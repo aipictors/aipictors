@@ -1,3 +1,9 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": ["next/core-web-vitals", "prettier"],
+  "plugins": ["unused-imports", "import"],
+  "rules": {
+    "import/no-duplicates": "error",
+    "import/order": ["error", { "alphabetize": { "order": "asc" } }],
+    "unused-imports/no-unused-imports": "error"
+  }
 }

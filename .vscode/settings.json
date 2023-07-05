@@ -1,0 +1,31 @@
+{
+  "deno.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.xml": "html",
+    "*.svg": "html",
+    "*.mjml": "html"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "*.lock": true,
+    "*.log": true,
+    "*.tsbuildinfo": true,
+    ".firebase": true,
+    ".idea": true,
+    ".next": true,
+    ".yarn": true,
+    "dist": true,
+    "next-env.d.ts": true
+  },
+  "search.exclude": {
+    "*.lock": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "cSpell.words": ["aipictors", "chakra", "nextjs"]
+}
