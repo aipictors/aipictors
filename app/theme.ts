@@ -6,7 +6,7 @@ import {
 
 const baseTheme = extendTheme({
   config: {
-    initialColorMode: "light",
+    initialColorMode: "dark",
     useSystemColorMode: false,
   },
   colors: {
