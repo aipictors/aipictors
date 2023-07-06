@@ -27,5 +27,5 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "cSpell.words": ["aipictors", "chakra", "nextjs"]
+  "cSpell.words": ["aipictors", "chakra", "nextjs", "ourt"]
 }
