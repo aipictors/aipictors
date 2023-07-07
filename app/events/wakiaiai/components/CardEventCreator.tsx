@@ -20,7 +20,7 @@ type Props = {
 
 export const CardEventCreator: FC<Props> = (props) => {
   return (
-    <Card overflow={"hidden"}>
+    <Card overflow={"hidden"} variant={"filled"}>
       <HStack>
         <Box minW={40} w={40} h={40}>
           <a
@@ -46,8 +46,8 @@ export const CardEventCreator: FC<Props> = (props) => {
           </a>
         </Box>
         <Stack
-          px={{ base: 2, sm: 4 }}
-          spacing={{ base: 2, sm: 4 }}
+          px={{ base: 2, md: 2 }}
+          spacing={{ base: 2, md: 4 }}
           h={"100%"}
           py={4}
         >
@@ -62,24 +62,30 @@ export const CardEventCreator: FC<Props> = (props) => {
             </Heading>
           </Stack>
           <HStack>
-          {props.user.twitterId !== null && (
-            <IconButton
-              aria-label={"Twitter"}
-              as={"a"}
-              borderRadius={"full"}
-              icon={<Icon as={TbBrandTwitterFilled} />}
-              target={"_blank"}
-              rel={"noopener"}
-              href={`https://twitter.com/${props.user.twitterId}`}
-            />
+            {props.user.twitterId !== null && (
+              <IconButton
+                aria-label={"Twitter"}
+                as={"a"}
+                borderRadius={"full"}
+                colorScheme={"blue"}
+                icon={<Icon as={TbBrandTwitterFilled} />}
+                target={"_blank"}
+                rel={"noopener"}
+                lineHeight={1}
+                size={{ base: "sm", md: "md" }}
+                href={`https://twitter.com/${props.user.twitterId}`}
+              />
             )}
             {props.user.siteURL !== null && props.user.siteTitle !== null && (
               <Button
                 as={"a"}
                 borderRadius={"full"}
+                colorScheme={"blue"}
                 leftIcon={<Icon as={TbClick} />}
                 target={"_blank"}
                 rel={"noopener"}
+                lineHeight={1}
+                size={{ base: "sm", md: "md" }}
                 href={props.user.siteURL}
               >
                 {props.user.siteTitle}
@@ -90,9 +96,12 @@ export const CardEventCreator: FC<Props> = (props) => {
                 aria-label={"Webサイト"}
                 as={"a"}
                 borderRadius={"full"}
+                colorScheme={"blue"}
                 icon={<Icon as={TbExternalLink} />}
                 target={"_blank"}
                 rel={"noopener"}
+                lineHeight={1}
+                size={{ base: "sm", md: "md" }}
                 href={props.user.siteURL}
               />
             )}

@@ -338,7 +338,6 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       siteTitle: "アワートAI",
       links: [],
     },
- 
   ]
 
   const shops = users.filter((user) => {
@@ -346,15 +345,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
   })
 
   const exhibits = users.filter((user) => {
-    return user.types.includes("EXHIBIT")
-  })
-
-  const sponsors = users.filter((user) => {
-    return (
-      user.types.includes("SPONSOR") &&
-      !user.types.includes("EXHIBIT") &&
-      !user.types.includes("SHOP")
-    )
+    return user.types.includes("EXHIBIT") || user.types.includes("SPONSOR")
   })
 
   return (
@@ -380,7 +371,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
             borderBottomRightRadius={"3xl"}
           />
         </Box>
-        <Stack flex={2} px={8} py={8} spacing={8}>
+        <Stack flex={2} px={{ base: 4, md: 8 }} py={8} spacing={8}>
           <Stack spacing={4}>
             <Heading size={"lg"} color={"blue.300"}>
               {"2023年9月30日"}
@@ -415,7 +406,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       </Stack>
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w={"100%"}>
         <Card variant={"filled"} bg={"gray.100"} color={"gray.800"}>
-          <Stack spacing={4} p={8}>
+          <Stack spacing={4} p={{ base: 4, md: 8 }}>
             <Heading size={"lg"}>{"9月30日（土） 10時〜16時"}</Heading>
             <Text>
               {
@@ -430,7 +421,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
           color={"gray.800"}
           borderTopRightRadius={{ base: "md", md: "3xl" }}
         >
-          <Stack spacing={4} p={8}>
+          <Stack spacing={4} p={{ base: 4, md: 8 }}>
             <Heading size={"lg"}>{"名古屋鉄道太田川駅から1分"}</Heading>
             <Text>
               {
@@ -441,7 +432,9 @@ export const BoxSectionAboutWakiaiai: FC = () => {
               {"即売会：太田川駅西広場 大屋根広場（愛知県東海市大田町下浜田）"}
             </Text>
             <Text>
-              {"展示：東海市芸術劇場 4階ギャラリー（愛知県東海市大田町下浜田137）"}
+              {
+                "展示：東海市芸術劇場 4階ギャラリー（愛知県東海市大田町下浜田137）"
+              }
             </Text>
           </Stack>
         </Card>
@@ -493,17 +486,14 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         }
         allowFullScreen={true}
       />
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
-        {sponsors.map((user, index) => (
-          <CardEventCreator key={index} user={user} />
-        ))}
-      </SimpleGrid>
       <Card variant={"filled"}>
-        <Stack spacing={6} p={8}>
+        <Stack spacing={6} p={{ base: 4, md: 8 }}>
           <Heading size={"md"}>{"お問い合わせはこちらまで"}</Heading>
           <HStack>
             <Button
               as={"a"}
+              variant={"solid"}
+              colorScheme={"blue"}
               borderRadius={"full"}
               leftIcon={<Icon as={TbExternalLink} />}
               target={"_blank"}
@@ -514,6 +504,8 @@ export const BoxSectionAboutWakiaiai: FC = () => {
             </Button>
             <Button
               as={"a"}
+              variant={"solid"}
+              colorScheme={"blue"}
               borderRadius={"full"}
               leftIcon={<Icon as={TbMail} />}
               target={"_blank"}
