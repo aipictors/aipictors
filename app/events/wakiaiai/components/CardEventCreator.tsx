@@ -57,9 +57,10 @@ export const CardEventCreator: FC<Props> = (props) => {
           spacing={{ base: 2, md: 4 }}
           h={"100%"}
           py={4}
+          overflow={"hidden"}
         >
           <Stack flex={1} spacing={{ base: 2, sm: 4 }}>
-            <HStack>
+            <HStack spacing={{ base: 1, sm: 2 }}>
               {props.user.types.map((type) => (
                 <TagEventUser key={type} type={type} />
               ))}

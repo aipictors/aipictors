@@ -317,7 +317,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         "https://pbs.twimg.com/profile_images/1636699451145486337/az0tlecX.jpg",
       twitterId: "promptonio",
       aipictorsId: null,
-      siteURL: "https://promptonio",
+      siteURL: "https://prompton.io",
       siteTitle: "プロンプトン",
       links: [],
     },
@@ -523,9 +523,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
               colorScheme={"blue"}
               borderRadius={"full"}
               leftIcon={<Icon as={TbMail} />}
-              target={"_blank"}
-              rel={"noopener"}
-              href={"kotoba.no.aya.2022@gmail.com"}
+              href={"mailto:kotoba.no.aya.2022@gmail.com"}
             >
               {"メール"}
             </Button>

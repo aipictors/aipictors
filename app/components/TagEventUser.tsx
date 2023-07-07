@@ -11,9 +11,9 @@ export const TagEventUser: FC<Props> = (props) => {
   if (props.type === "SPONSOR") {
     return (
       <Tag colorScheme={"yellow"} borderRadius={"full"} w={"fit-content"}>
-        <TagLeftIcon fontSize={20} as={TbFlame} />
+        <TagLeftIcon fontSize={20} as={TbFlame} mr={1} />
         <TagLabel fontWeight={"bold"} lineHeight={1}>
-          {"スポンサ"}
+          {"スポンサー"}
         </TagLabel>
       </Tag>
     )
@@ -22,7 +22,7 @@ export const TagEventUser: FC<Props> = (props) => {
   if (props.type === "EXHIBIT") {
     return (
       <Tag colorScheme={"blue"} borderRadius={"full"} w={"fit-content"}>
-        <TagLeftIcon fontSize={20} as={TbPhoto} />
+        <TagLeftIcon fontSize={20} as={TbPhoto} mr={1} />
         <TagLabel fontWeight={"bold"} lineHeight={1}>
           {"展示"}
         </TagLabel>
@@ -32,7 +32,7 @@ export const TagEventUser: FC<Props> = (props) => {
 
   return (
     <Tag colorScheme={"green"} borderRadius={"full"} w={"fit-content"}>
-      <TagLeftIcon fontSize={20} as={TbShoppingBag} />
+      <TagLeftIcon fontSize={20} as={TbShoppingBag} mr={1} />
       <TagLabel fontWeight={"bold"} lineHeight={1}>
         {"出展"}
       </TagLabel>

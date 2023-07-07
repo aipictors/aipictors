@@ -31,6 +31,8 @@ export const BoxEventImage: FC<Props> = (props) => {
         bottom={4}
         right={4}
         variant={"outline"}
+        colorScheme={"blue"}
+        lineHeight={1}
         borderRadius={"full"}
         leftIcon={<Icon as={TbClick} />}
       >
