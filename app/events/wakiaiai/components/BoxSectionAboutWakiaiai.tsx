@@ -224,7 +224,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
     },
     {
       name: "nawashi",
-      types: ["EXHIBIT"],
+      types: ["EXHIBIT", "SPONSOR"],
       message: null,
       iconImageURL:
         "https://www.aipictors.com/wp-content/uploads/2023/05/xRv4Z8QV2NXKrnj5UGYHiCuq3A9Dzb.webp",
@@ -326,18 +326,6 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       links: [],
     },
     {
-      name: "nawashi",
-      types: ["SPONSOR"],
-      message: null,
-      iconImageURL:
-        "https://www.aipictors.com/wp-content/uploads/2023/05/xRv4Z8QV2NXKrnj5UGYHiCuq3A9Dzb.webp",
-      twitterId: null,
-      aipictorsId: "8539",
-      siteURL: null,
-      siteTitle: null,
-      links: [],
-    },
-    {
       name: "プロンプトン",
       types: ["SPONSOR"],
       message: "イラスト依頼サイト",
@@ -426,7 +414,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w={"100%"}>
         <Card variant={"filled"} bg={"gray.100"} color={"gray.800"}>
           <Stack spacing={4} p={8}>
-            <Heading size={"lg"}>{"9月30日（土） 9時〜17時"}</Heading>
+            <Heading size={"lg"}>{"9月30日（土） 10時〜16時"}</Heading>
             <Text>
               {
                 "一般参加は無料！本イベントは、主に画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。"
@@ -448,7 +436,10 @@ export const BoxSectionAboutWakiaiai: FC = () => {
               }
             </Text>
             <Text>
-              {"東海市芸術劇場ギャラリー（愛知県東海市大田町下浜田137）"}
+              {"即売会：太田川駅西広場 大屋根広場（愛知県東海市大田町下浜田）"}
+            </Text>
+            <Text>
+              {"展示：東海市芸術劇場 4階ギャラリー（愛知県東海市大田町下浜田137）"}
             </Text>
           </Stack>
         </Card>
@@ -457,7 +448,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         borderRadius={"md"}
         as={"iframe"}
         src={
-          "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d209117.53550041988!2d136.6032689867188!3d35.0201831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60037e6311f617c3%3A0x14b06c0579552e33!2z5p2x5rW35biC6Iq46KGT5YqH5aC0!5e0!3m2!1sja!2sjp!4v1688616624200!5m2!1sja!2sjp"
+          "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d173236.96306047565!2d136.8223456376915!3d35.06173419127466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60037fbd4e27a501%3A0xced4a78d8bbf60fe!2z5aSq55Sw5bed6aeF6KW_5bqD5aC077yI5aSn5bGL5qC55bqD5aC077yJ!5e0!3m2!1sja!2sjp!4v1688692547024!5m2!1sja!2sjp"
         }
         width={"100%"}
         height={400}

@@ -21,7 +21,7 @@ export const TagEventUser: FC<Props> = (props) => {
     return (
       <Tag colorScheme={"blue"} borderRadius={"full"}>
         <TagLeftIcon fontSize={20} as={TbPhoto} />
-        <TagLabel fontWeight={"bold"}>{"展示のみ"}</TagLabel>
+        <TagLabel fontWeight={"bold"}>{"展示"}</TagLabel>
       </Tag>
     )
   }
