@@ -302,6 +302,19 @@ export const BoxSectionAboutWakiaiai: FC = () => {
     },
 
     {
+      name: "プロンプトン",
+      types: ["EXHIBIT"],
+      message: "イラスト依頼サイト",
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1636699451145486337/az0tlecX.jpg",
+      twitterId: "promptonio",
+      aipictorsId: null,
+      siteURL: "https://promptonio",
+      siteTitle: "プロンプトン",
+      links: [],
+    },
+
+    {
       name: "AI PICTORS",
       types: ["SPONSOR"],
       message: null,
@@ -325,18 +338,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       siteTitle: "アワートAI",
       links: [],
     },
-    {
-      name: "プロンプトン",
-      types: ["SPONSOR"],
-      message: "イラスト依頼サイト",
-      iconImageURL:
-        "https://pbs.twimg.com/profile_images/1636699451145486337/az0tlecX.jpg",
-      twitterId: "promptonio",
-      aipictorsId: null,
-      siteURL: "https://promptonio",
-      siteTitle: "プロンプトン",
-      links: [],
-    },
+ 
   ]
 
   const shops = users.filter((user) => {
