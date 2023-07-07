@@ -62,6 +62,7 @@ export const CardEventCreator: FC<Props> = (props) => {
             </Heading>
           </Stack>
           <HStack>
+          {props.user.twitterId !== null && (
             <IconButton
               aria-label={"Twitter"}
               as={"a"}
@@ -71,6 +72,7 @@ export const CardEventCreator: FC<Props> = (props) => {
               rel={"noopener"}
               href={`https://twitter.com/${props.user.twitterId}`}
             />
+            )}
             {props.user.siteURL !== null && props.user.siteTitle !== null && (
               <Button
                 as={"a"}
