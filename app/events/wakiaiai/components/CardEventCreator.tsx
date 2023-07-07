@@ -9,6 +9,7 @@ import {
   Button,
   Box,
 } from "@chakra-ui/react"
+import { getAnalytics, logEvent } from "firebase/analytics"
 import { FC } from "react"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
 import { TagEventUser } from "app/components/TagEventUser"
@@ -34,6 +35,12 @@ export const CardEventCreator: FC<Props> = (props) => {
                 ? `https://twitter.com/${props.user.twitterId}`
                 : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
             }
+            onClick={() => {
+              logEvent(getAnalytics(), "select_item", {
+                item_list_id: props.user.twitterId ?? "-",
+                item_list_name: props.user.name,
+              })
+            }}
           >
             <Image
               alt={props.user.name}

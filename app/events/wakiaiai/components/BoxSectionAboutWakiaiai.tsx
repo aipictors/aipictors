@@ -9,14 +9,22 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  useColorMode,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import { getAnalytics, logEvent } from "firebase/analytics"
+import { FC, useEffect } from "react"
 import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
 import { BoxEventImage } from "app/components/BoxEventImage"
 import { EventUser } from "app/events/types/eventUser"
 import { CardEventCreator } from "app/events/wakiaiai/components/CardEventCreator"
 
 export const BoxSectionAboutWakiaiai: FC = () => {
+  const { setColorMode } = useColorMode()
+
+  useEffect(() => {
+    setColorMode("light")
+  })
+
   const users: EventUser[] = [
     {
       name: "褐色眼鏡工房",
@@ -398,6 +406,13 @@ export const BoxSectionAboutWakiaiai: FC = () => {
                 <Icon as={TbBrandTwitterFilled} color={"twitter.500"} />
               }
               aria-label={"Twitter"}
+              onClick={() => {
+                logEvent(getAnalytics(), "share", {
+                  content_type: "link",
+                  method: "twitter",
+                  item_id: "",
+                })
+              }}
             >
               {"Twitterでシェアする"}
             </Button>
