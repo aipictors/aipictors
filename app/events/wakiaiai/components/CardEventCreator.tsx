@@ -65,7 +65,7 @@ export const CardEventCreator: FC<Props> = (props) => {
                 <TagEventUser key={type} type={type} />
               ))}
             </HStack>
-            <Heading as={"h2"} fontSize={{ base: 20, md: 24 }}>
+            <Heading as={"h2"} fontSize={{ base: 20 }}>
               {props.user.name}
             </Heading>
           </Stack>

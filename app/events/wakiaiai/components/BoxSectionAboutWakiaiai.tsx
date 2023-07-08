@@ -537,6 +537,17 @@ export const BoxSectionAboutWakiaiai: FC = () => {
           <CardEventCreator key={index} user={user} />
         ))}
       </SimpleGrid>
+      <BoxEventImage
+        alt={"和気あいAI"}
+        imageURL={
+          "https://www.aipictors.com/wp-content/uploads/2023/06/FDfUikjd67cARVC30vePmGJMn4zL81.webp"
+        }
+        linkURL={"https://www.aipictors.com/works/59815/"}
+        linkTitle={"Aipictors"}
+        borderTopRadius={"md"}
+        borderBottomLeftRadius={"md"}
+        borderBottomRightRadius={"3xl"}
+      />
       <Card variant={"filled"}>
         <Stack spacing={4} p={{ base: 4, md: 8 }}>
           <Heading size={"md"}>{"お問い合わせはこちらまで"}</Heading>
