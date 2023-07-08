@@ -195,6 +195,18 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       links: [],
     },
     {
+      name: "花葩レイミ",
+      types: ["SHOP"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1633695967294914560/7jx_6B3W.jpg",
+      twitterId: "hanahirareimi",
+      aipictorsId: "1240",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+    {
       name: "ざくろ舞",
       types: ["EXHIBIT"],
       message: null,
@@ -304,6 +316,19 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         "https://pbs.twimg.com/profile_images/1617456375944343552/GfSIFiDf.jpg",
       twitterId: "Hifumi_AID",
       aipictorsId: null,
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
+    {
+      name: "呉 春華",
+      types: ["EXHIBIT"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1599421733127081984/Whik0rb7.jpg",
+      twitterId: "ShunkaCule",
+      aipictorsId: "162",
       siteURL: null,
       siteTitle: null,
       links: [],
@@ -513,7 +538,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
               leftIcon={<Icon as={TbExternalLink} />}
               target={"_blank"}
               rel={"noopener"}
-              href={"https://kotobanoaya2023.blog.fc2.com"}
+              href={"https://twitter.com/ko_to_ba_no_aya"}
             >
               {"ことばのあや"}
             </Button>
@@ -526,6 +551,18 @@ export const BoxSectionAboutWakiaiai: FC = () => {
               href={"mailto:kotoba.no.aya.2022@gmail.com"}
             >
               {"メール"}
+            </Button>
+            <Button
+              as={"a"}
+              variant={"solid"}
+              colorScheme={"blue"}
+              borderRadius={"full"}
+              leftIcon={<Icon as={TbExternalLink} />}
+              target={"_blank"}
+              rel={"noopener"}
+              href={"https://discord.com/invite/xP73N3VJbS"}
+            >
+              {"相談Discord（Aipictors）"}
             </Button>
           </HStack>
         </Stack>
