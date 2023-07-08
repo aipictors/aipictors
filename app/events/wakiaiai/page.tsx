@@ -16,6 +16,9 @@ export const metadata: Metadata = {
       url: "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
     },
   },
+  twitter: {
+    card: "summary_large_image",
+  },
 }
 
 const EventWakiaiaiPage = async () => {
