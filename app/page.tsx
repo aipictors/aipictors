@@ -3,7 +3,7 @@ import { Metadata } from "next"
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: "Next.js",
+  title: "",
 }
 
 const HomePage = async () => {

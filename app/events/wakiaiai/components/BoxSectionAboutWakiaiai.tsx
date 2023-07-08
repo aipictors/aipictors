@@ -373,12 +373,18 @@ export const BoxSectionAboutWakiaiai: FC = () => {
     },
   ]
 
-  const shops = users.filter((user) => {
-    return user.types.includes("SHOP")
+  const length = Math.floor(users.length / 3)
+
+  const aUsers = users.filter((_, index) => {
+    return index <= length
   })
 
-  const exhibits = users.filter((user) => {
-    return user.types.includes("EXHIBIT") || user.types.includes("SPONSOR")
+  const bUsers = users.filter((_, index) => {
+    return length < index && index <= length * 2
+  })
+
+  const cUsers = users.filter((_, index) => {
+    return length * 2 < index && index <= length * 3
   })
 
   return (
@@ -493,7 +499,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         referrerPolicy={"no-referrer-when-downgrade"}
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
-        {shops.map((user, index) => (
+        {aUsers.map((user, index) => (
           <CardEventCreator key={index} user={user} />
         ))}
       </SimpleGrid>
@@ -509,7 +515,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         borderBottomRightRadius={"3xl"}
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
-        {exhibits.map((user, index) => (
+        {bUsers.map((user, index) => (
           <CardEventCreator key={index} user={user} />
         ))}
       </SimpleGrid>
@@ -526,10 +532,15 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         }
         allowFullScreen={true}
       />
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
+        {cUsers.map((user, index) => (
+          <CardEventCreator key={index} user={user} />
+        ))}
+      </SimpleGrid>
       <Card variant={"filled"}>
-        <Stack spacing={6} p={{ base: 4, md: 8 }}>
+        <Stack spacing={4} p={{ base: 4, md: 8 }}>
           <Heading size={"md"}>{"お問い合わせはこちらまで"}</Heading>
-          <HStack>
+          <Stack direction={{ base: "column", md: "row" }}>
             <Button
               as={"a"}
               variant={"solid"}
@@ -564,7 +575,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
             >
               {"相談Discord（Aipictors）"}
             </Button>
-          </HStack>
+          </Stack>
         </Stack>
       </Card>
     </Stack>
