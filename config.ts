@@ -22,4 +22,8 @@ export class Config {
   static get sentryDSN() {
     return process.env.NEXT_PUBLIC_SENTRY_DSN + ""
   }
+
+  static get appURL() {
+    return process.env.NEXT_PUBLIC_APP_URL!
+  }
 }
