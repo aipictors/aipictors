@@ -351,7 +351,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       name: "AI PICTORS",
       types: ["SPONSOR"],
       message: null,
-      aipictorsId: "https://www.aipictors.com/user/?id=admin",
+      aipictorsId: "admin",
       twitterId: "AIPICTORS",
       iconImageURL:
         "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp",
