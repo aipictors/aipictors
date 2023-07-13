@@ -17,7 +17,6 @@ const RootLayout: FC<Props> = (props) => {
   return (
     <html lang={"ja"}>
       <head>
-        <meta name={"robots"} content={"noindex"} />
         <link rel={"preconnect"} href={"https://fonts.googleapis.com"} />
         <link
           rel={"preconnect"}
