@@ -147,18 +147,6 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       links: [],
     },
     {
-      name: "ヤマガワ_AIイラスト",
-      types: ["SHOP"],
-      message: null,
-      iconImageURL:
-        "https://pbs.twimg.com/profile_images/1660414065360146432/aWrH9JNA.jpg",
-      twitterId: "yamagawaAI",
-      aipictorsId: null,
-      siteURL: null,
-      siteTitle: null,
-      links: [],
-    },
-    {
       name: "らけしで",
       types: ["SHOP"],
       message: null,
