@@ -55,7 +55,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       types: ["SHOP"],
       message: "AIイラスト兼AI副業｜YUMA FACTORY運営",
       iconImageURL:
-        "https://www.aipictors.com/wp-content/uploads/2023/06/Xv4Sba6TdwBY3VP9iMxHkmz8QE0fpt.webp",
+        "https://pbs.twimg.com/profile_images/1661753449300766724/OstlsYYo.jpg",
       twitterId: "yumanosekai",
       aipictorsId: "yumaillustai",
       siteTitle: null,
@@ -190,6 +190,18 @@ export const BoxSectionAboutWakiaiai: FC = () => {
         "https://pbs.twimg.com/profile_images/1633695967294914560/7jx_6B3W.jpg",
       twitterId: "hanahirareimi",
       aipictorsId: "1240",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+    {
+      name: "NOAH",
+      types: ["SHOP"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1604702634442600448/Ux21ytQb.jpg",
+      twitterId: "NOAH_AI_illust",
+      aipictorsId: null,
       siteURL: null,
       siteTitle: null,
       links: [],
