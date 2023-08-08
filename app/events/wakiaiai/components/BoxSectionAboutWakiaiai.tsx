@@ -335,6 +335,19 @@ export const BoxSectionAboutWakiaiai: FC = () => {
     },
 
     {
+      name: "ナコち",
+      types: ["EXHIBIT"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1672671535021301760/CrBv6doa.jpg",
+      twitterId: "ai_anima_nun",
+      aipictorsId: "@ai_anima_nun",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
+    {
       name: "プロンプトン",
       types: ["EXHIBIT"],
       message: "イラスト依頼サイト",
