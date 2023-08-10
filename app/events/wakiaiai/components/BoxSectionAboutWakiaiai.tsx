@@ -206,6 +206,20 @@ export const BoxSectionAboutWakiaiai: FC = () => {
       siteTitle: null,
       links: [],
     },
+
+    {
+      name: "エリマキ",
+      types: ["SHOP"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1617312481009102848/CqcQZjfP.jpg",
+      twitterId: "mogech6",
+      aipictorsId: "@mogech6",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
     {
       name: "ざくろ舞",
       types: ["EXHIBIT"],
