@@ -411,7 +411,7 @@ export const BoxSectionAboutWakiaiai: FC = () => {
   })
 
   const cUsers = users.filter((_, index) => {
-    return length * 2 < index && index <= length * 3
+    return length * 2 < index && index < users.length
   })
 
   return (
