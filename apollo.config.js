@@ -1,8 +1,8 @@
 module.exports = {
   client: {
     service: {
-      localSchemaFile: "schema.graphql",
-      endpoint: null,
+      name: "supergraph",
+      url: "https://router-6ouzjmdzha-an.a.run.app",
     },
     includes: ["graphql/**/*.ts"],
   },

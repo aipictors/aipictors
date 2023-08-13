@@ -11,12 +11,8 @@ export class Config {
     }
   }
 
-  static get isClient() {
-    return typeof window !== "undefined"
-  }
-
-  static get isNotClient() {
-    return typeof window === "undefined"
+  static get siteDescriptionJA() {
+    return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう！、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
   }
 
   static get sentryDSN() {
@@ -25,5 +21,21 @@ export class Config {
 
   static get appURL() {
     return process.env.NEXT_PUBLIC_APP_URL!
+  }
+
+  static get isClient() {
+    return typeof window !== "undefined"
+  }
+
+  static get isNotClient() {
+    return typeof window === "undefined"
+  }
+
+  static get isDevelopmentMode() {
+    return process.env.NODE_ENV === "development"
+  }
+
+  static get isReleaseMode() {
+    return process.env.NODE_ENV !== "development"
   }
 }

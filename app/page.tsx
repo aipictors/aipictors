@@ -1,13 +1,13 @@
 import { Metadata } from "next"
 
-export const revalidate = 60
+const HomePage = async () => {
+  return null
+}
 
 export const metadata: Metadata = {
   title: "",
 }
 
-const HomePage = async () => {
-  return null
-}
+export const revalidate = 60
 
 export default HomePage

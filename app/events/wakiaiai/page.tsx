@@ -1,6 +1,6 @@
 import { Metadata } from "next"
-import { BoxFooter } from "app/components/BoxFooter"
-import { BoxSectionAboutWakiaiai } from "app/events/wakiaiai/components/BoxSectionAboutWakiaiai"
+import { FooterHome } from "app/components/FooterHome"
+import { SectionAboutWakiaiai } from "app/events/wakiaiai/components/SectionAboutWakiaiai"
 
 export const revalidate = 60
 
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 const EventWakiaiaiPage = async () => {
   return (
     <>
-      <BoxSectionAboutWakiaiai />
-      <BoxFooter />
+      <SectionAboutWakiaiai />
+      <FooterHome />
     </>
   )
 }

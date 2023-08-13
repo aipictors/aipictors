@@ -12,8 +12,8 @@ import {
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { FC } from "react"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
-import { TagEventUser } from "app/components/TagEventUser"
 import { EventUser } from "app/events/types/eventUser"
+import { TagEventUser } from "app/events/wakiaiai/components/tag/TagEventUser"
 
 type Props = {
   user: EventUser

@@ -1,15 +1,40 @@
 "use client"
-import { Text, Stack } from "@chakra-ui/react"
-import { FC } from "react"
+import { CacheProvider } from "@chakra-ui/next-js"
+import { ChakraProvider } from "@chakra-ui/react"
+import type { Metadata } from "next"
+import type { FC } from "react"
+import RootError from "app/error"
+import { theme } from "app/theme"
 
 const RootGlobalError: FC = () => {
+  const fontURL =
+    "https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700&display=swap"
+
   return (
-    <Stack p={4} h={"100vh"} justifyContent={"center"} alignItems={"center"}>
-      <Stack spacing={8} alignItems={"center"}>
-        <Text>{"エラーが発生しました"}</Text>
-      </Stack>
-    </Stack>
+    <html>
+      <head>
+        <link rel={"preconnect"} href={"https://fonts.googleapis.com"} />
+        <link
+          rel={"preconnect"}
+          href={"https://fonts.gstatic.com"}
+          crossOrigin={""}
+        />
+        <link href={fontURL} rel={"stylesheet"} />
+        <link href={"/icon.svg"} rel={"icon"} type={"image/svg+xml"} />
+      </head>
+      <body>
+        <CacheProvider>
+          <ChakraProvider theme={theme}>
+            <RootError />
+          </ChakraProvider>
+        </CacheProvider>
+      </body>
+    </html>
   )
+}
+
+export const metadata: Metadata = {
+  title: "エラー",
 }
 
 export default RootGlobalError

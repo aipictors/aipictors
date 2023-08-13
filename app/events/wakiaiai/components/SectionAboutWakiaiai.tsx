@@ -14,11 +14,11 @@ import {
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { FC, useEffect } from "react"
 import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
-import { BoxEventImage } from "app/components/BoxEventImage"
 import { EventUser } from "app/events/types/eventUser"
-import { CardEventCreator } from "app/events/wakiaiai/components/CardEventCreator"
+import { BoxEventImage } from "app/events/wakiaiai/components/box/BoxEventImage"
+import { CardEventCreator } from "app/events/wakiaiai/components/card/CardEventCreator"
 
-export const BoxSectionAboutWakiaiai: FC = () => {
+export const SectionAboutWakiaiai: FC = () => {
   const { setColorMode } = useColorMode()
 
   useEffect(() => {
