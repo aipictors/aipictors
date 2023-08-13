@@ -15,8 +15,12 @@ export class Config {
     return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう！、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
   }
 
+  static get graphqlEndpoint() {
+    return process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT!
+  }
+
   static get sentryDSN() {
-    return process.env.NEXT_PUBLIC_SENTRY_DSN + ""
+    return process.env.NEXT_PUBLIC_SENTRY_DSN!
   }
 
   static get appURL() {

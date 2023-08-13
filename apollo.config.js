@@ -1,7 +1,7 @@
 module.exports = {
   client: {
     service: {
-      name: "supergraph",
+      name: "default",
       url: "https://router-6ouzjmdzha-an.a.run.app",
     },
     includes: ["graphql/**/*.ts"],

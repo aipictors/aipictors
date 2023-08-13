@@ -1,4 +1,5 @@
 "use client"
+import { ApolloProvider } from "@apollo/client"
 import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import { init } from "@sentry/nextjs"
@@ -6,6 +7,7 @@ import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"
 import { FC, ReactNode, useEffect } from "react"
+import { client } from "app/client"
 import { theme } from "app/theme"
 import { Config } from "config"
 
@@ -30,9 +32,11 @@ export const Providers: FC<Props> = (props) => {
   }, [pathname, searchParams])
 
   return (
-    <CacheProvider>
-      <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
-    </CacheProvider>
+    <ApolloProvider client={client}>
+      <CacheProvider>
+        <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
+      </CacheProvider>
+    </ApolloProvider>
   )
 }
 
