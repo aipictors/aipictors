@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prebuild": "yarn build:graphql",
     "start": "next start",
-    "build:graphql": "graphql-codegen",
-    "build:schema": "get-graphql-schema https://subgraph-aipictors-sn4ve5jg4q-an.a.run.app/api -h 'secret=xwzkbm237trfs3y9j4j9cui8e2setaj4' > schema.graphql"
+    "build:graphql": "graphql-codegen -c codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",

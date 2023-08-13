@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { FC, ReactNode } from "react"
 import { Providers } from "app/providers"
 import { Config } from "config"
@@ -28,15 +29,21 @@ const RootLayout: FC<Props> = (props) => {
   )
 }
 
-export const metadata = {
-  title: "Aipictors",
+export const metadata: Metadata = {
+  title: {
+    template: Config.siteTitleTemplateJA,
+    default: Config.siteTitleJA,
+  },
   description: Config.siteDescriptionJA,
   openGraph: {
     type: "website",
+    siteName: Config.siteTitleJA,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@aipictors",
+    title: Config.siteNameJA,
+    description: Config.siteDescriptionJA,
   },
 }
 

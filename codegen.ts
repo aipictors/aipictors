@@ -4,8 +4,8 @@ const config: CodegenConfig = {
   overwrite: true,
   documents: "graphql/**/*.ts",
   generates: {
-    "__generated__/react.ts": {
-      schema: "schema.graphql",
+    "__generated__/apollo.ts": {
+      schema: "https://router-6ouzjmdzha-an.a.run.app",
       plugins: [
         "typescript",
         "typescript-operations",
@@ -14,10 +14,10 @@ const config: CodegenConfig = {
       config: {
         enumsAsConst: true,
         avoidOptionals: {
-          field: true,
-          inputValue: true,
-          object: true,
           defaultValue: false,
+          field: true,
+          inputValue: false,
+          object: true,
         },
       },
     },

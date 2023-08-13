@@ -6,7 +6,6 @@ import { Config } from "config"
 
 const httpLink = createHttpLink({
   uri: Config.graphqlEndpoint,
-  // credentials: "same-origin",
 })
 
 const contextSetter: ContextSetter = async (_, context) => {
@@ -41,8 +40,7 @@ const authLink = setContext(contextSetter)
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
-      fields: {
-      },
+      fields: {},
     },
   },
 })

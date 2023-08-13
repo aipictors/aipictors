@@ -11,6 +11,34 @@ export class Config {
     }
   }
 
+  static get siteNameJA() {
+    return "AIピクターズ"
+  }
+
+  static get siteNameEN() {
+    return "Aipictors"
+  }
+
+  static get siteTitleJA() {
+    return `${Config.siteNameJA} - ${Config.siteCatchphraseJA}`
+  }
+
+  static get siteTitleEN() {
+    return `${Config.siteNameEN} - ${Config.siteCatchphraseEN}`
+  }
+
+  static get siteTitleTemplateJA() {
+    return "%s | AIイラスト・小説投稿サイト"
+  }
+
+  static get siteCatchphraseJA() {
+    return "AIイラスト・小説投稿サイト"
+  }
+
+  static get siteCatchphraseEN() {
+    return "AI Illustration & Novel"
+  }
+
   static get siteDescriptionJA() {
     return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう！、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
   }
@@ -21,6 +49,14 @@ export class Config {
 
   static get sentryDSN() {
     return process.env.NEXT_PUBLIC_SENTRY_DSN!
+  }
+
+  static get sentryEnvironment() {
+    return process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT!
+  }
+
+  static get sentryRelease() {
+    return process.env.NEXT_PUBLIC_SENTRY_RELEASE!
   }
 
   static get appURL() {

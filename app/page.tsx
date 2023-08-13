@@ -5,7 +5,8 @@ const HomePage = async () => {
 }
 
 export const metadata: Metadata = {
-  title: "",
+  robots: { index: false },
+  title: "-",
 }
 
 export const revalidate = 60
