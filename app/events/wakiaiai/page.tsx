@@ -1,14 +1,8 @@
 import { Metadata } from "next"
-import { FooterHome } from "app/components/FooterHome"
 import { SectionAboutWakiaiai } from "app/events/wakiaiai/components/SectionAboutWakiaiai"
 
 const EventWakiaiaiPage = async () => {
-  return (
-    <>
-      <SectionAboutWakiaiai />
-      <FooterHome />
-    </>
-  )
+  return <SectionAboutWakiaiai />
 }
 
 export const metadata: Metadata = {
@@ -30,6 +24,6 @@ export const metadata: Metadata = {
   },
 }
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export default EventWakiaiaiPage
