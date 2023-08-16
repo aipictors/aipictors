@@ -362,6 +362,19 @@ export const SectionAboutWakiaiai: FC = () => {
     },
 
     {
+      name: "エルセンナ",
+      types: ["EXHIBIT"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1680169001291505664/99f6SxJv.jpg",
+      twitterId: "elessenar",
+      aipictorsId: "@elessenar",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
+    {
       name: "プロンプトン",
       types: ["EXHIBIT"],
       message: "イラスト依頼サイト",
