@@ -221,6 +221,19 @@ export const SectionAboutWakiaiai: FC = () => {
     },
 
     {
+      name: "くらいむ",
+      types: ["SHOP"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1678709141928542209/HpxjE3ng.jpg",
+      twitterId: "kura_starwing",
+      aipictorsId: null,
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
+    {
       name: "ざくろ舞",
       types: ["EXHIBIT"],
       message: null,
@@ -369,6 +382,19 @@ export const SectionAboutWakiaiai: FC = () => {
         "https://pbs.twimg.com/profile_images/1680169001291505664/99f6SxJv.jpg",
       twitterId: "elessenar",
       aipictorsId: "@elessenar",
+      siteURL: null,
+      siteTitle: null,
+      links: [],
+    },
+
+    {
+      name: "さつき＠AIお絵描き(うさぎ好き）",
+      types: ["EXHIBIT"],
+      message: null,
+      iconImageURL:
+        "https://pbs.twimg.com/profile_images/1628409777721327616/lH-oxwC9.jpg",
+      twitterId: "masukarasulove",
+      aipictorsId: null,
       siteURL: null,
       siteTitle: null,
       links: [],
