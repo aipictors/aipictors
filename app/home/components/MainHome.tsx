@@ -5,16 +5,12 @@ import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/login/components/MainLogin"
 import { AppContext } from "contexts/appContext"
 
-type Props = {}
-
-export const MainHome: FC<Props> = (props) => {
+export const MainHome: FC = () => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {
     return <MainLoading />
   }
-
-  console.log(context)
 
   if (context.isNotLoggedIn) {
     return <MainLogin />

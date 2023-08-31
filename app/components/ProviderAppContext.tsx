@@ -75,8 +75,6 @@ export const ProviderAppContext: FC<Props> = (props) => {
     })
   }, [])
 
-  console.log("isLoading", isLoading)
-
   // 読み込み中
   if (isLoading) {
     const value = {
