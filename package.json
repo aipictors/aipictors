@@ -21,7 +21,7 @@
     "framer-motion": "^10.15.1",
     "get-graphql-schema": "^2.1.2",
     "graphql": "^16.7.1",
-    "next": "13.4.12",
+    "next": "13.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.10.1"
