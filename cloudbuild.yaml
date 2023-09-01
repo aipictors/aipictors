@@ -3,9 +3,8 @@ steps:
     script: |
       #!/usr/bin/env bash
       if [ "${IS_PRODUCTION}" = "false" ]; then
-        rm -rf .env.production
+        mv .env.staging .env
       fi
-      rm -rf .env.local
       rm -rf .env.production.local
     env:
       - "IS_PRODUCTION=$_IS_PRODUCTION"
