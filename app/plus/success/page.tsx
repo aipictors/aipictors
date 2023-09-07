@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
-import { MainPlus } from "app/plus/components/MainPlus"
+import { MainPlusSuccess } from "app/plus/success/components/MainPlusSuccess"
 
 /**
- * サブスク
+ * サブスクの決済を完了した場合のページ
  * @returns
  */
-const PlusPage = async () => {
-  return <MainPlus />
+const PlusSuccessPage = async () => {
+  return <MainPlusSuccess />
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -18,4 +18,4 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export const revalidate = 240
 
-export default PlusPage
+export default PlusSuccessPage
