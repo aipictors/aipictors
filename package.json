@@ -24,7 +24,8 @@
     "next": "13.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.10.1"
+    "react-icons": "^4.10.1",
+    "react-markdown": "^8.0.7"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
