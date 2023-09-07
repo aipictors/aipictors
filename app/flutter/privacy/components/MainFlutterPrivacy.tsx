@@ -1,7 +1,6 @@
 "use client"
-import { Box, HStack, useColorMode } from "@chakra-ui/react"
-import { useSearchParams } from "next/navigation"
-import { FC, useEffect } from "react"
+import { Box, HStack } from "@chakra-ui/react"
+import { FC } from "react"
 import { BoxMarkdown } from "components/BoxMarkdown"
 
 type Props = {
@@ -9,22 +8,6 @@ type Props = {
 }
 
 export const MainFlutterPrivacy: FC<Props> = (props) => {
-  const { setColorMode } = useColorMode()
-
-  const searchParams = useSearchParams()
-
-  const prefersColorScheme = searchParams.get("prefers-color-scheme")
-
-  useEffect(() => {
-    if (prefersColorScheme === "dark") {
-      setColorMode("dark")
-    }
-    if (prefersColorScheme === "light") {
-      setColorMode("light")
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <HStack justifyContent={"center"} py={8} minH={"100vh"}>
       <Box

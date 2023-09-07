@@ -18,7 +18,6 @@ export const FeedWorkFields = gql`
         downloadURL
       }
     }
-    tagNames
     createdAt
     likesCount
     viewsCount
