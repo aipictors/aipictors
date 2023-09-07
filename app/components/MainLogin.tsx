@@ -1,21 +1,14 @@
 "use client"
 import { HStack, useToast } from "@chakra-ui/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
-import { useRouter } from "next/navigation"
-import { FC, useContext } from "react"
+import { FC } from "react"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
-import { MainLoading } from "app/components/MainLoading"
-import { BoxFormLogin } from "app/login/components/BoxFormLogin"
-import { FormLogin } from "app/login/types/formLogin"
-import { AppContext } from "contexts/appContext"
+import { BoxFormLogin } from "app/components/BoxFormLogin"
+import { FormLogin } from "app/types/formLogin"
 
 type Props = {}
 
 export const MainLogin: FC<Props> = () => {
-  const context = useContext(AppContext)
-
-  const router = useRouter()
-
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
   const toast = useToast()
@@ -37,16 +30,11 @@ export const MainLogin: FC<Props> = () => {
       }
       await signInWithCustomToken(getAuth(), token)
       toast({ status: "success", description: "ログインしました。" })
-      router.replace("/home")
     } catch (error) {
       if (error instanceof Error) {
         toast({ status: "error", description: error.message })
       }
     }
-  }
-
-  if (context.isLoading) {
-    return <MainLoading />
   }
 
   return (

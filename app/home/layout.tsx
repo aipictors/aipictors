@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const PlusLayout: FC<Props> = (props) => {
+const HomeLayout: FC<Props> = (props) => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {
@@ -22,4 +22,4 @@ const PlusLayout: FC<Props> = (props) => {
   return <>{props.children}</>
 }
 
-export default PlusLayout
+export default HomeLayout

@@ -2,7 +2,7 @@
 import { HStack, Text } from "@chakra-ui/react"
 import { FC, useContext } from "react"
 import { MainLoading } from "app/components/MainLoading"
-import { MainLogin } from "app/login/components/MainLogin"
+import { MainLogin } from "app/components/MainLogin"
 import { AppContext } from "contexts/appContext"
 
 export const MainHome: FC = () => {
