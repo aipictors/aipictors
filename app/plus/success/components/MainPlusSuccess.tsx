@@ -23,7 +23,7 @@ export const MainPlusSuccess: FC = () => {
               fontSize={"xl"}
               fontWeight={"bold"}
             >
-              <Text>{"決済に成功しました。"}</Text>
+              <Text>{"決済に成功しました"}</Text>
             </HStack>
             <HStack justifyContent={"center"}>
               <Text>
