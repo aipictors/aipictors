@@ -18,20 +18,14 @@ export const MainPlusSuccess: FC = () => {
             <Icon as={TbThumbUp} fontSize={"8rem"} color={"green.400"} />
           </HStack>
           <Stack>
-            <HStack
-              justifyContent={"center"}
-              fontSize={"xl"}
-              fontWeight={"bold"}
-            >
-              <Text>{"決済に成功しました"}</Text>
-            </HStack>
-            <HStack justifyContent={"center"}>
-              <Text>
-                {
-                  "この度はピクタスにご登録ありがとうございます。これからもよろしくお願いします。"
-                }
-              </Text>
-            </HStack>
+            <Text fontSize={"xl"} fontWeight={"bold"} textAlign={"center"}>
+              {"決済に成功しました"}
+            </Text>
+            <Text>
+              {
+                "この度はピクタスにご登録ありがとうございます。これからもよろしくお願いします。"
+              }
+            </Text>
           </Stack>
         </Stack>
         <HStack justifyContent={"center"}>

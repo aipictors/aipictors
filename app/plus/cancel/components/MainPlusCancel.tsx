@@ -18,20 +18,14 @@ export const MainPlusCancel: FC = () => {
             <Icon as={TbMoodCry} fontSize={"8rem"} color={"gray.400"} />
           </HStack>
           <Stack>
-            <HStack
-              justifyContent={"center"}
-              fontSize={"xl"}
-              fontWeight={"bold"}
-            >
-              <Text>{"決済に失敗しました"}</Text>
-            </HStack>
-            <HStack justifyContent={"center"}>
-              <Text>
-                {
-                  "決済処理がキャンセルされました。再度決済を行う場合は、ホームに戻ってください。"
-                }
-              </Text>
-            </HStack>
+            <Text fontSize={"xl"} fontWeight={"bold"} textAlign={"center"}>
+              {"決済に失敗しました"}
+            </Text>
+            <Text>
+              {
+                "決済処理がキャンセルされました。再度決済を行う場合は、ホームに戻ってください。"
+              }
+            </Text>
           </Stack>
         </Stack>
         <HStack justifyContent={"center"}>
