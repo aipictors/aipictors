@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.11.0",
     "@sentry/nextjs": "^7.63.0",
     "@sentry/node": "^7.63.0",
+    "encoding": "^0.1.13",
     "firebase": "^10.1.0",
     "framer-motion": "^10.15.1",
     "get-graphql-schema": "^2.1.2",
