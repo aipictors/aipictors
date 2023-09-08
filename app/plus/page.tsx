@@ -12,7 +12,7 @@ const PlusPage = async () => {
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
     robots: { index: false },
-    title: { absolute: "サブスク" },
+    title: { absolute: "Aipictors+（ピクタス）" },
   }
 }
 
