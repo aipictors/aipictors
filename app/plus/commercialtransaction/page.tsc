@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
-import { CommercialTransaction } from "app/plus/commercialtransaction/components/MaincommercialTransaction"
+import { MaincommercialTransaction } from "app/plus/commercialtransaction/components/MaincommercialTransaction"
 
 /**
  * 特定商取引法に基づく表記のページ
  * @returns
  */
 const CommercialTransactionPage = async () => {
-  return <CommercialTransaction />
+  return <MaincommercialTransaction />
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -18,4 +18,4 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export const revalidate = 240
 
-export default CommercialTransaction
+export default CommercialTransactionPage
