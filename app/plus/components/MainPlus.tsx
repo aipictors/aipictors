@@ -113,7 +113,7 @@ export const MainPlus: FC = () => {
             </ListItem>
             <ListItem>
               {
-                "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。詳細は当サービスの規約（https://www.aipictors.com/terms）をご確認下さい。"
+                "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。詳細は当サービスの規約（<a href="https://www.aipictors.com/terms">https://www.aipictors.com/terms</a>）をご確認下さい。"
               }
             </ListItem>
           </OrderedList>
