@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { CommercialTransaction } from "app/plus/success/components/CommercialTransaction"
+import { CommercialTransaction } from "app/plus/commercialtransaction/components/MaincommercialTransaction"
 
 /**
  * 特定商取引法に基づく表記のページ
