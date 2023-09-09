@@ -3,7 +3,7 @@ import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 import { FC } from "react"
 
-export const CommercialTransaction: FC = () => {
+export const MaincommercialTransaction: FC = () => {
   return (
     <Stack
       py={16}
