@@ -1,0 +1,21 @@
+import type { Metadata } from "next"
+import { CommercialTransaction } from "app/plus/success/components/CommercialTransaction"
+
+/**
+ * 特定商取引法に基づく表記のページ
+ * @returns
+ */
+const CommercialTransactionPage = async () => {
+  return <CommercialTransaction />
+}
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  return {
+    robots: { index: false },
+    title: { absolute: "特定商取引法に基づく表記" },
+  }
+}
+
+export const revalidate = 240
+
+export default CommercialTransaction
