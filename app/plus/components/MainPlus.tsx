@@ -59,7 +59,6 @@ export const MainPlus: FC = () => {
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
             <ListItem>{"生成枚数 100枚へ 上限アップ"}</ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
-            <ListItem>{"生成イラスト一括ダウンロード機能"}</ListItem>
             <ListItem>{"認証マーク付与"}</ListItem>
           </UnorderedList>
           <Text>
@@ -81,7 +80,7 @@ export const MainPlus: FC = () => {
           <OrderedList>
             <ListItem>
               {
-                "本プランの加入期間は、加入日から翌月同日の前日（翌月同日に暦日が存在しない場合、翌月末日）までの1か月間となります。加入期間満了日までにお客様が自ら解約しない限り、本プランの加入期間は翌日から同一期間更新したものとみなし、以後同様とします。"
+                "本プランの加入期間は、加入日から翌月同日までの1か月間となります。加入期間満了日までにお客様が自ら解約しない限り、本プランの加入期間は翌日から同一期間更新したものとみなし、以後同様とします。"
               }
             </ListItem>
             <ListItem>
