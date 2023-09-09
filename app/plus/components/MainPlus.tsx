@@ -8,6 +8,7 @@ import {
   ListItem,
   UnorderedList,
   OrderedList,
+  Link,
 } from "@chakra-ui/react"
 import { FC } from "react"
 import { useCreatePassCheckoutUrlMutation } from "__generated__/apollo"
@@ -44,18 +45,17 @@ export const MainPlus: FC = () => {
           <Text>{"Aipictors+（ピクタス）"}</Text>
         </HStack>
         <Stack spacing={2}>
-          <Text fontWeight={"bold"}>
-            {"Aipictors+（ピクタス）とはどんなプランですか？"}
-          </Text>
-          <Text>
+          <Text whiteSpace={"pre-wrap"}>
             {
-              "Aipictors+になることでサービス内で特典* を受けることができるようになります。\n2000円/月のプランとなります。"
+              "Aipictors+になることでサービス内で特典*を受けることができるようになります。\n料金は2000円/月となります。"
             }
           </Text>
         </Stack>
         <Stack spacing={2}>
-          <Text fontWeight={"bold"}>{"特典"}</Text>
-          <UnorderedList>
+          <Text fontWeight={"bold"} fontSize={"lg"}>
+            {"特典"}
+          </Text>
+          <UnorderedList spacing={2}>
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
             <ListItem>{"生成枚数 100枚へ 上限アップ"}</ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
@@ -76,8 +76,10 @@ export const MainPlus: FC = () => {
           {"決済に進む"}
         </Button>
         <Stack spacing={2}>
-          <Text fontWeight={"bold"}>{"注意事項"}</Text>
-          <OrderedList>
+          <Text fontWeight={"bold"} fontSize={"lg"}>
+            {"注意事項"}
+          </Text>
+          <OrderedList spacing={2}>
             <ListItem>
               {
                 "本プランの加入期間は、加入日から翌月同日までの1か月間となります。加入期間満了日までにお客様が自ら解約しない限り、本プランの加入期間は翌日から同一期間更新したものとみなし、以後同様とします。"
@@ -104,9 +106,7 @@ export const MainPlus: FC = () => {
               }
             </ListItem>
             <ListItem>
-              {
-                "本プランの特典は加入期間を過ぎると全て無効となります。"
-              }
+              {"本プランの特典は加入期間を過ぎると全て無効となります。"}
             </ListItem>
             <ListItem>
               {
@@ -125,7 +125,7 @@ export const MainPlus: FC = () => {
             </ListItem>
             <ListItem>
               {
-              "規約違反の利用をした場合、生成機能の利用は禁止いたします。その場合も返金対応等は一切行いません。"
+                "規約違反の利用をした場合、生成機能の利用は禁止いたします。その場合も返金対応等は一切行いません。"
               }
             </ListItem>
             <ListItem>
@@ -135,8 +135,12 @@ export const MainPlus: FC = () => {
             </ListItem>
             <ListItem>
               {
-                "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。AIイラスト生成で規約違反が発覚した場合はAIイラスト生成機能の停止となる場合がございます。詳細は当サービスの規約（<a href="https://www.aipictors.com/terms">https://www.aipictors.com/terms</a>）をご確認下さい。"
+                "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。AIイラスト生成で規約違反が発覚した場合はAIイラスト生成機能の停止となる場合がございます。詳細は当サービスの規約（"
               }
+              <Link href={"https://www.aipictors.com/terms"} isExternal>
+                {"https://www.aipictors.com/terms"}
+              </Link>
+              {"）をご確認下さい。"}
             </ListItem>
           </OrderedList>
         </Stack>
