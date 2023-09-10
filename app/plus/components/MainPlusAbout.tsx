@@ -1,78 +1,63 @@
 "use client"
-import { useSuspenseQuery } from "@apollo/client"
 import {
   Button,
   HStack,
   Stack,
   Text,
   ListItem,
+  UnorderedList,
   OrderedList,
   Link,
-  UnorderedList,
+  useToast,
 } from "@chakra-ui/react"
 import { FC } from "react"
-import {
-  ViewerPassSubscriptionDocument,
-  ViewerPassSubscriptionQuery,
-  ViewerPassSubscriptionQueryVariables,
-} from "__generated__/apollo"
-import { MainPlusAbout } from "app/plus/components/MainPlusAbout"
-import { toDateText } from "utils/toDateTimeText"
+import { useCreatePassCheckoutUrlMutation } from "__generated__/apollo"
 
-export const MainPlus: FC = () => {
-  const { data: passSubscription } = useSuspenseQuery<
-    ViewerPassSubscriptionQuery,
-    ViewerPassSubscriptionQueryVariables
-  >(ViewerPassSubscriptionDocument, {})
+export const MainPlusAbout: FC = () => {
+  const [mutation, { loading: isLoading }] = useCreatePassCheckoutUrlMutation()
 
-  if (passSubscription.viewer === null) {
-    return null
+  const toast = useToast()
+
+  const onPay = async () => {
+    try {
+      const result = await mutation({ variables: {} })
+      const url = result.data?.createPassCheckoutURL ?? null
+      if (url === null) {
+        toast({ status: "error", description: "決済URLの取得に失敗しました。" })
+        return
+      }
+      window.location.assign(url)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({ status: "error", description: error.message })
+      }
+    }
   }
-
-  if (passSubscription.viewer.passSubscription === null) {
-    return <MainPlusAbout />
-  }
-
-  const periodEndDateText = toDateText(
-    passSubscription.viewer.passSubscription.periodEnd,
-  )
 
   return (
     <Stack py={16} minH={"100vh"} alignItems={"center"}>
-      <Stack spacing={8} maxW={"container.md"} px={6}>
+      <Stack spacing={8} maxW={"lg"} px={6}>
         <HStack
           justifyContent={"center"}
           fontSize={"xx-large"}
           fontWeight={"bold"}
         >
-          <Text>{"Aipictors+"}</Text>
+          <Text>{"Aipictors+（ピクタス）"}</Text>
         </HStack>
         <Stack spacing={2}>
           <Text whiteSpace={"pre-wrap"}>
-            {"現在、ご利用中のサブスクリプションがあります。"}
+            {
+              "Aipictors+になることでサービス内で特典*を受けることができるようになります。\n料金は2000円/月となります。"
+            }
           </Text>
-          <Text>{`サブスクリプションは自動的に更新され、${periodEndDateText}に2,000円（税込）が決済されます。`}</Text>
-        </Stack>
-        <Stack>
-          <Text whiteSpace={"pre-wrap"}>
-            {"決済方法の変更やキャンセルはこちらのリンクから行えます。"}
-          </Text>
-          <Button
-            as={"a"}
-            href={passSubscription.viewer.subscriptionURL}
-            colorScheme={"green"}
-            lineHeight={1}
-          >
-            {"サブスクリプションを管理する"}
-          </Button>
         </Stack>
         <Stack spacing={2}>
           <Text fontWeight={"bold"} fontSize={"lg"}>
-            {"現在の特典"}
+            {"特典"}
           </Text>
           <UnorderedList spacing={2}>
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
-            <ListItem>{"1ヶ月につき無料分とあわせ最大3,000枚（1日50枚から100枚）上限アップ"}</ListItem>
+            <ListItem>{"生成枚数 100枚へ 上限アップ"}</ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
             <ListItem>{"認証マーク付与"}</ListItem>
           </UnorderedList>
@@ -82,6 +67,14 @@ export const MainPlus: FC = () => {
             }
           </Text>
         </Stack>
+        <Button
+          colorScheme={"green"}
+          onClick={onPay}
+          lineHeight={1}
+          isLoading={isLoading}
+        >
+          {"決済に進む"}
+        </Button>
         <Stack spacing={2}>
           <Text fontWeight={"bold"} fontSize={"lg"}>
             {"注意事項"}
