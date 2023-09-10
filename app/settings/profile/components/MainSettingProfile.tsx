@@ -5,7 +5,7 @@ import { FC } from "react"
 export const MainSettingProfile: FC = () => {
   return (
     <Box as={"main"}>
-      <Text>{"プロフィール"}</Text>
+      <Text fontWeight={"bold"}>{"プロフィール"}</Text>
     </Box>
   )
 }

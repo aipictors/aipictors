@@ -6,7 +6,7 @@ export const MainSettingMuteTags: FC = () => {
   return (
     <Box as={"main"} maxW={"sm"}>
       <Stack p={4}>
-        <Text>{"ミュートしているタグ"}</Text>
+        <Text fontWeight={"bold"}>{"ミュートしているタグ"}</Text>
         <HStack justifyContent={"center"}>
           <Input placeholder="タグ" size="sm" />
         </HStack>
@@ -14,7 +14,6 @@ export const MainSettingMuteTags: FC = () => {
           <Button colorScheme="primary" borderRadius={"full"}>
             {"変更を保存"}
           </Button>
-          HStack
         </HStack>
       </Stack>
     </Box>

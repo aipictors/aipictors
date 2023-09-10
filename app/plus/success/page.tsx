@@ -12,7 +12,7 @@ const PlusSuccessPage = async () => {
 export const generateMetadata = async (): Promise<Metadata> => {
   return {
     robots: { index: false },
-    title: { absolute: "サブスク" },
+    title: { absolute: "Aipictors+の手続き完了" },
   }
 }
 
