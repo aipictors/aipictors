@@ -6,9 +6,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "files.associations": {
-    "*.xml": "html",
     "*.svg": "html",
-    "*.mjml": "html"
+    "*.xml": "html"
   },
   "files.exclude": {
     "**/node_modules": true,
@@ -19,6 +18,7 @@
     ".idea": true,
     ".next": true,
     ".yarn": true,
+    "__generated__": true,
     "dist": true,
     "next-env.d.ts": true
   },

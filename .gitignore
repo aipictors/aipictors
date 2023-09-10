@@ -2,7 +2,7 @@
 .env.local
 
 # GraphQL
-__generated__/*
+__generated__
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
