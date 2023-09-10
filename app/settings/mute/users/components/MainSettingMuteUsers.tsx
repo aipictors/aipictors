@@ -6,7 +6,7 @@ export const MainSettingMuteUsers: FC = () => {
   return (
     <Box as={"main"}>
       <Stack p={4}>
-        <Text>{"ミュートしているユーザ"}</Text>
+        <Text fontWeight={"bold"}>{"ミュートしているユーザ"}</Text>
       </Stack>
     </Box>
   )
