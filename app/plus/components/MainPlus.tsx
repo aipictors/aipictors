@@ -49,9 +49,9 @@ export const MainPlus: FC = () => {
         </HStack>
         <Stack spacing={2}>
           <Text whiteSpace={"pre-wrap"}>
-            {"現在、ご利用中のサブスクがあります。"}
+            {"現在、ご利用中のサブスクリプションがあります。"}
           </Text>
-          <Text>{`サブスクは自動的に更新され、${periodEndDateText}に2,000円（税込）が決済されます。`}</Text>
+          <Text>{`サブスクリプションは自動的に更新され、${periodEndDateText}に2,000円（税込）が決済されます。`}</Text>
         </Stack>
         <Stack>
           <Text whiteSpace={"pre-wrap"}>
@@ -63,7 +63,7 @@ export const MainPlus: FC = () => {
             colorScheme={"green"}
             lineHeight={1}
           >
-            {"サブスクを管理する"}
+            {"サブスクリプションを管理する"}
           </Button>
         </Stack>
         <Stack spacing={2}>
@@ -72,7 +72,7 @@ export const MainPlus: FC = () => {
           </Text>
           <UnorderedList spacing={2}>
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
-            <ListItem>{"生成枚数 100枚へ 上限アップ"}</ListItem>
+            <ListItem>{"1ヶ月につき無料分とあわせ最大3,000枚（1日50枚から100枚）上限アップ"}</ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
             <ListItem>{"認証マーク付与"}</ListItem>
           </UnorderedList>
