@@ -59,7 +59,7 @@ export const MainPlus: FC = () => {
           </Text>
           <Button
             as={"a"}
-            href={passSubscription.viewer.subscriptionURL}
+            href={passSubscription.viewer.subscriptionURL!}
             colorScheme={"green"}
             lineHeight={1}
           >
@@ -72,7 +72,11 @@ export const MainPlus: FC = () => {
           </Text>
           <UnorderedList spacing={2}>
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
-            <ListItem>{"1ヶ月につき無料分とあわせ最大3,000枚（1日50枚から100枚）上限アップ"}</ListItem>
+            <ListItem>
+              {
+                "1ヶ月につき無料分とあわせ最大3,000枚（1日50枚から100枚）上限アップ"
+              }
+            </ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
             <ListItem>{"認証マーク付与"}</ListItem>
           </UnorderedList>
