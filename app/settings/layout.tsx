@@ -5,6 +5,8 @@ import React from "react"
 import {
   TbBell,
   TbDownload,
+  TbMedal2,
+  TbMoodCog,
   TbPhoto,
   TbRubberStamp,
   TbSettings,
@@ -22,6 +24,16 @@ const SettingsLayout: React.FC<Props> = (props) => {
     <HStack alignItems={"flex-start"} spacing={0}>
       <Box as={"aside"} minW={"8rem"}>
         <Stack p={4}>
+          <Button
+            lineHeight={1}
+            leftIcon={<Icon as={TbMoodCog} />}
+            justifyContent={"flex-start"}
+            variant={"ghost"}
+            as={Link}
+            href={"/settings/account"}
+          >
+            {"アカウント"}
+          </Button>
           <Button
             lineHeight={1}
             leftIcon={<Icon as={TbUser} />}
@@ -91,6 +103,16 @@ const SettingsLayout: React.FC<Props> = (props) => {
             href={"/settings/stickers/downloads"}
           >
             {"DLスタンプ"}
+          </Button>
+          <Button
+            lineHeight={1}
+            leftIcon={<Icon as={TbMedal2} />}
+            justifyContent={"flex-start"}
+            variant={"ghost"}
+            as={Link}
+            href={"/settings/request"}
+          >
+            {"支援リクエスト"}
           </Button>
           <Button
             lineHeight={1}

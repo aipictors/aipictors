@@ -1,42 +1,52 @@
 "use client"
-import { Box, Button, HStack, Stack, Switch, Text } from "@chakra-ui/react"
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  HStack,
+  Stack,
+  Switch,
+  Text,
+} from "@chakra-ui/react"
 import { FC } from "react"
 
 export const MainSettingNotification: FC = () => {
   return (
-    <Box as={"main"} maxW={"sm"}>
-      <Stack p={4}>
-        <Text fontWeight={"bold"}>{"通知・いいね"}</Text>
+    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
+      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+        <Text fontWeight={"bold"} fontSize={"2xl"}>
+          {"通知・いいね"}
+        </Text>
         <Stack>
           <Text>{"匿名いいね"}</Text>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"全年齢いいね"}</Text>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"全年齢いいね"}</FormLabel>
             <Switch />
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"R-18いいね"}</Text>
+          </FormControl>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"R-18いいね"}</FormLabel>
             <Switch />
-          </HStack>
+          </FormControl>
         </Stack>
         <Stack>
           <Text>{"オフにすると次回以降の通知がされなくなります"}</Text>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"定期いいね通知"}</Text>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"定期いいね通知"}</FormLabel>
             <Switch />
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"リアルタイムいいね通知"}</Text>
+          </FormControl>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"リアルタイムいいね通知"}</FormLabel>
             <Switch />
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"コメント"}</Text>
+          </FormControl>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"コメント"}</FormLabel>
             <Switch />
-          </HStack>
+          </FormControl>
         </Stack>
         <Button colorScheme="primary" borderRadius={"full"}>
           {"変更を保存"}
         </Button>
       </Stack>
-    </Box>
+    </HStack>
   )
 }

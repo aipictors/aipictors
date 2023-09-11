@@ -53,11 +53,15 @@ export const MainPlusAbout: FC = () => {
         </Stack>
         <Stack spacing={2}>
           <Text fontWeight={"bold"} fontSize={"lg"}>
-            {"特典"}
+            {"特典*"}
           </Text>
           <UnorderedList spacing={2}>
             <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
-            <ListItem>{"1ヶ月につき無料分とあわせ最大3,000枚（1日あたり生成枚数 100枚へ 上限アップ）"}</ListItem>
+            <ListItem>
+              {
+                "1ヶ月につき無料分とあわせ最大3,000枚（1日あたり生成枚数 100枚へ 上限アップ）"
+              }
+            </ListItem>
             <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
             <ListItem>{"認証マーク付与"}</ListItem>
           </UnorderedList>

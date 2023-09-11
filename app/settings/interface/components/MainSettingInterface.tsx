@@ -1,21 +1,33 @@
 "use client"
-import { Box, Button, HStack, Stack, Switch, Text } from "@chakra-ui/react"
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  HStack,
+  Stack,
+  Switch,
+  Text,
+} from "@chakra-ui/react"
 import { FC } from "react"
 
 export const MainSettingInterface: FC = () => {
   return (
-    <Box as={"main"}>
-      <Stack p={4} maxW={"sm"}>
-        <Text fontWeight={"bold"}>{"UIカスタム"}</Text>
+    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
+      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+        <Text fontWeight={"bold"} fontSize={"2xl"}>
+          {"UIカスタム"}
+        </Text>
         <Stack>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"サムネイルにいいねボタンを表示"}</Text>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>{"サムネイルにいいねボタンを表示"}</FormLabel>
             <Switch />
-          </HStack>
-          <HStack>
-            <Text>{"ポップアップ（作品ダイアログ）を表示"}</Text>
+          </FormControl>
+          <FormControl display="flex" justifyContent={"space-between"}>
+            <FormLabel mb={0}>
+              {"ポップアップ（作品ダイアログ）を表示"}
+            </FormLabel>
             <Switch />
-          </HStack>
+          </FormControl>
         </Stack>
         <Stack>
           <HStack justifyContent={"center"}>
@@ -25,6 +37,6 @@ export const MainSettingInterface: FC = () => {
           </HStack>
         </Stack>
       </Stack>
-    </Box>
+    </HStack>
   )
 }
