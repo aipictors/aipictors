@@ -1,13 +1,15 @@
 "use client"
-import { Box, Stack, Text } from "@chakra-ui/react"
+import { HStack, Stack, Text } from "@chakra-ui/react"
 import { FC } from "react"
 
 export const MainSettingStickersDownloads: FC = () => {
   return (
-    <Box as={"main"}>
-      <Stack p={4}>
-        <Text fontWeight={"bold"}>{"DL済みスタンプ"}</Text>
+    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
+      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+        <Text fontWeight={"bold"} fontSize={"2xl"}>
+          {"DL済みスタンプ"}
+        </Text>
       </Stack>
-    </Box>
+    </HStack>
   )
 }
