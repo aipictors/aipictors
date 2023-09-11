@@ -23,7 +23,7 @@ export const MainPlusSuccess: FC = () => {
             </Text>
             <Text>
               {
-                "この度はピクタスにご登録ありがとうございます。これからもよろしくお願いします。"
+                "この度はAipictors+にご登録ありがとうございます。これからもよろしくお願いします。"
               }
             </Text>
           </Stack>
