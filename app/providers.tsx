@@ -50,6 +50,10 @@ init({
   attachStacktrace: true,
   normalizeDepth: 5,
   release: Config.sentryRelease,
+  beforeSend(event) {
+    if (Config.isDevelopmentMode) return null
+    return event
+  },
 })
 
 if (typeof window !== "undefined" && getApps().length === 0) {
