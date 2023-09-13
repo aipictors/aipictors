@@ -615,6 +615,22 @@ export const SectionAboutWakiaiai: FC = () => {
           <CardEventCreator key={index} user={user} />
         ))}
       </SimpleGrid>
+
+      <Card variant={"filled"}>
+        <Stack spacing={4} p={{ base: 4, md: 8 }}>
+          <Heading size={"md"}>
+            {"クラウドファンディング応援スポンサーさま✨"}
+          </Heading>
+          <Stack direction={{ base: "column", md: "row" }}>
+            <Text>
+              {
+                "AI TEC AI PICTURES様、erot様、haru@t2i(@3724_haru)様、KAMO@AI様、KarmaNeko様、nawashi様、Ozmo/AIart様、roiyaruRIZ様、sk panda様、STIS様、うほうほめもたろう様、える様、がーすー様、かけうどん様、かすみ様、さとー様、せぴぃ様、のとろ様、ミカエル翔@ShoSecAI様、花笠万夜様、街のパン屋さん様、甘党坊主様、京すけ様、呉春華様、今日桔梗様、沙乱・さみだれNFT様、神音様、猫黒夏躯様、白うさ王国観光課様、緋鏡悠様、碧燕工房様"
+              }
+            </Text>
+          </Stack>
+        </Stack>
+      </Card>
+
       <BoxEventImage
         alt={"和気あいAI"}
         imageURL={
