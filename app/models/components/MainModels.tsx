@@ -1,5 +1,6 @@
 "use client"
 import { Box, Grid, HStack, Stack, Text, Image } from "@chakra-ui/react"
+import Link from "next/link"
 import { FC } from "react"
 import { ImageModelsQuery } from "__generated__/apollo"
 
@@ -17,12 +18,14 @@ export const MainModels: FC<Props> = (props) => {
         <Grid templateColumns="repeat(4, 1fr)" gap={6}>
           {props.imageModelsQuery.imageModels.map((imageModel) => (
             <Box key={imageModel.id} overflow={"hidden"}>
-              <Image
-                src={imageModel.thumbnailImageURL!}
-                alt={imageModel.name}
-                width={"100%"}
-                borderRadius={"lg"}
-              />
+              <Link href={`/models/${imageModel.id}`}>
+                <Image
+                  src={imageModel.thumbnailImageURL!}
+                  alt={imageModel.name}
+                  width={"100%"}
+                  borderRadius={"lg"}
+                />
+              </Link>
               <Text fontSize={"sm"}>{imageModel.name}</Text>
             </Box>
           ))}
