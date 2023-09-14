@@ -3,7 +3,7 @@ import { ImageModelsDocument, ImageModelsQuery } from "__generated__/apollo"
 import { client } from "app/client"
 import { MainModels } from "app/models/components/MainModels"
 
-const SettingModelsPage = async () => {
+const ModelsPage = async () => {
   const resp = await client.query<ImageModelsQuery>({
     query: ImageModelsDocument,
     variables: {},
@@ -19,4 +19,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default SettingModelsPage
+export default ModelsPage
