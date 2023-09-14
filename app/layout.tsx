@@ -1,6 +1,5 @@
 import { Metadata } from "next"
 import { FC, ReactNode } from "react"
-import { FooterHome } from "app/components/FooterHome"
 import { Providers } from "app/providers"
 import { Config } from "config"
 
@@ -24,10 +23,7 @@ const RootLayout: FC<Props> = (props) => {
         <link href={fontURL} rel={"stylesheet"} />
       </head>
       <body>
-        <Providers>
-          {props.children}
-          <FooterHome />
-        </Providers>
+        <Providers>{props.children}</Providers>
       </body>
     </html>
   )
