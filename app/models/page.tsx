@@ -1,8 +1,15 @@
 import { Metadata } from "next"
+import { ImageModelsDocument, ImageModelsQuery } from "__generated__/apollo"
+import { client } from "app/client"
 import { MainModels } from "app/models/components/MainModels"
 
 const SettingModelsPage = async () => {
-  return <MainModels />
+  const resp = await client.query<ImageModelsQuery>({
+    query: ImageModelsDocument,
+    variables: {},
+  })
+
+  return <MainModels imageModelsQuery={resp.data} />
 }
 
 export const metadata: Metadata = {
