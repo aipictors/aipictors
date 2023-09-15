@@ -12,7 +12,7 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import { FC, useState } from "react"
 import { TbUser } from "react-icons/tb"
 import { PromptCategoryQuery } from "__generated__/apollo"
 
@@ -21,6 +21,13 @@ type Props = {
 }
 
 export const MainGeneration: FC<Props> = (props) => {
+  /**
+   * 青色になっているカテゴリーのIDの配列
+   * １２３４５、１２３４６，
+   */
+  const [promptIds, setPromptIds] = useState<string[]>([])
+  console.log(promptIds)
+
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
@@ -40,7 +47,19 @@ export const MainGeneration: FC<Props> = (props) => {
               <AccordionPanel pb={4}>
                 <Wrap>
                   {promptCategory.prompts.map((prompt) => (
-                    <Button size={"xs"} key={prompt.id}>
+                    <Button
+                      size={"xs"}
+                      key={prompt.id}
+                      onClick={() => {
+                        const newPromptIds = promptIds.includes(prompt.id)
+                          ? promptIds.filter((id) => id !== prompt.id)
+                          : [...promptIds, prompt.id]
+                        setPromptIds(newPromptIds)
+                      }}
+                      colorScheme={
+                        promptIds.includes(prompt.id) ? "blue" : "gray"
+                      }
+                    >
                       {prompt.name}
                     </Button>
                   ))}
