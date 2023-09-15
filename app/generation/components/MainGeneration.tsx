@@ -23,10 +23,8 @@ type Props = {
 export const MainGeneration: FC<Props> = (props) => {
   /**
    * 青色になっているカテゴリーのIDの配列
-   * １２３４５、１２３４６，
    */
   const [promptIds, setPromptIds] = useState<string[]>([])
-  console.log(promptIds)
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
@@ -41,6 +39,14 @@ export const MainGeneration: FC<Props> = (props) => {
                 <HStack flex="1">
                   <Icon as={TbUser} />
                   <Text>{promptCategory.name}</Text>
+                  <Text>
+                    {promptCategory.prompts
+                      .filter((prompt) => promptIds.includes(prompt.id))
+                      .map((prompt) => {
+                        return prompt.name
+                      })
+                      .join(",")}
+                  </Text>
                 </HStack>
                 <AccordionIcon />
               </AccordionButton>
