@@ -7,14 +7,13 @@ import {
   AccordionPanel,
   Button,
   HStack,
-  Icon,
   Stack,
   Text,
   Wrap,
 } from "@chakra-ui/react"
 import { FC, useState } from "react"
-import { TbUser } from "react-icons/tb"
 import { PromptCategoryQuery } from "__generated__/apollo"
+import { PromptCategoryIcon } from "app/generation/components/PromptCategoryIcon"
 
 type Props = {
   promptCategoryQuery: PromptCategoryQuery
@@ -32,12 +31,12 @@ export const MainGeneration: FC<Props> = (props) => {
         <Text fontWeight={"bold"} fontSize={"2xl"}>
           {"画像生成"}
         </Text>
-        <Accordion defaultIndex={[0]}>
+        <Accordion defaultIndex={[0]} allowToggle>
           {props.promptCategoryQuery.promptCategories.map((promptCategory) => (
             <AccordionItem key={promptCategory.id}>
               <AccordionButton>
                 <HStack flex="1">
-                  <Icon as={TbUser} />
+                  <PromptCategoryIcon name={promptCategory.name} />
                   <Text>{promptCategory.name}</Text>
                   <Text>
                     {promptCategory.prompts
