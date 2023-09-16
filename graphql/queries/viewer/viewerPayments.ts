@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const ViewerPayments = gql`
+export const VIEWER_PAYMENTS = gql`
   query ViewerPayments {
     viewer {
       payments {

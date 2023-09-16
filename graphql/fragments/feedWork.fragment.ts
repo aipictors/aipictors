@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const FeedWorkFields = gql`
+export const FEED_WORK_FIELDS = gql`
   fragment FeedWorkFields on WorkNode {
     id
     title

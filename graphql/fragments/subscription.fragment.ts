@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const SubscriptionFields = gql`
+export const SUBSCRIPTION_FIELDS = gql`
   fragment SubscriptionFields on SubscriptionNode {
     id
     type
