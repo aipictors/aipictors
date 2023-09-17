@@ -1,5 +1,18 @@
-import { Box, Text, Stack, Textarea, Button, Input } from "@chakra-ui/react"
+"use client"
+import {
+  Box,
+  Text,
+  Stack,
+  Textarea,
+  Button,
+  Input,
+  Image,
+  Flex,
+} from "@chakra-ui/react"
 import { Metadata } from "next"
+import { useState } from "react"
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd"
+import { useDropzone } from "react-dropzone"
 
 const NewImagePage = () => {
   const [selectedImages, setSelectedImages] = useState([]) // 画像の配列を保持する状態
@@ -143,10 +156,5 @@ export const metadata: Metadata = {
 }
 
 export const revalidate = 60
-
-const dropzoneStyle = {
-  backgroundColor: "white",
-  color: "gray.600",
-}
 
 export default NewImagePage
