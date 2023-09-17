@@ -28,10 +28,7 @@ const HomePage = async () => {
 
   const hotTagsQuery = await client.query<HotTagsQuery>({
     query: HotTagsDocument,
-    variables: {
-      offset: 0,
-      limit: 16,
-    },
+    variables: {},
   })
 
   return (

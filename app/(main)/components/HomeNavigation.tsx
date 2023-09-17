@@ -16,6 +16,7 @@ import {
   TbBrandThreads,
   TbBrandX,
   TbBrandYoutubeFilled,
+  TbBulb,
   TbCamera,
   TbFolder,
   TbHome,
@@ -50,6 +51,9 @@ export const HomeNavigation: FC = () => {
       <Stack p={4}>
         <HomeNavigationButton href={"/"} leftIcon={TbHome}>
           {"ホーム"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/themes"} leftIcon={TbBulb}>
+          {"創作アイデア"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/stickers"} leftIcon={TbRubberStamp}>
           {"スタンプ広場"}
