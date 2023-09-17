@@ -37,7 +37,6 @@ export const ThemeList: FC<Props> = (props) => {
   })
 
   const onNextMonth = () => {
-    console.log("onNextMonth")
     const nextMonth = props.month + 1
     if (nextMonth > 12) {
       router.push(`/themes/${props.year + 1}/${1}`)
@@ -47,7 +46,6 @@ export const ThemeList: FC<Props> = (props) => {
   }
 
   const onPreviousMonth = () => {
-    console.log("onPreviousMonth")
     const previousMonth = props.month - 1
     if (previousMonth < 1) {
       router.push(`/themes/${props.year - 1}/${12}`)
@@ -69,7 +67,10 @@ export const ThemeList: FC<Props> = (props) => {
           borderRadius={"full"}
           onClick={onPreviousMonth}
         />
-        <Text fontSize={"sm"}>{`${props.year}年${props.month}月`}</Text>
+        <Text
+          fontSize={"sm"}
+          lineHeight={1}
+        >{`${props.year}年${props.month}月`}</Text>
         <IconButton
           aria-label="next month"
           icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
