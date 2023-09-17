@@ -5,7 +5,7 @@ import { format } from "date-fns"
  * @param time
  * @returns
  */
-export const toDateText = (time: number) => {
+export const toDateTimeText = (time: number) => {
   const date = new Date(time * 1000)
   return format(date, "yyyy年MM月dd日")
 }

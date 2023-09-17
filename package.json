@@ -8,7 +8,8 @@
     "prebuild": "yarn build:graphql",
     "start": "next start",
     "build:graphql": "graphql-codegen -c codegen.ts",
-    "format": "prettier --write --ignore-path .gitignore app"
+    "format": "prettier --write --ignore-path .gitignore app",
+    "test": "vitest"
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
@@ -28,7 +29,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
-    "react-markdown": "^8.0.7"
+    "react-markdown": "^8.0.7",
+    "vitest": "^0.34.4"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
