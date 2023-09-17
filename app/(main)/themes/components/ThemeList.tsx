@@ -1,8 +1,9 @@
 "use client"
-import { SimpleGrid } from "@chakra-ui/react"
+import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { FC } from "react"
 import { DailyThemesQuery } from "__generated__/apollo"
 import { ThemeListItem } from "app/(main)/themes/components/ThemeListItem"
+import { createCalendarCells } from "app/(main)/themes/utils/createCalendarCells"
 
 type Props = {
   year: number
@@ -10,24 +11,10 @@ type Props = {
   dailyThemesQuery: DailyThemesQuery
 }
 
-const createCalendar = (year: number, month: number) => {
-  const first = new Date(year, month - 1, 1).getDay()
-
-  const last = new Date(year, month, 0).getDate()
-
-  return [0, 1, 2, 3, 4, 5].map((weekIndex) => {
-    return [0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-      const day = dayIndex + 1 + weekIndex * 7
-      return day - 1 < first || last < day - first ? null : day - first
-    })
-  })
-}
-
 export const ThemeList: FC<Props> = (props) => {
-  const calendar = createCalendar(2023, 9)
-  console.log(calendar)
+  const cells = createCalendarCells(2023, 9)
 
-  const blocks = calendar.flat().map((day, index) => {
+  const blocks = cells.map((day, index) => {
     const theme = props.dailyThemesQuery.dailyThemes?.find((dailyTheme) => {
       return dailyTheme.day === day
     })
@@ -37,19 +24,33 @@ export const ThemeList: FC<Props> = (props) => {
       title: theme?.title ?? null,
     }
   })
-  console.log(blocks)
 
   return (
-    <SimpleGrid as={"ul"} w={"100%"} spacing={2} pr={4} columns={7}>
-      {blocks.map((block) => (
-        <ThemeListItem
-          key={block.id}
-          year={props.year}
-          month={props.month}
-          day={block.day}
-          title={block.title}
-        />
-      ))}
-    </SimpleGrid>
+    <Stack>
+      <HStack justifyContent={"center"}>
+        <Text fontSize={"lg"}>{"お題一覧"} </Text>
+      </HStack>
+      <HStack justifyContent={"center"}>
+        <Text fontSize={"sm"}>{`${props.year}年${props.month}月`}</Text>
+      </HStack>
+      <SimpleGrid
+        as={"ul"}
+        w={"100%"}
+        spacing={2}
+        pr={4}
+        columns={{ base: 2, md: 4, lg: 7 }}
+        justifyItems={""}
+      >
+        {blocks.map((block) => (
+          <ThemeListItem
+            key={block.id}
+            year={props.year}
+            month={props.month}
+            day={block.day}
+            title={block.title}
+          />
+        ))}
+      </SimpleGrid>
+    </Stack>
   )
 }

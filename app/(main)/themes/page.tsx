@@ -1,24 +1,28 @@
 import { Metadata } from "next"
+import { ThemeList } from "./components/ThemeList"
 import { DailyThemesQuery, DailyThemesDocument } from "__generated__/apollo"
-import { ThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
 import { MainLayout } from "components/MainLayout"
 
 const ThemesPage = async () => {
+  const year = new Date().getFullYear()
+
+  const month = new Date().getMonth() + 1
+
   const dailyThemesQuery = await client.query<DailyThemesQuery>({
     query: DailyThemesDocument,
     variables: {
       offset: 0,
       limit: 31,
-      where: { year: 2023, month: 9 },
+      where: { year: year, month: month },
     },
   })
 
   return (
     <MainLayout>
       <ThemeList
-        year={2023}
-        month={9}
+        year={year}
+        month={month}
         dailyThemesQuery={dailyThemesQuery.data}
       />
     </MainLayout>
