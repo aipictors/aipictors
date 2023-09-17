@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PagePlaceholder } from "components/PagePlaceholder"
+import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const TermsPage = async () => {
   return <PagePlaceholder>{"利用規約"}</PagePlaceholder>

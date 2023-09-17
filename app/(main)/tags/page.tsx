@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PagePlaceholder } from "components/PagePlaceholder"
+import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const HomePage = async () => {
   return <PagePlaceholder>{"タグの一覧"}</PagePlaceholder>

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PagePlaceholder } from "components/PagePlaceholder"
+import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const AboutPage = async () => {
   return <PagePlaceholder>{"/privacy"}</PagePlaceholder>

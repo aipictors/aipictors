@@ -17,7 +17,7 @@ import {
   ViewerPassSubscriptionQueryVariables,
 } from "__generated__/apollo"
 import { MainPlusAbout } from "app/plus/components/MainPlusAbout"
-import { toDateText } from "utils/toDateTimeText"
+import { toDateText } from "app/utils/toDateTimeText"
 
 export const MainPlus: FC = () => {
   const { data: passSubscription } = useSuspenseQuery<

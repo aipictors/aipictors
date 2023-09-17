@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { DailyThemesQuery, DailyThemesDocument } from "__generated__/apollo"
 import { ThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
-import { MainLayout } from "components/MainLayout"
+import { MainLayout } from "app/components/MainLayout"
 
 const ThemesPage = async () => {
   const dailyThemesQuery = await client.query<DailyThemesQuery>({

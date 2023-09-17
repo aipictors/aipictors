@@ -10,7 +10,7 @@ import {
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
 import { client } from "app/client"
-import { MainLayout } from "components/MainLayout"
+import { MainLayout } from "app/components/MainLayout"
 import { Config } from "config"
 
 const HomePage = async () => {

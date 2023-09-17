@@ -14,7 +14,7 @@ import {
 } from "firebase/auth"
 import { useEffect, useState, type FC, type ReactNode } from "react"
 import { Config } from "config"
-import { AppContext } from "contexts/appContext"
+import { AppContext } from "app/contexts/appContext"
 
 type Props = {
   children: ReactNode

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PagePlaceholder } from "components/PagePlaceholder"
+import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const AboutUsPage = async () => {
   return <PagePlaceholder>{"運営会社について"}</PagePlaceholder>
