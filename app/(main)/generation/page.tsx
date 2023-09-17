@@ -1,18 +1,32 @@
 import { Metadata } from "next"
 import {
+  ImageModelsDocument,
+  ImageModelsQuery,
   PromptCategoryDocument,
   PromptCategoryQuery,
 } from "__generated__/apollo"
-import { MainGeneration } from "app/(main)/generation/components/MainGeneration"
+import { ImageGenerationEditor } from "app/(main)/generation/components/ImageGenerationEditor"
 import { client } from "app/client"
 
-const SettingGenerationPage = async () => {
-  const resp = await client.query<PromptCategoryQuery>({
+const GenerationPage = async () => {
+  const promptCategoryQuery = await client.query<PromptCategoryQuery>({
     query: PromptCategoryDocument,
     variables: {},
   })
 
-  return <MainGeneration promptCategoryQuery={resp.data} />
+  const imageModelsQuery = await client.query<ImageModelsQuery>({
+    query: ImageModelsDocument,
+    variables: {},
+  })
+
+  return (
+    <>
+      <ImageGenerationEditor
+        promptCategoryQuery={promptCategoryQuery.data}
+        imageModelsQuery={imageModelsQuery.data}
+      />
+    </>
+  )
 }
 
 export const metadata: Metadata = {
@@ -22,4 +36,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default SettingGenerationPage
+export default GenerationPage
