@@ -1,7 +1,8 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+import type {
+  PromptCategoryQuery} from "__generated__/apollo";
 import {
-  PromptCategoryDocument,
-  PromptCategoryQuery,
+  PromptCategoryDocument
 } from "__generated__/apollo"
 import { MainGeneration } from "app/(main)/generation/components/MainGeneration"
 import { client } from "app/client"

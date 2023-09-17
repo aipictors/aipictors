@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingProfile } from "app/(main)/settings/profile/components/MainSettingProfile"
 
 const SettingProfilePage = async () => {

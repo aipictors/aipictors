@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingInterface } from "app/(main)/settings/interface/components/MainSettingInterface"
 
 const SettingInterfacePage = async () => {

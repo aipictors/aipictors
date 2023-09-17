@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingAccount } from "app/(main)/settings/account/components/MainSettingAccount"
 
 const SettingAccountPage = async () => {

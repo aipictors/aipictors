@@ -7,7 +7,7 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 export const MainSettingRequest: FC = () => {
   return (

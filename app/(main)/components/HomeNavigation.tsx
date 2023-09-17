@@ -7,7 +7,7 @@ import {
   useBreakpoint,
 } from "@chakra-ui/react"
 import Link from "next/link"
-import { FC } from "react"
+import type { FC } from "react"
 import {
   TbAlbum,
   TbAward,

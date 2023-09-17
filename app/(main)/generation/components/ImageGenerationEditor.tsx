@@ -1,14 +1,17 @@
 "use client"
 import { Card, Grid, GridItem, Stack, Text, Textarea } from "@chakra-ui/react"
-import { FC } from "react"
-import { ImageModelsQuery, PromptCategoryQuery } from "__generated__/apollo"
+import type { FC } from "react"
+import type {
+  ImageModelsQuery,
+  PromptCategoryQuery,
+} from "__generated__/apollo"
 
 type Props = {
   imageModelsQuery: ImageModelsQuery
   promptCategoryQuery: PromptCategoryQuery
 }
 
-export const ImageGenerationEditor: FC<Props> = (props) => {
+export const ImageGenerationEditor: FC<Props> = () => {
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",

@@ -1,6 +1,6 @@
 "use client"
 import { Spinner, Stack } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 const RootLoading: FC = () => {
   return (

@@ -8,7 +8,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import { FolloweeListItem } from "app/(main)/viewer/followees/components/FolloweeListItem"
 
 export const MainViewerFollowees: FC = () => {

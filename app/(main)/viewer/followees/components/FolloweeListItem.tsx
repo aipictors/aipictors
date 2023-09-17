@@ -1,5 +1,5 @@
 import { HStack, Avatar, Button, Box, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 export const FolloweeListItem: FC = () => {
   return (

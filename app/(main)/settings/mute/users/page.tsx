@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingMuteUsers } from "app/(main)/settings/mute/users/components/MainSettingMuteUsers"
 
 const SettingMuteUsersPage = async () => {

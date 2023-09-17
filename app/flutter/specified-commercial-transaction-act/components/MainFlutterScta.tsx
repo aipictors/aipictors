@@ -1,8 +1,8 @@
 "use client"
 import { Box, HStack, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
-export const MainFlutterScta: FC = (props) => {
+export const MainFlutterScta: FC = () => {
   return (
     <HStack justifyContent={"center"} py={8}>
       <Box

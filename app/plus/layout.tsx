@@ -1,5 +1,6 @@
 "use client"
-import { FC, useContext } from "react"
+import type { FC} from "react";
+import { useContext } from "react"
 import { FooterHome } from "app/components/FooterHome"
 import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/components/MainLogin"

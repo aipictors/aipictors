@@ -1,5 +1,5 @@
 "use client"
-import { FC } from "react"
+import type { FC } from "react"
 import { MainLoading } from "app/components/MainLoading"
 
 const PlusLoading: FC = () => {

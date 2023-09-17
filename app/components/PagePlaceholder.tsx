@@ -1,6 +1,6 @@
 "use client"
 import { Box, Stack, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 type Props = {
   children?: React.ReactNode

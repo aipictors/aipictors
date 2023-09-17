@@ -1,6 +1,6 @@
 "use client"
 import { Avatar, Button, HStack, IconButton, Input } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import { TbBellFilled, TbFolderFilled } from "react-icons/tb"
 import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
 

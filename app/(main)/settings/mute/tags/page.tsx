@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingMuteTags } from "app/(main)/settings/mute/tags/components/MainSettingMuteTags"
 
 const SettingMuteTagsPage = async () => {

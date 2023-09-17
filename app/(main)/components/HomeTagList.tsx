@@ -1,7 +1,7 @@
 "use client"
 import { Box, Button, HStack } from "@chakra-ui/react"
-import { FC } from "react"
-import { HotTagsQuery } from "__generated__/apollo"
+import type { FC } from "react"
+import type { HotTagsQuery } from "__generated__/apollo"
 
 type Props = {
   hotTagsQuery: HotTagsQuery

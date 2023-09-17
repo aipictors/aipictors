@@ -1,6 +1,6 @@
 "use client"
 import { HStack, Stack, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 export const MainSettingStickersDownloads: FC = () => {
   return (

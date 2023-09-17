@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const PrivacyPage = async () => {

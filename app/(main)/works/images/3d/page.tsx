@@ -1,8 +1,9 @@
-import { Metadata } from "next"
-import {
+import type { Metadata } from "next"
+import type {
   WorksQuery,
+  HotTagsQuery} from "__generated__/apollo";
+import {
   WorksDocument,
-  HotTagsQuery,
   HotTagsDocument,
 } from "__generated__/apollo"
 import { HomeTagList } from "app/(main)/components/HomeTagList"

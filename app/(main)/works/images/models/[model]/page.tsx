@@ -1,5 +1,6 @@
-import { Metadata } from "next"
-import { ImageModelDocument, ImageModelQuery } from "__generated__/apollo"
+import type { Metadata } from "next"
+import type { ImageModelQuery } from "__generated__/apollo";
+import { ImageModelDocument } from "__generated__/apollo"
 import { MainModel } from "app/(main)/works/images/models/[model]/components/MainModel"
 import { client } from "app/client"
 

@@ -1,6 +1,6 @@
 "use client"
 import { HStack, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 export const FooterHome: FC = () => {
   return (

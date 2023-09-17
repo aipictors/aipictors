@@ -10,9 +10,9 @@ import {
   Box,
 } from "@chakra-ui/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
-import { FC } from "react"
+import type { FC } from "react"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
-import { EventUser } from "app/events/types/eventUser"
+import type { EventUser } from "app/events/types/eventUser"
 import { TagEventUser } from "app/events/wakiaiai/components/tag/TagEventUser"
 
 type Props = {

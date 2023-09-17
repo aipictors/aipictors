@@ -1,5 +1,5 @@
-import { Metadata } from "next"
-import { FC, ReactNode } from "react"
+import type { Metadata } from "next"
+import type { FC, ReactNode } from "react"
 import { Providers } from "app/providers"
 import { Config } from "config"
 
@@ -30,6 +30,7 @@ const RootLayout: FC<Props> = (props) => {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.aipictors.com/"),
   title: {
     template: Config.siteTitleTemplateJA,
     default: Config.siteTitleJA,

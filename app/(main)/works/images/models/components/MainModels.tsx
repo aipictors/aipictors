@@ -1,8 +1,8 @@
 "use client"
 import { Box, Grid, HStack, Stack, Text, Image } from "@chakra-ui/react"
 import Link from "next/link"
-import { FC } from "react"
-import { ImageModelsQuery } from "__generated__/apollo"
+import type { FC } from "react"
+import type { ImageModelsQuery } from "__generated__/apollo"
 
 type Props = {
   imageModelsQuery: ImageModelsQuery

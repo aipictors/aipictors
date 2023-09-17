@@ -1,7 +1,8 @@
 "use client"
 import { useColorMode } from "@chakra-ui/react"
 import { useSearchParams } from "next/navigation"
-import { FC, useEffect } from "react"
+import type { FC} from "react";
+import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode

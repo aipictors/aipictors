@@ -20,7 +20,7 @@ type Props = {
   children: ReactNode
 }
 
-type Claims = ParsedToken & {}
+type Claims = ParsedToken
 
 export const ProviderAppContext: FC<Props> = (props) => {
   const [isLoading, setLoadingState] = useState(() => {

@@ -1,6 +1,6 @@
 "use client"
 import { Box, HStack } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import { BoxMarkdown } from "app/components/BoxMarkdown"
 
 type Props = {

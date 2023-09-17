@@ -12,9 +12,10 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
-import { FC, useEffect } from "react"
+import type { FC} from "react";
+import { useEffect } from "react"
 import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
-import { EventUser } from "app/events/types/eventUser"
+import type { EventUser } from "app/events/types/eventUser"
 import { BoxEventImage } from "app/events/wakiaiai/components/box/BoxEventImage"
 import { CardEventCreator } from "app/events/wakiaiai/components/card/CardEventCreator"
 

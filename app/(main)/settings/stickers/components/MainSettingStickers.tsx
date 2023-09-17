@@ -1,6 +1,6 @@
 "use client"
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import { TbPlus } from "react-icons/tb"
 
 export const MainSettingStickers: FC = () => {

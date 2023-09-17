@@ -1,6 +1,7 @@
 "use client"
 import { HStack, Text } from "@chakra-ui/react"
-import { FC, useContext } from "react"
+import type { FC} from "react";
+import { useContext } from "react"
 import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/components/MainLogin"
 import { AppContext } from "app/contexts/appContext"

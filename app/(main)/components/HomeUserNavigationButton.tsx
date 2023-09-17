@@ -8,7 +8,7 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import {
   TbAlbum,
   TbDashboard,

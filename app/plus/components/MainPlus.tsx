@@ -10,11 +10,12 @@ import {
   Link,
   UnorderedList,
 } from "@chakra-ui/react"
-import { FC } from "react"
-import {
-  ViewerPassSubscriptionDocument,
+import type { FC } from "react"
+import type {
   ViewerPassSubscriptionQuery,
-  ViewerPassSubscriptionQueryVariables,
+  ViewerPassSubscriptionQueryVariables} from "__generated__/apollo";
+import {
+  ViewerPassSubscriptionDocument
 } from "__generated__/apollo"
 import { MainPlusAbout } from "app/plus/components/MainPlusAbout"
 import { toDateTimeText } from "app/utils/toDateTimeText"

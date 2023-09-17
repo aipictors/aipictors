@@ -1,7 +1,7 @@
 "use client"
 import { SimpleGrid } from "@chakra-ui/react"
-import { FC } from "react"
-import { DailyThemesQuery } from "__generated__/apollo"
+import type { FC } from "react"
+import type { DailyThemesQuery } from "__generated__/apollo"
 import { ThemeListItem } from "app/(main)/themes/components/ThemeListItem"
 
 type Props = {

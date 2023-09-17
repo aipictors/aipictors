@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 import { TbTrash } from "react-icons/tb"
 
 export const MainSettingMuteUsers: FC = () => {

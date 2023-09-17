@@ -1,6 +1,6 @@
 "use client"
 import { Text } from "@chakra-ui/react"
-import { FC } from "react"
+import type { FC } from "react"
 
 type Props = {
   title: string

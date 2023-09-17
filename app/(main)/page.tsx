@@ -1,11 +1,12 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { RedirectType } from "next/dist/client/components/redirect"
 import { redirect } from "next/navigation"
-import {
+import type {
   WorksQuery,
+  HotTagsQuery} from "__generated__/apollo";
+import {
   WorksDocument,
-  HotTagsDocument,
-  HotTagsQuery,
+  HotTagsDocument
 } from "__generated__/apollo"
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
