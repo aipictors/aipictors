@@ -1,7 +1,7 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 const NewTextPage = async () => {
-  return {"投稿"}
+  return <>{"投稿"}</>
 }
 
 export const metadata: Metadata = {

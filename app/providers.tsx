@@ -6,17 +6,17 @@ import { init } from "@sentry/nextjs"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"
-import { FC, ReactNode, useEffect } from "react"
+import { useEffect } from "react"
 import { client } from "app/client"
 import { ProviderAppContext } from "app/components/ProviderAppContext"
 import { theme } from "app/theme"
 import { Config } from "config"
 
 type Props = {
-  children: ReactNode
+  children: React.ReactNode
 }
 
-export const Providers: FC<Props> = (props) => {
+export const Providers: React.FC<Props> = (props) => {
   const pathname = usePathname()
 
   const searchParams = useSearchParams()

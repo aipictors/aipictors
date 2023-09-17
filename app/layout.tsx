@@ -1,13 +1,12 @@
-import { Metadata } from "next"
-import { FC, ReactNode } from "react"
+import type { Metadata } from "next"
 import { Providers } from "app/providers"
 import { Config } from "config"
 
 type Props = {
-  children: ReactNode
+  children: React.ReactNode
 }
 
-const RootLayout: FC<Props> = (props) => {
+const RootLayout: React.FC<Props> = (props) => {
   const fontURL =
     "https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700&display=swap"
 
@@ -30,6 +29,7 @@ const RootLayout: FC<Props> = (props) => {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.aipictors.com/"),
   title: {
     template: Config.siteTitleTemplateJA,
     default: Config.siteTitleJA,

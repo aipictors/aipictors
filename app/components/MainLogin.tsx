@@ -1,14 +1,11 @@
 "use client"
 import { HStack, useToast } from "@chakra-ui/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
-import { FC } from "react"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { BoxFormLogin } from "app/components/BoxFormLogin"
-import { FormLogin } from "app/types/formLogin"
+import type { FormLogin } from "app/types/formLogin"
 
-type Props = {}
-
-export const MainLogin: FC<Props> = () => {
+export const MainLogin: React.FC = () => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
   const toast = useToast()

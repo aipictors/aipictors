@@ -8,7 +8,6 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react"
-import { FC } from "react"
 import {
   TbAlbum,
   TbDashboard,
@@ -21,7 +20,7 @@ import {
   TbUserUp,
 } from "react-icons/tb"
 
-export const HomeUserNavigationButton: FC = () => {
+export const HomeUserNavigationButton: React.FC = () => {
   return (
     <Menu>
       <MenuButton

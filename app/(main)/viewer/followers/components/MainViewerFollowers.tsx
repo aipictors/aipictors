@@ -9,10 +9,9 @@ import {
   AlertIcon,
   AlertTitle,
 } from "@chakra-ui/react"
-import { FC } from "react"
 import { FolloweeListItem } from "app/(main)/viewer/followees/components/FolloweeListItem"
 
-export const MainViewerFollowers: FC = () => {
+export const MainViewerFollowers: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

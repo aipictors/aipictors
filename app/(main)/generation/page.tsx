@@ -1,9 +1,10 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+import type {
+  ImageModelsQuery,
+  PromptCategoryQuery} from "__generated__/apollo";
 import {
   ImageModelsDocument,
-  ImageModelsQuery,
-  PromptCategoryDocument,
-  PromptCategoryQuery,
+  PromptCategoryDocument
 } from "__generated__/apollo"
 import { ImageGenerationEditor } from "app/(main)/generation/components/ImageGenerationEditor"
 import { client } from "app/client"

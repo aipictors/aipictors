@@ -1,10 +1,9 @@
 "use client"
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
-import { FC } from "react"
 import { TbMoodCry } from "react-icons/tb"
 
-export const MainPlusCancel: FC = () => {
+export const MainPlusCancel: React.FC = () => {
   return (
     <Stack
       py={16}

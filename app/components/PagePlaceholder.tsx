@@ -1,12 +1,11 @@
 "use client"
 import { Box, Stack, Text } from "@chakra-ui/react"
-import { FC } from "react"
 
 type Props = {
   children?: React.ReactNode
 }
 
-export const PagePlaceholder: FC<Props> = (props) => {
+export const PagePlaceholder: React.FC<Props> = (props) => {
   return (
     <Stack
       p={4}

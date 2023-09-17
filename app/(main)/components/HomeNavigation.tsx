@@ -7,7 +7,6 @@ import {
   useBreakpoint,
 } from "@chakra-ui/react"
 import Link from "next/link"
-import { FC } from "react"
 import {
   TbAlbum,
   TbAward,
@@ -32,7 +31,7 @@ import {
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
 
-export const HomeNavigation: FC = () => {
+export const HomeNavigation: React.FC = () => {
   const breakpoint = useBreakpoint()
 
   if (breakpoint === "base" || breakpoint === "sm") {

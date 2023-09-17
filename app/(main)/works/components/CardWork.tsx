@@ -1,11 +1,10 @@
 import { Image } from "@chakra-ui/react"
-import { FC } from "react"
 
 type Props = {
   imageURL?: string
 }
 
-export const CardWork: FC<Props> = (props) => {
+export const CardWork: React.FC<Props> = (props) => {
   return (
     <Image
       w={"100%"}

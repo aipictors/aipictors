@@ -8,9 +8,8 @@ import {
   Text,
 } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
-import { FC } from "react"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
-import { DailyThemesQuery } from "__generated__/apollo"
+import type { DailyThemesQuery } from "__generated__/apollo"
 import { ThemeListItem } from "app/(main)/themes/components/ThemeListItem"
 import { createCalendarCells } from "app/(main)/themes/utils/createCalendarCells"
 
@@ -20,7 +19,7 @@ type Props = {
   dailyThemesQuery: DailyThemesQuery
 }
 
-export const ThemeList: FC<Props> = (props) => {
+export const ThemeList: React.FC<Props> = (props) => {
   const router = useRouter()
 
   const cells = createCalendarCells(2023, 9)

@@ -8,10 +8,9 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { FC } from "react"
 import { TbPlus } from "react-icons/tb"
 
-export const MainSettingProfile: FC = () => {
+export const MainSettingProfile: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

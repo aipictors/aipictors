@@ -1,7 +1,6 @@
 import { HStack, Avatar, Button, Box, Text } from "@chakra-ui/react"
-import { FC } from "react"
 
-export const FolloweeListItem: FC = () => {
+export const FolloweeListItem: React.FC = () => {
   return (
     <HStack justifyContent={"space-between"} p={4}>
       <HStack spacing={4}>

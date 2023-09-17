@@ -7,9 +7,8 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react"
-import { FC } from "react"
 
-export const MainSettingRequest: FC = () => {
+export const MainSettingRequest: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

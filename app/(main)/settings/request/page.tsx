@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { MainSettingRequest } from "app/(main)/settings/request/components/MainSettingRequest"
 
 const SettingRequestPage = async () => {

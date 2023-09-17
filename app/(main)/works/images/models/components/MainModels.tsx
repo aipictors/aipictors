@@ -1,14 +1,13 @@
 "use client"
 import { Box, Grid, HStack, Stack, Text, Image } from "@chakra-ui/react"
 import Link from "next/link"
-import { FC } from "react"
-import { ImageModelsQuery } from "__generated__/apollo"
+import type { ImageModelsQuery } from "__generated__/apollo"
 
 type Props = {
   imageModelsQuery: ImageModelsQuery
 }
 
-export const MainModels: FC<Props> = (props) => {
+export const MainModels: React.FC<Props> = (props) => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
