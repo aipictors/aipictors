@@ -9,14 +9,18 @@ const ThemesPage = async () => {
     query: DailyThemesDocument,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: 31,
       where: { year: 2023, month: 9 },
     },
   })
 
   return (
     <MainLayout>
-      <ThemeList dailyThemesQuery={dailyThemesQuery.data} />
+      <ThemeList
+        year={2023}
+        month={9}
+        dailyThemesQuery={dailyThemesQuery.data}
+      />
     </MainLayout>
   )
 }

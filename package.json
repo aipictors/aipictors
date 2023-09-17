@@ -7,7 +7,8 @@
     "build": "next build",
     "prebuild": "yarn build:graphql",
     "start": "next start",
-    "build:graphql": "graphql-codegen -c codegen.ts"
+    "build:graphql": "graphql-codegen -c codegen.ts",
+    "format": "prettier --write --ignore-path .gitignore app"
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
