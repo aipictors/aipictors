@@ -1,6 +1,14 @@
 "use client"
-import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import {
+  HStack,
+  Icon,
+  IconButton,
+  SimpleGrid,
+  Stack,
+  Text,
+} from "@chakra-ui/react"
 import { FC } from "react"
+import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 import { DailyThemesQuery } from "__generated__/apollo"
 import { ThemeListItem } from "app/(main)/themes/components/ThemeListItem"
 import { createCalendarCells } from "app/(main)/themes/utils/createCalendarCells"
@@ -30,8 +38,20 @@ export const ThemeList: FC<Props> = (props) => {
       <HStack justifyContent={"center"}>
         <Text fontSize={"lg"}>{"お題一覧"} </Text>
       </HStack>
-      <HStack justifyContent={"center"}>
+      <HStack justifyContent={"center"} spacing={4}>
+        <IconButton
+          aria-label="previous month"
+          icon={<Icon as={TbChevronLeft} fontSize={"lg"} />}
+          variant={"ghost"}
+          borderRadius={"full"}
+        />
         <Text fontSize={"sm"}>{`${props.year}年${props.month}月`}</Text>
+        <IconButton
+          aria-label="next month"
+          icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
+          variant={"ghost"}
+          borderRadius={"full"}
+        />
       </HStack>
       <SimpleGrid
         as={"ul"}
