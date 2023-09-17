@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
+import { useRouter } from "next/navigation"
 import { FC } from "react"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 import { DailyThemesQuery } from "__generated__/apollo"
@@ -20,6 +21,8 @@ type Props = {
 }
 
 export const ThemeList: FC<Props> = (props) => {
+  const router = useRouter()
+
   const cells = createCalendarCells(2023, 9)
 
   const blocks = cells.map((day, index) => {
@@ -33,6 +36,26 @@ export const ThemeList: FC<Props> = (props) => {
     }
   })
 
+  const onNextMonth = () => {
+    console.log("onNextMonth")
+    const nextMonth = props.month + 1
+    if (nextMonth > 12) {
+      router.push(`/themes/${props.year + 1}/${1}`)
+      return
+    }
+    router.push(`/themes/${props.year}/${nextMonth}`)
+  }
+
+  const onPreviousMonth = () => {
+    console.log("onPreviousMonth")
+    const previousMonth = props.month - 1
+    if (previousMonth < 1) {
+      router.push(`/themes/${props.year - 1}/${12}`)
+      return
+    }
+    router.push(`/themes/${props.year}/${previousMonth}`)
+  }
+
   return (
     <Stack>
       <HStack justifyContent={"center"}>
@@ -44,6 +67,7 @@ export const ThemeList: FC<Props> = (props) => {
           icon={<Icon as={TbChevronLeft} fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
+          onClick={onPreviousMonth}
         />
         <Text fontSize={"sm"}>{`${props.year}年${props.month}月`}</Text>
         <IconButton
@@ -51,6 +75,7 @@ export const ThemeList: FC<Props> = (props) => {
           icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
+          onClick={onNextMonth}
         />
       </HStack>
       <SimpleGrid
