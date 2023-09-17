@@ -1,9 +1,16 @@
 import { Metadata } from "next"
 import { RedirectType } from "next/dist/client/components/redirect"
 import { redirect } from "next/navigation"
-import { WorksQuery, WorksDocument } from "__generated__/apollo"
-import { SectionLatestWorks } from "app/(main)/components/SectionLatestWorks"
+import {
+  WorksQuery,
+  WorksDocument,
+  HotTagsDocument,
+  HotTagsQuery,
+} from "__generated__/apollo"
+import { HomeTagList } from "app/(main)/components/HomeTagList"
+import { HomeWorkList } from "app/(main)/components/HomeWorkList"
 import { client } from "app/client"
+import { MainLayout } from "components/MainLayout"
 import { Config } from "config"
 
 const HomePage = async () => {
@@ -11,7 +18,7 @@ const HomePage = async () => {
     redirect(Config.currentWebSiteURL, RedirectType.replace)
   }
 
-  const resp = await client.query<WorksQuery>({
+  const worksQuery = await client.query<WorksQuery>({
     query: WorksDocument,
     variables: {
       offset: 0,
@@ -19,7 +26,20 @@ const HomePage = async () => {
     },
   })
 
-  return <SectionLatestWorks query={resp.data} />
+  const hotTagsQuery = await client.query<HotTagsQuery>({
+    query: HotTagsDocument,
+    variables: {
+      offset: 0,
+      limit: 16,
+    },
+  })
+
+  return (
+    <MainLayout>
+      <HomeTagList hotTagsQuery={hotTagsQuery.data} />
+      <HomeWorkList worksQuery={worksQuery.data} />
+    </MainLayout>
+  )
 }
 
 export const metadata: Metadata = {

@@ -13,7 +13,7 @@ const MainLayout: FC<Props> = (props) => {
   return (
     <>
       <HomeHeader />
-      <HStack alignItems={"flex-start"} spacing={0}>
+      <HStack alignItems={"flex-start"} spacing={0} pr={4} pb={4}>
         <HomeNavigation />
         {props.children}
       </HStack>
