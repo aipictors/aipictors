@@ -1,5 +1,6 @@
 "use client"
 import { SimpleGrid, Box, Text } from "@chakra-ui/react"
+import Link from "next/link"
 import { FC } from "react"
 import { DailyThemesQuery } from "__generated__/apollo"
 
@@ -16,9 +17,13 @@ export const ThemeList: FC<Props> = (props) => {
       spacing={2}
       pr={4}
     >
-      {props.dailyThemesQuery.dailyThemes?.map((dailyThemes) => (
-        <Box as={"li"} key={dailyThemes.id}>
-          <Text>{dailyThemes.title}</Text>
+      {props.dailyThemesQuery.dailyThemes?.map((dailyTheme) => (
+        <Box as={"li"} key={dailyTheme.id}>
+          <Link
+            href={`/themes/${dailyTheme.year}/${dailyTheme.month}/${dailyTheme.day}`}
+          >
+            <Text>{dailyTheme.title}</Text>
+          </Link>
         </Box>
       ))}
     </SimpleGrid>
