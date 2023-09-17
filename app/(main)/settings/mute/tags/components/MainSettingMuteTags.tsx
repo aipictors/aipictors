@@ -10,11 +10,10 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type { FC} from "react";
 import { useState } from "react"
 import { TbTrash } from "react-icons/tb"
 
-export const MainSettingMuteTags: FC = () => {
+export const MainSettingMuteTags: React.FC = () => {
   const [count, setCount] = useState(0)
 
   const onClick = () => {}

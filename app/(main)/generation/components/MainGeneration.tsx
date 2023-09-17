@@ -11,7 +11,6 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import type { FC} from "react";
 import { useState } from "react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryIcon } from "app/(main)/generation/components/PromptCategoryIcon"
@@ -20,7 +19,7 @@ type Props = {
   promptCategoryQuery: PromptCategoryQuery
 }
 
-export const MainGeneration: FC<Props> = (props) => {
+export const MainGeneration: React.FC<Props> = (props) => {
   /**
    * 青色になっているカテゴリーのIDの配列
    */

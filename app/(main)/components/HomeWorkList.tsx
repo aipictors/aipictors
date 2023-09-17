@@ -1,6 +1,5 @@
 "use client"
 import { SimpleGrid, Box } from "@chakra-ui/react"
-import type { FC } from "react"
 import type { WorksQuery } from "__generated__/apollo"
 import { CardWork } from "app/(main)/works/components/CardWork"
 
@@ -8,7 +7,7 @@ type Props = {
   worksQuery: WorksQuery
 }
 
-export const HomeWorkList: FC<Props> = (props) => {
+export const HomeWorkList: React.FC<Props> = (props) => {
   return (
     <SimpleGrid
       as={"ul"}

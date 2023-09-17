@@ -1,6 +1,5 @@
 "use client"
 import { Button, Card, HStack, Image, Input, Stack } from "@chakra-ui/react"
-import type { FC} from "react";
 import { useState } from "react"
 import type { FormLogin } from "app/types/formLogin"
 
@@ -9,7 +8,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const BoxFormLogin: FC<Props> = (props) => {
+export const BoxFormLogin: React.FC<Props> = (props) => {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

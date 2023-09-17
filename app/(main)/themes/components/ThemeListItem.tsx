@@ -1,7 +1,6 @@
 "use client"
 import { Box, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
-import type { FC } from "react"
 
 type Props = {
   year: number
@@ -10,7 +9,7 @@ type Props = {
   title: string | null
 }
 
-export const ThemeListItem: FC<Props> = (props) => {
+export const ThemeListItem: React.FC<Props> = (props) => {
   if (props.title === null) {
     return (
       <Box

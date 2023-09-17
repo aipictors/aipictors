@@ -12,17 +12,17 @@ import {
   type ParsedToken,
   type User,
 } from "firebase/auth"
-import { useEffect, useState, type FC, type ReactNode } from "react"
+import { useEffect, useState } from "react"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
 
 type Props = {
-  children: ReactNode
+  children: React.ReactNode
 }
 
 type Claims = ParsedToken
 
-export const ProviderAppContext: FC<Props> = (props) => {
+export const ProviderAppContext: React.FC<Props> = (props) => {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })

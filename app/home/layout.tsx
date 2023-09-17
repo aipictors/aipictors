@@ -1,5 +1,4 @@
 "use client"
-import type { FC} from "react";
 import { useContext } from "react"
 import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/components/MainLogin"
@@ -9,7 +8,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const HomeLayout: FC<Props> = (props) => {
+const HomeLayout: React.FC<Props> = (props) => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {

@@ -1,10 +1,9 @@
 "use client"
 import { Button, Link as ChakraLink, Icon } from "@chakra-ui/react"
 import Link from "next/link"
-import type { FC } from "react"
 
 type Props = {
-  leftIcon?: FC
+  leftIcon?: React.FC
   href: string
   children: React.ReactNode
 }

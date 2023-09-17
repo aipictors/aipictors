@@ -1,5 +1,4 @@
 import { Icon } from "@chakra-ui/react"
-import type { FC } from "react"
 import {
   TbEye,
   TbFriends,
@@ -14,7 +13,7 @@ import {
 
 type Props = { name: string }
 
-export const PromptCategoryIcon: FC<Props> = (props) => {
+export const PromptCategoryIcon: React.FC<Props> = (props) => {
   const categoryIcons = new Map([
     ["キャラクター", TbFaceId],
     ["髪型", TbMoodBoy],

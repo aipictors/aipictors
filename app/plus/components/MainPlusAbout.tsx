@@ -10,10 +10,9 @@ import {
   Link,
   useToast,
 } from "@chakra-ui/react"
-import type { FC } from "react"
 import { useCreatePassCheckoutUrlMutation } from "__generated__/apollo"
 
-export const MainPlusAbout: FC = () => {
+export const MainPlusAbout: React.FC = () => {
   const [mutation, { loading: isLoading }] = useCreatePassCheckoutUrlMutation()
 
   const toast = useToast()

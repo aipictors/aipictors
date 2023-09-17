@@ -1,14 +1,13 @@
 "use client"
 import { useColorMode } from "@chakra-ui/react"
 import { useSearchParams } from "next/navigation"
-import type { FC} from "react";
 import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
 }
 
-const EventsLayout: FC<Props> = (props) => {
+const EventsLayout: React.FC<Props> = (props) => {
   const { setColorMode } = useColorMode()
 
   const searchParams = useSearchParams()

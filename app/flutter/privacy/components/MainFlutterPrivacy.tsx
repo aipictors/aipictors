@@ -1,13 +1,12 @@
 "use client"
 import { Box, HStack } from "@chakra-ui/react"
-import type { FC } from "react"
 import { BoxMarkdown } from "app/components/BoxMarkdown"
 
 type Props = {
   text: string
 }
 
-export const MainFlutterPrivacy: FC<Props> = (props) => {
+export const MainFlutterPrivacy: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"center"} py={8} minH={"100vh"}>
       <Box

@@ -1,6 +1,5 @@
 "use client"
 import { Card, Grid, GridItem, Stack, Text, Textarea } from "@chakra-ui/react"
-import type { FC } from "react"
 import type {
   ImageModelsQuery,
   PromptCategoryQuery,
@@ -11,7 +10,7 @@ type Props = {
   promptCategoryQuery: PromptCategoryQuery
 }
 
-export const ImageGenerationEditor: FC<Props> = () => {
+export const ImageGenerationEditor: React.FC<Props> = () => {
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",

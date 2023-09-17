@@ -1,9 +1,8 @@
 "use client"
 import { Text, Stack, HStack, Button } from "@chakra-ui/react"
 import Link from "next/link"
-import type { FC } from "react"
 
-const RootNotFound: FC = () => {
+const RootNotFound: React.FC = () => {
   return (
     <Stack p={4} h={"100vh"} justifyContent={"center"} alignItems={"center"}>
       <Stack spacing={8} alignItems={"center"}>

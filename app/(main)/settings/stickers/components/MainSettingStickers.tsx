@@ -1,9 +1,8 @@
 "use client"
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
-import type { FC } from "react"
 import { TbPlus } from "react-icons/tb"
 
-export const MainSettingStickers: FC = () => {
+export const MainSettingStickers: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

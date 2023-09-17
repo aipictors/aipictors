@@ -2,11 +2,10 @@
 import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import type { Metadata } from "next"
-import type { FC } from "react"
 import RootError from "app/error"
 import { theme } from "app/theme"
 
-const RootGlobalError: FC = () => {
+const RootGlobalError: React.FC = () => {
   const fontURL =
     "https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700&display=swap"
 

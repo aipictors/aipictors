@@ -1,8 +1,7 @@
 "use client"
-import type { FC } from "react"
 import { MainLoading } from "app/components/MainLoading"
 
-const PlusLoading: FC = () => {
+const PlusLoading: React.FC = () => {
   return <MainLoading />
 }
 

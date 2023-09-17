@@ -1,6 +1,5 @@
-import type { ImageProps } from "@chakra-ui/react";
+import type { ImageProps } from "@chakra-ui/react"
 import { Image, Box, Icon, Button } from "@chakra-ui/react"
-import type { FC } from "react"
 import { TbClick } from "react-icons/tb"
 
 type Props = ImageProps & {
@@ -10,7 +9,7 @@ type Props = ImageProps & {
   linkTitle: string
 }
 
-export const BoxEventImage: FC<Props> = (props) => {
+export const BoxEventImage: React.FC<Props> = (props) => {
   return (
     <Box position={"relative"}>
       <Image

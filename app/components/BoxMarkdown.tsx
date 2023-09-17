@@ -9,14 +9,14 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react"
-import React, { type FC, type ReactNode } from "react"
+import React from "react"
 import ReactMarkdown from "react-markdown"
 
 type Props = {
-  children: ReactNode
+  children: React.ReactNode
 }
 
-export const BoxMarkdown: FC<Props> = (props) => {
+export const BoxMarkdown: React.FC<Props> = (props) => {
   if (typeof props.children !== "string") {
     return <>{props.children}</>
   }

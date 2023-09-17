@@ -1,5 +1,5 @@
 import { Box, Text, Stack, Textarea, Button, Input } from "@chakra-ui/react"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 const NewImagePage = () => {
   return (
@@ -65,9 +65,9 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-const dropzoneStyle = {
-  backgroundColor: "white",
-  color: "gray.600",
-}
+// const dropzoneStyle = {
+//   backgroundColor: "white",
+//   color: "gray.600",
+// }
 
 export default NewImagePage

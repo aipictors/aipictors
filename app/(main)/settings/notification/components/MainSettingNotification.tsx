@@ -8,9 +8,8 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react"
-import type { FC } from "react"
 
-export const MainSettingNotification: FC = () => {
+export const MainSettingNotification: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

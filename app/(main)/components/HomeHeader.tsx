@@ -7,11 +7,10 @@ import {
   Input,
   Link,
 } from "@chakra-ui/react"
-import { FC } from "react"
 import { TbBellFilled, TbFolderFilled } from "react-icons/tb"
 import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
 
-export const HomeHeader: FC = () => {
+export const HomeHeader: React.FC = () => {
   return (
     <HStack
       p={4}
