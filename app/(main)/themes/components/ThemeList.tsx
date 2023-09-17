@@ -1,8 +1,18 @@
 "use client"
-import { SimpleGrid } from "@chakra-ui/react"
-import type { FC } from "react"
 import type { DailyThemesQuery } from "__generated__/apollo"
+import {
+  HStack,
+  Icon,
+  IconButton,
+  SimpleGrid,
+  Stack,
+  Text,
+} from "@chakra-ui/react"
+import { useRouter } from "next/navigation"
+import { FC } from "react"
+import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 import { ThemeListItem } from "app/(main)/themes/components/ThemeListItem"
+import { createCalendarCells } from "app/(main)/themes/utils/createCalendarCells"
 
 type Props = {
   year: number
@@ -10,24 +20,12 @@ type Props = {
   dailyThemesQuery: DailyThemesQuery
 }
 
-const createCalendar = (year: number, month: number) => {
-  const first = new Date(year, month - 1, 1).getDay()
-
-  const last = new Date(year, month, 0).getDate()
-
-  return [0, 1, 2, 3, 4, 5].map((weekIndex) => {
-    return [0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-      const day = dayIndex + 1 + weekIndex * 7
-      return day - 1 < first || last < day - first ? null : day - first
-    })
-  })
-}
-
 export const ThemeList: FC<Props> = (props) => {
-  const calendar = createCalendar(2023, 9)
-  console.log(calendar)
+  const router = useRouter()
 
-  const blocks = calendar.flat().map((day, index) => {
+  const cells = createCalendarCells(2023, 9)
+
+  const blocks = cells.map((day, index) => {
     const theme = props.dailyThemesQuery.dailyThemes?.find((dailyTheme) => {
       return dailyTheme.day === day
     })
@@ -37,19 +35,68 @@ export const ThemeList: FC<Props> = (props) => {
       title: theme?.title ?? null,
     }
   })
-  console.log(blocks)
+
+  const onNextMonth = () => {
+    const nextMonth = props.month + 1
+    if (nextMonth > 12) {
+      router.push(`/themes/${props.year + 1}/${1}`)
+      return
+    }
+    router.push(`/themes/${props.year}/${nextMonth}`)
+  }
+
+  const onPreviousMonth = () => {
+    const previousMonth = props.month - 1
+    if (previousMonth < 1) {
+      router.push(`/themes/${props.year - 1}/${12}`)
+      return
+    }
+    router.push(`/themes/${props.year}/${previousMonth}`)
+  }
 
   return (
-    <SimpleGrid as={"ul"} w={"100%"} spacing={2} pr={4} columns={7}>
-      {blocks.map((block) => (
-        <ThemeListItem
-          key={block.id}
-          year={props.year}
-          month={props.month}
-          day={block.day}
-          title={block.title}
+    <Stack>
+      <HStack justifyContent={"center"}>
+        <Text fontSize={"lg"}>{"お題一覧"} </Text>
+      </HStack>
+      <HStack justifyContent={"center"} spacing={4}>
+        <IconButton
+          aria-label="previous month"
+          icon={<Icon as={TbChevronLeft} fontSize={"lg"} />}
+          variant={"ghost"}
+          borderRadius={"full"}
+          onClick={onPreviousMonth}
         />
-      ))}
-    </SimpleGrid>
+        <Text
+          fontSize={"sm"}
+          lineHeight={1}
+        >{`${props.year}年${props.month}月`}</Text>
+        <IconButton
+          aria-label="next month"
+          icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
+          variant={"ghost"}
+          borderRadius={"full"}
+          onClick={onNextMonth}
+        />
+      </HStack>
+      <SimpleGrid
+        as={"ul"}
+        w={"100%"}
+        spacing={2}
+        pr={4}
+        columns={{ base: 2, md: 4, lg: 7 }}
+        justifyItems={""}
+      >
+        {blocks.map((block) => (
+          <ThemeListItem
+            key={block.id}
+            year={props.year}
+            month={props.month}
+            day={block.day}
+            title={block.title}
+          />
+        ))}
+      </SimpleGrid>
+    </Stack>
   )
 }

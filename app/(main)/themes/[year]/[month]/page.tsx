@@ -1,14 +1,20 @@
-import type { Metadata } from "next"
-import type { DailyThemesQuery} from "__generated__/apollo";
-import { DailyThemesDocument } from "__generated__/apollo"
+import { Metadata } from "next"
+import { DailyThemesQuery, DailyThemesDocument } from "__generated__/apollo"
 import { ThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
 import { MainLayout } from "app/components/MainLayout"
 
-const ThemesPage = async () => {
-  const year = new Date().getFullYear()
+type Props = {
+  params: {
+    year: string
+    month: string
+  }
+}
 
-  const month = new Date().getMonth() + 1
+const ThemesPage = async (props: Props) => {
+  const year = parseInt(props.params.year)
+
+  const month = parseInt(props.params.month)
 
   const dailyThemesQuery = await client.query<DailyThemesQuery>({
     query: DailyThemesDocument,
