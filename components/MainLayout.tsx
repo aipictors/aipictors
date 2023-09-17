@@ -7,5 +7,9 @@ type Props = {
 }
 
 export const MainLayout: FC<Props> = (props) => {
-  return <Stack overflowX={"hidden"}>{props.children}</Stack>
+  return (
+    <Stack overflowX={"hidden"} pb={4}>
+      {props.children}
+    </Stack>
+  )
 }

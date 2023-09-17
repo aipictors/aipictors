@@ -10,9 +10,10 @@ type Props = {
 export const HomeTagList: FC<Props> = (props) => {
   return (
     <Box w={"100%"} overflowX={"auto"} pb={2}>
-      <HStack w={"100%"} spacing={2}>
+      <HStack as={"ul"} w={"100%"} spacing={2}>
         {props.hotTagsQuery.hotTags?.map((tag) => (
           <Button
+            as={"li"}
             key={tag.id}
             size={"sm"}
             minW={"fit-content"}
@@ -21,6 +22,7 @@ export const HomeTagList: FC<Props> = (props) => {
             {tag.name}
           </Button>
         ))}
+        <Box p={"4px"} />
       </HStack>
     </Box>
   )
