@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { ThemeList } from "./components/ThemeList"
 import { DailyThemesQuery, DailyThemesDocument } from "__generated__/apollo"
 import { client } from "app/client"
-import { MainLayout } from "components/MainLayout"
+import { MainLayout } from "app/components/MainLayout"
 
 const ThemesPage = async () => {
   const year = new Date().getFullYear()

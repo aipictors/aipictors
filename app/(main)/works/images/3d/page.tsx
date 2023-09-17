@@ -8,7 +8,7 @@ import {
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
 import { client } from "app/client"
-import { MainLayout } from "components/MainLayout"
+import { MainLayout } from "app/components/MainLayout"
 
 const Images3dPage = async () => {
   const worksQuery = await client.query<WorksQuery>({

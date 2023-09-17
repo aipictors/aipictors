@@ -2,7 +2,7 @@
 import { FC, useContext } from "react"
 import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/components/MainLogin"
-import { AppContext } from "contexts/appContext"
+import { AppContext } from "app/contexts/appContext"
 
 type Props = {
   children: React.ReactNode

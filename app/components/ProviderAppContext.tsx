@@ -13,8 +13,8 @@ import {
   type User,
 } from "firebase/auth"
 import { useEffect, useState, type FC, type ReactNode } from "react"
+import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
-import { AppContext } from "contexts/appContext"
 
 type Props = {
   children: ReactNode

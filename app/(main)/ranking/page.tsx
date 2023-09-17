@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { PagePlaceholder } from "components/PagePlaceholder"
+import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const RankingPage = async () => {
   return <PagePlaceholder>{"ランキング"}</PagePlaceholder>
