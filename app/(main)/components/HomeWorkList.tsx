@@ -17,7 +17,7 @@ export const HomeWorkList: React.FC<Props> = (props) => {
       pr={4}
     >
       {props.worksQuery.works?.map((work) => (
-        <Box as={"li"} key={work.id}>
+        <Box key={work.id}>
           <CardWork imageURL={work.thumbnailImage?.downloadURL} />
         </Box>
       ))}

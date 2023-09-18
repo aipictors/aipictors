@@ -4,23 +4,20 @@ import {
   Box,
   Button,
   HStack,
+  Icon,
   IconButton,
   Input,
   Link,
 } from "@chakra-ui/react"
-import { TbBellFilled, TbFolderFilled } from "react-icons/tb"
-import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
-import { HamburgerIcon, SearchIcon } from "@chakra-ui/icons"
 import React from "react"
+import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
+import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
 
 type HomeHeaderProps = {
-  changeHomeNavigationState?: () => void
+  onOpenNavigation?: () => void
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
-  const btnRef = React.useRef<HTMLButtonElement>(null)
-  const { changeHomeNavigationState } = props
-
   return (
     <HStack
       p={4}
@@ -30,19 +27,20 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
       bg={"gray.800"}
       zIndex={100}
     >
-      <Button
-        ref={btnRef}
+      <IconButton
+        aria-label={"メニュー"}
         bgColor={"#fff0"}
         borderRadius={"full"}
         _hover={{ bgColor: "gray.700" }}
-        onClick={changeHomeNavigationState}
-      >
-        <HamburgerIcon color="gray.500" />
-      </Button>
-      <Box w={"100%"} display={{ base: "none", md: "flex" }}>
-        <Link href={"/"} marginRight={"8px"}>
+        onClick={props.onOpenNavigation}
+        icon={<Icon as={TbMenu2} />}
+      />
+      <Box display={{ base: "none", md: "block" }}>
+        <Link href={"/"}>
           <Avatar src={"/icon.png"} size={"sm"} />
         </Link>
+      </Box>
+      <Box w={"100%"} display={{ base: "none", md: "block" }}>
         <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
       </Box>
       <IconButton
@@ -50,7 +48,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         size={"sm"}
         display={{ base: "block", md: "none" }}
         borderRadius={"full"}
-        icon={<SearchIcon />}
+        icon={<Icon as={TbSearch} />}
         aria-label={"Search"}
       />
       <HStack>

@@ -4,40 +4,36 @@ import { useEffect, useState } from "react" // useState をインポート
 import { HomeHeader } from "app/(main)/components/HomeHeader"
 import { HomeNavigation } from "app/(main)/components/HomeNavigation"
 import { FooterHome } from "app/components/FooterHome"
+import { Config } from "config"
 
 type Props = {
   children: React.ReactNode
 }
 
 const MainLayout: React.FC<Props> = (props) => {
-  const [isHomeNavigationVisible, setHomeNavigationVisible] = useState(true)
-
-  const changeHomeNavigationState = () => {
-    setHomeNavigationVisible(!isHomeNavigationVisible)
-  }
+  const [isOpenNavigation, openNavigation] = useState(true)
 
   useEffect(() => {
+    if (Config.isNotClient) return
     const handleResize = () => {
-      if (window.innerWidth <= 600) {
-        setHomeNavigationVisible(false)
-      } else {
-        setHomeNavigationVisible(true)
-      }
+      openNavigation(600 < window.innerWidth)
     }
-
     window.addEventListener("resize", handleResize)
     handleResize()
-
     return () => {
       window.removeEventListener("resize", handleResize)
     }
   }, [])
 
+  const onOpenNavigation = () => {
+    openNavigation(!isOpenNavigation)
+  }
+
   return (
     <>
-      <HomeHeader changeHomeNavigationState={changeHomeNavigationState} />
+      <HomeHeader onOpenNavigation={onOpenNavigation} />
       <HStack alignItems={"flex-start"} spacing={0}>
-        {isHomeNavigationVisible && <HomeNavigation />} {props.children}
+        {isOpenNavigation && <HomeNavigation />} {props.children}
       </HStack>
       <Divider />
       <FooterHome />

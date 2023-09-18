@@ -35,7 +35,7 @@ export const HomeNavigation: React.FC = () => {
       minW={"12rem"}
       overflowY={"auto"}
     >
-      <Stack p={4}>
+      <Stack py={4} pl={4}>
         <HomeNavigationButton href={"/"} leftIcon={TbHome}>
           {"ホーム"}
         </HomeNavigationButton>
