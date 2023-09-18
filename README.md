@@ -32,3 +32,7 @@ $ yarn dev
 
 * ESLintを設定して var などの危険なコードを未然に防いでください。
 * 自動整形ツール「Prettier」をインストールして整形を行ってください。
+
+### 命名
+handleChange <- コンポーネント内部
+onChange <- Propsの場合
