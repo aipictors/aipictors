@@ -8,30 +8,58 @@ import {
   Input,
   Image,
   Flex,
+  RadioGroup,
+  Radio,
+  Select,
 } from "@chakra-ui/react"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core"
+import { arrayMove } from "@dnd-kit/sortable"
 import { Metadata } from "next"
-import { useState } from "react"
-import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd"
+import { SetStateAction, useState } from "react"
 import { useDropzone } from "react-dropzone"
+import { AutoResizeTextarea } from "app/components/AutoResizeTextarea"
 
 const NewImagePage = () => {
   const [selectedImages, setSelectedImages] = useState([]) // 画像の配列を保持する状態
   const [isHovered, setIsHovered] = useState(false) // ホバー状態を管理
+  const [ageRestriction, setAgeRestriction] = useState("全年齢")
+  const [publicMode, setPublicMode] = useState("全公開")
+  const [taste, setTaste] = useState("イラスト系")
+  const [aiUsed, setAiUsed] = useState("NovelAI")
+  const [reservationDate, setReservationDate] = useState("")
+  const [reservationTime, setReservationTime] = useState("")
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: { "image/jpeg": [".jpeg", ".jpg"], "image/png": [".png"] },
+    accept: {
+      "image/jpeg": [".jpeg", ".jpg"],
+      "image/png": [".png"],
+      "image/gif": [".gif"],
+      "image/webp": [".webp"],
+      "image/bmp": [".bmp"],
+    },
     onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0]
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (event.target) {
-          const imageDataURL = event.target.result
-          if (imageDataURL) {
-            setSelectedImages([...selectedImages, imageDataURL as never]) // 新しい画像を配列に追加
+      acceptedFiles.forEach((file) => {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          if (event.target) {
+            const imageDataURL = event.target.result
+            if (imageDataURL) {
+              setSelectedImages((prevSelectedImages) => [
+                ...prevSelectedImages,
+                imageDataURL as never,
+              ])
+            }
           }
         }
-      }
-      reader.readAsDataURL(file)
+        reader.readAsDataURL(file)
+      })
     },
     onDragEnter: () => {
       setIsHovered(true)
@@ -44,15 +72,58 @@ const NewImagePage = () => {
     },
   })
 
-  // 画像の並び替え処理
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return
+  // Create sensors for drag-and-drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor),
+  )
 
-    const items = Array.from(selectedImages)
-    const [reorderedItem] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reorderedItem)
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (active.id !== over.id) {
+      // Reorder the images array when a drag-and-drop operation ends
+      const reorderedImages = arrayMove(selectedImages, active.id, over.id)
+      setSelectedImages(reorderedImages)
+    }
+  }
 
-    setSelectedImages(items)
+  const handleRemoveImage = (indexToRemove: number) => {
+    const newSelectedImages = selectedImages.filter(
+      (_, index) => index !== indexToRemove,
+    )
+    setSelectedImages(newSelectedImages)
+  }
+
+  const handleAgeRestrictionChange = (value: string) => {
+    setAgeRestriction(value)
+  }
+
+  const handlePublicModeChange = (value: string) => {
+    setPublicMode(value)
+  }
+
+  const handleTasteChange = (value: string) => {
+    setTaste(value)
+  }
+
+  const handleAiUsedChange = (value: string) => {
+    setAiUsed(value)
+  }
+
+  const handleReservationDateChange = (event: {
+    target: { value: SetStateAction<string> }
+  }) => {
+    setReservationDate(event.target.value)
+  }
+
+  const handleReservationTimeChange = (event: {
+    target: { value: SetStateAction<string> }
+  }) => {
+    setReservationTime(event.target.value)
+  }
+
+  const handleSubmit = () => {
+    // フォームの送信処理をここに追加
   }
 
   return (
@@ -84,33 +155,43 @@ const NewImagePage = () => {
           />
           <p>画像／動画を追加</p>
         </Box>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="image-list" direction="horizontal">
-            {(provided) => (
-              <Flex flexWrap="wrap" justifyContent="center">
-                {selectedImages.map((image, index) => (
-                  <Box
-                    key={index}
-                    margin="1rem"
-                    maxW="200px" // 画像の最大幅を指定
-                    overflow="hidden"
-                    borderRadius="md"
-                  >
-                    <Image
-                      src={image}
-                      alt={`選択された画像 ${index + 1}`}
-                      w="100%"
-                      h="auto"
-                      ref={provided.innerRef}
-                      objectFit="cover" // アスペクト比を保持し、余白をカット
-                    />
-                  </Box>
-                ))}
-              </Flex>
-            )}
-          </Droppable>
-        </DragDropContext>
-
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <Flex flexWrap="wrap" justifyContent="center">
+            {selectedImages.map((image, index) => (
+              <Box
+                key={index}
+                margin="1rem"
+                w={{ base: "96px", md: "240px" }}
+                h={{ base: "96px", md: "240px" }}
+                overflow="hidden"
+                borderRadius="md"
+                position={"relative"}
+                id={`image-${index}`}
+              >
+                <Image
+                  src={image}
+                  alt={`選択された画像 ${index + 1}`}
+                  w={{ base: "96px", md: "240px" }}
+                  h={{ base: "96px", md: "240px" }}
+                  objectFit="cover"
+                />
+                <Button
+                  size="sm"
+                  onClick={() => handleRemoveImage(index)}
+                  position="absolute"
+                  top="0"
+                  right="0"
+                  colorScheme="red"
+                  variant="ghost"
+                  bg="whiteAlpha.500"
+                  _hover={{ bg: "whiteAlpha.600" }}
+                >
+                  ✕
+                </Button>
+              </Box>
+            ))}
+          </Flex>
+        </DndContext>
         <Stack margin={4} color="white">
           <Text fontSize="sm">JPEG、PNG、GIF、WEBP、BMP、MP4</Text>
           <Text fontSize="sm">
@@ -119,33 +200,110 @@ const NewImagePage = () => {
         </Stack>
       </Stack>
 
-      <Stack direction="column">
-        <Text fontSize="sm">タイトル</Text>
-        <Input
-          id="title_input"
-          minLength={1}
-          maxLength={120}
-          required
-          type="text"
-          name="title"
-          placeholder="タイトル"
-        />
-      </Stack>
+      <Box maxW={1200} mx={"auto"} padding={8}>
+        <Stack direction="column">
+          <Text fontSize="sm">タイトル</Text>
+          <Input
+            id="title_input"
+            minLength={1}
+            maxLength={120}
+            required
+            type="text"
+            name="title"
+            placeholder="タイトル"
+          />
+        </Stack>
 
-      <Stack direction="column">
-        <Text fontSize="sm">キャプション</Text>
-        <Textarea
-          id="caption_input"
-          maxLength={3000}
-          name="explanation"
-          placeholder="キャプション"
-        />
-      </Stack>
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">キャプション</Text>
+          <AutoResizeTextarea
+            minH={8}
+            maxLength={3000}
+            placeholder="キャプション"
+          />
+        </Stack>
 
-      {/* Submit button */}
-      <Button margin={4} w="120px" mx={"auto"} type="submit" colorScheme="blue">
-        投稿
-      </Button>
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">年齢制限</Text>
+          <RadioGroup
+            onChange={handleAgeRestrictionChange}
+            value={ageRestriction}
+          >
+            <Stack direction="column" spacing={2}>
+              <Radio value="全年齢">全年齢</Radio>
+              <Radio value="R-15">R-15</Radio>
+              <Radio value="R-18">R-18</Radio>
+              <Radio value="R-18G">R-18G</Radio>
+            </Stack>
+          </RadioGroup>
+        </Stack>
+
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">公開モード</Text>
+          <RadioGroup onChange={handlePublicModeChange} value={publicMode}>
+            <Stack direction="column" spacing={2}>
+              <Radio value="全公開">全公開</Radio>
+              <Radio value="限定公開(URLのみアクセス可)">
+                限定公開(URLのみアクセス可)
+              </Radio>
+              <Radio value="新着非表示">新着非表示</Radio>
+              <Radio value="アーカイブ">アーカイブ</Radio>
+              <Radio value="下書き">下書き</Radio>
+            </Stack>
+          </RadioGroup>
+        </Stack>
+
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">テイスト</Text>
+          <Select
+            onChange={(e) => handleTasteChange(e.target.value)}
+            value={taste}
+          >
+            <option value="イラスト系">イラスト系</option>
+            <option value="セミリアル系">セミリアル系</option>
+            <option value="リアル系">リアル系</option>
+          </Select>
+        </Stack>
+
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">使用AI</Text>
+          <Select
+            onChange={(e) => handleAiUsedChange(e.target.value)}
+            value={aiUsed}
+          >
+            <option value="NovelAI">NovelAI</option>
+            <option value="そのほか">そのほか</option>
+          </Select>
+        </Stack>
+
+        <Stack direction="column" mt={4}>
+          <Text fontSize="sm">予約投稿</Text>
+          <Box display={{ base: "block", md: "flex" }}>
+            <Input
+              type="date"
+              value={reservationDate}
+              onChange={handleReservationDateChange}
+              mr={{ base: 0, md: 2 }}
+              mt={{ base: 2, md: 0 }}
+            />
+            <Input
+              type="time"
+              value={reservationTime}
+              onChange={handleReservationTimeChange}
+            />
+          </Box>
+        </Stack>
+        {/* Submit button */}
+        <Button
+          margin={4}
+          w="120px"
+          mx={"auto"}
+          type="submit"
+          colorScheme="blue"
+        >
+          投稿
+        </Button>
+      </Box>
     </Box>
   )
 }
