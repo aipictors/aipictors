@@ -9,8 +9,17 @@ import {
 } from "@chakra-ui/react"
 import { TbBellFilled, TbFolderFilled } from "react-icons/tb"
 import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
+import { HamburgerIcon } from "@chakra-ui/icons"
+import React from "react"
 
-export const HomeHeader: React.FC = () => {
+type HomeHeaderProps = {
+  changeHomeNavigationState?: () => void
+}
+
+export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
+  const btnRef = React.useRef<HTMLButtonElement>(null)
+  const { changeHomeNavigationState } = props
+
   return (
     <HStack
       p={4}
@@ -20,7 +29,18 @@ export const HomeHeader: React.FC = () => {
       bg={"gray.800"}
       zIndex={100}
     >
-      <Avatar src={"/icon.png"} size={"sm"} />
+      <Button
+        ref={btnRef}
+        bgColor={"#fff0"}
+        borderRadius={"50%"}
+        _hover={{ bgColor: "gray.700" }}
+        onClick={changeHomeNavigationState}
+      >
+        <HamburgerIcon color="gray.500" />
+      </Button>
+      <Link href={"/"}>
+        <Avatar src={"/icon.png"} size={"sm"} />
+      </Link>
       <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
       <HStack>
         <Link href={"/new/image"}>

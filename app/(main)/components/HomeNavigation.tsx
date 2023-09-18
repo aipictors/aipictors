@@ -1,11 +1,5 @@
 "use client"
-import {
-  Box,
-  Divider,
-  Stack,
-  Link as ChakraLink,
-  useBreakpoint,
-} from "@chakra-ui/react"
+import { Box, Divider, Stack, Link as ChakraLink } from "@chakra-ui/react"
 import Link from "next/link"
 import {
   TbAlbum,
@@ -32,12 +26,6 @@ import {
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
 
 export const HomeNavigation: React.FC = () => {
-  const breakpoint = useBreakpoint()
-
-  if (breakpoint === "base" || breakpoint === "sm") {
-    return null
-  }
-
   return (
     <Box
       as={"nav"}
