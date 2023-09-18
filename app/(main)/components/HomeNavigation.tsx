@@ -125,7 +125,7 @@ export const HomeNavigation: React.FC = () => {
             href={"https://www.youtube.com/@aipictors"}
             leftIcon={TbBrandYoutubeFilled}
           >
-            {"Threads"}
+            {"YouTube"}
           </HomeNavigationButton>
         </Stack>
         <Box py={2}>

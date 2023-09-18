@@ -46,6 +46,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
       </Box>
       <IconButton
+        marginLeft={"auto"}
         size={"sm"}
         display={{ base: "block", md: "none" }}
         borderRadius={"full"}

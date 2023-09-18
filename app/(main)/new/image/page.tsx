@@ -20,7 +20,12 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
-import { arrayMove } from "@dnd-kit/sortable"
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 import { Metadata } from "next"
 import { SetStateAction, useState } from "react"
 import { useDropzone } from "react-dropzone"
@@ -126,6 +131,44 @@ const NewImagePage = () => {
     // フォームの送信処理をここに追加
   }
 
+  const SelectedImageItem = (props: any) => {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+      useSortable({ id: `image-${props.id}` })
+
+    return (
+      <Box
+        ref={setNodeRef}
+        margin="1rem"
+        w={{ base: "96px", md: "240px" }}
+        h={{ base: "96px", md: "240px" }}
+        overflow="hidden"
+        borderRadius="md"
+        position={"relative"}
+      >
+        <Image
+          src={props.image}
+          alt={`選択された画像 ${props.id + 1}`}
+          w={{ base: "96px", md: "240px" }}
+          h={{ base: "96px", md: "240px" }}
+          objectFit="cover"
+        />
+        <Button
+          size="sm"
+          onClick={() => handleRemoveImage(props.id)}
+          position="absolute"
+          top="0"
+          right="0"
+          colorScheme="red"
+          variant="ghost"
+          bg="whiteAlpha.500"
+          _hover={{ bg: "whiteAlpha.600" }}
+        >
+          ✕
+        </Button>
+      </Box>
+    )
+  }
+
   return (
     <Box h="100%" w="100%">
       <Stack
@@ -157,39 +200,14 @@ const NewImagePage = () => {
         </Box>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <Flex flexWrap="wrap" justifyContent="center">
-            {selectedImages.map((image, index) => (
-              <Box
-                key={index}
-                margin="1rem"
-                w={{ base: "96px", md: "240px" }}
-                h={{ base: "96px", md: "240px" }}
-                overflow="hidden"
-                borderRadius="md"
-                position={"relative"}
-                id={`image-${index}`}
-              >
-                <Image
-                  src={image}
-                  alt={`選択された画像 ${index + 1}`}
-                  w={{ base: "96px", md: "240px" }}
-                  h={{ base: "96px", md: "240px" }}
-                  objectFit="cover"
-                />
-                <Button
-                  size="sm"
-                  onClick={() => handleRemoveImage(index)}
-                  position="absolute"
-                  top="0"
-                  right="0"
-                  colorScheme="red"
-                  variant="ghost"
-                  bg="whiteAlpha.500"
-                  _hover={{ bg: "whiteAlpha.600" }}
-                >
-                  ✕
-                </Button>
-              </Box>
-            ))}
+            <SortableContext
+              items={selectedImages}
+              strategy={verticalListSortingStrategy}
+            >
+              {selectedImages.map((image, index) => (
+                <SelectedImageItem key={index} image={image} id={index} />
+              ))}
+            </SortableContext>
           </Flex>
         </DndContext>
         <Stack margin={4} color="white">
