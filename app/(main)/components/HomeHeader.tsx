@@ -1,6 +1,7 @@
 "use client"
 import {
   Avatar,
+  Box,
   Button,
   HStack,
   IconButton,
@@ -9,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { TbBellFilled, TbFolderFilled } from "react-icons/tb"
 import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
-import { HamburgerIcon } from "@chakra-ui/icons"
+import { HamburgerIcon, SearchIcon } from "@chakra-ui/icons"
 import React from "react"
 
 type HomeHeaderProps = {
@@ -32,16 +33,25 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
       <Button
         ref={btnRef}
         bgColor={"#fff0"}
-        borderRadius={"50%"}
+        borderRadius={"full"}
         _hover={{ bgColor: "gray.700" }}
         onClick={changeHomeNavigationState}
       >
         <HamburgerIcon color="gray.500" />
       </Button>
-      <Link href={"/"}>
-        <Avatar src={"/icon.png"} size={"sm"} />
-      </Link>
-      <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
+      <Box w={"100%"} display={{ base: "none", md: "flex" }}>
+        <Link href={"/"} marginRight={"8px"}>
+          <Avatar src={"/icon.png"} size={"sm"} />
+        </Link>
+        <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
+      </Box>
+      <IconButton
+        size={"sm"}
+        display={{ base: "block", md: "none" }}
+        borderRadius={"full"}
+        icon={<SearchIcon />}
+        aria-label={"Search"}
+      />
       <HStack>
         <Link href={"/new/image"}>
           <Button size={"sm"} borderRadius={"full"}>
