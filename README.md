@@ -34,5 +34,5 @@ $ yarn dev
 * 自動整形ツール「Prettier」をインストールして整形を行ってください。
 
 ### 命名
-handleChange <- コンポーネント内部
-onChange <- Propsの場合
+* handleChange <- コンポーネント内部
+* onChange <- Propsの場合
