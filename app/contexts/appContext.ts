@@ -9,8 +9,9 @@ type Value =
       isLoading: true
       isNotLoading: false
       isLoggedIn: false
-      isNotLoggedIn: true
+      isNotLoggedIn: false
       currentUser: null
+      userId: null
       refresh(): Promise<void>
     }
   /**
@@ -22,6 +23,7 @@ type Value =
       isLoggedIn: false
       isNotLoggedIn: true
       currentUser: null
+      userId: null
       refresh(): Promise<void>
     }
   /**
@@ -33,6 +35,7 @@ type Value =
       isLoggedIn: true
       isNotLoggedIn: false
       currentUser: User
+      userId: string
       refresh(): Promise<void>
     }
 
@@ -40,7 +43,8 @@ export const AppContext = createContext<Value>({
   isLoading: true,
   isNotLoading: false,
   isLoggedIn: false,
-  isNotLoggedIn: true,
+  isNotLoggedIn: false,
   currentUser: null,
+  userId: null,
   async refresh() {},
 })

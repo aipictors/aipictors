@@ -1,6 +1,7 @@
 "use client"
 import { Box, Divider, Stack, Link as ChakraLink } from "@chakra-ui/react"
 import Link from "next/link"
+import { useContext } from "react"
 import {
   TbAlbum,
   TbAward,
@@ -13,6 +14,8 @@ import {
   TbCamera,
   TbFolder,
   TbHome,
+  TbLogin,
+  TbLogout,
   TbMug,
   TbPhoto,
   TbPhotoPlus,
@@ -24,8 +27,11 @@ import {
   TbUserUp,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
+import { AppContext } from "app/contexts/appContext"
 
 export const HomeNavigation: React.FC = () => {
+  const appContext = useContext(AppContext)
+
   return (
     <Box
       as={"nav"}
@@ -78,27 +84,65 @@ export const HomeNavigation: React.FC = () => {
         <Box py={2}>
           <Divider />
         </Box>
-        <HomeNavigationButton href={"/settings/account"} leftIcon={TbUser}>
-          {"マイページ"}
-        </HomeNavigationButton>
-        <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
-          {"ダッシュボード"}
-        </HomeNavigationButton>
-        <HomeNavigationButton href={"/viewer/followees"} leftIcon={TbUserDown}>
-          {"フォロワー"}
-        </HomeNavigationButton>
-        <HomeNavigationButton href={"/viewer/followees"} leftIcon={TbUserUp}>
-          {"フォロー"}
-        </HomeNavigationButton>
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton href={"/settings/account"} leftIcon={TbUser}>
+            {"マイページ"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
+            {"ダッシュボード"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton
+            href={"/viewer/followees"}
+            leftIcon={TbUserDown}
+          >
+            {"フォロワー"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton href={"/viewer/followees"} leftIcon={TbUserUp}>
+            {"フォロー"}
+          </HomeNavigationButton>
+        )}
         <HomeNavigationButton href={"/plus"} leftIcon={TbSparkles}>
           {"Aipictors+"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
-          {"支援管理"}
-        </HomeNavigationButton>
-        <HomeNavigationButton href={"/settings/account"} leftIcon={TbSettings}>
-          {"設定"}
-        </HomeNavigationButton>
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
+            {"支援管理"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton
+            href={"/settings/account"}
+            leftIcon={TbSettings}
+          >
+            {"設定"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isLoggedIn && (
+          <HomeNavigationButton
+            onClick={() => {
+              // TODO: ログアウト処理
+            }}
+            leftIcon={TbLogout}
+          >
+            {"ログアウト"}
+          </HomeNavigationButton>
+        )}
+        {appContext.isNotLoggedIn && (
+          <HomeNavigationButton
+            onClick={() => {
+              // TODO: ログイン処理
+            }}
+            leftIcon={TbLogin}
+          >
+            {"ログイン"}
+          </HomeNavigationButton>
+        )}
         <Box py={2}>
           <Divider />
         </Box>
