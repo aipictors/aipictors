@@ -1,5 +1,5 @@
 "use client"
-import { Box, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 type Props = {
@@ -33,6 +33,9 @@ export const ThemeListItem: React.FC<Props> = (props) => {
         _hover={{ bgColor: "gray.700" }}
         p={4}
       >
+        <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
+          {props.day}
+        </Text>
         <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
           {props.title}
         </Text>
