@@ -1,5 +1,5 @@
 "use client"
-import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 type Props = {

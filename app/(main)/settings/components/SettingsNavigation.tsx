@@ -4,8 +4,9 @@ import React from "react"
 import {
   TbBell,
   TbDownload,
+  TbLock,
   TbMedal2,
-  TbMoodCog,
+  TbMoodSmile,
   TbPhoto,
   TbRubberStamp,
   TbSettings,
@@ -35,8 +36,11 @@ export const SettingsNavigation: React.FC = () => {
         <Box pl={3}>
           <Text fontWeight={"bold"}>{"設定"}</Text>
         </Box>
-        <HomeNavigationButton href={"/settings/account"} leftIcon={TbMoodCog}>
-          {"アカウント"}
+        <HomeNavigationButton href={"/settings/login"} leftIcon={TbMoodSmile}>
+          {"ユーザID"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/settings/password"} leftIcon={TbLock}>
+          {"パスワード"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/settings/profile"} leftIcon={TbUser}>
           {"プロフィール"}
