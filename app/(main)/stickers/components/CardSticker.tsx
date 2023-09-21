@@ -1,7 +1,7 @@
 "use client"
-import { Card, Text, Image, Icon, HStack } from "@chakra-ui/react"
+import { Card, Text, Image, Icon, HStack, Stack } from "@chakra-ui/react"
 import React from "react"
-import { TbDownload, TbHeart, TbSticker } from "react-icons/tb"
+import { TbDownload, TbRubberStamp } from "react-icons/tb"
 
 type Props = {
   title?: string
@@ -11,25 +11,23 @@ type Props = {
   usesCount?: number
 }
 
-export const CardSticker: React.FC<Props> = (props) => {
-  return (
-    <Card>
-      <Image
-        src={props.imageURL ?? ""}
-        alt={props.title ?? "no title"}
-        borderRadius={"lg"}
-      />
-      <Text p={2} fontSize={"sm"}>
+export const CardSticker: React.FC<Props> = (props) => (
+  <Card>
+    <Image
+      src={props.imageURL ?? ""}
+      alt={props.title ?? "no title"}
+      borderRadius={"lg"}
+    />
+    <Stack p={2} justifyContent={"space-between"} height={"100%"}>
+      <Text fontSize={"sm"} fontWeight={"bold"}>
         {props.title ?? "no title"}
       </Text>
-      <HStack>
+      <HStack alignItems={"center"}>
         <Icon as={TbDownload} />
         <Text fontSize={"sm"}>{props.downloadsCount}</Text>
-        <Icon as={TbSticker} />
+        <Icon as={TbRubberStamp} />
         <Text fontSize={"sm"}>{props.usesCount}</Text>
-        <Icon as={TbHeart} />
-        <Text fontSize={"sm"}>{props.likesCount}</Text>
       </HStack>
-    </Card>
-  )
-}
+    </Stack>
+  </Card>
+)
