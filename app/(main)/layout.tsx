@@ -33,7 +33,8 @@ const MainLayout: React.FC<Props> = (props) => {
     <>
       <HomeHeader onOpenNavigation={onOpenNavigation} />
       <HStack alignItems={"flex-start"} spacing={0}>
-        {isOpenNavigation && <HomeNavigation />} {props.children}
+        {isOpenNavigation && <HomeNavigation />}
+        {props.children}
       </HStack>
       <Divider />
       <FooterHome />
