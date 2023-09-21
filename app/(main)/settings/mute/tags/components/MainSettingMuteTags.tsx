@@ -1,19 +1,34 @@
 "use client"
+import { useSuspenseQuery } from "@apollo/client"
 import {
   Box,
   Button,
   Divider,
   HStack,
-  Icon,
-  IconButton,
   Input,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { useState } from "react"
-import { TbTrash } from "react-icons/tb"
+import React, { useContext, useState } from "react"
+import {
+  ViewerMutedTagsDocument,
+  type ViewerMutedTagsQuery,
+  type ViewerMutedTagsQueryVariables,
+} from "__generated__/apollo"
+import { MutedTag } from "app/(main)/settings/mute/tags/components/MutedTag"
+import { AppContext } from "app/contexts/appContext"
 
 export const MainSettingMuteTags: React.FC = () => {
+  const appContext = useContext(AppContext)
+
+  const { data = null } = useSuspenseQuery<
+    ViewerMutedTagsQuery,
+    ViewerMutedTagsQueryVariables
+  >(ViewerMutedTagsDocument, {
+    skip: appContext.isLoading,
+    variables: { offset: 0, limit: 128 },
+  })
+
   const [text, setText] = useState("")
 
   const onClick = () => {}
@@ -50,45 +65,17 @@ export const MainSettingMuteTags: React.FC = () => {
             </Button>
           </HStack>
         </Stack>
-        <Stack>
-          <Box>
-            <Text>{"ミュートしているタグはありません"}</Text>
-          </Box>
-        </Stack>
+        {data?.viewer?.mutedTags.length === 0 && (
+          <Stack>
+            <Box>
+              <Text>{"ミュートしているタグはありません"}</Text>
+            </Box>
+          </Stack>
+        )}
         <Stack divider={<Divider />}>
-          <HStack justifyContent={"space-between"}>
-            <Box>
-              <Text>{"プロンプトン"}</Text>
-            </Box>
-            <IconButton
-              aria-label="DeleteMuteTags"
-              icon={<Icon as={TbTrash} />}
-              variant={"ghost"}
-              borderRadius={"full"}
-            />
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <Box>
-              <Text>{"プロンプトン"}</Text>
-            </Box>
-            <IconButton
-              aria-label="Search database"
-              icon={<Icon as={TbTrash} />}
-              variant={"ghost"}
-              borderRadius={"full"}
-            />
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <Box>
-              <Text>{"プロンプトン"}</Text>
-            </Box>
-            <IconButton
-              aria-label="Search database"
-              icon={<Icon as={TbTrash} />}
-              variant={"ghost"}
-              borderRadius={"full"}
-            />
-          </HStack>
+          {data?.viewer?.mutedTags.map((mutedTag) => (
+            <MutedTag key={mutedTag.id} name={mutedTag.name} />
+          ))}
         </Stack>
       </Stack>
     </HStack>
