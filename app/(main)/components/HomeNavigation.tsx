@@ -1,5 +1,11 @@
 "use client"
-import { Box, Divider, Stack, Link as ChakraLink } from "@chakra-ui/react"
+import {
+  Box,
+  Divider,
+  Stack,
+  Link as ChakraLink,
+  useColorMode,
+} from "@chakra-ui/react"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -16,12 +22,14 @@ import {
   TbHome,
   TbLogin,
   TbLogout,
+  TbMoonFilled,
   TbMug,
   TbPhoto,
   TbPhotoPlus,
   TbRubberStamp,
   TbSettings,
   TbSparkles,
+  TbSunFilled,
   TbUser,
   TbUserDown,
   TbUserUp,
@@ -31,6 +39,8 @@ import { AppContext } from "app/contexts/appContext"
 
 export const HomeNavigation: React.FC = () => {
   const appContext = useContext(AppContext)
+
+  const { colorMode, toggleColorMode } = useColorMode()
 
   return (
     <Box
@@ -143,6 +153,14 @@ export const HomeNavigation: React.FC = () => {
             {"ログイン"}
           </HomeNavigationButton>
         )}
+        <HomeNavigationButton
+          onClick={() => {
+            toggleColorMode()
+          }}
+          leftIcon={colorMode === "dark" ? TbSunFilled : TbMoonFilled}
+        >
+          {colorMode === "dark" ? "ライトモード" : "ダークモード"}
+        </HomeNavigationButton>
         <Box py={2}>
           <Divider />
         </Box>

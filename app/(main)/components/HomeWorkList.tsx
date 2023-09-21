@@ -15,6 +15,7 @@ export const HomeWorkList: React.FC<Props> = (props) => {
       minChildWidth={{ base: "180px", md: "240px" }}
       spacing={2}
       pr={4}
+      pb={4}
     >
       {props.worksQuery.works?.map((work) => (
         <Box key={work.id}>
