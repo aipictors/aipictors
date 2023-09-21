@@ -18,15 +18,19 @@ export const CardSticker: React.FC<Props> = (props) => (
       alt={props.title ?? "no title"}
       borderRadius={"lg"}
     />
-    <Stack p={2} justifyContent={"space-between"} height={"100%"}>
+    <Stack p={2} justifyContent={"space-between"} height={"100%"} spacing={1}>
       <Text fontSize={"sm"} fontWeight={"bold"}>
         {props.title ?? "no title"}
       </Text>
-      <HStack alignItems={"center"}>
-        <Icon as={TbDownload} />
-        <Text fontSize={"sm"}>{props.downloadsCount}</Text>
-        <Icon as={TbRubberStamp} />
-        <Text fontSize={"sm"}>{props.usesCount}</Text>
+      <HStack alignItems={"center"} spacing={4}>
+        <HStack>
+          <Icon as={TbDownload} />
+          <Text fontSize={"sm"}>{props.downloadsCount}</Text>
+        </HStack>
+        <HStack>
+          <Icon as={TbRubberStamp} />
+          <Text fontSize={"sm"}>{props.usesCount}</Text>
+        </HStack>
       </HStack>
     </Stack>
   </Card>
