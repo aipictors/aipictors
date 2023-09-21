@@ -1,6 +1,14 @@
 "use client"
 import { useSuspenseQuery } from "@apollo/client"
-import { Box, Divider, HStack, Stack, Text } from "@chakra-ui/react"
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Divider,
+  HStack,
+  Stack,
+  Text,
+} from "@chakra-ui/react"
 import { useContext } from "react"
 import type {
   ViewerMutedUsersQuery,
@@ -28,11 +36,10 @@ export const MainSettingMuteUsers: React.FC = () => {
           {"ミュートしているユーザ"}
         </Text>
         {data?.viewer?.mutedUsers.length === 0 && (
-          <Stack>
-            <Box>
-              <Text>{"ミュートしているユーザはいません"}</Text>
-            </Box>
-          </Stack>
+          <Alert status="info" borderRadius={"md"}>
+            <AlertIcon />
+            <AlertTitle>{"ミュートしているユーザはいません"}</AlertTitle>
+          </Alert>
         )}
         <Stack divider={<Divider />}>
           {data?.viewer?.mutedUsers.map((user) => (
