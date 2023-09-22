@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { MainRanking } from "app/(main)/ranking/components/MainRanking"
 
-const RankingPage = async () => {
-  return <PagePlaceholder>{"ランキング"}</PagePlaceholder>
+const MainRankingPage = async () => {
+  return <MainRanking />
 }
 
 export const metadata: Metadata = {
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default RankingPage
+export default MainRankingPage
