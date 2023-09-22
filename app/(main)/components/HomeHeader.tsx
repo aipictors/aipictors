@@ -8,6 +8,7 @@ import {
   IconButton,
   Input,
   Link,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import React from "react"
 import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
@@ -18,13 +19,15 @@ type HomeHeaderProps = {
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
+  const backgroundColor = useColorModeValue("white", "gray.800")
+
   return (
     <HStack
       p={4}
       spacing={4}
       position={"sticky"}
       top={0}
-      bg={"gray.800"}
+      bg={backgroundColor}
       zIndex={100}
     >
       <IconButton

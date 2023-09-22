@@ -34,6 +34,9 @@ export const ThemeListItem: React.FC<Props> = (props) => {
         p={4}
       >
         <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
+          {props.day}
+        </Text>
+        <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
           {props.title}
         </Text>
       </Stack>

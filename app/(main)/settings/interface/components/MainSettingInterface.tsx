@@ -29,11 +29,13 @@ export const MainSettingInterface: React.FC = () => {
           </FormControl>
         </Stack>
         <Stack>
-          <HStack justifyContent={"center"}>
-            <Button colorScheme="primary" borderRadius={"full"}>
-              {"変更を保存"}
-            </Button>
-          </HStack>
+          <Button
+            colorScheme="primary"
+            borderRadius={"full"}
+            onChange={() => {}}
+          >
+            {"変更を保存"}
+          </Button>
         </Stack>
       </Stack>
     </HStack>

@@ -1,12 +1,17 @@
 import { HStack, Avatar, Button, Box, Text } from "@chakra-ui/react"
 
-export const FolloweeListItem: React.FC = () => {
+type Props = {
+  name: string
+  imageURL?: string
+}
+
+export const FolloweeListItem: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"space-between"} p={4}>
       <HStack spacing={4}>
-        <Avatar bg="teal.500" size={"sm"} />
+        <Avatar src={props.imageURL} bg="teal.500" size={"sm"} />
         <Box>
-          <Text>{"プロンプトン"}</Text>
+          <Text>{props.name}</Text>
         </Box>
       </HStack>
       <Button size={"sm"} borderRadius={"full"}>

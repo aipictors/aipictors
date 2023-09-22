@@ -1,13 +1,12 @@
 "use client"
 import React, { useContext } from "react"
-import { SettingsNavigation } from "app/(main)/settings/components/SettingsNavigation"
 import { AppContext } from "app/contexts/appContext"
 
 type Props = {
   children: React.ReactNode
 }
 
-const SettingsLayout: React.FC<Props> = (props) => {
+const ViewerLayout: React.FC<Props> = (props) => {
   const appContext = useContext(AppContext)
 
   if (appContext.isLoading) {
@@ -18,12 +17,7 @@ const SettingsLayout: React.FC<Props> = (props) => {
     return null
   }
 
-  return (
-    <>
-      <SettingsNavigation />
-      {props.children}
-    </>
-  )
+  return <>{props.children}</>
 }
 
-export default SettingsLayout
+export default ViewerLayout

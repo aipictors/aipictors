@@ -8,5 +8,8 @@ export const PARTIAL_STICKER_FIELDS = gql`
       id
       downloadURL
     }
+    downloadsCount
+    usesCount
+    likesCount
   }
 `

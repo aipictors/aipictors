@@ -1,5 +1,5 @@
 "use client"
-import { HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 
 export const MainSettingStickersDownloads: React.FC = () => {
   return (
@@ -8,6 +8,27 @@ export const MainSettingStickersDownloads: React.FC = () => {
         <Text fontWeight={"bold"} fontSize={"2xl"}>
           {"DL済みスタンプ"}
         </Text>
+        <SimpleGrid
+          as={"ul"}
+          w={"100%"}
+          spacing={2}
+          pr={4}
+          columns={{ base: 2, md: 4, lg: 7 }}
+          justifyItems={""}
+        >
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px"></Box>
+        </SimpleGrid>
       </Stack>
     </HStack>
   )

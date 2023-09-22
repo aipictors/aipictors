@@ -81,8 +81,9 @@ export const ProviderAppContext: React.FC<Props> = (props) => {
       isLoading: true,
       isNotLoading: false,
       isLoggedIn: false,
-      isNotLoggedIn: true,
+      isNotLoggedIn: false,
       currentUser: null,
+      userId: null,
       refresh: refresh,
     } as const
     return (
@@ -91,13 +92,18 @@ export const ProviderAppContext: React.FC<Props> = (props) => {
   }
 
   // 未ログイン
-  if (currentUser === null || claims === null) {
+  if (
+    currentUser === null ||
+    claims === null ||
+    typeof claims.userId !== "string"
+  ) {
     const value = {
       isLoading: false,
       isNotLoading: true,
       isLoggedIn: false,
       isNotLoggedIn: true,
       currentUser: null,
+      userId: null,
       refresh: refresh,
     } as const
     return (
@@ -111,6 +117,7 @@ export const ProviderAppContext: React.FC<Props> = (props) => {
     isLoggedIn: true,
     isNotLoggedIn: false,
     currentUser: currentUser,
+    userId: claims.userId,
     refresh: refresh,
   } as const
 

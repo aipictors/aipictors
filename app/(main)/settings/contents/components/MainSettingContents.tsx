@@ -51,7 +51,11 @@ export const MainSettingContents: React.FC = () => {
           </FormControl>
         </Stack>
         <Stack>
-          <Button colorScheme="primary" borderRadius={"full"}>
+          <Button
+            colorScheme="primary"
+            borderRadius={"full"}
+            onChange={() => {}}
+          >
             {"変更を保存"}
           </Button>
         </Stack>
