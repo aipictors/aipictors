@@ -1,11 +1,11 @@
 "use client"
-import { Avatar, Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, HStack, Text } from "@chakra-ui/react"
 import React from "react"
-import { TbTrash } from "react-icons/tb"
 
 type Props = {
   name: string
   iconImageURL: string | null
+  onClick(): void
 }
 
 export const MutedUser: React.FC<Props> = (props) => {
@@ -21,12 +21,9 @@ export const MutedUser: React.FC<Props> = (props) => {
           <Text>{props.name}</Text>
         </Box>
       </HStack>
-      <IconButton
-        aria-label="DeleteMuteUsers"
-        icon={<Icon as={TbTrash} />}
-        variant={"ghost"}
-        borderRadius={"full"}
-      />
+      <Button borderRadius={"full"} onClick={props.onClick}>
+        {"解除"}
+      </Button>
     </HStack>
   )
 }

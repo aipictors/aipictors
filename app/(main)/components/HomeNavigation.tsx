@@ -126,10 +126,7 @@ export const HomeNavigation: React.FC = () => {
           </HomeNavigationButton>
         )}
         {appContext.isLoggedIn && (
-          <HomeNavigationButton
-            href={"/settings/account"}
-            leftIcon={TbSettings}
-          >
+          <HomeNavigationButton href={"/settings/login"} leftIcon={TbSettings}>
             {"設定"}
           </HomeNavigationButton>
         )}

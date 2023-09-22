@@ -1,5 +1,5 @@
 "use client"
-import { useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,
   AlertIcon,
@@ -11,17 +11,22 @@ import {
 } from "@chakra-ui/react"
 import { useContext } from "react"
 import type {
+  MuteUserMutation,
+  MuteUserMutationVariables,
   ViewerMutedUsersQuery,
   ViewerMutedUsersQueryVariables,
 } from "__generated__/apollo"
-import { ViewerMutedUsersDocument } from "__generated__/apollo"
+import {
+  MuteUserDocument,
+  ViewerMutedUsersDocument,
+} from "__generated__/apollo"
 import { MutedUser } from "app/(main)/settings/mute/users/components/MutedUser"
 import { AppContext } from "app/contexts/appContext"
 
 export const MainSettingMuteUsers: React.FC = () => {
   const appContext = useContext(AppContext)
 
-  const { data = null } = useSuspenseQuery<
+  const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedUsersQuery,
     ViewerMutedUsersQueryVariables
   >(ViewerMutedUsersDocument, {
@@ -29,9 +34,24 @@ export const MainSettingMuteUsers: React.FC = () => {
     variables: { offset: 0, limit: 128 },
   })
 
+  const [mutation] = useMutation<MuteUserMutation, MuteUserMutationVariables>(
+    MuteUserDocument,
+  )
+
+  const handleUnmute = async (userID: string) => {
+    await mutation({
+      variables: {
+        input: {
+          userId: userID,
+        },
+      },
+    })
+    await refetch()
+  }
+
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+      <Stack maxW={"lg"} w={"100%"} p={4} spacing={8}>
         <Text fontWeight={"bold"} fontSize={"2xl"}>
           {"ミュートしているユーザ"}
         </Text>
@@ -47,6 +67,9 @@ export const MainSettingMuteUsers: React.FC = () => {
               key={user.id}
               name={user.name}
               iconImageURL={user.iconImage?.downloadURL ?? null}
+              onClick={() => {
+                handleUnmute(user.id)
+              }}
             />
           ))}
         </Stack>
