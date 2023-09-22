@@ -1,6 +1,5 @@
 "use client"
 import {
-  Button,
   FormControl,
   FormLabel,
   HStack,
@@ -49,15 +48,6 @@ export const MainSettingContents: React.FC = () => {
             </FormLabel>
             <Switch />
           </FormControl>
-        </Stack>
-        <Stack>
-          <Button
-            colorScheme="primary"
-            borderRadius={"full"}
-            onChange={() => {}}
-          >
-            {"変更を保存"}
-          </Button>
         </Stack>
       </Stack>
     </HStack>
