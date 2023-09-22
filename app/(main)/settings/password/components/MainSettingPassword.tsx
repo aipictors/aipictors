@@ -47,7 +47,7 @@ export const MainSettingPassword: React.FC = () => {
       toast({ status: "success", title: "パスワードを変更しました" })
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ status: "error", title: "現在のパスワードが間違っています" })
+        toast({ status: "error", title: error.message })
       }
     }
   }

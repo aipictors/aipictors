@@ -1,5 +1,5 @@
 "use client"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,
   AlertIcon,
@@ -10,6 +10,7 @@ import {
   Input,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import { MuteTagDocument, ViewerMutedTagsDocument } from "__generated__/apollo"
@@ -36,9 +37,9 @@ export const MainSettingMuteTags: React.FC = () => {
 
   const [text, setText] = useState("")
 
-  const onClick = () => {}
-
   const count = text.length
+
+  const toast = useToast()
 
   const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
     MuteTagDocument,
@@ -53,6 +54,24 @@ export const MainSettingMuteTags: React.FC = () => {
       },
     })
     await refetch()
+  }
+
+  const handleMute = async () => {
+    try {
+      await mutation({
+        variables: {
+          input: {
+            tagName: text,
+          },
+        },
+      })
+      setText("")
+      await refetch()
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast({ status: "error", title: error.message })
+      }
+    }
   }
 
   return (
@@ -79,7 +98,7 @@ export const MainSettingMuteTags: React.FC = () => {
             <Button
               colorScheme="primary"
               borderRadius={"full"}
-              onClick={onClick}
+              onClick={handleMute}
             >
               {"変更を保存"}
             </Button>
