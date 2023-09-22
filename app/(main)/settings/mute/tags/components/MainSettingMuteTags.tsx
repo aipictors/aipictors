@@ -1,7 +1,9 @@
 "use client"
-import { useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
 import {
-  Box,
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Button,
   Divider,
   HStack,
@@ -10,18 +12,21 @@ import {
   Text,
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
-import {
-  ViewerMutedTagsDocument,
-  type ViewerMutedTagsQuery,
-  type ViewerMutedTagsQueryVariables,
+import { MuteTagDocument, ViewerMutedTagsDocument } from "__generated__/apollo"
+import type {
+  MuteTagMutation,
+  MuteTagMutationVariables,
+  ViewerMutedTagsQuery,
+  ViewerMutedTagsQueryVariables,
 } from "__generated__/apollo"
+
 import { MutedTag } from "app/(main)/settings/mute/tags/components/MutedTag"
 import { AppContext } from "app/contexts/appContext"
 
 export const MainSettingMuteTags: React.FC = () => {
   const appContext = useContext(AppContext)
 
-  const { data = null } = useSuspenseQuery<
+  const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedTagsQuery,
     ViewerMutedTagsQueryVariables
   >(ViewerMutedTagsDocument, {
@@ -34,6 +39,21 @@ export const MainSettingMuteTags: React.FC = () => {
   const onClick = () => {}
 
   const count = text.length
+
+  const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
+    MuteTagDocument,
+  )
+
+  const handleUnmute = async (tagName: string) => {
+    await mutation({
+      variables: {
+        input: {
+          tagName: tagName,
+        },
+      },
+    })
+    await refetch()
+  }
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
@@ -66,15 +86,20 @@ export const MainSettingMuteTags: React.FC = () => {
           </HStack>
         </Stack>
         {data?.viewer?.mutedTags.length === 0 && (
-          <Stack>
-            <Box>
-              <Text>{"ミュートしているタグはありません"}</Text>
-            </Box>
-          </Stack>
+          <Alert status="info" borderRadius={"md"}>
+            <AlertIcon />
+            <AlertTitle>{"ミュートしているタグはありません"}</AlertTitle>
+          </Alert>
         )}
         <Stack divider={<Divider />}>
           {data?.viewer?.mutedTags.map((mutedTag) => (
-            <MutedTag key={mutedTag.id} name={mutedTag.name} />
+            <MutedTag
+              key={mutedTag.id}
+              name={mutedTag.name}
+              onClick={() => {
+                handleUnmute(mutedTag.name)
+              }}
+            />
           ))}
         </Stack>
       </Stack>
