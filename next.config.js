@@ -10,7 +10,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    appDir: true,
     scrollRestoration: true,
   },
   output: "standalone",
