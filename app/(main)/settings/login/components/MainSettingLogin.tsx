@@ -26,7 +26,7 @@ export const MainSettingLogin: React.FC = () => {
 
   const toast = useToast()
 
-  const [userId, setUserId] = useState(data?.viewer?.user?.login ?? "")
+  const [userId, setUserId] = useState("")
 
   const [mutation, { loading }] = useMutation<
     UpdateAccountLoginMutation,
