@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useContext } from "react"
 import {
   TbAlbum,
+  TbAlertTriangle,
   TbAward,
   TbBolt,
   TbBrandDiscordFilled,
@@ -90,6 +91,9 @@ export const HomeNavigation: React.FC = () => {
         </HomeNavigationButton>
         <HomeNavigationButton href={"/works/images/3d"} leftIcon={TbCamera}>
           {"フォト"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/sensitive"} leftIcon={TbAlertTriangle}>
+          {"センシティブ"}
         </HomeNavigationButton>
         <Box py={2}>
           <Divider />
