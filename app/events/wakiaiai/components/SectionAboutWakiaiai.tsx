@@ -387,7 +387,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
 
     {
       name: "七瀬葵",
-      types: ["SPONSOR"],
+      types: ["EXHIBIT", "SPONSOR"],
       message: null,
       iconImageURL:
         "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FPiGZzeRnBxvr9hmgV4WbadEqLFDNws.webp?alt=media&token=d7f4c500-ccfc-4fe8-b224-80ec362a0d96",
@@ -405,7 +405,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
     },
     {
       name: "花葩レイミ",
-      types: ["SPONSOR"],
+      types: ["EXHIBIT", "SPONSOR"],
       message: null,
       iconImageURL:
         "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2F7jx_6B3W.jpg?alt=media&token=c2dd30f7-16f2-4055-a69e-14c65c8cada8",
