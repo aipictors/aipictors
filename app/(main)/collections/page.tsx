@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { PagePlaceholder } from "app/components/PagePlaceholder"
 
-const AboutPage = async () => {
-  return <PagePlaceholder>{"このサイトについて"}</PagePlaceholder>
+const CollectionsPage = async () => {
+  return <PagePlaceholder>{"コレクションの一覧"}</PagePlaceholder>
 }
 
 export const metadata: Metadata = {
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default AboutPage
+export default CollectionsPage

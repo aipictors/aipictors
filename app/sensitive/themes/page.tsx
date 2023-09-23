@@ -5,17 +5,10 @@ import { SensitiveThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
 import { MainLayout } from "app/components/MainLayout"
 
-type Props = {
-  params: {
-    year: string
-    month: string
-  }
-}
+const SensitiveThemesPage = async () => {
+  const year = new Date().getFullYear()
 
-const ThemesPage = async (props: Props) => {
-  const year = parseInt(props.params.year)
-
-  const month = parseInt(props.params.month)
+  const month = new Date().getMonth() + 1
 
   const dailyThemesQuery = await client.query<DailyThemesQuery>({
     query: DailyThemesDocument,
@@ -44,4 +37,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default ThemesPage
+export default SensitiveThemesPage

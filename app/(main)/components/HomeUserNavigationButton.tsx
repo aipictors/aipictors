@@ -26,6 +26,7 @@ import {
   TbUserUp,
 } from "react-icons/tb"
 import { AppContext } from "app/contexts/appContext"
+import { Config } from "config"
 
 export const HomeUserNavigationButton: React.FC = () => {
   const appContext = useContext(AppContext)
@@ -65,6 +66,17 @@ export const HomeUserNavigationButton: React.FC = () => {
         )}
         {appContext.isLoggedIn && (
           <MenuItem
+            isDisabled={Config.isReleaseMode}
+            as={Link}
+            icon={<Icon as={TbAlbum} fontSize={"lg"} />}
+            href={"/viewer/collections"}
+          >
+            {"コレクション"}
+          </MenuItem>
+        )}
+        {appContext.isLoggedIn && (
+          <MenuItem
+            isDisabled={Config.isReleaseMode}
             as={Link}
             icon={<Icon as={TbAlbum} fontSize={"lg"} />}
             href={"/viewer/albums"}

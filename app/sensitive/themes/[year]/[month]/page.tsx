@@ -12,7 +12,7 @@ type Props = {
   }
 }
 
-const ThemesPage = async (props: Props) => {
+const SensitiveMonthThemesPage = async (props: Props) => {
   const year = parseInt(props.params.year)
 
   const month = parseInt(props.params.month)
@@ -44,4 +44,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default ThemesPage
+export default SensitiveMonthThemesPage

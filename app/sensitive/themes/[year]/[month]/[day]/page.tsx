@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
-import { SensitiveThemeList } from "app/(main)/themes/components/ThemeList"
+import { AboutTheme } from "app/(main)/themes/[year]/[month]/[day]/components/AboutTheme"
 import { client } from "app/client"
 import { MainLayout } from "app/components/MainLayout"
 
@@ -9,30 +9,29 @@ type Props = {
   params: {
     year: string
     month: string
+    day: string
   }
 }
 
-const ThemesPage = async (props: Props) => {
-  const year = parseInt(props.params.year)
-
-  const month = parseInt(props.params.month)
-
+const SensitiveThemePage = async (props: Props) => {
   const dailyThemesQuery = await client.query<DailyThemesQuery>({
     query: DailyThemesDocument,
     variables: {
       offset: 0,
-      limit: 31,
-      where: { year: year, month: month },
+      limit: 1,
+      where: {
+        year: parseInt(props.params.year),
+        month: parseInt(props.params.month),
+        day: parseInt(props.params.day),
+      },
     },
   })
 
+  const [dailyTheme] = dailyThemesQuery.data.dailyThemes
+
   return (
     <MainLayout>
-      <SensitiveThemeList
-        year={year}
-        month={month}
-        dailyThemesQuery={dailyThemesQuery.data}
-      />
+      <AboutTheme title={dailyTheme.title} />
     </MainLayout>
   )
 }
@@ -44,4 +43,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default ThemesPage
+export default SensitiveThemePage

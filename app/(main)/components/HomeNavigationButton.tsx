@@ -50,7 +50,11 @@ export const HomeNavigationButton: React.FC<Props> = (props) => {
     <Button
       isDisabled={props.isDisabled}
       lineHeight={1}
-      leftIcon={<Icon as={props.leftIcon} fontSize={"lg"} />}
+      leftIcon={
+        props.leftIcon ? (
+          <Icon as={props.leftIcon} fontSize={"lg"} />
+        ) : undefined
+      }
       justifyContent={"flex-start"}
       variant={"ghost"}
       as={Link}

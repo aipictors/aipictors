@@ -1,5 +1,5 @@
 "use client"
-import { Box, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Text, useColorModeValue } from "@chakra-ui/react"
 import Link from "next/link"
 
 type Props = {
@@ -10,12 +10,14 @@ type Props = {
 }
 
 export const ThemeListItem: React.FC<Props> = (props) => {
+  const backgroundColor = useColorModeValue("gray.100", "gray.900")
+
   if (props.title === null) {
     return (
       <Box
         display={{ base: "none", lg: "block" }}
         h={24}
-        bgColor={"gray.900"}
+        bgColor={backgroundColor}
         borderRadius={"md"}
         p={4}
       />
@@ -24,14 +26,13 @@ export const ThemeListItem: React.FC<Props> = (props) => {
 
   return (
     <Link href={`/themes/${props.year}/${props.month}/${props.day}`}>
-      <Stack
+      <Button
         h={24}
         justifyContent={"center"}
         alignItems={"center"}
-        bgColor={"gray.900"}
         borderRadius={"md"}
-        _hover={{ bgColor: "gray.700" }}
         p={4}
+        w={"100%"}
       >
         <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
           {props.day}
@@ -39,7 +40,7 @@ export const ThemeListItem: React.FC<Props> = (props) => {
         <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
           {props.title}
         </Text>
-      </Stack>
+      </Button>
     </Link>
   )
 }

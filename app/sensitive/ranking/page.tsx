@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { MainRanking } from "app/(main)/ranking/components/MainRanking"
 
-const RankingPage = async () => {
+const SensitiveRankingPage = async () => {
   return <MainRanking />
 }
 
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default RankingPage
+export default SensitiveRankingPage

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { PagePlaceholder } from "app/components/PagePlaceholder"
 
-const RankingPage = async () => {
-  return <PagePlaceholder>{"ランキング（センシティブ）"}</PagePlaceholder>
+const ViewerCollectionsPage = async () => {
+  return <PagePlaceholder>{"コレクション"}</PagePlaceholder>
 }
 
 export const metadata: Metadata = {
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default RankingPage
+export default ViewerCollectionsPage
