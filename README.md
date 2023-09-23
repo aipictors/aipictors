@@ -1,5 +1,5 @@
-現在、PHPで構築されているAipictorsをNext.jsに移行いたします。
-また、バックエンドはGraphQL（Apollo Federation）で構築されています。
+現在、PHPで構築されているAipictorsをNext.jsに移行します。
+また、バックエンドには、GraphQL（Apollo Federation）が用意されています。
 
 ディレクトリ|↓
 :--|:--
@@ -14,17 +14,17 @@
 必要なモジュールを取得する。
 
 ```bash
-$ yarn install
+$ npm install
 ```
 
 GraphQLのコードをビルドする。
 
 ```bash
-$ yarn build:graphql
+$ npm run prebuild
 ```
 
 開発サーバーを起動する。
 
 ```bash
-$ yarn dev
+$ npm run dev
 ```
