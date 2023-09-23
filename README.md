@@ -1,11 +1,13 @@
 現在、PHPで構築されているAipictorsをNext.jsに移行いたします。
 また、バックエンドはGraphQL（Apollo Federation）で構築されています。
 
-- [.vscode](/.vscode) - VSCodeの設定
-- [app](/app) - Webサイトを構成するコンポーネントなど
-- [graphql](/graphql) - クエリなど
-- [docs](/docs) - ルールなど
-- [public](/public) - 画像など
+ディレクトリ|↓
+:--|:--
+[app](/app)|Webサイトを構成するコンポーネントなど
+[graphql](/graphql)|クエリなど
+[public](/public)|画像など
+[.vscode](/.vscode)|VSCodeの設定
+[docs](/docs)|開発でのルールなど
 
 ## 環境構築
 
