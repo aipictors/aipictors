@@ -9,7 +9,8 @@
     "start": "next start",
     "format": "prettier --write --ignore-path .gitignore app",
     "test": "vitest",
-    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx ."
+    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx .",
+    "check": "tsc"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",

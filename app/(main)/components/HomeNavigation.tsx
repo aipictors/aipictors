@@ -13,6 +13,7 @@ import {
   TbAlertTriangle,
   TbAward,
   TbBolt,
+  TbBox,
   TbBrandDiscordFilled,
   TbBrandThreads,
   TbBrandX,
@@ -24,19 +25,15 @@ import {
   TbLogin,
   TbLogout,
   TbMoonFilled,
-  TbMug,
   TbPhoto,
   TbPhotoPlus,
   TbRubberStamp,
   TbSettings,
-  TbSparkles,
   TbSunFilled,
-  TbUser,
-  TbUserDown,
-  TbUserUp,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
 import { AppContext } from "app/contexts/appContext"
+import { Config } from "config"
 
 export const HomeNavigation: React.FC = () => {
   const appContext = useContext(AppContext)
@@ -56,13 +53,21 @@ export const HomeNavigation: React.FC = () => {
         <HomeNavigationButton href={"/"} leftIcon={TbHome}>
           {"ホーム"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/themes"} leftIcon={TbBulb}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/themes"}
+          leftIcon={TbBulb}
+        >
           {"創作アイデア"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/stickers"} leftIcon={TbRubberStamp}>
           {"スタンプ広場"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/ranking"} leftIcon={TbAward}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/ranking"}
+          leftIcon={TbAward}
+        >
           {"ランキング"}
         </HomeNavigationButton>
         <HomeNavigationButton
@@ -71,26 +76,34 @@ export const HomeNavigation: React.FC = () => {
         >
           {"画像生成"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/series"} leftIcon={TbAlbum}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/series"}
+          leftIcon={TbAlbum}
+        >
           {"シリーズ"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/collections"} leftIcon={TbFolder}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/collections"}
+          leftIcon={TbFolder}
+        >
           {"コレクション"}
         </HomeNavigationButton>
         <Box py={2}>
           <Divider />
         </Box>
-        <HomeNavigationButton href={"/works/images/2d"} leftIcon={TbPhoto}>
+        <HomeNavigationButton href={"/works/2d"} leftIcon={TbPhoto}>
           {"イラスト"}
         </HomeNavigationButton>
-        <HomeNavigationButton
-          href={"/works/images/2.5d"}
-          leftIcon={TbPhotoPlus}
-        >
+        <HomeNavigationButton href={"/works/2.5d"} leftIcon={TbPhotoPlus}>
           {"セミリアル"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/works/images/3d"} leftIcon={TbCamera}>
+        <HomeNavigationButton href={"/works/3d"} leftIcon={TbCamera}>
           {"フォト"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/works/models"} leftIcon={TbBox}>
+          {"モデル"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/sensitive"} leftIcon={TbAlertTriangle}>
           {"センシティブ"}
@@ -98,37 +111,6 @@ export const HomeNavigation: React.FC = () => {
         <Box py={2}>
           <Divider />
         </Box>
-        {appContext.isLoggedIn && (
-          <HomeNavigationButton href={"/settings/account"} leftIcon={TbUser}>
-            {"マイページ"}
-          </HomeNavigationButton>
-        )}
-        {appContext.isLoggedIn && (
-          <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
-            {"ダッシュボード"}
-          </HomeNavigationButton>
-        )}
-        {appContext.isLoggedIn && (
-          <HomeNavigationButton
-            href={"/viewer/followees"}
-            leftIcon={TbUserDown}
-          >
-            {"フォロワー"}
-          </HomeNavigationButton>
-        )}
-        {appContext.isLoggedIn && (
-          <HomeNavigationButton href={"/viewer/followees"} leftIcon={TbUserUp}>
-            {"フォロー"}
-          </HomeNavigationButton>
-        )}
-        <HomeNavigationButton href={"/plus"} leftIcon={TbSparkles}>
-          {"Aipictors+"}
-        </HomeNavigationButton>
-        {appContext.isLoggedIn && (
-          <HomeNavigationButton href={"/viewer"} leftIcon={TbMug}>
-            {"支援管理"}
-          </HomeNavigationButton>
-        )}
         {appContext.isLoggedIn && (
           <HomeNavigationButton href={"/settings/login"} leftIcon={TbSettings}>
             {"設定"}

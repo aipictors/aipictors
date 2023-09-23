@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import type { ImageModelQuery } from "__generated__/apollo";
+import type { ImageModelQuery } from "__generated__/apollo"
 import { ImageModelDocument } from "__generated__/apollo"
-import { MainModel } from "app/(main)/works/images/models/[model]/components/MainModel"
+import { MainModel } from "app/(main)/works/models/[model]/components/MainModel"
 import { client } from "app/client"
 
 type Props = {

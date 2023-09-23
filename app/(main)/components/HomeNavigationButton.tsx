@@ -8,14 +8,16 @@ type Props = {
   href?: string
   children: React.ReactNode
   onClick?: ButtonProps["onClick"]
+  isDisabled?: boolean
 }
 
 export const HomeNavigationButton: React.FC<Props> = (props) => {
   if (props.href === undefined) {
     return (
       <Button
+        isDisabled={props.isDisabled}
         lineHeight={1}
-        leftIcon={<Icon as={props.leftIcon} />}
+        leftIcon={<Icon as={props.leftIcon} fontSize={"lg"} />}
         justifyContent={"flex-start"}
         variant={"ghost"}
         size={"sm"}
@@ -29,8 +31,9 @@ export const HomeNavigationButton: React.FC<Props> = (props) => {
   if (props.href.startsWith("http")) {
     return (
       <Button
+        isDisabled={props.isDisabled}
         lineHeight={1}
-        leftIcon={<Icon as={props.leftIcon} />}
+        leftIcon={<Icon as={props.leftIcon} fontSize={"lg"} />}
         justifyContent={"flex-start"}
         variant={"ghost"}
         as={ChakraLink}
@@ -45,8 +48,9 @@ export const HomeNavigationButton: React.FC<Props> = (props) => {
 
   return (
     <Button
+      isDisabled={props.isDisabled}
       lineHeight={1}
-      leftIcon={<Icon as={props.leftIcon} />}
+      leftIcon={<Icon as={props.leftIcon} fontSize={"lg"} />}
       justifyContent={"flex-start"}
       variant={"ghost"}
       as={Link}

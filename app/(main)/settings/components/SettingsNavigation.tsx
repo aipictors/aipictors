@@ -15,6 +15,7 @@ import {
   TbUserOff,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
+import { Config } from "config"
 
 export const SettingsNavigation: React.FC = () => {
   const breakpoint = useBreakpoint()
@@ -42,13 +43,25 @@ export const SettingsNavigation: React.FC = () => {
         <HomeNavigationButton href={"/settings/password"} leftIcon={TbLock}>
           {"パスワード"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/settings/profile"} leftIcon={TbUser}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/settings/profile"}
+          leftIcon={TbUser}
+        >
           {"プロフィール"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/settings/notification"} leftIcon={TbBell}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/settings/notification"}
+          leftIcon={TbBell}
+        >
           {"通知・いいね"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/settings/contents"} leftIcon={TbPhoto}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/settings/contents"}
+          leftIcon={TbPhoto}
+        >
           {"表示コンテンツ"}
         </HomeNavigationButton>
         <HomeNavigationButton
@@ -61,21 +74,28 @@ export const SettingsNavigation: React.FC = () => {
           {"タグミュート"}
         </HomeNavigationButton>
         <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
           href={"/settings/stickers"}
           leftIcon={TbRubberStamp}
         >
           {"作成スタンプ"}
         </HomeNavigationButton>
         <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
           href={"/settings/stickers/downloads"}
           leftIcon={TbDownload}
         >
           {"DLスタンプ"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/settings/request"} leftIcon={TbMedal2}>
+        <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
+          href={"/settings/request"}
+          leftIcon={TbMedal2}
+        >
           {"支援リクエスト"}
         </HomeNavigationButton>
         <HomeNavigationButton
+          isDisabled={Config.isReleaseMode}
           href={"/settings/interface"}
           leftIcon={TbSettings}
         >

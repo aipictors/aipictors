@@ -9,9 +9,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    scrollRestoration: true,
-  },
   output: "standalone",
   env: {
     NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,

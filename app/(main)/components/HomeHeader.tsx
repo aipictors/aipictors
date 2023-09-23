@@ -55,11 +55,9 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         aria-label={"Search"}
       />
       <HStack>
-        <Link href={"/new/image"}>
-          <Button size={"sm"} borderRadius={"full"}>
-            {"投稿"}
-          </Button>
-        </Link>
+        <Button as={Link} href={"/new/image"} size={"sm"} borderRadius={"full"}>
+          {"投稿"}
+        </Button>
         <Button size={"sm"} borderRadius={"full"}>
           {"生成"}
         </Button>
