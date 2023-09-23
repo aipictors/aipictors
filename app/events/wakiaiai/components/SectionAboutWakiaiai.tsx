@@ -117,24 +117,6 @@ export const SectionAboutWakiaiai: React.FC = () => {
       ],
     },
     {
-      name: "七瀬葵",
-      types: ["SHOP", "SPONSOR"],
-      message: null,
-      iconImageURL:
-        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FPiGZzeRnBxvr9hmgV4WbadEqLFDNws.webp?alt=media&token=d7f4c500-ccfc-4fe8-b224-80ec362a0d96",
-      twitterId: "aoi_nanase3",
-      aipictorsId: "@aoi_nanase3",
-      siteURL: "https://lit.link/aoinanase",
-      siteTitle: null,
-      links: [
-        {
-          type: "youtube",
-          siteURL: "https://www.youtube.com/@Aoi_nanase3",
-          siteTitle: null,
-        },
-      ],
-    },
-    {
       name: "水マン(waterman)",
       types: ["SHOP"],
       message: null,
@@ -170,18 +152,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       siteTitle: null,
       links: [],
     },
-    {
-      name: "花葩レイミ",
-      types: ["SHOP"],
-      message: null,
-      iconImageURL:
-        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2F7jx_6B3W.jpg?alt=media&token=c2dd30f7-16f2-4055-a69e-14c65c8cada8",
-      twitterId: "hanahirareimi",
-      aipictorsId: "1240",
-      siteURL: null,
-      siteTitle: null,
-      links: [],
-    },
+
     {
       name: "NOAH",
       types: ["SHOP"],
@@ -411,6 +382,37 @@ export const SectionAboutWakiaiai: React.FC = () => {
       aipictorsId: null,
       siteURL: "https://prompton.io",
       siteTitle: "プロンプトン",
+      links: [],
+    },
+
+    {
+      name: "七瀬葵",
+      types: ["SPONSOR"],
+      message: null,
+      iconImageURL:
+        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FPiGZzeRnBxvr9hmgV4WbadEqLFDNws.webp?alt=media&token=d7f4c500-ccfc-4fe8-b224-80ec362a0d96",
+      twitterId: "aoi_nanase3",
+      aipictorsId: "@aoi_nanase3",
+      siteURL: "https://lit.link/aoinanase",
+      siteTitle: null,
+      links: [
+        {
+          type: "youtube",
+          siteURL: "https://www.youtube.com/@Aoi_nanase3",
+          siteTitle: null,
+        },
+      ],
+    },
+    {
+      name: "花葩レイミ",
+      types: ["SPONSOR"],
+      message: null,
+      iconImageURL:
+        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2F7jx_6B3W.jpg?alt=media&token=c2dd30f7-16f2-4055-a69e-14c65c8cada8",
+      twitterId: "hanahirareimi",
+      aipictorsId: "1240",
+      siteURL: null,
+      siteTitle: null,
       links: [],
     },
     {
