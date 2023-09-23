@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import type { DailyThemesQuery} from "__generated__/apollo";
+import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
-import { ThemeList } from "app/(main)/themes/components/ThemeList"
+import { SensitiveThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
 import { MainLayout } from "app/components/MainLayout"
 
@@ -21,7 +21,7 @@ const ThemesPage = async () => {
 
   return (
     <MainLayout>
-      <ThemeList
+      <SensitiveThemeList
         year={year}
         month={month}
         dailyThemesQuery={dailyThemesQuery.data}

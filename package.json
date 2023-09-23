@@ -5,12 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "prebuild": "yarn build:graphql",
+    "prebuild": "graphql-codegen -c codegen.ts",
     "start": "next start",
-    "build:graphql": "graphql-codegen -c codegen.ts",
     "format": "prettier --write --ignore-path .gitignore app",
     "test": "vitest",
-    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx ."
+    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx .",
+    "check": "tsc"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",

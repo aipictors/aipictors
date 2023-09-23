@@ -5,11 +5,9 @@ import {
   TbArrowBackUp,
   TbAward,
   TbBulb,
-  TbCamera,
   TbFolder,
   TbHome,
   TbMoonFilled,
-  TbPhoto,
   TbSunFilled,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
@@ -28,54 +26,54 @@ export const SensitiveNavigation: React.FC = () => {
     >
       <Stack py={4} pl={4}>
         <HomeNavigationButton href={"/"} leftIcon={TbArrowBackUp}>
-          {"全年齢に戻る"}
+          {"全年齢"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/sensitive"} leftIcon={TbHome}>
           {"ホーム"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/themes"} leftIcon={TbBulb}>
+        <HomeNavigationButton href={"/sensitive/themes"} leftIcon={TbBulb}>
           {"創作アイデア"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/ranking"} leftIcon={TbAward}>
+        <HomeNavigationButton href={"/sensitive/ranking"} leftIcon={TbAward}>
           {"ランキング"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/series"} leftIcon={TbAlbum}>
+        <HomeNavigationButton href={"/sensitive/albums"} leftIcon={TbAlbum}>
           {"シリーズ"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/collections"} leftIcon={TbFolder}>
+        <HomeNavigationButton
+          href={"/sensitive/collections"}
+          leftIcon={TbFolder}
+        >
           {"コレクション"}
         </HomeNavigationButton>
         <Box py={2}>
           <Divider />
         </Box>
-        <HomeNavigationButton
-          href={"/sensitive/works/3d/a"}
-          leftIcon={TbCamera}
-        >
+        <HomeNavigationButton href={"/sensitive/works/3d"}>
+          {"フォト"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/sensitive/works/3d/a"}>
           {"フォトA"}
         </HomeNavigationButton>
-        <HomeNavigationButton
-          href={"/sensitive/works/3d/b"}
-          leftIcon={TbCamera}
-        >
+        <HomeNavigationButton href={"/sensitive/works/3d/b"}>
           {"フォトB"}
         </HomeNavigationButton>
-        <HomeNavigationButton
-          href={"/sensitive/works/3d/c"}
-          leftIcon={TbCamera}
-        >
+        <HomeNavigationButton href={"/sensitive/works/3d/c"}>
           {"フォトC"}
         </HomeNavigationButton>
         <Box py={2}>
           <Divider />
         </Box>
-        <HomeNavigationButton href={"/sensitive/works/2d/a"} leftIcon={TbPhoto}>
+        <HomeNavigationButton href={"/sensitive/works/2d"}>
+          {"イラスト"}
+        </HomeNavigationButton>
+        <HomeNavigationButton href={"/sensitive/works/2d/a"}>
           {"イラストA"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/sensitive/works/2d/b"} leftIcon={TbPhoto}>
+        <HomeNavigationButton href={"/sensitive/works/2d/b"}>
           {"イラストB"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/sensitive/works/2d/c"} leftIcon={TbPhoto}>
+        <HomeNavigationButton href={"/sensitive/works/2d/c"}>
           {"イラストC"}
         </HomeNavigationButton>
         <Box py={2}>

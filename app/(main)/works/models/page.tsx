@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import type { ImageModelsQuery } from "__generated__/apollo";
+import type { ImageModelsQuery } from "__generated__/apollo"
 import { ImageModelsDocument } from "__generated__/apollo"
-import { MainModels } from "app/(main)/works/images/models/components/MainModels"
+import { ImageModelList } from "app/(main)/works/models/components/ImageModelList"
 import { client } from "app/client"
 
 const ModelsPage = async () => {
@@ -10,7 +10,7 @@ const ModelsPage = async () => {
     variables: {},
   })
 
-  return <MainModels imageModelsQuery={resp.data} />
+  return <ImageModelList imageModelsQuery={resp.data} />
 }
 
 export const metadata: Metadata = {

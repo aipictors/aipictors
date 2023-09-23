@@ -6,7 +6,6 @@
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
     "mikestead.dotenv",
-    "smulyono.reveal",
     "streetsidesoftware.code-spell-checker"
   ]
 }

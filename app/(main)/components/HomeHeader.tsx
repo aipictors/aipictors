@@ -7,12 +7,13 @@ import {
   Icon,
   IconButton,
   Input,
-  Link,
   useColorModeValue,
 } from "@chakra-ui/react"
+import Link from "next/link"
 import React from "react"
 import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
 import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
+import { Config } from "config"
 
 type HomeHeaderProps = {
   onOpenNavigation?: () => void
@@ -55,15 +56,28 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         aria-label={"Search"}
       />
       <HStack>
-        <Link href={"/new/image"}>
-          <Button size={"sm"} borderRadius={"full"}>
-            {"投稿"}
-          </Button>
-        </Link>
-        <Button size={"sm"} borderRadius={"full"}>
+        <Button
+          isDisabled={Config.isReleaseMode}
+          as={Link}
+          href={"/new/image"}
+          size={"sm"}
+          borderRadius={"full"}
+        >
+          {"投稿"}
+        </Button>
+        <Button
+          isDisabled={Config.isReleaseMode}
+          as={Link}
+          href={"/generation"}
+          size={"sm"}
+          borderRadius={"full"}
+        >
           {"生成"}
         </Button>
         <IconButton
+          isDisabled={Config.isReleaseMode}
+          as={Link}
+          href={"/viewer/albums"}
           size={"sm"}
           borderRadius={"full"}
           aria-label={"フォルダ"}
@@ -71,6 +85,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
           icon={<TbFolderFilled />}
         />
         <IconButton
+          isDisabled
           size={"sm"}
           borderRadius={"full"}
           aria-label={"通知"}

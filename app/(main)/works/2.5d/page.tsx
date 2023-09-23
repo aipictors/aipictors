@@ -1,17 +1,12 @@
 import type { Metadata } from "next"
-import type {
-  WorksQuery,
-  HotTagsQuery} from "__generated__/apollo";
-import {
-  WorksDocument,
-  HotTagsDocument,
-} from "__generated__/apollo"
+import type { WorksQuery, HotTagsQuery } from "__generated__/apollo"
+import { WorksDocument, HotTagsDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
 import { client } from "app/client"
 import { MainLayout } from "app/components/MainLayout"
 
-const Images3dPage = async () => {
+const Works25dPage = async () => {
   const worksQuery = await client.query<WorksQuery>({
     query: WorksDocument,
     variables: {
@@ -40,4 +35,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default Images3dPage
+export default Works25dPage

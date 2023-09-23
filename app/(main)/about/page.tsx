@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const AboutPage = async () => {
-  return <PagePlaceholder>{"/privacy"}</PagePlaceholder>
+  return <PagePlaceholder>{"このサイトについて"}</PagePlaceholder>
 }
 
 export const metadata: Metadata = {
