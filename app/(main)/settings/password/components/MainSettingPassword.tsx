@@ -25,6 +25,8 @@ export const MainSettingPassword: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false)
 
+  const [showNewPassword, setShowNewPassword] = useState(false)
+
   const toast = useToast()
 
   const [mutation, { loading }] = useMutation<
@@ -83,7 +85,7 @@ export const MainSettingPassword: React.FC = () => {
           <HStack>
             <Input
               placeholder="新しいログインパスワード"
-              type={showPassword ? "text" : "password"}
+              type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(event) => {
                 setNewPassword(event.target.value)
@@ -93,7 +95,7 @@ export const MainSettingPassword: React.FC = () => {
               aria-label="Search database"
               icon={<Icon as={TbEye} />}
               onClick={() => {
-                setShowPassword(!showPassword)
+                setShowNewPassword(!showNewPassword)
               }}
             />
           </HStack>
