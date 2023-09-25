@@ -1,6 +1,11 @@
 import type { Metadata } from "next"
-import type { WorkQuery, WorkQueryVariables } from "__generated__/apollo"
-import { WorkDocument } from "__generated__/apollo"
+import type {
+  WorkCommentsQuery,
+  WorkCommentsQueryVariables,
+  WorkQuery,
+  WorkQueryVariables,
+} from "__generated__/apollo"
+import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
 import { WorkArticle } from "app/(main)/works/[work]/components/WorkArticle"
 import { WorkCommentList } from "app/(main)/works/[work]/components/WorkCommentList"
 import { client } from "app/client"
@@ -18,12 +23,23 @@ const WorkPage: React.FC<Props> = async (props) => {
     },
   })
 
+  const workCommentsQuery = await client.query<
+    WorkCommentsQuery,
+    WorkCommentsQueryVariables
+  >({
+    query: WorkCommentsDocument,
+    variables: {
+      workId: props.params.work,
+    },
+  })
+
   if (workQuery.data.work === null) return null
+  if (workCommentsQuery.data.work === null) return null
 
   return (
     <MainPage>
       <WorkArticle work={workQuery.data.work} />
-      <WorkCommentList work={workQuery.data.work} />
+      <WorkCommentList work={workCommentsQuery.data.work} />
     </MainPage>
   )
 }

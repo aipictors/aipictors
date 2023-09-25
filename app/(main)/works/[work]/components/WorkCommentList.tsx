@@ -10,10 +10,12 @@ import {
   Text,
 } from "@chakra-ui/react"
 import { TbRubberStamp } from "react-icons/tb"
-import type { WorkQuery } from "__generated__/apollo"
+import type { WorkCommentsQuery } from "__generated__/apollo"
+import { WorkComment } from "app/(main)/works/[work]/components/WorkComment"
+import { WorkCommentResponse } from "app/(main)/works/[work]/components/WorkCommentResponse"
 
 type Props = {
-  work: NonNullable<WorkQuery["work"]>
+  work: NonNullable<WorkCommentsQuery["work"]>
 }
 
 export const WorkCommentList: React.FC<Props> = (props) => {
@@ -33,6 +35,29 @@ export const WorkCommentList: React.FC<Props> = (props) => {
           {"投稿"}
         </Button>
       </HStack>
+      <Stack>
+        {props.work.comments.map((comment) => (
+          <Stack key={comment.id} spacing={8}>
+            <WorkComment
+              createdAt={comment.createdAt}
+              stickerImageURL={comment.sticker?.image?.downloadURL}
+              text={comment.text}
+              userIconImageURL={comment.user?.iconImage?.downloadURL}
+              userName={comment.user?.name}
+            />
+            {comment.responses.map((reply) => (
+              <WorkCommentResponse
+                key={reply.id}
+                createdAt={reply.createdAt}
+                stickerImageURL={reply.sticker?.image?.downloadURL}
+                text={reply.text}
+                userIconImageURL={reply.user?.iconImage?.downloadURL}
+                userName={reply.user?.name}
+              />
+            ))}
+          </Stack>
+        ))}
+      </Stack>
     </Stack>
   )
 }
