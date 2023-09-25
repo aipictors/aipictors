@@ -4,7 +4,7 @@ import { WorksDocument, HotTagsDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
 import { client } from "app/client"
-import { MainLayout } from "app/components/MainLayout"
+import { MainPage } from "app/components/MainPage"
 
 const HomePage = async () => {
   // if (Config.isReleaseMode) {
@@ -25,10 +25,10 @@ const HomePage = async () => {
   })
 
   return (
-    <MainLayout>
+    <MainPage>
       <HomeTagList hotTagsQuery={hotTagsQuery.data} />
       <HomeWorkList worksQuery={worksQuery.data} />
-    </MainLayout>
+    </MainPage>
   )
 }
 

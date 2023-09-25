@@ -18,6 +18,13 @@ export const WORK = gql`
           isFollowee
           isMuted
         }
+        works(offset: 0, limit: 16) {
+          id
+          thumbnailImage {
+            id
+            downloadURL
+          }
+        }
       }
       tagNames
       createdAt

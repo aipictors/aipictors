@@ -7,5 +7,5 @@ import { format } from "date-fns"
  */
 export const toDateTimeText = (time: number) => {
   const date = new Date(time * 1000)
-  return format(date, "yyyy年MM月dd日")
+  return format(date, "yyyy年MM月dd日 HH時mm分")
 }

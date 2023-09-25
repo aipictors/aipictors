@@ -3,7 +3,7 @@ import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
 import { SensitiveThemeList } from "app/(main)/themes/components/ThemeList"
 import { client } from "app/client"
-import { MainLayout } from "app/components/MainLayout"
+import { MainPage } from "app/components/MainPage"
 
 const SensitiveThemesPage = async () => {
   const year = new Date().getFullYear()
@@ -20,13 +20,13 @@ const SensitiveThemesPage = async () => {
   })
 
   return (
-    <MainLayout>
+    <MainPage>
       <SensitiveThemeList
         year={year}
         month={month}
         dailyThemesQuery={dailyThemesQuery.data}
       />
-    </MainLayout>
+    </MainPage>
   )
 }
 

@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const MainLayout: React.FC<Props> = (props) => {
+export const MainPage: React.FC<Props> = (props) => {
   return (
     <Stack overflowX={"hidden"} pl={4} w={"100%"}>
       {props.children}
