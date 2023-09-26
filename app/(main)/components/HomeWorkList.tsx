@@ -1,5 +1,6 @@
 "use client"
-import { SimpleGrid, Box } from "@chakra-ui/react"
+import { SimpleGrid } from "@chakra-ui/react"
+import Link from "next/link"
 import type { WorksQuery } from "__generated__/apollo"
 import { CardWork } from "app/(main)/works/components/CardWork"
 
@@ -18,9 +19,9 @@ export const HomeWorkList: React.FC<Props> = (props) => {
       pb={4}
     >
       {props.worksQuery.works?.map((work) => (
-        <Box key={work.id}>
+        <Link key={work.id} href={`/works/${work.id}`}>
           <CardWork imageURL={work.thumbnailImage?.downloadURL} />
-        </Box>
+        </Link>
       ))}
     </SimpleGrid>
   )

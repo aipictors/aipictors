@@ -11,7 +11,6 @@ type Props = {
 }
 
 export const WorkUser: React.FC<Props> = (props) => {
-  console.log(props)
   return (
     <Stack spacing={0} maxW={{ base: "auto", lg: "xs" }} w={"100%"}>
       <Card>
@@ -40,9 +39,6 @@ export const WorkUser: React.FC<Props> = (props) => {
         </HStack>
       </Card>
       <Text>{"前後の作品"}</Text>
-      <Text>{"関連フォルダ"}</Text>
-      <Text>{"おすすめタグ"}</Text>
-      <Text>{"新着コメント"}</Text>
     </Stack>
   )
 }
