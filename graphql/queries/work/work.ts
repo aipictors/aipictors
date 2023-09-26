@@ -11,6 +11,9 @@ export const WORK = gql`
         downloadURL
       }
       user {
+        promptonUser {
+          id
+        }
         ...UserFields
         viewer {
           id
@@ -25,6 +28,10 @@ export const WORK = gql`
             downloadURL
           }
         }
+      }
+      dailyTheme {
+        id
+        title
       }
       tagNames
       createdAt

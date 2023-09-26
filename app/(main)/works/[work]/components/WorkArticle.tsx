@@ -12,7 +12,6 @@ type Props = {
 }
 
 export const WorkArticle: React.FC<Props> = (props) => {
-  console.log(props.work.user)
   return (
     <Stack
       direction={{ base: "column", lg: "row" }}
@@ -30,9 +29,30 @@ export const WorkArticle: React.FC<Props> = (props) => {
         <Text fontSize={"lg"} fontWeight={"bold"}>
           {props.work.title}
         </Text>
-        <Text>{props.work.description}</Text>
+        <Text fontSize={"xs"}>{"CustomModel(その他)"}</Text>
         <Text fontSize={"sm"}>{toDateTimeText(props.work.createdAt)}</Text>
-        <Text>{props.work.tagNames}</Text>
+        <Text fontSize={"sm"}>{`デイリー入賞`}</Text>
+        {props.work.dailyTheme && (
+          <HStack>
+            <Text fontSize={"sm"}>{"参加お題:"}</Text>
+            <Button borderRadius={"full"} size={"sm"} variant={"outline"}>
+              {props.work.dailyTheme.title}
+            </Button>
+          </HStack>
+        )}
+        <HStack>
+          {props.work.tagNames.map((tagName) => (
+            <Button
+              key={tagName}
+              borderRadius={"full"}
+              size={"sm"}
+              variant={"outline"}
+            >
+              {`#${tagName}`}
+            </Button>
+          ))}
+        </HStack>
+        <Text>{props.work.description}</Text>
         <HStack justifyContent={"space-between"}>
           <HStack>
             <Avatar src={props.work.user.iconImage?.downloadURL} />
@@ -60,6 +80,8 @@ export const WorkArticle: React.FC<Props> = (props) => {
         userIconImageURL={props.work.user.iconImage?.downloadURL}
         userFollowersCount={props.work.user.followersCount}
         userBiography={props.work.user.biography}
+        userPromptonId={props.work.user.promptonUser?.id}
+        userWorksCount={props.work.user.worksCount}
       />
     </Stack>
   )

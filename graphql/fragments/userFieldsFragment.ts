@@ -10,6 +10,7 @@ export const USER_FIELDS = gql`
     receivedViewsCount
     awardsCount
     followersCount
+    worksCount
     iconImage {
       id
       downloadURL
