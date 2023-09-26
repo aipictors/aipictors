@@ -9,7 +9,7 @@ import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
 import { WorkArticle } from "app/(main)/works/[work]/components/WorkArticle"
 import { WorkCommentList } from "app/(main)/works/[work]/components/WorkCommentList"
 import { client } from "app/client"
-import { MainPage } from "app/components/MainPage"
+import { ArticlePage } from "app/components/ArticlePage"
 
 type Props = {
   params: { work: string }
@@ -37,10 +37,10 @@ const WorkPage: React.FC<Props> = async (props) => {
   if (workCommentsQuery.data.work === null) return null
 
   return (
-    <MainPage>
+    <ArticlePage>
       <WorkArticle work={workQuery.data.work} />
       <WorkCommentList work={workCommentsQuery.data.work} />
-    </MainPage>
+    </ArticlePage>
   )
 }
 

@@ -7,7 +7,7 @@ export const useNavigation = () => {
   useEffect(() => {
     if (Config.isNotClient) return
     const handleResize = () => {
-      setFlag(600 < window.innerWidth)
+      setFlag(800 < window.innerWidth)
     }
     window.addEventListener("resize", handleResize)
     handleResize()

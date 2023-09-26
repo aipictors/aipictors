@@ -29,9 +29,8 @@ export const WorkCommentList: React.FC<Props> = (props) => {
           aria-label={"スタンプ"}
           borderRadius={"full"}
           icon={<Icon as={TbRubberStamp} />}
-          size={"sm"}
         />
-        <Button colorScheme={"primary"} borderRadius={"full"} size={"sm"}>
+        <Button colorScheme={"primary"} borderRadius={"full"}>
           {"投稿"}
         </Button>
       </HStack>

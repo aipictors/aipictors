@@ -11,7 +11,7 @@ export const WORK = gql`
         downloadURL
       }
       user {
-        ...WorkUserFields
+        ...UserFields
         viewer {
           id
           isFollower
