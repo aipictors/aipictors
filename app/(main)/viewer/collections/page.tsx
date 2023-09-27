@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { ViewerCollectionListItem } from "app/(main)/viewer/collections/components/ViewerCollectionListItem"
+import { MainPage } from "app/components/MainPage"
 
 const ViewerCollectionsPage = async () => {
-  return <PagePlaceholder>{"コレクション"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <ViewerCollectionListItem />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

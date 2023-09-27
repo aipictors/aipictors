@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { NotificationItemList } from "app/(main)/viewer/notifications/components/NotificationItemList"
+import { MainPage } from "app/components/MainPage"
 
 const ViewerNotificationsPage = async () => {
-  return <PagePlaceholder>{"通知"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <NotificationItemList />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

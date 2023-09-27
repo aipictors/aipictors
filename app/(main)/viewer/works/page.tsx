@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { ViewerWorksHome } from "app/(main)/viewer/works/components/ViewerWorksHome"
+import { MainPage } from "app/components/MainPage"
 
 const ViewerWorksPage = async () => {
-  return <PagePlaceholder>{"作品"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <ViewerWorksHome />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

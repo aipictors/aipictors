@@ -1,7 +1,13 @@
 import type { Metadata } from "next"
+import { NewTextForm } from "app/(main)/new/text/components/NewTextForm"
+import { MainPage } from "app/components/MainPage"
 
 const NewTextPage = async () => {
-  return <>{"投稿"}</>
+  return (
+    <MainPage>
+      <NewTextForm />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

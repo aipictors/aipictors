@@ -1,8 +1,15 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { AlbumList } from "app/(main)/albums/components/AlbumList"
+import { AlbumListItem } from "app/(main)/albums/components/AlbumListItem"
+import { MainPage } from "app/components/MainPage"
 
 const AlbumsPage = async () => {
-  return <PagePlaceholder>{"シリーズの一覧"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <AlbumList />
+      <AlbumListItem />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

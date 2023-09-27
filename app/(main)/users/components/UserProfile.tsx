@@ -1,9 +1,9 @@
 "use client"
-import { Text, Stack } from "@chakra-ui/react"
+import { Stack, Avatar } from "@chakra-ui/react"
 import React from "react"
 
-export const UserProfile: React.FC<Props> = (props) => (
+export const UserProfile: React.FC = () => (
   <Stack>
-    <Text>{"aaaaaa"}</Text>
+    <Avatar />
   </Stack>
 )

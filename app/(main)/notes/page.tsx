@@ -1,8 +1,15 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { NoteList } from "app/(main)/notes/components/NoteList"
+import { NoteListItem } from "app/(main)/notes/components/NoteListItem"
+import { MainPage } from "app/components/MainPage"
 
 const NotesPage = async () => {
-  return <PagePlaceholder>{"コラムの一覧"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <NoteList />
+      <NoteListItem />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

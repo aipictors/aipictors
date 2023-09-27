@@ -2,7 +2,7 @@
 import { HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 
-export const MainRanking: React.FC = () => {
+export const MainRankingHeader: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

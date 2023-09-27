@@ -1,8 +1,15 @@
 import type { Metadata } from "next"
-import { MainRanking } from "app/(main)/ranking/components/MainRanking"
+import { MainRankingHeader } from "app/(main)/ranking/components/MainRankingHeader"
+import { MainRankingWorks } from "app/(main)/ranking/components/MainRankingWorks"
+import { MainPage } from "app/components/MainPage"
 
 const RankingPage = async () => {
-  return <MainRanking />
+  return (
+    <MainPage>
+      <MainRankingHeader />
+      <MainRankingWorks />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {
