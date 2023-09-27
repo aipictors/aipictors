@@ -1,25 +1,23 @@
 "use client"
-import { Box, Button, HStack } from "@chakra-ui/react"
+import { Box, HStack } from "@chakra-ui/react"
 import type { HotTagsQuery } from "__generated__/apollo"
+import { TagButton } from "app/(main)/components/TagButton"
 
 type Props = {
   hotTagsQuery: HotTagsQuery
 }
 
+/**
+ * ホーム上部に
+ * @param props
+ * @returns
+ */
 export const HomeTagList: React.FC<Props> = (props) => {
   return (
     <Box w={"100%"} overflowX={"auto"} pb={2}>
       <HStack as={"ul"} w={"100%"} spacing={2}>
         {props.hotTagsQuery.hotTags?.map((tag) => (
-          <Button
-            as={"li"}
-            key={tag.id}
-            size={"sm"}
-            minW={"fit-content"}
-            variant={"outline"}
-          >
-            {tag.name}
-          </Button>
+          <TagButton key={tag.id} id={tag.id} name={tag.name} />
         ))}
         <Box p={"4px"} />
       </HStack>

@@ -1,10 +1,10 @@
 "use client"
 import { Divider, HStack } from "@chakra-ui/react"
-// useState をインポート
 import { HomeHeader } from "app/(main)/components/HomeHeader"
 import { HomeNavigation } from "app/(main)/components/HomeNavigation"
 import { FooterHome } from "app/components/FooterHome"
 import { useNavigation } from "app/hooks/useNavigation"
+import "@splidejs/react-splide/css"
 
 type Props = {
   children: React.ReactNode

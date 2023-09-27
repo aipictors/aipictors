@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { TagList } from "app/(main)/tags/components/TagList"
 import { MainPage } from "app/components/MainPage"
 
-const HomePage = async () => {
+const TagsPage = async () => {
   return (
     <MainPage>
       <TagList />
@@ -17,4 +17,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default HomePage
+export default TagsPage

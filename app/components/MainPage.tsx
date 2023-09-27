@@ -7,7 +7,13 @@ type Props = {
 
 export const MainPage: React.FC<Props> = (props) => {
   return (
-    <Stack overflowX={"hidden"} pl={4} w={"100%"}>
+    <Stack
+      overflowX={"hidden"}
+      pl={4}
+      w={"100%"}
+      mx={"auto"}
+      maxW={"container.lg"}
+    >
       {props.children}
     </Stack>
   )

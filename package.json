@@ -24,6 +24,7 @@
     "@emotion/styled": "^11.11.0",
     "@sentry/nextjs": "^7.69.0",
     "@sentry/node": "^7.69.0",
+    "@splidejs/react-splide": "^0.7.12",
     "@types/react-beautiful-dnd": "^13.1.4",
     "date-fns": "^2.30.0",
     "encoding": "^0.1.13",

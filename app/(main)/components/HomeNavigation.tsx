@@ -49,7 +49,7 @@ export const HomeNavigation: React.FC = () => {
       minW={"12rem"}
       overflowY={"auto"}
     >
-      <Stack py={4} pl={4}>
+      <Stack pb={4} pl={4}>
         <HomeNavigationButton href={"/"} leftIcon={TbHome}>
           {"ホーム"}
         </HomeNavigationButton>
@@ -102,7 +102,7 @@ export const HomeNavigation: React.FC = () => {
         <HomeNavigationButton href={"/works/3d"} leftIcon={TbCamera}>
           {"フォト"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/works/models"} leftIcon={TbBox}>
+        <HomeNavigationButton href={"/models"} leftIcon={TbBox}>
           {"モデル"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/sensitive"} leftIcon={TbAlertTriangle}>

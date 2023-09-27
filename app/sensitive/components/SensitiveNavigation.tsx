@@ -24,7 +24,7 @@ export const SensitiveNavigation: React.FC = () => {
       minW={"12rem"}
       overflowY={"auto"}
     >
-      <Stack py={4} pl={4}>
+      <Stack pb={4} pl={4}>
         <HomeNavigationButton href={"/"} leftIcon={TbArrowBackUp}>
           {"全年齢"}
         </HomeNavigationButton>
