@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import type { ImageModelQuery } from "__generated__/apollo"
 import { ImageModelDocument } from "__generated__/apollo"
-import { MainModel } from "app/(main)/works/models/[model]/components/MainModel"
+import { ModelList } from "app/(main)/works/models/[model]/components/ModelList"
 import { client } from "app/client"
 
 type Props = {
@@ -18,7 +18,7 @@ const SettingModelsPage = async (props: Props) => {
     },
   })
 
-  return <MainModel imageModelQuery={resp.data} />
+  return <ModelList imageModelQuery={resp.data} />
 }
 
 export const metadata: Metadata = {

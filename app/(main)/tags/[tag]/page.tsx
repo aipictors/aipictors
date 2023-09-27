@@ -1,8 +1,15 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { RelatedTagList } from "app/(main)/tags/[tag]/components/RelatedTagList"
+import { WorkList } from "app/(main)/works/components/WorkList"
+import { MainPage } from "app/components/MainPage"
 
 const TagPage = async () => {
-  return <PagePlaceholder>{"タグ"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <WorkList />
+      <RelatedTagList />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

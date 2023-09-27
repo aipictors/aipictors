@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { StickerArticle } from "app/(main)/stickers/[sticker]/components/StickerArticle"
+import { MainPage } from "app/components/MainPage"
 
 const StickerPage = async () => {
-  return <PagePlaceholder>{"スタンプ"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <StickerArticle />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

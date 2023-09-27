@@ -1,10 +1,11 @@
 "use client"
-import { Stack, Text } from "@chakra-ui/react"
+import { Stack } from "@chakra-ui/react"
+import { NovelListItem } from "app/(main)/novels/components/NovelListItem"
 
 export const NovelList: React.FC = () => {
   return (
     <Stack>
-      <Text>{"小説リストアイテム"}</Text>
+      <NovelListItem />
     </Stack>
   )
 }

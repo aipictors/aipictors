@@ -1,8 +1,13 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { CollectionArticle } from "app/(main)/collections/[collection]/components/CollectionArticle"
+import { MainPage } from "app/components/MainPage"
 
 const CollectionPage = async () => {
-  return <PagePlaceholder>{"コレクション"}</PagePlaceholder>
+  return (
+    <MainPage>
+      <CollectionArticle />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

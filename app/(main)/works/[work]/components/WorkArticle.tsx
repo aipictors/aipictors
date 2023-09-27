@@ -1,6 +1,5 @@
 "use client"
 import { Avatar, Button, HStack, Image, Stack, Text } from "@chakra-ui/react"
-
 import type { WorkQuery } from "__generated__/apollo"
 import { WorkAction } from "app/(main)/works/[work]/components/WorkAction"
 import { WorkImageView } from "app/(main)/works/[work]/components/WorkImageView"

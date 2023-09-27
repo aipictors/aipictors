@@ -1,10 +1,11 @@
 "use client"
-import { Stack, Text } from "@chakra-ui/react"
+import { Stack } from "@chakra-ui/react"
+import { CollectionListItem } from "app/(main)/collections/components/CollectionListItem"
 
 export const CollectionList: React.FC = () => {
   return (
     <Stack>
-      <Text>{"コレクションの一覧"}</Text>
+      <CollectionListItem />
     </Stack>
   )
 }

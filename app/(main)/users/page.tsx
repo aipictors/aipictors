@@ -1,17 +1,7 @@
 import type { Metadata } from "next"
-import { UserProfile } from "app/(main)/users/components/UserProfile"
-import { UserProfileHeader } from "app/(main)/users/components/UserProfileHeader"
-import { UserProfileWorks } from "app/(main)/users/components/UserProfileWorks"
-import { MainPage } from "app/components/MainPage"
 
-const UserPage = async () => {
-  return (
-    <MainPage>
-      <UserProfileHeader />
-      <UserProfile />
-      <UserProfileWorks />
-    </MainPage>
-  )
+const UsersPage = async () => {
+  return null
 }
 
 export const metadata: Metadata = {
@@ -21,4 +11,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default UserPage
+export default UsersPage
