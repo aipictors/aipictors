@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
-import { ViewerAlbumHeader } from "app/(main)/viewer/albums/components/ViewerAlbumHeader"
+import { NewAlbumForm } from "app/(main)/albums/new/components/NewAlbumForm"
 import { MainPage } from "app/components/MainPage"
 
-const ViewerAlbumsPage = async () => {
+const NewAlbumPage = async () => {
   return (
     <MainPage>
-      <ViewerAlbumHeader />
+      <NewAlbumForm />
     </MainPage>
   )
 }
@@ -17,4 +17,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default ViewerAlbumsPage
+export default NewAlbumPage
