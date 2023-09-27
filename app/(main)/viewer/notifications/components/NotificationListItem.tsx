@@ -1,10 +1,10 @@
 "use client"
 import { Stack, Text } from "@chakra-ui/react"
 
-export const NoteListItem: React.FC = () => {
+export const NotificationListItem: React.FC = () => {
   return (
     <Stack>
-      <Text>{"コラムリストアイテム"}</Text>
+      <Text>{"通知履歴"}</Text>
     </Stack>
   )
 }

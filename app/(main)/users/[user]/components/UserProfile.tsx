@@ -1,23 +1,15 @@
 "use client"
-import {
-  Stack,
-  Avatar,
-  Text,
-  HStack,
-  Button,
-  IconButton,
-  Icon,
-} from "@chakra-ui/react"
+import { Stack, Avatar, Text, HStack, Icon } from "@chakra-ui/react"
 import React from "react"
-import {
-  TbShare2,
-  TbHeartFilled,
-  TbEye,
-  TbUser,
-  TbMedal2,
-  TbAward,
-  TbDots,
-} from "react-icons/tb"
+import { TbHeartFilled, TbEye, TbUser, TbMedal2, TbAward } from "react-icons/tb"
+import { UserWorkList } from "app/(main)/users/[user]/components/UserWorkList"
+import { DotButton } from "app/components/DotButton"
+import { FollowButton } from "app/components/FollowButton"
+import { LinkEmailButton } from "app/components/LinkEmailButton"
+import { LinkWebButton } from "app/components/LinkWebButton"
+import { ShareButton } from "app/components/ShareButton"
+import { SocialInstagramButton } from "app/components/SocialInstagramButton"
+import { SocialTwitterButton } from "app/components/SocialTwitterButton"
 
 export const UserProfile: React.FC = () => (
   <Stack>
@@ -26,11 +18,9 @@ export const UserProfile: React.FC = () => (
       <Text fontWeight={"bold"} fontSize={"lg"}>
         {"名前"}
       </Text>
-      <Button colorScheme="primary" borderRadius={"full"} size={"sm"}>
-        {"フォローする"}
-      </Button>
-      <IconButton aria-label="share" icon={<TbShare2 />} size={"sm"} />
-      <IconButton aria-label="menu" icon={<TbDots />} size={"sm"} />
+      <FollowButton />
+      <ShareButton />
+      <DotButton />
     </HStack>
     <HStack>
       <Stack>
@@ -60,12 +50,11 @@ export const UserProfile: React.FC = () => (
     </HStack>
     <Text fontSize={"sm"}>{"紹介文"}</Text>
     <HStack>
-      <Button borderRadius={"full"} size={"sm"}>
-        {"ツイッター"}
-      </Button>
-      <Button borderRadius={"full"} size={"sm"}>
-        {"インスタ"}
-      </Button>
+      <SocialTwitterButton />
+      <SocialInstagramButton />
+      <LinkEmailButton />
+      <LinkWebButton />
     </HStack>
+    <UserWorkList />
   </Stack>
 )

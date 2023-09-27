@@ -1,11 +1,11 @@
 "use client"
 import { Stack } from "@chakra-ui/react"
-import { NoteListItem } from "app/(main)/notes/components/NoteListItem"
+import { CardNote } from "app/(main)/notes/components/CardNote"
 
 export const NoteList: React.FC = () => {
   return (
     <Stack>
-      <NoteListItem />
+      <CardNote />
     </Stack>
   )
 }

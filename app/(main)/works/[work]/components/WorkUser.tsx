@@ -1,5 +1,6 @@
 "use client"
 import { Button, Card, Stack, Text, Avatar, HStack } from "@chakra-ui/react"
+import { PromptonRequestButton } from "app/(main)/works/[work]/components/PromptonRequestButton"
 
 type Props = {
   userName: string
@@ -28,11 +29,7 @@ export const WorkUser: React.FC<Props> = (props) => {
               <Button colorScheme="primary" borderRadius={"full"}>
                 {"フォローする"}
               </Button>
-              {props.userPromptonId && (
-                <Button colorScheme="orange" borderRadius={"full"}>
-                  {"支援"}
-                </Button>
-              )}
+              {props.userPromptonId && <PromptonRequestButton />}
             </HStack>
             {props.userBiography && <Text>{props.userBiography}</Text>}
           </Stack>

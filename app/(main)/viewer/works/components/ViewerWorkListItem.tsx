@@ -1,10 +1,10 @@
 "use client"
 import { Stack, Text } from "@chakra-ui/react"
 
-export const NovelListItem: React.FC = () => {
+export const ViewerWorkListItem: React.FC = () => {
   return (
     <Stack>
-      <Text>{"小説リストアイテム"}</Text>
+      <Text>{"合計リアクション数"}</Text>
     </Stack>
   )
 }
