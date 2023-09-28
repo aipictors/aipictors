@@ -1,13 +1,11 @@
 import type { Metadata } from "next"
-import { NotificationList } from "app/(main)/viewer/notifications/components/NotificationList"
-import { NotificationTab } from "app/(main)/viewer/notifications/components/NotificationTab"
+import { NotificationArticle } from "app/(main)/viewer/notifications/components/NotificationArticle"
 import { MainPage } from "app/components/MainPage"
 
 const ViewerNotificationsPage = async () => {
   return (
     <MainPage>
-      <NotificationTab />
-      <NotificationList />
+      <NotificationArticle />
     </MainPage>
   )
 }

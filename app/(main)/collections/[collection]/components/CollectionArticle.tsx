@@ -1,13 +1,11 @@
 "use client"
 import { Stack } from "@chakra-ui/react"
 import { CollectionHeader } from "./CollectionHeader"
-import { WorkList } from "app/(main)/works/components/WorkList"
 
-export const CollectionArticle: React.FC = () => {
+export const CollectionArticle = () => {
   return (
-    <Stack as={"article"}>
+    <Stack as={"article"} pr={4}>
       <CollectionHeader />
-      <WorkList />
     </Stack>
   )
 }

@@ -1,11 +1,24 @@
 import type { Metadata } from "next"
+import type { WorksQuery } from "__generated__/apollo"
+import { WorksDocument } from "__generated__/apollo"
 import { CollectionArticle } from "app/(main)/collections/[collection]/components/CollectionArticle"
+import { WorkList } from "app/(main)/works/components/WorkList"
+import { client } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 const CollectionPage = async () => {
+  const worksQuery = await client.query<WorksQuery>({
+    query: WorksDocument,
+    variables: {
+      offset: 0,
+      limit: 16,
+    },
+  })
+
   return (
     <MainPage>
       <CollectionArticle />
+      <WorkList works={worksQuery.data.works ?? []} />
     </MainPage>
   )
 }

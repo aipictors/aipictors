@@ -5,7 +5,9 @@ import {
   Stack,
   Link as ChakraLink,
   useColorMode,
+  useDisclosure,
 } from "@chakra-ui/react"
+import { getAuth, signOut } from "firebase/auth"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -32,13 +34,19 @@ import {
   TbSunFilled,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
+import { LoginModal } from "app/(main)/components/LoginModal"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
 
 export const HomeNavigation: React.FC = () => {
   const appContext = useContext(AppContext)
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const { colorMode, toggleColorMode } = useColorMode()
+
+  const handleLogout = async () => {
+    await signOut(getAuth())
+  }
 
   return (
     <Box
@@ -117,19 +125,14 @@ export const HomeNavigation: React.FC = () => {
           </HomeNavigationButton>
         )}
         {appContext.isLoggedIn && (
-          <HomeNavigationButton
-            onClick={() => {
-              // TODO: ログアウト処理
-            }}
-            leftIcon={TbLogout}
-          >
+          <HomeNavigationButton onClick={handleLogout} leftIcon={TbLogout}>
             {"ログアウト"}
           </HomeNavigationButton>
         )}
         {appContext.isNotLoggedIn && (
           <HomeNavigationButton
             onClick={() => {
-              // TODO: ログイン処理
+              onOpen()
             }}
             leftIcon={TbLogin}
           >
@@ -198,6 +201,7 @@ export const HomeNavigation: React.FC = () => {
           </ChakraLink>
         </Stack>
       </Stack>
+      <LoginModal isOpen={isOpen} onClose={onClose} />
     </Box>
   )
 }

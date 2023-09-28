@@ -9,12 +9,15 @@ import {
   MenuItem,
   MenuList,
   useColorMode,
+  useDisclosure,
 } from "@chakra-ui/react"
+import { signOut, getAuth } from "firebase/auth"
 import Link from "next/link"
 import { useContext } from "react"
 import {
   TbAlbum,
   TbDashboard,
+  TbLogin,
   TbLogout,
   TbMoonFilled,
   TbMug,
@@ -25,13 +28,20 @@ import {
   TbUserDown,
   TbUserUp,
 } from "react-icons/tb"
+import { LoginModal } from "app/(main)/components/LoginModal"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
 
 export const HomeUserNavigationButton: React.FC = () => {
   const appContext = useContext(AppContext)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   const { colorMode, toggleColorMode } = useColorMode()
+
+  const handleLogout = async () => {
+    await signOut(getAuth())
+  }
 
   return (
     <Menu>
@@ -136,9 +146,25 @@ export const HomeUserNavigationButton: React.FC = () => {
         >
           {colorMode === "dark" ? "ライトモード" : "ダークモード"}
         </MenuItem>
-        <MenuItem icon={<Icon as={TbLogout} fontSize={"lg"} />}>
-          {"ログアウト"}
-        </MenuItem>
+        {appContext.isLoggedIn && (
+          <MenuItem
+            icon={<Icon as={TbLogout} fontSize={"lg"} />}
+            onClick={handleLogout}
+          >
+            {"ログアウト"}
+          </MenuItem>
+        )}
+        {appContext.isNotLoggedIn && (
+          <MenuItem
+            icon={<Icon as={TbLogin} fontSize={"lg"} />}
+            onClick={() => {
+              onOpen()
+            }}
+          >
+            {"ログイン"}
+          </MenuItem>
+        )}
+        <LoginModal isOpen={isOpen} onClose={onClose} />
       </MenuList>
     </Menu>
   )

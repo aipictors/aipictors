@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
-import { ViewerWorkList } from "app/(main)/viewer/works/components/ViewerWorkList"
+import { ViewerWorkTable } from "app/(main)/viewer/works/components/ViewerWorkTable"
 import { MainPage } from "app/components/MainPage"
 
 const ViewerWorksPage = async () => {
   return (
     <MainPage>
-      <ViewerWorkList />
+      <ViewerWorkTable />
     </MainPage>
   )
 }

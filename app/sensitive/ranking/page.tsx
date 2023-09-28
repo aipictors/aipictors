@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import { MainRanking } from "app/(main)/ranking/components/MainRankingHeader"
 
 const SensitiveRankingPage = async () => {
-  return <MainRanking />
+  return {}
 }
 
 export const metadata: Metadata = {
