@@ -6,11 +6,11 @@ const EventWakiaiaiPage = async () => {
 }
 
 export const metadata: Metadata = {
-  title: { absolute: "和気あいAI - 展示即売会" },
+  title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
   description:
     "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
   openGraph: {
-    title: { absolute: "和気あいAI - 展示即売会" },
+    title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
     description:
       "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
     images: {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: { absolute: "和気あいAI - 展示即売会" },
+    title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
     description:
       "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
   },
