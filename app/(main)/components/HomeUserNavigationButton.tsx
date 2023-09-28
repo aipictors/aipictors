@@ -11,7 +11,6 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react"
-import { signOut, getAuth } from "firebase/auth"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -29,6 +28,7 @@ import {
   TbUserUp,
 } from "react-icons/tb"
 import { LoginModal } from "app/(main)/components/LoginModal"
+import { LogoutModal } from "app/(main)/components/LogoutModal"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
 
@@ -39,9 +39,11 @@ export const HomeUserNavigationButton: React.FC = () => {
 
   const { colorMode, toggleColorMode } = useColorMode()
 
-  const handleLogout = async () => {
-    await signOut(getAuth())
-  }
+  const {
+    isOpen: isOpenLogout,
+    onOpen: onOpenLogout,
+    onClose: onCloseLogout,
+  } = useDisclosure()
 
   return (
     <Menu>
@@ -149,7 +151,7 @@ export const HomeUserNavigationButton: React.FC = () => {
         {appContext.isLoggedIn && (
           <MenuItem
             icon={<Icon as={TbLogout} fontSize={"lg"} />}
-            onClick={handleLogout}
+            onClick={onOpenLogout}
           >
             {"ログアウト"}
           </MenuItem>
@@ -165,6 +167,11 @@ export const HomeUserNavigationButton: React.FC = () => {
           </MenuItem>
         )}
         <LoginModal isOpen={isOpen} onClose={onClose} />
+        <LogoutModal
+          isOpen={isOpenLogout}
+          onClose={onCloseLogout}
+          onOpen={onOpenLogout}
+        />
       </MenuList>
     </Menu>
   )
