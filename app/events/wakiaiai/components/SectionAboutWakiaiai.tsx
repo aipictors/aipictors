@@ -495,7 +495,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
             <Heading size={"lg"} color={"blue.300"}>
               {"2023年9月30日"}
             </Heading>
-            <Heading size={"4xl"} color={"blue.300"}>
+            <Heading as="h1" size={"4xl"} color={"blue.300"}>
               {"和気あいAI"}
             </Heading>
           </Stack>
