@@ -1,10 +1,7 @@
 import type { Metadata } from "next"
-import type {
-  PromptCategoryQuery} from "__generated__/apollo";
-import {
-  PromptCategoryDocument
-} from "__generated__/apollo"
-import { MainGeneration } from "app/(main)/generation/components/MainGeneration"
+import type { PromptCategoryQuery } from "__generated__/apollo"
+import { PromptCategoryDocument } from "__generated__/apollo"
+import { GenerationEditorLite } from "app/(main)/generation/lite/components/GenerationEditorLite"
 import { client } from "app/client"
 
 const GenerationLitePage = async () => {
@@ -13,7 +10,7 @@ const GenerationLitePage = async () => {
     variables: {},
   })
 
-  return <MainGeneration promptCategoryQuery={promptCategoryQuery.data} />
+  return <GenerationEditorLite promptCategoryQuery={promptCategoryQuery.data} />
 }
 
 export const metadata: Metadata = {

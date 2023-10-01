@@ -1,12 +1,13 @@
 import type { Metadata } from "next"
 import type {
   ImageModelsQuery,
-  PromptCategoryQuery} from "__generated__/apollo";
+  PromptCategoryQuery,
+} from "__generated__/apollo"
 import {
   ImageModelsDocument,
-  PromptCategoryDocument
+  PromptCategoryDocument,
 } from "__generated__/apollo"
-import { ImageGenerationEditor } from "app/(main)/generation/components/ImageGenerationEditor"
+import { GenerationEditor } from "app/(main)/generation/components/GenerationEditor"
 import { client } from "app/client"
 
 const GenerationPage = async () => {
@@ -22,7 +23,7 @@ const GenerationPage = async () => {
 
   return (
     <>
-      <ImageGenerationEditor
+      <GenerationEditor
         promptCategoryQuery={promptCategoryQuery.data}
         imageModelsQuery={imageModelsQuery.data}
       />

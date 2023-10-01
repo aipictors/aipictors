@@ -19,7 +19,7 @@ type Props = {
   promptCategoryQuery: PromptCategoryQuery
 }
 
-export const MainGeneration: React.FC<Props> = (props) => {
+export const GenerationEditorLite: React.FC<Props> = (props) => {
   /**
    * 青色になっているカテゴリーのIDの配列
    */

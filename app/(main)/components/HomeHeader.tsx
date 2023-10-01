@@ -59,20 +59,20 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         <Button
           isDisabled={Config.isReleaseMode}
           as={Link}
-          href={"/new/image"}
-          size={"sm"}
-          borderRadius={"full"}
-        >
-          {"投稿"}
-        </Button>
-        <Button
-          isDisabled={Config.isReleaseMode}
-          as={Link}
           href={"/generation"}
           size={"sm"}
           borderRadius={"full"}
         >
           {"生成"}
+        </Button>
+        <Button
+          isDisabled={Config.isReleaseMode}
+          as={Link}
+          href={"/new/image"}
+          size={"sm"}
+          borderRadius={"full"}
+        >
+          {"投稿"}
         </Button>
         <IconButton
           isDisabled={Config.isReleaseMode}
