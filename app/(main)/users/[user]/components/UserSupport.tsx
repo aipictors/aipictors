@@ -4,16 +4,15 @@ import type { UserQuery } from "__generated__/apollo"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>
+  userIconImageURL: string
+  userName: string
 }
 
 export const UserSupport: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"center"}>
       <Stack alignItems={"center"}>
-        <Avatar
-          src={props.user.iconImage?.downloadURL ?? ""}
-          name={props.user.name}
-        />
+        <Avatar src={props.userIconImageURL ?? ""} name={props.userName} />
         <HStack>
           <Text>{"￥1,000円"}</Text>
           <Button colorScheme="orange" borderRadius={"full"}>

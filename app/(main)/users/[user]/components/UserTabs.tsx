@@ -3,8 +3,10 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react"
 import React from "react"
 import type { UserQuery, UserWorksQuery } from "__generated__/apollo"
 import { UserAlbumList } from "app/(main)/users/[user]/components/UserAlbumList"
+import { UserCollectionList } from "app/(main)/users/[user]/components/UserCollectionList"
 import { UserNoteList } from "app/(main)/users/[user]/components/UserNoteList"
 import { UserNovelList } from "app/(main)/users/[user]/components/UserNovelList"
+import { UserStickerList } from "app/(main)/users/[user]/components/UserStickerList"
 import { UserSupport } from "app/(main)/users/[user]/components/UserSupport"
 import { UserWorkList } from "app/(main)/users/[user]/components/UserWorkList"
 import { UserWorkListActions } from "app/(main)/users/[user]/components/UserWorkListActions"
@@ -21,6 +23,8 @@ export const UserTabs: React.FC<Props> = (props) => (
       <Tab>{"小説"}</Tab>
       <Tab>{"コラム"}</Tab>
       <Tab>{"シリーズ"}</Tab>
+      <Tab>{"コレクション"}</Tab>
+      <Tab>{"スタンプ"}</Tab>
       <Tab>{"支援応援"}</Tab>
     </TabList>
     <TabPanels>
@@ -41,7 +45,15 @@ export const UserTabs: React.FC<Props> = (props) => (
         <UserAlbumList />
       </TabPanel>
       <TabPanel>
-        <UserSupport user={props.user} />
+        <UserWorkListActions />
+        <UserCollectionList />
+      </TabPanel>
+      <TabPanel>
+        <UserWorkListActions />
+        <UserStickerList />
+      </TabPanel>
+      <TabPanel>
+        <UserSupport user={props.user} userIconImageURL="" userName="" />
       </TabPanel>
     </TabPanels>
   </Tabs>

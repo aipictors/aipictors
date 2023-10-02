@@ -6,7 +6,6 @@ import {
   IconButton,
   Input,
   Stack,
-  Switch,
   Text,
 } from "@chakra-ui/react"
 import React from "react"
@@ -40,10 +39,6 @@ export const UserWorkListActions: React.FC = () => (
       <Button borderRadius={"full"} size={"sm"}>
         {"いいね順（現在新しい順）"}
       </Button>
-    </HStack>
-    <HStack>
-      <Text>{"R18（n）"}</Text>
-      <Switch />
     </HStack>
   </Stack>
 )

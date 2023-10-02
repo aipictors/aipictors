@@ -1,11 +1,15 @@
 "use client"
-import { HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
+import { HStack, Icon, IconButton, Stack, Switch, Text } from "@chakra-ui/react"
 import { TbPlus } from "react-icons/tb"
 
 export const UserPickUp: React.FC = () => {
   return (
     <Stack>
       <Text>{"Pick Up"}</Text>
+      <HStack>
+        <Text>{"R18（n）"}</Text>
+        <Switch />
+      </HStack>
       <HStack justifyContent={"flex-start"}>
         <IconButton
           aria-label={"追加"}

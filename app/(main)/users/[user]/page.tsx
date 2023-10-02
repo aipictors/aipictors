@@ -21,14 +21,14 @@ const UserPage = async () => {
     variables: {
       offset: 0,
       limit: 16,
-      userId: "4321",
+      userId: "1",
     },
   })
 
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {
-      userId: "4321",
+      userId: "1",
     },
   })
 

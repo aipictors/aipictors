@@ -2,10 +2,10 @@
 import { HStack, Switch, Text } from "@chakra-ui/react"
 import React from "react"
 
-export const UserNoteList: React.FC = () => {
+export const UserCollectionList: React.FC = () => {
   return (
     <HStack>
-      <Text>{"R18（n）"}</Text>
+      <Text>{"ぼかしを外す"}</Text>
       <Switch />
     </HStack>
   )
