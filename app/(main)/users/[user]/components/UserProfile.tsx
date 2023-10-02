@@ -1,5 +1,12 @@
 "use client"
-import { Stack, Avatar, Text, HStack, Icon } from "@chakra-ui/react"
+import {
+  Stack,
+  Avatar,
+  Text,
+  HStack,
+  Icon,
+  Link as ChakraLink,
+} from "@chakra-ui/react"
 import React from "react"
 import { TbHeartFilled, TbEye, TbUser, TbMedal2, TbAward } from "react-icons/tb"
 import type { UserQuery } from "__generated__/apollo"
@@ -21,6 +28,7 @@ export const UserProfile: React.FC<Props> = (props) => (
     <Avatar
       name="props.user.name"
       src={props.user.iconImage?.downloadURL ?? ""}
+      size={"lg"}
     />
     <HStack>
       <Text fontWeight={"bold"} fontSize={"lg"}>
@@ -58,7 +66,7 @@ export const UserProfile: React.FC<Props> = (props) => (
     </HStack>
     <HStack>
       <Icon as={TbAward} fontSize={"sm"} />
-      <Text fontSize={"sm"}>{"実績・トロフィーはこちら"}</Text>
+      <ChakraLink fontSize={"sm"}>{"実績・トロフィーはこちら"}</ChakraLink>
     </HStack>
     <Text fontSize={"sm"}>{props.user.biography}</Text>
     <HStack>

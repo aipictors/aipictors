@@ -1,11 +1,19 @@
 "use client"
 import { Avatar, Button, HStack, Stack, Text, Image } from "@chakra-ui/react"
+import type { UserQuery } from "__generated__/apollo"
 
-export const UserSupport: React.FC = () => {
+type Props = {
+  user: NonNullable<UserQuery["user"]>
+}
+
+export const UserSupport: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"center"}>
       <Stack alignItems={"center"}>
-        <Avatar />
+        <Avatar
+          src={props.user.iconImage?.downloadURL ?? ""}
+          name={props.user.name}
+        />
         <HStack>
           <Text>{"￥1,000円"}</Text>
           <Button colorScheme="orange" borderRadius={"full"}>
@@ -20,9 +28,9 @@ export const UserSupport: React.FC = () => {
       </Stack>
       <Image
         src="gibbresh.png"
-        fallbackSrc="https://via.placeholder.com/150"
         alt=""
         borderRadius={"md"}
+        fallbackSrc="https://via.placeholder.com/150"
       />
     </HStack>
   )

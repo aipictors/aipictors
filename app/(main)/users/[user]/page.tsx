@@ -40,7 +40,10 @@ const UserPage = async () => {
     <MainPage>
       <UserProfileHeader user={userQuery.data.user} />
       <UserProfile user={userQuery.data.user} />
-      <UserTabs works={worksQuery.data.user?.works ?? []} />
+      <UserTabs
+        works={worksQuery.data.user?.works ?? []}
+        user={userQuery.data.user}
+      />
     </MainPage>
   )
 }
