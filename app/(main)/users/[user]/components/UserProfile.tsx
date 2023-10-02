@@ -2,7 +2,8 @@
 import { Stack, Avatar, Text, HStack, Icon } from "@chakra-ui/react"
 import React from "react"
 import { TbHeartFilled, TbEye, TbUser, TbMedal2, TbAward } from "react-icons/tb"
-import { UserWorkList } from "app/(main)/users/[user]/components/UserWorkList"
+import type { UserQuery } from "__generated__/apollo"
+import { UserPickUp } from "app/(main)/users/[user]/components/UserPickUp"
 import { DotButton } from "app/components/DotButton"
 import { FollowButton } from "app/components/FollowButton"
 import { LinkEmailButton } from "app/components/LinkEmailButton"
@@ -11,12 +12,19 @@ import { ShareButton } from "app/components/ShareButton"
 import { SocialInstagramButton } from "app/components/SocialInstagramButton"
 import { SocialTwitterButton } from "app/components/SocialTwitterButton"
 
-export const UserProfile: React.FC = () => (
+type Props = {
+  user: NonNullable<UserQuery["user"]>
+}
+
+export const UserProfile: React.FC<Props> = (props) => (
   <Stack>
-    <Avatar />
+    <Avatar
+      name="props.user.name"
+      src={props.user.iconImage?.downloadURL ?? ""}
+    />
     <HStack>
       <Text fontWeight={"bold"} fontSize={"lg"}>
-        {"名前"}
+        {props.user.name}
       </Text>
       <FollowButton />
       <ShareButton />
@@ -26,20 +34,24 @@ export const UserProfile: React.FC = () => (
       <Stack>
         <HStack>
           <Icon as={TbHeartFilled} fontSize={"sm"} />
+          <Text fontSize={"sm"}>{props.user.receivedLikesCount}</Text>
           <Text fontSize={"sm"}>{"いいねされた"}</Text>
         </HStack>
         <HStack>
           <Icon as={TbEye} fontSize={"sm"} />
+          <Text fontSize={"sm"}>{props.user.receivedViewsCount}</Text>
           <Text fontSize={"sm"}>{"閲覧された"}</Text>
         </HStack>
       </Stack>
       <Stack>
         <HStack>
           <Icon as={TbUser} fontSize={"sm"} />
+          <Text fontSize={"sm"}>{props.user.followersCount}</Text>
           <Text fontSize={"sm"}>{"フォロワー"}</Text>
         </HStack>
         <HStack>
           <Icon as={TbMedal2} fontSize={"sm"} />
+          <Text fontSize={"sm"}>{props.user.awardsCount}</Text>
           <Text fontSize={"sm"}>{"入賞数"}</Text>
         </HStack>
       </Stack>
@@ -48,13 +60,13 @@ export const UserProfile: React.FC = () => (
       <Icon as={TbAward} fontSize={"sm"} />
       <Text fontSize={"sm"}>{"実績・トロフィーはこちら"}</Text>
     </HStack>
-    <Text fontSize={"sm"}>{"紹介文"}</Text>
+    <Text fontSize={"sm"}>{props.user.biography}</Text>
     <HStack>
       <SocialTwitterButton />
       <SocialInstagramButton />
       <LinkEmailButton />
       <LinkWebButton />
     </HStack>
-    <UserWorkList />
+    <UserPickUp />
   </Stack>
 )

@@ -1,11 +1,20 @@
 "use client"
-import { Text, Stack } from "@chakra-ui/react"
+import { Image, Stack } from "@chakra-ui/react"
 import React from "react"
+import type { UserQuery } from "__generated__/apollo"
 
-export const UserProfileHeader: React.FC = () => {
+type Props = {
+  user: NonNullable<UserQuery["user"]>
+}
+
+export const UserProfileHeader: React.FC<Props> = (props) => {
   return (
     <Stack>
-      <Text>{"ヘッダー画像"}</Text>
+      <Image
+        src={props.user.headerImage?.downloadURL ?? ""}
+        alt={props.user.name}
+        borderRadius={"md"}
+      />
     </Stack>
   )
 }
