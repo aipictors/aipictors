@@ -1,11 +1,15 @@
 import type { Metadata } from "next"
 import type {
+  StickersQuery,
   UserQuery,
-  UserQueryVariables,
   UserWorksQuery,
   UserWorksQueryVariables,
 } from "__generated__/apollo"
-import { UserDocument, UserWorksDocument } from "__generated__/apollo"
+import {
+  StickersDocument,
+  UserDocument,
+  UserWorksDocument,
+} from "__generated__/apollo"
 import { UserProfile } from "app/(main)/users/[user]/components/UserProfile"
 import { UserProfileHeader } from "app/(main)/users/[user]/components/UserProfileHeader"
 import { UserTabs } from "app/(main)/users/[user]/components/UserTabs"
@@ -25,10 +29,18 @@ const UserPage = async () => {
     },
   })
 
-  const userQuery = await client.query<UserQuery, UserQueryVariables>({
+  const userQuery = await client.query<UserQuery>({
     query: UserDocument,
     variables: {
       userId: "1",
+    },
+  })
+
+  const stickersQuery = await client.query<StickersQuery>({
+    query: StickersDocument,
+    variables: {
+      offset: 0,
+      limit: 256,
     },
   })
 
@@ -43,6 +55,7 @@ const UserPage = async () => {
       <UserTabs
         works={worksQuery.data.user?.works ?? []}
         user={userQuery.data.user}
+        stickersQuery={stickersQuery.data}
       />
     </MainPage>
   )
