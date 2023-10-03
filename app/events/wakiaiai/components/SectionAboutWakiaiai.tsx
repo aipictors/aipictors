@@ -678,9 +678,9 @@ export const SectionAboutWakiaiai: React.FC = () => {
               leftIcon={<Icon as={TbExternalLink} />}
               target={"_blank"}
               rel={"noopener"}
-              href={"https://discord.com/invite/xP73N3VJbS"}
+              href={"https://discord.gg/vAmWY6MCAX"}
             >
-              {"相談Discord（Aipictors）"}
+              {"相談Discord"}
             </Button>
           </Stack>
         </Stack>
