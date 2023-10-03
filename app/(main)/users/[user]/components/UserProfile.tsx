@@ -21,60 +21,75 @@ import { SocialTwitterButton } from "app/components/SocialTwitterButton"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>
+  userIconImageURL: string | null
+  userReceivedLikesCount: number
+  userReceivedViewsCount: number
+  userFollowersCount: number
+  userAwardsCount: number
+  userBiography: string | null
+  userName: string
 }
-
-export const UserProfile: React.FC<Props> = (props) => (
-  <Stack>
-    <Avatar
-      name="props.user.name"
-      src={props.user.iconImage?.downloadURL ?? ""}
-      size={"lg"}
-    />
-    <HStack>
-      <Text fontWeight={"bold"} fontSize={"lg"}>
-        {props.user.name}
-      </Text>
-      <FollowButton />
-      <ShareButton />
-      <DotButton />
-    </HStack>
-    <HStack>
-      <Stack>
-        <HStack>
-          <Icon as={TbHeartFilled} fontSize={"sm"} />
-          <Text fontSize={"sm"}>{props.user.receivedLikesCount}</Text>
-          <Text fontSize={"sm"}>{"いいねされた"}</Text>
-        </HStack>
-        <HStack>
-          <Icon as={TbEye} fontSize={"sm"} />
-          <Text fontSize={"sm"}>{props.user.receivedViewsCount}</Text>
-          <Text fontSize={"sm"}>{"閲覧された"}</Text>
-        </HStack>
-      </Stack>
-      <Stack>
-        <HStack>
-          <Icon as={TbUser} fontSize={"sm"} />
-          <Text fontSize={"sm"}>{props.user.followersCount}</Text>
-          <Text fontSize={"sm"}>{"フォロワー"}</Text>
-        </HStack>
-        <HStack>
-          <Icon as={TbMedal2} fontSize={"sm"} />
-          <Text fontSize={"sm"}>{props.user.awardsCount}</Text>
-          <Text fontSize={"sm"}>{"入賞数"}</Text>
-        </HStack>
-      </Stack>
-    </HStack>
-    <HStack>
-      <Icon as={TbAward} fontSize={"sm"} />
-      <ChakraLink fontSize={"sm"}>{"実績・トロフィーはこちら"}</ChakraLink>
-    </HStack>
-    <Text fontSize={"sm"}>{props.user.biography}</Text>
-    <HStack>
-      <SocialTwitterButton />
-      <SocialInstagramButton />
-      <LinkEmailButton />
-      <LinkWebButton />
-    </HStack>
-    <UserPickUp />
-  </Stack>
-)
+/**
+ * ユーザープロフィール
+ * @param props
+ * @returns
+ */
+export const UserProfile: React.FC<Props> = (props) => {
+  return (
+    <Stack>
+      <Avatar
+        name={props.userName}
+        src={props.userIconImageURL ?? ""}
+        size={"lg"}
+      />
+      <HStack>
+        <Text fontWeight={"bold"} fontSize={"lg"}>
+          {props.userName}
+        </Text>
+        <FollowButton />
+        <ShareButton />
+        <DotButton />
+      </HStack>
+      <HStack>
+        <Stack>
+          <HStack>
+            <Icon as={TbHeartFilled} fontSize={"sm"} />
+            <Text fontSize={"sm"}>{props.userReceivedLikesCount}</Text>
+            <Text fontSize={"sm"}>{"いいねされた"}</Text>
+          </HStack>
+          <HStack>
+            <Icon as={TbEye} fontSize={"sm"} />
+            <Text fontSize={"sm"}>{props.userReceivedViewsCount}</Text>
+            <Text fontSize={"sm"}>{"閲覧された"}</Text>
+          </HStack>
+        </Stack>
+        <Stack>
+          <HStack>
+            <Icon as={TbUser} fontSize={"sm"} />
+            <Text fontSize={"sm"}>{props.userFollowersCount}</Text>
+            <Text fontSize={"sm"}>{"フォロワー"}</Text>
+          </HStack>
+          <HStack>
+            <Icon as={TbMedal2} fontSize={"sm"} />
+            <Text fontSize={"sm"}>{props.userAwardsCount}</Text>
+            <Text fontSize={"sm"}>{"入賞数"}</Text>
+          </HStack>
+        </Stack>
+      </HStack>
+      <HStack>
+        <Icon as={TbAward} fontSize={"sm"} />
+        <ChakraLink fontSize={"sm"}>{"実績・トロフィーはこちら"}</ChakraLink>
+      </HStack>
+      {props.userBiography && (
+        <Text fontSize={"sm"}>{props.userBiography}</Text>
+      )}
+      <HStack>
+        <SocialTwitterButton />
+        <SocialInstagramButton />
+        <LinkEmailButton />
+        <LinkWebButton />
+      </HStack>
+      <UserPickUp />
+    </Stack>
+  )
+}

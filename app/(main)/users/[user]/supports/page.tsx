@@ -4,11 +4,15 @@ import { UserDocument } from "__generated__/apollo"
 import { UserSupport } from "app/(main)/users/[user]/supports/components/UserSupport"
 import { client } from "app/client"
 
-const UserSupportsPage = async () => {
+type Props = {
+  params: { user: string }
+}
+
+const UserSupportsPage = async (props: Props) => {
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {
-      userId: "1",
+      userId: props.params.user,
     },
   })
 
@@ -18,7 +22,11 @@ const UserSupportsPage = async () => {
 
   return (
     <>
-      <UserSupport user={userQuery.data.user} userIconImageURL="" userName="" />
+      <UserSupport
+        user={userQuery.data.user}
+        userIconImageURL={userQuery.data.user.iconImage?.downloadURL ?? null}
+        userName={userQuery.data.user.name}
+      />
     </>
   )
 }

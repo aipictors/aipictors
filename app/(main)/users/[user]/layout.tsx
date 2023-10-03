@@ -27,7 +27,16 @@ const UserLayout = async (props: Props) => {
   return (
     <MainPage>
       <UserProfileHeader user={userQuery.data.user} />
-      <UserProfile user={userQuery.data.user} />
+      <UserProfile
+        user={userQuery.data.user}
+        userName={userQuery.data.user.name}
+        userIconImageURL={userQuery.data.user.iconImage?.downloadURL ?? null}
+        userReceivedLikesCount={userQuery.data.user.receivedLikesCount}
+        userReceivedViewsCount={userQuery.data.user.receivedViewsCount}
+        userFollowersCount={userQuery.data.user.followersCount}
+        userAwardsCount={userQuery.data.user.awardsCount}
+        userBiography={userQuery.data.user.biography}
+      />
       <UserTabs userId={props.params.user} />
       {props.children}
     </MainPage>
