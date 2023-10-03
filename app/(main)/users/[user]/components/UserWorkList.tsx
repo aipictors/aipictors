@@ -1,11 +1,11 @@
 "use client"
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
 import React from "react"
-import type { WorksQuery } from "__generated__/apollo"
+import type { UserWorksQuery } from "__generated__/apollo"
 import { CardWork } from "app/(main)/works/components/CardWork"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]>
+  works: NonNullable<UserWorksQuery["user"]>["works"]
 }
 
 export const UserWorkList: React.FC<Props> = (props) => {
