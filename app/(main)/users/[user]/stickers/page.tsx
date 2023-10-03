@@ -8,14 +8,18 @@ import { UserWorkListActions } from "app/(main)/users/[user]/components/UserWork
 import { UserStickerList } from "app/(main)/users/[user]/stickers/components/UserStickerList"
 import { client } from "app/client"
 
-const UserStickersPage = async () => {
+type Props = {
+  params: { user: string }
+}
+
+const UserStickersPage = async (props: Props) => {
   const stickersQuery = await client.query<
     UserStickersQuery,
     UserStickersQueryVariables
   >({
     query: UserStickersDocument,
     variables: {
-      userId: "1",
+      userId: props.params.user,
       offset: 0,
       limit: 256,
     },

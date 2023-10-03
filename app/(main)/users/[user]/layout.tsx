@@ -9,13 +9,14 @@ import { MainPage } from "app/components/MainPage"
 
 type Props = {
   children: React.ReactNode
+  params: { user: string }
 }
 
 const UserLayout = async (props: Props) => {
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {
-      userId: "1",
+      userId: props.params.user,
     },
   })
 
@@ -27,7 +28,7 @@ const UserLayout = async (props: Props) => {
     <MainPage>
       <UserProfileHeader user={userQuery.data.user} />
       <UserProfile user={userQuery.data.user} />
-      <UserTabs />
+      <UserTabs userId={props.params.user} />
       {props.children}
     </MainPage>
   )

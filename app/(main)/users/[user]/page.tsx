@@ -8,7 +8,11 @@ import { UserWorkList } from "app/(main)/users/[user]/components/UserWorkList"
 import { UserWorkListActions } from "app/(main)/users/[user]/components/UserWorkListActions"
 import { client } from "app/client"
 
-const UserPage = async () => {
+type Props = {
+  params: { user: string }
+}
+
+const UserPage = async (props: Props) => {
   const worksQuery = await client.query<
     UserWorksQuery,
     UserWorksQueryVariables
@@ -17,7 +21,7 @@ const UserPage = async () => {
     variables: {
       offset: 0,
       limit: 16,
-      userId: "1",
+      userId: props.params.user,
     },
   })
 

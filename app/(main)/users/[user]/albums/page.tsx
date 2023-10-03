@@ -7,7 +7,11 @@ import { UserAlbumsDocument } from "__generated__/apollo"
 import { UserAlbumList } from "app/(main)/users/[user]/albums/components/UserAlbumList"
 import { client } from "app/client"
 
-const UserAlbumsPage = async () => {
+type Props = {
+  params: { user: string }
+}
+
+const UserAlbumsPage = async (props: Props) => {
   const albumsQuery = await client.query<
     UserAlbumsQuery,
     UserAlbumsQueryVariables
@@ -16,7 +20,7 @@ const UserAlbumsPage = async () => {
     variables: {
       offset: 0,
       limit: 16,
-      userId: "4321",
+      userId: props.params.user,
     },
   })
   return (

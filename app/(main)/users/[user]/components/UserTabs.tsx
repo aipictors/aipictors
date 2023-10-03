@@ -4,31 +4,35 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import React from "react"
 
-export const UserTabs: React.FC = () => {
+type Props = {
+  userId: string
+}
+
+export const UserTabs: React.FC<Props> = (props) => {
   const pathname = usePathname()
   console.log(pathname)
   return (
     <Tabs isFitted variant="line" index={1}>
       <TabList>
-        <Tab as={Link} href={"/users/maple"}>
+        <Tab as={Link} href={`/users/${props.userId}`}>
           {"画像"}
         </Tab>
-        <Tab as={Link} href={"/users/maple/novels"}>
+        <Tab as={Link} href={`/users/${props.userId}/novels`}>
           {"小説"}
         </Tab>
-        <Tab as={Link} href={"/users/maple/notes"}>
+        <Tab as={Link} href={`/users/${props.userId}/notes`}>
           {"コラム"}
         </Tab>
-        <Tab as={Link} href={"/users/albums/albums"}>
+        <Tab as={Link} href={`/users/${props.userId}/albums`}>
           {"シリーズ"}
         </Tab>
-        <Tab as={Link} href={"/users/maple/collections"}>
+        <Tab as={Link} href={`/users/${props.userId}/collections`}>
           {"コレクション"}
         </Tab>
-        <Tab as={Link} href={"/users/maple/stickers"}>
+        <Tab as={Link} href={`/users/${props.userId}/stickers`}>
           {"スタンプ"}
         </Tab>
-        <Tab as={Link} href={"/users/maple/supports"}>
+        <Tab as={Link} href={`/users/${props.userId}/supports`}>
           {"支援応援"}
         </Tab>
       </TabList>
