@@ -656,9 +656,9 @@ export const SectionAboutWakiaiai: React.FC = () => {
               leftIcon={<Icon as={TbExternalLink} />}
               target={"_blank"}
               rel={"noopener"}
-              href={"https://twitter.com/ko_to_ba_no_aya"}
+              href={"https://twitter.com/waki_ai_ai_kot"}
             >
-              {"ことばのあや"}
+              {"X（Twitter）"}
             </Button>
             <Button
               as={"a"}
@@ -678,9 +678,9 @@ export const SectionAboutWakiaiai: React.FC = () => {
               leftIcon={<Icon as={TbExternalLink} />}
               target={"_blank"}
               rel={"noopener"}
-              href={"https://discord.com/invite/xP73N3VJbS"}
+              href={"https://discord.gg/vAmWY6MCAX"}
             >
-              {"相談Discord（Aipictors）"}
+              {"相談Discord"}
             </Button>
           </Stack>
         </Stack>
