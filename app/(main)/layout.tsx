@@ -20,9 +20,7 @@ const MainLayout: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-    console.log(window.innerWidth)
     if (window.innerWidth < 768) return
-    console.log("aaaaaaaaaa")
     onOpen()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
