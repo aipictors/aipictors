@@ -1,6 +1,7 @@
 "use client"
 import "@splidejs/react-splide/css"
 import { Divider, HStack, useDisclosure } from "@chakra-ui/react"
+import { useEffect } from "react"
 import { FlexibleNavigation } from "app/(main)/components/FlexibleNavigation"
 import { HomeHeader } from "app/(main)/components/HomeHeader"
 import { HomeNavigationList } from "app/(main)/components/HomeNavigationList"
@@ -13,7 +14,18 @@ type Props = {
 }
 
 const MainLayout: React.FC<Props> = (props) => {
-  const { isOpen, onClose, onToggle } = useDisclosure()
+  const { isOpen, onClose, onOpen, onToggle } = useDisclosure({
+    defaultIsOpen: false,
+  })
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    console.log(window.innerWidth)
+    if (window.innerWidth < 768) return
+    console.log("aaaaaaaaaa")
+    onOpen()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const {
     isOpen: isOpenLogin,
