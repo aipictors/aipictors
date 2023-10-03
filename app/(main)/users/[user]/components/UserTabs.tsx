@@ -35,25 +35,25 @@ export const UserTabs: React.FC<Props> = (props) => {
   return (
     <Tabs isFitted variant="line" index={index}>
       <TabList>
-        <Tab as={Link} href={`/users/${props.userId}`}>
+        <Tab as={Link} href={`/users/${props.userId}`} minW={32}>
           {"画像"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/novels`}>
+        <Tab as={Link} href={`/users/${props.userId}/novels`} minW={32}>
           {"小説"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/notes`}>
+        <Tab as={Link} href={`/users/${props.userId}/notes`} minW={32}>
           {"コラム"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/albums`}>
+        <Tab as={Link} href={`/users/${props.userId}/albums`} minW={32}>
           {"シリーズ"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/collections`}>
+        <Tab as={Link} href={`/users/${props.userId}/collections`} minW={32}>
           {"コレクション"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/stickers`}>
+        <Tab as={Link} href={`/users/${props.userId}/stickers`} minW={32}>
           {"スタンプ"}
         </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/supports`}>
+        <Tab as={Link} href={`/users/${props.userId}/supports`} minW={32}>
           {"支援応援"}
         </Tab>
       </TabList>
