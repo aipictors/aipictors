@@ -1,5 +1,5 @@
 "use client"
-import { Tab, TabIndicator, TabList, Tabs } from "@chakra-ui/react"
+import { Flex, Tab, TabIndicator, TabList, Tabs } from "@chakra-ui/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import React, { useMemo } from "react"
@@ -33,31 +33,33 @@ export const UserTabs: React.FC<Props> = (props) => {
   }, [pathname, props.userId])
 
   return (
-    <Tabs isFitted variant="line" index={index}>
-      <TabList>
-        <Tab as={Link} href={`/users/${props.userId}`} minW={32}>
-          {"画像"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/novels`} minW={32}>
-          {"小説"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/notes`} minW={32}>
-          {"コラム"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/albums`} minW={32}>
-          {"シリーズ"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/collections`} minW={32}>
-          {"コレクション"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/stickers`} minW={32}>
-          {"スタンプ"}
-        </Tab>
-        <Tab as={Link} href={`/users/${props.userId}/supports`} minW={32}>
-          {"支援応援"}
-        </Tab>
-      </TabList>
-      <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
-    </Tabs>
+    <Flex overflowX="auto" w="100%">
+      <Tabs isFitted variant="line" index={index} w="100%">
+        <TabList>
+          <Tab as={Link} href={`/users/${props.userId}`} minW={32}>
+            {"画像"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/novels`} minW={32}>
+            {"小説"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/notes`} minW={32}>
+            {"コラム"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/albums`} minW={32}>
+            {"シリーズ"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/collections`} minW={32}>
+            {"コレクション"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/stickers`} minW={32}>
+            {"スタンプ"}
+          </Tab>
+          <Tab as={Link} href={`/users/${props.userId}/supports`} minW={32}>
+            {"支援応援"}
+          </Tab>
+        </TabList>
+        <TabIndicator bg="blue.500" borderRadius="full" />
+      </Tabs>
+    </Flex>
   )
 }
