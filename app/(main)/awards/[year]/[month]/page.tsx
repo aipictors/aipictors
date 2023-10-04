@@ -1,13 +1,12 @@
 import type { Metadata } from "next"
-import { MainRankingHeader } from "app/(main)/ranking/components/MainRankingHeader"
-import { MainRankingWorks } from "app/(main)/ranking/components/MainRankingWorks"
+
+import { MainRankingHeader } from "app/(main)/awards/components/MainRankingHeader"
 import { MainPage } from "app/components/MainPage"
 
-const RankingPage = async () => {
+const AwardsPage = async () => {
   return (
     <MainPage>
       <MainRankingHeader />
-      <MainRankingWorks />
     </MainPage>
   )
 }
@@ -19,4 +18,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default RankingPage
+export default AwardsPage

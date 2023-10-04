@@ -8,7 +8,7 @@ import type {
 import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
 import { WorkArticle } from "app/(main)/works/[work]/components/WorkArticle"
 import { WorkCommentList } from "app/(main)/works/[work]/components/WorkCommentList"
-import { WorkRelatedWorks } from "app/(main)/works/[work]/components/WorkRelatedWorks"
+import { WorkRelatedWorkList } from "app/(main)/works/[work]/components/WorkRelatedWorkList"
 import { client } from "app/client"
 import { ArticlePage } from "app/components/ArticlePage"
 
@@ -41,7 +41,7 @@ const WorkPage: React.FC<Props> = async (props) => {
     <ArticlePage>
       <WorkArticle work={workQuery.data.work} />
       <WorkCommentList work={workCommentsQuery.data.work} />
-      <WorkRelatedWorks />
+      <WorkRelatedWorkList />
     </ArticlePage>
   )
 }

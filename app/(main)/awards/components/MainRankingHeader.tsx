@@ -2,7 +2,13 @@
 import { HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 
-export const MainRankingHeader: React.FC = () => {
+type Props = {
+  year: number
+  month: number
+  day: number | null
+}
+
+export const MainRankingHeader: React.FC<Props> = (props) => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
@@ -17,7 +23,7 @@ export const MainRankingHeader: React.FC = () => {
               variant={"ghost"}
               borderRadius={"full"}
             />
-            <Text>{"2023年9月22日"}</Text>
+            <Text>{`${props.year}年${props.month}月${props.day}日`}</Text>
             <IconButton
               aria-label="previous month"
               icon={<Icon as={TbChevronRight} fontSize={"lg"} />}

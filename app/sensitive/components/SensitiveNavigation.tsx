@@ -34,7 +34,7 @@ export const SensitiveNavigation: React.FC = () => {
         <HomeNavigationButton href={"/sensitive/themes"} leftIcon={TbBulb}>
           {"創作アイデア"}
         </HomeNavigationButton>
-        <HomeNavigationButton href={"/sensitive/ranking"} leftIcon={TbAward}>
+        <HomeNavigationButton href={"/sensitive/awards"} leftIcon={TbAward}>
           {"ランキング"}
         </HomeNavigationButton>
         <HomeNavigationButton href={"/sensitive/albums"} leftIcon={TbAlbum}>

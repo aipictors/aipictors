@@ -34,7 +34,6 @@ export const StickerList: React.FC<Props> = (props) => {
                 imageURL={props.image?.downloadURL ?? null}
                 downloadsCount={props.downloadsCount}
                 usesCount={props.usesCount}
-                likesCount={props.likesCount}
               />
             )
           })}

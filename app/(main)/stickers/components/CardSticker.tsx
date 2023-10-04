@@ -7,7 +7,6 @@ type Props = {
   title?: string
   imageURL: string | null
   downloadsCount?: number
-  likesCount?: number
   usesCount?: number
 }
 

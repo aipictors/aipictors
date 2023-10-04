@@ -63,7 +63,7 @@ export const HomeNavigationList: React.FC<Props> = (props) => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
-        href={"/ranking"}
+        href={"/awards"}
         leftIcon={TbAward}
       >
         {"ランキング"}
