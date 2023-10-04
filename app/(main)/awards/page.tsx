@@ -42,7 +42,7 @@ const AwardsPage = async (props: Props) => {
 
   return (
     <MainPage>
-      <MainRankingHeader />
+      <MainRankingHeader year={year} month={month} day={day} />
       <MainRankingWorkList awards={workAwardsQuery.data.workAwards} />
     </MainPage>
   )

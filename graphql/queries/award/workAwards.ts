@@ -7,7 +7,7 @@ export const WORK_AWARDS = gql`
       index
       dateText
       work {
-        ...PartialWorkFields
+        ...FeedWorkFields
       }
     }
   }
