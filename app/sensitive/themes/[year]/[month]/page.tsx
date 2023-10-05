@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
 import { ThemeList } from "app/(main)/themes/components/ThemeList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 type Props = {
@@ -13,6 +13,8 @@ type Props = {
 }
 
 const SensitiveMonthThemesPage = async (props: Props) => {
+  const client = createClient()
+
   const year = parseInt(props.params.year)
 
   const month = parseInt(props.params.month)

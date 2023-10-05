@@ -5,10 +5,12 @@ import { RelatedModelList } from "app/(main)/tags/[tag]/components/RelatedModelL
 import { RelatedTagList } from "app/(main)/tags/[tag]/components/RelatedTagList"
 import { TagHeader } from "app/(main)/tags/[tag]/components/TagHeader"
 import { WorkList } from "app/(main)/works/components/WorkList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 const TagPage = async () => {
+  const client = createClient()
+
   const worksQuery = await client.query<WorksQuery>({
     query: WorksDocument,
     variables: {

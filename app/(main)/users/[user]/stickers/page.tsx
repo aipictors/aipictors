@@ -6,13 +6,15 @@ import type {
 import { UserStickersDocument } from "__generated__/apollo"
 import { UserWorkListActions } from "app/(main)/users/[user]/components/UserWorkListActions"
 import { UserStickerList } from "app/(main)/users/[user]/stickers/components/UserStickerList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 type Props = {
   params: { user: string }
 }
 
 const UserStickersPage = async (props: Props) => {
+  const client = createClient()
+
   const stickersQuery = await client.query<
     UserStickersQuery,
     UserStickersQueryVariables

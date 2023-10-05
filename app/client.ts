@@ -2,6 +2,7 @@ import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client"
 import { setContext, type ContextSetter } from "@apollo/client/link/context"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
+import { typePolicies } from "app/typePolicies"
 import { Config } from "config"
 
 const httpLink = createHttpLink({
@@ -37,16 +38,13 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
-const cache = new InMemoryCache({
-  typePolicies: {
-    Query: {
-      fields: {},
-    },
-  },
-})
-
-export const client = new ApolloClient({
-  ssrMode: true,
-  link: authLink.concat(httpLink),
-  cache: cache,
-})
+export const createClient = () => {
+  const cache = new InMemoryCache({
+    typePolicies: typePolicies,
+  })
+  return new ApolloClient({
+    ssrMode: true,
+    link: authLink.concat(httpLink),
+    cache: cache,
+  })
+}

@@ -1,12 +1,22 @@
 import type { Metadata } from "next"
-
 import { MainRankingHeader } from "app/(main)/awards/components/MainRankingHeader"
 import { MainPage } from "app/components/MainPage"
 
-const AwardsPage = async () => {
+type Props = {
+  params: {
+    year: string
+    month: string
+  }
+}
+
+const AwardsPage = async (props: Props) => {
+  const year = parseInt(props.params.year)
+
+  const month = parseInt(props.params.month)
+
   return (
     <MainPage>
-      <MainRankingHeader />
+      <MainRankingHeader year={year} month={month} day={null} />
     </MainPage>
   )
 }

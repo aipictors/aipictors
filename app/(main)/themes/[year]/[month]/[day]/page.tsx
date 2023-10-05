@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
 import { AboutTheme } from "app/(main)/themes/[year]/[month]/[day]/components/AboutTheme"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 type Props = {
@@ -14,6 +14,8 @@ type Props = {
 }
 
 const ThemePage = async (props: Props) => {
+  const client = createClient()
+
   const dailyThemesQuery = await client.query<DailyThemesQuery>({
     query: DailyThemesDocument,
     variables: {

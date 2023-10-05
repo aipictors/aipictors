@@ -66,10 +66,9 @@ export const ThemeList: React.FC<Props> = (props) => {
           borderRadius={"full"}
           onClick={onPreviousMonth}
         />
-        <Text
-          fontSize={"sm"}
-          lineHeight={1}
-        >{`${props.year}年${props.month}月`}</Text>
+        <Text fontSize={"sm"} lineHeight={1}>
+          {`${props.year}年${props.month}月`}
+        </Text>
         <IconButton
           aria-label="next month"
           icon={<Icon as={TbChevronRight} fontSize={"lg"} />}

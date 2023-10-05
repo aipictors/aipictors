@@ -2,13 +2,15 @@ import type { Metadata } from "next"
 import type { StickersQuery } from "__generated__/apollo"
 import { StickersDocument } from "__generated__/apollo"
 import { StickerList } from "app/(main)/stickers/components/StickerList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 /**
  * https://www.aipictors.com/stamp-space/
  * @returns
  */
 const StickersPage = async () => {
+  const client = createClient()
+
   const stickersQuery = await client.query<StickersQuery>({
     query: StickersDocument,
     variables: {

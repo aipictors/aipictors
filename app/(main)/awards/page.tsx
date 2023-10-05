@@ -6,23 +6,17 @@ import type {
 import { WorkAwardsDocument } from "__generated__/apollo"
 import { MainRankingHeader } from "app/(main)/awards/components/MainRankingHeader"
 import { MainRankingWorkList } from "app/(main)/awards/components/MainRankingWorkList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
-type Props = {
-  params: {
-    year: string
-    month: string
-    day: string
-  }
-}
+const AwardsPage = async () => {
+  const client = createClient()
 
-const AwardsPage = async (props: Props) => {
-  const year = parseInt(props.params.year)
+  const year = new Date().getFullYear()
 
-  const month = parseInt(props.params.month)
+  const month = new Date().getMonth() + 1
 
-  const day = parseInt(props.params.day)
+  const day = new Date().getDate()
 
   const workAwardsQuery = await client.query<
     WorkAwardsQuery,

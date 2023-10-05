@@ -8,9 +8,11 @@ import {
   PromptCategoryDocument,
 } from "__generated__/apollo"
 import { GenerationEditor } from "app/(main)/generation/components/GenerationEditor"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 const GenerationPage = async () => {
+  const client = createClient()
+
   const promptCategoryQuery = await client.query<PromptCategoryQuery>({
     query: PromptCategoryDocument,
     variables: {},
