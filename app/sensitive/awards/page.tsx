@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-const SensitiveRankingPage = async () => {
+const SensitiveAwardsPage = async () => {
   return {}
 }
 
@@ -11,4 +11,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default SensitiveRankingPage
+export default SensitiveAwardsPage

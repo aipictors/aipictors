@@ -19,7 +19,7 @@ type Props = {
   dailyThemesQuery: DailyThemesQuery
 }
 
-export const SensitiveThemeList: React.FC<Props> = (props) => {
+export const ThemeList: React.FC<Props> = (props) => {
   const router = useRouter()
 
   const cells = createCalendarCells(2023, 9)
@@ -35,15 +35,6 @@ export const SensitiveThemeList: React.FC<Props> = (props) => {
     }
   })
 
-  const onNextMonth = () => {
-    const nextMonth = props.month + 1
-    if (nextMonth > 12) {
-      router.push(`/themes/${props.year + 1}/${1}`)
-      return
-    }
-    router.push(`/themes/${props.year}/${nextMonth}`)
-  }
-
   const onPreviousMonth = () => {
     const previousMonth = props.month - 1
     if (previousMonth < 1) {
@@ -51,6 +42,15 @@ export const SensitiveThemeList: React.FC<Props> = (props) => {
       return
     }
     router.push(`/themes/${props.year}/${previousMonth}`)
+  }
+
+  const onNextMonth = () => {
+    const nextMonth = props.month + 1
+    if (nextMonth > 12) {
+      router.push(`/themes/${props.year + 1}/${1}`)
+      return
+    }
+    router.push(`/themes/${props.year}/${nextMonth}`)
   }
 
   return (

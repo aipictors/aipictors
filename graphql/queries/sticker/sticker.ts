@@ -6,6 +6,14 @@ export const STICKER = gql`
       id
       createdAt
       title
+      user {
+        id
+        name
+        iconImage {
+          id
+          downloadURL
+        }
+      }
       image {
         id
         downloadURL
