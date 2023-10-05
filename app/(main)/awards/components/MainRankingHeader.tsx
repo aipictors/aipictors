@@ -5,7 +5,7 @@ import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 type Props = {
   year: number
   month: number
-  day: number | null
+  day: number
 }
 
 export const MainRankingHeader: React.FC<Props> = (props) => {
@@ -23,9 +23,9 @@ export const MainRankingHeader: React.FC<Props> = (props) => {
               variant={"ghost"}
               borderRadius={"full"}
             />
-            <Text>{`${props.year}年${props.month}月${props.day}日`}</Text>
+            <Text>{`${props.year}年${props.month}月`}</Text>
             <IconButton
-              aria-label="previous month"
+              aria-label="next month"
               icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
               variant={"ghost"}
               borderRadius={"full"}

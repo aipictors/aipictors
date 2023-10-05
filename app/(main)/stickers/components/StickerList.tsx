@@ -1,8 +1,9 @@
 "use client"
-import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { HStack, SimpleGrid, Stack } from "@chakra-ui/react"
 import React from "react"
 import type { StickersQuery } from "__generated__/apollo"
 import { CardSticker } from "app/(main)/stickers/components/CardSticker"
+import { StickerListHeader } from "app/(main)/stickers/components/StickerListHeader"
 
 type Props = {
   stickersQuery: StickersQuery
@@ -11,17 +12,8 @@ type Props = {
 export const StickerList: React.FC<Props> = (props) => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.lg"} w={"100%"} p={4} spacing={8}>
-        <Stack>
-          <Text fontWeight={"bold"} fontSize={"2xl"}>
-            {"AIイラストスタンプ広場"}
-          </Text>
-          <Text fontSize={"sm"}>
-            {
-              "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！"
-            }
-          </Text>
-        </Stack>
+      <Stack>
+        <StickerListHeader />
         <SimpleGrid
           columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
           spacing={2}
