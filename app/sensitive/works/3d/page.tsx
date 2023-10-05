@@ -3,10 +3,12 @@ import type { WorksQuery, HotTagsQuery } from "__generated__/apollo"
 import { WorksDocument, HotTagsDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/(main)/components/HomeWorkList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 const Works3dPage = async () => {
+  const client = createClient()
+
   const worksQuery = await client.query<WorksQuery>({
     query: WorksDocument,
     variables: {

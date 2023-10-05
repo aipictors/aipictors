@@ -1,19 +1,18 @@
 "use client"
 import { Card, Text, Image, Stack } from "@chakra-ui/react"
 import React from "react"
-import { UserAvatarLink } from "app/(main)/components/UserAvatarLink"
 
 type Props = {
   title?: string
   imageURL: string | null
-  work: {
-    user: {
-      name: string
-      iconImage: {
-        downloadURL: string | null
-      } | null
-    }
-  }
+  // work: {
+  //   user: {
+  //     name: string
+  //     iconImage: {
+  //       downloadURL: string | null
+  //     } | null
+  //   }
+  // }
 }
 
 export const CardRanking: React.FC<Props> = (props) => (
@@ -30,10 +29,10 @@ export const CardRanking: React.FC<Props> = (props) => (
       <Text fontSize={"sm"} fontWeight={"bold"}>
         {props.title ?? ""}
       </Text>
-      <UserAvatarLink
+      {/* <UserAvatarLink
         userName={props.work.user.name}
         userIconImageURL={props.work.user.iconImage?.downloadURL ?? null}
-      />
+      /> */}
     </Stack>
   </Card>
 )

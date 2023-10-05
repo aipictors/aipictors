@@ -16,7 +16,7 @@ const AwardsPage = async (props: Props) => {
 
   return (
     <MainPage>
-      <MainRankingHeader year={year} month={month} day={null} />
+      <MainRankingHeader year={year} month={month} day={0} />
     </MainPage>
   )
 }

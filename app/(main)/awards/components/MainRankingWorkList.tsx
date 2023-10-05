@@ -15,8 +15,8 @@ export const MainRankingWorkList: React.FC<Props> = (props) => {
           <CardRanking
             key={props.id}
             title={props.work.title}
-            imageURL={props.work.image?.downloadURL ?? null}
-            work={props.work}
+            imageURL={props.work.thumbnailImage?.downloadURL ?? null}
+            // work={props.work}
           />
         )
       })}
