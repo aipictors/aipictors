@@ -3,7 +3,7 @@ import type { ImageModelQuery, WorksQuery } from "__generated__/apollo"
 import { ImageModelDocument, WorksDocument } from "__generated__/apollo"
 import { ModelHeader } from "app/(main)/models/[model]/components/ModelHeader"
 import { WorkList } from "app/(main)/works/components/WorkList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 type Props = {
@@ -13,6 +13,8 @@ type Props = {
 }
 
 const ModelPage = async (props: Props) => {
+  const client = createClient()
+
   const resp = await client.query<ImageModelQuery>({
     query: ImageModelDocument,
     variables: {

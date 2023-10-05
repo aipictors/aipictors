@@ -5,13 +5,15 @@ import type {
 } from "__generated__/apollo"
 import { UserAlbumsDocument } from "__generated__/apollo"
 import { UserAlbumList } from "app/(main)/users/[user]/albums/components/UserAlbumList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 type Props = {
   params: { user: string }
 }
 
 const UserAlbumsPage = async (props: Props) => {
+  const client = createClient()
+
   const albumsQuery = await client.query<
     UserAlbumsQuery,
     UserAlbumsQueryVariables

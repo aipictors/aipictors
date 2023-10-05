@@ -9,7 +9,7 @@ import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
 import { WorkArticle } from "app/(main)/works/[work]/components/WorkArticle"
 import { WorkCommentList } from "app/(main)/works/[work]/components/WorkCommentList"
 import { WorkRelatedWorkList } from "app/(main)/works/[work]/components/WorkRelatedWorkList"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { ArticlePage } from "app/components/ArticlePage"
 
 type Props = {
@@ -17,6 +17,8 @@ type Props = {
 }
 
 const WorkPage: React.FC<Props> = async (props) => {
+  const client = createClient()
+
   const workQuery = await client.query<WorkQuery, WorkQueryVariables>({
     query: WorkDocument,
     variables: {

@@ -2,13 +2,15 @@ import type { Metadata } from "next"
 import type { UserQuery, UserQueryVariables } from "__generated__/apollo"
 import { UserDocument } from "__generated__/apollo"
 import { UserSupport } from "app/(main)/users/[user]/supports/components/UserSupport"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 type Props = {
   params: { user: string }
 }
 
 const UserSupportsPage = async (props: Props) => {
+  const client = createClient()
+
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {

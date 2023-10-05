@@ -4,7 +4,7 @@ import { UserDocument } from "__generated__/apollo"
 import { UserProfile } from "app/(main)/users/[user]/components/UserProfile"
 import { UserProfileHeader } from "app/(main)/users/[user]/components/UserProfileHeader"
 import { UserTabs } from "app/(main)/users/[user]/components/UserTabs"
-import { client } from "app/client"
+import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
 
 type Props = {
@@ -13,6 +13,8 @@ type Props = {
 }
 
 const UserLayout = async (props: Props) => {
+  const client = createClient()
+
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {

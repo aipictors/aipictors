@@ -6,13 +6,15 @@ import type {
 import { UserWorksDocument } from "__generated__/apollo"
 import { UserWorkList } from "app/(main)/users/[user]/components/UserWorkList"
 import { UserWorkListActions } from "app/(main)/users/[user]/components/UserWorkListActions"
-import { client } from "app/client"
+import { createClient } from "app/client"
 
 type Props = {
   params: { user: string }
 }
 
 const UserPage = async (props: Props) => {
+  const client = createClient()
+
   const worksQuery = await client.query<
     UserWorksQuery,
     UserWorksQueryVariables
