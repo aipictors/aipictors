@@ -7,8 +7,11 @@ type Props = {
 }
 
 const RootLayout: React.FC<Props> = (props) => {
-  const fontURL =
+  const mPlus1p =
     "https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700&display=swap"
+
+  const pixelifySans =
+    "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&display=swap"
 
   return (
     <html lang={"ja"}>
@@ -19,7 +22,8 @@ const RootLayout: React.FC<Props> = (props) => {
           href={"https://fonts.gstatic.com"}
           crossOrigin={""}
         />
-        <link href={fontURL} rel={"stylesheet"} />
+        <link href={mPlus1p} rel={"stylesheet"} />
+        <link href={pixelifySans} rel="stylesheet" />
       </head>
       <body>
         <Providers>{props.children}</Providers>
