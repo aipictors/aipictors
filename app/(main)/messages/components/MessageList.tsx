@@ -11,6 +11,20 @@ export const MessageList: React.FC = () => {
         <MessageInput />
         <RecipientMessage />
         <SenderMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <RecipientMessage />
+        <SenderMessage />
+        <SenderMessage />
+        <SenderMessage />
+        <SenderMessage />
+        <SenderMessage />
+        <SenderMessage />
+        <SenderMessage />
       </Stack>
     </HStack>
   )

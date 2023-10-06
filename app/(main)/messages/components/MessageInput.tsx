@@ -1,6 +1,7 @@
 "use client"
-import { Button, HStack, Input } from "@chakra-ui/react"
+import { Button, HStack, Icon, IconButton, Input } from "@chakra-ui/react"
 import { useState } from "react"
+import { TbPhoto } from "react-icons/tb"
 
 export const MessageInput: React.FC = () => {
   const [message, setMessage] = useState("")
@@ -12,6 +13,11 @@ export const MessageInput: React.FC = () => {
 
   return (
     <HStack>
+      <IconButton
+        aria-label="previous month"
+        icon={<Icon as={TbPhoto} fontSize={"lg"} />}
+        borderRadius={"full"}
+      />
       <Input
         placeholder="メッセージを入力してください"
         value={message}
