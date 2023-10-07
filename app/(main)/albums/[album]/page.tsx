@@ -1,7 +1,13 @@
 import type { Metadata } from "next"
+import { AlbumArticle } from "app/(main)/albums/[album]/components/AlbumArticle"
+import { MainPage } from "app/components/MainPage"
 
 const AlbumPage = async () => {
-  return null
+  return (
+    <MainPage>
+      <AlbumArticle />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {
