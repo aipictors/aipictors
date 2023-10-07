@@ -27,7 +27,7 @@ export const AppFooter: React.FC = () => {
       </Text>
       <HStack>
         <Text fontWeight={"bold"} fontSize={"sm"}>
-          {"© 2023 Aipictors.com"}
+          {"© 2023 Aipictors"}
         </Text>
       </HStack>
     </Stack>
