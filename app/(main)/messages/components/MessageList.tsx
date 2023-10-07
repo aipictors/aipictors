@@ -5,25 +5,13 @@ import { RecipientMessage } from "app/(main)/messages/components/RecipientMessag
 import { SenderMessage } from "app/(main)/messages/components/SenderMessage"
 
 export const MessageList: React.FC = () => {
+  const adminAvatarURL =
+    "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp"
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
         <MessageInput />
-        <RecipientMessage />
-        <SenderMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <RecipientMessage />
-        <SenderMessage />
-        <SenderMessage />
-        <SenderMessage />
-        <SenderMessage />
-        <SenderMessage />
-        <SenderMessage />
+        <RecipientMessage avatarURL={adminAvatarURL} />
         <SenderMessage />
       </Stack>
     </HStack>

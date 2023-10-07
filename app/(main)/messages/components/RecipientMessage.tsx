@@ -1,13 +1,15 @@
 "use client"
 import { Avatar, Card, HStack, Stack, Text } from "@chakra-ui/react"
+import { toElapsedTimeText } from "app/utils/toElapsedTimeText"
 
-export const RecipientMessage: React.FC = () => {
-  const AvatarURL =
-    "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp"
+type Props = {
+  avatarURL: string
+}
 
+export const RecipientMessage: React.FC<Props> = (props) => {
   return (
     <HStack spacing={4} alignItems={"flex-start"}>
-      <Avatar bg={"teal.500"} src={AvatarURL} />
+      <Avatar bg={"teal.500"} src={props.avatarURL} />
       <Stack>
         <Card
           px={6}
@@ -18,7 +20,7 @@ export const RecipientMessage: React.FC = () => {
           <Text> {"Hello!"}</Text>
         </Card>
         <HStack justifyContent={"end"}>
-          <Text fontSize={"2xs"}> {"18:50"}</Text>
+          <Text fontSize={"2xs"}>{toElapsedTimeText(1696685478)}</Text>
         </HStack>
       </Stack>
     </HStack>

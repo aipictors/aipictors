@@ -1,5 +1,6 @@
 "use client"
 import { Card, HStack, Stack, Text } from "@chakra-ui/react"
+import { toElapsedTimeText } from "app/utils/toElapsedTimeText"
 
 export const SenderMessage: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ export const SenderMessage: React.FC = () => {
           <Text> {"Hello"}</Text>
         </Card>
         <HStack justifyContent={"flex-end"}>
-          <Text fontSize={"2xs"}> {"19:04"}</Text>
+          <Text fontSize={"2xs"}> {toElapsedTimeText(1696686060)}</Text>
         </HStack>
       </Stack>
     </HStack>
