@@ -7,7 +7,7 @@ import { HomeHeader } from "app/(main)/components/HomeHeader"
 import { HomeNavigationList } from "app/(main)/components/HomeNavigationList"
 import { LoginModal } from "app/(main)/components/LoginModal"
 import { LogoutModal } from "app/(main)/components/LogoutModal"
-import { FooterHome } from "app/components/FooterHome"
+import { HomeFooter } from "app/components/HomeFooter"
 
 type Props = {
   children: React.ReactNode
@@ -50,7 +50,7 @@ const MainLayout: React.FC<Props> = (props) => {
         {props.children}
       </HStack>
       <Divider />
-      <FooterHome />
+      <HomeFooter />
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal
         isOpen={isOpenLogout}

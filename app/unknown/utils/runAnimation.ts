@@ -76,9 +76,9 @@ export const runAnimation = (canvas: HTMLCanvasElement) => {
   const render = () => {
     if (!isRunning) return
 
-    const viewportWidth = window.innerWidth / 12
+    const viewportWidth = window.innerWidth / 1
 
-    const viewportHeight = window.innerHeight / 12
+    const viewportHeight = window.innerHeight / 1
 
     canvas.width = viewportWidth
 

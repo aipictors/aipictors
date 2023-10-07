@@ -2,7 +2,7 @@
 import { Divider, HStack } from "@chakra-ui/react"
 // useState をインポート
 import { HomeHeader } from "app/(main)/components/HomeHeader"
-import { FooterHome } from "app/components/FooterHome"
+import { HomeFooter } from "app/components/HomeFooter"
 import { useNavigation } from "app/hooks/useNavigation"
 import { SensitiveNavigation } from "app/sensitive/components/SensitiveNavigation"
 
@@ -21,7 +21,7 @@ const SensitiveLayout: React.FC<Props> = (props) => {
         {props.children}
       </HStack>
       <Divider />
-      <FooterHome />
+      <HomeFooter />
     </>
   )
 }

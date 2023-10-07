@@ -1,7 +1,7 @@
 "use client"
 import { HStack, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
 
-export const FooterHome: React.FC = () => {
+export const HomeFooter: React.FC = () => {
   return (
     <Stack p={4}>
       <Stack direction={{ base: "column", md: "row" }}>

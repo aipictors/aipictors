@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
-import { PrivacyDocument } from "app/(main)/privacy/components/PrivacyDocument"
 import { MainPage } from "app/components/MainPage"
+import { TermsDocument } from "app/terms/component/TermsDocument"
 
-const PrivacyPage = async () => {
+const TermsPage = async () => {
   return (
     <MainPage>
-      <PrivacyDocument />
+      <TermsDocument />
     </MainPage>
   )
 }
@@ -17,4 +17,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default PrivacyPage
+export default TermsPage

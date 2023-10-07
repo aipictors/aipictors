@@ -1,6 +1,6 @@
 "use client"
 import { useContext } from "react"
-import { FooterHome } from "app/components/FooterHome"
+import { HomeFooter } from "app/components/HomeFooter"
 import { MainLoading } from "app/components/MainLoading"
 import { MainLogin } from "app/components/MainLogin"
 import { AppContext } from "app/contexts/appContext"
@@ -23,7 +23,7 @@ const PlusLayout: React.FC<Props> = (props) => {
   return (
     <>
       {props.children}
-      <FooterHome />
+      <HomeFooter />
     </>
   )
 }
