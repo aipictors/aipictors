@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
 
 const AlbumPage = async () => {
-  return <PagePlaceholder>{"シリーズ"}</PagePlaceholder>
+  return null
 }
 
 export const metadata: Metadata = {
