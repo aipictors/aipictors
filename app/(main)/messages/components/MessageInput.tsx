@@ -14,7 +14,7 @@ export const MessageInput: React.FC = () => {
   return (
     <HStack>
       <IconButton
-        aria-label="previous month"
+        aria-label="photo"
         icon={<Icon as={TbPhoto} fontSize={"lg"} />}
         borderRadius={"full"}
       />

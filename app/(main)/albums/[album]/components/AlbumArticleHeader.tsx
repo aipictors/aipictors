@@ -9,6 +9,7 @@ export const AlbumArticleHeader: React.FC = () => {
         src="https://bit.ly/dan-abramov"
         alt="Dan Abramov"
         boxSize={"sm"}
+        borderRadius={"md"}
       />
       <HStack justifyContent={"space-between"}>
         <Text>{"タイトル"}</Text>

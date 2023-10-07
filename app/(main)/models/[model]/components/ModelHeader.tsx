@@ -1,5 +1,5 @@
 "use client"
-import { HStack, Stack, Text } from "@chakra-ui/react"
+import { HStack, Stack, Switch, Text } from "@chakra-ui/react"
 import type { ImageModelQuery } from "__generated__/apollo"
 
 type Props = {
@@ -8,12 +8,22 @@ type Props = {
 
 export const ModelHeader: React.FC<Props> = (props) => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+    <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+      <HStack as={"main"} justifyContent={"center"} w={"100%"}>
         <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {props.imageModelQuery.imageModel.name}
+          {`モデル「${props.imageModelQuery.imageModel?.name}」で生成された作品一覧`}
         </Text>
-      </Stack>
-    </HStack>
+      </HStack>
+      <HStack>
+        <Text fontSize={"xs"}>{"R18作品モザイクあり"}</Text>
+        <Switch size={"sm"} />
+      </HStack>
+      <HStack alignItems={"center"}>
+        <Text fontSize={"xl"}>{"新着"}</Text>
+        <Text fontSize={"xs"} color={"blue.400"}>
+          {"もっと見る"}
+        </Text>
+      </HStack>
+    </Stack>
   )
 }

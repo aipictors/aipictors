@@ -29,6 +29,7 @@ export const AlbumWork: React.FC = () => {
             src="https://bit.ly/dan-abramov"
             alt="Dan Abramov"
             boxSize={36}
+            borderRadius={"md"}
           />
           <Stack>
             <Text py="2">{"いいね数："}</Text>
