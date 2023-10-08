@@ -32,10 +32,9 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
       zIndex={100}
     >
       <IconButton
+        variant={"ghost"}
         aria-label={"メニュー"}
-        bgColor={"#fff0"}
         borderRadius={"full"}
-        _hover={{ bgColor: "gray.700" }}
         onClick={props.onOpenNavigation}
         icon={<Icon as={TbMenu2} />}
       />
