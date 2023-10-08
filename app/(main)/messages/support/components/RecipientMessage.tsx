@@ -3,24 +3,27 @@ import { Avatar, Card, HStack, Stack, Text } from "@chakra-ui/react"
 import { toElapsedTimeText } from "app/utils/toElapsedTimeText"
 
 type Props = {
-  avatarURL: string
+  text: string
+  iconImageURL: string
+  createdAt: number
 }
 
 export const RecipientMessage: React.FC<Props> = (props) => {
   return (
     <HStack spacing={4} alignItems={"flex-start"}>
-      <Avatar bg={"teal.500"} src={props.avatarURL} />
+      <Avatar src={props.iconImageURL} />
       <Stack>
         <Card
+          variant={"filled"}
           px={6}
           py={2}
           borderRightRadius={"full"}
           borderBottomLeftRadius={"full"}
         >
-          <Text> {"Hello!"}</Text>
+          <Text>{props.text}</Text>
         </Card>
         <HStack justifyContent={"end"}>
-          <Text fontSize={"2xs"}>{toElapsedTimeText(1696685478)}</Text>
+          <Text fontSize={"2xs"}>{toElapsedTimeText(props.createdAt)}</Text>
         </HStack>
       </Stack>
     </HStack>

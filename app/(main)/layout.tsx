@@ -1,7 +1,6 @@
 "use client"
 import "@splidejs/react-splide/css"
-import { Divider, HStack, useDisclosure } from "@chakra-ui/react"
-import { useEffect } from "react"
+import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
 import { FlexibleNavigation } from "app/(main)/components/FlexibleNavigation"
 import { HomeHeader } from "app/(main)/components/HomeHeader"
 import { HomeNavigationList } from "app/(main)/components/HomeNavigationList"
@@ -14,16 +13,24 @@ type Props = {
 }
 
 const MainLayout: React.FC<Props> = (props) => {
-  const { isOpen, onClose, onOpen, onToggle } = useDisclosure({
-    defaultIsOpen: false,
+  const breakPoint = useBreakpoint()
+
+  const {
+    isOpen: isOpenNavigation,
+    onClose: onCloseNavigation,
+    onToggle: onToggleNavigation,
+  } = useDisclosure({
+    defaultIsOpen:
+      typeof window !== "undefined" ? 768 < window.innerWidth : false,
   })
 
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    if (window.innerWidth < 768) return
-    onOpen()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const {
+    isOpen: isOpenDrawer,
+    onClose: onCloseDrawer,
+    onToggle: onToggleDrawer,
+  } = useDisclosure({
+    defaultIsOpen: false,
+  })
 
   const {
     isOpen: isOpenLogin,
@@ -37,11 +44,30 @@ const MainLayout: React.FC<Props> = (props) => {
     onClose: onCloseLogout,
   } = useDisclosure()
 
+  const onToggle = () => {
+    if (breakPoint === "base" || breakPoint === "sm") {
+      onToggleDrawer()
+      return
+    }
+    onToggleNavigation()
+  }
+
+  const onClose = () => {
+    if (breakPoint === "base" || breakPoint === "sm") {
+      onCloseDrawer()
+    }
+    onCloseNavigation()
+  }
+
   return (
     <>
       <HomeHeader onOpenNavigation={onToggle} />
       <HStack alignItems={"flex-start"} spacing={0}>
-        <FlexibleNavigation isOpen={isOpen} onClose={onClose}>
+        <FlexibleNavigation
+          isOpen={isOpenNavigation}
+          isOpenDrawer={isOpenDrawer}
+          onClose={onClose}
+        >
           <HomeNavigationList
             onOpen={onOpenLogin}
             onOpenLogout={onOpenLogout}

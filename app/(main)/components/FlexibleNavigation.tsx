@@ -10,6 +10,7 @@ import {
 type Props = {
   children: React.ReactNode
   isOpen: boolean
+  isOpenDrawer: boolean
   onClose: () => void
 }
 
@@ -35,7 +36,11 @@ export const FlexibleNavigation: React.FC<Props> = (props) => {
         </Box>
       )}
       {isMobile && (
-        <Drawer isOpen={props.isOpen} onClose={props.onClose} placement="left">
+        <Drawer
+          isOpen={props.isOpenDrawer}
+          onClose={props.onClose}
+          placement="left"
+        >
           <DrawerOverlay />
           <DrawerContent>
             <Box overflow={"auto"} height={"100%"} py={4}>
