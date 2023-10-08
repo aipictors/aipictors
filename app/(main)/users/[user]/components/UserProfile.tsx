@@ -10,8 +10,8 @@ import {
 import React from "react"
 import { TbHeartFilled, TbEye, TbUser, TbMedal2, TbAward } from "react-icons/tb"
 import type { UserQuery } from "__generated__/apollo"
+import { UserMuteMenu } from "app/(main)/users/[user]/components/UserMuteMenu"
 import { UserPickUp } from "app/(main)/users/[user]/components/UserPickUp"
-import { DotButton } from "app/components/DotButton"
 import { FollowButton } from "app/components/FollowButton"
 import { LinkEmailButton } from "app/components/LinkEmailButton"
 import { LinkWebButton } from "app/components/LinkWebButton"
@@ -48,7 +48,7 @@ export const UserProfile: React.FC<Props> = (props) => {
         </Text>
         <FollowButton />
         <ShareButton />
-        <DotButton />
+        <UserMuteMenu />
       </HStack>
       <HStack>
         <Stack>
