@@ -1,7 +1,7 @@
 import { Stack } from "@chakra-ui/react"
 import type { ViewerSupportMessagesQuery } from "__generated__/apollo"
-import { RecipientMessage } from "app/(main)/messages/support/components/RecipientMessage"
-import { SenderMessage } from "app/(main)/messages/support/components/SenderMessage"
+import { RecipientMessage } from "app/(beta)/support/chat/components/RecipientMessage"
+import { SenderMessage } from "app/(beta)/support/chat/components/SenderMessage"
 
 type Props = {
   recipientIconImageURL: string

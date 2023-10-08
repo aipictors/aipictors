@@ -5,22 +5,27 @@ import { startTransition } from "react"
 import type {
   CreateMessageMutationResult,
   CreateMessageMutationVariables,
-  ViewerSupportMessagesQuery,
-  ViewerSupportMessagesQueryVariables,
+  MessageThreadMessagesQuery,
+  MessageThreadMessagesQueryVariables,
 } from "__generated__/apollo"
 import {
   CreateMessageDocument,
-  ViewerSupportMessagesDocument,
+  MessageThreadMessagesDocument,
 } from "__generated__/apollo"
-import { MessageInput } from "app/(main)/messages/support/components/MessageInput"
-import { SupportMessageList } from "app/(main)/messages/support/components/SupportMessageList"
+import { MessageInput } from "app/(beta)/support/chat/components/MessageInput"
+import { SupportMessageList } from "app/(beta)/support/chat/components/SupportMessageList"
 
-export const ViewerSupportMessagesMain: React.FC = () => {
-  const { data: supportMessages, refetch } = useSuspenseQuery<
-    ViewerSupportMessagesQuery,
-    ViewerSupportMessagesQueryVariables
-  >(ViewerSupportMessagesDocument, {
+type Props = {
+  recipientId: string
+}
+
+export const RecipientMessages: React.FC<Props> = (props) => {
+  const { data, refetch } = useSuspenseQuery<
+    MessageThreadMessagesQuery,
+    MessageThreadMessagesQueryVariables
+  >(MessageThreadMessagesDocument, {
     variables: {
+      threadId: props.recipientId,
       limit: 124,
       offset: 0,
     },
@@ -41,9 +46,8 @@ export const ViewerSupportMessagesMain: React.FC = () => {
 
   const onSubmit = async (message: string) => {
     try {
-      console.log(message)
       await createMessage({
-        variables: { input: { text: message, recipientId: "1" } },
+        variables: { input: { text: message, recipientId: props.recipientId } },
       })
       startTransition(() => {
         refetch()
@@ -58,7 +62,7 @@ export const ViewerSupportMessagesMain: React.FC = () => {
   const adminAvatarURL =
     "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp"
 
-  const messages = supportMessages?.viewer?.supportMessages ?? []
+  const messages = data?.viewer?.messageThread?.messages ?? []
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"} pb={40}>

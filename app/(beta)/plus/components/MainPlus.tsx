@@ -15,7 +15,7 @@ import type {
   ViewerPassSubscriptionQueryVariables,
 } from "__generated__/apollo"
 import { ViewerPassSubscriptionDocument } from "__generated__/apollo"
-import { MainPlusAbout } from "app/plus/components/MainPlusAbout"
+import { MainPlusAbout } from "app/(beta)/plus/components/MainPlusAbout"
 import { toDateTimeText } from "app/utils/toDateTimeText"
 
 export const MainPlus: React.FC = () => {
