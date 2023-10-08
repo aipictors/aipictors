@@ -21,13 +21,24 @@ import {
   SliderTrack,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react"
 
 export const GenerationEditorLoraModels = () => {
   return (
     <Card p={4} h={"100%"}>
       <Stack>
-        <Text fontWeight={"bold"}>{"LoRA"}</Text>
+        <HStack>
+          <Text fontWeight={"bold"}>{"加工（LoRA）"}</Text>
+          <Tooltip
+            label="イラストの絵柄を調整することができます。"
+            fontSize="md"
+          >
+            <Button size={"xs"} borderRadius={"full"}>
+              {"?"}
+            </Button>
+          </Tooltip>
+        </HStack>
         <HStack spacing={4}>
           <Skeleton height={20} width={20} />
           <Stack>
@@ -83,7 +94,14 @@ export const GenerationEditorLoraModels = () => {
           </Menu>
         </HStack>
         <HStack justifyContent={"space-between"}>
-          <Text fontWeight={"bold"}>{"VAE"}</Text>
+          <HStack>
+            <Text fontWeight={"bold"}>{"VAE"}</Text>
+            <Tooltip label="出力される色や線を調整します。" fontSize="md">
+              <Button size={"xs"} borderRadius={"full"}>
+                {"?"}
+              </Button>
+            </Tooltip>
+          </HStack>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size={"xs"}>
               {""}
@@ -96,7 +114,17 @@ export const GenerationEditorLoraModels = () => {
           </Menu>
         </HStack>
         <HStack justifyContent={"space-between"}>
-          <Text fontWeight={"bold"}>{"Seed"}</Text>
+          <HStack>
+            <Text fontWeight={"bold"}>{"Seed"}</Text>
+            <Tooltip
+              label="キャラや構図などを固定したいときに使用します。"
+              fontSize="md"
+            >
+              <Button size={"xs"} borderRadius={"full"}>
+                {"?"}
+              </Button>
+            </Tooltip>
+          </HStack>
           <NumberInput defaultValue={-1} size={"xs"}>
             <NumberInputField />
             <NumberInputStepper>

@@ -22,12 +22,11 @@ const GenerationPage = async () => {
     query: ImageModelsDocument,
     variables: {},
   })
-
   return (
     <>
       <GenerationEditor
         promptCategoryQuery={promptCategoryQuery.data}
-        imageModelsQuery={imageModelsQuery.data}
+        imageModels={imageModelsQuery.data.imageModels}
       />
     </>
   )
