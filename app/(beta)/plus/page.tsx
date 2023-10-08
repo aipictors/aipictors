@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { MainPlus } from "app/plus/components/MainPlus"
+import { MainPlus } from "app/(beta)/plus/components/MainPlus"
 
 /**
  * サブスク

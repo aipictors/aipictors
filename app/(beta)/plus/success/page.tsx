@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { MainPlusSuccess } from "app/plus/success/components/MainPlusSuccess"
+import { MainPlusSuccess } from "app/(beta)/plus/success/components/MainPlusSuccess"
 
 /**
  * サブスクの決済を完了した場合のページ

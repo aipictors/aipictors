@@ -1,6 +1,5 @@
 "use client"
 import React, { useContext } from "react"
-import { MessageThreadList } from "app/(main)/messages/components/MessageThreadList"
 import MessagesLoading from "app/(main)/messages/loading"
 import { AppContext } from "app/contexts/appContext"
 
@@ -8,7 +7,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const MessagesLayout: React.FC<Props> = (props) => {
+const SupportLayout: React.FC<Props> = (props) => {
   const appContext = useContext(AppContext)
 
   if (appContext.isLoading) {
@@ -19,12 +18,7 @@ const MessagesLayout: React.FC<Props> = (props) => {
     return <MessagesLoading />
   }
 
-  return (
-    <>
-      <MessageThreadList />
-      {props.children}
-    </>
-  )
+  return <>{props.children}</>
 }
 
-export default MessagesLayout
+export default SupportLayout
