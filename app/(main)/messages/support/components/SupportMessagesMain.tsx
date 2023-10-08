@@ -1,7 +1,7 @@
 "use client"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { HStack, Stack, useInterval, useToast } from "@chakra-ui/react"
-import { useTransition } from "react"
+import { startTransition } from "react"
 import type {
   CreateMessageMutationResult,
   CreateMessageMutationVariables,
@@ -16,8 +16,6 @@ import { MessageInput } from "app/(main)/messages/support/components/MessageInpu
 import { SupportMessageList } from "app/(main)/messages/support/components/SupportMessageList"
 
 export const ViewerSupportMessagesMain: React.FC = () => {
-  const [startTransition] = useTransition()
-
   const { data: supportMessages, refetch } = useSuspenseQuery<
     ViewerSupportMessagesQuery,
     ViewerSupportMessagesQueryVariables
@@ -37,7 +35,7 @@ export const ViewerSupportMessagesMain: React.FC = () => {
     startTransition(() => {
       refetch()
     })
-  }, 2000)
+  }, 4000)
 
   const toast = useToast()
 

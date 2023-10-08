@@ -30,6 +30,12 @@ const baseTheme = extendTheme({
       "*": {
         WebkitTapHighlightColor: "transparent",
       },
+      "body::-webkit-scrollbar": {
+        display: "none",
+      },
+      "nav::-webkit-scrollbar": {
+        display: "none",
+      },
     },
   },
 })
