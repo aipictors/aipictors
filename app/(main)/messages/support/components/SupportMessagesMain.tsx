@@ -16,7 +16,7 @@ import { MessageInput } from "app/(main)/messages/support/components/MessageInpu
 import { SupportMessageList } from "app/(main)/messages/support/components/SupportMessageList"
 
 export const ViewerSupportMessagesMain: React.FC = () => {
-  const [isPending, startTransition] = useTransition()
+  const [startTransition] = useTransition()
 
   const { data: supportMessages, refetch } = useSuspenseQuery<
     ViewerSupportMessagesQuery,
@@ -28,7 +28,7 @@ export const ViewerSupportMessagesMain: React.FC = () => {
     },
   })
 
-  const [createMessage] = useMutation<
+  const [createMessage, { loading: isLoading }] = useMutation<
     CreateMessageMutationResult,
     CreateMessageMutationVariables
   >(CreateMessageDocument)
@@ -65,7 +65,7 @@ export const ViewerSupportMessagesMain: React.FC = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"} pb={40}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
-        <MessageInput onSubmit={onSubmit} isLoading={isPending} />
+        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={adminAvatarURL}
