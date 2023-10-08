@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { MessageList } from "app/(main)/messages/components/MessageList"
+import { ViewerSupportMessagesMain } from "app/(main)/messages/support/components/SupportMessagesMain"
 
 const MessagePage = async () => {
-  return <MessageList />
+  return <ViewerSupportMessagesMain />
 }
 
 export const metadata: Metadata = {
