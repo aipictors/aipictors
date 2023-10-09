@@ -37,7 +37,11 @@ export const GenerationEditorPrompt = () => {
             </Button>
           </HStack>
           <Box h={"100%"} flex={1}>
-            <Textarea h={"100%"} placeholder={"プロンプト"} />
+            <Textarea
+              h={"100%"}
+              placeholder={"プロンプト"}
+              borderRadius={"md"}
+            />
           </Box>
         </Stack>
       </Card>
