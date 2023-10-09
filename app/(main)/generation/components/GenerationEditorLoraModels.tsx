@@ -48,6 +48,7 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
                 src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
                 alt={props.imageLoraModels[0].name}
                 boxSize={20}
+                borderRadius={"md"}
               />
               <Text fontSize={"xs"}>{props.imageLoraModels[0].name}</Text>
             </Stack>
@@ -77,6 +78,7 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
                 src={props.imageLoraModels[1].thumbnailImageURL!}
                 alt={props.imageLoraModels[1].name}
                 boxSize={20}
+                borderRadius={"md"}
               />
               <Text fontSize={"xs"}>{props.imageLoraModels[1].name}</Text>
             </Stack>

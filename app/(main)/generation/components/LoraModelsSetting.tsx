@@ -24,7 +24,12 @@ export const LoraModelsSetting: React.FC = () => {
     <Stack>
       <Text fontWeight={"bold"}>{"サイズ"}</Text>
       <Menu>
-        <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size={"xs"}>
+        <MenuButton
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          size={"xs"}
+          borderRadius={"md"}
+        >
           {"【縦長】768×1152"}
         </MenuButton>
         <MenuList>
@@ -42,7 +47,12 @@ export const LoraModelsSetting: React.FC = () => {
         </Tooltip>
       </HStack>
       <Menu>
-        <MenuButton as={Button} rightIcon={<ChevronDownIcon />} size={"xs"}>
+        <MenuButton
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          size={"xs"}
+          borderRadius={"md"}
+        >
           {""}
         </MenuButton>
         <MenuList>
@@ -63,7 +73,7 @@ export const LoraModelsSetting: React.FC = () => {
         </Tooltip>
       </HStack>
       <HStack>
-        <NumberInput defaultValue={-1} size={"xs"}>
+        <NumberInput defaultValue={-1} size={"xs"} borderRadius={"md"}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />

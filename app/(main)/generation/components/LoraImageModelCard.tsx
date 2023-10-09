@@ -21,6 +21,7 @@ export const LoraImageModelCard: React.FC<Props> = (props) => {
           overflow={"hidden"}
           variant={"outline"}
           borderWidth={2}
+          borderRadius={"md"}
           borderColor={
             props.selectedImageLoraModelId === props.imageLoraModelId
               ? "primary.500"
