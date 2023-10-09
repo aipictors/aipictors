@@ -13,10 +13,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
+import { InPaintingImageModal } from "app/(main)/generation/components/InPaintingImageModal"
 import { SelectedImageModal } from "app/(main)/generation/components/SelectedImageModal"
 
 export const GenerationEditorHistory = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const {
+    isOpen: isOpenInPainting,
+    onOpen: onOpenInPainting,
+    onClose: onCloseInPainting,
+  } = useDisclosure()
 
   return (
     <>
@@ -64,9 +71,17 @@ export const GenerationEditorHistory = () => {
       <SelectedImageModal
         isOpen={isOpen}
         onClose={onClose}
+        onOpenInPainting={() => {
+          onClose()
+          onOpenInPainting()
+        }}
         onChangeRating={(value) => {
           console.log(value)
         }}
+      />
+      <InPaintingImageModal
+        isOpen={isOpenInPainting}
+        onClose={onCloseInPainting}
       />
     </>
   )
