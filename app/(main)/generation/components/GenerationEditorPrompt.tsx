@@ -9,6 +9,7 @@ import {
   Box,
   Textarea,
   useDisclosure,
+  Tooltip,
 } from "@chakra-ui/react"
 import { PromptCategoriesModal } from "app/(main)/generation/components/PromptCategoriesModal"
 
@@ -20,7 +21,17 @@ export const GenerationEditorPrompt = () => {
       <Card p={4} h={"100%"}>
         <Stack h={"100%"} spacing={4}>
           <HStack justifyContent={"space-between"}>
-            <Text fontWeight={"bold"}>{"プロンプト"}</Text>
+            <HStack>
+              <Text fontWeight={"bold"}>{"プロンプト"}</Text>
+              <Tooltip
+                label="生成したいイラストの要素をキーワードから選んでください。"
+                fontSize="md"
+              >
+                <Button size={"xs"} borderRadius={"full"}>
+                  {"?"}
+                </Button>
+              </Tooltip>
+            </HStack>
             <Button borderRadius={"full"} size={"sm"} onClick={onOpen}>
               {"キーワード"}
             </Button>

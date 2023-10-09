@@ -1,19 +1,9 @@
 "use client"
 
-import { ChevronDownIcon } from "@chakra-ui/icons"
 import {
   Button,
   Card,
   HStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -26,6 +16,7 @@ import {
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraModelsModal } from "app/(main)/generation/components/LoraModelsModal"
+import { LoraModelsSetting } from "app/(main)/generation/components/LoraModelsSetting"
 
 type Props = {
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
@@ -112,67 +103,7 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
           <Button borderRadius={"full"} onClick={onOpen}>
             {"もっとLoRAを表示する"}
           </Button>
-          <HStack justifyContent={"space-between"}>
-            <Text fontWeight={"bold"}>{"サイズ"}</Text>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rightIcon={<ChevronDownIcon />}
-                size={"xs"}
-              >
-                {"【縦長】768×1152"}
-              </MenuButton>
-              <MenuList>
-                <MenuItem>{"【正方形】n×n"}</MenuItem>
-                <MenuItem>{"【縦長】n×n"}</MenuItem>
-                <MenuItem>{"【横長】n×n"}</MenuItem>
-              </MenuList>
-            </Menu>
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <HStack>
-              <Text fontWeight={"bold"}>{"VAE"}</Text>
-              <Tooltip label="出力される色や線を調整します。" fontSize="md">
-                <Button size={"xs"} borderRadius={"full"}>
-                  {"?"}
-                </Button>
-              </Tooltip>
-            </HStack>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rightIcon={<ChevronDownIcon />}
-                size={"xs"}
-              >
-                {""}
-              </MenuButton>
-              <MenuList>
-                <MenuItem>{"なし"}</MenuItem>
-                <MenuItem>{"vae"}</MenuItem>
-                <MenuItem>{"vae"}</MenuItem>
-              </MenuList>
-            </Menu>
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <HStack>
-              <Text fontWeight={"bold"}>{"Seed"}</Text>
-              <Tooltip
-                label="キャラや構図などを固定したいときに使用します。"
-                fontSize="md"
-              >
-                <Button size={"xs"} borderRadius={"full"}>
-                  {"?"}
-                </Button>
-              </Tooltip>
-            </HStack>
-            <NumberInput defaultValue={-1} size={"xs"}>
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </HStack>
+          <LoraModelsSetting />
         </Stack>
       </Card>
       <LoraModelsModal
