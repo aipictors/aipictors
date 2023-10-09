@@ -20,7 +20,11 @@ type Props = {
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
-  const [selectedImageModelId, setSelectedImageModelId] = useState<
+  const [selectedImageModelId, onSelectedImageModelId] = useState<
+    string | null
+  >(null)
+
+  const [selectedImageLoraModelId, onSelectedImageLoraModelId] = useState<
     string | null
   >(null)
 
@@ -56,13 +60,17 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           imageModels={props.imageModels}
           selectedImageModelId={selectedImageModelId}
           onSelectImageModelId={(id) => {
-            setSelectedImageModelId(id)
+            onSelectedImageModelId(id)
           }}
         />
       </GridItem>
       <GridItem area={area.loraModels}>
         <GenerationEditorLoraModels
-          ImageLoraModelsQuery={props.ImageLoraModelsQuery}
+          imageLoraModels={props.ImageLoraModelsQuery.imageLoraModels}
+          selectedImageLoraModelId={selectedImageLoraModelId}
+          onSelectImageLoraModelId={(id) => {
+            onSelectedImageLoraModelId(id)
+          }}
         />
       </GridItem>
       <GridItem area={area.editorPrompt}>

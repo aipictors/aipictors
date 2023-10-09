@@ -10,12 +10,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  Image,
   SimpleGrid,
-  Stack,
-  Card,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
+import { ImageModelCard } from "app/(main)/generation/components/ImageModelCard"
 
 type Props = {
   isOpen: boolean
@@ -46,31 +44,15 @@ export const ModelsModal: React.FC<Props> = (props) => {
           <SimpleGrid columns={{ base: 3, sm: 3, md: 4 }} spacing={2}>
             {props.imageModels.map((imageModel) => {
               return (
-                <Card key={imageModel.id}>
-                  <Stack>
-                    <Button
-                      p={0}
-                      h={"auto"}
-                      overflow={"hidden"}
-                      variant={"outline"}
-                      borderWidth={2}
-                      borderColor={
-                        props.selectedImageModelId === imageModel.id
-                          ? "primary.500"
-                          : "gray.200"
-                      }
-                      onClick={() => {
-                        props.onSelectImageModelId(imageModel.id)
-                      }}
-                    >
-                      <Image
-                        src={imageModel.thumbnailImageURL!}
-                        alt={imageModel.displayName}
-                      />
-                    </Button>
-                    <Text>{imageModel.displayName}</Text>
-                  </Stack>
-                </Card>
+                <ImageModelCard
+                  key={imageModel.id}
+                  imageModels={props.imageModels}
+                  selectedImageModelId={props.selectedImageModelId}
+                  onSelectImageModelId={props.onSelectImageModelId}
+                  imageModelId={imageModel.id}
+                  imageModelDisplayName={imageModel.displayName}
+                  imageModelImageURL={imageModel.thumbnailImageURL}
+                />
               )
             })}
           </SimpleGrid>
@@ -79,7 +61,6 @@ export const ModelsModal: React.FC<Props> = (props) => {
           <Button
             onClick={() => {
               props.onClose()
-              console.log(props.selectedImageModelId)
             }}
             borderRadius={"full"}
             colorScheme="primary"
