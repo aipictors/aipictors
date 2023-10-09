@@ -32,8 +32,8 @@ export const MessageThreadList: React.FC = () => {
       {messageThreads.map((messageThread) => (
         <Link key={messageThread.id} href={`/messages/${messageThread.id}`}>
           <Box>
+            <Text>{messageThread.recipient.name}</Text>
             <Text>{messageThread.latestMessage.text}</Text>
-            <Text>{messageThread.latestMessage.user.name}</Text>
             <Text>{messageThread.latestMessage.isRead ? "既読" : "未読"}</Text>
           </Box>
         </Link>
