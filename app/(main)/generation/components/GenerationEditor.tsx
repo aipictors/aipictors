@@ -1,9 +1,12 @@
 "use client"
 import { Grid, GridItem } from "@chakra-ui/react"
+import { useState } from "react"
 import type {
+  ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoryQuery,
 } from "__generated__/apollo"
+
 import { GenerationEditorHistory } from "app/(main)/generation/components/GenerationEditorHistory"
 import { GenerationEditorLoraModels } from "app/(main)/generation/components/GenerationEditorLoraModels"
 import { GenerationEditorModels } from "app/(main)/generation/components/GenerationEditorModels"
@@ -11,11 +14,16 @@ import { GenerationEditorNegative } from "app/(main)/generation/components/Gener
 import { GenerationEditorPrompt } from "app/(main)/generation/components/GenerationEditorPrompt"
 
 type Props = {
-  imageModelsQuery: ImageModelsQuery
+  imageModels: ImageModelsQuery["imageModels"]
   promptCategoryQuery: PromptCategoryQuery
+  ImageLoraModelsQuery: ImageLoraModelsQuery
 }
 
-export const GenerationEditor: React.FC<Props> = () => {
+export const GenerationEditor: React.FC<Props> = (props) => {
+  const [selectedImageModelId, setSelectedImageModelId] = useState<
+    string | null
+  >(null)
+
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",
@@ -44,10 +52,18 @@ export const GenerationEditor: React.FC<Props> = () => {
       pb={4}
     >
       <GridItem area={area.models}>
-        <GenerationEditorModels />
+        <GenerationEditorModels
+          imageModels={props.imageModels}
+          selectedImageModelId={selectedImageModelId}
+          onSelectImageModelId={(id) => {
+            setSelectedImageModelId(id)
+          }}
+        />
       </GridItem>
       <GridItem area={area.loraModels}>
-        <GenerationEditorLoraModels />
+        <GenerationEditorLoraModels
+          ImageLoraModelsQuery={props.ImageLoraModelsQuery}
+        />
       </GridItem>
       <GridItem area={area.editorPrompt}>
         <GenerationEditorPrompt />

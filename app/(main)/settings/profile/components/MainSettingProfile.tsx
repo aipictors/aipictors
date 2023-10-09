@@ -129,7 +129,6 @@ export const MainSettingProfile: React.FC = () => {
             />
           </Stack>
         </Stack>
-
         <Button colorScheme="primary" borderRadius={"full"} onClick={() => {}}>
           {"変更を保存"}
         </Button>
