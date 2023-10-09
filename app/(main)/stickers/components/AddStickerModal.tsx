@@ -25,7 +25,13 @@ type Props = {
 
 export const AddStickerModal: React.FC<Props> = (props) => {
   return (
-    <Modal onClose={props.onClose} isOpen={props.isOpen} isCentered>
+    <Modal
+      onClose={props.onClose}
+      isOpen={props.isOpen}
+      isCentered
+      size={"xl"}
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{"スタンプ公開"}</ModalHeader>

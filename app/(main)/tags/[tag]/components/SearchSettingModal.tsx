@@ -24,7 +24,12 @@ type Props = {
 
 export const SearchSettingModal: React.FC<Props> = (props) => {
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose}>
+    <Modal
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      size={"3xl"}
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{"詳細検索設定"}</ModalHeader>
@@ -66,17 +71,17 @@ export const SearchSettingModal: React.FC<Props> = (props) => {
             <Divider />
             <HStack>
               <Text>{"使用AI："}</Text>
-              <Input placeholder={"タグ名"} />
+              <Input placeholder={"タグ名"} maxW={"lg"} />
             </HStack>
             <Divider />
             <HStack>
               <Text>{"使用モデル："}</Text>
-              <Input placeholder={"タグ名"} />
+              <Input placeholder={"タグ名"} maxW={"lg"} />
             </HStack>
             <Divider />
             <HStack>
               <Text>{"使用サービス："}</Text>
-              <Input placeholder={"タグ名"} />
+              <Input placeholder={"タグ名"} maxW={"lg"} />
             </HStack>
             <Divider />
             <HStack>

@@ -5,6 +5,7 @@ export const ImageModel = gql`
     imageModel(id: $id) {
       id
       name
+      displayName
       category
       description
       license

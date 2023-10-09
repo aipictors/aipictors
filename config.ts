@@ -1,4 +1,8 @@
 export class Config {
+  static get defaultImageModelIds() {
+    return ["1", "3", "19"]
+  }
+
   static get currentWebSiteURL() {
     return "https://www.aipictors.com"
   }

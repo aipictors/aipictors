@@ -20,12 +20,12 @@ export const ImageModelList: React.FC<Props> = (props) => {
               <Link href={`/models/${imageModel.id}`}>
                 <Image
                   src={imageModel.thumbnailImageURL!}
-                  alt={imageModel.name}
+                  alt={imageModel.displayName}
                   width={"100%"}
                   borderRadius={"lg"}
                 />
               </Link>
-              <Text fontSize={"sm"}>{imageModel.name}</Text>
+              <Text fontSize={"sm"}>{imageModel.displayName}</Text>
             </Box>
           ))}
         </Grid>
