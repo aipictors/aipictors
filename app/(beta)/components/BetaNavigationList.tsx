@@ -4,7 +4,6 @@ import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
 import { useContext } from "react"
 import {
   TbBolt,
-  TbSettings,
   TbLogout,
   TbLogin,
   TbSunFilled,
@@ -18,7 +17,6 @@ import {
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
 import { AppContext } from "app/contexts/appContext"
-import { Config } from "config"
 
 type Props = {
   onOpen: () => void
@@ -39,20 +37,15 @@ export const BetaNavigationList: React.FC<Props> = (props) => {
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
         href={"https://www.aipictors.com/generate/"}
         leftIcon={TbBolt}
       >
         {"画像生成"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
-        href={"/support/chat"}
-        leftIcon={TbMessageCircle2}
-      >
+      <HomeNavigationButton href={"/support/chat"} leftIcon={TbMessageCircle2}>
         {"お問い合わせ"}
       </HomeNavigationButton>
-      {appContext.isLoggedIn && (
+      {/* {appContext.isLoggedIn && (
         <HomeNavigationButton
           isDisabled={Config.isReleaseMode}
           href={"/settings/login"}
@@ -60,7 +53,7 @@ export const BetaNavigationList: React.FC<Props> = (props) => {
         >
           {"設定"}
         </HomeNavigationButton>
-      )}
+      )} */}
       {appContext.isLoggedIn && (
         <HomeNavigationButton
           onClick={() => {

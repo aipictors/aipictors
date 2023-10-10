@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import Link from "next/link"
 import React from "react"
-import { TbMenu2, TbBellFilled, TbSearch } from "react-icons/tb"
+import { TbMenu2, TbBellFilled } from "react-icons/tb"
 import { BetaUserNavigationButton } from "app/(main)/components/BetaUserNavigationButton"
 
 type HomeHeaderProps = {
@@ -36,22 +36,14 @@ export const BetaHeader: React.FC<HomeHeaderProps> = (props) => {
         onClick={props.onOpenNavigation}
         icon={<Icon as={TbMenu2} />}
       />
-      <Box display={{ base: "none", md: "block" }}>
+      <Box>
         <Link href={"https://www.aipictors.com"}>
           <Avatar src={"/icon.png"} size={"sm"} />
         </Link>
       </Box>
-      <Box w={"100%"} display={{ base: "none", md: "block" }}>
+      <Box w={"100%"}>
         <Text fontWeight={"bold"}>{"Beta"}</Text>
       </Box>
-      <IconButton
-        marginLeft={"auto"}
-        size={"sm"}
-        display={{ base: "block", md: "none" }}
-        borderRadius={"full"}
-        icon={<Icon as={TbSearch} />}
-        aria-label={"Search"}
-      />
       <HStack>
         <IconButton
           isDisabled
