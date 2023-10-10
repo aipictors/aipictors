@@ -1,12 +1,17 @@
 import type { Metadata } from "next"
 import { MainPlus } from "app/(beta)/plus/components/MainPlus"
+import { MainCenterPage } from "app/components/MainCenterPage"
 
 /**
  * サブスク
  * @returns
  */
 const PlusPage = async () => {
-  return <MainPlus />
+  return (
+    <MainCenterPage>
+      <MainPlus />
+    </MainCenterPage>
+  )
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {

@@ -2,24 +2,22 @@
 import {
   Avatar,
   Box,
-  Button,
   HStack,
   Icon,
   IconButton,
-  Input,
   useColorModeValue,
+  Text,
 } from "@chakra-ui/react"
 import Link from "next/link"
 import React from "react"
-import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
+import { TbMenu2, TbBellFilled, TbSearch } from "react-icons/tb"
 import { BetaUserNavigationButton } from "app/(main)/components/BetaUserNavigationButton"
-import { Config } from "config"
 
 type HomeHeaderProps = {
   onOpenNavigation?: () => void
 }
 
-export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
+export const BetaHeader: React.FC<HomeHeaderProps> = (props) => {
   const backgroundColor = useColorModeValue("white", "gray.800")
 
   return (
@@ -39,12 +37,12 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         icon={<Icon as={TbMenu2} />}
       />
       <Box display={{ base: "none", md: "block" }}>
-        <Link href={"/"}>
+        <Link href={"https://www.aipictors.com"}>
           <Avatar src={"/icon.png"} size={"sm"} />
         </Link>
       </Box>
       <Box w={"100%"} display={{ base: "none", md: "block" }}>
-        <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
+        <Text fontWeight={"bold"}>{"Beta"}</Text>
       </Box>
       <IconButton
         marginLeft={"auto"}
@@ -55,34 +53,6 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
         aria-label={"Search"}
       />
       <HStack>
-        <Button
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/generation"}
-          size={"sm"}
-          borderRadius={"full"}
-        >
-          {"生成"}
-        </Button>
-        <Button
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/new/image"}
-          size={"sm"}
-          borderRadius={"full"}
-        >
-          {"投稿"}
-        </Button>
-        <IconButton
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/viewer/albums"}
-          size={"sm"}
-          borderRadius={"full"}
-          aria-label={"フォルダ"}
-          fontSize={"lg"}
-          icon={<TbFolderFilled />}
-        />
         <IconButton
           isDisabled
           size={"sm"}
