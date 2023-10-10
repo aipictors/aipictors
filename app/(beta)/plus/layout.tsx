@@ -1,8 +1,7 @@
 "use client"
 import { useContext } from "react"
-import { HomeFooter } from "app/components/HomeFooter"
-import { MainLoading } from "app/components/MainLoading"
-import { MainLogin } from "app/components/MainLogin"
+import { LoadingPage } from "app/components/LoadingPage"
+import { LoginPage } from "app/components/LoginPage"
 import { AppContext } from "app/contexts/appContext"
 
 type Props = {
@@ -13,19 +12,14 @@ const PlusLayout: React.FC<Props> = (props) => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {
-    return <MainLoading />
+    return <LoadingPage />
   }
 
   if (context.isNotLoggedIn) {
-    return <MainLogin />
+    return <LoginPage />
   }
 
-  return (
-    <>
-      {props.children}
-      <HomeFooter />
-    </>
-  )
+  return <>{props.children}</>
 }
 
 export default PlusLayout

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { PlaceholderPage } from "app/components/Placeholder"
 
 const RankingPage = async () => {
-  return <PagePlaceholder>{"センシティブ"}</PagePlaceholder>
+  return <PlaceholderPage>{"センシティブ"}</PlaceholderPage>
 }
 
 export const metadata: Metadata = {

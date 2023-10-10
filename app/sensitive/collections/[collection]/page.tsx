@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "app/components/PagePlaceholder"
+import { PlaceholderPage } from "app/components/Placeholder"
 
 const SensitiveCollectionPage = async () => {
-  return <PagePlaceholder>{"コレクション"}</PagePlaceholder>
+  return <PlaceholderPage>{"コレクション"}</PlaceholderPage>
 }
 
 export const metadata: Metadata = {

@@ -2,10 +2,10 @@
 import { HStack, useToast } from "@chakra-ui/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
-import { BoxFormLogin } from "app/components/BoxFormLogin"
+import { LoginForm } from "app/components/LoginForm"
 import type { FormLogin } from "app/types/formLogin"
 
-export const MainLogin: React.FC = () => {
+export const LoginPage: React.FC = () => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
   const toast = useToast()
@@ -35,8 +35,8 @@ export const MainLogin: React.FC = () => {
   }
 
   return (
-    <HStack justifyContent={"center"} py={16} minH={"100vh"}>
-      <BoxFormLogin onSubmit={onLogin} isLoading={isLoading} />
+    <HStack justifyContent={"center"} py={16}>
+      <LoginForm onSubmit={onLogin} isLoading={isLoading} />
     </HStack>
   )
 }

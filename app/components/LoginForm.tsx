@@ -8,7 +8,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const BoxFormLogin: React.FC<Props> = (props) => {
+export const LoginForm: React.FC<Props> = (props) => {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

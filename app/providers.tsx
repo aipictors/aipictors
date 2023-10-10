@@ -8,7 +8,7 @@ import { getApp, getApps, initializeApp } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { createClient } from "app/client"
-import { ProviderAppContext } from "app/components/ProviderAppContext"
+import { AppContextProvider } from "app/components/AppContextProvider"
 import { theme } from "app/theme"
 import { Config } from "config"
 
@@ -35,13 +35,13 @@ export const Providers: React.FC<Props> = (props) => {
   }, [pathname, searchParams])
 
   return (
-    <ProviderAppContext>
+    <AppContextProvider>
       <ApolloProvider client={client}>
         <CacheProvider>
           <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
         </CacheProvider>
       </ApolloProvider>
-    </ProviderAppContext>
+    </AppContextProvider>
   )
 }
 

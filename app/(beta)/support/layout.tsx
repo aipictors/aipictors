@@ -1,6 +1,7 @@
 "use client"
 import React, { useContext } from "react"
-import MessagesLoading from "app/(main)/messages/loading"
+import { LoadingPage } from "app/components/LoadingPage"
+import { LoginPage } from "app/components/LoginPage"
 import { AppContext } from "app/contexts/appContext"
 
 type Props = {
@@ -11,11 +12,11 @@ const SupportLayout: React.FC<Props> = (props) => {
   const appContext = useContext(AppContext)
 
   if (appContext.isLoading) {
-    return <MessagesLoading />
+    return <LoadingPage />
   }
 
   if (appContext.isNotLoggedIn) {
-    return <MessagesLoading />
+    return <LoginPage />
   }
 
   return <>{props.children}</>

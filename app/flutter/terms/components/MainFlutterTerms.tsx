@@ -1,6 +1,6 @@
 "use client"
 import { Box, HStack } from "@chakra-ui/react"
-import { BoxMarkdown } from "app/components/BoxMarkdown"
+import { MarkdownDocument } from "app/components/MarkdownDocument"
 
 type Props = {
   text: string
@@ -15,7 +15,7 @@ export const MainFlutterTerms: React.FC<Props> = (props) => {
         w={"100%"}
         px={{ base: 4, md: 12 }}
       >
-        <BoxMarkdown>{props.text}</BoxMarkdown>
+        <MarkdownDocument>{props.text}</MarkdownDocument>
       </Box>
     </HStack>
   )

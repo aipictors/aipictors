@@ -62,7 +62,7 @@ export const SupportChat: React.FC = () => {
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"} pb={40}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
+      <Stack maxW={"sm"} w={"100%"} p={4} spacing={8}>
         <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
         <SupportMessageList
           messages={messages}

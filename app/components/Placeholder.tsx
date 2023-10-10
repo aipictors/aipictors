@@ -5,7 +5,7 @@ type Props = {
   children?: React.ReactNode
 }
 
-export const PagePlaceholder: React.FC<Props> = (props) => {
+export const PlaceholderPage: React.FC<Props> = (props) => {
   return (
     <Stack
       p={4}

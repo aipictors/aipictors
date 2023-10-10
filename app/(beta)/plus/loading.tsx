@@ -1,8 +1,8 @@
 "use client"
-import { MainLoading } from "app/components/MainLoading"
+import { LoadingPage } from "app/components/LoadingPage"
 
 const PlusLoading: React.FC = () => {
-  return <MainLoading />
+  return <LoadingPage />
 }
 
 export default PlusLoading
