@@ -13,7 +13,6 @@ import {
   Tooltip,
   Image,
   useDisclosure,
-  SimpleGrid,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraModelsModal } from "app/(main)/generation/components/LoraModelsModal"
@@ -44,38 +43,34 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             </Tooltip>
           </HStack>
           <HStack spacing={4}>
-            <SimpleGrid spacing={2}>
-              <Card>
-                <Stack>
-                  <Button
-                    p={0}
-                    h={"auto"}
-                    overflow={"hidden"}
-                    variant={"outline"}
-                    borderWidth={2}
-                    borderColor={"gray.200"}
-                  >
-                    <Image
-                      src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
-                      alt={props.imageLoraModels[0].name}
-                      borderRadius={"md"}
-                      w={"sm"}
-                    />
-                  </Button>
-                  <Text fontSize={"sm"}>{props.imageLoraModels[0].name}</Text>
-                </Stack>
-              </Card>
-            </SimpleGrid>
-            <Stack>
-              <Text fontSize={"xs"} w={32}>
-                {"フラットな絵になります２"}
-              </Text>
+            <Card>
+              <Stack>
+                <Button
+                  p={0}
+                  h={"auto"}
+                  overflow={"hidden"}
+                  variant={"outline"}
+                  borderWidth={2}
+                  borderColor={"gray.200"}
+                >
+                  <Image
+                    src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
+                    alt={props.imageLoraModels[0].name}
+                    borderRadius={"md"}
+                    w={"100%"}
+                    maxW={32}
+                  />
+                </Button>
+              </Stack>
+            </Card>
+            <Stack flex={1}>
+              <Text fontSize={"lg"}>{props.imageLoraModels[0].name}</Text>
+              <Text fontSize={"xs"}>{"フラットな絵になります２"}</Text>
               <HStack>
                 <Slider
                   aria-label="slider-ex-2"
                   colorScheme="pink"
                   defaultValue={50}
-                  w={32}
                 >
                   <SliderTrack>
                     <SliderFilledTrack />
@@ -87,38 +82,33 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             </Stack>
           </HStack>
           <HStack spacing={4}>
-            <SimpleGrid spacing={2}>
-              <Card>
-                <Stack>
-                  <Button
-                    p={0}
-                    h={"auto"}
-                    overflow={"hidden"}
-                    variant={"outline"}
-                    borderWidth={2}
-                    borderColor={"gray.200"}
-                  >
-                    <Image
-                      src={props.imageLoraModels[1].thumbnailImageURL!}
-                      alt={props.imageLoraModels[1].name}
-                      borderRadius={"md"}
-                      w={"sm"}
-                    />
-                  </Button>
-                  <Text fontSize={"xs"}>{props.imageLoraModels[1].name}</Text>
-                </Stack>
-              </Card>
-            </SimpleGrid>
-            <Stack>
-              <Text fontSize={"xs"} w={32}>
-                {"髪がより細かく描き込まれます"}
-              </Text>
+            <Card>
+              <Stack>
+                <Button
+                  p={0}
+                  h={"auto"}
+                  overflow={"hidden"}
+                  variant={"outline"}
+                  borderWidth={2}
+                  borderColor={"gray.200"}
+                >
+                  <Image
+                    src={props.imageLoraModels[1].thumbnailImageURL!}
+                    alt={props.imageLoraModels[1].name}
+                    borderRadius={"md"}
+                    maxW={32}
+                  />
+                </Button>
+              </Stack>
+            </Card>
+            <Stack flex={1}>
+              <Text fontSize={"lg"}>{props.imageLoraModels[1].name}</Text>
+              <Text fontSize={"xs"}>{"髪がより細かく描き込まれます"}</Text>
               <HStack>
                 <Slider
                   aria-label="slider-ex-2"
                   colorScheme="pink"
                   defaultValue={50}
-                  w={32}
                 >
                   <SliderTrack>
                     <SliderFilledTrack />
