@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
 import type {
+  ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoryQuery,
 } from "__generated__/apollo"
 import {
+  ImageLoraModelsDocument,
   ImageModelsDocument,
   PromptCategoryDocument,
 } from "__generated__/apollo"
@@ -22,11 +24,18 @@ const GenerationPage = async () => {
     query: ImageModelsDocument,
     variables: {},
   })
+
+  const imageLoraModelsQuery = await client.query<ImageLoraModelsQuery>({
+    query: ImageLoraModelsDocument,
+    variables: {},
+  })
+
   return (
     <>
       <GenerationEditor
         promptCategoryQuery={promptCategoryQuery.data}
         imageModels={imageModelsQuery.data.imageModels}
+        ImageLoraModelsQuery={imageLoraModelsQuery.data}
       />
     </>
   )

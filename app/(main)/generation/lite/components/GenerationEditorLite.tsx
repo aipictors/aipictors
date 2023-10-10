@@ -16,7 +16,7 @@ import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryIcon } from "app/(main)/generation/components/PromptCategoryIcon"
 
 type Props = {
-  promptCategoryQuery: PromptCategoryQuery
+  promptCategories: PromptCategoryQuery["promptCategories"]
 }
 
 export const GenerationEditorLite: React.FC<Props> = (props) => {
@@ -32,7 +32,7 @@ export const GenerationEditorLite: React.FC<Props> = (props) => {
           {"画像生成"}
         </Text>
         <Accordion defaultIndex={[0]} allowToggle>
-          {props.promptCategoryQuery.promptCategories.map((promptCategory) => (
+          {props.promptCategories.map((promptCategory) => (
             <AccordionItem key={promptCategory.id}>
               <AccordionButton>
                 <HStack flex="1">

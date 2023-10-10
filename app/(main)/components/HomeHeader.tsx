@@ -12,7 +12,7 @@ import {
 import Link from "next/link"
 import React from "react"
 import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
-import { HomeUserNavigationButton } from "app/(main)/components/HomeUserNavigationButton"
+import { BetaUserNavigationButton } from "app/(main)/components/BetaUserNavigationButton"
 import { Config } from "config"
 
 type HomeHeaderProps = {
@@ -91,7 +91,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
           fontSize={"lg"}
           icon={<TbBellFilled />}
         />
-        <HomeUserNavigationButton />
+        <BetaUserNavigationButton />
       </HStack>
     </HStack>
   )
