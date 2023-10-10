@@ -1,8 +1,9 @@
 "use client"
-import { Divider, HStack, Stack, useToast, Text } from "@chakra-ui/react"
+import { Divider, Stack, useToast, Text, HStack, Image } from "@chakra-ui/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { LoginForm } from "app/components/LoginForm"
+import { MainCenterPage } from "app/components/MainCenterPage"
 import type { FormLogin } from "app/types/formLogin"
 
 export const LoginPage: React.FC = () => {
@@ -35,22 +36,26 @@ export const LoginPage: React.FC = () => {
   }
 
   return (
-    <HStack justifyContent={"center"} py={16} w={"100%"}>
+    <MainCenterPage>
       <Stack
+        w={"100%"}
         justifyContent={"center"}
         alignItems={"center"}
         maxW={"sm"}
         spacing={6}
+        pb={16}
       >
+        <HStack justifyContent={"center"}>
+          <Image alt={"Logo"} src={"/icon.png"} maxW={"4rem"} />
+        </HStack>
         <LoginForm onSubmit={onLogin} isLoading={isLoading} />
         <Divider />
-
-        <Text>
+        <Text fontSize={"sm"}>
           {
             "現在、アプリでのログインはパスワード認証のみに対応しています。パスワードはサイトから設定または変更できます。"
           }
         </Text>
       </Stack>
-    </HStack>
+    </MainCenterPage>
   )
 }

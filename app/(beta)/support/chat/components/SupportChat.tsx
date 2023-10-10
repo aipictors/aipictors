@@ -1,6 +1,6 @@
 "use client"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { HStack, Stack, useInterval, useToast } from "@chakra-ui/react"
+import { Stack, useInterval, useToast } from "@chakra-ui/react"
 import { startTransition } from "react"
 import type {
   CreateMessageMutationResult,
@@ -61,14 +61,12 @@ export const SupportChat: React.FC = () => {
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"} pb={40}>
-      <Stack maxW={"sm"} w={"100%"} p={4} spacing={8}>
-        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-        <SupportMessageList
-          messages={messages}
-          recipientIconImageURL={adminAvatarURL}
-        />
-      </Stack>
-    </HStack>
+    <Stack w={"100%"} spacing={8} pb={16}>
+      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+      <SupportMessageList
+        messages={messages}
+        recipientIconImageURL={adminAvatarURL}
+      />
+    </Stack>
   )
 }

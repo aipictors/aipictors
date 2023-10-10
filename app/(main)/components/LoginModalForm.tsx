@@ -63,10 +63,10 @@ export const LoginModalForm: React.FC<Props> = (props) => {
               setPassword(event.target.value)
             }}
           />
+          <Button isLoading={props.isLoading} lineHeight={1} onClick={onLogin}>
+            {"ログイン"}
+          </Button>
         </Stack>
-        <Button isLoading={props.isLoading} lineHeight={1} onClick={onLogin}>
-          {"ログイン"}
-        </Button>
       </Stack>
     </Stack>
   )

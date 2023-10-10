@@ -34,7 +34,7 @@ export const MainPlusAbout: React.FC = () => {
   }
 
   return (
-    <Stack spacing={8} maxW={"lg"} pb={16}>
+    <Stack spacing={8} pb={16}>
       <HStack
         justifyContent={"center"}
         fontSize={"xx-large"}

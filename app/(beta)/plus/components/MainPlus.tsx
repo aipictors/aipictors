@@ -16,7 +16,7 @@ import type {
 } from "__generated__/apollo"
 import { ViewerPassSubscriptionDocument } from "__generated__/apollo"
 import { MainPlusAbout } from "app/(beta)/plus/components/MainPlusAbout"
-import { toDateTimeText } from "app/utils/toDateTimeText"
+import { toDateText } from "app/utils/toDateText"
 
 export const MainPlus: React.FC = () => {
   const { data: passSubscription } = useSuspenseQuery<
@@ -32,12 +32,12 @@ export const MainPlus: React.FC = () => {
     return <MainPlusAbout />
   }
 
-  const periodEndDateText = toDateTimeText(
+  const periodEndDateText = toDateText(
     passSubscription.viewer.passSubscription.periodEnd,
   )
 
   return (
-    <Stack spacing={8} maxW={"container.md"} pb={16}>
+    <Stack spacing={8} pb={16}>
       <HStack
         justifyContent={"center"}
         fontSize={"xx-large"}
