@@ -82,6 +82,7 @@ export const GenerationEditorModels: React.FC<Props> = (props) => {
                       <Image
                         src={imageModel.thumbnailImageURL!}
                         alt={imageModel.displayName}
+                        borderRadius={"md"}
                       />
                     </Button>
                     <Text fontSize={"sm"}>{imageModel.displayName}</Text>

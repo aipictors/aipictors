@@ -13,6 +13,7 @@ import {
   Tooltip,
   Image,
   useDisclosure,
+  SimpleGrid,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraModelsModal } from "app/(main)/generation/components/LoraModelsModal"
@@ -43,15 +44,28 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             </Tooltip>
           </HStack>
           <HStack spacing={4}>
-            <Stack>
-              <Image
-                src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
-                alt={props.imageLoraModels[0].name}
-                boxSize={20}
-                borderRadius={"md"}
-              />
-              <Text fontSize={"xs"}>{props.imageLoraModels[0].name}</Text>
-            </Stack>
+            <SimpleGrid spacing={2}>
+              <Card>
+                <Stack>
+                  <Button
+                    p={0}
+                    h={"auto"}
+                    overflow={"hidden"}
+                    variant={"outline"}
+                    borderWidth={2}
+                    borderColor={"gray.200"}
+                  >
+                    <Image
+                      src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
+                      alt={props.imageLoraModels[0].name}
+                      borderRadius={"md"}
+                      w={"sm"}
+                    />
+                  </Button>
+                  <Text fontSize={"sm"}>{props.imageLoraModels[0].name}</Text>
+                </Stack>
+              </Card>
+            </SimpleGrid>
             <Stack>
               <Text fontSize={"xs"} w={32}>
                 {"フラットな絵になります２"}
@@ -73,15 +87,28 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             </Stack>
           </HStack>
           <HStack spacing={4}>
-            <Stack>
-              <Image
-                src={props.imageLoraModels[1].thumbnailImageURL!}
-                alt={props.imageLoraModels[1].name}
-                boxSize={20}
-                borderRadius={"md"}
-              />
-              <Text fontSize={"xs"}>{props.imageLoraModels[1].name}</Text>
-            </Stack>
+            <SimpleGrid spacing={2}>
+              <Card>
+                <Stack>
+                  <Button
+                    p={0}
+                    h={"auto"}
+                    overflow={"hidden"}
+                    variant={"outline"}
+                    borderWidth={2}
+                    borderColor={"gray.200"}
+                  >
+                    <Image
+                      src={props.imageLoraModels[1].thumbnailImageURL!}
+                      alt={props.imageLoraModels[1].name}
+                      borderRadius={"md"}
+                      w={"sm"}
+                    />
+                  </Button>
+                  <Text fontSize={"xs"}>{props.imageLoraModels[1].name}</Text>
+                </Stack>
+              </Card>
+            </SimpleGrid>
             <Stack>
               <Text fontSize={"xs"} w={32}>
                 {"髪がより細かく描き込まれます"}

@@ -1,5 +1,5 @@
 "use client"
-import { Grid, GridItem } from "@chakra-ui/react"
+import { Grid, GridItem, useBreakpointValue } from "@chakra-ui/react"
 import { useState } from "react"
 import type {
   ImageLoraModelsQuery,
@@ -36,24 +36,49 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     editorNegativePrompt: "editor-negative-prompt",
   }
 
-  const templateAreas = [
-    [area.models, area.editorPrompt, area.histories].join(" "),
-    [area.loraModels, area.editorNegativePrompt, area.histories].join(" "),
-  ]
-    .map((row) => `"${row}"`)
+  const responsiveAreas = useBreakpointValue({
+    base: [
+      [area.models],
+      [area.loraModels],
+      [area.editorPrompt],
+      [area.editorNegativePrompt],
+      [area.histories],
+    ],
+    sm: [
+      [area.models, area.editorPrompt],
+      [area.loraModels, area.editorNegativePrompt],
+      [area.histories, area.histories],
+    ],
+    xl: [
+      [area.models, area.editorPrompt, area.histories],
+      [area.loraModels, area.editorNegativePrompt, area.histories],
+    ],
+  })
+
+  const templateAreas = (responsiveAreas ?? [])
+    .map((row) => `"${row.join(" ")}"`)
     .join("\n")
 
   return (
     <Grid
       as={"main"}
       templateAreas={templateAreas}
-      gridTemplateRows={"1fr 1fr"}
-      gridTemplateColumns={"1fr 1fr 1fr"}
+      gridTemplateRows={{
+        base: "1fr 1fr 1fr 1fr 1fr",
+        sm: "1fr 1fr 1fr",
+        xl: "1fr 1fr",
+      }}
+      gridTemplateColumns={{
+        base: "1fr",
+        sm: "1fr 1fr",
+        xl: "1fr 1fr 1fr",
+      }}
       w={"100%"}
       gap={2}
       h={"calc(100svh - 64px)"}
       px={4}
       pb={4}
+      overflowY={"auto"}
     >
       <GridItem area={area.models}>
         <GenerationEditorModels
