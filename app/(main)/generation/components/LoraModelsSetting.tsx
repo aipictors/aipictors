@@ -17,7 +17,7 @@ import {
   Icon,
   IconButton,
 } from "@chakra-ui/react"
-import { TbDice3, TbRepeat } from "react-icons/tb"
+import { TbDice3, TbRefresh } from "react-icons/tb"
 
 export const LoraModelsSetting: React.FC = () => {
   return (
@@ -95,7 +95,7 @@ export const LoraModelsSetting: React.FC = () => {
           <Tooltip label="前回生成に使用したSeed値を復元する" fontSize="md">
             <IconButton
               aria-label="previous month"
-              icon={<Icon as={TbRepeat} fontSize={"lg"} />}
+              icon={<Icon as={TbRefresh} fontSize={"lg"} />}
               borderRadius={"md"}
               size={"sm"}
               onClick={() => {

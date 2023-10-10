@@ -2,6 +2,8 @@
 
 import {
   Button,
+  HStack,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,7 +11,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Stack,
+  Text,
 } from "@chakra-ui/react"
+import { InPaintingIMage } from "app/(main)/generation/components/InPaintingIMage"
+import { InPaintingSetting } from "app/(main)/generation/components/InPaintingSetting"
 
 type Props = {
   isOpen: boolean
@@ -22,22 +28,44 @@ export const InPaintingImageModal: React.FC<Props> = (props) => {
       onClose={props.onClose}
       isOpen={props.isOpen}
       scrollBehavior={"inside"}
-      size={"xl"}
+      size={"4xl"}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{"一部修正する"}</ModalHeader>
+        <ModalHeader></ModalHeader>
         <ModalCloseButton />
-        <ModalBody alignItems={"center"} justifyContent={"center"}></ModalBody>
-        <ModalFooter justifyContent={"center"}>
-          <Button
-            onClick={() => {
-              props.onClose()
-            }}
-          >
-            {"OK"}
-          </Button>
-        </ModalFooter>
+        <ModalBody>
+          <Stack spacing={4}>
+            <Stack alignItems={"center"}>
+              <Text fontSize={"lg"}>{"一部修正"}</Text>
+              <Text fontSize={"md"}>
+                {
+                  "画像の修正したい箇所を塗潰して置き換えたい内容のキーワードを入力してください"
+                }
+              </Text>
+            </Stack>
+            <Stack spacing={2}>
+              <HStack justifyContent={"flex-start"}>
+                <Text>{"修正内容のキーワード（英単語）:"}</Text>
+              </HStack>
+              <Input placeholder="一部修正" />
+            </Stack>
+            <InPaintingSetting />
+            <InPaintingIMage />
+            <HStack justifyContent={"center"}>
+              <Button
+                borderRadius={"full"}
+                colorScheme="primary"
+                onClick={() => {
+                  props.onClose()
+                }}
+              >
+                {"修正する"}
+              </Button>
+            </HStack>
+          </Stack>
+        </ModalBody>
+        <ModalFooter justifyContent={"center"}></ModalFooter>
       </ModalContent>
     </Modal>
   )

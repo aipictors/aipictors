@@ -13,8 +13,10 @@ import {
   Image,
   HStack,
   Stack,
+  useDisclosure,
 } from "@chakra-ui/react"
 import { useState } from "react"
+import { SelectedPromptModal } from "app/(main)/generation/components/SelectedPromptModal"
 import { StarRating } from "app/(main)/generation/components/StarRating"
 
 type Props = {
@@ -25,6 +27,12 @@ type Props = {
 }
 
 export const SelectedImageModal: React.FC<Props> = (props) => {
+  const {
+    isOpen: isPromptOpen,
+    onOpen: onPromptOpen,
+    onClose: onPromptClose,
+  } = useDisclosure()
+
   const [rating, setRating] = useState(0)
 
   return (
@@ -39,7 +47,7 @@ export const SelectedImageModal: React.FC<Props> = (props) => {
         <ModalContent>
           <ModalHeader></ModalHeader>
           <ModalCloseButton />
-          <ModalBody alignItems={"center"} justifyContent={"center"}>
+          <ModalBody justifyContent={"center"}>
             <Stack spacing={2} alignItems={"center"}>
               <Image
                 boxSize={"lg"}
@@ -51,7 +59,15 @@ export const SelectedImageModal: React.FC<Props> = (props) => {
                   "選んだプロンプトたち：masterpiece, best quality, extremely detailed, anime, girl, skirt, donut, braids,"
                 }
               </Text>
-              <Button size={"xs"} variant={"ghost"} textColor={"blue.400"}>
+              <Button
+                size={"xs"}
+                variant={"ghost"}
+                textColor={"blue.400"}
+                onClick={() => {
+                  onPromptOpen()
+                  props.onClose()
+                }}
+              >
                 {"more"}
               </Button>
               <Stack spacing={2}>
@@ -108,6 +124,7 @@ export const SelectedImageModal: React.FC<Props> = (props) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <SelectedPromptModal isOpen={isPromptOpen} onClose={onPromptClose} />
     </>
   )
 }

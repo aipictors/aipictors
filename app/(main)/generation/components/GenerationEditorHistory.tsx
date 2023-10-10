@@ -13,11 +13,25 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
+import { GenerationHistoryDeleteModal } from "app/(main)/generation/components/GenerationHistoryDeleteModal"
+import { GenerationHistoryDlModal } from "app/(main)/generation/components/GenerationHistoryDlModal"
 import { InPaintingImageModal } from "app/(main)/generation/components/InPaintingImageModal"
 import { SelectedImageModal } from "app/(main)/generation/components/SelectedImageModal"
 
 export const GenerationEditorHistory = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure()
+
+  const {
+    isOpen: isDlOpen,
+    onOpen: onDlOpen,
+    onClose: onDlClose,
+  } = useDisclosure()
 
   const {
     isOpen: isOpenInPainting,
@@ -36,11 +50,13 @@ export const GenerationEditorHistory = () => {
               aria-label={"削除"}
               borderRadius={"full"}
               icon={<Icon as={TbTrash} />}
+              onClick={onDeleteOpen}
             />
             <IconButton
               aria-label={"ダウンロード"}
               borderRadius={"full"}
               icon={<Icon as={TbDownload} />}
+              onClick={onDlOpen}
             />
             <Button borderRadius={"full"}>{"解除"}</Button>
             <IconButton
@@ -83,6 +99,11 @@ export const GenerationEditorHistory = () => {
         isOpen={isOpenInPainting}
         onClose={onCloseInPainting}
       />
+      <GenerationHistoryDeleteModal
+        isOpen={isDeleteOpen}
+        onClose={onDeleteClose}
+      />
+      <GenerationHistoryDlModal isOpen={isDlOpen} onClose={onDlClose} />
     </>
   )
 }
