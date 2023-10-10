@@ -14,6 +14,7 @@ import {
   TbBrandYoutubeFilled,
   TbHome,
   TbMessageCircle2,
+  TbSparkles,
 } from "react-icons/tb"
 import { HomeNavigationButton } from "app/(main)/components/HomeNavigationButton"
 import { AppContext } from "app/contexts/appContext"
@@ -36,14 +37,25 @@ export const BetaNavigationList: React.FC<Props> = (props) => {
       >
         {"ホーム"}
       </HomeNavigationButton>
+      {appContext.isLoggedIn && (
+        <HomeNavigationButton href={"/plus"} leftIcon={TbSparkles}>
+          {"Aipictors+"}
+        </HomeNavigationButton>
+      )}
+
+      {appContext.isLoggedIn && (
+        <HomeNavigationButton
+          href={"/support/chat"}
+          leftIcon={TbMessageCircle2}
+        >
+          {"お問い合わせ"}
+        </HomeNavigationButton>
+      )}
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate/"}
         leftIcon={TbBolt}
       >
         {"画像生成"}
-      </HomeNavigationButton>
-      <HomeNavigationButton href={"/support/chat"} leftIcon={TbMessageCircle2}>
-        {"お問い合わせ"}
       </HomeNavigationButton>
       {/* {appContext.isLoggedIn && (
         <HomeNavigationButton
