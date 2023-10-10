@@ -18,7 +18,7 @@ export const BoxFormLogin: React.FC<Props> = (props) => {
   }
 
   return (
-    <Card variant={"unstyled"} w={"100%"} maxW={"xs"} borderRadius={"lg"}>
+    <Card variant={"unstyled"} w={"100%"} borderRadius={"lg"}>
       <Stack spacing={8} p={0}>
         <HStack justifyContent={"center"}>
           <Image alt={"Logo"} src={"/icon.png"} maxW={"4rem"} />
