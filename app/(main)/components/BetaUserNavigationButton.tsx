@@ -17,7 +17,6 @@ import {
   TbLogin,
   TbLogout,
   TbMoonFilled,
-  TbSettings,
   TbSparkles,
   TbSunFilled,
   TbUser,
@@ -92,7 +91,7 @@ export const BetaUserNavigationButton: React.FC = () => {
             {"Aipictors+"}
           </MenuItem>
         )}
-        {appContext.isLoggedIn && (
+        {/* {appContext.isLoggedIn && (
           <MenuItem
             as={Link}
             icon={<Icon as={TbSettings} fontSize={"lg"} />}
@@ -100,7 +99,7 @@ export const BetaUserNavigationButton: React.FC = () => {
           >
             {"設定"}
           </MenuItem>
-        )}
+        )} */}
         <MenuItem
           icon={
             <Icon
