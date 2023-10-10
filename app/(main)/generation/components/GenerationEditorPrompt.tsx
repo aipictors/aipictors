@@ -11,9 +11,14 @@ import {
   useDisclosure,
   Tooltip,
 } from "@chakra-ui/react"
+import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoriesModal } from "app/(main)/generation/components/PromptCategoriesModal"
 
-export const GenerationEditorPrompt = () => {
+type Props = {
+  promptCategories: PromptCategoryQuery["promptCategories"]
+}
+
+export const GenerationEditorPrompt: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -45,7 +50,11 @@ export const GenerationEditorPrompt = () => {
           </Box>
         </Stack>
       </Card>
-      <PromptCategoriesModal onClose={onClose} isOpen={isOpen} />
+      <PromptCategoriesModal
+        onClose={onClose}
+        isOpen={isOpen}
+        promptCategories={props.promptCategories}
+      />
     </>
   )
 }

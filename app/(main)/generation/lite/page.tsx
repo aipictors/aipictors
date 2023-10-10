@@ -12,7 +12,11 @@ const GenerationLitePage = async () => {
     variables: {},
   })
 
-  return <GenerationEditorLite promptCategoryQuery={promptCategoryQuery.data} />
+  return (
+    <GenerationEditorLite
+      promptCategories={promptCategoryQuery.data.promptCategories}
+    />
+  )
 }
 
 export const metadata: Metadata = {

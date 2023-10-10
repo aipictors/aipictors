@@ -74,7 +74,9 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         />
       </GridItem>
       <GridItem area={area.editorPrompt}>
-        <GenerationEditorPrompt />
+        <GenerationEditorPrompt
+          promptCategories={props.promptCategoryQuery.promptCategories}
+        />
       </GridItem>
       <GridItem area={area.editorNegativePrompt}>
         <GenerationEditorNegative />

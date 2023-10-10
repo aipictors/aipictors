@@ -16,7 +16,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useState } from "react"
-import { SelectedPromptModal } from "app/(main)/generation/components/SelectedPromptModal"
+import { InPaintingSelectedPromptModal } from "app/(main)/generation/components/InPaintingSelectedPromptModal"
 import { StarRating } from "app/(main)/generation/components/StarRating"
 
 type Props = {
@@ -124,7 +124,10 @@ export const SelectedImageModal: React.FC<Props> = (props) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <SelectedPromptModal isOpen={isPromptOpen} onClose={onPromptClose} />
+      <InPaintingSelectedPromptModal
+        isOpen={isPromptOpen}
+        onClose={onPromptClose}
+      />
     </>
   )
 }
