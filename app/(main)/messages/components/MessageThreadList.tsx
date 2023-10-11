@@ -1,7 +1,17 @@
 "use client"
 import { useSuspenseQuery } from "@apollo/client"
-import { Box, Text, Stack, Divider, Button } from "@chakra-ui/react"
+import {
+  Box,
+  Text,
+  Stack,
+  Divider,
+  Button,
+  HStack,
+  Avatar,
+} from "@chakra-ui/react"
 import Link from "next/link"
+import { startTransition } from "react"
+import { useInterval } from "usehooks-ts"
 import type {
   ViewerMessageThreadsQuery,
   ViewerMessageThreadsQueryVariables,
@@ -10,7 +20,7 @@ import { ViewerMessageThreadsDocument } from "__generated__/apollo"
 import { toDateTimeText } from "app/utils/toDateTimeText"
 
 export const MessageThreadList: React.FC = () => {
-  const { data: threads } = useSuspenseQuery<
+  const { data: threads, refetch } = useSuspenseQuery<
     ViewerMessageThreadsQuery,
     ViewerMessageThreadsQueryVariables
   >(ViewerMessageThreadsDocument, {
@@ -20,11 +30,11 @@ export const MessageThreadList: React.FC = () => {
     },
   })
 
-  // useInterval(() => {
-  //   startTransition(() => {
-  //     refetch()
-  //   })
-  // }, 4000)
+  useInterval(() => {
+    startTransition(() => {
+      refetch()
+    })
+  }, 4000)
 
   const messageThreads = threads.viewer?.messageThreads ?? []
 
@@ -35,6 +45,7 @@ export const MessageThreadList: React.FC = () => {
       top={"64px"}
       h={"calc(100svh - 64px)"}
       minW={64}
+      maxW={64}
       overflowY={"auto"}
       borderLeftWidth={1}
       borderRightWidth={1}
@@ -49,11 +60,22 @@ export const MessageThreadList: React.FC = () => {
             p={0}
             key={messageThread.id}
             href={`/messages/${messageThread.id}`}
+            borderRadius={0}
           >
-            <Stack px={4} py={2} spacing={1} overflow={"hidden"}>
-              <Text fontWeight={"bold"}>{messageThread.recipient.name}</Text>
-              <Stack spacing={2}>
-                <Text whiteSpace={"pre-wrap"} lineHeight={1}>
+            <Stack px={4} py={4} spacing={2} overflow={"hidden"}>
+              <HStack>
+                <Avatar
+                  src={messageThread.recipient.iconImage?.downloadURL}
+                  size={"xs"}
+                />
+                <Text fontWeight={"bold"}>{messageThread.recipient.name}</Text>
+              </HStack>
+              <Stack spacing={1}>
+                <Text
+                  lineHeight={1}
+                  textOverflow={"ellipsis"}
+                  overflow={"hidden"}
+                >
                   {messageThread.latestMessage.text}
                 </Text>
                 <Text fontSize={"xs"} opacity={0.8}>
