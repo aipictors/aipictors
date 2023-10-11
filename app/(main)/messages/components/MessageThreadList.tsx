@@ -8,10 +8,10 @@ import {
   Button,
   HStack,
   Avatar,
+  useInterval,
 } from "@chakra-ui/react"
 import Link from "next/link"
 import { startTransition } from "react"
-import { useInterval } from "usehooks-ts"
 import type {
   ViewerMessageThreadsQuery,
   ViewerMessageThreadsQueryVariables,
