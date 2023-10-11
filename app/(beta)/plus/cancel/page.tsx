@@ -1,12 +1,17 @@
 import type { Metadata } from "next"
-import { MainPlusCancel } from "app/(beta)/plus/cancel/components/MainPlusCancel"
+import { PlusCancel } from "app/(beta)/plus/cancel/components/PlusCancel"
+import { MainCenterPage } from "app/components/MainCenterPage"
 
 /**
  * サブスクの決済をキャンセルした場合のページ
  * @returns
  */
 const PlusCancelPage = async () => {
-  return <MainPlusCancel />
+  return (
+    <MainCenterPage>
+      <PlusCancel />
+    </MainCenterPage>
+  )
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {
