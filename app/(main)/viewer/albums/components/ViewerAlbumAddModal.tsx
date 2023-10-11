@@ -92,7 +92,10 @@ export const ViewerAlbumAddModal: React.FC<Props> = (props) => {
                 <Button
                   colorScheme="primary"
                   borderRadius={"full"}
-                  onClick={props.onClose}
+                  onClick={() => {
+                    alert("投稿しました")
+                    props.onClose()
+                  }}
                 >
                   {"保存"}
                 </Button>

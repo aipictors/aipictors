@@ -8,6 +8,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { TbPlus } from "react-icons/tb"
+import { ViewerAlbumList } from "app/(main)/viewer/albums/components/VIewerAlbumList"
 import { ViewerAlbumAddModal } from "app/(main)/viewer/albums/components/ViewerAlbumAddModal"
 
 export const ViewerAlbumHeader: React.FC = () => {
@@ -15,7 +16,7 @@ export const ViewerAlbumHeader: React.FC = () => {
 
   return (
     <>
-      <Stack>
+      <Stack spacing={4}>
         <Text>{"投稿作品をシリーズにまとめてシェアしてみよう！"}</Text>
         <HStack justifyContent={"center"}>
           <IconButton
@@ -26,6 +27,7 @@ export const ViewerAlbumHeader: React.FC = () => {
             onClick={onOpen}
           />
         </HStack>
+        <ViewerAlbumList />
       </Stack>
       <ViewerAlbumAddModal isOpen={isOpen} onClose={onClose} />
     </>
