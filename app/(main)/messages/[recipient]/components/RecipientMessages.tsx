@@ -59,9 +59,6 @@ export const RecipientMessages: React.FC<Props> = (props) => {
     }
   }
 
-  const adminAvatarURL =
-    "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp"
-
   const messages = data?.viewer?.messageThread?.messages ?? []
 
   return (
@@ -70,7 +67,9 @@ export const RecipientMessages: React.FC<Props> = (props) => {
         <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
         <SupportMessageList
           messages={messages}
-          recipientIconImageURL={adminAvatarURL}
+          recipientIconImageURL={
+            data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ?? ""
+          }
         />
       </Stack>
     </HStack>

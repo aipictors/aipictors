@@ -12,17 +12,19 @@ export const RecipientMessage: React.FC<Props> = (props) => {
   return (
     <HStack spacing={4} alignItems={"flex-start"}>
       <Avatar src={props.iconImageURL} />
-      <Stack>
+      <Stack maxW={"sm"}>
         <Card
           variant={"filled"}
           px={6}
           py={2}
-          borderRightRadius={"full"}
-          borderBottomLeftRadius={"full"}
+          borderTopRightRadius={"xl"}
+          borderTopLeftRadius={"sm"}
+          borderBottomRightRadius={"xl"}
+          borderBottomLeftRadius={"xl"}
         >
-          <Text>{props.text}</Text>
+          <Text whiteSpace={"pre-wrap"}>{props.text}</Text>
         </Card>
-        <HStack justifyContent={"end"}>
+        <HStack justifyContent={"flex-end"}>
           <Text fontSize={"2xs"}>{toElapsedTimeText(props.createdAt)}</Text>
         </HStack>
       </Stack>

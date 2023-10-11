@@ -5,6 +5,7 @@ export const MESSAGE_THREAD_MESSAGES = gql`
     viewer {
       messageThread(threadId: $threadId) {
         id
+        ...MessageThreadFields
         messages(offset: $offset, limit: $limit) {
           ...MessageFields
         }
