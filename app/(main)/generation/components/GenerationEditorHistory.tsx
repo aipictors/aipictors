@@ -65,22 +65,24 @@ export const GenerationEditorHistory = () => {
               icon={<Icon as={TbStar} />}
             />
           </HStack>
-          <SimpleGrid spacing={2} columns={3} py={4}>
-            <Button
-              p={0}
-              h={"auto"}
-              overflow={"hidden"}
-              variant={"outline"}
-              borderWidth={2}
-              borderColor={"blue.500"}
-              onClick={onOpen}
-            >
-              <Image
-                src="https://source.unsplash.com/random/800x600"
-                alt=""
-                boxSize={28}
-              />
-            </Button>
+          <SimpleGrid spacing={2} columns={{ base: 3, md: 4 }} py={4}>
+            <Card>
+              <Button
+                p={0}
+                h={"auto"}
+                overflow={"hidden"}
+                variant={"outline"}
+                borderWidth={2}
+                borderColor={"blue.500"}
+                onClick={onOpen}
+              >
+                <Image
+                  src="https://source.unsplash.com/random/800x600"
+                  alt=""
+                  boxSize={28}
+                />
+              </Button>
+            </Card>
           </SimpleGrid>
         </Stack>
       </Card>
