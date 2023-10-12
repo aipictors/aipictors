@@ -1,5 +1,5 @@
 ---
-name: "✍✨　作品機能の改善"
+name: "作品 - ✨　改善"
 about: 作品機能の改善する開発内容を提案する。✒
 title: ''
 labels: ":sparkles: enhancement"

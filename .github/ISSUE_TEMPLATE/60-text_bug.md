@@ -1,5 +1,5 @@
 ---
-name: "🐛　誤字脱字"
+name: "誤字脱字 - 🐛　バグ"
 about: 誤字や脱字を見つけたので報告する。
 title: ''
 labels: ":bug: bug"
