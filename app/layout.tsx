@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Script from "next/dist/client/script"
 import { Providers } from "app/providers"
 import { Config } from "config"
 
@@ -24,6 +25,14 @@ const RootLayout: React.FC<Props> = (props) => {
         />
         <link href={mPlus1p} rel={"stylesheet"} />
         <link href={pixelifySans} rel="stylesheet" />
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxx"
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body>
         <Providers>{props.children}</Providers>
