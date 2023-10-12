@@ -28,7 +28,7 @@ const RootLayout: React.FC<Props> = (props) => {
         {process.env.NODE_ENV === 'production' && (
           <Script
             async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxx"
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2116548824296763"
             crossOrigin="anonymous"
             strategy="afterInteractive"
           />
