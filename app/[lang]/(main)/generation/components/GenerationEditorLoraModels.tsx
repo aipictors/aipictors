@@ -30,12 +30,12 @@ type Props = {
 export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const selectedModeIds = props.selectedModels.map((model) => model.id)
+  const selectedModelIds = props.selectedModels.map((model) => model.id)
 
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = selectedModeIds.map((id) => {
+  const selectedModels = selectedModelIds.map((id) => {
     return props.models.find((model) => model.id === id)!
   })
 
@@ -79,7 +79,7 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
-        selectedModelIds={selectedModeIds}
+        selectedModelIds={selectedModelIds}
         onSelect={props.onSelectModelId}
       />
     </>

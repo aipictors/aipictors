@@ -13,22 +13,24 @@ import { GenerationEditorModels } from "app/[lang]/(main)/generation/components/
 import { GenerationEditorNegative } from "app/[lang]/(main)/generation/components/GenerationEditorNegative"
 import { GenerationEditorPrompt } from "app/[lang]/(main)/generation/components/GenerationEditorPrompt"
 import { useImageGenerationAreas } from "app/[lang]/(main)/generation/hooks/useImageGenerationAreas"
+import { Config } from "config"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
-  promptCategoryQuery: PromptCategoryQuery
-  ImageLoraModelsQuery: ImageLoraModelsQuery
+  promptCategories: PromptCategoryQuery["promptCategories"]
+  imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
-  const [selectedImageModelId, onSelectedImageModelId] = useState<
-    string | null
-  >(null)
+  const [selectedImageModelId, onSelectedImageModelId] = useState(
+    Config.defaultImageModelId,
+  )
 
-  const [selectedLoraModels, selectLoraModels] = useState([
-    { id: props.ImageLoraModelsQuery.imageLoraModels[0].id, value: 0 },
-    { id: props.ImageLoraModelsQuery.imageLoraModels[1].id, value: 0 },
-  ])
+  const [selectedLoraModels, selectLoraModels] = useState(() => {
+    return Config.defaultImageLoraModelIds.map((id) => {
+      return { id, value: 0 }
+    })
+  })
 
   const area = {
     models: "models",
@@ -95,7 +97,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     >
       <GridItem area={area.models}>
         <GenerationEditorModels
-          imageModels={props.imageModels}
+          models={props.imageModels}
           selectedImageModelId={selectedImageModelId}
           onSelectImageModelId={(id) => {
             onSelectedImageModelId(id)
@@ -104,7 +106,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       </GridItem>
       <GridItem area={area.loraModels}>
         <GenerationEditorLoraModels
-          models={props.ImageLoraModelsQuery.imageLoraModels}
+          models={props.imageLoraModels}
           selectedModels={selectedLoraModels}
           onSelectModelId={onSelectLoraModelId}
           onChangeValue={(id, value) => {
@@ -119,9 +121,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         />
       </GridItem>
       <GridItem area={area.editorPrompt}>
-        <GenerationEditorPrompt
-          promptCategories={props.promptCategoryQuery.promptCategories}
-        />
+        <GenerationEditorPrompt promptCategories={props.promptCategories} />
       </GridItem>
       <GridItem area={area.editorNegativePrompt}>
         <GenerationEditorNegative />

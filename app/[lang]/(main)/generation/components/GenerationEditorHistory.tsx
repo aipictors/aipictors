@@ -16,7 +16,7 @@ import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 import { GenerationHistoryDeleteModal } from "app/[lang]/(main)/generation/components/GenerationHistoryDeleteModal"
 import { GenerationHistoryDlModal } from "app/[lang]/(main)/generation/components/GenerationHistoryDlModal"
 import { InPaintingImageModal } from "app/[lang]/(main)/generation/components/InPaintingImageModal"
-import { SelectedImageModal } from "app/[lang]/(main)/generation/components/SelectedImageModal"
+import { SelectedWorkModal } from "app/[lang]/(main)/generation/components/SelectedWorkModal"
 
 export const GenerationEditorHistory = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -80,13 +80,14 @@ export const GenerationEditorHistory = () => {
                   src="https://source.unsplash.com/random/800x600"
                   alt=""
                   boxSize={28}
+                  draggable={false}
                 />
               </Button>
             </Card>
           </SimpleGrid>
         </Stack>
       </Card>
-      <SelectedImageModal
+      <SelectedWorkModal
         isOpen={isOpen}
         onClose={onClose}
         onOpenInPainting={() => {

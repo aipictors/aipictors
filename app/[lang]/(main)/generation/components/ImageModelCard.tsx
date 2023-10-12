@@ -1,18 +1,15 @@
 import { Card, Stack, Button, Image, Text } from "@chakra-ui/react"
-import type { ImageModelsQuery } from "__generated__/apollo"
 
 type Props = {
-  imageModels: ImageModelsQuery["imageModels"]
-  selectedImageModelId: string | null
-  onSelectImageModelId(id: string | null): void
-  imageModelId: string
-  imageModelDisplayName: string
-  imageModelImageURL: string | null
+  onSelect(): void
+  name: string
+  imageURL: string | null
+  isActive: boolean
 }
 
 export const ImageModelCard: React.FC<Props> = (props) => {
   return (
-    <Card key={props.imageModelId}>
+    <Card>
       <Stack>
         <Button
           p={0}
@@ -20,21 +17,14 @@ export const ImageModelCard: React.FC<Props> = (props) => {
           overflow={"hidden"}
           variant={"outline"}
           borderWidth={2}
-          borderColor={
-            props.selectedImageModelId === props.imageModelId
-              ? "primary.500"
-              : "gray.200"
-          }
+          borderColor={props.isActive ? "primary.500" : "gray.200"}
           onClick={() => {
-            props.onSelectImageModelId(props.imageModelId)
+            props.onSelect()
           }}
         >
-          <Image
-            src={props.imageModelImageURL!}
-            alt={props.imageModelDisplayName}
-          />
+          <Image src={props.imageURL!} alt={props.name} />
         </Button>
-        <Text>{props.imageModelDisplayName}</Text>
+        <Text>{props.name}</Text>
       </Stack>
     </Card>
   )

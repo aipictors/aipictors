@@ -41,6 +41,7 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
               borderRadius={"md"}
               w={"100%"}
               maxW={32}
+              draggable={false}
             />
           </Button>
         </Stack>

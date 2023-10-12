@@ -3,6 +3,17 @@ export class Config {
     return ["1", "3", "19"]
   }
 
+  static get defaultImageModelId() {
+    return "1"
+  }
+
+  /**
+   * デフォルトのLoRAモデルID
+   */
+  static get defaultImageLoraModelIds() {
+    return ["25", "26"]
+  }
+
   static get currentWebSiteURL() {
     return "https://www.aipictors.com"
   }

@@ -18,9 +18,9 @@ import { ImageModelCard } from "app/[lang]/(main)/generation/components/ImageMod
 type Props = {
   isOpen: boolean
   onClose(): void
-  imageModels: ImageModelsQuery["imageModels"]
-  selectedImageModelId: string | null
-  onSelectImageModelId(id: string | null): void
+  models: ImageModelsQuery["imageModels"]
+  selectedModelId: string | null
+  onSelect(id: string | null): void
 }
 
 export const ModelsModal: React.FC<Props> = (props) => {
@@ -42,16 +42,16 @@ export const ModelsModal: React.FC<Props> = (props) => {
           <Text>{"背景"}</Text>
           <Text>{"獣系"}</Text>
           <SimpleGrid columns={{ base: 3, sm: 3, md: 4 }} spacing={2}>
-            {props.imageModels.map((imageModel) => {
+            {props.models.map((imageModel) => {
               return (
                 <ImageModelCard
                   key={imageModel.id}
-                  imageModels={props.imageModels}
-                  selectedImageModelId={props.selectedImageModelId}
-                  onSelectImageModelId={props.onSelectImageModelId}
-                  imageModelId={imageModel.id}
-                  imageModelDisplayName={imageModel.displayName}
-                  imageModelImageURL={imageModel.thumbnailImageURL}
+                  onSelect={() => {
+                    props.onSelect(imageModel.id)
+                  }}
+                  name={imageModel.displayName ?? ""}
+                  imageURL={imageModel.thumbnailImageURL ?? ""}
+                  isActive={props.selectedModelId === imageModel.id}
                 />
               )
             })}

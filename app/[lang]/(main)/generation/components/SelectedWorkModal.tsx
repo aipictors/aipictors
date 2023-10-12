@@ -26,7 +26,7 @@ type Props = {
   onOpenInPainting(): void
 }
 
-export const SelectedImageModal: React.FC<Props> = (props) => {
+export const SelectedWorkModal: React.FC<Props> = (props) => {
   const {
     isOpen: isPromptOpen,
     onOpen: onPromptOpen,

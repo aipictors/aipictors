@@ -33,9 +33,9 @@ const GenerationPage = async () => {
   return (
     <>
       <GenerationEditor
-        promptCategoryQuery={promptCategoryQuery.data}
+        promptCategories={promptCategoryQuery.data.promptCategories}
         imageModels={imageModelsQuery.data.imageModels}
-        ImageLoraModelsQuery={imageLoraModelsQuery.data}
+        imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
       />
     </>
   )
