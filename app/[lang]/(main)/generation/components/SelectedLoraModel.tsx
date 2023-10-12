@@ -12,12 +12,13 @@ import {
   Text,
   Image,
 } from "@chakra-ui/react"
-import type { ImageLoraModelsQuery } from "__generated__/apollo"
 
 type Props = {
-  imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
-  selectedImageLoraModelId: string | null
-  onSelectImageLoraModelId(id: string | null): void
+  imageURL: string
+  name: string
+  description: string
+  value: number
+  setValue(value: number): void
 }
 
 export const SelectedLoraModel: React.FC<Props> = (props) => {
@@ -34,8 +35,8 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
             borderColor={"gray.200"}
           >
             <Image
-              src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
-              alt={props.imageLoraModels[0].name}
+              src={props.imageURL ?? ""}
+              alt={props.name}
               borderRadius={"md"}
               w={"100%"}
               maxW={32}
@@ -43,17 +44,31 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
           </Button>
         </Stack>
       </Card>
-      <Stack flex={1}>
-        <Text fontSize={"lg"}>{props.imageLoraModels[0].name}</Text>
-        <Text fontSize={"xs"}>{"フラットな絵になります２"}</Text>
+      <Stack flex={1} overflow={"hidden"}>
+        <Text fontSize={"lg"} whiteSpace={"pre-wrap"} lineHeight={1.2}>
+          {props.name}
+        </Text>
+        <Text fontSize={"xs"} whiteSpace={"pre-wrap"} lineHeight={1.2}>
+          {props.description}
+        </Text>
         <HStack>
-          <Slider aria-label="slider-ex-2" colorScheme="pink" defaultValue={50}>
+          <Slider
+            aria-label="slider-ex-2"
+            colorScheme="pink"
+            value={props.value}
+            min={-1}
+            max={1}
+            step={0.01}
+            onChange={(value) => props.setValue(value)}
+          >
             <SliderTrack>
               <SliderFilledTrack />
             </SliderTrack>
             <SliderThumb />
           </Slider>
-          <Text>{"0"}</Text>
+          <HStack w={16} justifyContent={"flex-end"}>
+            <Text>{props.value.toFixed(2)}</Text>
+          </HStack>
         </HStack>
       </Stack>
     </HStack>

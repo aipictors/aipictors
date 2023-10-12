@@ -2,6 +2,7 @@
 import React, { useContext } from "react"
 import { MessageThreadList } from "app/[lang]/(main)/messages/components/MessageThreadList"
 import MessagesLoading from "app/[lang]/(main)/messages/loading"
+import { LoginPage } from "app/components/LoginPage"
 import { AppContext } from "app/contexts/appContext"
 
 type Props = {
@@ -16,7 +17,7 @@ const MessagesLayout: React.FC<Props> = (props) => {
   }
 
   if (appContext.isNotLoggedIn) {
-    return <MessagesLoading />
+    return <LoginPage />
   }
 
   return (

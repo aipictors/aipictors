@@ -4,28 +4,40 @@ import {
   Button,
   Card,
   HStack,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Stack,
   Text,
   Tooltip,
-  Image,
   useDisclosure,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraModelsModal } from "app/[lang]/(main)/generation/components/LoraModelsModal"
 import { LoraModelsSetting } from "app/[lang]/(main)/generation/components/LoraModelsSetting"
+import { SelectedLoraModel } from "app/[lang]/(main)/generation/components/SelectedLoraModel"
 
 type Props = {
-  imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
-  selectedImageLoraModelId: string | null
-  onSelectImageLoraModelId(id: string | null): void
+  /**
+   * 全てのモデル
+   */
+  models: ImageLoraModelsQuery["imageLoraModels"]
+  /**
+   * 選択されたモデルのIDの配列
+   */
+  selectedModels: { id: string; value: number }[]
+  onSelectModelId(id: string): void
+  onChangeValue(id: string, value: number): void
 }
 
 export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const selectedModeIds = props.selectedModels.map((model) => model.id)
+
+  /**
+   * 選択されたLoRAモデル
+   */
+  const selectedModels = props.models.filter((model) => {
+    return selectedModeIds.includes(model.id)
+  })
 
   return (
     <>
@@ -42,83 +54,18 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
               </Button>
             </Tooltip>
           </HStack>
-          <HStack spacing={4}>
-            <Card>
-              <Stack>
-                <Button
-                  p={0}
-                  h={"auto"}
-                  overflow={"hidden"}
-                  variant={"outline"}
-                  borderWidth={2}
-                  borderColor={"gray.200"}
-                >
-                  <Image
-                    src={props.imageLoraModels[0].thumbnailImageURL ?? ""}
-                    alt={props.imageLoraModels[0].name}
-                    borderRadius={"md"}
-                    w={"100%"}
-                    maxW={32}
-                  />
-                </Button>
-              </Stack>
-            </Card>
-            <Stack flex={1}>
-              <Text fontSize={"lg"}>{props.imageLoraModels[0].name}</Text>
-              <Text fontSize={"xs"}>{"フラットな絵になります２"}</Text>
-              <HStack>
-                <Slider
-                  aria-label="slider-ex-2"
-                  colorScheme="pink"
-                  defaultValue={50}
-                >
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb />
-                </Slider>
-                <Text>{"0"}</Text>
-              </HStack>
-            </Stack>
-          </HStack>
-          <HStack spacing={4}>
-            <Card>
-              <Stack>
-                <Button
-                  p={0}
-                  h={"auto"}
-                  overflow={"hidden"}
-                  variant={"outline"}
-                  borderWidth={2}
-                  borderColor={"gray.200"}
-                >
-                  <Image
-                    src={props.imageLoraModels[1].thumbnailImageURL!}
-                    alt={props.imageLoraModels[1].name}
-                    borderRadius={"md"}
-                    maxW={32}
-                  />
-                </Button>
-              </Stack>
-            </Card>
-            <Stack flex={1}>
-              <Text fontSize={"lg"}>{props.imageLoraModels[1].name}</Text>
-              <Text fontSize={"xs"}>{"髪がより細かく描き込まれます"}</Text>
-              <HStack>
-                <Slider
-                  aria-label="slider-ex-2"
-                  colorScheme="pink"
-                  defaultValue={50}
-                >
-                  <SliderTrack>
-                    <SliderFilledTrack />
-                  </SliderTrack>
-                  <SliderThumb />
-                </Slider>
-                <Text>{"0"}</Text>
-              </HStack>
-            </Stack>
-          </HStack>
+          {selectedModels.map((model) => (
+            <SelectedLoraModel
+              key={model.id}
+              imageURL={model.thumbnailImageURL ?? ""}
+              name={model.name}
+              description={model.description!}
+              value={props.selectedModels.find((m) => m.id === model.id)!.value}
+              setValue={(value) => {
+                props.onChangeValue(model.id, value)
+              }}
+            />
+          ))}
           <Button borderRadius={"full"} onClick={onOpen}>
             {"もっとLoRAを表示する"}
           </Button>
@@ -128,9 +75,9 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
       <LoraModelsModal
         isOpen={isOpen}
         onClose={onClose}
-        imageLoraModels={props.imageLoraModels}
-        selectedImageLoraModelId={props.selectedImageLoraModelId}
-        onSelectImageLoraModelId={props.onSelectImageLoraModelId}
+        models={props.models}
+        selectedModelIds={selectedModeIds}
+        onSelect={props.onSelectModelId}
       />
     </>
   )

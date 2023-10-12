@@ -1,19 +1,16 @@
 import { Card, Stack, Button, Image, Text } from "@chakra-ui/react"
-import type { ImageLoraModelsQuery } from "__generated__/apollo"
 
 type Props = {
-  imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
-  selectedImageLoraModelId: string | null
-  onSelectImageLoraModelId(id: string | null): void
-  imageLoraModelId: string
-  imageLoraModelName: string
-  imageLoraModelDescription: string | null
-  imageLoraModelImageURL: string | null
+  onSelect(): void
+  name: string
+  description: string | null
+  imageURL: string | null
+  isActive: boolean
 }
 
 export const LoraImageModelCard: React.FC<Props> = (props) => {
   return (
-    <Card key={props.imageLoraModelId}>
+    <Card>
       <Stack>
         <Button
           p={0}
@@ -22,23 +19,16 @@ export const LoraImageModelCard: React.FC<Props> = (props) => {
           variant={"outline"}
           borderWidth={2}
           borderRadius={"md"}
-          borderColor={
-            props.selectedImageLoraModelId === props.imageLoraModelId
-              ? "primary.500"
-              : "gray.200"
-          }
+          borderColor={props.isActive ? "primary.500" : "gray.200"}
           onClick={() => {
-            props.onSelectImageLoraModelId(props.imageLoraModelId)
+            props.onSelect()
           }}
         >
-          <Image
-            src={props.imageLoraModelImageURL!}
-            alt={props.imageLoraModelName}
-          />
+          <Image src={props.imageURL!} alt={props.name} />
         </Button>
         <Stack spacing={0}>
-          <Text fontSize={"sm"}>{props.imageLoraModelName}</Text>
-          <Text fontSize={"xs"}>{props.imageLoraModelDescription}</Text>
+          <Text fontSize={"sm"}>{props.name}</Text>
+          <Text fontSize={"xs"}>{props.description}</Text>
         </Stack>
       </Stack>
     </Card>
