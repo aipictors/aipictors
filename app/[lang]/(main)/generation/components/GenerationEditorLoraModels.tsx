@@ -35,14 +35,14 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = props.models.filter((model) => {
-    return selectedModeIds.includes(model.id)
+  const selectedModels = selectedModeIds.map((id) => {
+    return props.models.find((model) => model.id === id)!
   })
 
   return (
     <>
       <Card p={4} h={"100%"}>
-        <Stack>
+        <Stack spacing={4}>
           <HStack>
             <Text fontWeight={"bold"}>{"加工（LoRA）"}</Text>
             <Tooltip
@@ -64,10 +64,13 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
               setValue={(value) => {
                 props.onChangeValue(model.id, value)
               }}
+              onDelete={() => {
+                props.onSelectModelId(model.id)
+              }}
             />
           ))}
           <Button borderRadius={"full"} onClick={onOpen}>
-            {"もっとLoRAを表示する"}
+            {"LoRAを追加する"}
           </Button>
           <LoraModelsSetting />
         </Stack>

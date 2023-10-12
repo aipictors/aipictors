@@ -19,6 +19,7 @@ type Props = {
   description: string
   value: number
   setValue(value: number): void
+  onDelete(): void
 }
 
 export const SelectedLoraModel: React.FC<Props> = (props) => {
@@ -44,32 +45,54 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
           </Button>
         </Stack>
       </Card>
-      <Stack flex={1} overflow={"hidden"}>
-        <Text fontSize={"lg"} whiteSpace={"pre-wrap"} lineHeight={1.2}>
-          {props.name}
-        </Text>
-        <Text fontSize={"xs"} whiteSpace={"pre-wrap"} lineHeight={1.2}>
-          {props.description}
-        </Text>
-        <HStack>
-          <Slider
-            aria-label="slider-ex-2"
-            colorScheme="pink"
-            value={props.value}
-            min={-1}
-            max={1}
-            step={0.01}
-            onChange={(value) => props.setValue(value)}
+      <Stack
+        flex={1}
+        overflow={"hidden"}
+        justifyContent={"space-between"}
+        h={"100%"}
+      >
+        <Stack>
+          <Text
+            fontSize={"xl"}
+            fontWeight={"bold"}
+            whiteSpace={"pre-wrap"}
+            lineHeight={1.2}
           >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <SliderThumb />
-          </Slider>
-          <HStack w={16} justifyContent={"flex-end"}>
-            <Text>{props.value.toFixed(2)}</Text>
+            {props.name}
+          </Text>
+          <Text
+            fontSize={"xs"}
+            opacity={0.8}
+            whiteSpace={"pre-wrap"}
+            lineHeight={1.2}
+          >
+            {props.description}
+          </Text>
+        </Stack>
+        <Stack>
+          <HStack>
+            <Slider
+              aria-label="slider-ex-2"
+              colorScheme="pink"
+              value={props.value}
+              min={-1}
+              max={1}
+              step={0.01}
+              onChange={(value) => props.setValue(value)}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+            <HStack w={16} justifyContent={"flex-end"}>
+              <Text>{props.value.toFixed(2)}</Text>
+            </HStack>
           </HStack>
-        </HStack>
+          <Button size={"xs"} onClick={props.onDelete}>
+            {"削除"}
+          </Button>
+        </Stack>
       </Stack>
     </HStack>
   )
