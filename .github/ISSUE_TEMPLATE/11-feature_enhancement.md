@@ -1,6 +1,6 @@
 ---
-name: "✨　デザインを改善する"
-about: デザインを改善する開発内容を提案する。
+name: "✨　その他機能の改善"
+about: その他機能の改善する開発内容を提案する。
 title: ''
 labels: ":sparkles: enhancement"
 assignees: ''
