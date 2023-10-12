@@ -1,6 +1,6 @@
 ---
-name: "その他 - 🐛　バグ"
-about: 機能の不具合を見つけたので報告する。
+name: "その他 - バグ　🐛"
+about: その他の機能の不具合を見つけたので報告する。
 title: ''
 labels: ":bug: bug"
 assignees: ''

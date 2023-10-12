@@ -1,5 +1,5 @@
 ---
-name: "作品 - 🐛　バグ"
+name: "イラスト - バグ　🐛"
 about: 作品機能の不具合を見つけたので報告する。
 title: ''
 labels: ":bug: bug"
