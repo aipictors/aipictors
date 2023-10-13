@@ -32,6 +32,20 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     })
   })
 
+  const [imageSize, setImageSize] = useState<number>()
+
+  const [imageVae, setImageVae] = useState<number>()
+
+  const [imageSeed, setImageSeed] = useState<number>()
+
+  const [selectedPromptCategories, setSelectPromptCategories] =
+    useState<string>()
+
+  const [selectedNegativePromptCategories, setSelectNegativePromptCategories] =
+    useState<string>()
+
+  const [selectedHistory, selectHistory] = useState("")
+
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",
@@ -118,16 +132,42 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             })
             selectLoraModels(draftModels)
           }}
+          size={imageSize!}
+          setSize={(size) => {
+            setImageSize(size)
+          }}
+          vae={imageVae!}
+          setVae={(vae) => {
+            setImageVae(vae)
+          }}
+          seed={imageSeed!}
+          setSeed={(seed) => {
+            setImageSeed(seed)
+          }}
         />
       </GridItem>
       <GridItem area={area.editorPrompt}>
-        <GenerationEditorPrompt promptCategories={props.promptCategories} />
+        <GenerationEditorPrompt
+          promptCategories={props.promptCategories}
+          selectedPromptCategory={selectedPromptCategories!}
+          onSelectPromptCategory={(categories) => {
+            setSelectPromptCategories(categories)
+          }}
+        />
       </GridItem>
       <GridItem area={area.editorNegativePrompt}>
-        <GenerationEditorNegative />
+        <GenerationEditorNegative
+          negativePrompt={selectedNegativePromptCategories!}
+          setNegativePrompt={(prompt) => {
+            setSelectNegativePromptCategories(prompt)
+          }}
+        />
       </GridItem>
       <GridItem area={area.histories}>
-        <GenerationEditorHistory />
+        <GenerationEditorHistory
+          selectHistory={selectHistory}
+          selectedHistory={selectedHistory}
+        />
       </GridItem>
     </Grid>
   )

@@ -9,8 +9,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
   SimpleGrid,
+  Text,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
 import { ImageModelCard } from "app/[lang]/(main)/generation/components/ImageModelCard"

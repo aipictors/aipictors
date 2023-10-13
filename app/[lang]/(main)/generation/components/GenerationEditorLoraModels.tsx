@@ -25,6 +25,12 @@ type Props = {
   selectedModels: { id: string; value: number }[]
   onSelectModelId(id: string): void
   onChangeValue(id: string, value: number): void
+  size: number
+  setSize(size: number): void
+  vae: number
+  setVae(vae: number): void
+  seed: number
+  setSeed(seed: number): void
 }
 
 export const GenerationEditorLoraModels: React.FC<Props> = (props) => {

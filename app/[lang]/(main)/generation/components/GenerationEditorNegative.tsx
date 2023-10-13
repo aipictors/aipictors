@@ -11,7 +11,12 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 
-export const GenerationEditorNegative = () => {
+type Props = {
+  negativePrompt: string
+  setNegativePrompt(prompt: string): void
+}
+
+export const GenerationEditorNegative: React.FC<Props> = (props) => {
   return (
     <Card p={4} h={"100%"}>
       <Stack h={"100%"} spacing={4}>
@@ -27,7 +32,12 @@ export const GenerationEditorNegative = () => {
           </Tooltip>
         </HStack>
         <Box h={"100%"} flex={1}>
-          <Textarea h={"100%"} placeholder={"プロンプト"} borderRadius={"md"} />
+          <Textarea
+            h={"100%"}
+            placeholder={"プロンプト"}
+            borderRadius={"md"}
+            value={props.negativePrompt}
+          />
         </Box>
       </Stack>
     </Card>

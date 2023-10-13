@@ -18,7 +18,12 @@ import { GenerationHistoryDlModal } from "app/[lang]/(main)/generation/component
 import { InPaintingImageModal } from "app/[lang]/(main)/generation/components/InPaintingImageModal"
 import { SelectedWorkModal } from "app/[lang]/(main)/generation/components/SelectedWorkModal"
 
-export const GenerationEditorHistory = () => {
+type Props = {
+  selectedHistory: string
+  selectHistory(history: string): void
+}
+
+export const GenerationEditorHistory: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const {
@@ -56,7 +61,10 @@ export const GenerationEditorHistory = () => {
               aria-label={"ダウンロード"}
               borderRadius={"full"}
               icon={<Icon as={TbDownload} />}
-              onClick={onDlOpen}
+              onClick={() => {
+                onDlOpen
+                props.selectHistory(props.selectedHistory)
+              }}
             />
             <Button borderRadius={"full"}>{"解除"}</Button>
             <IconButton
@@ -74,7 +82,9 @@ export const GenerationEditorHistory = () => {
                 variant={"outline"}
                 borderWidth={2}
                 borderColor={"blue.500"}
-                onClick={onOpen}
+                onClick={() => {
+                  onOpen()
+                }}
               >
                 <Image
                   src="https://source.unsplash.com/random/800x600"
