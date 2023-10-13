@@ -7,7 +7,7 @@ import { theme } from "app/theme"
 
 const RootGlobalError: React.FC = () => {
   const fontURL =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap"
+    "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap"
 
   return (
     <html>

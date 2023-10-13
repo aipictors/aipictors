@@ -25,7 +25,7 @@ const RootLayout: React.FC<Props> = (props) => {
         />
         <link href={notoSansJP} rel={"stylesheet"} />
         <link href={pixelifySans} rel="stylesheet" />
-        {process.env.NODE_ENV === 'production' && (
+        {process.env.NODE_ENV === "production" && (
           <Script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2116548824296763"

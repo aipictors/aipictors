@@ -2,9 +2,8 @@
   "recommendations": [
     "ApolloGraphQL.apollo-workbench",
     "apollographql.vscode-apollo",
-    "dbaeumer.vscode-eslint",
+    "biomejs.biome",
     "editorconfig.editorconfig",
-    "esbenp.prettier-vscode",
     "mikestead.dotenv",
     "streetsidesoftware.code-spell-checker"
   ]
