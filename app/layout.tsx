@@ -8,8 +8,8 @@ type Props = {
 }
 
 const RootLayout: React.FC<Props> = (props) => {
-  const mPlus1p =
-    "https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@500;700&display=swap"
+  const notoSansJP =
+    "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap"
 
   const pixelifySans =
     "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&display=swap"
@@ -23,7 +23,7 @@ const RootLayout: React.FC<Props> = (props) => {
           href={"https://fonts.gstatic.com"}
           crossOrigin={""}
         />
-        <link href={mPlus1p} rel={"stylesheet"} />
+        <link href={notoSansJP} rel={"stylesheet"} />
         <link href={pixelifySans} rel="stylesheet" />
         {process.env.NODE_ENV === 'production' && (
           <Script

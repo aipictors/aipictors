@@ -17,8 +17,8 @@ const baseTheme = extendTheme({
     },
   },
   fonts: {
-    body: ["'M PLUS 1p'", "system-ui", "sans-serif"].join(","),
-    heading: ["'M PLUS 1p'", "system-ui", "sans-serif"].join(","),
+    body: ["'Noto Sans JP'", "system-ui", "sans-serif"].join(","),
+    heading: ["'Noto Sans JP'", "system-ui", "sans-serif"].join(","),
     mono: ["Menlo", "monospace"].join(","),
   },
   styles: {
