@@ -8,6 +8,68 @@ export class Config {
   }
 
   /**
+   * パスの仕様: 認証バッジ
+   */
+  static get passFeature() {
+    return {
+      /**
+       * 認証バッジ
+       */
+      badge: {
+        free: false,
+        lite: true,
+        standard: true,
+        premium: true,
+      },
+      /**
+       * 広告非表示
+       */
+      noAdvertisement: {
+        free: false,
+        lite: true,
+        standard: true,
+        premium: true,
+      },
+      /**
+       * 1日の画像生成数
+       */
+      imageGenerationsCount: {
+        free: 30,
+        lite: 50,
+        standard: 100,
+        premium: 200,
+      },
+      /**
+       * 画像生成タスク数
+       */
+      imageGenerationTasksCount: {
+        free: 1,
+        lite: 1,
+        standard: 2,
+        premium: 3,
+      },
+      /**
+       * LoRAモデル数
+       */
+      imageGenerationLoraModelsCount: {
+        free: 2,
+        lite: 2,
+        standard: 5,
+        premium: 5,
+      },
+      /**
+       * 画像生成履歴数
+       */
+      imageGenerationHistoriesCount: {
+        free: 0,
+        lite: 10,
+        standard: 50,
+        premium: 100,
+      },
+    }
+  }
+
+  /**
    * デフォルトのLoRAモデルID
    */
   static get defaultImageLoraModelIds() {

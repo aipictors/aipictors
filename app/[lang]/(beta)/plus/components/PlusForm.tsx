@@ -2,13 +2,12 @@
 import { useSuspenseQuery } from "@apollo/client"
 import {
   Button,
+  Card,
+  Divider,
   HStack,
-  Link,
-  ListItem,
-  OrderedList,
   Stack,
+  Tag,
   Text,
-  UnorderedList,
   useToast,
 } from "@chakra-ui/react"
 import type {
@@ -19,14 +18,19 @@ import {
   ViewerCurrentPassDocument,
   useCreateCustomerPortalSessionMutation,
 } from "__generated__/apollo"
+import { PassBenefitList } from "app/[lang]/(beta)/plus/components/PassBenefitList"
+import { PassImageGenerationBenefitList } from "app/[lang]/(beta)/plus/components/PassImageGenerationBenefitList"
 import { PlusAbout } from "app/[lang]/(beta)/plus/components/PlusAbout"
+import { PlusNoteList } from "app/[lang]/(beta)/plus/components/PlusNoteList"
+import { toPassName } from "app/[lang]/(beta)/plus/utils/toPassName"
+import { toPassPrice } from "app/[lang]/(beta)/plus/utils/toPassPrice"
 import { toDateText } from "app/utils/toDateText"
 
 export const PlusForm: React.FC = () => {
   const [mutation, { loading: isLoading }] =
     useCreateCustomerPortalSessionMutation()
 
-  const { data: passSubscription } = useSuspenseQuery<
+  const { data } = useSuspenseQuery<
     ViewerCurrentPassQuery,
     ViewerCurrentPassQueryVariables
   >(ViewerCurrentPassDocument, {})
@@ -52,17 +56,19 @@ export const PlusForm: React.FC = () => {
     }
   }
 
-  if (passSubscription.viewer === null) {
+  if (data.viewer === null) {
     return null
   }
 
-  if (passSubscription.viewer.currentPass === null) {
+  if (data.viewer.currentPass === null) {
     return <PlusAbout />
   }
 
-  const periodEndDateText = toDateText(
-    passSubscription.viewer.currentPass.periodEnd,
-  )
+  const currentPass = data.viewer.currentPass
+
+  const nextDateText = toDateText(currentPass.periodEnd)
+
+  const currentPassName = toPassName(currentPass.type)
 
   return (
     <Stack spacing={8} pb={16}>
@@ -73,112 +79,69 @@ export const PlusForm: React.FC = () => {
       >
         <Text>{"Aipictors+"}</Text>
       </HStack>
-      <Stack spacing={2}>
-        <Text whiteSpace={"pre-wrap"}>
-          {"現在、ご利用中のサブスクリプションがあります。"}
-        </Text>
-        <Text>{`パスは自動的に更新され、${periodEndDateText}に1,980円（税込）が決済されます。`}</Text>
+      <Stack
+        spacing={{ base: 4, md: 8 }}
+        direction={{ base: "column", md: "row-reverse" }}
+        justifyContent={"space-between"}
+      >
+        <Stack spacing={4} flex={1}>
+          <Text>{`現在、あなたは「${currentPassName}」をご利用中です。`}</Text>
+          <Stack>
+            <HStack>
+              <Tag>{"次回の請求日"}</Tag>
+              <Text>{nextDateText}</Text>
+            </HStack>
+            <HStack>
+              <Tag>{"次回の請求額"}</Tag>
+              <Text>{`${currentPass.price}円（税込）`}</Text>
+            </HStack>
+          </Stack>
+          <Text>
+            {
+              "決済方法の変更やプランのキャンセル及び変更はこちらのリンクから行えます。"
+            }
+          </Text>
+          <Button
+            colorScheme={"green"}
+            onClick={onOpenCustomerPortal}
+            isLoading={isLoading}
+          >
+            {"プランをキャンセルまたは変更する"}
+          </Button>
+        </Stack>
+        <Card variant={"filled"} flex={1}>
+          <Stack p={4} spacing={2}>
+            <HStack justifyContent={"space-between"}>
+              <Text fontWeight={"bold"} fontSize={{ base: "md", sm: "xl" }}>
+                {`${currentPassName}の特典`}
+              </Text>
+            </HStack>
+            <Divider />
+            <PassBenefitList passType={currentPass.type} />
+            <Divider />
+            <Text fontSize={"sm"} opacity={0.6} fontWeight={"bold"}>
+              {"画像生成の特典"}
+            </Text>
+            <PassImageGenerationBenefitList passType={currentPass.type} />
+            <Divider />
+            <Text fontSize={"xs"}>
+              {
+                "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
+              }
+            </Text>
+          </Stack>
+        </Card>
       </Stack>
       <Stack>
-        <Text whiteSpace={"pre-wrap"}>
-          {"決済方法の変更やキャンセルはこちらのリンクから行えます。"}
-        </Text>
-        <Button
-          colorScheme={"green"}
-          onClick={onOpenCustomerPortal}
-          isLoading={isLoading}
-        >
-          {"パスを管理する"}
-        </Button>
-      </Stack>
-      <Stack spacing={2}>
-        <Text fontWeight={"bold"} fontSize={"lg"}>
-          {"現在の特典"}
-        </Text>
-        <UnorderedList spacing={2}>
-          <ListItem>{"サービス内の広告をすべて非表示"}</ListItem>
-          <ListItem>
-            {
-              "1ヶ月につき無料分とあわせ最大3,000枚（1日50枚から100枚）上限アップ"
-            }
-          </ListItem>
-          <ListItem>{"生成速度アップ（生成優先）"}</ListItem>
-          <ListItem>{"認証マーク付与"}</ListItem>
-        </UnorderedList>
         <Text>
-          {
-            "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
-          }
+          {"この度はAipictorsをご利用いただき、誠にありがとうございます。"}
         </Text>
       </Stack>
       <Stack spacing={2}>
         <Text fontWeight={"bold"} fontSize={"lg"}>
           {"注意事項"}
         </Text>
-        <OrderedList spacing={2}>
-          <ListItem>
-            {
-              "本プランの加入期間は、加入日から翌月同日までの1か月間となります。加入期間満了日までにお客様が自ら解約しない限り、本プランの加入期間は翌日から同一期間更新したものとみなし、以後同様とします。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "お客様は当社指定方法に基づき申し出ることで、いつでも本プランを解約することができます。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "解約を申し出る場合は、解約手続きの完了日以降に到来する加入期間満了日をもって、本プランは終了します。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "加入期間の途中で、本料金の金額が変更される場合があっても、本料金の日割り計算は行いません。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "お客様は本プランの解約を申し出た場合は、これを撤回または取り消すことはできません。"
-            }
-          </ListItem>
-          <ListItem>
-            {"本プランの特典は加入期間を過ぎると全て無効となります。"}
-          </ListItem>
-          <ListItem>
-            {
-              "生成サービスの提供はベストエフォートです。待ち時間により上限まで生成することに時間がかかることがあります。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "システム障害などが発生した場合でも返金や期間の延長は原則行うことができません。予めご了承下さい。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "プロンプトの指定が適切でなく意図した画像が生成できない、StableDiffusion側での生成がうまくいかず真っ黒画像が生成されるなど、生成処理を実行したものの、生成がうまくいかないケースについてはエラーとはみなしません。利用者側で工夫してご対応下さい。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "規約違反の利用をした場合、生成機能の利用は禁止いたします。その場合も返金対応等は一切行いません。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "本プランは何らかの理由により内容を変更し、又は廃止する場合があります。変更後の内容がお客様の権利関係に重大な影響を与える場合又は本プランを廃止する場合は事前に通知、お知らせいたします。緊急性がある場合又はやむをえない場合は事後的に通知いたします。"
-            }
-          </ListItem>
-          <ListItem>
-            {
-              "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。AIイラスト生成で規約違反が発覚した場合はAIイラスト生成機能の停止となる場合がございます。詳細は当サービスの規約（"
-            }
-            <Link href={"https://www.aipictors.com/terms"} isExternal>
-              {"https://www.aipictors.com/terms"}
-            </Link>
-            {"）をご確認下さい。"}
-          </ListItem>
-        </OrderedList>
+        <PlusNoteList />T
       </Stack>
     </Stack>
   )

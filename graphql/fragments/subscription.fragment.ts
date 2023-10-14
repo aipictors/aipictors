@@ -15,5 +15,6 @@ export const PASS_FIELDS = gql`
     trialPeriodStart
     trialPeriodEnd
     createdAt
+    price
   }
 `

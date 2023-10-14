@@ -1,4 +1,17 @@
 {
+  "cSpell.words": [
+    "adsbygoogle",
+    "adsense",
+    "aipictors",
+    "chakra",
+    "followee",
+    "followees",
+    "nextjs",
+    "ourt",
+    "prompton",
+    "scta",
+    "splide"
+  ],
   "deno.enable": false,
   "editor.codeActionsOnSave": {
     "quickfix.biome": true,
@@ -27,18 +40,5 @@
     "*.lock": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "cSpell.words": [
-    "adsbygoogle",
-    "adsense",
-    "aipictors",
-    "chakra",
-    "followee",
-    "followees",
-    "nextjs",
-    "ourt",
-    "prompton",
-    "scta",
-    "splide"
-  ]
+  "typescript.preferences.importModuleSpecifier": "non-relative"
 }
