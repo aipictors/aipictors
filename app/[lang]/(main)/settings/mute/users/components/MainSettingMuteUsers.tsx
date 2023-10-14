@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { useContext } from "react"
 import type {
   MuteUserMutation,
   MuteUserMutationVariables,
@@ -22,6 +21,7 @@ import {
 } from "__generated__/apollo"
 import { MutedUser } from "app/[lang]/(main)/settings/mute/users/components/MutedUser"
 import { AppContext } from "app/contexts/appContext"
+import { useContext } from "react"
 
 export const MainSettingMuteUsers: React.FC = () => {
   const appContext = useContext(AppContext)

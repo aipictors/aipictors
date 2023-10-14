@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   UserStickersQuery,
   UserStickersQueryVariables,
@@ -7,6 +6,7 @@ import { UserStickersDocument } from "__generated__/apollo"
 import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/components/UserWorkListActions"
 import { UserStickerList } from "app/[lang]/(main)/users/[user]/stickers/components/UserStickerList"
 import { createClient } from "app/client"
+import type { Metadata } from "next"
 
 type Props = {
   params: { user: string }

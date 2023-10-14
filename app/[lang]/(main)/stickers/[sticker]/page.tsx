@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { StickerArticle } from "app/[lang]/(main)/stickers/[sticker]/components/StickerArticle"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const StickerPage = async () => {
   return (

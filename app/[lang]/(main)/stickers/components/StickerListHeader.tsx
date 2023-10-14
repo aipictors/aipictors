@@ -7,8 +7,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbPlus } from "react-icons/tb"
 import { AddStickerModal } from "app/[lang]/(main)/stickers/components/AddStickerModal"
+import { TbPlus } from "react-icons/tb"
 
 export const StickerListHeader: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()

@@ -1,5 +1,5 @@
 import type { ImageProps } from "@chakra-ui/react"
-import { Image, Box, Icon, Button } from "@chakra-ui/react"
+import { Box, Button, Icon, Image } from "@chakra-ui/react"
 import { TbClick } from "react-icons/tb"
 
 type Props = ImageProps & {

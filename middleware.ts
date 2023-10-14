@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 
 export const middleware = (request: NextRequest) => {
   const pathname = request.nextUrl.pathname
@@ -26,8 +26,6 @@ export const middleware = (request: NextRequest) => {
       "https://subgraph-aipictors-6ouzjmdzha-an.a.run.app/sitemap.xml"
     return NextResponse.redirect(pageURL)
   }
-
-  console.log("pathname", pathname)
 
   // パスに「ja」が含まれる場合はリダイレクトする
   if (pathname.startsWith("/ja")) {

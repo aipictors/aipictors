@@ -11,9 +11,9 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import { useState } from "react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryIcon } from "app/[lang]/(main)/generation/components/PromptCategoryIcon"
+import { useState } from "react"
 
 type Props = {
   promptCategories: PromptCategoryQuery["promptCategories"]

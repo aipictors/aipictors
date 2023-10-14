@@ -1,8 +1,8 @@
-import type { Metadata } from "next"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryDocument } from "__generated__/apollo"
 import { GenerationEditorLite } from "app/[lang]/(main)/generation/lite/components/GenerationEditorLite"
 import { createClient } from "app/client"
+import type { Metadata } from "next"
 
 const GenerationLitePage = async () => {
   const client = createClient()

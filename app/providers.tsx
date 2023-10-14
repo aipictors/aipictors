@@ -3,14 +3,14 @@ import { ApolloProvider } from "@apollo/client"
 import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import { init } from "@sentry/nextjs"
-import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
-import { getApp, getApps, initializeApp } from "firebase/app"
-import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
 import { createClient } from "app/client"
 import { AppContextProvider } from "app/components/AppContextProvider"
 import { theme } from "app/theme"
 import { Config } from "config"
+import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
+import { getApp, getApps, initializeApp } from "firebase/app"
+import { usePathname, useSearchParams } from "next/navigation"
+import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode

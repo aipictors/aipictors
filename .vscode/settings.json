@@ -1,9 +1,10 @@
 {
   "deno.enable": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "quickfix.biome": true,
+    "source.organizeImports.biome": true
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
   "files.associations": {
     "*.svg": "html",
@@ -28,6 +29,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "cSpell.words": [
+    "adsbygoogle",
+    "adsense",
     "aipictors",
     "chakra",
     "followee",

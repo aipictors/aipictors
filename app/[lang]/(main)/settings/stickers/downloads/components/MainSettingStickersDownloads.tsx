@@ -16,18 +16,18 @@ export const MainSettingStickersDownloads: React.FC = () => {
           columns={{ base: 2, md: 4, lg: 7 }}
           justifyItems={""}
         >
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
-          <Box bg="tomato" height="80px"></Box>
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
+          <Box bg="tomato" height="80px" />
         </SimpleGrid>
       </Stack>
     </HStack>

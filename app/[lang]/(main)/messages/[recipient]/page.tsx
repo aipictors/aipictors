@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { RecipientMessages } from "app/[lang]/(main)/messages/[recipient]/components/RecipientMessages"
+import type { Metadata } from "next"
 
 type Props = {
   params: {

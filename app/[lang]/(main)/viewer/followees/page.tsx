@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { MainViewerFollowees } from "app/[lang]/(main)/viewer/followees/components/MainViewerFollowees"
+import type { Metadata } from "next"
 
 const ViewerFolloweesPage = async () => {
   return <MainViewerFollowees />

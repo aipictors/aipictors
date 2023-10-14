@@ -1,12 +1,12 @@
 "use client"
 import {
-  Image,
-  Text,
   Button,
   Card,
   HStack,
   Icon,
   IconButton,
+  Image,
+  Text,
 } from "@chakra-ui/react"
 import { TbTrash } from "react-icons/tb"
 

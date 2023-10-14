@@ -1,14 +1,14 @@
 import { Icon } from "@chakra-ui/react"
 import {
-  TbEye,
-  TbFriends,
-  TbFaceId,
   TbBrightnessUp,
   TbBrush,
   TbBuildingCarousel,
+  TbDog,
+  TbEye,
+  TbFaceId,
+  TbFriends,
   TbMoodBoy,
   TbShirt,
-  TbDog,
 } from "react-icons/tb"
 
 type Props = { name: string }

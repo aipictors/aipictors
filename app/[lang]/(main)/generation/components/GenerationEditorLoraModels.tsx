@@ -42,7 +42,11 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
    * 選択されたLoRAモデル
    */
   const selectedModels = selectedModelIds.map((id) => {
-    return props.models.find((model) => model.id === id)!
+    const model = props.models.find((model) => model.id === id)
+    if (model === undefined) {
+      throw new Error()
+    }
+    return model
   })
 
   return (
@@ -65,8 +69,10 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
               key={model.id}
               imageURL={model.thumbnailImageURL ?? ""}
               name={model.name}
-              description={model.description!}
-              value={props.selectedModels.find((m) => m.id === model.id)!.value}
+              description={model.description ?? ""}
+              value={
+                props.selectedModels.find((m) => m.id === model.id)?.value ?? 0
+              }
               setValue={(value) => {
                 props.onChangeValue(model.id, value)
               }}

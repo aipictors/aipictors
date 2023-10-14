@@ -1,6 +1,9 @@
 "use client"
 import {
+  Button,
   HStack,
+  Image,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,14 +11,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Stack,
-  Text,
-  Image,
-  Input,
-  Textarea,
   Radio,
   RadioGroup,
-  Button,
+  Stack,
+  Text,
+  Textarea,
 } from "@chakra-ui/react"
 import { CardTitleWorkList } from "app/[lang]/(main)/viewer/albums/components/CardTitleWorkList"
 
@@ -34,7 +34,7 @@ export const ViewerAlbumAddModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalCloseButton />
         <ModalBody>
           <HStack justifyContent={"center"}>
@@ -103,7 +103,7 @@ export const ViewerAlbumAddModal: React.FC<Props> = (props) => {
             </Stack>
           </HStack>
         </ModalBody>
-        <ModalFooter></ModalFooter>
+        <ModalFooter />
       </ModalContent>
     </Modal>
   )

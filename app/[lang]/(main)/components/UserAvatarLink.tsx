@@ -1,5 +1,5 @@
 "use client"
-import { Text, Avatar, HStack } from "@chakra-ui/react"
+import { Avatar, HStack, Text } from "@chakra-ui/react"
 import React from "react"
 
 type Props = {

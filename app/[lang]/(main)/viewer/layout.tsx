@@ -1,6 +1,6 @@
 "use client"
-import React, { useContext } from "react"
 import { AppContext } from "app/contexts/appContext"
+import React, { useContext } from "react"
 
 type Props = {
   children: React.ReactNode

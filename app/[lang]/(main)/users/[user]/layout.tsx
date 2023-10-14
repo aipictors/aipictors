@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type { UserQuery, UserQueryVariables } from "__generated__/apollo"
 import { UserDocument } from "__generated__/apollo"
 import { UserProfile } from "app/[lang]/(main)/users/[user]/components/UserProfile"
@@ -6,6 +5,7 @@ import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/components/Use
 import { UserTabs } from "app/[lang]/(main)/users/[user]/components/UserTabs"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 type Props = {
   children: React.ReactNode

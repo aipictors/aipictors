@@ -22,7 +22,7 @@ export const DescriptionSettingModal: React.FC<Props> = (props) => {
       <ModalContent>
         <ModalHeader>{"Modal Title"}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody></ModalBody>
+        <ModalBody />
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={props.onClose}>
             {" Close"}

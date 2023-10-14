@@ -1,5 +1,5 @@
-import { expect, describe, test } from "vitest"
 import { toDateText } from "app/utils/toDateText"
+import { describe, expect, test } from "vitest"
 
 describe("toDateText", () => {
   test("1694951164", () => {

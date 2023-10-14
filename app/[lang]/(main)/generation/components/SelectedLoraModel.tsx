@@ -4,13 +4,13 @@ import {
   Button,
   Card,
   HStack,
+  Image,
   Slider,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
   Stack,
   Text,
-  Image,
 } from "@chakra-ui/react"
 
 type Props = {

@@ -1,10 +1,10 @@
 "use client"
-import { Divider, Stack, useToast, Text, HStack, Image } from "@chakra-ui/react"
-import { getAuth, signInWithCustomToken } from "firebase/auth"
+import { Divider, HStack, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { LoginForm } from "app/components/LoginForm"
 import { MainCenterPage } from "app/components/MainCenterPage"
 import type { FormLogin } from "app/types/formLogin"
+import { getAuth, signInWithCustomToken } from "firebase/auth"
 
 export const LoginPage: React.FC = () => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()

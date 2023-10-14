@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { MainPlus } from "app/[lang]/(beta)/plus/components/MainPlus"
 import { MainCenterPage } from "app/components/MainCenterPage"
+import type { Metadata } from "next"
 
 /**
  * サブスク

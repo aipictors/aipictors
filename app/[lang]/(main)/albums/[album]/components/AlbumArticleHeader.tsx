@@ -1,5 +1,5 @@
 "use client"
-import { Stack, Text, Image, Button, HStack, Icon } from "@chakra-ui/react"
+import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import { TbShare2 } from "react-icons/tb"
 
 export const AlbumArticleHeader: React.FC = () => {

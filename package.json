@@ -7,10 +7,11 @@
     "build": "next build",
     "prebuild": "graphql-codegen -c codegen.ts",
     "start": "next start",
-    "format": "prettier --write --ignore-path .gitignore app",
     "test": "vitest",
-    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx .",
-    "check": "tsc"
+    "check": "tsc --noEmit",
+    "biome:check": "biome check --apply-unsafe app",
+    "biome:lint": "biome lint --apply-unsafe app",
+    "biome:format": "biome format --write app"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
@@ -43,6 +44,7 @@
     "vitest": "^0.34.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.2.2",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
@@ -50,13 +52,6 @@
     "@types/node": "20.6.2",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "eslint": "8.49.0",
-    "eslint-config-next": "13.4.19",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-unused-imports": "^3.0.0",
-    "prettier": "^3.0.3",
-    "prettier-plugin-prisma": "^5.0.0",
     "typescript": "5.2.2"
   }
 }

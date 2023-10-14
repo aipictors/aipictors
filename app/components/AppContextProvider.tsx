@@ -1,4 +1,6 @@
 import { setUser } from "@sentry/react"
+import { AppContext } from "app/contexts/appContext"
+import { Config } from "config"
 import {
   getAnalytics,
   logEvent,
@@ -6,15 +8,13 @@ import {
   setUserProperties,
 } from "firebase/analytics"
 import {
-  getAuth,
-  onAuthStateChanged,
-  getIdTokenResult,
   type ParsedToken,
   type User,
+  getAuth,
+  getIdTokenResult,
+  onAuthStateChanged,
 } from "firebase/auth"
 import { useEffect, useState } from "react"
-import { AppContext } from "app/contexts/appContext"
-import { Config } from "config"
 
 type Props = {
   children: React.ReactNode

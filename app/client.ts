@@ -1,9 +1,9 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client"
-import { setContext, type ContextSetter } from "@apollo/client/link/context"
-import { getApps } from "firebase/app"
-import { getAuth, getIdToken } from "firebase/auth"
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client"
+import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { typePolicies } from "app/typePolicies"
 import { Config } from "config"
+import { getApps } from "firebase/app"
+import { getAuth, getIdToken } from "firebase/auth"
 
 const httpLink = createHttpLink({
   uri: Config.graphqlEndpoint,

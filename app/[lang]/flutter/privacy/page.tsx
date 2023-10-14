@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises"
 import { join } from "path"
-import type { Metadata } from "next"
 import { MainFlutterPrivacy } from "app/[lang]/flutter/privacy/components/MainFlutterPrivacy"
+import { readFile } from "fs/promises"
+import type { Metadata } from "next"
 
 const FlutterPrivacyPage = async () => {
   const text = await readFile(

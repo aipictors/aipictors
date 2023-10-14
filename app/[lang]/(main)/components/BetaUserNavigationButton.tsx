@@ -3,14 +3,18 @@ import {
   Avatar,
   Icon,
   IconButton,
+  Link as ChakraLink,
   Menu,
   MenuButton,
-  Link as ChakraLink,
   MenuItem,
   MenuList,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react"
+import { LoginModal } from "app/[lang]/(main)/components/LoginModal"
+import { LogoutModal } from "app/[lang]/(main)/components/LogoutModal"
+import { AppContext } from "app/contexts/appContext"
+import { Config } from "config"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -23,10 +27,6 @@ import {
   TbUserDown,
   TbUserUp,
 } from "react-icons/tb"
-import { LoginModal } from "app/[lang]/(main)/components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/components/LogoutModal"
-import { AppContext } from "app/contexts/appContext"
-import { Config } from "config"
 
 export const BetaUserNavigationButton: React.FC = () => {
   const appContext = useContext(AppContext)

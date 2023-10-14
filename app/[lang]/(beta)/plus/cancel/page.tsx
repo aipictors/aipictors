@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { PlusCancel } from "app/[lang]/(beta)/plus/cancel/components/PlusCancel"
 import { MainCenterPage } from "app/components/MainCenterPage"
+import type { Metadata } from "next"
 
 /**
  * サブスクの決済をキャンセルした場合のページ

@@ -1,18 +1,18 @@
 "use client"
 import {
+  Button,
   Card,
   CardBody,
-  Stack,
-  Image,
-  Text,
   HStack,
-  IconButton,
   Icon,
-  Button,
+  IconButton,
+  Image,
+  Stack,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbTrash } from "react-icons/tb"
 import { AlbumWorkDeleteModal } from "app/[lang]/(main)/viewer/albums/[album]/components/AlbumWorkDeleteModal"
+import { TbTrash } from "react-icons/tb"
 
 export const ViewerAlbumWork: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()

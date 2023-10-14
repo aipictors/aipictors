@@ -1,5 +1,5 @@
 "use client"
-import { Button, HStack, Divider, Stack } from "@chakra-ui/react"
+import { Button, Divider, HStack, Stack } from "@chakra-ui/react"
 
 export const NotificationTab: React.FC = () => {
   return (

@@ -1,8 +1,8 @@
-import type { Metadata } from "next"
 import NewImageForm from "app/[lang]/(main)/new/image/components/NewImageForm"
+import type { Metadata } from "next"
 
 const NewImagePage = () => {
-  return <NewImageForm></NewImageForm>
+  return <NewImageForm />
 }
 
 export const metadata: Metadata = {

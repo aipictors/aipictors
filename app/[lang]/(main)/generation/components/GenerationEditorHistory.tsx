@@ -12,11 +12,11 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 import { GenerationHistoryDeleteModal } from "app/[lang]/(main)/generation/components/GenerationHistoryDeleteModal"
 import { GenerationHistoryDlModal } from "app/[lang]/(main)/generation/components/GenerationHistoryDlModal"
 import { InPaintingImageModal } from "app/[lang]/(main)/generation/components/InPaintingImageModal"
 import { SelectedWorkModal } from "app/[lang]/(main)/generation/components/SelectedWorkModal"
+import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 
 type Props = {
   selectedHistory: string

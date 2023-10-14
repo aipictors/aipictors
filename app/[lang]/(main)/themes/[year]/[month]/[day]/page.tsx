@@ -1,9 +1,9 @@
-import type { Metadata } from "next"
 import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
 import { AboutTheme } from "app/[lang]/(main)/themes/[year]/[month]/[day]/components/AboutTheme"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 type Props = {
   params: {

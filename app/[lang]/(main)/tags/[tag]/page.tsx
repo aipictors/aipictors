@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type { WorksQuery } from "__generated__/apollo"
 import { WorksDocument } from "__generated__/apollo"
 import { RelatedModelList } from "app/[lang]/(main)/tags/[tag]/components/RelatedModelList"
@@ -7,6 +6,7 @@ import { TagHeader } from "app/[lang]/(main)/tags/[tag]/components/TagHeader"
 import { WorkList } from "app/[lang]/(main)/works/components/WorkList"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const TagPage = async () => {
   const client = createClient()

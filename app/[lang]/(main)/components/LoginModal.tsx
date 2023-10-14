@@ -1,9 +1,9 @@
 "use client"
 import { Modal, ModalContent, ModalOverlay, useToast } from "@chakra-ui/react"
-import { signInWithCustomToken, getAuth } from "firebase/auth"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { LoginModalForm } from "app/[lang]/(main)/components/LoginModalForm"
 import type { FormLogin } from "app/types/formLogin"
+import { getAuth, signInWithCustomToken } from "firebase/auth"
 
 type Props = {
   isOpen: boolean

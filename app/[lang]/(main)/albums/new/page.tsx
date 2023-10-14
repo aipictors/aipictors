@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { NewAlbumForm } from "app/[lang]/(main)/albums/new/components/NewAlbumForm"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const NewAlbumPage = async () => {
   return (

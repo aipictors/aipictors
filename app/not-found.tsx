@@ -1,5 +1,5 @@
 "use client"
-import { Text, Stack, HStack, Button } from "@chakra-ui/react"
+import { Button, HStack, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 const RootNotFound: React.FC = () => {

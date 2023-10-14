@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { AppAboutHeader } from "app/[lang]/app/components/AppAboutHeader"
 import { AppFooter } from "app/[lang]/app/components/AppFooter"
+import type { Metadata } from "next"
 
 const AppPage = async () => {
   return (

@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   WorkAwardsQuery,
   WorkAwardsQueryVariables,
@@ -8,6 +7,7 @@ import { MainRankingHeader } from "app/[lang]/(main)/awards/components/MainRanki
 import { MainRankingWorkList } from "app/[lang]/(main)/awards/components/MainRankingWorkList"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const AwardsPage = async () => {
   const client = createClient()

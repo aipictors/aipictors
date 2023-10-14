@@ -1,7 +1,7 @@
-import { readFile } from "fs/promises"
 import { join } from "path"
-import type { Metadata } from "next"
 import { MainFlutterTerms } from "app/[lang]/flutter/terms/components/MainFlutterTerms"
+import { readFile } from "fs/promises"
+import type { Metadata } from "next"
 
 const FlutterTermsPage = async () => {
   const text = await readFile(

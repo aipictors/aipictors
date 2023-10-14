@@ -9,11 +9,11 @@ import {
   Input,
   useColorModeValue,
 } from "@chakra-ui/react"
-import Link from "next/link"
-import React from "react"
-import { TbMenu2, TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
 import { BetaUserNavigationButton } from "app/[lang]/(main)/components/BetaUserNavigationButton"
 import { Config } from "config"
+import Link from "next/link"
+import React from "react"
+import { TbBellFilled, TbFolderFilled, TbMenu2, TbSearch } from "react-icons/tb"
 
 type HomeHeaderProps = {
   onOpenNavigation?: () => void

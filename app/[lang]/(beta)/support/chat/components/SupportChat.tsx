@@ -1,7 +1,6 @@
 "use client"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { Stack, useInterval, useToast } from "@chakra-ui/react"
-import { startTransition } from "react"
 import type {
   CreateMessageMutationResult,
   CreateMessageMutationVariables,
@@ -14,6 +13,7 @@ import {
 } from "__generated__/apollo"
 import { MessageInput } from "app/[lang]/(beta)/support/chat/components/MessageInput"
 import { SupportMessageList } from "app/[lang]/(beta)/support/chat/components/SupportMessageList"
+import { startTransition } from "react"
 
 export const SupportChat: React.FC = () => {
   const { data: supportMessages, refetch } = useSuspenseQuery<

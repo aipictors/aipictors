@@ -12,7 +12,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
 import { MuteTagDocument, ViewerMutedTagsDocument } from "__generated__/apollo"
 import type {
   MuteTagMutation,
@@ -20,6 +19,7 @@ import type {
   ViewerMutedTagsQuery,
   ViewerMutedTagsQueryVariables,
 } from "__generated__/apollo"
+import React, { useContext, useState } from "react"
 
 import { MutedTag } from "app/[lang]/(main)/settings/mute/tags/components/MutedTag"
 import { AppContext } from "app/contexts/appContext"

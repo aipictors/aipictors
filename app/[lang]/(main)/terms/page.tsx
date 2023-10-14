@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { TermsDocument } from "app/[lang]/(main)/terms/component/TermsDocument"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const TermsPage = async () => {
   return (

@@ -8,9 +8,9 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react"
+import type { FormLogin } from "app/types/formLogin"
 import { useState } from "react"
 import { TbX } from "react-icons/tb"
-import type { FormLogin } from "app/types/formLogin"
 
 type Props = {
   onSubmit(form: FormLogin): void

@@ -11,12 +11,12 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react"
-import { getAnalytics, logEvent } from "firebase/analytics"
-import { useEffect } from "react"
-import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
 import type { EventUser } from "app/[lang]/events/types/eventUser"
 import { BoxEventImage } from "app/[lang]/events/wakiaiai/components/box/BoxEventImage"
 import { CardEventCreator } from "app/[lang]/events/wakiaiai/components/card/CardEventCreator"
+import { getAnalytics, logEvent } from "firebase/analytics"
+import { useEffect } from "react"
+import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
 
 export const SectionAboutWakiaiai: React.FC = () => {
   const { setColorMode } = useColorMode()
@@ -580,7 +580,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {aUsers.map((user, index) => (
-          <CardEventCreator key={index} user={user} />
+          <CardEventCreator key={user.name} user={user} />
         ))}
       </SimpleGrid>
       <BoxEventImage
@@ -596,7 +596,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {bUsers.map((user, index) => (
-          <CardEventCreator key={index} user={user} />
+          <CardEventCreator key={user.name} user={user} />
         ))}
       </SimpleGrid>
       <Box
@@ -614,7 +614,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {cUsers.map((user, index) => (
-          <CardEventCreator key={index} user={user} />
+          <CardEventCreator key={user.name} user={user} />
         ))}
       </SimpleGrid>
 

@@ -7,9 +7,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbPlus } from "react-icons/tb"
 import { ViewerAlbumList } from "app/[lang]/(main)/viewer/albums/components/VIewerAlbumList"
 import { ViewerAlbumAddModal } from "app/[lang]/(main)/viewer/albums/components/ViewerAlbumAddModal"
+import { TbPlus } from "react-icons/tb"
 
 export const ViewerAlbumHeader: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()

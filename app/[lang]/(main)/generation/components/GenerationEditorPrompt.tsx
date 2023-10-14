@@ -1,15 +1,15 @@
 "use client"
 
 import {
+  Box,
+  Button,
   Card,
+  HStack,
   Stack,
   Text,
-  Button,
-  HStack,
-  Box,
   Textarea,
-  useDisclosure,
   Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoriesModal } from "app/[lang]/(main)/generation/components/PromptCategoriesModal"
@@ -55,7 +55,7 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
               placeholder={"プロンプト"}
               borderRadius={"md"}
               value={selectedPrompt?.name ?? ""}
-            ></Textarea>
+            />
           </Box>
         </Stack>
       </Card>

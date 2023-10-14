@@ -26,7 +26,7 @@ export const InPaintingSelectedPromptModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalBody>
           <Stack alignItems={"center"} spacing={4}>
             <Text fontSize={"lg"}>{"選択したプロンプト"}</Text>
@@ -53,7 +53,7 @@ export const InPaintingSelectedPromptModal: React.FC<Props> = (props) => {
             </Button>
           </Stack>
         </ModalBody>
-        <ModalFooter justifyContent={"center"}></ModalFooter>
+        <ModalFooter justifyContent={"center"} />
       </ModalContent>
     </Modal>
   )

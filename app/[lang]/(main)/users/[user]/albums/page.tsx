@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   UserAlbumsQuery,
   UserAlbumsQueryVariables,
@@ -6,6 +5,7 @@ import type {
 import { UserAlbumsDocument } from "__generated__/apollo"
 import { UserAlbumList } from "app/[lang]/(main)/users/[user]/albums/components/UserAlbumList"
 import { createClient } from "app/client"
+import type { Metadata } from "next"
 
 type Props = {
   params: { user: string }

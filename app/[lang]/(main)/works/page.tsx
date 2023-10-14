@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { PlaceholderPage } from "app/components/Placeholder"
+import type { Metadata } from "next"
 
 const WorksPage = async () => {
   return <PlaceholderPage>{"作品の一覧"}</PlaceholderPage>
