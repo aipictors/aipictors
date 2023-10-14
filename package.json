@@ -9,9 +9,9 @@
     "start": "next start",
     "test": "vitest",
     "check": "tsc --noEmit",
-    "biome:check": "biome check --apply-unsafe app",
-    "biome:lint": "biome lint --apply-unsafe app",
-    "biome:format": "biome format --write app"
+    "biome:check": "biome check --apply-unsafe .",
+    "biome:lint": "biome lint --apply-unsafe .",
+    "biome:format": "biome format --write ."
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
