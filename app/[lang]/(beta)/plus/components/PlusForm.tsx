@@ -23,7 +23,6 @@ import { PassImageGenerationBenefitList } from "app/[lang]/(beta)/plus/component
 import { PlusAbout } from "app/[lang]/(beta)/plus/components/PlusAbout"
 import { PlusNoteList } from "app/[lang]/(beta)/plus/components/PlusNoteList"
 import { toPassName } from "app/[lang]/(beta)/plus/utils/toPassName"
-import { toPassPrice } from "app/[lang]/(beta)/plus/utils/toPassPrice"
 import { toDateText } from "app/utils/toDateText"
 
 export const PlusForm: React.FC = () => {
