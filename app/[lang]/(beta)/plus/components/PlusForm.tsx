@@ -140,7 +140,7 @@ export const PlusForm: React.FC = () => {
         <Text fontWeight={"bold"} fontSize={"lg"}>
           {"注意事項"}
         </Text>
-        <PlusNoteList />T
+        <PlusNoteList />
       </Stack>
     </Stack>
   )
