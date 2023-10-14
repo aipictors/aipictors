@@ -23,12 +23,15 @@ export const PlusAbout: React.FC = () => {
       const result = await mutation({
         variables: { input: { passType: "STANDARD" } },
       })
-      const url = result.data?.createPassCheckoutSession ?? null
-      if (url === null) {
-        toast({ status: "error", description: "決済URLの取得に失敗しました。" })
+      const pageURL = result.data?.createPassCheckoutSession ?? null
+      if (pageURL === null) {
+        toast({
+          status: "error",
+          description: "セッションの作成に失敗しました。",
+        })
         return
       }
-      window.location.assign(url)
+      window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
         toast({ status: "error", description: error.message })

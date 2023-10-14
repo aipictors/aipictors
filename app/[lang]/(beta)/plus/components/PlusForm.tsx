@@ -9,20 +9,48 @@ import {
   Stack,
   Text,
   UnorderedList,
+  useToast,
 } from "@chakra-ui/react"
 import type {
   ViewerCurrentPassQuery,
   ViewerCurrentPassQueryVariables,
 } from "__generated__/apollo"
-import { ViewerCurrentPassDocument } from "__generated__/apollo"
+import {
+  ViewerCurrentPassDocument,
+  useCreateCustomerPortalSessionMutation,
+} from "__generated__/apollo"
 import { PlusAbout } from "app/[lang]/(beta)/plus/components/PlusAbout"
 import { toDateText } from "app/utils/toDateText"
 
 export const PlusForm: React.FC = () => {
+  const [mutation, { loading: isLoading }] =
+    useCreateCustomerPortalSessionMutation()
+
   const { data: passSubscription } = useSuspenseQuery<
     ViewerCurrentPassQuery,
     ViewerCurrentPassQueryVariables
   >(ViewerCurrentPassDocument, {})
+
+  const toast = useToast()
+
+  const onOpenCustomerPortal = async () => {
+    try {
+      const result = await mutation({})
+      const pageURL = result.data?.createCustomerPortalSession ?? null
+      if (pageURL === null) {
+        toast({
+          status: "error",
+          description: "セッションの作成に失敗しました。",
+        })
+        return
+      }
+      window.location.assign(pageURL)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({ status: "error", description: error.message })
+      }
+    }
+  }
 
   if (passSubscription.viewer === null) {
     return null
@@ -56,10 +84,9 @@ export const PlusForm: React.FC = () => {
           {"決済方法の変更やキャンセルはこちらのリンクから行えます。"}
         </Text>
         <Button
-          as={"a"}
-          href={passSubscription.viewer.customerPortalUrl ?? ""}
           colorScheme={"green"}
-          lineHeight={1}
+          onClick={onOpenCustomerPortal}
+          isLoading={isLoading}
         >
           {"パスを管理する"}
         </Button>
