@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next"
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
   const eventRoutes = [
     {
-      url: `${Config.appURL}/events/wakiaiai`,
+      url: `${Config.siteURL}/events/wakiaiai`,
       lastModified: new Date(),
     },
   ]
