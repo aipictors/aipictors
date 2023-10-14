@@ -16,13 +16,8 @@ const ModelsPage = async () => {
 
   return (
     <ArticlePage>
-      <ImageModelList imageModelsQuery={resp.data} />
-      <GoogleAdsense
-        slot="5201832236"
-        style={{ display: "block" }}
-        format="auto"
-        responsive="true"
-      />
+      <ImageModelList imageModels={resp.data.imageModels} />
+      <GoogleAdsense slot={"5201832236"} format={"auto"} responsive={"true"} />
     </ArticlePage>
   )
 }

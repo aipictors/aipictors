@@ -4,7 +4,7 @@ import type { ImageModelsQuery } from "__generated__/apollo"
 import Link from "next/link"
 
 type Props = {
-  imageModelsQuery: ImageModelsQuery
+  imageModels: ImageModelsQuery["imageModels"]
 }
 
 export const ImageModelList: React.FC<Props> = (props) => {
@@ -15,7 +15,7 @@ export const ImageModelList: React.FC<Props> = (props) => {
           {"モデル"}
         </Text>
         <Grid templateColumns="repeat(4, 1fr)" gap={6}>
-          {props.imageModelsQuery.imageModels.map((imageModel) => (
+          {props.imageModels.map((imageModel) => (
             <Box key={imageModel.id} overflow={"hidden"}>
               <Link href={`/models/${imageModel.id}`}>
                 <Image

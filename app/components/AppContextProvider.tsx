@@ -1,4 +1,4 @@
-import { setUser } from "@sentry/react"
+import { setUser } from "@sentry/nextjs"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
 import {

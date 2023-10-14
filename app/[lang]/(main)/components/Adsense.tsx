@@ -1,24 +1,19 @@
 "use client"
 import { Box } from "@chakra-ui/react"
-import { captureException } from "@sentry/node"
+import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 
 const PUBLISHER_ID = "2116548824296763"
 
-type GoogleAdsenseProps = {
+type Props = {
   slot: string
   style?: React.CSSProperties
   format?: string
   responsive?: string
 }
 
-export const GoogleAdsense = ({
-  slot,
-  style = { display: "block" },
-  format,
-  responsive = "false",
-}: GoogleAdsenseProps): JSX.Element => {
+export const GoogleAdsense: React.FC<Props> = (props): JSX.Element => {
   const pathname = usePathname()
 
   useEffect(() => {
@@ -28,6 +23,7 @@ export const GoogleAdsense = ({
         window.adsbygoogle = []
       }
       window.adsbygoogle.push({})
+      console.log("window.adsbygoogle", window.adsbygoogle)
     } catch (error) {
       captureException(error)
     }
@@ -37,12 +33,15 @@ export const GoogleAdsense = ({
     <Box key={pathname}>
       <ins
         className="adsbygoogle"
-        style={style}
+        style={{
+          ...props.style,
+          display: "block",
+        }}
         data-adtest={process.env.NODE_ENV === "production" ? "off" : "on"}
         data-ad-client={`ca-pub-${PUBLISHER_ID}`}
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive={responsive}
+        data-ad-slot={props.slot}
+        data-ad-format={props.format}
+        data-full-width-responsive={props.responsive ?? false}
       />
     </Box>
   )
