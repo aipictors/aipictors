@@ -1,23 +1,23 @@
 "use client"
 
 import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
+import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
+import { AppContext } from "app/contexts/appContext"
 import { useContext } from "react"
 import {
   TbBolt,
-  TbLogout,
-  TbLogin,
-  TbSunFilled,
-  TbMoonFilled,
-  TbBrandX,
   TbBrandDiscordFilled,
   TbBrandThreads,
+  TbBrandX,
   TbBrandYoutubeFilled,
   TbHome,
+  TbLogin,
+  TbLogout,
   TbMessageCircle2,
+  TbMoonFilled,
   TbSparkles,
+  TbSunFilled,
 } from "react-icons/tb"
-import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
-import { AppContext } from "app/contexts/appContext"
 
 type Props = {
   onOpen: () => void

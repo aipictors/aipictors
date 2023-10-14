@@ -1,7 +1,7 @@
 "use client"
 import { Box, Stack, Text } from "@chakra-ui/react"
-import { useEffect, useRef } from "react"
 import { runAnimation } from "app/[lang]/unknown/utils/runAnimation"
+import { useEffect, useRef } from "react"
 
 export const UnknownCanvas: React.FC = () => {
   const ref = useRef<HTMLCanvasElement>(null)

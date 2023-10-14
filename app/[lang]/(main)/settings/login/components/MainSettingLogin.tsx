@@ -1,7 +1,6 @@
 "use client"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { Button, HStack, Input, Stack, Text, useToast } from "@chakra-ui/react"
-import { useState, useContext } from "react"
 import type {
   UpdateAccountLoginMutation,
   UpdateAccountLoginMutationVariables,
@@ -13,6 +12,7 @@ import {
   ViewerUserDocument,
 } from "__generated__/apollo"
 import { AppContext } from "app/contexts/appContext"
+import { useContext, useState } from "react"
 
 export const MainSettingLogin: React.FC = () => {
   const appContext = useContext(AppContext)

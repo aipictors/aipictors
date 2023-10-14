@@ -1,11 +1,11 @@
 "use client"
 import { Button, HStack, Icon, IconButton, Text } from "@chakra-ui/react"
 import {
-  TbQuestionMark,
-  TbHeartFilled,
-  TbFolderFilled,
-  TbShare2,
   TbDots,
+  TbFolderFilled,
+  TbHeartFilled,
+  TbQuestionMark,
+  TbShare2,
 } from "react-icons/tb"
 
 type Props = {

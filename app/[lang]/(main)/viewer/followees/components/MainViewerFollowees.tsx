@@ -1,5 +1,5 @@
 "use client"
-import { useSuspenseQuery } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,
   AlertIcon,
@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { useContext } from "react"
 import type {
   UserFolloweesQuery,
   UserFolloweesQueryVariables,
@@ -17,6 +16,7 @@ import type {
 import { UserFolloweesDocument } from "__generated__/apollo"
 import { FolloweeListItem } from "app/[lang]/(main)/viewer/followees/components/FolloweeListItem"
 import { AppContext } from "app/contexts/appContext"
+import { useContext } from "react"
 
 export const MainViewerFollowees: React.FC = () => {
   const appContext = useContext(AppContext)
@@ -24,10 +24,18 @@ export const MainViewerFollowees: React.FC = () => {
   const { data = null } = useSuspenseQuery<
     UserFolloweesQuery,
     UserFolloweesQueryVariables
-  >(UserFolloweesDocument, {
-    skip: appContext.isLoading,
-    variables: { user_id: appContext.userId!, offset: 0, limit: 128 },
-  })
+  >(
+    UserFolloweesDocument,
+    appContext.isLoading || appContext.userId === null
+      ? skipToken
+      : {
+          variables: {
+            user_id: appContext.userId,
+            offset: 0,
+            limit: 128,
+          },
+        },
+  )
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>

@@ -1,5 +1,5 @@
 "use client"
-import { Stack, Image } from "@chakra-ui/react"
+import { Image, Stack } from "@chakra-ui/react"
 
 type Props = {
   workImageURL?: string

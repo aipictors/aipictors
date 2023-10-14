@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { SctaDocument } from "app/[lang]/(main)/specified-commercial-transaction-ac-document/component/SctaDocument"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const SctaPage = async () => {
   return (

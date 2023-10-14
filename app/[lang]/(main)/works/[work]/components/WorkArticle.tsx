@@ -30,7 +30,7 @@ export const WorkArticle: React.FC<Props> = (props) => {
         </Text>
         <Text fontSize={"xs"}>{"CustomModel(その他)"}</Text>
         <Text fontSize={"sm"}>{toDateTimeText(props.work.createdAt)}</Text>
-        <Text fontSize={"sm"}>{`デイリー入賞`}</Text>
+        <Text fontSize={"sm"}>{"デイリー入賞"}</Text>
         {props.work.dailyTheme && (
           <HStack>
             <Text fontSize={"sm"}>{"参加お題:"}</Text>

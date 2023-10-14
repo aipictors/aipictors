@@ -26,7 +26,7 @@ export const GenerationHistoryDeleteModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalBody>
           <HStack justifyContent={"center"}>
             <Text>{"削除する履歴を選択してください"}</Text>

@@ -1,7 +1,7 @@
 "use client"
-import { Box, Grid, HStack, Stack, Text, Image } from "@chakra-ui/react"
-import Link from "next/link"
+import { Box, Grid, HStack, Image, Stack, Text } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
+import Link from "next/link"
 
 type Props = {
   imageModelsQuery: ImageModelsQuery
@@ -19,7 +19,7 @@ export const ImageModelList: React.FC<Props> = (props) => {
             <Box key={imageModel.id} overflow={"hidden"}>
               <Link href={`/models/${imageModel.id}`}>
                 <Image
-                  src={imageModel.thumbnailImageURL!}
+                  src={imageModel.thumbnailImageURL ?? ""}
                   alt={imageModel.displayName}
                   width={"100%"}
                   borderRadius={"lg"}

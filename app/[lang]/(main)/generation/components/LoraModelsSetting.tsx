@@ -1,9 +1,9 @@
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import {
-  Stack,
   Button,
-  Text,
   HStack,
+  Icon,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -13,9 +13,9 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
+  Stack,
+  Text,
   Tooltip,
-  Icon,
-  IconButton,
 } from "@chakra-ui/react"
 import { TbDice3, TbRefresh } from "react-icons/tb"
 

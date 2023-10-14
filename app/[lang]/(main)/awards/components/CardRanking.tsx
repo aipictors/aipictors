@@ -1,5 +1,5 @@
 "use client"
-import { Card, Text, Image, Stack } from "@chakra-ui/react"
+import { Card, Image, Stack, Text } from "@chakra-ui/react"
 import React from "react"
 
 type Props = {

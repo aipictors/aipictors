@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { PlaceholderPage } from "app/components/Placeholder"
+import type { Metadata } from "next"
 
 const SensitiveAlbumsPage = async () => {
   return <PlaceholderPage>{"シリーズの一覧"}</PlaceholderPage>

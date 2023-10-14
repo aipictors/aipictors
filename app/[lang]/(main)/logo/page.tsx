@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { LogoList } from "app/[lang]/(main)/logo/components/LogoList"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const LogoPage = async () => {
   return (

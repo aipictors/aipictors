@@ -1,7 +1,7 @@
 "use client"
-import React, { useContext } from "react"
 import { SettingsNavigation } from "app/[lang]/(main)/settings/components/SettingsNavigation"
 import { AppContext } from "app/contexts/appContext"
+import React, { useContext } from "react"
 
 type Props = {
   children: React.ReactNode

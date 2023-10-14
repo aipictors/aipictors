@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { MainSettingLogin } from "app/[lang]/(main)/settings/login/components/MainSettingLogin"
+import type { Metadata } from "next"
 
 const SettingLoginPage = async () => {
   return <MainSettingLogin />

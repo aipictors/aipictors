@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   WorkCommentsQuery,
   WorkCommentsQueryVariables,
@@ -11,6 +10,7 @@ import { WorkCommentList } from "app/[lang]/(main)/works/[work]/components/WorkC
 import { WorkRelatedWorkList } from "app/[lang]/(main)/works/[work]/components/WorkRelatedWorkList"
 import { createClient } from "app/client"
 import { ArticlePage } from "app/components/ArticlePage"
+import type { Metadata } from "next"
 
 type Props = {
   params: { work: string }

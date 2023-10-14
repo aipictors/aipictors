@@ -1,6 +1,6 @@
 "use client"
 
-import { HStack, Stack, Link as ChakraLink, Text } from "@chakra-ui/react"
+import { HStack, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 export const AppFooter: React.FC = () => {

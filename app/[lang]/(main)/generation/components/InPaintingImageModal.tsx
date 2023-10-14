@@ -32,7 +32,7 @@ export const InPaintingImageModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalCloseButton />
         <ModalBody>
           <Stack spacing={4}>
@@ -65,7 +65,7 @@ export const InPaintingImageModal: React.FC<Props> = (props) => {
             </HStack>
           </Stack>
         </ModalBody>
-        <ModalFooter justifyContent={"center"}></ModalFooter>
+        <ModalFooter justifyContent={"center"} />
       </ModalContent>
     </Modal>
   )

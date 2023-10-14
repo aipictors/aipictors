@@ -10,7 +10,7 @@ import {
   Stack,
   useToast,
 } from "@chakra-ui/react"
-import { signOut, getAuth } from "firebase/auth"
+import { getAuth, signOut } from "firebase/auth"
 import { useRef } from "react"
 
 type Props = {

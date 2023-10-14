@@ -1,18 +1,18 @@
 import {
+  Box,
+  Button,
   Card,
   HStack,
-  Stack,
   Heading,
-  Image,
-  IconButton,
   Icon,
-  Button,
-  Box,
+  IconButton,
+  Image,
+  Stack,
 } from "@chakra-ui/react"
-import { getAnalytics, logEvent } from "firebase/analytics"
-import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
 import type { EventUser } from "app/[lang]/events/types/eventUser"
 import { TagEventUser } from "app/[lang]/events/wakiaiai/components/tag/TagEventUser"
+import { getAnalytics, logEvent } from "firebase/analytics"
+import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
 
 type Props = {
   user: EventUser
@@ -23,10 +23,11 @@ export const CardEventCreator: React.FC<Props> = (props) => {
     <Card overflow={"hidden"} variant={"filled"}>
       <HStack>
         <Box minW={40} w={40} h={40}>
+          {/** biome-ignore lint: TODO: 修正 */}
           <a
             aria-label={"Twitter"}
             target={"_blank"}
-            rel={"noopener"}
+            rel="noreferrer"
             href={
               props.user.twitterId === null
                 ? undefined

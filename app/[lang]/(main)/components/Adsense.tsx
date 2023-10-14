@@ -1,4 +1,6 @@
 "use client"
+import { Box } from "@chakra-ui/react"
+import { captureException } from "@sentry/node"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 
@@ -21,17 +23,18 @@ export const GoogleAdsense = ({
 
   useEffect(() => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(
-        {},
-      )
+      if (typeof window === "undefined") return
+      if (window.adsbygoogle === undefined) {
+        window.adsbygoogle = []
+      }
+      window.adsbygoogle.push({})
     } catch (error) {
-      // Pass
+      captureException(error)
     }
   }, [pathname])
 
   return (
-    <div key={pathname}>
+    <Box key={pathname}>
       <ins
         className="adsbygoogle"
         style={style}
@@ -41,6 +44,6 @@ export const GoogleAdsense = ({
         data-ad-format={format}
         data-full-width-responsive={responsive}
       />
-    </div>
+    </Box>
   )
 }

@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { MainSettingNotification } from "app/[lang]/(main)/settings/notification/components/MainSettingNotification"
+import type { Metadata } from "next"
 
 const SettingNotificationPage = async () => {
   return <MainSettingNotification />

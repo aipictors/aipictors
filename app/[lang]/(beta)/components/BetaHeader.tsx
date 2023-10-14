@@ -5,13 +5,13 @@ import {
   HStack,
   Icon,
   IconButton,
-  useColorModeValue,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
+import { BetaUserNavigationButton } from "app/[lang]/(main)/components/BetaUserNavigationButton"
 import Link from "next/link"
 import React from "react"
-import { TbMenu2, TbBellFilled } from "react-icons/tb"
-import { BetaUserNavigationButton } from "app/[lang]/(main)/components/BetaUserNavigationButton"
+import { TbBellFilled, TbMenu2 } from "react-icons/tb"
 
 type HomeHeaderProps = {
   onOpenNavigation?: () => void

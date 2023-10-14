@@ -7,10 +7,11 @@
     "build": "next build",
     "prebuild": "graphql-codegen -c codegen.ts",
     "start": "next start",
-    "format": "prettier --write --ignore-path .gitignore app",
     "test": "vitest",
-    "lint:fix": "eslint --fix --ignore-path .gitignore --ext .ts,.tsx .",
-    "check": "tsc"
+    "check": "tsc --noEmit",
+    "biome:check": "biome check --apply-unsafe app",
+    "biome:lint": "biome lint --apply-unsafe app",
+    "biome:format": "biome format --write app"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",

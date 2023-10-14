@@ -1,6 +1,6 @@
 "use client"
-import "@splidejs/react-splide/css"
 import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
+import "@splidejs/react-splide/css"
 import { FlexibleNavigation } from "app/[lang]/(main)/components/FlexibleNavigation"
 import { HomeHeader } from "app/[lang]/(main)/components/HomeHeader"
 import { HomeNavigationList } from "app/[lang]/(main)/components/HomeNavigationList"

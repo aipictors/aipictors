@@ -2,12 +2,12 @@
 import {
   Card,
   CardBody,
-  Stack,
-  Image,
-  Text,
   HStack,
-  IconButton,
   Icon,
+  IconButton,
+  Image,
+  Stack,
+  Text,
 } from "@chakra-ui/react"
 import { TbHeart } from "react-icons/tb"
 

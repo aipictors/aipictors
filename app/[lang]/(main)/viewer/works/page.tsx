@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { ViewerWorkTable } from "app/[lang]/(main)/viewer/works/components/ViewerWorkTable"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const ViewerWorksPage = async () => {
   return (

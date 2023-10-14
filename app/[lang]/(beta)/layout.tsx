@@ -1,6 +1,6 @@
 "use client"
-import "@splidejs/react-splide/css"
 import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
+import "@splidejs/react-splide/css"
 import { BetaHeader } from "app/[lang]/(beta)/components/BetaHeader"
 import { BetaNavigationList } from "app/[lang]/(beta)/components/BetaNavigationList"
 import { FlexibleNavigation } from "app/[lang]/(main)/components/FlexibleNavigation"

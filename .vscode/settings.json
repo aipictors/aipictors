@@ -29,6 +29,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "cSpell.words": [
+    "adsbygoogle",
+    "adsense",
     "aipictors",
     "chakra",
     "followee",

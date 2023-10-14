@@ -1,4 +1,4 @@
-import { Card, Stack, Button, Image, Text } from "@chakra-ui/react"
+import { Button, Card, Image, Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   onSelect(): void
@@ -24,7 +24,7 @@ export const LoraImageModelCard: React.FC<Props> = (props) => {
             props.onSelect()
           }}
         >
-          <Image src={props.imageURL!} alt={props.name} />
+          <Image src={props.imageURL ?? ""} alt={props.name} />
         </Button>
         <Stack spacing={0}>
           <Text fontSize={"sm"}>{props.name}</Text>

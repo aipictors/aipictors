@@ -7,34 +7,34 @@ import {
   Stack,
   useColorMode,
 } from "@chakra-ui/react"
-import Link from "next/link"
-import { useContext } from "react"
-import {
-  TbHome,
-  TbBulb,
-  TbRubberStamp,
-  TbAward,
-  TbBolt,
-  TbAlbum,
-  TbFolder,
-  TbPhoto,
-  TbPhotoPlus,
-  TbCamera,
-  TbBox,
-  TbAlertTriangle,
-  TbSettings,
-  TbLogout,
-  TbLogin,
-  TbSunFilled,
-  TbMoonFilled,
-  TbBrandX,
-  TbBrandDiscordFilled,
-  TbBrandThreads,
-  TbBrandYoutubeFilled,
-} from "react-icons/tb"
 import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
 import { AppContext } from "app/contexts/appContext"
 import { Config } from "config"
+import Link from "next/link"
+import { useContext } from "react"
+import {
+  TbAlbum,
+  TbAlertTriangle,
+  TbAward,
+  TbBolt,
+  TbBox,
+  TbBrandDiscordFilled,
+  TbBrandThreads,
+  TbBrandX,
+  TbBrandYoutubeFilled,
+  TbBulb,
+  TbCamera,
+  TbFolder,
+  TbHome,
+  TbLogin,
+  TbLogout,
+  TbMoonFilled,
+  TbPhoto,
+  TbPhotoPlus,
+  TbRubberStamp,
+  TbSettings,
+  TbSunFilled,
+} from "react-icons/tb"
 
 type Props = {
   onOpen: () => void

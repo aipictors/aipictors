@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { MainHome } from "app/[lang]/home/components/MainHome"
+import type { Metadata } from "next"
 
 const HomePage = async () => {
   return <MainHome />

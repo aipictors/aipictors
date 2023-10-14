@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Image, Text, HStack } from "@chakra-ui/react"
+import { Button, HStack, Image, Text } from "@chakra-ui/react"
 
 type Props = {
   imageURL: string

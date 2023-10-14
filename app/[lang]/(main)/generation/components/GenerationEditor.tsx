@@ -1,11 +1,11 @@
 "use client"
 import { Grid, GridItem } from "@chakra-ui/react"
-import { useState } from "react"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoryQuery,
 } from "__generated__/apollo"
+import { useState } from "react"
 
 import { GenerationEditorHistory } from "app/[lang]/(main)/generation/components/GenerationEditorHistory"
 import { GenerationEditorLoraModels } from "app/[lang]/(main)/generation/components/GenerationEditorLoraModels"
@@ -132,15 +132,15 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             })
             selectLoraModels(draftModels)
           }}
-          size={imageSize!}
+          size={0}
           setSize={(size) => {
             setImageSize(size)
           }}
-          vae={imageVae!}
+          vae={0}
           setVae={(vae) => {
             setImageVae(vae)
           }}
-          seed={imageSeed!}
+          seed={0}
           setSeed={(seed) => {
             setImageSeed(seed)
           }}
@@ -149,7 +149,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       <GridItem area={area.editorPrompt}>
         <GenerationEditorPrompt
           promptCategories={props.promptCategories}
-          selectedPromptCategory={selectedPromptCategories!}
+          selectedPromptCategory={selectedPromptCategories ?? ""}
           onSelectPromptCategory={(categories) => {
             setSelectPromptCategories(categories)
           }}
@@ -157,7 +157,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       </GridItem>
       <GridItem area={area.editorNegativePrompt}>
         <GenerationEditorNegative
-          negativePrompt={selectedNegativePromptCategories!}
+          negativePrompt={selectedNegativePromptCategories ?? ""}
           setNegativePrompt={(prompt) => {
             setSelectNegativePromptCategories(prompt)
           }}

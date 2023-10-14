@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import type { WorksQuery, HotTagsQuery } from "__generated__/apollo"
-import { WorksDocument, HotTagsDocument } from "__generated__/apollo"
+import type { HotTagsQuery, WorksQuery } from "__generated__/apollo"
+import { HotTagsDocument, WorksDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/[lang]/(main)/components/HomeTagList"
 import { HomeWorkList } from "app/[lang]/(main)/components/HomeWorkList"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const HomePage = async () => {
   const client = createClient()

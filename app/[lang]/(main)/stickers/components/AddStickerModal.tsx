@@ -2,6 +2,10 @@
 "use client"
 import {
   Button,
+  Checkbox,
+  HStack,
+  Image,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,12 +13,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-  Image,
-  Input,
-  HStack,
-  Checkbox,
   Stack,
+  Text,
 } from "@chakra-ui/react"
 import React from "react"
 

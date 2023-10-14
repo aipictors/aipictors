@@ -1,14 +1,12 @@
 "use client"
 import {
-  Stack,
   Avatar,
-  Text,
   HStack,
   Icon,
   Link as ChakraLink,
+  Stack,
+  Text,
 } from "@chakra-ui/react"
-import React from "react"
-import { TbHeartFilled, TbEye, TbUser, TbMedal2, TbAward } from "react-icons/tb"
 import type { UserQuery } from "__generated__/apollo"
 import { UserMuteMenu } from "app/[lang]/(main)/users/[user]/components/UserMuteMenu"
 import { UserPickUp } from "app/[lang]/(main)/users/[user]/components/UserPickUp"
@@ -18,6 +16,8 @@ import { LinkWebButton } from "app/components/LinkWebButton"
 import { ShareButton } from "app/components/ShareButton"
 import { SocialInstagramButton } from "app/components/SocialInstagramButton"
 import { SocialTwitterButton } from "app/components/SocialTwitterButton"
+import React from "react"
+import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>

@@ -1,5 +1,7 @@
 "use client"
 import { Box, Stack, Text, useBreakpoint } from "@chakra-ui/react"
+import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
+import { Config } from "config"
 import React from "react"
 import {
   TbBell,
@@ -14,8 +16,6 @@ import {
   TbUser,
   TbUserOff,
 } from "react-icons/tb"
-import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
-import { Config } from "config"
 
 export const SettingsNavigation: React.FC = () => {
   const breakpoint = useBreakpoint()

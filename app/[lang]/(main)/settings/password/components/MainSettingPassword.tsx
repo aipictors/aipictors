@@ -10,13 +10,13 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react"
-import { useState } from "react"
-import { TbEye } from "react-icons/tb"
 import type {
   UpdateAccountPasswordMutation,
   UpdateAccountPasswordMutationVariables,
 } from "__generated__/apollo"
 import { UpdateAccountPasswordDocument } from "__generated__/apollo"
+import { useState } from "react"
+import { TbEye } from "react-icons/tb"
 
 export const MainSettingPassword: React.FC = () => {
   const [newPassword, setNewPassword] = useState("")

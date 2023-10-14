@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
 import type { WorksQuery } from "__generated__/apollo"
 import { WorksDocument } from "__generated__/apollo"
 import { CollectionArticle } from "app/[lang]/(main)/collections/[collection]/components/CollectionArticle"
 import { WorkList } from "app/[lang]/(main)/works/components/WorkList"
 import { createClient } from "app/client"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const CollectionPage = async () => {
   const client = createClient()

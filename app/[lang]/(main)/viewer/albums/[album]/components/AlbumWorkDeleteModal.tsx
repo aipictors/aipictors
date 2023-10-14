@@ -21,7 +21,7 @@ export const AlbumWorkDeleteModal: React.FC<Props> = (props) => {
     <Modal isOpen={props.isOpen} onClose={props.onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalBody justifyContent={"center"}>
           <HStack justifyContent={"center"}>
             <Text>{"選択した作品を削除しますか？"}</Text>

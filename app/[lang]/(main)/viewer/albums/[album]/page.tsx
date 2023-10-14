@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { ViewerAlbumArticle } from "app/[lang]/(main)/viewer/albums/[album]/components/ViewerAlbumArticle"
 import { MainCenterPage } from "app/components/MainCenterPage"
+import type { Metadata } from "next"
 
 const AlbumPage = async () => {
   return (

@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { NoteArticle } from "app/[lang]/(main)/notes/[note]/components/NoteArticle"
 import { MainPage } from "app/components/MainPage"
+import type { Metadata } from "next"
 
 const NotePage = async () => {
   return (

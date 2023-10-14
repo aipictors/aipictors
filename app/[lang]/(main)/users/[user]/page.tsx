@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   UserWorksQuery,
   UserWorksQueryVariables,
@@ -7,6 +6,7 @@ import { UserWorksDocument } from "__generated__/apollo"
 import { UserWorkList } from "app/[lang]/(main)/users/[user]/components/UserWorkList"
 import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/components/UserWorkListActions"
 import { createClient } from "app/client"
+import type { Metadata } from "next"
 
 type Props = {
   params: { user: string }

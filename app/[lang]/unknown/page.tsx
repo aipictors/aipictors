@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { UnknownCanvas } from "app/[lang]/unknown/components/unknownCanvas"
+import type { Metadata } from "next"
 
 const UnknownPage = async () => {
   return <UnknownCanvas />

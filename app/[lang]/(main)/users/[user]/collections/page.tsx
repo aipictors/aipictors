@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { UserCollectionList } from "app/[lang]/(main)/users/[user]/collections/components/UserCollectionList"
+import type { Metadata } from "next"
 
 const UserCollectionsPage = async () => {
   return (

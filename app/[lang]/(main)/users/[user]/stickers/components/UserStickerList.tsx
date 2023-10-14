@@ -1,8 +1,8 @@
 "use client"
 import { SimpleGrid } from "@chakra-ui/react"
-import React from "react"
 import type { UserStickersQuery } from "__generated__/apollo"
 import { CardSticker } from "app/[lang]/(main)/stickers/components/CardSticker"
+import React from "react"
 
 type Props = {
   stickers: NonNullable<UserStickersQuery["user"]>["stickers"]

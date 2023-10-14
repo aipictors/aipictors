@@ -1,23 +1,23 @@
 "use client"
 import { useSuspenseQuery } from "@apollo/client"
 import {
-  Box,
-  Text,
-  Stack,
-  Divider,
-  Button,
-  HStack,
   Avatar,
+  Box,
+  Button,
+  Divider,
+  HStack,
+  Stack,
+  Text,
   useInterval,
 } from "@chakra-ui/react"
-import Link from "next/link"
-import { startTransition } from "react"
 import type {
   ViewerMessageThreadsQuery,
   ViewerMessageThreadsQueryVariables,
 } from "__generated__/apollo"
 import { ViewerMessageThreadsDocument } from "__generated__/apollo"
 import { toDateTimeText } from "app/utils/toDateTimeText"
+import Link from "next/link"
+import { startTransition } from "react"
 
 export const MessageThreadList: React.FC = () => {
   const { data: threads, refetch } = useSuspenseQuery<

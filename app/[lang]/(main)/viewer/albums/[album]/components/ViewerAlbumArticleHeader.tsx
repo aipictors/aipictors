@@ -1,5 +1,5 @@
 "use client"
-import { Stack, Text, Button, HStack, Icon, IconButton } from "@chakra-ui/react"
+import { Button, HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
 import { TbPencil, TbPlus, TbShare2 } from "react-icons/tb"
 
 export const ViewerAlbumArticleHeader: React.FC = () => {
@@ -30,7 +30,7 @@ export const ViewerAlbumArticleHeader: React.FC = () => {
           icon={<Icon as={TbPlus} />}
         />
       </HStack>
-      <HStack justifyContent={"space-between"}></HStack>
+      <HStack justifyContent={"space-between"} />
     </Stack>
   )
 }

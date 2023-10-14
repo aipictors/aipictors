@@ -10,8 +10,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbSettings } from "react-icons/tb"
 import { DescriptionSettingModal } from "app/[lang]/(main)/viewer/albums/[album]/components/DescriptionSettingModal"
+import { TbSettings } from "react-icons/tb"
 
 export const ViewerAlbumWorkDescription: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -34,7 +34,7 @@ export const ViewerAlbumWorkDescription: React.FC = () => {
                 onClick={onOpen}
               />
             </HStack>
-            <HStack justifyContent={"flex-start"}></HStack>
+            <HStack justifyContent={"flex-start"} />
             <Text>{"説明"}</Text>
           </Stack>
         </CardBody>

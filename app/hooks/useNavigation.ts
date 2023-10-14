@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
 import { Config } from "config"
+import { useEffect, useState } from "react"
 
 export const useNavigation = () => {
   const [flag, setFlag] = useState(true)

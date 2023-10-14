@@ -55,7 +55,7 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
               placeholder={"プロンプト"}
               borderRadius={"md"}
               value={selectedPrompt?.name ?? ""}
-            ></Textarea>
+            />
           </Box>
         </Stack>
       </Card>

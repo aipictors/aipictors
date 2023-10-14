@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
@@ -11,6 +10,7 @@ import {
 } from "__generated__/apollo"
 import { GenerationEditor } from "app/[lang]/(main)/generation/components/GenerationEditor"
 import { createClient } from "app/client"
+import type { Metadata } from "next"
 
 const GenerationPage = async () => {
   const client = createClient()

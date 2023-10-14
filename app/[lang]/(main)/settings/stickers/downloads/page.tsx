@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { MainSettingStickersDownloads } from "app/[lang]/(main)/settings/stickers/downloads/components/MainSettingStickersDownloads"
+import type { Metadata } from "next"
 
 const StickersDownloadsPage = async () => {
   return <MainSettingStickersDownloads />

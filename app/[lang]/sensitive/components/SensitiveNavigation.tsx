@@ -1,5 +1,6 @@
 "use client"
 import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
+import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
 import {
   TbAlbum,
   TbArrowBackUp,
@@ -10,7 +11,6 @@ import {
   TbMoonFilled,
   TbSunFilled,
 } from "react-icons/tb"
-import { HomeNavigationButton } from "app/[lang]/(main)/components/HomeNavigationButton"
 
 export const SensitiveNavigation: React.FC = () => {
   const { colorMode, toggleColorMode } = useColorMode()

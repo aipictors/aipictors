@@ -3,11 +3,11 @@ import { useSuspenseQuery } from "@apollo/client"
 import {
   Button,
   HStack,
-  Stack,
-  Text,
+  Link,
   ListItem,
   OrderedList,
-  Link,
+  Stack,
+  Text,
   UnorderedList,
 } from "@chakra-ui/react"
 import type {
@@ -57,7 +57,7 @@ export const MainPlus: React.FC = () => {
         </Text>
         <Button
           as={"a"}
-          href={passSubscription.viewer.subscriptionURL!}
+          href={passSubscription.viewer.subscriptionURL ?? ""}
           colorScheme={"green"}
           lineHeight={1}
         >

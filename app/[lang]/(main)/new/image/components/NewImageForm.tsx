@@ -1,15 +1,15 @@
 "use client"
 import {
   Box,
-  Text,
-  Stack,
   Button,
-  Input,
-  Image,
   Flex,
-  RadioGroup,
+  Image,
+  Input,
   Radio,
+  RadioGroup,
   Select,
+  Stack,
+  Text,
 } from "@chakra-ui/react"
 import {
   DndContext,
@@ -24,10 +24,10 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
+import { AutoResizeTextarea } from "app/components/AutoResizeTextarea"
 import type { SetStateAction } from "react"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { AutoResizeTextarea } from "app/components/AutoResizeTextarea"
 
 const NewImageForm = () => {
   const [selectedImages, setSelectedImages] = useState([]) // 画像の配列を保持する状態
@@ -81,6 +81,10 @@ const NewImageForm = () => {
     useSensor(KeyboardSensor),
   )
 
+  /**
+   * @param event
+   * biome-ignore lint: TODO: 修正
+   */
   const handleDragEnd = (event: any) => {
     console.log("Drag ended:", event)
     const { active, over } = event
@@ -125,7 +129,12 @@ const NewImageForm = () => {
     setReservationTime(event.target.value)
   }
 
-  // ドラッグアンドドロップで並び替えできるようにする
+  /**
+   * ドラッグアンドドロップで並び替えできるようにする
+   * @param props
+   * @returns
+   * biome-ignore lint: TODO: 修正
+   */
   const SelectedImageItem = (props: any) => {
     // ドラッグアンドドロップで並び替えできるようにする
     const { attributes, listeners, setNodeRef } = useSortable({

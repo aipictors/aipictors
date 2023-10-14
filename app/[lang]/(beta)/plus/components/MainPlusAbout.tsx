@@ -2,12 +2,12 @@
 import {
   Button,
   HStack,
+  Link,
+  ListItem,
+  OrderedList,
   Stack,
   Text,
-  ListItem,
   UnorderedList,
-  OrderedList,
-  Link,
   useToast,
 } from "@chakra-ui/react"
 import { useCreatePassCheckoutUrlMutation } from "__generated__/apollo"

@@ -18,9 +18,9 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import React, { useState } from "react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryIcon } from "app/[lang]/(main)/generation/components/PromptCategoryIcon"
+import React, { useState } from "react"
 
 type Props = {
   isOpen: boolean
@@ -43,7 +43,7 @@ export const PromptCategoriesModal: React.FC<Props> = (props) => {
         size={"2xl"}
       >
         <ModalContent>
-          <ModalHeader></ModalHeader>
+          <ModalHeader />
           <ModalCloseButton />
           <ModalBody>
             <Accordion defaultIndex={[0]} allowToggle>

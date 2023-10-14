@@ -1,7 +1,7 @@
 "use client"
 import { Button, Input, Stack } from "@chakra-ui/react"
-import { useState } from "react"
 import type { FormLogin } from "app/types/formLogin"
+import { useState } from "react"
 
 type Props = {
   onSubmit(form: FormLogin): void

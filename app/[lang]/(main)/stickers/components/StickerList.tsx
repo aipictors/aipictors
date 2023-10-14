@@ -1,9 +1,9 @@
 "use client"
 import { HStack, SimpleGrid, Stack } from "@chakra-ui/react"
-import React from "react"
 import type { StickersQuery } from "__generated__/apollo"
 import { CardSticker } from "app/[lang]/(main)/stickers/components/CardSticker"
 import { StickerListHeader } from "app/[lang]/(main)/stickers/components/StickerListHeader"
+import React from "react"
 
 type Props = {
   stickersQuery: StickersQuery

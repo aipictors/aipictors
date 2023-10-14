@@ -2,6 +2,7 @@
 
 import {
   Button,
+  HStack,
   Modal,
   ModalBody,
   ModalContent,
@@ -9,7 +10,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  HStack,
 } from "@chakra-ui/react"
 
 type Props = {
@@ -27,7 +27,7 @@ export const GenerationHistoryDlModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader></ModalHeader>
+        <ModalHeader />
         <ModalBody alignItems={"center"} justifyContent={"center"}>
           <HStack justifyContent={"center"}>
             <Text>{"ダウンロード対象を選択してください"}</Text>

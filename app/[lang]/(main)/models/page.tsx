@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
 import type { ImageModelsQuery } from "__generated__/apollo"
 import { ImageModelsDocument } from "__generated__/apollo"
 import { GoogleAdsense } from "app/[lang]/(main)/components/Adsense"
 import { ImageModelList } from "app/[lang]/(main)/models/components/ImageModelList"
 import { createClient } from "app/client"
 import { ArticlePage } from "app/components/ArticlePage"
+import type { Metadata } from "next"
 
 const ModelsPage = async () => {
   const client = createClient()

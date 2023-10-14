@@ -2,6 +2,8 @@
 
 import {
   Button,
+  HStack,
+  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -9,15 +11,13 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
-  Image,
-  HStack,
   Stack,
+  Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { useState } from "react"
 import { InPaintingSelectedPromptModal } from "app/[lang]/(main)/generation/components/InPaintingSelectedPromptModal"
 import { StarRating } from "app/[lang]/(main)/generation/components/StarRating"
+import { useState } from "react"
 
 type Props = {
   isOpen: boolean
@@ -45,7 +45,7 @@ export const SelectedWorkModal: React.FC<Props> = (props) => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader></ModalHeader>
+          <ModalHeader />
           <ModalCloseButton />
           <ModalBody justifyContent={"center"}>
             <Stack spacing={2} alignItems={"center"}>
