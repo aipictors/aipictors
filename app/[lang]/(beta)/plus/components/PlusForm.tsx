@@ -11,18 +11,18 @@ import {
   UnorderedList,
 } from "@chakra-ui/react"
 import type {
-  ViewerPassSubscriptionQuery,
-  ViewerPassSubscriptionQueryVariables,
+  ViewerCurrentPassQuery,
+  ViewerCurrentPassQueryVariables,
 } from "__generated__/apollo"
-import { ViewerPassSubscriptionDocument } from "__generated__/apollo"
+import { ViewerCurrentPassDocument } from "__generated__/apollo"
 import { PlusAbout } from "app/[lang]/(beta)/plus/components/PlusAbout"
 import { toDateText } from "app/utils/toDateText"
 
 export const PlusForm: React.FC = () => {
   const { data: passSubscription } = useSuspenseQuery<
-    ViewerPassSubscriptionQuery,
-    ViewerPassSubscriptionQueryVariables
-  >(ViewerPassSubscriptionDocument, {})
+    ViewerCurrentPassQuery,
+    ViewerCurrentPassQueryVariables
+  >(ViewerCurrentPassDocument, {})
 
   if (passSubscription.viewer === null) {
     return null
