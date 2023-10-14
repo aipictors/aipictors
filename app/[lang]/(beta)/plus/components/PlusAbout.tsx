@@ -10,17 +10,20 @@ import {
   UnorderedList,
   useToast,
 } from "@chakra-ui/react"
-import { useCreatePassCheckoutUrlMutation } from "__generated__/apollo"
+import { useCreatePassCheckoutSessionMutation } from "__generated__/apollo"
 
-export const MainPlusAbout: React.FC = () => {
-  const [mutation, { loading: isLoading }] = useCreatePassCheckoutUrlMutation()
+export const PlusAbout: React.FC = () => {
+  const [mutation, { loading: isLoading }] =
+    useCreatePassCheckoutSessionMutation()
 
   const toast = useToast()
 
   const onPay = async () => {
     try {
-      const result = await mutation({ variables: {} })
-      const url = result.data?.createPassCheckoutURL ?? null
+      const result = await mutation({
+        variables: { input: { passType: "STANDARD" } },
+      })
+      const url = result.data?.createPassCheckoutSession ?? null
       if (url === null) {
         toast({ status: "error", description: "決済URLの取得に失敗しました。" })
         return
@@ -45,7 +48,7 @@ export const MainPlusAbout: React.FC = () => {
       <Stack spacing={2}>
         <Text whiteSpace={"pre-wrap"}>
           {
-            "Aipictors+になることでサービス内で特典*を受けることができるようになります。\n料金は2000円/月となります。"
+            "Aipictors+になることでサービス内で特典*を受けることができるようになります。\n料金は1,980円（税込）/月となります。"
           }
         </Text>
       </Stack>

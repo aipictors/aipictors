@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client"
 
-export const SUBSCRIPTION_FIELDS = gql`
-  fragment SubscriptionFields on SubscriptionNode {
+export const PASS_FIELDS = gql`
+  fragment PassFields on PassNode {
     id
     type
     payment {

@@ -1,4 +1,4 @@
-import { MainPlus } from "app/[lang]/(beta)/plus/components/MainPlus"
+import { PlusForm } from "app/[lang]/(beta)/plus/components/PlusForm"
 import { MainCenterPage } from "app/components/MainCenterPage"
 import type { Metadata } from "next"
 
@@ -9,7 +9,7 @@ import type { Metadata } from "next"
 const PlusPage = async () => {
   return (
     <MainCenterPage>
-      <MainPlus />
+      <PlusForm />
     </MainCenterPage>
   )
 }

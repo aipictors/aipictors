@@ -15,10 +15,10 @@ import type {
   ViewerPassSubscriptionQueryVariables,
 } from "__generated__/apollo"
 import { ViewerPassSubscriptionDocument } from "__generated__/apollo"
-import { MainPlusAbout } from "app/[lang]/(beta)/plus/components/MainPlusAbout"
+import { PlusAbout } from "app/[lang]/(beta)/plus/components/PlusAbout"
 import { toDateText } from "app/utils/toDateText"
 
-export const MainPlus: React.FC = () => {
+export const PlusForm: React.FC = () => {
   const { data: passSubscription } = useSuspenseQuery<
     ViewerPassSubscriptionQuery,
     ViewerPassSubscriptionQueryVariables
@@ -28,12 +28,12 @@ export const MainPlus: React.FC = () => {
     return null
   }
 
-  if (passSubscription.viewer.passSubscription === null) {
-    return <MainPlusAbout />
+  if (passSubscription.viewer.currentPass === null) {
+    return <PlusAbout />
   }
 
   const periodEndDateText = toDateText(
-    passSubscription.viewer.passSubscription.periodEnd,
+    passSubscription.viewer.currentPass.periodEnd,
   )
 
   return (
@@ -49,7 +49,7 @@ export const MainPlus: React.FC = () => {
         <Text whiteSpace={"pre-wrap"}>
           {"現在、ご利用中のサブスクリプションがあります。"}
         </Text>
-        <Text>{`サブスクリプションは自動的に更新され、${periodEndDateText}に2,000円（税込）が決済されます。`}</Text>
+        <Text>{`パスは自動的に更新され、${periodEndDateText}に1,980円（税込）が決済されます。`}</Text>
       </Stack>
       <Stack>
         <Text whiteSpace={"pre-wrap"}>
@@ -57,11 +57,11 @@ export const MainPlus: React.FC = () => {
         </Text>
         <Button
           as={"a"}
-          href={passSubscription.viewer.subscriptionURL ?? ""}
+          href={passSubscription.viewer.customerPortalUrl ?? ""}
           colorScheme={"green"}
           lineHeight={1}
         >
-          {"サブスクリプションを管理する"}
+          {"パスを管理する"}
         </Button>
       </Stack>
       <Stack spacing={2}>
