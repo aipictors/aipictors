@@ -14,7 +14,6 @@ export const PassPlanList: React.FC<Props> = (props) => {
     <Stack direction={{ base: "column", lg: "row" }} spacing={2}>
       <Box flex={1}>
         <PassPlanDescription
-          isDisabled
           title={"ライト"}
           price={480}
           features={toPassFeatures("LITE")}
@@ -38,7 +37,6 @@ export const PassPlanList: React.FC<Props> = (props) => {
       </Box>
       <Box flex={1}>
         <PassPlanDescription
-          isDisabled
           title={"プレミアム"}
           price={3980}
           features={toPassFeatures("PREMIUM")}

@@ -27,6 +27,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - name: Run TypeScript
-        run: npm run tsc -- --noEmit
-      - name: Run Vitest
-        run: npm run vitest -- --run
+        run: npm run check
+      - name: Run Test
+        run: npm run test
