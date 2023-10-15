@@ -1,0 +1,34 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**/*"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app/**/*"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Install
+        run: npm install
+      - name: Run Type Cheking
+        run: npm run check
+      - name: Run Test
+        run: npm run test

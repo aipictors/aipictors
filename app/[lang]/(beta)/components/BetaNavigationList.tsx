@@ -66,16 +66,6 @@ export const BetaNavigationList: React.FC<Props> = (props) => {
           {"設定"}
         </HomeNavigationButton>
       )} */}
-      {appContext.isLoggedIn && (
-        <HomeNavigationButton
-          onClick={() => {
-            props.onOpenLogout()
-          }}
-          leftIcon={TbLogout}
-        >
-          {"ログアウト"}
-        </HomeNavigationButton>
-      )}
       {appContext.isNotLoggedIn && (
         <HomeNavigationButton
           onClick={() => {

@@ -20,6 +20,7 @@ export const AppAboutHeader: React.FC = () => {
       mx={"auto"}
       spacing={0}
       pb={32}
+      position={"relative"}
     >
       <Box
         position={"absolute"}

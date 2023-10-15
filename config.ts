@@ -8,6 +8,68 @@ export class Config {
   }
 
   /**
+   * パスの仕様: 認証バッジ
+   */
+  static get passFeature() {
+    return {
+      /**
+       * 認証バッジ
+       */
+      badge: {
+        free: false,
+        lite: true,
+        standard: true,
+        premium: true,
+      },
+      /**
+       * 広告非表示
+       */
+      noAdvertisement: {
+        free: false,
+        lite: true,
+        standard: true,
+        premium: true,
+      },
+      /**
+       * 1日の画像生成数
+       */
+      imageGenerationsCount: {
+        free: 30,
+        lite: 50,
+        standard: 100,
+        premium: 200,
+      },
+      /**
+       * 画像生成タスク数
+       */
+      imageGenerationTasksCount: {
+        free: 1,
+        lite: 1,
+        standard: 2,
+        premium: 3,
+      },
+      /**
+       * LoRAモデル数
+       */
+      imageGenerationLoraModelsCount: {
+        free: 2,
+        lite: 2,
+        standard: 5,
+        premium: 5,
+      },
+      /**
+       * 画像生成履歴数
+       */
+      imageGenerationHistoriesCount: {
+        free: 0,
+        lite: 10,
+        standard: 50,
+        premium: 100,
+      },
+    }
+  }
+
+  /**
    * デフォルトのLoRAモデルID
    */
   static get defaultImageLoraModelIds() {
@@ -50,6 +112,9 @@ export class Config {
     return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう！、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
   }
 
+  /**
+   * Firebaseの設定
+   */
   static get firebaseConfig() {
     return {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -62,38 +127,65 @@ export class Config {
     }
   }
 
+  /**
+   * GraphQLのエンドポイント
+   */
   static get graphqlEndpoint() {
     return process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT!
   }
 
+  /**
+   * Sentry: DSN
+   */
   static get sentryDSN() {
     return process.env.NEXT_PUBLIC_SENTRY_DSN!
   }
 
+  /**
+   * Sentry: 環境
+   */
   static get sentryEnvironment() {
     return process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT!
   }
 
+  /**
+   * Sentry: バージョン
+   */
   static get sentryRelease() {
     return process.env.NEXT_PUBLIC_SENTRY_RELEASE!
   }
 
-  static get appURL() {
+  /**
+   * サイトのURL
+   */
+  static get siteURL() {
     return process.env.NEXT_PUBLIC_APP_URL!
   }
 
+  /**
+   * クライアントサイドである
+   */
   static get isClient() {
     return typeof window !== "undefined"
   }
 
+  /**
+   * サーバーサイドである
+   */
   static get isNotClient() {
     return typeof window === "undefined"
   }
 
+  /**
+   * ローカル環境である
+   */
   static get isDevelopmentMode() {
     return process.env.NODE_ENV === "development"
   }
 
+  /**
+   * 本番環境である
+   */
   static get isReleaseMode() {
     return process.env.NODE_ENV !== "development"
   }

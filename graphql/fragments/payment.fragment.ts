@@ -8,7 +8,7 @@ export const PAYMENT_FIELDS = gql`
     amount
     isRefunded
     stripePaymentIntentId
-    subscription {
+    pass {
       id
       type
     }

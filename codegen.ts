@@ -1,11 +1,13 @@
 import type { CodegenConfig } from "@graphql-codegen/cli"
 
+const endPoint = "https://router-6ouzjmdzha-an.a.run.app"
+
 const config: CodegenConfig = {
   overwrite: true,
   documents: "graphql/**/*.ts",
   generates: {
     "__generated__/apollo.ts": {
-      schema: "https://router-6ouzjmdzha-an.a.run.app",
+      schema: endPoint,
       plugins: [
         "typescript",
         "typescript-operations",

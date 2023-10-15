@@ -62,7 +62,7 @@ export const BetaUserNavigationButton: React.FC = () => {
             {"マイページ"}
           </MenuItem>
         )}
-        {appContext.isLoggedIn && (
+        {/* {appContext.isLoggedIn && (
           <MenuItem
             isDisabled={Config.isReleaseMode}
             as={Link}
@@ -71,8 +71,8 @@ export const BetaUserNavigationButton: React.FC = () => {
           >
             {"フォロワー"}
           </MenuItem>
-        )}
-        {appContext.isLoggedIn && (
+        )} */}
+        {/* {appContext.isLoggedIn && (
           <MenuItem
             isDisabled={Config.isReleaseMode}
             as={Link}
@@ -81,7 +81,7 @@ export const BetaUserNavigationButton: React.FC = () => {
           >
             {"フォロー"}
           </MenuItem>
-        )}
+        )} */}
         {appContext.isLoggedIn && (
           <MenuItem
             as={Link}

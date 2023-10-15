@@ -7,11 +7,12 @@
     "build": "next build",
     "prebuild": "graphql-codegen -c codegen.ts",
     "start": "next start",
-    "test": "vitest",
+    "test": "vitest --run",
+    "test:watch": "vitest",
     "check": "tsc --noEmit",
-    "biome:check": "biome check --apply-unsafe app",
-    "biome:lint": "biome lint --apply-unsafe app",
-    "biome:format": "biome format --write app"
+    "biome:check": "biome check --apply-unsafe .",
+    "biome:lint": "biome lint --apply-unsafe .",
+    "biome:format": "biome format --write ."
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
@@ -43,7 +44,7 @@
     "vitest": "^0.34.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.2.2",
+    "@biomejs/biome": "^1.2.2",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
