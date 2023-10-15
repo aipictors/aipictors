@@ -62,8 +62,7 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
               borderRadius={"full"}
               icon={<Icon as={TbDownload} />}
               onClick={() => {
-                onDlOpen
-                props.selectHistory(props.selectedHistory)
+                onDlOpen()
               }}
             />
             <Button borderRadius={"full"}>{"解除"}</Button>
@@ -73,7 +72,7 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
               icon={<Icon as={TbStar} />}
             />
           </HStack>
-          <SimpleGrid spacing={2} columns={{ base: 3, md: 4 }} py={4}>
+          <SimpleGrid spacing={2} columns={{ base: 3, md: 6 }}>
             <Card>
               <Button
                 p={0}
@@ -89,7 +88,9 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
                 <Image
                   src="https://source.unsplash.com/random/800x600"
                   alt=""
-                  boxSize={28}
+                  borderRadius={"md"}
+                  w={"100%"}
+                  maxW={32}
                   draggable={false}
                 />
               </Button>
@@ -104,9 +105,7 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
           onClose()
           onOpenInPainting()
         }}
-        onChangeRating={(value) => {
-          console.log(value)
-        }}
+        onChangeRating={() => {}}
       />
       <InPaintingImageModal
         isOpen={isOpenInPainting}

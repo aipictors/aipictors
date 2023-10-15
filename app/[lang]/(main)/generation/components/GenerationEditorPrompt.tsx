@@ -16,18 +16,12 @@ import { PromptCategoriesModal } from "app/[lang]/(main)/generation/components/P
 
 type Props = {
   promptCategories: PromptCategoryQuery["promptCategories"]
-  selectedPromptCategory: string
-  onSelectPromptCategory(categories: string): void
+  selectedPrompts: { id: string }[]
+  onSelectPromptId(id: string): void
 }
 
 export const GenerationEditorPrompt: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const selectedPromptCategory = props.selectedPromptCategory
-
-  const selectedPrompt = props.promptCategories.find((prompt) => {
-    return prompt.id === selectedPromptCategory
-  })
 
   return (
     <>
@@ -54,7 +48,7 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
               h={"100%"}
               placeholder={"プロンプト"}
               borderRadius={"md"}
-              value={selectedPrompt?.name ?? ""}
+              value={""}
             />
           </Box>
         </Stack>
@@ -63,6 +57,7 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
         onClose={onClose}
         isOpen={isOpen}
         promptCategories={props.promptCategories}
+        onSelect={props.onSelectPromptId}
       />
     </>
   )

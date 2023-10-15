@@ -10,6 +10,7 @@ import {
   Textarea,
   Tooltip,
 } from "@chakra-ui/react"
+import { al } from "vitest/dist/reporters-5f784f42"
 
 type Props = {
   negativePrompt: string
@@ -32,12 +33,44 @@ export const GenerationEditorNegative: React.FC<Props> = (props) => {
           </Tooltip>
         </HStack>
         <Box h={"100%"} flex={1}>
-          <Textarea
-            h={"100%"}
-            placeholder={"プロンプト"}
-            borderRadius={"md"}
-            value={props.negativePrompt}
-          />
+          <Stack spacing={2} h={"100%"}>
+            <Textarea
+              h={"100%"}
+              placeholder={"プロンプト"}
+              borderRadius={"md"}
+              onChange={() => {}}
+              defaultValue={"EasyNegativeなど"}
+            />
+            <HStack>
+              <Button
+                size={"xs"}
+                borderRadius={"full"}
+                onClick={() => {
+                  alert("+bad-hands-5")
+                }}
+              >
+                {"+bad-hands-5"}
+              </Button>
+              <Button
+                size={"xs"}
+                borderRadius={"full"}
+                onClick={() => {
+                  alert("+badhandv4")
+                }}
+              >
+                {"+badhandv4"}
+              </Button>
+              <Button
+                size={"xs"}
+                borderRadius={"full"}
+                onClick={() => {
+                  alert("+bad_prompt_version2")
+                }}
+              >
+                {"+bad_prompt_version2"}
+              </Button>
+            </HStack>
+          </Stack>
         </Box>
       </Stack>
     </Card>

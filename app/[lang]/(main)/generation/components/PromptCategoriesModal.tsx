@@ -26,6 +26,7 @@ type Props = {
   isOpen: boolean
   onClose(): void
   promptCategories: PromptCategoryQuery["promptCategories"]
+  onSelect(id: string): void
 }
 
 export const PromptCategoriesModal: React.FC<Props> = (props) => {
@@ -79,6 +80,9 @@ export const PromptCategoriesModal: React.FC<Props> = (props) => {
                           colorScheme={
                             promptIds.includes(prompt.id) ? "blue" : "gray"
                           }
+                          onSelect={() => {
+                            props.onSelect(prompt.id)
+                          }}
                         >
                           {prompt.name}
                         </Button>

@@ -45,5 +45,47 @@ export const GenerationHistoryDeleteModal: React.FC<Props> = (props) => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+
+    /**
+     * 対象が選択されている場合のモーダル
+     */
+    // <Modal
+    //   onClose={props.onClose}
+    //   isOpen={props.isOpen}
+    //   scrollBehavior={"inside"}
+    //   size={"sm"}
+    // >
+    //   <ModalOverlay />
+    //   <ModalContent>
+    //     <ModalHeader />
+    //     <ModalBody alignItems={"center"} justifyContent={"center"}>
+    //       <HStack justifyContent={"center"}>
+    //         <Text>{"本当に削除しますか？"}</Text>
+    //       </HStack>
+    //     </ModalBody>
+    //     <ModalFooter justifyContent={"center"}>
+    //       <HStack justifyContent={"center"} spacing={4}>
+    //         <Button
+    //           borderRadius={"full"}
+    //           colorScheme="primary"
+    //           onClick={() => {
+    //             props.onClose()
+    //             alert("削除しました")
+    //           }}
+    //         >
+    //           {"はい"}
+    //         </Button>
+    //         <Button
+    //           borderRadius={"full"}
+    //           onClick={() => {
+    //             props.onClose()
+    //           }}
+    //         >
+    //           {"やめる"}
+    //         </Button>
+    //       </HStack>
+    //     </ModalFooter>
+    //   </ModalContent>
+    // </Modal>
   )
 }

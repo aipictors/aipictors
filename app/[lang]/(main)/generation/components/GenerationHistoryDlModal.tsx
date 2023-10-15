@@ -46,5 +46,36 @@ export const GenerationHistoryDlModal: React.FC<Props> = (props) => {
         </ModalFooter>
       </ModalContent>
     </Modal>
+
+    /**
+     * 対象が選択されている場合のモーダル
+     */
+    // <Modal
+    //   onClose={props.onClose}
+    //   isOpen={props.isOpen}
+    //   scrollBehavior={"inside"}
+    //   size={"sm"}
+    // >
+    //   <ModalOverlay />
+    //   <ModalContent>
+    //     <ModalHeader />
+    //     <ModalBody alignItems={"center"} justifyContent={"center"}>
+    //       <HStack justifyContent={"center"}>
+    //         <Text>{"ダウンロードしました"}</Text>
+    //       </HStack>
+    //     </ModalBody>
+    //     <ModalFooter justifyContent={"center"}>
+    //       <Button
+    //         borderRadius={"full"}
+    //         colorScheme="primary"
+    //         onClick={() => {
+    //           props.onClose()
+    //         }}
+    //       >
+    //         {"OK"}
+    //       </Button>
+    //     </ModalFooter>
+    //   </ModalContent>
+    // </Modal>
   )
 }

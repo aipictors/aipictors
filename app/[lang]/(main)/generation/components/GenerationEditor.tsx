@@ -38,9 +38,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   const [imageSeed, setImageSeed] = useState<number>()
 
-  const [selectedPromptCategories, setSelectPromptCategories] =
-    useState<string>()
-
   const [selectedNegativePromptCategories, setSelectNegativePromptCategories] =
     useState<string>()
 
@@ -149,10 +146,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       <GridItem area={area.editorPrompt}>
         <GenerationEditorPrompt
           promptCategories={props.promptCategories}
-          selectedPromptCategory={selectedPromptCategories ?? ""}
-          onSelectPromptCategory={(categories) => {
-            setSelectPromptCategories(categories)
-          }}
+          selectedPrompts={[]}
+          onSelectPromptId={() => {}}
         />
       </GridItem>
       <GridItem area={area.editorNegativePrompt}>
