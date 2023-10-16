@@ -14,7 +14,6 @@ export const SupportMessageList: React.FC<Props> = (props) => {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 800)
 
   useEffect(() => {
-    // 読み込まれた後にスクロール位置を一番下に設定
     if (containerRef.current) {
       containerRef.current.scrollTo({
         top: isMobileView ? 0 : containerRef.current.scrollHeight,
