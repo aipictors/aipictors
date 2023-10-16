@@ -11,7 +11,7 @@ type Props = {
 
 export const SupportMessageList: React.FC<Props> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 800)
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768)
 
   useEffect(() => {
     if (containerRef.current) {
@@ -22,7 +22,7 @@ export const SupportMessageList: React.FC<Props> = (props) => {
 
     const handleResize = () => {
       console.log(isMobileView)
-      setIsMobileView(window.innerWidth <= 800)
+      setIsMobileView(window.innerWidth <= 768)
     }
 
     window.addEventListener("resize", handleResize)
