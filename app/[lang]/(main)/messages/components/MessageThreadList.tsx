@@ -45,7 +45,7 @@ export const MessageThreadList: React.FC = () => {
       top={"64px"}
       h={"calc(100svh - 64px)"}
       minW={64}
-      maxW={64}
+      maxW={96}
       overflowY={"auto"}
       borderLeftWidth={1}
       borderRightWidth={1}

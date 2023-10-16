@@ -63,14 +63,21 @@ export const RecipientMessages: React.FC<Props> = (props) => {
 
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"} pb={40}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
-        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+      <Stack
+        position={"relative"}
+        maxW={"800px"}
+        w={"100%"}
+        marginRight={"auto"}
+        p={4}
+        spacing={8}
+      >
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={
             data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ?? ""
           }
         />
+        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
       </Stack>
     </HStack>
   )
