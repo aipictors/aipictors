@@ -71,13 +71,16 @@ export const RecipientMessages: React.FC<Props> = (props) => {
         p={4}
         spacing={8}
       >
-        <SupportMessageList
-          messages={messages}
-          recipientIconImageURL={
-            data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ?? ""
-          }
-        />
-        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+        <Stack flexDirection={{ base: "column-reverse", md: "column" }}>
+          <SupportMessageList
+            messages={messages}
+            recipientIconImageURL={
+              data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ??
+              ""
+            }
+          />
+          <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+        </Stack>
       </Stack>
     </HStack>
   )

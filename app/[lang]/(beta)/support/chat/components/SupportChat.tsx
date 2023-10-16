@@ -62,11 +62,13 @@ export const SupportChat: React.FC = () => {
 
   return (
     <Stack w={"100%"} spacing={8} pb={16}>
-      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-      <SupportMessageList
-        messages={messages}
-        recipientIconImageURL={adminAvatarURL}
-      />
+      <Stack flexDirection={{ base: "column-reverse", md: "row" }}>
+        <SupportMessageList
+          messages={messages}
+          recipientIconImageURL={adminAvatarURL}
+        />
+        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+      </Stack>
     </Stack>
   )
 }
