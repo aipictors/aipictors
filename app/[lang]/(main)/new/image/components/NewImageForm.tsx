@@ -25,6 +25,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { AutoResizeTextarea } from "app/components/AutoResizeTextarea"
+import { uploadFile } from "app/utils/uploadFile"
 import type { SetStateAction } from "react"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone"
@@ -63,6 +64,22 @@ const NewImageForm = () => {
         }
         reader.readAsDataURL(file)
       })
+
+      // ここで input の id が image_inputの要素に file をセットする
+      const inputElement = document.getElementById(
+        "image_input",
+      ) as HTMLInputElement
+      if (inputElement) {
+        const fileList: File[] = []
+        acceptedFiles.forEach((file) => {
+          fileList.push(file)
+        })
+        const newFileList = new DataTransfer()
+        fileList.forEach((file) => {
+          newFileList.items.add(file)
+        })
+        inputElement.files = newFileList.files
+      }
     },
     onDragEnter: () => {
       setIsHovered(true)
@@ -127,6 +144,23 @@ const NewImageForm = () => {
     target: { value: SetStateAction<string> }
   }) => {
     setReservationTime(event.target.value)
+  }
+
+  const handleUpload = async () => {
+    const inputElement = document.getElementById("image_input") as HTMLElement
+    if (inputElement) {
+      const selectedFiles: FileList = (inputElement as HTMLInputElement)
+        .files as FileList
+      try {
+        const url = await uploadFile(selectedFiles[0])
+        console.log(url)
+      } catch (error) {
+        // エラーハンドリング
+        console.error("アップロードエラー:", error)
+      }
+    } else {
+      console.error("ファイルが選択されていません。")
+    }
   }
 
   /**
@@ -330,6 +364,7 @@ const NewImageForm = () => {
             mx={"auto"}
             type="submit"
             colorScheme="blue"
+            onClick={handleUpload}
           >
             投稿
           </Button>
