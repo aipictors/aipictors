@@ -1,9 +1,9 @@
 import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
-import { ThemeHeader } from "app/[lang]/(main)/themes/components/ThemeHeader"
-import { ThemeList } from "app/[lang]/(main)/themes/components/ThemeList"
+import { ThemeHeader } from "app/[lang]/(main)/themes/_components/ThemeHeader"
+import { ThemeList } from "app/[lang]/(main)/themes/_components/ThemeList"
+import { MainPage } from "app/_components/MainPage"
 import { createClient } from "app/client"
-import { MainPage } from "app/components/MainPage"
 import type { Metadata } from "next"
 
 const ThemesPage = async () => {

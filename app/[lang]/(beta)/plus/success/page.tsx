@@ -1,4 +1,4 @@
-import { MainPlusSuccess } from "app/[lang]/(beta)/plus/success/components/MainPlusSuccess"
+import { MainPlusSuccess } from "app/[lang]/(beta)/plus/success/_components/MainPlusSuccess"
 import type { Metadata } from "next"
 
 /**

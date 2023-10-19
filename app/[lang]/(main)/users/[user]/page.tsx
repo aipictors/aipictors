@@ -3,8 +3,8 @@ import type {
   UserWorksQueryVariables,
 } from "__generated__/apollo"
 import { UserWorksDocument } from "__generated__/apollo"
-import { UserWorkList } from "app/[lang]/(main)/users/[user]/components/UserWorkList"
-import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/components/UserWorkListActions"
+import { UserWorkList } from "app/[lang]/(main)/users/[user]/_components/UserWorkList"
+import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/_components/UserWorkListActions"
 import { createClient } from "app/client"
 import type { Metadata } from "next"
 

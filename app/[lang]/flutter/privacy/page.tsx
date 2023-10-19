@@ -1,5 +1,5 @@
 import { join } from "path"
-import { MainFlutterPrivacy } from "app/[lang]/flutter/privacy/components/MainFlutterPrivacy"
+import { MainFlutterPrivacy } from "app/[lang]/flutter/privacy/_components/MainFlutterPrivacy"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 

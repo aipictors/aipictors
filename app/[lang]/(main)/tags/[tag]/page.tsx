@@ -1,11 +1,11 @@
 import type { WorksQuery } from "__generated__/apollo"
 import { WorksDocument } from "__generated__/apollo"
-import { RelatedModelList } from "app/[lang]/(main)/tags/[tag]/components/RelatedModelList"
-import { RelatedTagList } from "app/[lang]/(main)/tags/[tag]/components/RelatedTagList"
-import { TagHeader } from "app/[lang]/(main)/tags/[tag]/components/TagHeader"
-import { WorkList } from "app/[lang]/(main)/works/components/WorkList"
+import { RelatedModelList } from "app/[lang]/(main)/tags/[tag]/_components/RelatedModelList"
+import { RelatedTagList } from "app/[lang]/(main)/tags/[tag]/_components/RelatedTagList"
+import { TagHeader } from "app/[lang]/(main)/tags/[tag]/_components/TagHeader"
+import { WorkList } from "app/[lang]/(main)/works/_components/WorkList"
+import { MainPage } from "app/_components/MainPage"
 import { createClient } from "app/client"
-import { MainPage } from "app/components/MainPage"
 import type { Metadata } from "next"
 
 const TagPage = async () => {

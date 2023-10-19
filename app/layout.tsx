@@ -1,7 +1,7 @@
 import { Providers } from "app/providers"
 import { Config } from "config"
 import type { Metadata } from "next"
-import Script from "next/dist/client/script"
+import Script from "next/script"
 
 type Props = {
   children: React.ReactNode

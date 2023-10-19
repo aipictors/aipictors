@@ -5,11 +5,11 @@ import type {
   WorkQueryVariables,
 } from "__generated__/apollo"
 import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
-import { WorkArticle } from "app/[lang]/(main)/works/[work]/components/WorkArticle"
-import { WorkCommentList } from "app/[lang]/(main)/works/[work]/components/WorkCommentList"
-import { WorkRelatedWorkList } from "app/[lang]/(main)/works/[work]/components/WorkRelatedWorkList"
+import { WorkArticle } from "app/[lang]/(main)/works/[work]/_components/WorkArticle"
+import { WorkCommentList } from "app/[lang]/(main)/works/[work]/_components/WorkCommentList"
+import { WorkRelatedWorkList } from "app/[lang]/(main)/works/[work]/_components/WorkRelatedWorkList"
+import { ArticlePage } from "app/_components/ArticlePage"
 import { createClient } from "app/client"
-import { ArticlePage } from "app/components/ArticlePage"
 import type { Metadata } from "next"
 
 type Props = {

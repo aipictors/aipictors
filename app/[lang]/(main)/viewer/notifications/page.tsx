@@ -1,5 +1,5 @@
-import { NotificationArticle } from "app/[lang]/(main)/viewer/notifications/components/NotificationArticle"
-import { MainPage } from "app/components/MainPage"
+import { NotificationArticle } from "app/[lang]/(main)/viewer/notifications/_components/NotificationArticle"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const ViewerNotificationsPage = async () => {

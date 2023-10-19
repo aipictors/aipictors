@@ -1,5 +1,5 @@
-import { TagList } from "app/[lang]/(main)/tags/components/TagList"
-import { MainPage } from "app/components/MainPage"
+import { TagList } from "app/[lang]/(main)/tags/_components/TagList"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const TagsPage = async () => {

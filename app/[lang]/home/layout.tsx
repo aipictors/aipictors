@@ -1,7 +1,7 @@
 "use client"
-import { LoadingPage } from "app/components/LoadingPage"
-import { LoginPage } from "app/components/LoginPage"
-import { AppContext } from "app/contexts/appContext"
+import { LoadingPage } from "app/_components/LoadingPage"
+import { LoginPage } from "app/_components/LoginPage"
+import { AppContext } from "app/_contexts/appContext"
 import { useContext } from "react"
 
 type Props = {

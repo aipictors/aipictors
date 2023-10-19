@@ -1,5 +1,5 @@
-import { NoteList } from "app/[lang]/(main)/notes/components/NoteList"
-import { MainPage } from "app/components/MainPage"
+import { NoteList } from "app/[lang]/(main)/notes/_components/NoteList"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const NotesPage = async () => {

@@ -1,5 +1,5 @@
 "use client"
-import { LoadingPage } from "app/components/LoadingPage"
+import { LoadingPage } from "app/_components/LoadingPage"
 
 const MessagesLoading: React.FC = () => {
   return <LoadingPage />

@@ -1,4 +1,4 @@
-import { MainHome } from "app/[lang]/home/components/MainHome"
+import { MainHome } from "app/[lang]/home/_components/MainHome"
 import type { Metadata } from "next"
 
 const HomePage = async () => {

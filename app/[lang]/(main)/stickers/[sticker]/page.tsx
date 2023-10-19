@@ -1,5 +1,5 @@
-import { StickerArticle } from "app/[lang]/(main)/stickers/[sticker]/components/StickerArticle"
-import { MainPage } from "app/components/MainPage"
+import { StickerArticle } from "app/[lang]/(main)/stickers/[sticker]/_components/StickerArticle"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const StickerPage = async () => {

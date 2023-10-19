@@ -1,12 +1,12 @@
 "use client"
 import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
 import "@splidejs/react-splide/css"
-import { FlexibleNavigation } from "app/[lang]/(main)/components/FlexibleNavigation"
-import { HomeHeader } from "app/[lang]/(main)/components/HomeHeader"
-import { HomeNavigationList } from "app/[lang]/(main)/components/HomeNavigationList"
-import { LoginModal } from "app/[lang]/(main)/components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/components/LogoutModal"
-import { HomeFooter } from "app/components/HomeFooter"
+import { HomeHeader } from "app/[lang]/(main)/_components/HomeHeader"
+import { HomeNavigationList } from "app/[lang]/(main)/_components/HomeNavigationList"
+import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
+import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
+import { HomeFooter } from "app/_components/HomeFooter"
+import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
 
 type Props = {
   children: React.ReactNode
@@ -63,7 +63,7 @@ const MainLayout: React.FC<Props> = (props) => {
     <>
       <HomeHeader onOpenNavigation={onToggle} />
       <HStack alignItems={"flex-start"} spacing={0}>
-        <FlexibleNavigation
+        <ResponsiveNavigation
           isOpen={isOpenNavigation}
           isOpenDrawer={isOpenDrawer}
           onClose={onClose}
@@ -72,7 +72,7 @@ const MainLayout: React.FC<Props> = (props) => {
             onOpen={onOpenLogin}
             onOpenLogout={onOpenLogout}
           />
-        </FlexibleNavigation>
+        </ResponsiveNavigation>
         {props.children}
       </HStack>
       <Divider />

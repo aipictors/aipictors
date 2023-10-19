@@ -1,4 +1,4 @@
-import { MainFlutterScta } from "app/[lang]/flutter/specified-commercial-transaction-act/components/MainFlutterScta"
+import { MainFlutterScta } from "app/[lang]/flutter/specified-commercial-transaction-act/_components/MainFlutterScta"
 import type { Metadata } from "next"
 
 const FlutterSctaPage = async () => {

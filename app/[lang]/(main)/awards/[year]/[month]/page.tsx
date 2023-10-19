@@ -1,5 +1,5 @@
-import { MainRankingHeader } from "app/[lang]/(main)/awards/components/MainRankingHeader"
-import { MainPage } from "app/components/MainPage"
+import { MainRankingHeader } from "app/[lang]/(main)/awards/_components/MainRankingHeader"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 type Props = {

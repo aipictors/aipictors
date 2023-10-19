@@ -1,5 +1,5 @@
-import { GuidelineDocument } from "app/[lang]/(main)/guideline/components/GuidelineDocument"
-import { MainPage } from "app/components/MainPage"
+import { GuidelineDocument } from "app/[lang]/(main)/guideline/_components/GuidelineDocument"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const GuidelinePage = async () => {

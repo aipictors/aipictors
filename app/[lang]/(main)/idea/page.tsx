@@ -1,5 +1,4 @@
-import { RedirectType } from "next/dist/client/components/redirect"
-import { redirect } from "next/navigation"
+import { RedirectType, redirect } from "next/navigation"
 
 /**
  * https://www.aipictors.com/idea/

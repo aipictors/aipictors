@@ -1,4 +1,4 @@
-import { UnknownCanvas } from "app/[lang]/unknown/components/unknownCanvas"
+import { UnknownCanvas } from "app/[lang]/unknown/_components/unknownCanvas"
 import type { Metadata } from "next"
 
 const UnknownPage = async () => {

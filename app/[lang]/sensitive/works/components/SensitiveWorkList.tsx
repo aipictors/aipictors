@@ -1,7 +1,7 @@
 "use client"
 import { Link, SimpleGrid } from "@chakra-ui/react"
 import type { WorksQuery } from "__generated__/apollo"
-import { CardWork } from "app/[lang]/(main)/works/components/CardWork"
+import { CardWork } from "app/[lang]/(main)/works/_components/CardWork"
 
 type Props = {
   works: NonNullable<WorksQuery["works"]>

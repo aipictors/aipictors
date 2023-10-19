@@ -1,5 +1,5 @@
-import { NovelArticle } from "app/[lang]/(main)/novels/[novel]/components/NovelArticle"
-import { MainPage } from "app/components/MainPage"
+import { NovelArticle } from "app/[lang]/(main)/novels/[novel]/_components/NovelArticle"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const NovelPage = async () => {

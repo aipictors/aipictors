@@ -1,4 +1,4 @@
-import { SectionAboutWakiaiai } from "app/[lang]/events/wakiaiai/components/SectionAboutWakiaiai"
+import { SectionAboutWakiaiai } from "app/[lang]/events/wakiaiai/_components/SectionAboutWakiaiai"
 import type { Metadata } from "next"
 
 const EventWakiaiaiPage = async () => {

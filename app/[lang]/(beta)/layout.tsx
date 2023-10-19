@@ -1,12 +1,12 @@
 "use client"
 import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
 import "@splidejs/react-splide/css"
-import { BetaHeader } from "app/[lang]/(beta)/components/BetaHeader"
-import { BetaNavigationList } from "app/[lang]/(beta)/components/BetaNavigationList"
-import { FlexibleNavigation } from "app/[lang]/(main)/components/FlexibleNavigation"
-import { LoginModal } from "app/[lang]/(main)/components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/components/LogoutModal"
-import { HomeFooter } from "app/components/HomeFooter"
+import { BetaHeader } from "app/[lang]/(beta)/_components/BetaHeader"
+import { BetaNavigationList } from "app/[lang]/(beta)/_components/BetaNavigationList"
+import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
+import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
+import { HomeFooter } from "app/_components/HomeFooter"
+import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
 
 type Props = {
   children: React.ReactNode
@@ -63,7 +63,7 @@ const BetaLayout: React.FC<Props> = (props) => {
     <>
       <BetaHeader onOpenNavigation={onToggle} />
       <HStack alignItems={"flex-start"} spacing={0}>
-        <FlexibleNavigation
+        <ResponsiveNavigation
           isOpen={isOpenNavigation}
           isOpenDrawer={isOpenDrawer}
           onClose={onClose}
@@ -72,7 +72,7 @@ const BetaLayout: React.FC<Props> = (props) => {
             onOpen={onOpenLogin}
             onOpenLogout={onOpenLogout}
           />
-        </FlexibleNavigation>
+        </ResponsiveNavigation>
         {props.children}
       </HStack>
       <Divider />

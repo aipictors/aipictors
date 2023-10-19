@@ -1,5 +1,5 @@
-import { AboutDocument } from "app/[lang]/(main)/about/components/AboutDocument"
-import { MainPage } from "app/components/MainPage"
+import { AboutDocument } from "app/[lang]/(main)/about/_components/AboutDocument"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const AboutPage = async () => {

@@ -1,5 +1,5 @@
-import { LogoList } from "app/[lang]/(main)/logo/components/LogoList"
-import { MainPage } from "app/components/MainPage"
+import { LogoList } from "app/[lang]/(main)/logo/_components/LogoList"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const LogoPage = async () => {

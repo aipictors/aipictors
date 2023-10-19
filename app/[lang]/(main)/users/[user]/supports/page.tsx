@@ -1,6 +1,6 @@
 import type { UserQuery, UserQueryVariables } from "__generated__/apollo"
 import { UserDocument } from "__generated__/apollo"
-import { UserSupport } from "app/[lang]/(main)/users/[user]/supports/components/UserSupport"
+import { UserSupport } from "app/[lang]/(main)/users/[user]/supports/_components/UserSupport"
 import { createClient } from "app/client"
 import type { Metadata } from "next"
 

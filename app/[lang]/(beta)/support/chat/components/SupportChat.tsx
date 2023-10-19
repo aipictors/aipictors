@@ -62,7 +62,7 @@ export const SupportChat: React.FC = () => {
 
   return (
     <Stack w={"100%"} spacing={8} pb={16}>
-      <Stack flexDirection={{ base: "column-reverse", md: "row" }}>
+      <Stack flexDirection={{ base: "column-reverse", md: "column" }}>
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={adminAvatarURL}

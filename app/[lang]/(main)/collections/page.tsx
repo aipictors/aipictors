@@ -1,5 +1,5 @@
-import { CollectionList } from "app/[lang]/(main)/collections/components/CollectionList"
-import { MainPage } from "app/components/MainPage"
+import { CollectionList } from "app/[lang]/(main)/collections/_components/CollectionList"
+import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const CollectionsPage = async () => {

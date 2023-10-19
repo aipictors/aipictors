@@ -1,5 +1,5 @@
 "use client"
-import { AppContext } from "app/contexts/appContext"
+import { AppContext } from "app/_contexts/appContext"
 import React, { useContext } from "react"
 
 type Props = {

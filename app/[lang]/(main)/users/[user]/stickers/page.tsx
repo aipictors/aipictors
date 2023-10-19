@@ -3,8 +3,8 @@ import type {
   UserStickersQueryVariables,
 } from "__generated__/apollo"
 import { UserStickersDocument } from "__generated__/apollo"
-import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/components/UserWorkListActions"
-import { UserStickerList } from "app/[lang]/(main)/users/[user]/stickers/components/UserStickerList"
+import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/_components/UserWorkListActions"
+import { UserStickerList } from "app/[lang]/(main)/users/[user]/stickers/_components/UserStickerList"
 import { createClient } from "app/client"
 import type { Metadata } from "next"
 

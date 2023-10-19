@@ -3,7 +3,7 @@ import type {
   UserAlbumsQueryVariables,
 } from "__generated__/apollo"
 import { UserAlbumsDocument } from "__generated__/apollo"
-import { UserAlbumList } from "app/[lang]/(main)/users/[user]/albums/components/UserAlbumList"
+import { UserAlbumList } from "app/[lang]/(main)/users/[user]/albums/_components/UserAlbumList"
 import { createClient } from "app/client"
 import type { Metadata } from "next"
 
