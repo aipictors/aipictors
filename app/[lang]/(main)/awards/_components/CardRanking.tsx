@@ -15,7 +15,7 @@ type Props = {
   // }
 }
 
-export const CardRanking: React.FC<Props> = (props) => (
+export const RankingCard: React.FC<Props> = (props) => (
   <Card>
     <Image
       src={props.imageURL ?? ""}
