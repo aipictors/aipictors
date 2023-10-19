@@ -4,6 +4,7 @@
     "adsense",
     "aipictors",
     "chakra",
+    "codegen",
     "followee",
     "followees",
     "nextjs",
@@ -34,10 +35,12 @@
     ".yarn": true,
     "__generated__": true,
     "dist": true,
-    "next-env.d.ts": true
+    "next-env.d.ts": true,
+    "package-lock.json": true
   },
   "search.exclude": {
-    "*.lock": true
+    "*.lock": true,
+    "package-lock.json": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "non-relative"
