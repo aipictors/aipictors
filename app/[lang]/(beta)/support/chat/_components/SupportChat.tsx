@@ -11,8 +11,8 @@ import {
   CreateMessageDocument,
   ViewerSupportMessagesDocument,
 } from "__generated__/apollo"
-import { MessageInput } from "app/[lang]/(beta)/support/chat/components/MessageInput"
-import { SupportMessageList } from "app/[lang]/(beta)/support/chat/components/SupportMessageList"
+import { MessageInput } from "app/[lang]/(beta)/support/chat/_components/MessageInput"
+import { SupportMessageList } from "app/[lang]/(beta)/support/chat/_components/SupportMessageList"
 import { startTransition } from "react"
 
 export const SupportChat: React.FC = () => {

@@ -1,7 +1,7 @@
 import { Stack } from "@chakra-ui/react"
 import type { ViewerSupportMessagesQuery } from "__generated__/apollo"
-import { RecipientMessage } from "app/[lang]/(beta)/support/chat/components/RecipientMessage"
-import { SenderMessage } from "app/[lang]/(beta)/support/chat/components/SenderMessage"
+import { RecipientMessage } from "app/[lang]/(beta)/support/chat/_components/RecipientMessage"
+import { SenderMessage } from "app/[lang]/(beta)/support/chat/_components/SenderMessage"
 import { useEffect, useRef, useState } from "react"
 
 type Props = {

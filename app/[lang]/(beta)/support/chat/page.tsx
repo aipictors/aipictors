@@ -1,4 +1,4 @@
-import { SupportChat } from "app/[lang]/(beta)/support/chat/components/SupportChat"
+import { SupportChat } from "app/[lang]/(beta)/support/chat/_components/SupportChat"
 import { MainCenterPage } from "app/_components/MainCenterPage"
 import type { Metadata } from "next"
 
