@@ -40,7 +40,11 @@ const NewImageForm = () => {
   const [reservationDate, setReservationDate] = useState("")
   const [reservationTime, setReservationTime] = useState("")
 
+  const maxSize = 32 * 1024 * 1024
+
   const { getRootProps, getInputProps } = useDropzone({
+    minSize: 1,
+    maxSize: maxSize,
     accept: {
       "image/jpeg": [".jpeg", ".jpg"],
       "image/png": [".png"],
@@ -89,6 +93,18 @@ const NewImageForm = () => {
     },
     onDropAccepted: () => {
       setIsHovered(false)
+    },
+    onDropRejected: (fileRejections) => {
+      setIsHovered(false)
+
+      console.log("onDropRejected")
+      fileRejections.forEach((file) => {
+        file.errors.forEach((err) => {
+          if (err.code === "file-too-large") {
+            console.warn(err)
+          }
+        })
+      })
     },
   })
 
