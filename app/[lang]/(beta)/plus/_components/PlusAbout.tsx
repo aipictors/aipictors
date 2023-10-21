@@ -16,6 +16,8 @@ import {
 } from "__generated__/apollo"
 import { PassPlanList } from "app/[lang]/(beta)/plus/_components/PassPlanList"
 import { PlusNoteList } from "app/[lang]/(beta)/plus/_components/PlusNoteList"
+import { Config } from "config"
+import { getAnalytics, logEvent } from "firebase/analytics"
 
 export const PlusAbout: React.FC = () => {
   const [mutation, { loading: isLoading }] =
@@ -25,6 +27,10 @@ export const PlusAbout: React.FC = () => {
 
   const onSelect = async (passType: PassType) => {
     try {
+      logEvent(getAnalytics(), Config.logEvent.select_item, {
+        item_list_id: passType,
+        items: [{ item_id: passType, item_name: passType }],
+      })
       const result = await mutation({
         variables: { input: { passType: passType } },
       })

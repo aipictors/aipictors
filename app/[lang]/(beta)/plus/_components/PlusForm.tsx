@@ -24,6 +24,8 @@ import { PlusAbout } from "app/[lang]/(beta)/plus/_components/PlusAbout"
 import { PlusNoteList } from "app/[lang]/(beta)/plus/_components/PlusNoteList"
 import { toPassName } from "app/[lang]/(beta)/plus/_utils/toPassName"
 import { toDateText } from "app/_utils/toDateText"
+import { Config } from "config"
+import { getAnalytics, logEvent } from "firebase/analytics"
 
 export const PlusForm: React.FC = () => {
   const [mutation, { loading: isLoading }] =

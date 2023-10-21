@@ -23,7 +23,6 @@ export const GoogleAdsense: React.FC<Props> = (props): JSX.Element => {
         window.adsbygoogle = []
       }
       window.adsbygoogle.push({})
-      console.log("window.adsbygoogle", window.adsbygoogle)
     } catch (error) {
       captureException(error)
     }

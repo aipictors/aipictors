@@ -69,6 +69,15 @@ export class Config {
     }
   }
 
+  static get logEvent() {
+    return {
+      page_view: "page_view",
+      share: "share",
+      select_item: "select_item",
+      login: "login",
+    } as const
+  }
+
   /**
    * デフォルトのLoRAモデルID
    */

@@ -27,7 +27,7 @@ export const Providers: React.FC<Props> = (props) => {
     if (Config.isNotClient) return
     if (Config.isDevelopmentMode) return
     if (getApps().length === 0) return
-    logEvent(getAnalytics(), "page_view", {
+    logEvent(getAnalytics(), Config.logEvent.page_view, {
       page_path: pathname,
       page_title: pathname,
       page_location: window.location.href,

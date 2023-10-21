@@ -41,7 +41,6 @@ export const SupportChat: React.FC = () => {
 
   const onSubmit = async (message: string) => {
     try {
-      console.log(message)
       await createMessage({
         variables: { input: { text: message, recipientId: "1" } },
       })

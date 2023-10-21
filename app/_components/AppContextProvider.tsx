@@ -54,7 +54,9 @@ export const AppContextProvider: React.FC<Props> = (props) => {
         setLoadingState(false)
         return
       }
-      logEvent(getAnalytics(), "login", { method: user.providerId })
+      logEvent(getAnalytics(), Config.logEvent.login, {
+        method: user.providerId,
+      })
       getIdTokenResult(user, true).then((result) => {
         setUser({
           id: user.uid,

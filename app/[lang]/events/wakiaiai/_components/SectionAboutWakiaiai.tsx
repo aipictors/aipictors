@@ -14,6 +14,7 @@ import {
 import type { EventUser } from "app/[lang]/events/_types/eventUser"
 import { BoxEventImage } from "app/[lang]/events/wakiaiai/_components/box/BoxEventImage"
 import { CardEventCreator } from "app/[lang]/events/wakiaiai/_components/card/CardEventCreator"
+import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { useEffect } from "react"
 import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"
@@ -518,7 +519,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
               }
               aria-label={"Twitter"}
               onClick={() => {
-                logEvent(getAnalytics(), "share", {
+                logEvent(getAnalytics(), Config.logEvent.share, {
                   content_type: "link",
                   method: "twitter",
                   item_id: "",

@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import type { EventUser } from "app/[lang]/events/_types/eventUser"
 import { TagEventUser } from "app/[lang]/events/wakiaiai/_components/tag/TagEventUser"
+import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
 
@@ -36,7 +37,7 @@ export const CardEventCreator: React.FC<Props> = (props) => {
                 : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
             }
             onClick={() => {
-              logEvent(getAnalytics(), "select_item", {
+              logEvent(getAnalytics(), Config.logEvent.select_item, {
                 item_list_id: props.user.twitterId ?? "-",
                 item_list_name: props.user.name,
               })

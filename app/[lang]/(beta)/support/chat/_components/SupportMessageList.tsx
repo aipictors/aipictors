@@ -21,7 +21,6 @@ export const SupportMessageList: React.FC<Props> = (props) => {
     }
 
     const handleResize = () => {
-      console.log(isMobileView)
       setIsMobileView(window.innerWidth <= 768)
     }
 
