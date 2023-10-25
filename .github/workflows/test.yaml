@@ -28,6 +28,8 @@ jobs:
           cache: "npm"
       - name: Install
         run: npm install
+      - name: Prebuild
+        run: npm run prebuild
       - name: Run Type Cheking
         run: npm run check
       - name: Run Test
