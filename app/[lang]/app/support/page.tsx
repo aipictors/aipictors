@@ -1,10 +1,8 @@
-import { AppAboutHeader } from "app/[lang]/app/_components/AppAboutHeader"
 import { AppFooter } from "app/[lang]/app/_components/AppFooter"
-import { AppMilestoneList } from "app/[lang]/app/_components/AppMilestoneList"
 import { AppSupportDescription } from "app/[lang]/app/support/_components/AppSupportDescription"
 import type { Metadata } from "next"
 
-const AppPage = async () => {
+const AppSupportPage = async () => {
   return (
     <>
       <AppSupportDescription />
@@ -21,4 +19,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600
 
-export default AppPage
+export default AppSupportPage
