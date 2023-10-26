@@ -1,4 +1,5 @@
 import { join } from "path"
+import { AppFooter } from "app/[lang]/app/_components/AppFooter"
 import { AppTermsDocument } from "app/[lang]/app/terms/_components/AppTermsDocument"
 import { MainCenterPage } from "app/_components/MainCenterPage"
 import { readFile } from "fs/promises"
@@ -11,9 +12,12 @@ const AppTermsPage = async () => {
   )
 
   return (
-    <MainCenterPage>
-      <AppTermsDocument text={text} />
-    </MainCenterPage>
+    <>
+      <MainCenterPage>
+        <AppTermsDocument text={text} />
+      </MainCenterPage>
+      <AppFooter />
+    </>
   )
 }
 

@@ -1,4 +1,5 @@
 import { join } from "path"
+import { AppFooter } from "app/[lang]/app/_components/AppFooter"
 import { AppPrivacyDocument } from "app/[lang]/app/privacy/_components/AppPrivacyDocument"
 import { MainCenterPage } from "app/_components/MainCenterPage"
 import { readFile } from "fs/promises"
@@ -11,9 +12,12 @@ const AppPrivacyPage = async () => {
   )
 
   return (
-    <MainCenterPage>
-      <AppPrivacyDocument text={text} />
-    </MainCenterPage>
+    <>
+      <MainCenterPage>
+        <AppPrivacyDocument text={text} />
+      </MainCenterPage>
+      <AppFooter />
+    </>
   )
 }
 
