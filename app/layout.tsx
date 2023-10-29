@@ -1,4 +1,4 @@
-import { Providers } from "app/providers"
+import { RootProviders } from "app/_components/RootProviders"
 import { Config } from "config"
 import type { Metadata } from "next"
 import Script from "next/script"
@@ -35,7 +35,7 @@ const RootLayout: React.FC<Props> = (props) => {
         )}
       </head>
       <body>
-        <Providers>{props.children}</Providers>
+        <RootProviders>{props.children}</RootProviders>
       </body>
     </html>
   )

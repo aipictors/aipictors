@@ -5,7 +5,7 @@ import type {
 import { UserStickersDocument } from "__generated__/apollo"
 import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/_components/UserWorkListActions"
 import { UserStickerList } from "app/[lang]/(main)/users/[user]/stickers/_components/UserStickerList"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 type Props = {

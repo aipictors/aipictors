@@ -5,7 +5,7 @@ import type {
 import { UserWorksDocument } from "__generated__/apollo"
 import { UserWorkList } from "app/[lang]/(main)/users/[user]/_components/UserWorkList"
 import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/_components/UserWorkListActions"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 type Props = {

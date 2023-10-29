@@ -4,7 +4,7 @@ import type {
 } from "__generated__/apollo"
 import { UserAlbumsDocument } from "__generated__/apollo"
 import { UserAlbumList } from "app/[lang]/(main)/users/[user]/albums/_components/UserAlbumList"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 type Props = {

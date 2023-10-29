@@ -2,7 +2,7 @@ import type { DailyThemesQuery } from "__generated__/apollo"
 import { DailyThemesDocument } from "__generated__/apollo"
 import { AboutTheme } from "app/[lang]/(main)/themes/[year]/[month]/[day]/_components/AboutTheme"
 import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 type Props = {

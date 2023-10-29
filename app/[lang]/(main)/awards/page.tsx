@@ -6,7 +6,7 @@ import { WorkAwardsDocument } from "__generated__/apollo"
 import { MainRankingHeader } from "app/[lang]/(main)/awards/_components/MainRankingHeader"
 import { MainRankingWorkList } from "app/[lang]/(main)/awards/_components/MainRankingWorkList"
 import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 const AwardsPage = async () => {

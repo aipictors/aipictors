@@ -9,7 +9,7 @@ import {
   PromptCategoryDocument,
 } from "__generated__/apollo"
 import { GenerationEditor } from "app/[lang]/(main)/generation/_components/GenerationEditor"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 const GenerationPage = async () => {

@@ -3,7 +3,7 @@ import { WorksDocument } from "__generated__/apollo"
 import { CollectionArticle } from "app/[lang]/(main)/collections/[collection]/_components/CollectionArticle"
 import { WorkList } from "app/[lang]/(main)/works/_components/WorkList"
 import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 const CollectionPage = async () => {

@@ -3,7 +3,7 @@ import { DailyThemesDocument } from "__generated__/apollo"
 import { ThemeHeader } from "app/[lang]/(main)/themes/_components/ThemeHeader"
 import { ThemeList } from "app/[lang]/(main)/themes/_components/ThemeList"
 import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 const ThemesPage = async () => {

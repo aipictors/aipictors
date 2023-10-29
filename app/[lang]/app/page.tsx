@@ -1,8 +1,6 @@
 import { AppAboutHeader } from "app/[lang]/app/_components/AppAboutHeader"
 import { AppFooter } from "app/[lang]/app/_components/AppFooter"
-import { AppMilestoneList } from "app/[lang]/app/_components/AppMilestoneList"
 import type { Metadata } from "next"
-import { Suspense } from "react"
 
 const AppPage = async () => {
   return (

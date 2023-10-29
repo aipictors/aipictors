@@ -1,7 +1,7 @@
 import type { StickersQuery } from "__generated__/apollo"
 import { StickersDocument } from "__generated__/apollo"
 import { StickerList } from "app/[lang]/(main)/stickers/_components/StickerList"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 /**

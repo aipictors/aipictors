@@ -3,7 +3,7 @@ import { ImageModelsDocument } from "__generated__/apollo"
 import { GoogleAdsense } from "app/[lang]/(main)/_components/Adsense"
 import { ImageModelList } from "app/[lang]/(main)/models/_components/ImageModelList"
 import { ArticlePage } from "app/_components/ArticlePage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 const ModelsPage = async () => {

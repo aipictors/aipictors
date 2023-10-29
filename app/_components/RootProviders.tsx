@@ -4,8 +4,8 @@ import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import { init } from "@sentry/nextjs"
 import { AppContextProvider } from "app/_components/AppContextProvider"
-import { createClient } from "app/client"
-import { theme } from "app/theme"
+import { createClient } from "app/_utils/client"
+import { theme } from "app/_utils/theme"
 import { Config } from "config"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
@@ -18,7 +18,7 @@ type Props = {
 
 const client = createClient()
 
-export const Providers: React.FC<Props> = (props) => {
+export const RootProviders: React.FC<Props> = (props) => {
   const pathname = usePathname()
 
   const searchParams = useSearchParams()

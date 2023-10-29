@@ -4,7 +4,7 @@ import { UserProfile } from "app/[lang]/(main)/users/[user]/_components/UserProf
 import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/_components/UserProfileHeader"
 import { UserTabs } from "app/[lang]/(main)/users/[user]/_components/UserTabs"
 import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/client"
+import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 
 type Props = {

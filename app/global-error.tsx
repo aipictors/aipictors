@@ -1,8 +1,8 @@
 "use client"
 import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
+import { theme } from "app/_utils/theme"
 import RootError from "app/error"
-import { theme } from "app/theme"
 import type { Metadata } from "next"
 
 const RootGlobalError: React.FC = () => {
