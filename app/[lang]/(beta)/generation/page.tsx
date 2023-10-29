@@ -8,7 +8,7 @@ import {
   ImageModelsDocument,
   PromptCategoryDocument,
 } from "__generated__/apollo"
-import { GenerationEditor } from "app/[lang]/(main)/generation/_components/GenerationEditor"
+import { GenerationEditor } from "app/[lang]/(beta)/generation/_components/GenerationEditor"
 import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 

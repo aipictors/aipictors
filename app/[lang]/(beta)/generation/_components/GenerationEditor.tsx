@@ -7,12 +7,12 @@ import type {
 } from "__generated__/apollo"
 import { useState } from "react"
 
-import { GenerationEditorHistory } from "app/[lang]/(main)/generation/_components/GenerationEditorHistory"
-import { GenerationEditorLoraModels } from "app/[lang]/(main)/generation/_components/GenerationEditorLoraModels"
-import { GenerationEditorModels } from "app/[lang]/(main)/generation/_components/GenerationEditorModels"
-import { GenerationEditorNegative } from "app/[lang]/(main)/generation/_components/GenerationEditorNegative"
-import { GenerationEditorPrompt } from "app/[lang]/(main)/generation/_components/GenerationEditorPrompt"
-import { useImageGenerationAreas } from "app/[lang]/(main)/generation/_hooks/useImageGenerationAreas"
+import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
+import { GenerationEditorLoraModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorLoraModels"
+import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorModels"
+import { GenerationEditorNegative } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegative"
+import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorPrompt"
+import { useImageGenerationAreas } from "app/[lang]/(beta)/generation/_hooks/useImageGenerationAreas"
 import { Config } from "config"
 
 type Props = {

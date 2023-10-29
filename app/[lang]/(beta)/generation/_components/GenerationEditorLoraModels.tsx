@@ -10,9 +10,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
-import { LoraModelsModal } from "app/[lang]/(main)/generation/_components/LoraModelsModal"
-import { LoraModelsSetting } from "app/[lang]/(main)/generation/_components/LoraModelsSetting"
-import { SelectedLoraModel } from "app/[lang]/(main)/generation/_components/SelectedLoraModel"
+import { LoraModelsModal } from "app/[lang]/(beta)/generation/_components/LoraModelsModal"
+import { LoraModelsSetting } from "app/[lang]/(beta)/generation/_components/LoraModelsSetting"
+import { SelectedLoraModel } from "app/[lang]/(beta)/generation/_components/SelectedLoraModel"
 
 type Props = {
   /**

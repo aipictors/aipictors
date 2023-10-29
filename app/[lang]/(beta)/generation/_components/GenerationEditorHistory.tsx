@@ -12,10 +12,10 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { GenerationHistoryDeleteModal } from "app/[lang]/(main)/generation/_components/GenerationHistoryDeleteModal"
-import { GenerationHistoryDlModal } from "app/[lang]/(main)/generation/_components/GenerationHistoryDlModal"
-import { InPaintingImageModal } from "app/[lang]/(main)/generation/_components/InPaintingImageModal"
-import { SelectedWorkModal } from "app/[lang]/(main)/generation/_components/SelectedWorkModal"
+import { GenerationHistoryDeleteModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDeleteModal"
+import { GenerationHistoryDlModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDlModal"
+import { InPaintingImageModal } from "app/[lang]/(beta)/generation/_components/InPaintingImageModal"
+import { SelectedWorkModal } from "app/[lang]/(beta)/generation/_components/SelectedWorkModal"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 
 type Props = {

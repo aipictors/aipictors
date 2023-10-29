@@ -15,8 +15,8 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { InPaintingSelectedPromptModal } from "app/[lang]/(main)/generation/_components/InPaintingSelectedPromptModal"
-import { StarRating } from "app/[lang]/(main)/generation/_components/StarRating"
+import { InPaintingSelectedPromptModal } from "app/[lang]/(beta)/generation/_components/InPaintingSelectedPromptModal"
+import { StarRating } from "app/[lang]/(beta)/generation/_components/StarRating"
 import { useState } from "react"
 
 type Props = {

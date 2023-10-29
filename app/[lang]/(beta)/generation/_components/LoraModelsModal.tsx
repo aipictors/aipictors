@@ -12,7 +12,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
-import { LoraImageModelCard } from "app/[lang]/(main)/generation/_components/LoraImageModelCard"
+import { LoraImageModelCard } from "app/[lang]/(beta)/generation/_components/LoraImageModelCard"
 
 type Props = {
   isOpen: boolean

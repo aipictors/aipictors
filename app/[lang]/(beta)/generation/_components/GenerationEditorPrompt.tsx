@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
-import { PromptCategoriesModal } from "app/[lang]/(main)/generation/_components/PromptCategoriesModal"
+import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"
 
 type Props = {
   promptCategories: PromptCategoryQuery["promptCategories"]

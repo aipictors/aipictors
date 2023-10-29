@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
-import { ImageModelCard } from "app/[lang]/(main)/generation/_components/ImageModelCard"
+import { ImageModelCard } from "app/[lang]/(beta)/generation/_components/ImageModelCard"
 
 type Props = {
   isOpen: boolean

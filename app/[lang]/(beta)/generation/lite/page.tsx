@@ -1,6 +1,6 @@
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoryDocument } from "__generated__/apollo"
-import { GenerationEditorLite } from "app/[lang]/(main)/generation/lite/_components/GenerationEditorLite"
+import { GenerationEditorLite } from "app/[lang]/(beta)/generation/lite/_components/GenerationEditorLite"
 import { createClient } from "app/_utils/client"
 import type { Metadata } from "next"
 

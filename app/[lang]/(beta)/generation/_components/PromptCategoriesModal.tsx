@@ -19,7 +19,7 @@ import {
   Wrap,
 } from "@chakra-ui/react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
-import { PromptCategoryIcon } from "app/[lang]/(main)/generation/_components/PromptCategoryIcon"
+import { PromptCategoryIcon } from "app/[lang]/(beta)/generation/_components/PromptCategoryIcon"
 import React, { useState } from "react"
 
 type Props = {

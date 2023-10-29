@@ -14,8 +14,8 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { InPaintingIMage } from "app/[lang]/(main)/generation/_components/InPaintingIMage"
-import { InPaintingSetting } from "app/[lang]/(main)/generation/_components/InPaintingSetting"
+import { InPaintingIMage } from "app/[lang]/(beta)/generation/_components/InPaintingIMage"
+import { InPaintingSetting } from "app/[lang]/(beta)/generation/_components/InPaintingSetting"
 
 type Props = {
   isOpen: boolean

@@ -10,8 +10,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
-import { ModelsModal } from "app/[lang]/(main)/generation/_components/ModelsModal"
-import { SelectedModel } from "app/[lang]/(main)/generation/_components/SelectedModel"
+import { ModelsModal } from "app/[lang]/(beta)/generation/_components/ModelsModal"
+import { SelectedModel } from "app/[lang]/(beta)/generation/_components/SelectedModel"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
