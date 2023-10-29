@@ -1,15 +1,15 @@
 import { join } from "path"
-import { MainFlutterTerms } from "app/[lang]/flutter/terms/_components/MainFlutterTerms"
+import { FlutterTermsArticle } from "app/[lang]/flutter/terms/_components/FlutterTermsArticle"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
 const FlutterTermsPage = async () => {
   const text = await readFile(
-    join(process.cwd(), "assets/flutter/terms.md"),
+    join(process.cwd(), "app/[lang]/flutter/_assets/terms.md"),
     "utf-8",
   )
 
-  return <MainFlutterTerms text={text} />
+  return <FlutterTermsArticle text={text} />
 }
 
 export const metadata: Metadata = {

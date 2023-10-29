@@ -10,7 +10,7 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import type { EventUser } from "app/[lang]/events/_types/eventUser"
-import { TagEventUser } from "app/[lang]/events/wakiaiai/_components/tag/TagEventUser"
+import { EventUserTag } from "app/[lang]/events/wakiaiai/_components/EventUserTag"
 import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
@@ -19,7 +19,7 @@ type Props = {
   user: EventUser
 }
 
-export const CardEventCreator: React.FC<Props> = (props) => {
+export const EventCreatorCard: React.FC<Props> = (props) => {
   return (
     <Card overflow={"hidden"} variant={"filled"}>
       <HStack>
@@ -63,7 +63,7 @@ export const CardEventCreator: React.FC<Props> = (props) => {
           <Stack flex={1} spacing={{ base: 2, sm: 4 }}>
             <HStack spacing={{ base: 1, sm: 2 }}>
               {props.user.types.map((type) => (
-                <TagEventUser key={type} type={type} />
+                <EventUserTag key={type} type={type} />
               ))}
             </HStack>
             <Heading as={"h2"} fontSize={{ base: 20 }}>

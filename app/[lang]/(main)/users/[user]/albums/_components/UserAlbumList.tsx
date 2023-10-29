@@ -1,7 +1,7 @@
 "use client"
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
 import type { UserAlbumsQuery } from "__generated__/apollo"
-import { CardWork } from "app/[lang]/(main)/works/_components/CardWork"
+import { WorkCard } from "app/[lang]/(main)/works/_components/WorkCard"
 import React from "react"
 
 type Props = {
@@ -25,7 +25,7 @@ export const UserAlbumList: React.FC<Props> = (props) => {
       >
         {props.albums.map((album) => (
           <Link key={album.id} href={`/albums/${album.id}`}>
-            <CardWork imageURL={album.thumbnailImage?.downloadURL} />
+            <WorkCard imageURL={album.thumbnailImage?.downloadURL} />
           </Link>
         ))}
       </SimpleGrid>

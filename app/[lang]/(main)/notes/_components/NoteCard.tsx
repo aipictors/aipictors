@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardHeader, Text } from "@chakra-ui/react"
 
-export const CardAlbum: React.FC = () => {
+export const NoteCard: React.FC = () => {
   return (
     <Card as={"article"}>
       <CardHeader as={"header"}>

@@ -1,14 +1,13 @@
-import type { Metadata } from "next"
-
 import type {
   WorkAwardsQuery,
   WorkAwardsQueryVariables,
 } from "__generated__/apollo"
 import { WorkAwardsDocument } from "__generated__/apollo"
-import { MainRankingHeader } from "app/[lang]/(main)/awards/_components/MainRankingHeader"
-import { MainRankingWorkList } from "app/[lang]/(main)/awards/_components/MainRankingWorkList"
+import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
+import { RankingWorkList } from "app/[lang]/(main)/awards/_components/RankingWorkList"
 import { MainPage } from "app/_components/MainPage"
 import { createClient } from "app/_utils/client"
+import type { Metadata } from "next"
 
 type Props = {
   params: {
@@ -45,8 +44,8 @@ const AwardsPage = async (props: Props) => {
 
   return (
     <MainPage>
-      <MainRankingHeader year={year} month={month} day={day} />
-      <MainRankingWorkList awards={workAwardsQuery.data.workAwards} />
+      <RankingHeader year={year} month={month} day={day} />
+      <RankingWorkList awards={workAwardsQuery.data.workAwards} />
     </MainPage>
   )
 }

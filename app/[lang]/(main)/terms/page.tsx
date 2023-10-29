@@ -1,11 +1,11 @@
-import { TermsDocument } from "app/[lang]/(main)/terms/_components/TermsDocument"
+import { TermsArticle } from "app/[lang]/(main)/terms/_components/TermsArticle"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const TermsPage = async () => {
   return (
     <MainPage>
-      <TermsDocument />
+      <TermsArticle />
     </MainPage>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 import { Button, Card, Image, Text } from "@chakra-ui/react"
 
-export const CardTitleWork: React.FC = () => {
+export const TitleWorkCard: React.FC = () => {
   return (
     <Card>
       <Button

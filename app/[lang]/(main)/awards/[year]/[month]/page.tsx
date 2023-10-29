@@ -1,4 +1,4 @@
-import { MainRankingHeader } from "app/[lang]/(main)/awards/_components/MainRankingHeader"
+import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
@@ -16,7 +16,7 @@ const AwardsPage = async (props: Props) => {
 
   return (
     <MainPage>
-      <MainRankingHeader year={year} month={month} day={0} />
+      <RankingHeader year={year} month={month} day={0} />
     </MainPage>
   )
 }

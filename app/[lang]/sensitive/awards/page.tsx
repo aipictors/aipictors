@@ -1,4 +1,4 @@
-import { MainRankingHeader } from "app/[lang]/(main)/awards/_components/MainRankingHeader"
+import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
@@ -11,7 +11,7 @@ const SensitiveAwardsPage = async () => {
 
   return (
     <MainPage>
-      <MainRankingHeader year={year} month={month} day={day} />
+      <RankingHeader year={year} month={month} day={day} />
     </MainPage>
   )
 }

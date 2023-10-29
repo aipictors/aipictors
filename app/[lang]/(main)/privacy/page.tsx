@@ -1,11 +1,11 @@
-import { PrivacyDocument } from "app/[lang]/(main)/privacy/_components/PrivacyDocument"
+import { PrivacyArticle } from "app/[lang]/(main)/privacy/_components/PrivacyArticle"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const PrivacyPage = async () => {
   return (
     <MainPage>
-      <PrivacyDocument />
+      <PrivacyArticle />
     </MainPage>
   )
 }

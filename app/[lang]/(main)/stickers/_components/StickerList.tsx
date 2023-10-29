@@ -1,7 +1,7 @@
 "use client"
 import { HStack, SimpleGrid, Stack } from "@chakra-ui/react"
 import type { StickersQuery } from "__generated__/apollo"
-import { CardSticker } from "app/[lang]/(main)/stickers/_components/CardSticker"
+import { StickerCard } from "app/[lang]/(main)/stickers/_components/StickerCard"
 import { StickerListHeader } from "app/[lang]/(main)/stickers/_components/StickerListHeader"
 import React from "react"
 
@@ -20,7 +20,7 @@ export const StickerList: React.FC<Props> = (props) => {
         >
           {props.stickersQuery.stickers?.map((props) => {
             return (
-              <CardSticker
+              <StickerCard
                 key={props.id}
                 title={props.title}
                 imageURL={props.image?.downloadURL ?? null}

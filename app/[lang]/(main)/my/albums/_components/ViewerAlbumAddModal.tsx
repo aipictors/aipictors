@@ -17,7 +17,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react"
-import { CardTitleWorkList } from "app/[lang]/(main)/my/albums/_components/CardTitleWorkList"
+import { TitleWorkList } from "app/[lang]/(main)/my/albums/_components/TitleWorkList"
 
 type Props = {
   isOpen: boolean
@@ -82,11 +82,11 @@ export const ViewerAlbumAddModal: React.FC<Props> = (props) => {
               </Stack>
               <Stack>
                 <Text>{"投稿済み作品一覧"}</Text>
-                <CardTitleWorkList />
+                <TitleWorkList />
               </Stack>
               <Stack>
                 <Text>{"選択済み作品一覧"}</Text>
-                <CardTitleWorkList />
+                <TitleWorkList />
               </Stack>
               <HStack justifyContent={"center"}>
                 <Button

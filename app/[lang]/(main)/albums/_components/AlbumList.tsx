@@ -1,11 +1,11 @@
 "use client"
 import { Stack } from "@chakra-ui/react"
-import { CardAlbum } from "app/[lang]/(main)/albums/_components/CardAlbum"
+import { AlbumCard } from "app/[lang]/(main)/albums/_components/AlbumCard"
 
 export const AlbumList: React.FC = () => {
   return (
     <Stack>
-      <CardAlbum />
+      <AlbumCard />
     </Stack>
   )
 }

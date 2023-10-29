@@ -6,7 +6,7 @@ type Props = {
   text: string
 }
 
-export const MainFlutterPrivacy: React.FC<Props> = (props) => {
+export const FlutterPrivacyArticle: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"center"} py={8} minH={"100vh"}>
       <Box

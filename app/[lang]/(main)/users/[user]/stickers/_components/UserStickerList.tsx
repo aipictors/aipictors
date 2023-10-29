@@ -1,7 +1,7 @@
 "use client"
 import { SimpleGrid } from "@chakra-ui/react"
 import type { UserStickersQuery } from "__generated__/apollo"
-import { CardSticker } from "app/[lang]/(main)/stickers/_components/CardSticker"
+import { StickerCard } from "app/[lang]/(main)/stickers/_components/StickerCard"
 import React from "react"
 
 type Props = {
@@ -13,7 +13,7 @@ export const UserStickerList: React.FC<Props> = (props) => {
     <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} spacing={2}>
       {props.stickers.map((props) => {
         return (
-          <CardSticker
+          <StickerCard
             key={props.id}
             title={props.title}
             imageURL={props.image?.downloadURL ?? null}

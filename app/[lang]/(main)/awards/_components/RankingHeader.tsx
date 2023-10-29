@@ -8,9 +8,9 @@ type Props = {
   day: number
 }
 
-export const MainRankingHeader: React.FC<Props> = (props) => {
+export const RankingHeader: React.FC<Props> = (props) => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
+    <HStack justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
         <Text fontWeight={"bold"} fontSize={"2xl"}>
           {"ランキング"}

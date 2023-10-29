@@ -10,7 +10,7 @@ type Props = {
   usesCount?: number
 }
 
-export const CardSticker: React.FC<Props> = (props) => {
+export const StickerCard: React.FC<Props> = (props) => {
   return (
     <>
       <Card>

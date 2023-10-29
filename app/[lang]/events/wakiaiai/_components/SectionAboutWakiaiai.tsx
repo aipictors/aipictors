@@ -12,8 +12,8 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import type { EventUser } from "app/[lang]/events/_types/eventUser"
-import { BoxEventImage } from "app/[lang]/events/wakiaiai/_components/box/BoxEventImage"
-import { CardEventCreator } from "app/[lang]/events/wakiaiai/_components/card/CardEventCreator"
+import { EventCreatorCard } from "app/[lang]/events/wakiaiai/_components/EventCreatorCard"
+import { EventImage } from "app/[lang]/events/wakiaiai/_components/EventImage"
 import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { useEffect } from "react"
@@ -479,7 +479,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
     >
       <Stack direction={{ base: "column", md: "row" }} alignItems={"center"}>
         <Box flex={3}>
-          <BoxEventImage
+          <EventImage
             alt={"和気あいAI"}
             imageURL={
               "https://www.aipictors.com/wp-content/uploads/2023/07/XVzvtp28cfh6CQaMT9Rk0yJFA4rsgN.webp"
@@ -581,10 +581,10 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {aUsers.map((user, index) => (
-          <CardEventCreator key={user.name} user={user} />
+          <EventCreatorCard key={user.name} user={user} />
         ))}
       </SimpleGrid>
-      <BoxEventImage
+      <EventImage
         alt={"和気あいAI"}
         imageURL={
           "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp"
@@ -597,7 +597,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {bUsers.map((user, index) => (
-          <CardEventCreator key={user.name} user={user} />
+          <EventCreatorCard key={user.name} user={user} />
         ))}
       </SimpleGrid>
       <Box
@@ -615,7 +615,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
       />
       <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} spacing={2} w={"100%"}>
         {cUsers.map((user, index) => (
-          <CardEventCreator key={user.name} user={user} />
+          <EventCreatorCard key={user.name} user={user} />
         ))}
       </SimpleGrid>
 
@@ -634,7 +634,7 @@ export const SectionAboutWakiaiai: React.FC = () => {
         </Stack>
       </Card>
 
-      <BoxEventImage
+      <EventImage
         alt={"和気あいAI"}
         imageURL={
           "https://www.aipictors.com/wp-content/uploads/2023/06/FDfUikjd67cARVC30vePmGJMn4zL81.webp"

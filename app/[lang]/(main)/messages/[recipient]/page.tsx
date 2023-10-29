@@ -1,4 +1,4 @@
-import { RecipientMessages } from "app/[lang]/(main)/messages/[recipient]/_components/RecipientMessages"
+import { RecipientMessageList } from "app/[lang]/(main)/messages/[recipient]/_components/RecipientMessageList"
 import type { Metadata } from "next"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 const RecipientMessagesPage = async (props: Props) => {
   const recipientId = props.params.recipient
 
-  return <RecipientMessages recipientId={recipientId} />
+  return <RecipientMessageList recipientId={recipientId} />
 }
 
 export const metadata: Metadata = {

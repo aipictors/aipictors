@@ -1,15 +1,15 @@
 import { join } from "path"
-import { MainFlutterPrivacy } from "app/[lang]/flutter/privacy/_components/MainFlutterPrivacy"
+import { FlutterPrivacyArticle } from "app/[lang]/flutter/privacy/_components/FlutterPrivacyArticle"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
 const FlutterPrivacyPage = async () => {
   const text = await readFile(
-    join(process.cwd(), "assets/flutter/privacy.md"),
+    join(process.cwd(), "app/[lang]/flutter/_assets/privacy.md"),
     "utf-8",
   )
 
-  return <MainFlutterPrivacy text={text} />
+  return <FlutterPrivacyArticle text={text} />
 }
 
 export const metadata: Metadata = {

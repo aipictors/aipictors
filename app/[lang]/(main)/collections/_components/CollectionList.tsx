@@ -1,6 +1,6 @@
 "use client"
 import { Divider, HStack, Stack } from "@chakra-ui/react"
-import { CardCollection } from "app/[lang]/(main)/collections/_components/CardCollection"
+import { CollectionCard } from "app/[lang]/(main)/collections/_components/CollectionCard"
 import { CollectionsHeader } from "app/[lang]/(main)/collections/_components/CollectionsHeader"
 
 export const CollectionList: React.FC = () => {
@@ -9,9 +9,9 @@ export const CollectionList: React.FC = () => {
       <CollectionsHeader />
       <Divider />
       <HStack>
-        <CardCollection />
-        <CardCollection />
-        <CardCollection />
+        <CollectionCard />
+        <CollectionCard />
+        <CollectionCard />
       </HStack>
     </Stack>
   )

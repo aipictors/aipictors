@@ -9,7 +9,7 @@ type Props = ImageProps & {
   linkTitle: string
 }
 
-export const BoxEventImage: React.FC<Props> = (props) => {
+export const EventImage: React.FC<Props> = (props) => {
   return (
     <Box position={"relative"}>
       <Image

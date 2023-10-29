@@ -1,11 +1,11 @@
-import { GuidelineDocument } from "app/[lang]/(main)/guideline/_components/GuidelineDocument"
+import { GuidelineArticle } from "app/[lang]/(main)/guideline/_components/GuidelineArticle"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
 const GuidelinePage = async () => {
   return (
     <MainPage>
-      <GuidelineDocument />
+      <GuidelineArticle />
     </MainPage>
   )
 }

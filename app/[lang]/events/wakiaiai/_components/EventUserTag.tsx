@@ -6,7 +6,7 @@ type Props = {
   type: EventUserType
 }
 
-export const TagEventUser: React.FC<Props> = (props) => {
+export const EventUserTag: React.FC<Props> = (props) => {
   if (props.type === "SPONSOR") {
     return (
       <Tag colorScheme={"yellow"} borderRadius={"full"} w={"fit-content"}>

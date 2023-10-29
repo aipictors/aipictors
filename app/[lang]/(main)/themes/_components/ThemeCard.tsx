@@ -1,7 +1,7 @@
 "use client"
 import { Avatar, Card, HStack, Image, Stack, Text } from "@chakra-ui/react"
 
-export const CardTheme: React.FC = () => {
+export const ThemeCard: React.FC = () => {
   return (
     <Card>
       <Image

@@ -6,7 +6,7 @@ type Props = {
   text: string
 }
 
-export const MainFlutterTerms: React.FC<Props> = (props) => {
+export const FlutterTermsArticle: React.FC<Props> = (props) => {
   return (
     <HStack justifyContent={"center"} py={8} minH={"100vh"}>
       <Box

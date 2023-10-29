@@ -1,10 +1,10 @@
 "use client"
 import { Stack, Text } from "@chakra-ui/react"
 
-export const TermsDocument: React.FC = () => {
+export const GuidelineArticle: React.FC = () => {
   return (
     <Stack>
-      <Text>{"利用規約"}</Text>
+      <Text>{"ガイドライン"}</Text>
     </Stack>
   )
 }

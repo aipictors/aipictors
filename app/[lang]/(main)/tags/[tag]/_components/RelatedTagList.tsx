@@ -1,7 +1,7 @@
 "use client"
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
-import { CardTag } from "app/[lang]/(main)/tags/[tag]/_components/CardTag"
+import { TagCard } from "app/[lang]/(main)/tags/[tag]/_components/TagCard"
 
 export const RelatedTagList: React.FC = () => {
   return (
@@ -17,25 +17,25 @@ export const RelatedTagList: React.FC = () => {
         }}
       >
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <CardTag />
+          <TagCard />
         </Box>
       </Splide>
     </Stack>
