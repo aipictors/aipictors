@@ -7,6 +7,7 @@ import {
   Icon,
   IconButton,
   Input,
+  Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
 import { BetaUserNavigationButton } from "app/[lang]/(main)/_components/BetaUserNavigationButton"
@@ -23,76 +24,78 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
   const backgroundColor = useColorModeValue("white", "gray.800")
 
   return (
-    <HStack
-      p={4}
-      spacing={4}
-      position={"sticky"}
-      top={0}
-      bg={backgroundColor}
-      zIndex={100}
-    >
-      <IconButton
-        variant={"ghost"}
-        aria-label={"メニュー"}
-        borderRadius={"full"}
-        onClick={props.onOpenNavigation}
-        icon={<Icon as={TbMenu2} />}
-      />
-      <Box display={{ base: "none", md: "block" }}>
-        <Link href={"/"}>
-          <Avatar src={"/icon.png"} size={"sm"} />
-        </Link>
-      </Box>
-      <Box w={"100%"} display={{ base: "none", md: "block" }}>
-        <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
-      </Box>
-      <IconButton
-        marginLeft={"auto"}
-        size={"sm"}
-        display={{ base: "block", md: "none" }}
-        borderRadius={"full"}
-        icon={<Icon as={TbSearch} />}
-        aria-label={"Search"}
-      />
-      <HStack>
-        <Button
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/generation"}
-          size={"sm"}
-          borderRadius={"full"}
-        >
-          {"生成"}
-        </Button>
-        <Button
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/new/image"}
-          size={"sm"}
-          borderRadius={"full"}
-        >
-          {"投稿"}
-        </Button>
+    <Stack>
+      <HStack
+        p={4}
+        spacing={4}
+        position={"sticky"}
+        top={0}
+        bg={backgroundColor}
+        zIndex={100}
+      >
         <IconButton
-          isDisabled={Config.isReleaseMode}
-          as={Link}
-          href={"/viewer/albums"}
-          size={"sm"}
+          variant={"ghost"}
+          aria-label={"メニュー"}
           borderRadius={"full"}
-          aria-label={"フォルダ"}
-          fontSize={"lg"}
-          icon={<TbFolderFilled />}
+          onClick={props.onOpenNavigation}
+          icon={<Icon as={TbMenu2} />}
         />
+        <Box display={{ base: "none", md: "block" }}>
+          <Link href={"/"}>
+            <Avatar src={"/icon.png"} size={"sm"} />
+          </Link>
+        </Box>
+        <Box w={"100%"} display={{ base: "none", md: "block" }}>
+          <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
+        </Box>
         <IconButton
-          isDisabled
+          marginLeft={"auto"}
           size={"sm"}
+          display={{ base: "block", md: "none" }}
           borderRadius={"full"}
-          aria-label={"通知"}
-          fontSize={"lg"}
-          icon={<TbBellFilled />}
+          icon={<Icon as={TbSearch} />}
+          aria-label={"Search"}
         />
-        <BetaUserNavigationButton />
+        <HStack>
+          <Button
+            isDisabled={Config.isReleaseMode}
+            as={Link}
+            href={"/generation"}
+            size={"sm"}
+            borderRadius={"full"}
+          >
+            {"生成"}
+          </Button>
+          <Button
+            isDisabled={Config.isReleaseMode}
+            as={Link}
+            href={"/new/image"}
+            size={"sm"}
+            borderRadius={"full"}
+          >
+            {"投稿"}
+          </Button>
+          <IconButton
+            isDisabled={Config.isReleaseMode}
+            as={Link}
+            href={"/viewer/albums"}
+            size={"sm"}
+            borderRadius={"full"}
+            aria-label={"フォルダ"}
+            fontSize={"lg"}
+            icon={<TbFolderFilled />}
+          />
+          <IconButton
+            isDisabled
+            size={"sm"}
+            borderRadius={"full"}
+            aria-label={"通知"}
+            fontSize={"lg"}
+            icon={<TbBellFilled />}
+          />
+          <BetaUserNavigationButton />
+        </HStack>
       </HStack>
-    </HStack>
+    </Stack>
   )
 }

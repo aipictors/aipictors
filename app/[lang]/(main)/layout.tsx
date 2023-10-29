@@ -1,5 +1,11 @@
 "use client"
-import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
+import {
+  Divider,
+  HStack,
+  useBreakpoint,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react"
 import "@splidejs/react-splide/css"
 import { HomeHeader } from "app/[lang]/(main)/_components/HomeHeader"
 import { HomeNavigationList } from "app/[lang]/(main)/_components/HomeNavigationList"
@@ -7,6 +13,7 @@ import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
 import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
 import { HomeFooter } from "app/_components/HomeFooter"
 import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
+import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -14,6 +21,8 @@ type Props = {
 
 const MainLayout: React.FC<Props> = (props) => {
   const breakPoint = useBreakpoint()
+
+  const toast = useToast()
 
   const {
     isOpen: isOpenNavigation,
@@ -43,6 +52,16 @@ const MainLayout: React.FC<Props> = (props) => {
     onOpen: onOpenLogout,
     onClose: onCloseLogout,
   } = useDisclosure()
+
+  useEffect(() => {
+    toast({
+      description:
+        "こちらは開発中のページです。何らかの不具合が発生する可能性があります。",
+      status: "warning",
+      isClosable: false,
+      duration: 60 * 4 * 1000,
+    })
+  }, [])
 
   const onToggle = () => {
     if (breakPoint === "base" || breakPoint === "sm") {
