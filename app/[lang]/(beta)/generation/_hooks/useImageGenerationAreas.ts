@@ -17,7 +17,7 @@ export const useImageGenerationAreas = () => {
       [area.editorNegativePrompt],
       [area.histories],
     ],
-    sm: [
+    md: [
       [area.models, area.editorPrompt],
       [area.loraModels, area.editorNegativePrompt],
       [area.histories, area.histories],

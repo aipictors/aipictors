@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Box,
   Button,
   Card,
   HStack,
@@ -51,41 +52,51 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Card p={4} h={"100%"}>
-        <Stack spacing={4}>
-          <HStack>
-            <Text fontWeight={"bold"}>{"加工（LoRA）"}</Text>
-            <Tooltip
-              label="イラストの絵柄を調整することができます。"
-              fontSize="md"
-            >
-              <Button size={"xs"} borderRadius={"full"}>
-                {"?"}
-              </Button>
-            </Tooltip>
-          </HStack>
-          {selectedModels.map((model) => (
-            <SelectedLoraModel
-              key={model.id}
-              imageURL={model.thumbnailImageURL ?? ""}
-              name={model.name}
-              description={model.description ?? ""}
-              value={
-                props.selectedModels.find((m) => m.id === model.id)?.value ?? 0
-              }
-              setValue={(value) => {
-                props.onChangeValue(model.id, value)
-              }}
-              onDelete={() => {
-                props.onSelectModelId(model.id)
-              }}
-            />
-          ))}
-          <Button borderRadius={"full"} onClick={onOpen}>
-            {"LoRAを追加する"}
-          </Button>
-          <LoraModelsSetting />
-        </Stack>
+      <Card h={"100%"} overflowX={"hidden"} position={"relative"}>
+        <HStack
+          position={"sticky"}
+          top={0}
+          zIndex={8}
+          bg={"gray.700"}
+          p={4}
+          boxShadow={"md"}
+        >
+          <Text fontWeight={"bold"}>{"加工（LoRA）"}</Text>
+          <Tooltip
+            label="イラストの絵柄を調整することができます。"
+            fontSize="md"
+          >
+            <Button size={"xs"} borderRadius={"full"}>
+              {"?"}
+            </Button>
+          </Tooltip>
+        </HStack>
+        <Box overflowY={"auto"}>
+          <Stack p={4} spacing={4}>
+            {selectedModels.map((model) => (
+              <SelectedLoraModel
+                key={model.id}
+                imageURL={model.thumbnailImageURL ?? ""}
+                name={model.name}
+                description={model.description ?? ""}
+                value={
+                  props.selectedModels.find((m) => m.id === model.id)?.value ??
+                  0
+                }
+                setValue={(value) => {
+                  props.onChangeValue(model.id, value)
+                }}
+                onDelete={() => {
+                  props.onSelectModelId(model.id)
+                }}
+              />
+            ))}
+            <Button borderRadius={"full"} onClick={onOpen}>
+              {"LoRAを追加する"}
+            </Button>
+            <LoraModelsSetting />
+          </Stack>
+        </Box>
       </Card>
       <LoraModelsModal
         isOpen={isOpen}

@@ -1,7 +1,10 @@
 import type {
   ImageLoraModelsQuery,
+  ImageLoraModelsQueryVariables,
   ImageModelsQuery,
+  ImageModelsQueryVariables,
   PromptCategoryQuery,
+  PromptCategoryQueryVariables,
 } from "__generated__/apollo"
 import {
   ImageLoraModelsDocument,
@@ -15,17 +18,26 @@ import type { Metadata } from "next"
 const GenerationPage = async () => {
   const client = createClient()
 
-  const promptCategoryQuery = await client.query<PromptCategoryQuery>({
+  const promptCategoryQuery = await client.query<
+    PromptCategoryQuery,
+    PromptCategoryQueryVariables
+  >({
     query: PromptCategoryDocument,
     variables: {},
   })
 
-  const imageModelsQuery = await client.query<ImageModelsQuery>({
+  const imageModelsQuery = await client.query<
+    ImageModelsQuery,
+    ImageModelsQueryVariables
+  >({
     query: ImageModelsDocument,
     variables: {},
   })
 
-  const imageLoraModelsQuery = await client.query<ImageLoraModelsQuery>({
+  const imageLoraModelsQuery = await client.query<
+    ImageLoraModelsQuery,
+    ImageLoraModelsQueryVariables
+  >({
     query: ImageLoraModelsDocument,
     variables: {},
   })

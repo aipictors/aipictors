@@ -22,13 +22,19 @@ import { TbDice3, TbRefresh } from "react-icons/tb"
 
 export const LoraModelsSetting: React.FC = () => {
   return (
-    <Stack>
-      <Text fontWeight={"bold"}>{"サイズ"}</Text>
-      <Select placeholder="【縦長】768×1152(upscale:1.5)" size={"sm"}>
-        <option value="option1">{"【正方形】768×768(upscale:1.5)"}</option>
-        <option value="option2">{"【縦長】768×1200(upscale:1.5)"}</option>
-        <option value="option3">{"【横長】1200×768(upscale:1.5)"}</option>
-      </Select>
+    <Stack spacing={4}>
+      <Stack>
+        <Text fontWeight={"bold"}>{"サイズ"}</Text>
+        <Select
+          placeholder="【縦長】768×1152(upscale:1.5)"
+          size={"sm"}
+          borderRadius={"full"}
+        >
+          <option value="option1">{"【正方形】768×768(upscale:1.5)"}</option>
+          <option value="option2">{"【縦長】768×1200(upscale:1.5)"}</option>
+          <option value="option3">{"【横長】1200×768(upscale:1.5)"}</option>
+        </Select>
+      </Stack>
       <HStack>
         <Text fontWeight={"bold"}>{"VAE"}</Text>
         <Tooltip label="出力される色や線を調整します。" fontSize="md">
@@ -37,7 +43,7 @@ export const LoraModelsSetting: React.FC = () => {
           </Button>
         </Tooltip>
       </HStack>
-      <Select defaultValue={"option3"} size={"sm"}>
+      <Select defaultValue={"option3"} size={"sm"} borderRadius={"full"}>
         <option value="option1">{"なし"}</option>
         <option value="option2">{"kl-f8-anime2"}</option>
         <option value="option3">{"ClearVAE_V2.3"}</option>
@@ -54,8 +60,8 @@ export const LoraModelsSetting: React.FC = () => {
         </Tooltip>
       </HStack>
       <HStack>
-        <NumberInput defaultValue={-1} size={"sm"} borderRadius={"md"}>
-          <NumberInputField />
+        <NumberInput defaultValue={-1} size={"sm"}>
+          <NumberInputField borderRadius={"full"} />
           <NumberInputStepper>
             <NumberIncrementStepper />
             <NumberDecrementStepper />
@@ -66,7 +72,7 @@ export const LoraModelsSetting: React.FC = () => {
             <IconButton
               aria-label="previous month"
               icon={<Icon as={TbDice3} fontSize={"lg"} />}
-              borderRadius={"md"}
+              borderRadius={"full"}
               size={"sm"}
               onClick={() => {
                 alert("Seed値をランダムにする")
@@ -77,7 +83,7 @@ export const LoraModelsSetting: React.FC = () => {
             <IconButton
               aria-label="previous month"
               icon={<Icon as={TbRefresh} fontSize={"lg"} />}
-              borderRadius={"md"}
+              borderRadius={"full"}
               size={"sm"}
               onClick={() => {
                 alert("前回生成に使用したSeed値を復元する")
@@ -97,14 +103,8 @@ export const LoraModelsSetting: React.FC = () => {
           </Button>
         </Tooltip>
       </HStack>
-      <NumberInput
-        defaultValue={20}
-        size={"sm"}
-        borderRadius={"md"}
-        min={9}
-        max={25}
-      >
-        <NumberInputField />
+      <NumberInput defaultValue={20} size={"sm"} min={9} max={25}>
+        <NumberInputField borderRadius={"full"} />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
@@ -121,14 +121,8 @@ export const LoraModelsSetting: React.FC = () => {
           </Button>
         </Tooltip>
       </HStack>
-      <NumberInput
-        defaultValue={7}
-        size={"sm"}
-        borderRadius={"md"}
-        min={1}
-        max={15}
-      >
-        <NumberInputField />
+      <NumberInput defaultValue={7} size={"sm"} min={1} max={15}>
+        <NumberInputField borderRadius={"full"} />
         <NumberInputStepper>
           <NumberIncrementStepper />
           <NumberDecrementStepper />
@@ -142,7 +136,7 @@ export const LoraModelsSetting: React.FC = () => {
           </Button>
         </Tooltip>
       </HStack>
-      <Select defaultValue={"option3"} size={"sm"}>
+      <Select defaultValue={"option3"} size={"sm"} borderRadius={"full"}>
         <option value="option1">{"Euler a"}</option>
         <option value="option2">{"Euler"}</option>
         <option value="option3">{"Heun"}</option>

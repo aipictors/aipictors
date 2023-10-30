@@ -30,7 +30,7 @@ export const GenerationEditorModels: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Card p={4} h={"100%"}>
+      <Card p={4} h={"100%"} overflowX={"hidden"} overflowY={"auto"} flex={1}>
         <Stack>
           <HStack justifyContent={"space-between"}>
             <HStack>
