@@ -1,11 +1,12 @@
 import { NewAlbumForm } from "app/[lang]/(main)/albums/new/_components/NewAlbumForm"
+import { SensitiveNewAlbumForm } from "app/[lang]/sensitive/albums/new/components/SensitiveNewAlbumForm"
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
-const NewAlbumPage = async () => {
+const SensitiveNewAlbumPage = async () => {
   return (
     <MainPage>
-      <NewAlbumForm />
+      <SensitiveNewAlbumForm />
     </MainPage>
   )
 }
@@ -17,4 +18,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default NewAlbumPage
+export default SensitiveNewAlbumPage

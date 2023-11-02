@@ -2,8 +2,9 @@
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 import { SelectableWorkCard } from "app/[lang]/(main)/albums/new/_components/SelectableWorkCard"
+import { SensitiveSelectableWorkCard } from "app/[lang]/sensitive/albums/new/components/SensitiveSelectableWorkCard"
 
-export const NewAlbumWorkList: React.FC = () => {
+export const SensitiveNewAlbumWorkList: React.FC = () => {
   return (
     <Stack>
       <Splide
@@ -17,25 +18,25 @@ export const NewAlbumWorkList: React.FC = () => {
         }}
       >
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
         <Box as={SplideSlide} w={40}>
-          <SelectableWorkCard />
+          <SensitiveSelectableWorkCard />
         </Box>
       </Splide>
     </Stack>
