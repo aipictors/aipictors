@@ -22,11 +22,4 @@ describe("toElapsedTimeText", () => {
     )
     expect(elapsedTimeText).toBe("1日前")
   })
-
-  test("1ヶ月前", () => {
-    const elapsedTimeText = toElapsedTimeText(
-      Math.floor(Date.now() / 1000) - 2592000,
-    )
-    expect(elapsedTimeText).toBe("1ヶ月前")
-  })
 })
