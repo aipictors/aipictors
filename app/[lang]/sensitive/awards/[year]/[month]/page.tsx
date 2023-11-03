@@ -2,7 +2,7 @@ import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeade
 import { MainPage } from "app/_components/MainPage"
 import type { Metadata } from "next"
 
-const AwardsPage = async () => {
+const SensitiveAwardsPage = async () => {
   const year = new Date().getFullYear()
 
   const month = new Date().getMonth() + 1
@@ -21,4 +21,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default AwardsPage
+export default SensitiveAwardsPage

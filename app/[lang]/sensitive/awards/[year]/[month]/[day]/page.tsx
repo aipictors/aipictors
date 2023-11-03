@@ -17,7 +17,7 @@ type Props = {
   }
 }
 
-const AwardsPage = async (props: Props) => {
+const SensitiveAwardsPage = async (props: Props) => {
   const client = createClient()
 
   const year = parseInt(props.params.year)
@@ -57,4 +57,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default AwardsPage
+export default SensitiveAwardsPage
