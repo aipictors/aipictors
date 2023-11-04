@@ -19,6 +19,7 @@ import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/G
 import { GenerationHistoryDeleteModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDeleteModal"
 import { InPaintingImageModal } from "app/[lang]/(beta)/generation/_components/InPaintingImageModal"
 import { SelectedWorkModal } from "app/[lang]/(beta)/generation/_components/SelectedWorkModal"
+import { GenerationHistoryCard } from "app/[lang]/(beta)/generation/history/_components/GenerationHistoryCard"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 
 type Props = {
@@ -76,82 +77,12 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
           <Divider />
           <Stack p={4} spacing={4}>
             <SimpleGrid spacing={2} columns={{ base: 1, md: 2 }}>
-              <Button
-                p={0}
-                h={"auto"}
-                overflow={"hidden"}
-                variant={"outline"}
-                borderWidth={2}
-                borderColor={"blue.500"}
-                onClick={() => {
-                  onOpen()
-                }}
-              >
-                <Image
-                  src="https://source.unsplash.com/random/800x600"
-                  alt=""
-                  borderRadius={"md"}
-                  w={"100%"}
-                  draggable={false}
-                />
-              </Button>
-              <Button
-                p={0}
-                h={"auto"}
-                overflow={"hidden"}
-                variant={"outline"}
-                borderWidth={2}
-                borderColor={"blue.500"}
-                onClick={() => {
-                  onOpen()
-                }}
-              >
-                <Image
-                  src="https://source.unsplash.com/random/800x600"
-                  alt=""
-                  borderRadius={"md"}
-                  w={"100%"}
-                  draggable={false}
-                />
-              </Button>
-              <Button
-                p={0}
-                h={"auto"}
-                overflow={"hidden"}
-                variant={"outline"}
-                borderWidth={2}
-                borderColor={"blue.500"}
-                onClick={() => {
-                  onOpen()
-                }}
-              >
-                <Image
-                  src="https://source.unsplash.com/random/800x600"
-                  alt=""
-                  borderRadius={"md"}
-                  w={"100%"}
-                  draggable={false}
-                />
-              </Button>
-              <Button
-                p={0}
-                h={"auto"}
-                overflow={"hidden"}
-                variant={"outline"}
-                borderWidth={2}
-                borderColor={"blue.500"}
-                onClick={() => {
-                  onOpen()
-                }}
-              >
-                <Image
-                  src="https://source.unsplash.com/random/800x600"
-                  alt=""
-                  borderRadius={"md"}
-                  w={"100%"}
-                  draggable={false}
-                />
-              </Button>
+              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard onClick={() => {}} />
             </SimpleGrid>
           </Stack>
         </Box>
