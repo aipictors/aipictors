@@ -17,7 +17,7 @@ type Props = {
   onClose(): void
 }
 
-export const GenerationHistoryDlModal: React.FC<Props> = (props) => {
+export const GenerationDownloadModal: React.FC<Props> = (props) => {
   return (
     <Modal
       onClose={props.onClose}

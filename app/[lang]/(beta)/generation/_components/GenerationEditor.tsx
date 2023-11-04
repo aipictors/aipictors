@@ -1,23 +1,22 @@
 "use client"
-import { Grid, GridItem } from "@chakra-ui/react"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
-  PromptCategoryQuery,
+  PromptCategoriesQuery,
 } from "__generated__/apollo"
 import { useState } from "react"
 
 import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
+import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/GenerationEditorLayout"
 import { GenerationEditorLoraModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorLoraModels"
 import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorModels"
-import { GenerationEditorNegative } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegative"
+import { GenerationEditorNegativePrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegativePrompt"
 import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorPrompt"
-import { useImageGenerationAreas } from "app/[lang]/(beta)/generation/_hooks/useImageGenerationAreas"
 import { Config } from "config"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
-  promptCategories: PromptCategoryQuery["promptCategories"]
+  promptCategories: PromptCategoriesQuery["promptCategories"]
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
 
@@ -49,20 +48,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   const [selectedHistory, selectHistory] = useState("")
 
-  const area = {
-    models: "models",
-    editorPrompt: "editor-prompt",
-    histories: "histories",
-    loraModels: "lora-models",
-    editorNegativePrompt: "editor-negative-prompt",
-  } as const
-
-  const responsiveAreas = useImageGenerationAreas()
-
-  const templateAreas = (responsiveAreas ?? [])
-    .map((row) => `"${row.join(" ")}"`)
-    .join("\n")
-
   /**
    * LoRAモデルを選択する
    * @param modelId
@@ -92,27 +77,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   }
 
   return (
-    <Grid
-      as={"main"}
-      templateAreas={templateAreas}
-      gridTemplateRows={{
-        base: "1fr 1fr 1fr 1fr 1fr",
-        md: "1fr 1fr 1fr",
-        xl: "1fr 1fr",
-      }}
-      gridTemplateColumns={{
-        base: "1fr",
-        md: "1fr 1fr",
-        xl: "1fr 1fr 1fr",
-      }}
-      w={"100%"}
-      gap={2}
-      h={"calc(100svh - 72px)"}
-      px={4}
-      pb={4}
-      overflowY={"auto"}
-    >
-      <GridItem area={area.models} overflow={{ base: "auto", md: "hidden" }}>
+    <GenerationEditorLayout
+      models={
         <GenerationEditorModels
           models={props.imageModels}
           selectedImageModelId={selectedImageModelId}
@@ -120,11 +86,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             onSelectedImageModelId(id)
           }}
         />
-      </GridItem>
-      <GridItem
-        area={area.loraModels}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
+      }
+      loraModels={
         <GenerationEditorLoraModels
           models={props.imageLoraModels}
           selectedModels={selectedLoraModels}
@@ -151,34 +114,28 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             setImageSeed(seed)
           }}
         />
-      </GridItem>
-      <GridItem
-        area={area.editorPrompt}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
+      }
+      promptEditor={
         <GenerationEditorPrompt
           promptCategories={props.promptCategories}
           selectedPrompts={[]}
           onSelectPromptId={() => {}}
         />
-      </GridItem>
-      <GridItem
-        area={area.editorNegativePrompt}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
-        <GenerationEditorNegative
+      }
+      negativePromptEditor={
+        <GenerationEditorNegativePrompt
           negativePrompt={selectedNegativePromptCategories ?? ""}
           setNegativePrompt={(prompt) => {
             setSelectNegativePromptCategories(prompt)
           }}
         />
-      </GridItem>
-      <GridItem area={area.histories} overflow={{ base: "auto", md: "hidden" }}>
+      }
+      histories={
         <GenerationEditorHistory
           selectHistory={selectHistory}
           selectedHistory={selectedHistory}
         />
-      </GridItem>
-    </Grid>
+      }
+    />
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Box,
   Button,
   Card,
   HStack,
@@ -10,6 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
+import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { ModelsModal } from "app/[lang]/(beta)/generation/_components/ModelsModal"
 import { SelectedModel } from "app/[lang]/(beta)/generation/_components/SelectedModel"
 
@@ -30,32 +32,26 @@ export const GenerationEditorModels: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Card p={4} h={"100%"} overflowX={"hidden"} overflowY={"auto"} flex={1}>
-        <Stack>
-          <HStack justifyContent={"space-between"}>
-            <HStack>
-              <Text fontWeight={"bold"}>{"モデル"}</Text>
-              <Tooltip
-                label="イラスト生成に使用するモデルです。絵柄などが変わります。"
-                fontSize="md"
-              >
-                <Button size={"xs"} borderRadius={"full"}>
-                  {"?"}
-                </Button>
-              </Tooltip>
+      <GenerationEditorCard
+        title={"モデル"}
+        tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
+        action={
+          <Button size={"xs"} borderRadius={"full"} onClick={onOpen}>
+            {"モデルを変更する"}
+          </Button>
+        }
+      >
+        <Box overflowY={"auto"}>
+          <Stack p={4}>
+            <HStack justifyContent={"space-between"}>
+              <SelectedModel
+                imageURL={selectedModel?.thumbnailImageURL ?? ""}
+                name={selectedModel?.displayName ?? ""}
+              />
             </HStack>
-            <Button size={"sm"} borderRadius={"full"} onClick={onOpen}>
-              {"モデルを変更する"}
-            </Button>
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <SelectedModel
-              imageURL={selectedModel?.thumbnailImageURL ?? ""}
-              name={selectedModel?.displayName ?? ""}
-            />
-          </HStack>
-        </Stack>
-      </Card>
+          </Stack>
+        </Box>
+      </GenerationEditorCard>
       <ModelsModal
         isOpen={isOpen}
         onClose={onClose}

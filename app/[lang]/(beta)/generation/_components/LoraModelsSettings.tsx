@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react"
 import { TbDice3, TbRefresh } from "react-icons/tb"
 
-export const LoraModelsSetting: React.FC = () => {
+export const LoraModelsSettings: React.FC = () => {
   return (
     <Stack spacing={4}>
       <Stack>

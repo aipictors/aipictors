@@ -11,8 +11,9 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
+import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { LoraModelsModal } from "app/[lang]/(beta)/generation/_components/LoraModelsModal"
-import { LoraModelsSetting } from "app/[lang]/(beta)/generation/_components/LoraModelsSetting"
+import { LoraModelsSettings } from "app/[lang]/(beta)/generation/_components/LoraModelsSettings"
 import { SelectedLoraModel } from "app/[lang]/(beta)/generation/_components/SelectedLoraModel"
 
 type Props = {
@@ -52,25 +53,10 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Card h={"100%"} overflowX={"hidden"} position={"relative"}>
-        <HStack
-          position={"sticky"}
-          top={0}
-          zIndex={8}
-          bg={"gray.700"}
-          p={4}
-          boxShadow={"md"}
-        >
-          <Text fontWeight={"bold"}>{"加工（LoRA）"}</Text>
-          <Tooltip
-            label="イラストの絵柄を調整することができます。"
-            fontSize="md"
-          >
-            <Button size={"xs"} borderRadius={"full"}>
-              {"?"}
-            </Button>
-          </Tooltip>
-        </HStack>
+      <GenerationEditorCard
+        title={"加工（LoRA）"}
+        tooltip={"イラストの絵柄を調整することができます。"}
+      >
         <Box overflowY={"auto"}>
           <Stack p={4} spacing={4}>
             {selectedModels.map((model) => (
@@ -94,10 +80,10 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             <Button borderRadius={"full"} onClick={onOpen}>
               {"LoRAを追加する"}
             </Button>
-            <LoraModelsSetting />
+            <LoraModelsSettings />
           </Stack>
         </Box>
-      </Card>
+      </GenerationEditorCard>
       <LoraModelsModal
         isOpen={isOpen}
         onClose={onClose}

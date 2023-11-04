@@ -1,8 +1,10 @@
 "use client"
 
 import {
+  Box,
   Button,
   Card,
+  Divider,
   HStack,
   Icon,
   IconButton,
@@ -12,8 +14,9 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
+import { GenerationDownloadModal } from "app/[lang]/(beta)/generation/_components/GenerationDownloadModal"
+import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { GenerationHistoryDeleteModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDeleteModal"
-import { GenerationHistoryDlModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDlModal"
 import { InPaintingImageModal } from "app/[lang]/(beta)/generation/_components/InPaintingImageModal"
 import { SelectedWorkModal } from "app/[lang]/(beta)/generation/_components/SelectedWorkModal"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
@@ -46,11 +49,9 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Card p={4} h={"100%"}>
-        <Text fontWeight={"bold"}>{"生成履歴"}</Text>
-        <Stack>
-          <HStack>
-            <Text fontWeight={"bold"}>{"全件/3日前"}</Text>
+      <GenerationEditorCard title={"生成履歴"}>
+        <Box overflowY={"auto"}>
+          <HStack p={4}>
             <IconButton
               aria-label={"削除"}
               borderRadius={"full"}
@@ -72,8 +73,9 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
               icon={<Icon as={TbStar} />}
             />
           </HStack>
-          <SimpleGrid spacing={2} columns={{ base: 3, md: 6 }}>
-            <Card>
+          <Divider />
+          <Stack p={4} spacing={4}>
+            <SimpleGrid spacing={2} columns={{ base: 1, md: 2 }}>
               <Button
                 p={0}
                 h={"auto"}
@@ -90,14 +92,70 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
                   alt=""
                   borderRadius={"md"}
                   w={"100%"}
-                  maxW={32}
                   draggable={false}
                 />
               </Button>
-            </Card>
-          </SimpleGrid>
-        </Stack>
-      </Card>
+              <Button
+                p={0}
+                h={"auto"}
+                overflow={"hidden"}
+                variant={"outline"}
+                borderWidth={2}
+                borderColor={"blue.500"}
+                onClick={() => {
+                  onOpen()
+                }}
+              >
+                <Image
+                  src="https://source.unsplash.com/random/800x600"
+                  alt=""
+                  borderRadius={"md"}
+                  w={"100%"}
+                  draggable={false}
+                />
+              </Button>
+              <Button
+                p={0}
+                h={"auto"}
+                overflow={"hidden"}
+                variant={"outline"}
+                borderWidth={2}
+                borderColor={"blue.500"}
+                onClick={() => {
+                  onOpen()
+                }}
+              >
+                <Image
+                  src="https://source.unsplash.com/random/800x600"
+                  alt=""
+                  borderRadius={"md"}
+                  w={"100%"}
+                  draggable={false}
+                />
+              </Button>
+              <Button
+                p={0}
+                h={"auto"}
+                overflow={"hidden"}
+                variant={"outline"}
+                borderWidth={2}
+                borderColor={"blue.500"}
+                onClick={() => {
+                  onOpen()
+                }}
+              >
+                <Image
+                  src="https://source.unsplash.com/random/800x600"
+                  alt=""
+                  borderRadius={"md"}
+                  w={"100%"}
+                  draggable={false}
+                />
+              </Button>
+            </SimpleGrid>
+          </Stack>
+        </Box>
+      </GenerationEditorCard>
       <SelectedWorkModal
         isOpen={isOpen}
         onClose={onClose}
@@ -115,7 +173,7 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
       />
-      <GenerationHistoryDlModal isOpen={isDlOpen} onClose={onDlClose} />
+      <GenerationDownloadModal isOpen={isDlOpen} onClose={onDlClose} />
     </>
   )
 }
