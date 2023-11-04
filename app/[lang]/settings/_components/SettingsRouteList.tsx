@@ -1,19 +1,15 @@
 "use client"
+
 import { Stack } from "@chakra-ui/react"
 import { HomeNavigationButton } from "app/[lang]/(main)/_components/HomeNavigationButton"
 import { Config } from "config"
 import React from "react"
 import {
   TbBell,
-  TbDownload,
-  TbLock,
   TbMedal2,
-  TbMoodSmile,
   TbPhoto,
-  TbRubberStamp,
   TbSettings,
   TbTagsOff,
-  TbUser,
   TbUserOff,
 } from "react-icons/tb"
 

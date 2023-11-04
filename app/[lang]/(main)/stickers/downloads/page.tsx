@@ -1,6 +1,10 @@
 import { DownloadStickerList } from "app/[lang]/(main)/stickers/downloads/_components/DownloadStickerList"
 import type { Metadata } from "next"
 
+/**
+ * ダウンロードしたスタンプの一覧
+ * @returns
+ */
 const StickersDownloadsPage = async () => {
   return <DownloadStickerList />
 }

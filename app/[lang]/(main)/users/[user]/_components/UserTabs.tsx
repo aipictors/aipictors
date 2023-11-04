@@ -1,4 +1,5 @@
 "use client"
+
 import { Flex, Tab, TabIndicator, TabList, Tabs } from "@chakra-ui/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"

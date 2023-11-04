@@ -1,7 +1,11 @@
 import { CollectionList } from "app/[lang]/(main)/collections/_components/CollectionList"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/pages/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * コレクションの一覧
+ * @returns
+ */
 const CollectionsPage = async () => {
   return (
     <MainPage>

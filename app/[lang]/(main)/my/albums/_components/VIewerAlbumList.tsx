@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack } from "@chakra-ui/react"
 import { ViewerAlbum } from "app/[lang]/(main)/my/albums/_components/ViewerAlbum"
 

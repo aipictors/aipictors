@@ -1,5 +1,6 @@
 "use client"
-import { HStack, Stack, Text } from "@chakra-ui/react"
+
+import { HStack, Stack } from "@chakra-ui/react"
 import { SensitiveAlbumArticleHeader } from "app/[lang]/sensitive/albums/[album]/components/SensitiveAlbumArticleHeader"
 import { SensitiveAlbumWorkDescription } from "app/[lang]/sensitive/albums/[album]/components/SensitiveAlbumWorkDescription"
 import { SensitiveAlbumWorkList } from "app/[lang]/sensitive/albums/[album]/components/SensitiveAlbumWorkList"

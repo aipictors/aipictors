@@ -1,15 +1,6 @@
 "use client"
 
-import {
-  Box,
-  Button,
-  Card,
-  HStack,
-  Stack,
-  Text,
-  Tooltip,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { LoraModelsModal } from "app/[lang]/(beta)/generation/_components/LoraModelsModal"

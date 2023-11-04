@@ -2,8 +2,8 @@ import type { HotTagsQuery, WorksQuery } from "__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/[lang]/(main)/_components/HomeTagList"
 import { HomeWorkList } from "app/[lang]/(main)/_components/HomeWorkList"
-import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/_utils/client"
+import { MainPage } from "app/_components/pages/MainPage"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 const Works3dPage = async () => {

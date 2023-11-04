@@ -1,4 +1,5 @@
 "use client"
+
 import { useSuspenseQuery } from "@apollo/client"
 import {
   Avatar,

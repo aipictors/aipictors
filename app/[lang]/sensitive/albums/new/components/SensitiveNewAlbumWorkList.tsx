@@ -1,7 +1,8 @@
 "use client"
+
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
-import { SelectableWorkCard } from "app/[lang]/(main)/albums/new/_components/SelectableWorkCard"
+
 import { SensitiveSelectableWorkCard } from "app/[lang]/sensitive/albums/new/components/SensitiveSelectableWorkCard"
 
 export const SensitiveNewAlbumWorkList: React.FC = () => {

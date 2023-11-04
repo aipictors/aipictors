@@ -1,4 +1,5 @@
 "use client"
+
 import { Card, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import React from "react"
 import { TbDownload, TbRubberStamp } from "react-icons/tb"

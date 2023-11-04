@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
 import type { UserWorksQuery } from "__generated__/apollo"
 import { WorkCard } from "app/[lang]/(main)/works/_components/WorkCard"

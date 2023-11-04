@@ -1,4 +1,5 @@
 "use client"
+
 import { useColorMode } from "@chakra-ui/react"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"

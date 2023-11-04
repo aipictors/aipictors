@@ -1,11 +1,6 @@
 "use client"
-import {
-  Box,
-  Drawer,
-  DrawerContent,
-  DrawerOverlay,
-  useBreakpoint,
-} from "@chakra-ui/react"
+
+import { useBreakpoint } from "@chakra-ui/react"
 import { NavigationDrawer } from "app/_components/NavigationDrawer"
 import { StaticNavigation } from "app/_components/StaticNavigation"
 

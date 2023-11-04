@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack } from "@chakra-ui/react"
 import { SensitiveCollectionHeader } from "./SensitiveCollectionHeader"
 

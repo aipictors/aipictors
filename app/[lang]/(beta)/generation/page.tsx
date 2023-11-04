@@ -12,7 +12,7 @@ import {
   PromptCategoriesDocument,
 } from "__generated__/apollo"
 import { GenerationEditor } from "app/[lang]/(beta)/generation/_components/GenerationEditor"
-import { createClient } from "app/_utils/client"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 const GenerationPage = async () => {

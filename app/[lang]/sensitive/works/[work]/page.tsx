@@ -8,8 +8,8 @@ import { WorkCommentsDocument, WorkDocument } from "__generated__/apollo"
 import { WorkArticle } from "app/[lang]/(main)/works/[work]/_components/WorkArticle"
 import { WorkCommentList } from "app/[lang]/(main)/works/[work]/_components/WorkCommentList"
 import { WorkRelatedWorkList } from "app/[lang]/(main)/works/[work]/_components/WorkRelatedWorkList"
-import { ArticlePage } from "app/_components/ArticlePage"
-import { createClient } from "app/_utils/client"
+import { ArticlePage } from "app/_components/pages/ArticlePage"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

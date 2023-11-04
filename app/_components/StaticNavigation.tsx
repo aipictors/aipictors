@@ -1,11 +1,6 @@
 "use client"
-import {
-  Box,
-  Drawer,
-  DrawerContent,
-  DrawerOverlay,
-  useBreakpoint,
-} from "@chakra-ui/react"
+
+import { Box } from "@chakra-ui/react"
 
 type Props = {
   children: React.ReactNode

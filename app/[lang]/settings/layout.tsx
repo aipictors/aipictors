@@ -1,11 +1,12 @@
 "use client"
-import { Divider, HStack, useDisclosure } from "@chakra-ui/react"
+
+import { HStack, useDisclosure } from "@chakra-ui/react"
 import { BetaHeader } from "app/[lang]/(beta)/_components/BetaHeader"
 import { BetaNavigationList } from "app/[lang]/(beta)/_components/BetaNavigationList"
 import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
 import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
 import { SettingsRouteList } from "app/[lang]/settings/_components/SettingsRouteList"
-import { HomeFooter } from "app/_components/HomeFooter"
+
 import { NavigationDrawer } from "app/_components/NavigationDrawer"
 import { StaticNavigation } from "app/_components/StaticNavigation"
 import { AppContext } from "app/_contexts/appContext"

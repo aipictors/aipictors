@@ -1,5 +1,5 @@
 import { AccountLoginForm } from "app/[lang]/account/login/_components/AccountLoginForm"
-import { MainCenterPage } from "app/_components/MainCenterPage"
+import { MainCenterPage } from "app/_components/pages/MainCenterPage"
 import type { Metadata } from "next"
 
 const AccountLoginPage = async () => {

@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 import { TbMoodCry } from "react-icons/tb"

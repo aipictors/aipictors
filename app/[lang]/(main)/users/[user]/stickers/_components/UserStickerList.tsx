@@ -1,4 +1,5 @@
 "use client"
+
 import { SimpleGrid } from "@chakra-ui/react"
 import type { UserStickersQuery } from "__generated__/apollo"
 import { StickerCard } from "app/[lang]/(main)/stickers/_components/StickerCard"

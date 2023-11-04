@@ -1,16 +1,6 @@
 "use client"
 
-import {
-  Box,
-  Button,
-  Card,
-  HStack,
-  Stack,
-  Text,
-  Textarea,
-  Tooltip,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Box, Button, Textarea, useDisclosure } from "@chakra-ui/react"
 import type { PromptCategoriesQuery } from "__generated__/apollo"
 import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"

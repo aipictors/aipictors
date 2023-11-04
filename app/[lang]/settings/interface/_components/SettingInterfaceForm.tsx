@@ -1,12 +1,6 @@
 "use client"
-import {
-  FormControl,
-  FormLabel,
-  HStack,
-  Stack,
-  Switch,
-  Text,
-} from "@chakra-ui/react"
+
+import { FormControl, FormLabel, Stack, Switch, Text } from "@chakra-ui/react"
 
 export const SettingInterfaceForm: React.FC = () => {
   return (

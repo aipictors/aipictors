@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import { TbShare2 } from "react-icons/tb"
 

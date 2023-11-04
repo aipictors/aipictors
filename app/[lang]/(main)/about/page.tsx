@@ -1,7 +1,11 @@
 import { AboutDocument } from "app/[lang]/(main)/about/_components/AboutDocument"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/pages/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * サイトについて
+ * @returns
+ */
 const AboutPage = async () => {
   return (
     <MainPage>

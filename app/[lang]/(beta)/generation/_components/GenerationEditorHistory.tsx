@@ -3,15 +3,12 @@
 import {
   Box,
   Button,
-  Card,
   Divider,
   HStack,
   Icon,
   IconButton,
-  Image,
   SimpleGrid,
   Stack,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react"
 import { GenerationDownloadModal } from "app/[lang]/(beta)/generation/_components/GenerationDownloadModal"

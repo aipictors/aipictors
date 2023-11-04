@@ -1,4 +1,5 @@
 "use client"
+
 import { Box } from "@chakra-ui/react"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"

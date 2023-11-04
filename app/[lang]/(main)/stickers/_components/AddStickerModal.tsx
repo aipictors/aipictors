@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/alt-text */
 "use client"
+
 import {
   Button,
   Checkbox,

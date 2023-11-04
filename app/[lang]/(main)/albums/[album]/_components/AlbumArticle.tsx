@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Stack } from "@chakra-ui/react"
 import { AlbumArticleHeader } from "app/[lang]/(main)/albums/[album]/_components/AlbumArticleHeader"
 import { AlbumWorkDescription } from "app/[lang]/(main)/albums/[album]/_components/AlbumWorkDescription"

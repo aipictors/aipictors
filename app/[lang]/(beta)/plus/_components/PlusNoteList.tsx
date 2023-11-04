@@ -1,4 +1,5 @@
 "use client"
+
 import { Link, ListItem, OrderedList } from "@chakra-ui/react"
 
 export const PlusNoteList: React.FC = () => {

@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
 import { HomeNavigationButton } from "app/[lang]/(main)/_components/HomeNavigationButton"
 import {

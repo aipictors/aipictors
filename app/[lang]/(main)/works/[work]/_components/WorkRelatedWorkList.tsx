@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Text } from "@chakra-ui/react"
 
 export const WorkRelatedWorkList: React.FC = () => {

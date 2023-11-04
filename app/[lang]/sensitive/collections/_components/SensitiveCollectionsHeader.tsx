@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
 
 export const SensitiveCollectionsHeader: React.FC = () => {

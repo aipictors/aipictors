@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 

@@ -1,4 +1,5 @@
 "use client"
+
 import {
   Box,
   Button,
@@ -53,6 +54,7 @@ const NewImageForm = () => {
       "image/bmp": [".bmp"],
     },
     onDrop: (acceptedFiles) => {
+      // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach((file) => {
         const reader = new FileReader()
         reader.onload = (event) => {
@@ -75,10 +77,12 @@ const NewImageForm = () => {
       ) as HTMLInputElement
       if (inputElement) {
         const fileList: File[] = []
+        // biome-ignore lint/complexity/noForEach: <explanation>
         acceptedFiles.forEach((file) => {
           fileList.push(file)
         })
         const newFileList = new DataTransfer()
+        // biome-ignore lint/complexity/noForEach: <explanation>
         fileList.forEach((file) => {
           newFileList.items.add(file)
         })
@@ -98,7 +102,9 @@ const NewImageForm = () => {
       setIsHovered(false)
 
       console.log("onDropRejected")
+      // biome-ignore lint/complexity/noForEach: <explanation>
       fileRejections.forEach((file) => {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         file.errors.forEach((err) => {
           if (err.code === "file-too-large") {
             console.warn(err)

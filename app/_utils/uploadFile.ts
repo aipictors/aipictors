@@ -1,5 +1,8 @@
-export async function uploadFile(file: File): Promise<string> {
+import { captureException } from "@sentry/nextjs"
+
+export const uploadFile = async (file: File): Promise<string> => {
   const formData = new FormData()
+
   formData.append("file", file)
 
   try {
@@ -12,12 +15,12 @@ export async function uploadFile(file: File): Promise<string> {
 
     if (response.ok) {
       const responseData = await response.json()
-      const url = responseData.url
-      return url
+      return responseData.url
     } else {
       throw new Error()
     }
   } catch (error) {
+    captureException(error)
     throw new Error()
   }
 }

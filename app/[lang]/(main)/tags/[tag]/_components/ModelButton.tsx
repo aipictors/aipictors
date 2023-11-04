@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, Skeleton } from "@chakra-ui/react"
 
 export const ModelButton: React.FC = () => {

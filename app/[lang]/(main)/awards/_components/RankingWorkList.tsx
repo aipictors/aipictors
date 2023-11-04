@@ -1,4 +1,5 @@
 "use client"
+
 import { SimpleGrid } from "@chakra-ui/react"
 import type { WorkAwardsQuery } from "__generated__/apollo"
 import { RankingCard } from "app/[lang]/(main)/awards/_components/RankingCard"

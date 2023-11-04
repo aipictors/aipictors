@@ -1,5 +1,5 @@
 import { TermsArticle } from "app/[lang]/(main)/terms/_components/TermsArticle"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/pages/MainPage"
 import type { Metadata } from "next"
 
 const TermsPage = async () => {

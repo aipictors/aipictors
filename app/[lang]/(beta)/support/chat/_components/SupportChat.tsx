@@ -1,4 +1,5 @@
 "use client"
+
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { Stack, useInterval, useToast } from "@chakra-ui/react"
 import type {

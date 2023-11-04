@@ -1,7 +1,7 @@
 "use client"
 
 import { useSuspenseQuery } from "@apollo/client"
-import { Card, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
+import { Card, Stack, Text } from "@chakra-ui/react"
 import {
   MilestonesDocument,
   MilestonesQuery,

@@ -1,11 +1,10 @@
 "use client"
+
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoriesQuery,
 } from "__generated__/apollo"
-import { useState } from "react"
-
 import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
 import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/GenerationEditorLayout"
 import { GenerationEditorLoraModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorLoraModels"
@@ -13,6 +12,7 @@ import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components
 import { GenerationEditorNegativePrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegativePrompt"
 import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorPrompt"
 import { Config } from "config"
+import { useState } from "react"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]

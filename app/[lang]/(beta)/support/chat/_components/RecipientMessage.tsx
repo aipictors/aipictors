@@ -1,4 +1,5 @@
 "use client"
+
 import { Avatar, Card, HStack, Stack, Text } from "@chakra-ui/react"
 import { toElapsedTimeText } from "app/_utils/toElapsedTimeText"
 

@@ -1,4 +1,5 @@
 "use client"
+
 import { Spinner, Stack } from "@chakra-ui/react"
 
 const Loading: React.FC = () => {

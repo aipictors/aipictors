@@ -1,4 +1,5 @@
 "use client"
+
 import {
   Avatar,
   Icon,
@@ -14,7 +15,7 @@ import {
 import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
 import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
 import { AppContext } from "app/_contexts/appContext"
-import { Config } from "config"
+
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -24,11 +25,8 @@ import {
   TbSettings,
   TbSparkles,
   TbSunFilled,
-  TbUser,
   TbUserCircle,
   TbUserCog,
-  TbUserDown,
-  TbUserUp,
 } from "react-icons/tb"
 
 export const BetaUserNavigationButton: React.FC = () => {

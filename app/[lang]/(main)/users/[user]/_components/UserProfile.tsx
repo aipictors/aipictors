@@ -1,4 +1,5 @@
 "use client"
+
 import {
   Avatar,
   HStack,
@@ -10,12 +11,12 @@ import {
 import type { UserQuery } from "__generated__/apollo"
 import { UserMuteMenu } from "app/[lang]/(main)/users/[user]/_components/UserMuteMenu"
 import { UserPickUp } from "app/[lang]/(main)/users/[user]/_components/UserPickUp"
-import { FollowButton } from "app/_components/FollowButton"
-import { LinkEmailButton } from "app/_components/LinkEmailButton"
-import { LinkWebButton } from "app/_components/LinkWebButton"
-import { ShareButton } from "app/_components/ShareButton"
-import { SocialInstagramButton } from "app/_components/SocialInstagramButton"
-import { SocialTwitterButton } from "app/_components/SocialTwitterButton"
+import { FollowButton } from "app/_components/buttons/FollowButton"
+import { LinkEmailButton } from "app/_components/buttons/LinkEmailButton"
+import { LinkWebButton } from "app/_components/buttons/LinkWebButton"
+import { ShareButton } from "app/_components/buttons/ShareButton"
+import { SocialInstagramButton } from "app/_components/buttons/SocialInstagramButton"
+import { SocialTwitterButton } from "app/_components/buttons/SocialTwitterButton"
 import React from "react"
 import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
 

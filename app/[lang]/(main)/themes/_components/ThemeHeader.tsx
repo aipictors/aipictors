@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Stack, Text } from "@chakra-ui/react"
 import { ThemeCard } from "app/[lang]/(main)/themes/_components/ThemeCard"
 

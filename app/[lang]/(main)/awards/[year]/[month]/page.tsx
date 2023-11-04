@@ -1,5 +1,5 @@
 import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/pages/MainPage"
 import type { Metadata } from "next"
 
 type Props = {
@@ -9,7 +9,12 @@ type Props = {
   }
 }
 
-const AwardsPage = async (props: Props) => {
+/**
+ * ある月のランキングの履歴
+ * @param props
+ * @returns
+ */
+const MonthAwardsPage = async (props: Props) => {
   const year = parseInt(props.params.year)
 
   const month = parseInt(props.params.month)
@@ -28,4 +33,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default AwardsPage
+export default MonthAwardsPage

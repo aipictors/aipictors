@@ -1,5 +1,6 @@
 "use client"
-import { Box, Stack, Text, useBreakpoint } from "@chakra-ui/react"
+
+import { Stack, useBreakpoint } from "@chakra-ui/react"
 import { SettingsRouteList } from "app/[lang]/settings/_components/SettingsRouteList"
 import React from "react"
 

@@ -1,5 +1,5 @@
 import { AccountNavigation } from "app/[lang]/account/_components/AccountNavigation"
-import { MainCenterPage } from "app/_components/MainCenterPage"
+import { MainCenterPage } from "app/_components/pages/MainCenterPage"
 import type { Metadata } from "next"
 
 /**

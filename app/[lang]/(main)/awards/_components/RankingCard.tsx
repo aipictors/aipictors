@@ -1,4 +1,5 @@
 "use client"
+
 import { Card, Image, Stack, Text } from "@chakra-ui/react"
 import React from "react"
 
