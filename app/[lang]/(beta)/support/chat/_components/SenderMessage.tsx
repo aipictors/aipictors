@@ -6,6 +6,7 @@ import { toElapsedTimeText } from "app/_utils/toElapsedTimeText"
 type Props = {
   text: string
   createdAt: number
+  isRead: boolean
 }
 
 export const SenderMessage: React.FC<Props> = (props) => {
@@ -26,6 +27,9 @@ export const SenderMessage: React.FC<Props> = (props) => {
         >
           <Text whiteSpace={"pre-wrap"}>{props.text}</Text>
         </Card>
+        <HStack justifyContent={"flex-end"}>
+          <Text fontSize={"2xs"}> {props.isRead ? "既読" : ""}</Text>
+        </HStack>
         <HStack justifyContent={"flex-end"}>
           <Text fontSize={"2xs"}> {toElapsedTimeText(props.createdAt)}</Text>
         </HStack>

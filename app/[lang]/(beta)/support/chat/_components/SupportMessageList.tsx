@@ -52,6 +52,7 @@ export const SupportMessageList: React.FC<Props> = (props) => {
             <SenderMessage
               key={message.id}
               createdAt={message.createdAt}
+              isRead={message.isRead}
               text={message.text ?? "-"}
             />
           ) : (
