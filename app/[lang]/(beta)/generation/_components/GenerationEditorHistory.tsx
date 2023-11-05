@@ -74,12 +74,30 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
           <Divider />
           <Stack p={4} spacing={4}>
             <SimpleGrid spacing={2} columns={{ base: 1, md: 2 }}>
-              <GenerationHistoryCard onClick={() => {}} />
-              <GenerationHistoryCard onClick={() => {}} />
-              <GenerationHistoryCard onClick={() => {}} />
-              <GenerationHistoryCard onClick={() => {}} />
-              <GenerationHistoryCard onClick={() => {}} />
-              <GenerationHistoryCard onClick={() => {}} />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
+              <GenerationHistoryCard
+                imageURL={"https://source.unsplash.com/random/800x600"}
+                onClick={() => {}}
+              />
             </SimpleGrid>
           </Stack>
         </Box>
