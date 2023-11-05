@@ -1,4 +1,5 @@
 import { GenerationHistoryList } from "app/[lang]/(beta)/generation/history/_components/GenerationHistoryList"
+
 import type { Metadata } from "next"
 
 /**
@@ -6,8 +7,6 @@ import type { Metadata } from "next"
  * @returns
  */
 const GenerationHistoriesPage = async () => {
-  // TODO: 履歴の取得
-
   return <GenerationHistoryList />
 }
 

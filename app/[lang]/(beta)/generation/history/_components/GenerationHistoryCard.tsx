@@ -4,6 +4,7 @@ import { Button, Card, Image } from "@chakra-ui/react"
 import React from "react"
 
 type Props = {
+  imageURL: string
   onClick(): void
 }
 
@@ -24,6 +25,7 @@ export const GenerationHistoryCard: React.FC<Props> = (props) => {
         onClick={props.onClick}
       >
         <Image
+          // src={props.imageURL}
           src="https://source.unsplash.com/random/800x600"
           alt=""
           borderRadius={"md"}
