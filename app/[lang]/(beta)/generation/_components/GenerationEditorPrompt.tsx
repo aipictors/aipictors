@@ -6,9 +6,11 @@ import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/G
 import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"
 
 type Props = {
+  promptText: string
   promptCategories: PromptCategoriesQuery["promptCategories"]
   selectedPrompts: { id: string }[]
   onSelectPromptId(id: string): void
+  onChangePromptText(text: string): void
 }
 
 export const GenerationEditorPrompt: React.FC<Props> = (props) => {
@@ -31,8 +33,10 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
             p={2}
             placeholder={"プロンプト"}
             borderRadius={0}
-            value={""}
-            onChange={() => {}}
+            value={props.promptText}
+            onChange={(event) => {
+              props.onChangePromptText(event.target.value)
+            }}
             border={"none"}
             resize={"none"}
             borderBottomRightRadius={"md"}

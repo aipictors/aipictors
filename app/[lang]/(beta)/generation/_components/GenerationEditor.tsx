@@ -1,9 +1,14 @@
 "use client"
 
-import type {
+import { useMutation } from "@apollo/client"
+import { Button, Stack, useToast } from "@chakra-ui/react"
+import {
+  CreateImageGenerationTaskDocument,
+  CreateImageGenerationTaskMutationResult,
+  CreateImageGenerationTaskMutationVariables,
   ImageLoraModelsQuery,
-  ImageModelsQuery,
-  PromptCategoriesQuery,
+  type ImageModelsQuery,
+  type PromptCategoriesQuery,
 } from "__generated__/apollo"
 import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
 import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/GenerationEditorLayout"
@@ -21,6 +26,13 @@ type Props = {
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
+  const [createTask, { loading: isLoading }] = useMutation<
+    CreateImageGenerationTaskMutationResult,
+    CreateImageGenerationTaskMutationVariables
+  >(CreateImageGenerationTaskDocument)
+
+  const toast = useToast()
+
   /**
    * 選択された画像モデルのID
    */
@@ -37,14 +49,15 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     })
   })
 
+  const [promptText, setPromptText] = useState("")
+
+  const [negativePromptText, setNegativePromptText] = useState("")
+
   const [imageSize, setImageSize] = useState<number>()
 
   const [imageVae, setImageVae] = useState<number>()
 
   const [imageSeed, setImageSeed] = useState<number>()
-
-  const [selectedNegativePromptCategories, setSelectNegativePromptCategories] =
-    useState<string>()
 
   const [selectedHistory, selectHistory] = useState("")
 
@@ -74,6 +87,37 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       return { id, value: 0 }
     })
     selectLoraModels(draftModels)
+  }
+
+  /**
+   * タスクを作成する
+   */
+  const onCreateTask = async () => {
+    try {
+      await createTask({
+        variables: {
+          input: {
+            count: 1,
+            model: "petitcutie_v20.safetensors [6a1f2c62a7]",
+            vae: "clearvae_v23.safetensors",
+            prompt:
+              "masterpiece, best quality, masterpiece, best quality, standing",
+            negativePrompt: "EasyNegative, nsfw, nude, ",
+            seed: 868050328,
+            steps: 20,
+            scale: 7,
+            sampler: "DPM++ 2M Karras",
+            sizeType: "SD1_512_768",
+            type: "TEXT_TO_IMAGE",
+          },
+        },
+      })
+      toast({ status: "success", description: "タスクを作成しました" })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({ status: "error", description: error.message })
+      }
+    }
   }
 
   return (
@@ -117,24 +161,33 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       }
       promptEditor={
         <GenerationEditorPrompt
+          promptText={promptText}
           promptCategories={props.promptCategories}
           selectedPrompts={[]}
           onSelectPromptId={() => {}}
+          onChangePromptText={setPromptText}
         />
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          negativePrompt={selectedNegativePromptCategories ?? ""}
-          setNegativePrompt={(prompt) => {
-            setSelectNegativePromptCategories(prompt)
-          }}
+          promptText={negativePromptText}
+          onChangePromptText={setNegativePromptText}
         />
       }
       histories={
-        <GenerationEditorHistory
-          selectHistory={selectHistory}
-          selectedHistory={selectedHistory}
-        />
+        <Stack height={"100%"}>
+          <Button
+            colorScheme={"primary"}
+            isLoading={isLoading}
+            onClick={onCreateTask}
+          >
+            {"生成する"}
+          </Button>
+          <GenerationEditorHistory
+            selectHistory={selectHistory}
+            selectedHistory={selectedHistory}
+          />
+        </Stack>
       }
     />
   )
