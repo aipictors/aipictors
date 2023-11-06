@@ -1,4 +1,4 @@
-import { Button, Card, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Image, Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   onSelect(): void
@@ -9,7 +9,7 @@ type Props = {
 
 export const ImageModelCard: React.FC<Props> = (props) => {
   return (
-    <Card>
+    <Box>
       <Stack>
         <Button
           p={0}
@@ -24,8 +24,8 @@ export const ImageModelCard: React.FC<Props> = (props) => {
         >
           <Image src={props.imageURL ?? ""} alt={props.name} />
         </Button>
-        <Text>{props.name}</Text>
+        <Text fontSize={"sm"}>{props.name}</Text>
       </Stack>
-    </Card>
+    </Box>
   )
 }

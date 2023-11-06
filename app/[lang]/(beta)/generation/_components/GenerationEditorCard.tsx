@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Card, HStack, Text, Tooltip } from "@chakra-ui/react"
+import { Button, Card, Divider, HStack, Text, Tooltip } from "@chakra-ui/react"
 
 type Props = {
   title: string
@@ -12,6 +12,7 @@ type Props = {
 export const GenerationEditorCard: React.FC<Props> = (props) => {
   return (
     <Card
+      variant={"filled"}
       h={"100%"}
       overflowX={"hidden"}
       overflowY={"auto"}
@@ -21,9 +22,8 @@ export const GenerationEditorCard: React.FC<Props> = (props) => {
         position={"sticky"}
         top={0}
         zIndex={8}
-        bg={"gray.700"}
+        bg={"rgba(255,255,255,0.1)"}
         p={4}
-        boxShadow={"md"}
         justifyContent={"space-between"}
       >
         <HStack>
@@ -38,6 +38,7 @@ export const GenerationEditorCard: React.FC<Props> = (props) => {
         </HStack>
         {props.action}
       </HStack>
+      <Divider />
       {props.children}
     </Card>
   )
