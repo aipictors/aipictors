@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { FollowButton } from "app/_components/buttons/FollowButton"
+import { FollowButton } from "app/_components/button/FollowButton"
 import { TbFlag } from "react-icons/tb"
 
 export const SensitiveCollectionHeader: React.FC = () => {

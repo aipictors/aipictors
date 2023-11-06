@@ -1,5 +1,5 @@
 import { SettingsNavigation } from "app/[lang]/settings/_components/SettingsNavigation"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 /**

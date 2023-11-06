@@ -4,7 +4,7 @@ import { RelatedModelList } from "app/[lang]/(main)/tags/[tag]/_components/Relat
 import { RelatedTagList } from "app/[lang]/(main)/tags/[tag]/_components/RelatedTagList"
 import { TagHeader } from "app/[lang]/(main)/tags/[tag]/_components/TagHeader"
 import { WorkList } from "app/[lang]/(main)/works/_components/WorkList"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 

@@ -1,5 +1,5 @@
 import { PlusForm } from "app/[lang]/(beta)/plus/_components/PlusForm"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 /**

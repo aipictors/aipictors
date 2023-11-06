@@ -1,7 +1,7 @@
 "use client"
 
 import { Avatar, Card, CardBody, HStack, Stack, Text } from "@chakra-ui/react"
-import { FollowButton } from "app/_components/buttons/FollowButton"
+import { FollowButton } from "app/_components/button/FollowButton"
 
 export const SensitiveAlbumWorkDescription: React.FC = () => {
   return (

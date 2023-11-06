@@ -1,5 +1,5 @@
 import { ViewerAlbumHeader } from "app/[lang]/(main)/my/albums/_components/ViewerAlbumHeader"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 const MyAlbumsPage = async () => {

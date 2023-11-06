@@ -3,7 +3,7 @@
 import { Divider, HStack, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { LoginForm } from "app/_components/LoginForm"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { FormLogin } from "app/_types/formLogin"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 

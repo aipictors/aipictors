@@ -1,6 +1,6 @@
 import { SensitiveAlbumArticle } from "app/[lang]/sensitive/albums/[album]/components/SensitiveAlbumArticle"
 
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 const SensitiveAlbumPage = async () => {

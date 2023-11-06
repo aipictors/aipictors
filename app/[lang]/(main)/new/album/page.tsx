@@ -1,5 +1,5 @@
 import { NewAlbumForm } from "app/[lang]/(main)/new/album/_components/NewAlbumForm"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 /**

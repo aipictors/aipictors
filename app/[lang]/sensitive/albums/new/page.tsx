@@ -1,5 +1,5 @@
 import { SensitiveNewAlbumForm } from "app/[lang]/sensitive/albums/new/components/SensitiveNewAlbumForm"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 const SensitiveNewAlbumPage = async () => {

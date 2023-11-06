@@ -5,7 +5,7 @@ import type {
 import { WorkAwardsDocument } from "__generated__/apollo"
 import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
 import { RankingWorkList } from "app/[lang]/(main)/awards/_components/RankingWorkList"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 

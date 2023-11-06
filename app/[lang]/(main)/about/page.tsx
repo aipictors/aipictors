@@ -1,5 +1,5 @@
 import { AboutDocument } from "app/[lang]/(main)/about/_components/AboutDocument"
-import { MainPage } from "app/_components/pages/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 /**

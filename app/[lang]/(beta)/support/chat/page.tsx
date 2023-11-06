@@ -1,5 +1,5 @@
 import { SupportChat } from "app/[lang]/(beta)/support/chat/_components/SupportChat"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 const MessagePage = async () => {

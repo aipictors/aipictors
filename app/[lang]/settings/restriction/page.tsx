@@ -1,5 +1,5 @@
 import { SettingRestrictionForm } from "app/[lang]/settings/restriction/_components/AccountRestrictionForm"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 const SettingRestrictionPage = async () => {

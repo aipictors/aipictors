@@ -1,5 +1,5 @@
 import { MutedTagList } from "app/[lang]/settings/muted/tags/_components/MutedTagList"
-import { MainCenterPage } from "app/_components/pages/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 const SettingMutedTagsPage = async () => {
