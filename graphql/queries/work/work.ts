@@ -6,27 +6,18 @@ export const WORK = gql`
       id
       title
       description
-      image {
-        id
-        downloadURL
-      }
+      imageURL
       user {
         promptonUser {
           id
         }
         ...UserFields
-        viewer {
-          id
-          isFollower
-          isFollowee
-          isMuted
-        }
+        isFollower
+        isFollowee
+        isMuted
         works(offset: 0, limit: 16) {
           id
-          thumbnailImage {
-            id
-            downloadURL
-          }
+          largeThumbnailImageURL
         }
       }
       dailyTheme {
@@ -40,11 +31,8 @@ export const WORK = gql`
       subWorks {
         ...SubWorkFields
       }
-      viewer {
-        id
-        isLiked
-        isBookmarked
-      }
+      isLiked
+      isInCollection
     }
   }
 `

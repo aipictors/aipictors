@@ -10,11 +10,9 @@ export const FOLDER = gql`
       description
       user {
         ...WorkUserFields
-        viewer {
-          isFollowee
-          isFollowee
-          isMuted
-        }
+        isFollowee
+        isFollowee
+        isMuted
       }
       createdAt
       rating

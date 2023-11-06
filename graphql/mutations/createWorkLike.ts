@@ -5,10 +5,7 @@ export const CREATE_WORK_LIKE = gql`
     createWorkLike(input: $input) {
       id
       likesCount
-      viewer {
-        id
-        isLiked
-      }
+      isLiked
     }
   }
 `

@@ -7,18 +7,12 @@ export const VIEWER_FEED_WORKS = gql`
         ...PartialFeedWorkFields
         user {
           ...PartialUserFields
-          viewer {
-            id
-            isFollower
-            isFollowee
-            isMuted
-          }
+          isFollower
+          isFollowee
+          isMuted
         }
-        viewer {
-          id
-          isLiked
-          isBookmarked
-        }
+        isLiked
+        isInCollection
       }
     }
   }

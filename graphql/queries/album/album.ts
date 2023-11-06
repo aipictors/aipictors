@@ -8,11 +8,9 @@ export const ALBUM = gql`
       description
       user {
         ...WorkUserFields
-        viewer {
-          isFollowee
-          isFollowee
-          isMuted
-        }
+        isFollowee
+        isFollowee
+        isMuted
       }
       createdAt
       isSensitive

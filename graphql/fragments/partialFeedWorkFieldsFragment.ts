@@ -8,9 +8,6 @@ export const PARTIAL_FEED_WORK_FIELDS = gql`
     commentsCount
     createdAt
     imageAspectRatio
-    image {
-      id
-      downloadURL
-    }
+    imageURL
   }
 `

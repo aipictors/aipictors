@@ -7,9 +7,6 @@ export const PARTIAL_WORK_FIELDS = gql`
     likesCount
     commentsCount
     createdAt
-    thumbnailImage {
-      id
-      downloadURL
-    }
+    largeThumbnailImageURL
   }
 `

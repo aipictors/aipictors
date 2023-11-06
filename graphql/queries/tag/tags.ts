@@ -4,11 +4,9 @@ export const TAGS = gql`
   query Tags($offset: Int!, $limit: Int!, $where: TagsWhereInput) {
     tags(offset: $offset, limit: $limit, where: $where) {
       ...PartialTagFields
-      viewer {
-        isLiked
-        isWatched
-        isMuted
-      }
+      isLiked
+      isWatched
+      isMuted
     }
   }
 `
