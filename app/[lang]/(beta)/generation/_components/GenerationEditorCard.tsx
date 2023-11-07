@@ -1,6 +1,15 @@
 "use client"
 
-import { Button, Card, Divider, HStack, Text, Tooltip } from "@chakra-ui/react"
+import {
+  Card,
+  Divider,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react"
+import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   title: string
@@ -30,9 +39,11 @@ export const GenerationEditorCard: React.FC<Props> = (props) => {
           <Text fontWeight={"bold"}>{props.title}</Text>
           {props.tooltip && (
             <Tooltip label={props.tooltip} fontSize="md">
-              <Button size={"xs"} borderRadius={"full"}>
-                {"?"}
-              </Button>
+              <IconButton
+                aria-label={"メニュー"}
+                borderRadius={"full"}
+                icon={<Icon as={TbQuestionMark} />}
+              />
             </Tooltip>
           )}
         </HStack>
