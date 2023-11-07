@@ -1,10 +1,10 @@
 "use client"
 
 import {
-  Icon,
-  IconButton,
+  HStack,
   Image,
   List,
+  ListIcon,
   ListItem,
   Stack,
   Table,
@@ -27,6 +27,7 @@ type Props = {
 export const GenerationDocument: React.FC<Props> = (props) => {
   const imageUrl =
     "https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-banner.webp"
+
   return (
     <Stack overflow={"hidden"} px={4} spacing={4}>
       <Image borderRadius={"md"} src={imageUrl} />
@@ -59,26 +60,18 @@ export const GenerationDocument: React.FC<Props> = (props) => {
           </ListItem>
         </UnorderedList>
         <List>
-          <ListItem>
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbCheck} />}
-              size={"sm"}
-              color="green.500"
-            />
-            {"すべてのモデルについて個人利用可です。"}
-          </ListItem>
-          <ListItem>
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbCheck} />}
-              size={"sm"}
-              color="green.500"
-            />
-            {"すべてのモデルについて商業利用可です。"}
-          </ListItem>
+          <HStack>
+            <ListItem>
+              <ListIcon as={TbCheck} color="green.500" />
+              {"すべてのモデルについて個人利用可です。"}
+            </ListItem>
+          </HStack>
+          <HStack>
+            <ListItem>
+              <ListIcon as={TbCheck} color="green.500" />
+              {"すべてのモデルについて商業利用可です。"}
+            </ListItem>
+          </HStack>
         </List>
         <Text>
           {
