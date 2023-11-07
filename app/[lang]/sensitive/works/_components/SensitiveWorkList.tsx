@@ -1,7 +1,7 @@
 "use client"
 import { Link, SimpleGrid } from "@chakra-ui/react"
 import type { WorksQuery } from "__generated__/apollo"
-import { WorkCard } from "app/[lang]/(main)/works/_components/WorkCard"
+
 import { SensitiveWorkCard } from "app/[lang]/sensitive/works/_components/SensitiveWorkCard"
 
 type Props = {

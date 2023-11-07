@@ -50,6 +50,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   })
 
   const [promptText, setPromptText] = useState("")
+  console.log(promptText)
 
   const [negativePromptText, setNegativePromptText] = useState("")
 
@@ -100,8 +101,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             count: 1,
             model: "petitcutie_v20.safetensors [6a1f2c62a7]",
             vae: "clearvae_v23.safetensors",
-            prompt:
-              "masterpiece, best quality, masterpiece, best quality, standing",
+            prompt: promptText,
             negativePrompt: "EasyNegative, nsfw, nude, ",
             seed: 868050328,
             steps: 20,

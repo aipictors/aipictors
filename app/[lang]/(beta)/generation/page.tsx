@@ -11,6 +11,7 @@ import {
   ImageModelsDocument,
   PromptCategoriesDocument,
 } from "__generated__/apollo"
+import { GenerationDocument } from "app/[lang]/(beta)/generation/_components/GenerationDocument"
 import { GenerationEditor } from "app/[lang]/(beta)/generation/_components/GenerationEditor"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
@@ -49,6 +50,7 @@ const GenerationPage = async () => {
         imageModels={imageModelsQuery.data.imageModels}
         imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
       />
+      <GenerationDocument models={imageModelsQuery.data.imageModels} />
     </>
   )
 }

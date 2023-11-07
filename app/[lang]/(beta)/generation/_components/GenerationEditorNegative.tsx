@@ -13,7 +13,6 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { TbQuestionMark } from "react-icons/tb"
-import { al } from "vitest/dist/reporters-5f784f42"
 
 type Props = {
   negativePrompt: string
