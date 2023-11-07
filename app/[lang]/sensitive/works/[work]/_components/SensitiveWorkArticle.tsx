@@ -19,7 +19,7 @@ export const SensitiveWorkArticle: React.FC<Props> = (props) => {
     >
       <Stack as="article" flex={1}>
         <WorkImageView
-          workImageURL={props.work.image?.downloadURL}
+          workImageURL={props.work.imageURL}
           subWorkImageURLs={props.work.subWorks.map((subWork) => {
             return subWork.image.downloadURL
           })}
@@ -69,7 +69,7 @@ export const SensitiveWorkArticle: React.FC<Props> = (props) => {
               h={40}
               borderRadius={"md"}
               alt={""}
-              src={work.thumbnailImage?.downloadURL}
+              src={work.largeThumbnailImageURL}
             />
           ))}
         </HStack>

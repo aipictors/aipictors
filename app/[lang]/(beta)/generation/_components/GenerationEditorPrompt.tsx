@@ -13,14 +13,16 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import type { PromptCategoryQuery } from "__generated__/apollo"
+import { PromptCategoriesQuery } from "__generated__/apollo"
 import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"
 import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
-  promptCategories: PromptCategoryQuery["promptCategories"]
+  promptText: string
+  promptCategories: PromptCategoriesQuery["promptCategories"]
   selectedPrompts: { id: string }[]
   onSelectPromptId(id: string): void
+  onChangePromptText(text: string): void
 }
 
 export const GenerationEditorPrompt: React.FC<Props> = (props) => {

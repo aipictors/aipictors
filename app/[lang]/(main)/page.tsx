@@ -4,8 +4,8 @@ import { HomeTagList } from "app/[lang]/(main)/_components/HomeTagList"
 import { HomeWorkList } from "app/[lang]/(main)/_components/HomeWorkList"
 import { HomeWorkSection } from "app/[lang]/(main)/_components/HomeWorkSection"
 import { HomeWorkSection2 } from "app/[lang]/(main)/_components/HomeWorkSection2"
-import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/_utils/client"
+import { MainPage } from "app/_components/page/MainPage"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 const HomePage = async () => {

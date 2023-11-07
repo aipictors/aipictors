@@ -20,7 +20,7 @@ export const SensitiveWorkList: React.FC<Props> = (props) => {
     >
       {props.works.map((work) => (
         <Link key={work.id} href={`/works/${work.id}`}>
-          <SensitiveWorkCard imageURL={work.thumbnailImage?.downloadURL} />
+          <SensitiveWorkCard imageURL={work.largeThumbnailImageURL} />
         </Link>
       ))}
     </SimpleGrid>
