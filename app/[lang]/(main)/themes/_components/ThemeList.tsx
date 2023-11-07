@@ -1,5 +1,6 @@
 "use client"
 import {
+  Button,
   HStack,
   Icon,
   IconButton,
@@ -95,6 +96,14 @@ export const ThemeList: React.FC<Props> = (props) => {
           />
         ))}
       </SimpleGrid>
+      <Stack>
+        <Text fontSize={"sm"}>
+          {"毎日のお題の希望のお題がございましたら下記より受け付けております！"}
+        </Text>
+        <HStack>
+          <Button fontSize={"sm"}>{"お題アイディア投稿BOX"}</Button>
+        </HStack>
+      </Stack>
     </Stack>
   )
 }

@@ -1,5 +1,5 @@
 "use client"
-import { HStack, SimpleGrid, Stack } from "@chakra-ui/react"
+import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import type { StickersQuery } from "__generated__/apollo"
 import { StickerCard } from "app/[lang]/(main)/stickers/_components/StickerCard"
 import { StickerListHeader } from "app/[lang]/(main)/stickers/_components/StickerListHeader"
@@ -14,6 +14,7 @@ export const StickerList: React.FC<Props> = (props) => {
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack>
         <StickerListHeader />
+        <Text>{"新着"}</Text>
         <SimpleGrid
           columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
           spacing={2}

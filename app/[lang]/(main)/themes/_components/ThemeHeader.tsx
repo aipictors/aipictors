@@ -1,5 +1,5 @@
 "use client"
-import { HStack, Stack, Text } from "@chakra-ui/react"
+import { Button, Divider, HStack, Stack, Text } from "@chakra-ui/react"
 import { ThemeCard } from "app/[lang]/(main)/themes/_components/ThemeCard"
 
 export const ThemeHeader: React.FC = () => {
@@ -11,8 +11,12 @@ export const ThemeHeader: React.FC = () => {
           "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう。午前0時に更新されます。"
         }
       </Text>
+      <Divider />
       <Stack>
-        <Text fontSize={"sm"}>{"今日のお題「」"}</Text>
+        <HStack>
+          <Text fontSize={"sm"}>{"今日のお題「」"}</Text>
+          <Button fontSize={"sm"}>{"お題を見る"}</Button>
+        </HStack>
         <Text fontSize={"sm"}>{"新着順"}</Text>
         <HStack>
           <ThemeCard />
@@ -21,6 +25,7 @@ export const ThemeHeader: React.FC = () => {
           <ThemeCard />
         </HStack>
       </Stack>
+      <Divider />
     </Stack>
   )
 }

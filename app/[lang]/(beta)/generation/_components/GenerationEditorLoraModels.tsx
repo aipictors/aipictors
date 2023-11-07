@@ -5,6 +5,8 @@ import {
   Button,
   Card,
   HStack,
+  Icon,
+  IconButton,
   Stack,
   Text,
   Tooltip,
@@ -14,6 +16,7 @@ import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraModelsModal } from "app/[lang]/(beta)/generation/_components/LoraModelsModal"
 import { LoraModelsSetting } from "app/[lang]/(beta)/generation/_components/LoraModelsSetting"
 import { SelectedLoraModel } from "app/[lang]/(beta)/generation/_components/SelectedLoraModel"
+import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   /**
@@ -66,9 +69,11 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
             label="イラストの絵柄を調整することができます。"
             fontSize="md"
           >
-            <Button size={"xs"} borderRadius={"full"}>
-              {"?"}
-            </Button>
+            <IconButton
+              aria-label={"メニュー"}
+              borderRadius={"full"}
+              icon={<Icon as={TbQuestionMark} />}
+            />
           </Tooltip>
         </HStack>
         <Box overflowY={"auto"}>

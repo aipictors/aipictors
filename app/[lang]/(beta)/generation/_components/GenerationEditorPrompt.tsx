@@ -5,6 +5,8 @@ import {
   Button,
   Card,
   HStack,
+  Icon,
+  IconButton,
   Stack,
   Text,
   Textarea,
@@ -13,6 +15,7 @@ import {
 } from "@chakra-ui/react"
 import type { PromptCategoryQuery } from "__generated__/apollo"
 import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"
+import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   promptCategories: PromptCategoryQuery["promptCategories"]
@@ -34,9 +37,11 @@ export const GenerationEditorPrompt: React.FC<Props> = (props) => {
                 label="生成したいイラストの要素をキーワードから選んでください。"
                 fontSize="md"
               >
-                <Button size={"xs"} borderRadius={"full"}>
-                  {"?"}
-                </Button>
+                <IconButton
+                  aria-label={"メニュー"}
+                  borderRadius={"full"}
+                  icon={<Icon as={TbQuestionMark} />}
+                />
               </Tooltip>
             </HStack>
             <Button borderRadius={"full"} size={"sm"} onClick={onOpen}>

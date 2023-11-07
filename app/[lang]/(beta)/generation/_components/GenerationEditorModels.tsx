@@ -4,6 +4,8 @@ import {
   Button,
   Card,
   HStack,
+  Icon,
+  IconButton,
   Stack,
   Text,
   Tooltip,
@@ -12,6 +14,7 @@ import {
 import type { ImageModelsQuery } from "__generated__/apollo"
 import { ModelsModal } from "app/[lang]/(beta)/generation/_components/ModelsModal"
 import { SelectedModel } from "app/[lang]/(beta)/generation/_components/SelectedModel"
+import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -39,9 +42,11 @@ export const GenerationEditorModels: React.FC<Props> = (props) => {
                 label="イラスト生成に使用するモデルです。絵柄などが変わります。"
                 fontSize="md"
               >
-                <Button size={"xs"} borderRadius={"full"}>
-                  {"?"}
-                </Button>
+                <IconButton
+                  aria-label={"メニュー"}
+                  borderRadius={"full"}
+                  icon={<Icon as={TbQuestionMark} />}
+                />
               </Tooltip>
             </HStack>
             <Button size={"sm"} borderRadius={"full"} onClick={onOpen}>

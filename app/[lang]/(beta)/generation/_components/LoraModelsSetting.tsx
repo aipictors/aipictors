@@ -18,7 +18,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { TbDice3, TbRefresh } from "react-icons/tb"
+import { TbDice3, TbQuestionMark, TbRefresh } from "react-icons/tb"
 
 export const LoraModelsSetting: React.FC = () => {
   return (
@@ -38,9 +38,11 @@ export const LoraModelsSetting: React.FC = () => {
       <HStack>
         <Text fontWeight={"bold"}>{"VAE"}</Text>
         <Tooltip label="出力される色や線を調整します。" fontSize="md">
-          <Button size={"xs"} borderRadius={"full"}>
-            {"?"}
-          </Button>
+          <IconButton
+            aria-label={"メニュー"}
+            borderRadius={"full"}
+            icon={<Icon as={TbQuestionMark} />}
+          />
         </Tooltip>
       </HStack>
       <Select defaultValue={"option3"} size={"sm"} borderRadius={"full"}>
@@ -54,9 +56,11 @@ export const LoraModelsSetting: React.FC = () => {
           label="キャラや構図などを固定したいときに使用します。"
           fontSize="md"
         >
-          <Button size={"xs"} borderRadius={"full"}>
-            {"?"}
-          </Button>
+          <IconButton
+            aria-label={"メニュー"}
+            borderRadius={"full"}
+            icon={<Icon as={TbQuestionMark} />}
+          />
         </Tooltip>
       </HStack>
       <HStack>
@@ -98,9 +102,11 @@ export const LoraModelsSetting: React.FC = () => {
           label="Steps値を大きくするほどイラストがより洗練されます。"
           fontSize="md"
         >
-          <Button size={"xs"} borderRadius={"full"}>
-            {"?"}
-          </Button>
+          <IconButton
+            aria-label={"メニュー"}
+            borderRadius={"full"}
+            icon={<Icon as={TbQuestionMark} />}
+          />
         </Tooltip>
       </HStack>
       <NumberInput defaultValue={20} size={"sm"} min={9} max={25}>
@@ -116,9 +122,11 @@ export const LoraModelsSetting: React.FC = () => {
           label="Scale値が小さいほど創造的な画像を生成できます。値が大きいほど、より厳密にテキストを解釈します。"
           fontSize="md"
         >
-          <Button size={"xs"} borderRadius={"full"}>
-            {"?"}
-          </Button>
+          <IconButton
+            aria-label={"メニュー"}
+            borderRadius={"full"}
+            icon={<Icon as={TbQuestionMark} />}
+          />
         </Tooltip>
       </HStack>
       <NumberInput defaultValue={7} size={"sm"} min={1} max={15}>
@@ -131,9 +139,11 @@ export const LoraModelsSetting: React.FC = () => {
       <HStack>
         <Text fontWeight={"bold"}>{"Sampler"}</Text>
         <Tooltip label="ノイズの除去の手法です。" fontSize="md">
-          <Button size={"xs"} borderRadius={"full"}>
-            {"?"}
-          </Button>
+          <IconButton
+            aria-label={"メニュー"}
+            borderRadius={"full"}
+            icon={<Icon as={TbQuestionMark} />}
+          />
         </Tooltip>
       </HStack>
       <Select defaultValue={"option3"} size={"sm"} borderRadius={"full"}>

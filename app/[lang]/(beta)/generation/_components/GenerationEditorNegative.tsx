@@ -5,11 +5,14 @@ import {
   Button,
   Card,
   HStack,
+  Icon,
+  IconButton,
   Stack,
   Text,
   Textarea,
   Tooltip,
 } from "@chakra-ui/react"
+import { TbQuestionMark } from "react-icons/tb"
 import { al } from "vitest/dist/reporters-5f784f42"
 
 type Props = {
@@ -27,9 +30,11 @@ export const GenerationEditorNegative: React.FC<Props> = (props) => {
             label="生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
             fontSize="md"
           >
-            <Button size={"xs"} borderRadius={"full"}>
-              {"?"}
-            </Button>
+            <IconButton
+              aria-label={"メニュー"}
+              borderRadius={"full"}
+              icon={<Icon as={TbQuestionMark} />}
+            />
           </Tooltip>
         </HStack>
         <Box h={"100%"} flex={1}>
