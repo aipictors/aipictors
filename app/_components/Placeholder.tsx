@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, Stack, Text } from "@chakra-ui/react"
 
 type Props = {

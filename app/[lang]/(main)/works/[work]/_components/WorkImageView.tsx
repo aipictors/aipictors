@@ -1,4 +1,5 @@
 "use client"
+
 import { Image, Stack } from "@chakra-ui/react"
 
 type Props = {

@@ -1,7 +1,8 @@
 "use client"
+
 import { MessageThreadList } from "app/[lang]/(main)/messages/_components/MessageThreadList"
 import MessagesLoading from "app/[lang]/(main)/messages/loading"
-import { LoginPage } from "app/_components/LoginPage"
+import { LoginPage } from "app/_components/page/LoginPage"
 import { AppContext } from "app/_contexts/appContext"
 import React, { useContext } from "react"
 

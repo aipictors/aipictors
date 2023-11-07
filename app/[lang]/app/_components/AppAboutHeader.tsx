@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, HStack, Image, Stack, Text } from "@chakra-ui/react"
-import { runAnimation } from "app/[lang]/unknown/_utils/runAnimation"
+import { runAnimation } from "app/[lang]/app/_utils/runAnimation"
 import { useEffect, useRef } from "react"
 
 export const AppAboutHeader: React.FC = () => {

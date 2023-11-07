@@ -1,5 +1,5 @@
 import { AccountPasswordForm } from "app/[lang]/account/password/_components/SettingPasswordForm"
-import { MainCenterPage } from "app/_components/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 const AccountPasswordPage = async () => {

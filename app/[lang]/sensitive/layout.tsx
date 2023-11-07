@@ -1,4 +1,5 @@
 "use client"
+
 import { Divider, HStack } from "@chakra-ui/react"
 // useState をインポート
 import { HomeHeader } from "app/[lang]/(main)/_components/HomeHeader"

@@ -1,14 +1,16 @@
-import type { PromptCategoryQuery } from "__generated__/apollo"
-import { PromptCategoryDocument } from "__generated__/apollo"
+import {
+  PromptCategoriesDocument,
+  PromptCategoriesQuery,
+} from "__generated__/apollo"
 import { GenerationEditorLite } from "app/[lang]/(beta)/generation/lite/_components/GenerationEditorLite"
-import { createClient } from "app/_utils/client"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 const GenerationLitePage = async () => {
   const client = createClient()
 
-  const promptCategoryQuery = await client.query<PromptCategoryQuery>({
-    query: PromptCategoryDocument,
+  const promptCategoryQuery = await client.query<PromptCategoriesQuery>({
+    query: PromptCategoriesDocument,
     variables: {},
   })
 

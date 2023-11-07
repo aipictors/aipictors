@@ -1,4 +1,5 @@
 "use client"
+
 import { Avatar, Button, HStack, Image, Stack, Text } from "@chakra-ui/react"
 import type { WorkQuery } from "__generated__/apollo"
 import { WorkAction } from "app/[lang]/(main)/works/[work]/_components/WorkAction"
@@ -19,7 +20,7 @@ export const WorkArticle: React.FC<Props> = (props) => {
     >
       <Stack as="article" flex={1}>
         <WorkImageView
-          workImageURL={props.work.image?.downloadURL}
+          workImageURL={props.work.imageURL}
           subWorkImageURLs={props.work.subWorks.map((subWork) => {
             return subWork.image.downloadURL
           })}
@@ -69,7 +70,7 @@ export const WorkArticle: React.FC<Props> = (props) => {
               h={40}
               borderRadius={"md"}
               alt={""}
-              src={work.thumbnailImage?.downloadURL}
+              src={work.largeThumbnailImageURL}
             />
           ))}
         </HStack>

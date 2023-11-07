@@ -1,5 +1,6 @@
 "use client"
-import { Box, ListItem, Stack, UnorderedList } from "@chakra-ui/react"
+
+import { Box, Stack } from "@chakra-ui/react"
 import { PassType } from "__generated__/apollo"
 import { PassPlanDescription } from "app/[lang]/(beta)/plus/_components/PassPlanDescription"
 import { toPassFeatures } from "app/[lang]/(beta)/plus/_utils/toPassFeatures"

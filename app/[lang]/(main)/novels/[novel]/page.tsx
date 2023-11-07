@@ -1,7 +1,11 @@
 import { NovelArticle } from "app/[lang]/(main)/novels/[novel]/_components/NovelArticle"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * 小説の詳細
+ * @returns
+ */
 const NovelPage = async () => {
   return (
     <MainPage>

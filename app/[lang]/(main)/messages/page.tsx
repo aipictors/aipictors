@@ -1,5 +1,9 @@
 import type { Metadata } from "next"
 
+/**
+ * メッセージの一覧
+ * @returns
+ */
 const MessagesPage = async () => {
   return null
 }

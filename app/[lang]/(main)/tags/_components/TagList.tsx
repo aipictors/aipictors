@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack } from "@chakra-ui/react"
 import { TagListItem } from "app/[lang]/(main)/tags/_components/TagListItem"
 

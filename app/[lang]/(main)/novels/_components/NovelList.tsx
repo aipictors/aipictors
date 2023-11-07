@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack } from "@chakra-ui/react"
 import { NovelCard } from "app/[lang]/(main)/novels/_components/NovelCard"
 

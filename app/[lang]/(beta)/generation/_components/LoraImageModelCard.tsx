@@ -1,4 +1,4 @@
-import { Button, Card, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Image, Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   onSelect(): void
@@ -10,7 +10,7 @@ type Props = {
 
 export const LoraImageModelCard: React.FC<Props> = (props) => {
   return (
-    <Card>
+    <Box>
       <Stack>
         <Button
           p={0}
@@ -31,6 +31,6 @@ export const LoraImageModelCard: React.FC<Props> = (props) => {
           <Text fontSize={"xs"}>{props.description}</Text>
         </Stack>
       </Stack>
-    </Card>
+    </Box>
   )
 }

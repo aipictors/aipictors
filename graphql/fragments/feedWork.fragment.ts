@@ -5,10 +5,7 @@ export const FEED_WORK_FIELDS = gql`
     id
     title
     description
-    image {
-      id
-      downloadURL
-    }
+    imageURL
     user {
       id
       name

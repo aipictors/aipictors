@@ -1,7 +1,11 @@
 import { AlbumArticle } from "app/[lang]/(main)/albums/[album]/_components/AlbumArticle"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * シリーズの詳細
+ * @returns
+ */
 const AlbumPage = async () => {
   return (
     <MainPage>

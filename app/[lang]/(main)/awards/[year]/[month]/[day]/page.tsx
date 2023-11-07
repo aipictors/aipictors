@@ -7,8 +7,8 @@ import type {
 import { WorkAwardsDocument } from "__generated__/apollo"
 import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
 import { RankingWorkList } from "app/[lang]/(main)/awards/_components/RankingWorkList"
-import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/_utils/client"
+import { MainPage } from "app/_components/page/MainPage"
+import { createClient } from "app/_contexts/client"
 
 type Props = {
   params: {
@@ -18,7 +18,12 @@ type Props = {
   }
 }
 
-const AwardsPage = async (props: Props) => {
+/**
+ * ある日のランキングの履歴
+ * @param props
+ * @returns
+ */
+const DayAwardsPage = async (props: Props) => {
   const client = createClient()
 
   const year = parseInt(props.params.year)
@@ -58,4 +63,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default AwardsPage
+export default DayAwardsPage

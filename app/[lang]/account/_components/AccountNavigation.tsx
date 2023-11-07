@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack, useBreakpoint } from "@chakra-ui/react"
 import { AccountRouteList } from "app/[lang]/account/_components/AccountRouteList"
 import React from "react"

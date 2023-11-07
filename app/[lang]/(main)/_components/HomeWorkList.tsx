@@ -21,7 +21,7 @@ export const HomeWorkList: React.FC<Props> = (props) => {
     >
       {props.worksQuery.works?.map((work) => (
         <Link key={work.id} href={`/works/${work.id}`}>
-          <WorkCard imageURL={work.thumbnailImage?.downloadURL} />
+          <WorkCard imageURL={work.largeThumbnailImageURL} />
         </Link>
       ))}
     </SimpleGrid>

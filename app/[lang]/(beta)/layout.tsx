@@ -1,6 +1,8 @@
 "use client"
-import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
+
 import "@splidejs/react-splide/css"
+
+import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
 import { BetaHeader } from "app/[lang]/(beta)/_components/BetaHeader"
 import { BetaNavigationList } from "app/[lang]/(beta)/_components/BetaNavigationList"
 import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
@@ -62,7 +64,7 @@ const BetaLayout: React.FC<Props> = (props) => {
   return (
     <>
       <BetaHeader onOpenNavigation={onToggle} />
-      <HStack alignItems={"flex-start"} spacing={0}>
+      <HStack alignItems={"flex-start"} spacing={0} w={"100%"}>
         <ResponsiveNavigation
           isOpen={isOpenNavigation}
           isOpenDrawer={isOpenDrawer}

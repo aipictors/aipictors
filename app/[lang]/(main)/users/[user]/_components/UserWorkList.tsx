@@ -1,4 +1,5 @@
 "use client"
+
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
 import type { UserWorksQuery } from "__generated__/apollo"
 import { WorkCard } from "app/[lang]/(main)/works/_components/WorkCard"
@@ -25,7 +26,7 @@ export const UserWorkList: React.FC<Props> = (props) => {
       >
         {props.works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.thumbnailImage?.downloadURL} />
+            <WorkCard imageURL={work.largeThumbnailImageURL} />
           </Link>
         ))}
       </SimpleGrid>

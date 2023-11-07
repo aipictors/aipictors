@@ -1,7 +1,11 @@
 import { NoteArticle } from "app/[lang]/(main)/notes/[note]/_components/NoteArticle"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * コラムの詳細
+ * @returns
+ */
 const NotePage = async () => {
   return (
     <MainPage>

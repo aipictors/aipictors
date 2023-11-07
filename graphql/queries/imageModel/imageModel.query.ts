@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const ImageModel = gql`
+export const IMAGE_MODEL = gql`
   query ImageModel($id: ID!) {
     imageModel(id: $id) {
       id

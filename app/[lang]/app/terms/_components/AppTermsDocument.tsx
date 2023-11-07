@@ -1,5 +1,6 @@
 "use client"
-import { Box, Stack, Text } from "@chakra-ui/react"
+
+import { Stack, Text } from "@chakra-ui/react"
 import { MarkdownDocument } from "app/_components/MarkdownDocument"
 
 type Props = {

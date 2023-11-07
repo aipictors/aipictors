@@ -1,6 +1,7 @@
 "use client"
-import { LoadingPage } from "app/_components/LoadingPage"
-import { LoginPage } from "app/_components/LoginPage"
+
+import { LoadingPage } from "app/_components/page/LoadingPage"
+import { LoginPage } from "app/_components/page/LoginPage"
 import { AppContext } from "app/_contexts/appContext"
 import React, { useContext } from "react"
 

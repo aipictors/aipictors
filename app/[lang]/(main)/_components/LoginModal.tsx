@@ -1,4 +1,5 @@
 "use client"
+
 import { Modal, ModalContent, ModalOverlay, useToast } from "@chakra-ui/react"
 import { useLoginWithPasswordMutation } from "__generated__/apollo"
 import { LoginModalForm } from "app/[lang]/(main)/_components/LoginModalForm"

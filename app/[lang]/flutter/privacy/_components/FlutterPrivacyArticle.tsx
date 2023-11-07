@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, HStack } from "@chakra-ui/react"
 import { MarkdownDocument } from "app/_components/MarkdownDocument"
 

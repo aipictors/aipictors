@@ -3,8 +3,8 @@ import { UserDocument } from "__generated__/apollo"
 import { UserProfile } from "app/[lang]/(main)/users/[user]/_components/UserProfile"
 import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/_components/UserProfileHeader"
 import { UserTabs } from "app/[lang]/(main)/users/[user]/_components/UserTabs"
-import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/_utils/client"
+import { MainPage } from "app/_components/page/MainPage"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

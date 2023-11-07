@@ -1,4 +1,5 @@
 "use client"
+
 import { Card, CardBody, Skeleton, Stack } from "@chakra-ui/react"
 
 export const SensitiveSelectableWorkCard: React.FC = () => {

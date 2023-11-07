@@ -18,14 +18,14 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import type { PromptCategoryQuery } from "__generated__/apollo"
+import { PromptCategoriesQuery } from "__generated__/apollo"
 import { PromptCategoryIcon } from "app/[lang]/(beta)/generation/_components/PromptCategoryIcon"
 import React, { useState } from "react"
 
 type Props = {
   isOpen: boolean
   onClose(): void
-  promptCategories: PromptCategoryQuery["promptCategories"]
+  promptCategories: PromptCategoriesQuery["promptCategories"]
   onSelect(id: string): void
 }
 

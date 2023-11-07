@@ -10,7 +10,6 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
-  Text,
 } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
 import { ImageModelCard } from "app/[lang]/(beta)/generation/_components/ImageModelCard"
@@ -36,11 +35,11 @@ export const ModelsModal: React.FC<Props> = (props) => {
         <ModalHeader>{"モデル選択"}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>{"美少女イラスト"}</Text>
+          {/* <Text>{"美少女イラスト"}</Text>
           <Text>{"美男子イラスト"}</Text>
           <Text>{"グラビア"}</Text>
           <Text>{"背景"}</Text>
-          <Text>{"獣系"}</Text>
+          <Text>{"獣系"}</Text> */}
           <SimpleGrid columns={{ base: 3, sm: 3, md: 4 }} spacing={2}>
             {props.models.map((imageModel) => {
               return (

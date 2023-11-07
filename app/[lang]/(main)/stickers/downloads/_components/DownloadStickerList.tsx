@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 
 export const DownloadStickerList: React.FC = () => {

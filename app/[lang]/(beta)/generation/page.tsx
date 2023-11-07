@@ -3,26 +3,26 @@ import type {
   ImageLoraModelsQueryVariables,
   ImageModelsQuery,
   ImageModelsQueryVariables,
-  PromptCategoryQuery,
-  PromptCategoryQueryVariables,
+  PromptCategoriesQuery,
+  PromptCategoriesQueryVariables,
 } from "__generated__/apollo"
 import {
   ImageLoraModelsDocument,
   ImageModelsDocument,
-  PromptCategoryDocument,
+  PromptCategoriesDocument,
 } from "__generated__/apollo"
 import { GenerationEditor } from "app/[lang]/(beta)/generation/_components/GenerationEditor"
-import { createClient } from "app/_utils/client"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 const GenerationPage = async () => {
   const client = createClient()
 
-  const promptCategoryQuery = await client.query<
-    PromptCategoryQuery,
-    PromptCategoryQueryVariables
+  const promptCategoriesQuery = await client.query<
+    PromptCategoriesQuery,
+    PromptCategoriesQueryVariables
   >({
-    query: PromptCategoryDocument,
+    query: PromptCategoriesDocument,
     variables: {},
   })
 
@@ -45,7 +45,7 @@ const GenerationPage = async () => {
   return (
     <>
       <GenerationEditor
-        promptCategories={promptCategoryQuery.data.promptCategories}
+        promptCategories={promptCategoriesQuery.data.promptCategories}
         imageModels={imageModelsQuery.data.imageModels}
         imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
       />

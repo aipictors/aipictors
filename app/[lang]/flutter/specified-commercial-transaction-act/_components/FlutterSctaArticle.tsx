@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, HStack, Text } from "@chakra-ui/react"
 
 export const FlutterSctaArticle: React.FC = () => {

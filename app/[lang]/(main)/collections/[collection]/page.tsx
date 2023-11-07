@@ -2,10 +2,14 @@ import type { WorksQuery } from "__generated__/apollo"
 import { WorksDocument } from "__generated__/apollo"
 import { CollectionArticle } from "app/[lang]/(main)/collections/[collection]/_components/CollectionArticle"
 import { WorkList } from "app/[lang]/(main)/works/_components/WorkList"
-import { MainPage } from "app/_components/MainPage"
-import { createClient } from "app/_utils/client"
+import { MainPage } from "app/_components/page/MainPage"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
+/**
+ * コレクションの詳細
+ * @returns
+ */
 const CollectionPage = async () => {
   const client = createClient()
 

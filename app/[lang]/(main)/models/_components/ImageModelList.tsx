@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, Grid, HStack, Image, Stack, Text } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
 import Link from "next/link"

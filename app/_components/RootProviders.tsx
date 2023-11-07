@@ -1,11 +1,12 @@
 "use client"
+
 import { ApolloProvider } from "@apollo/client"
 import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import { init } from "@sentry/nextjs"
 import { AppContextProvider } from "app/_components/AppContextProvider"
-import { createClient } from "app/_utils/client"
-import { theme } from "app/_utils/theme"
+import { createClient } from "app/_contexts/client"
+import { theme } from "app/_contexts/theme"
 import { Config } from "config"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
@@ -23,6 +24,9 @@ export const RootProviders: React.FC<Props> = (props) => {
 
   const searchParams = useSearchParams()
 
+  /**
+   * ページビューのイベントを送信する
+   */
   useEffect(() => {
     if (Config.isNotClient) return
     if (Config.isDevelopmentMode) return

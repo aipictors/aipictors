@@ -1,4 +1,5 @@
 "use client"
+
 import { Link, SimpleGrid } from "@chakra-ui/react"
 import type { WorksQuery } from "__generated__/apollo"
 import { WorkCard } from "app/[lang]/(main)/works/_components/WorkCard"
@@ -19,7 +20,7 @@ export const SensitiveWorkList: React.FC<Props> = (props) => {
     >
       {props.works.map((work) => (
         <Link key={work.id} href={`/works/${work.id}`}>
-          <WorkCard imageURL={work.thumbnailImage?.downloadURL} />
+          <WorkCard imageURL={work.largeThumbnailImageURL} />
         </Link>
       ))}
     </SimpleGrid>

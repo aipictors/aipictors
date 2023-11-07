@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack } from "@chakra-ui/react"
 import { NotificationList } from "app/[lang]/(main)/notifications/_components/NotificationList"
 import { NotificationTab } from "app/[lang]/(main)/notifications/_components/NotificationTab"

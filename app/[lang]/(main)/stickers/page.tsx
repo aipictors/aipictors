@@ -1,11 +1,11 @@
 import type { StickersQuery } from "__generated__/apollo"
 import { StickersDocument } from "__generated__/apollo"
 import { StickerList } from "app/[lang]/(main)/stickers/_components/StickerList"
-import { createClient } from "app/_utils/client"
+import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 /**
- * https://www.aipictors.com/stamp-space/
+ * スタンプの一覧
  * @returns
  */
 const StickersPage = async () => {

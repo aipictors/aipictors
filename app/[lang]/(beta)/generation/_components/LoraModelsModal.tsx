@@ -2,17 +2,21 @@
 
 import {
   Button,
+  HStack,
+  Icon,
+  IconButton,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Text,
 } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
 import { LoraImageModelCard } from "app/[lang]/(beta)/generation/_components/LoraImageModelCard"
+import { TbX } from "react-icons/tb"
 
 type Props = {
   isOpen: boolean
@@ -32,9 +36,18 @@ export const LoraModelsModal: React.FC<Props> = (props) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{"LoRA選択"}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
+        <ModalHeader>
+          <HStack justifyContent={"space-between"}>
+            <Text>{"LoRA選択"}</Text>
+            <IconButton
+              aria-label={"Close"}
+              icon={<Icon fontSize={"lg"} as={TbX} />}
+              variant={"ghost"}
+              onClick={props.onClose}
+            />
+          </HStack>
+        </ModalHeader>
+        <ModalBody py={0}>
           <SimpleGrid columns={{ base: 3, sm: 5, md: 7, lg: 9 }} spacing={2}>
             {props.models.map((imageLoraModel) => {
               return (

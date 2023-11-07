@@ -1,4 +1,5 @@
 "use client"
+
 import { ListItem, UnorderedList } from "@chakra-ui/react"
 import { PassType } from "__generated__/apollo"
 import { toPassFeatures } from "app/[lang]/(beta)/plus/_utils/toPassFeatures"

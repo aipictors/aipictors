@@ -1,4 +1,5 @@
 "use client"
+
 import { Image, Stack } from "@chakra-ui/react"
 import type { UserQuery } from "__generated__/apollo"
 import React from "react"

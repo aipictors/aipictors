@@ -1,13 +1,18 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.2.2/schema.json",
   "formatter": {
     "indentStyle": "space"
   },
   "linter": {
     "rules": {
       "recommended": true,
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
       "complexity": {
         "noStaticOnlyClass": "off"
+      },
+      "nursery": {
+        "noUnusedImports": "error"
       },
       "style": {
         "noNonNullAssertion": "off"

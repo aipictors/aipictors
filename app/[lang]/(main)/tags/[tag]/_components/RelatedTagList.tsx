@@ -1,4 +1,5 @@
 "use client"
+
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 import { TagCard } from "app/[lang]/(main)/tags/[tag]/_components/TagCard"

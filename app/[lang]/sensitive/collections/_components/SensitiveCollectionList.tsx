@@ -1,4 +1,5 @@
 "use client"
+
 import { Divider, HStack, Stack } from "@chakra-ui/react"
 import { SensitiveCollectionCard } from "app/[lang]/sensitive/collections/_components/SensitiveCollectionCard"
 import { SensitiveCollectionsHeader } from "app/[lang]/sensitive/collections/_components/SensitiveCollectionsHeader"

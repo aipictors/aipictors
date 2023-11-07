@@ -7,6 +7,11 @@ type Props = {
   }
 }
 
+/**
+ * 受信者とのメッセージ
+ * @param props
+ * @returns
+ */
 const RecipientMessagesPage = async (props: Props) => {
   const recipientId = props.params.recipient
 

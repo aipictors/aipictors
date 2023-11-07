@@ -1,4 +1,5 @@
 "use client"
+
 import { SimpleGrid } from "@chakra-ui/react"
 import type { WorkAwardsQuery } from "__generated__/apollo"
 import { RankingCard } from "app/[lang]/(main)/awards/_components/RankingCard"
@@ -15,7 +16,7 @@ export const RankingWorkList: React.FC<Props> = (props) => {
           <RankingCard
             key={props.id}
             title={props.work.title}
-            imageURL={props.work.image?.downloadURL ?? null}
+            imageURL={props.work.imageURL}
             // work={props.work}
           />
         )

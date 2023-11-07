@@ -1,7 +1,11 @@
 import { GuidelineArticle } from "app/[lang]/(main)/guideline/_components/GuidelineArticle"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
+/**
+ * ガイドライン
+ * @returns
+ */
 const GuidelinePage = async () => {
   return (
     <MainPage>

@@ -1,5 +1,5 @@
 import { NewTextForm } from "app/[lang]/(main)/new/text/_components/NewTextForm"
-import { MainPage } from "app/_components/MainPage"
+import { MainPage } from "app/_components/page/MainPage"
 import type { Metadata } from "next"
 
 const NewTextPage = async () => {

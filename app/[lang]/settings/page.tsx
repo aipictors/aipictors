@@ -1,6 +1,5 @@
-import { PlusForm } from "app/[lang]/(beta)/plus/_components/PlusForm"
 import { SettingsNavigation } from "app/[lang]/settings/_components/SettingsNavigation"
-import { MainCenterPage } from "app/_components/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 /**

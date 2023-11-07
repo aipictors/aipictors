@@ -1,4 +1,5 @@
 "use client"
+
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,

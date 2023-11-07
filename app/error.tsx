@@ -1,4 +1,5 @@
 "use client"
+
 import { Stack, Text } from "@chakra-ui/react"
 
 const RootError: React.FC = () => {

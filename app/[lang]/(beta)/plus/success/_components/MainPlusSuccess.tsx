@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 import { TbThumbUp } from "react-icons/tb"

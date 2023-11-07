@@ -1,4 +1,5 @@
 "use client"
+
 import { Card, CardHeader, Text } from "@chakra-ui/react"
 
 export const CollectionCard: React.FC = () => {

@@ -1,27 +1,38 @@
 "use client"
-import { Grid, GridItem } from "@chakra-ui/react"
-import type {
-  ImageLoraModelsQuery,
-  ImageModelsQuery,
-  PromptCategoryQuery,
-} from "__generated__/apollo"
-import { useState } from "react"
 
+import { useMutation } from "@apollo/client"
+import { Button, Stack, useToast } from "@chakra-ui/react"
+import {
+  CreateImageGenerationTaskDocument,
+  CreateImageGenerationTaskMutationResult,
+  CreateImageGenerationTaskMutationVariables,
+  ImageLoraModelsQuery,
+  type ImageModelsQuery,
+  type PromptCategoriesQuery,
+} from "__generated__/apollo"
 import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
+import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/GenerationEditorLayout"
 import { GenerationEditorLoraModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorLoraModels"
 import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorModels"
-import { GenerationEditorNegative } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegative"
+import { GenerationEditorNegativePrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegativePrompt"
 import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorPrompt"
-import { useImageGenerationAreas } from "app/[lang]/(beta)/generation/_hooks/useImageGenerationAreas"
 import { Config } from "config"
+import { useState } from "react"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
-  promptCategories: PromptCategoryQuery["promptCategories"]
+  promptCategories: PromptCategoriesQuery["promptCategories"]
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
+  const [createTask, { loading: isLoading }] = useMutation<
+    CreateImageGenerationTaskMutationResult,
+    CreateImageGenerationTaskMutationVariables
+  >(CreateImageGenerationTaskDocument)
+
+  const toast = useToast()
+
   /**
    * 選択された画像モデルのID
    */
@@ -38,30 +49,17 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     })
   })
 
+  const [promptText, setPromptText] = useState("")
+
+  const [negativePromptText, setNegativePromptText] = useState("")
+
   const [imageSize, setImageSize] = useState<number>()
 
   const [imageVae, setImageVae] = useState<number>()
 
   const [imageSeed, setImageSeed] = useState<number>()
 
-  const [selectedNegativePromptCategories, setSelectNegativePromptCategories] =
-    useState<string>()
-
   const [selectedHistory, selectHistory] = useState("")
-
-  const area = {
-    models: "models",
-    editorPrompt: "editor-prompt",
-    histories: "histories",
-    loraModels: "lora-models",
-    editorNegativePrompt: "editor-negative-prompt",
-  } as const
-
-  const responsiveAreas = useImageGenerationAreas()
-
-  const templateAreas = (responsiveAreas ?? [])
-    .map((row) => `"${row.join(" ")}"`)
-    .join("\n")
 
   /**
    * LoRAモデルを選択する
@@ -91,28 +89,40 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     selectLoraModels(draftModels)
   }
 
+  /**
+   * タスクを作成する
+   */
+  const onCreateTask = async () => {
+    try {
+      await createTask({
+        variables: {
+          input: {
+            count: 1,
+            model: "petitcutie_v20.safetensors [6a1f2c62a7]",
+            vae: "clearvae_v23.safetensors",
+            prompt:
+              "masterpiece, best quality, masterpiece, best quality, standing",
+            negativePrompt: "EasyNegative, nsfw, nude, ",
+            seed: 868050328,
+            steps: 20,
+            scale: 7,
+            sampler: "DPM++ 2M Karras",
+            sizeType: "SD1_512_768",
+            type: "TEXT_TO_IMAGE",
+          },
+        },
+      })
+      toast({ status: "success", description: "タスクを作成しました" })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({ status: "error", description: error.message })
+      }
+    }
+  }
+
   return (
-    <Grid
-      as={"main"}
-      templateAreas={templateAreas}
-      gridTemplateRows={{
-        base: "1fr 1fr 1fr 1fr 1fr",
-        md: "1fr 1fr 1fr",
-        xl: "1fr 1fr",
-      }}
-      gridTemplateColumns={{
-        base: "1fr",
-        md: "1fr 1fr",
-        xl: "1fr 1fr 1fr",
-      }}
-      w={"100%"}
-      gap={2}
-      h={"calc(100svh - 72px)"}
-      px={4}
-      pb={4}
-      overflowY={"auto"}
-    >
-      <GridItem area={area.models} overflow={{ base: "auto", md: "hidden" }}>
+    <GenerationEditorLayout
+      models={
         <GenerationEditorModels
           models={props.imageModels}
           selectedImageModelId={selectedImageModelId}
@@ -120,11 +130,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             onSelectedImageModelId(id)
           }}
         />
-      </GridItem>
-      <GridItem
-        area={area.loraModels}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
+      }
+      loraModels={
         <GenerationEditorLoraModels
           models={props.imageLoraModels}
           selectedModels={selectedLoraModels}
@@ -151,34 +158,37 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             setImageSeed(seed)
           }}
         />
-      </GridItem>
-      <GridItem
-        area={area.editorPrompt}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
+      }
+      promptEditor={
         <GenerationEditorPrompt
+          promptText={promptText}
           promptCategories={props.promptCategories}
           selectedPrompts={[]}
           onSelectPromptId={() => {}}
+          onChangePromptText={setPromptText}
         />
-      </GridItem>
-      <GridItem
-        area={area.editorNegativePrompt}
-        overflow={{ base: "auto", md: "hidden" }}
-      >
-        <GenerationEditorNegative
-          negativePrompt={selectedNegativePromptCategories ?? ""}
-          setNegativePrompt={(prompt) => {
-            setSelectNegativePromptCategories(prompt)
-          }}
+      }
+      negativePromptEditor={
+        <GenerationEditorNegativePrompt
+          promptText={negativePromptText}
+          onChangePromptText={setNegativePromptText}
         />
-      </GridItem>
-      <GridItem area={area.histories} overflow={{ base: "auto", md: "hidden" }}>
-        <GenerationEditorHistory
-          selectHistory={selectHistory}
-          selectedHistory={selectedHistory}
-        />
-      </GridItem>
-    </Grid>
+      }
+      histories={
+        <Stack height={"100%"}>
+          <Button
+            colorScheme={"primary"}
+            isLoading={isLoading}
+            onClick={onCreateTask}
+          >
+            {"生成する"}
+          </Button>
+          <GenerationEditorHistory
+            selectHistory={selectHistory}
+            selectedHistory={selectedHistory}
+          />
+        </Stack>
+      }
+    />
   )
 }

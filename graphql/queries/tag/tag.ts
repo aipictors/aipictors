@@ -5,11 +5,9 @@ export const TAG = gql`
     tag(name: $name) {
       id
       name
-      viewer {
-        isLiked
-        isWatched
-        isMuted
-      }
+      isLiked
+      isWatched
+      isMuted
     }
   }
 `

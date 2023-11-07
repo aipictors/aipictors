@@ -1,14 +1,6 @@
 "use client"
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  Stack,
-  Text,
-  UnorderedList,
-} from "@chakra-ui/react"
-import { PassType } from "__generated__/apollo"
+
+import { Box, Button, Card, Stack, Text } from "@chakra-ui/react"
 import { toMoneyNumberText } from "app/_utils/toMoneyNumberText"
 
 type Props = {

@@ -1,5 +1,5 @@
 import { PlusCancel } from "app/[lang]/(beta)/plus/cancel/_components/PlusCancel"
-import { MainCenterPage } from "app/_components/MainCenterPage"
+import { MainCenterPage } from "app/_components/page/MainCenterPage"
 import type { Metadata } from "next"
 
 /**
