@@ -5,7 +5,7 @@ import type { HotTagsQuery } from "__generated__/apollo"
 import { TagButton } from "app/[lang]/(main)/_components/TagButton"
 
 type Props = {
-  hotTagsQuery: HotTagsQuery
+  hotTags: HotTagsQuery["hotTags"]
 }
 
 /**
@@ -17,7 +17,7 @@ export const HomeTagList: React.FC<Props> = (props) => {
   return (
     <Box w={"100%"} overflowX={"auto"} pb={2}>
       <HStack as={"ul"} w={"100%"} spacing={2}>
-        {props.hotTagsQuery.hotTags?.map((tag) => (
+        {props.hotTags.map((tag) => (
           <TagButton key={tag.id} id={tag.id} name={tag.name} />
         ))}
         <Box p={"4px"} />

@@ -16,7 +16,7 @@ import Link from "next/link"
 import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
-  worksQuery: WorksQuery
+  works: NonNullable<WorksQuery["works"]>
   title: string
 }
 
@@ -48,7 +48,7 @@ export const HomeWorkSection: React.FC<Props> = (props) => {
         pr={4}
         pb={4}
       >
-        {props.worksQuery.works?.map((work) => (
+        {props.works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
             <WorkCard imageURL={work.largeThumbnailImageURL} />
           </Link>

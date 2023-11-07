@@ -3,7 +3,7 @@ import { HotTagsDocument, WorksDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/[lang]/(main)/_components/HomeTagList"
 
 import { HomeWorkSection } from "app/[lang]/(main)/_components/HomeWorkSection"
-import { HomeWorkSection2 } from "app/[lang]/(main)/_components/HomeWorkSection2"
+
 import { MainPage } from "app/_components/page/MainPage"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
@@ -30,9 +30,26 @@ const HomePage = async () => {
 
   return (
     <MainPage>
-      <HomeTagList hotTagsQuery={hotTagsQuery.data} />
-      <HomeWorkSection worksQuery={worksQuery.data} />
-      <HomeWorkSection2 worksQuery={worksQuery.data} />
+      <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
+      <HomeWorkSection
+        title="イラスト無料生成で参考にできる作品"
+        works={worksQuery.data.works!}
+      />
+      <HomeWorkSection title="おすすめ作品" works={worksQuery.data.works!} />
+      <HomeWorkSection title="推薦作品" works={worksQuery.data.works!} />
+      <HomeWorkSection
+        title="先日のランキング作品"
+        works={worksQuery.data.works!}
+      />
+      <HomeWorkSection title="コレクション" works={worksQuery.data.works!} />
+      <HomeWorkSection title="人気タグ" works={worksQuery.data.works!} />
+      <HomeWorkSection title="ショート動画" works={worksQuery.data.works!} />
+      <HomeWorkSection title="小説" works={worksQuery.data.works!} />
+      <HomeWorkSection title="コラム" works={worksQuery.data.works!} />
+      <HomeWorkSection
+        title="＃タグのおすすめ作品"
+        works={worksQuery.data.works!}
+      />
     </MainPage>
   )
 }
