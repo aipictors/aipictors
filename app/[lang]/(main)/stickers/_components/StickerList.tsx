@@ -6,7 +6,7 @@ import { StickerListHeader } from "app/[lang]/(main)/stickers/_components/Sticke
 import React from "react"
 
 type Props = {
-  stickersQuery: StickersQuery
+  stickers: StickersQuery["stickers"]
 }
 
 export const StickerList: React.FC<Props> = (props) => {
@@ -19,7 +19,7 @@ export const StickerList: React.FC<Props> = (props) => {
           columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
           spacing={2}
         >
-          {props.stickersQuery.stickers?.map((props) => {
+          {props.stickers.map((props) => {
             return (
               <StickerCard
                 key={props.id}
