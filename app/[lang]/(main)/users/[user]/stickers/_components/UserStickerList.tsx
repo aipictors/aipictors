@@ -16,6 +16,7 @@ export const UserStickerList: React.FC<Props> = (props) => {
         return (
           <StickerCard
             key={props.id}
+            id={props.id}
             title={props.title}
             imageURL={props.image?.downloadURL ?? null}
             downloadsCount={props.downloadsCount}

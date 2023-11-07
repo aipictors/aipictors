@@ -1,6 +1,9 @@
+import { Stack } from "@chakra-ui/react"
 import type { StickersQuery } from "__generated__/apollo"
 import { StickersDocument } from "__generated__/apollo"
 import { StickerList } from "app/[lang]/(main)/stickers/_components/StickerList"
+import { StickerListHeader } from "app/[lang]/(main)/stickers/_components/StickerListHeader"
+import StickerSearchForm from "app/[lang]/(main)/stickers/_components/StickerSearchForm"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
@@ -19,7 +22,13 @@ const StickersPage = async () => {
     },
   })
 
-  return <StickerList stickers={stickersQuery.data.stickers} />
+  return (
+    <Stack>
+      <StickerListHeader />
+      <StickerSearchForm />
+      <StickerList stickers={stickersQuery.data.stickers} />
+    </Stack>
+  )
 }
 
 export const metadata: Metadata = {
