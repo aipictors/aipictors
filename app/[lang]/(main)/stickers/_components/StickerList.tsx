@@ -3,6 +3,7 @@ import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import type { StickersQuery } from "__generated__/apollo"
 import { StickerCard } from "app/[lang]/(main)/stickers/_components/StickerCard"
 import { StickerListHeader } from "app/[lang]/(main)/stickers/_components/StickerListHeader"
+import Link from "next/link"
 import React from "react"
 
 type Props = {
@@ -21,13 +22,19 @@ export const StickerList: React.FC<Props> = (props) => {
         >
           {props.stickers.map((props) => {
             return (
-              <StickerCard
+              <Link
                 key={props.id}
-                title={props.title}
-                imageURL={props.image?.downloadURL ?? null}
-                downloadsCount={props.downloadsCount}
-                usesCount={props.usesCount}
-              />
+                href={`/stickers/${props.id}`}
+                scroll={false}
+              >
+                <StickerCard
+                  key={props.id}
+                  title={props.title}
+                  imageURL={props.image?.downloadURL ?? null}
+                  downloadsCount={props.downloadsCount}
+                  usesCount={props.usesCount}
+                />
+              </Link>
             )
           })}
         </SimpleGrid>
