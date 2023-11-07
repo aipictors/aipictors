@@ -1,6 +1,5 @@
 "use client"
 
-import { SearchIcon } from "@chakra-ui/icons"
 import {
   Button,
   HStack,

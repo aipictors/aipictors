@@ -1,6 +1,5 @@
 "use client"
 
-import { SearchIcon } from "@chakra-ui/icons"
 import {
   Button,
   HStack,
@@ -18,6 +17,7 @@ import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   worksQuery: WorksQuery
+  title: string
 }
 
 export const HomeWorkSection: React.FC<Props> = (props) => {
@@ -26,7 +26,7 @@ export const HomeWorkSection: React.FC<Props> = (props) => {
       <HStack justifyContent={"space-between"} alignItems={"center"}>
         <HStack alignItems={"center"}>
           <Text fontSize="2xl" fontWeight="bold">
-            {"イラスト無料生成で参考にできる作品(タイトル)"}
+            {props.title}
           </Text>
           <Tooltip label="推奨作品のところに出てくる" fontSize="md">
             <IconButton

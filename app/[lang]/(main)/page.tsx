@@ -1,7 +1,7 @@
 import type { HotTagsQuery, WorksQuery } from "__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "__generated__/apollo"
 import { HomeTagList } from "app/[lang]/(main)/_components/HomeTagList"
-import { HomeWorkList } from "app/[lang]/(main)/_components/HomeWorkList"
+
 import { HomeWorkSection } from "app/[lang]/(main)/_components/HomeWorkSection"
 import { HomeWorkSection2 } from "app/[lang]/(main)/_components/HomeWorkSection2"
 import { MainPage } from "app/_components/page/MainPage"
