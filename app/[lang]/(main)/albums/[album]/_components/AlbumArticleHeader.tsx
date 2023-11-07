@@ -1,19 +1,24 @@
 "use client"
 
 import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
+import { AlbumQuery } from "__generated__/apollo"
 import { TbShare2 } from "react-icons/tb"
 
-export const AlbumArticleHeader: React.FC = () => {
+type Props = {
+  albumQuery: AlbumQuery
+}
+
+export const AlbumArticleHeader: React.FC<Props> = (props) => {
   return (
     <Stack>
       <Image
-        src="https://bit.ly/dan-abramov"
-        alt="Dan Abramov"
+        src={props.albumQuery.album?.thumbnailImage?.downloadURL!}
+        alt={props.albumQuery.album?.title!}
         boxSize={"sm"}
         borderRadius={"md"}
       />
       <HStack justifyContent={"space-between"}>
-        <Text>{"タイトル"}</Text>
+        <Text>{props.albumQuery.album?.title}</Text>
         <Button
           leftIcon={<Icon as={TbShare2} />}
           borderRadius={"full"}
