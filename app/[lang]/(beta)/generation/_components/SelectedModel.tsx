@@ -5,31 +5,39 @@ import { Button, HStack, Image, Text } from "@chakra-ui/react"
 type Props = {
   imageURL: string
   name: string
+  isSelected: boolean
+  onClick(): void
 }
 
 export const SelectedModel: React.FC<Props> = (props) => {
   return (
-    <HStack overflow={"hidden"} spacing={4}>
-      <Button
-        p={0}
-        h={"auto"}
-        overflow={"hidden"}
-        variant={"outline"}
-        borderWidth={2}
-        borderColor={"gray.200"}
-      >
+    <Button
+      w={"100%"}
+      p={2}
+      h={"auto"}
+      overflow={"hidden"}
+      variant={"solid"}
+      colorScheme={props.isSelected ? "primary" : "gray"}
+      onClick={props.onClick}
+    >
+      <HStack spacing={4} w={"100%"}>
         <Image
           src={props.imageURL ?? ""}
           alt={props.name}
           borderRadius={"md"}
           w={"100%"}
-          maxW={32}
           draggable={false}
+          maxW={16}
         />
-      </Button>
-      <Text fontSize={"lg"} fontWeight={"bold"} whiteSpace={"pre-wrap"}>
-        {props.name}
-      </Text>
-    </HStack>
+        <Text
+          wordBreak={"break-all"}
+          fontSize={"sm"}
+          fontWeight={"bold"}
+          whiteSpace={"pre-wrap"}
+        >
+          {props.name}
+        </Text>
+      </HStack>
+    </Button>
   )
 }

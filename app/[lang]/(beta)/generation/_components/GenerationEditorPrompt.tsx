@@ -1,70 +1,53 @@
 "use client"
 
-import {
-  Box,
-  Button,
-  Card,
-  HStack,
-  Icon,
-  IconButton,
-  Stack,
-  Text,
-  Textarea,
-  Tooltip,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Box, Button, Textarea, useDisclosure } from "@chakra-ui/react"
 import { PromptCategoriesQuery } from "__generated__/apollo"
+import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/PromptCategoriesModal"
-import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   promptText: string
   promptCategories: PromptCategoriesQuery["promptCategories"]
-  selectedPrompts: { id: string }[]
-  onSelectPromptId(id: string): void
   onChangePromptText(text: string): void
 }
 
 export const GenerationEditorPrompt: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const onSelectPromptId = (promptId: string) => {}
+
   return (
     <>
-      <Card p={4} h={"100%"}>
-        <Stack h={"100%"} spacing={4}>
-          <HStack justifyContent={"space-between"}>
-            <HStack>
-              <Text fontWeight={"bold"}>{"プロンプト"}</Text>
-              <Tooltip
-                label="生成したいイラストの要素をキーワードから選んでください。"
-                fontSize="md"
-              >
-                <IconButton
-                  aria-label={"メニュー"}
-                  borderRadius={"full"}
-                  icon={<Icon as={TbQuestionMark} />}
-                />
-              </Tooltip>
-            </HStack>
-            <Button borderRadius={"full"} size={"sm"} onClick={onOpen}>
-              {"キーワード"}
-            </Button>
-          </HStack>
-          <Box h={"100%"} flex={1}>
-            <Textarea
-              h={"100%"}
-              placeholder={"プロンプト"}
-              borderRadius={"md"}
-              value={""}
-            />
-          </Box>
-        </Stack>
-      </Card>
+      <GenerationEditorCard
+        title={"プロンプト"}
+        tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
+        action={
+          <Button borderRadius={"full"} size={"sm"} onClick={onOpen}>
+            {"キーワード"}
+          </Button>
+        }
+      >
+        <Box h={"100%"} flex={1} p={"1px"}>
+          <Textarea
+            h={"100%"}
+            p={2}
+            placeholder={"プロンプト"}
+            borderRadius={0}
+            value={props.promptText}
+            onChange={(event) => {
+              props.onChangePromptText(event.target.value)
+            }}
+            border={"none"}
+            resize={"none"}
+            borderBottomRadius={"md"}
+          />
+        </Box>
+      </GenerationEditorCard>
       <PromptCategoriesModal
         onClose={onClose}
         isOpen={isOpen}
         promptCategories={props.promptCategories}
-        onSelect={props.onSelectPromptId}
+        onSelect={onSelectPromptId}
       />
     </>
   )

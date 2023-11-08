@@ -19,7 +19,7 @@ type Props = {
   onClose(): void
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
-  onSelect(id: string | null): void
+  onSelect(id: string): void
 }
 
 export const ModelsModal: React.FC<Props> = (props) => {

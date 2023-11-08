@@ -32,22 +32,26 @@ export const GenerationEditorCard: React.FC<Props> = (props) => {
         top={0}
         zIndex={8}
         bg={"rgba(255,255,255,0.1)"}
-        p={4}
+        px={2}
+        py={2}
         justifyContent={"space-between"}
       >
-        <HStack>
+        <HStack alignItems={"center"}>
           <Text fontWeight={"bold"}>{props.title}</Text>
+        </HStack>
+        <HStack>
           {props.tooltip && (
             <Tooltip label={props.tooltip} fontSize="md">
               <IconButton
+                size={"sm"}
                 aria-label={"メニュー"}
                 borderRadius={"full"}
                 icon={<Icon as={TbQuestionMark} />}
               />
             </Tooltip>
           )}
+          {props.action}
         </HStack>
-        {props.action}
       </HStack>
       <Divider />
       {props.children}

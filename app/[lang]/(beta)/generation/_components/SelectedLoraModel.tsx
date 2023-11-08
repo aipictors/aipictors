@@ -24,7 +24,7 @@ type Props = {
 
 export const SelectedLoraModel: React.FC<Props> = (props) => {
   return (
-    <HStack spacing={4}>
+    <HStack spacing={2}>
       <Card>
         <Stack>
           <Button
@@ -40,7 +40,7 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
               alt={props.name}
               borderRadius={"md"}
               w={"100%"}
-              maxW={32}
+              maxW={24}
               draggable={false}
             />
           </Button>
@@ -51,10 +51,11 @@ export const SelectedLoraModel: React.FC<Props> = (props) => {
         overflow={"hidden"}
         justifyContent={"space-between"}
         h={"100%"}
+        spacing={1}
       >
-        <Stack>
+        <Stack spacing={1}>
           <Text
-            fontSize={"xl"}
+            fontSize={"lg"}
             fontWeight={"bold"}
             whiteSpace={"pre-wrap"}
             lineHeight={1.2}

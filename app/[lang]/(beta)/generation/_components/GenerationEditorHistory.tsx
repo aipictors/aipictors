@@ -1,5 +1,6 @@
 "use client"
 
+import { useSuspenseQuery } from "@apollo/client"
 import {
   Box,
   Button,
@@ -11,6 +12,11 @@ import {
   Stack,
   useDisclosure,
 } from "@chakra-ui/react"
+import {
+  ViewerImageGenerationTasksDocument,
+  ViewerImageGenerationTasksQuery,
+  ViewerImageGenerationTasksQueryVariables,
+} from "__generated__/apollo"
 import { GenerationDownloadModal } from "app/[lang]/(beta)/generation/_components/GenerationDownloadModal"
 import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { GenerationHistoryDeleteModal } from "app/[lang]/(beta)/generation/_components/GenerationHistoryDeleteModal"
@@ -25,6 +31,16 @@ type Props = {
 }
 
 export const GenerationEditorHistory: React.FC<Props> = (props) => {
+  const { data } = useSuspenseQuery<
+    ViewerImageGenerationTasksQuery,
+    ViewerImageGenerationTasksQueryVariables
+  >(ViewerImageGenerationTasksDocument, {
+    variables: {
+      limit: 64,
+      offset: 0,
+    },
+  })
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const {
@@ -49,7 +65,7 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
     <>
       <GenerationEditorCard title={"生成履歴"}>
         <Box overflowY={"auto"}>
-          <HStack p={4}>
+          <HStack p={2}>
             <IconButton
               aria-label={"削除"}
               borderRadius={"full"}
@@ -72,32 +88,16 @@ export const GenerationEditorHistory: React.FC<Props> = (props) => {
             />
           </HStack>
           <Divider />
-          <Stack p={4} spacing={4}>
+          <Stack p={2} spacing={4}>
             <SimpleGrid spacing={2} columns={{ base: 1, md: 2 }}>
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
-              <GenerationHistoryCard
-                imageURL={"https://source.unsplash.com/random/800x600"}
-                onClick={() => {}}
-              />
+              {data.viewer?.imageGenerationTasks?.map((task) => (
+                <GenerationHistoryCard
+                  imageURL={"https://source.unsplash.com/random/800x600"}
+                  onClick={() => {
+                    onOpen()
+                  }}
+                />
+              ))}
             </SimpleGrid>
           </Stack>
         </Box>

@@ -1,72 +1,81 @@
 "use client"
 
-import {
-  Button,
-  Card,
-  HStack,
-  Icon,
-  IconButton,
-  Stack,
-  Text,
-  Tooltip,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react"
 import type { ImageModelsQuery } from "__generated__/apollo"
+import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { ModelsModal } from "app/[lang]/(beta)/generation/_components/ModelsModal"
 import { SelectedModel } from "app/[lang]/(beta)/generation/_components/SelectedModel"
-import { TbQuestionMark } from "react-icons/tb"
+import { Config } from "config"
+import { useState } from "react"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
-  selectedImageModelId: string
-  onSelectImageModelId(id: string): void
+  selectedModelId: string
+  onSelectModelId(id: string): void
 }
 
 export const GenerationEditorModels: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const selectedModelId = props.selectedImageModelId
+  /**
+   * 表示されるモデルのID
+   */
+  const [currentModelIds, setCurrentModelIds] = useState(
+    Config.defaultImageModelIds,
+  )
 
-  const selectedModel = props.models.find((model) => {
-    return model.id === selectedModelId
+  const currentModels = currentModelIds.map((modelId) => {
+    return props.models.find((model) => {
+      return model.id === modelId
+    })
   })
+
+  const onSelectModelId = (modelId: string) => {
+    props.onSelectModelId(modelId)
+    const draftIds = [...currentModelIds]
+    const index = draftIds.indexOf(modelId)
+    if (index !== -1) return
+    draftIds.unshift(modelId)
+    console.log("draftIds", draftIds)
+    if (6 < draftIds.length) {
+      draftIds.pop()
+    }
+    setCurrentModelIds(draftIds)
+  }
 
   return (
     <>
-      <Card p={4} h={"100%"} overflowX={"hidden"} overflowY={"auto"} flex={1}>
-        <Stack>
-          <HStack justifyContent={"space-between"}>
-            <HStack>
-              <Text fontWeight={"bold"}>{"モデル"}</Text>
-              <Tooltip
-                label="イラスト生成に使用するモデルです。絵柄などが変わります。"
-                fontSize="md"
-              >
-                <IconButton
-                  aria-label={"メニュー"}
-                  borderRadius={"full"}
-                  icon={<Icon as={TbQuestionMark} />}
-                />
-              </Tooltip>
-            </HStack>
-            <Button size={"sm"} borderRadius={"full"} onClick={onOpen}>
-              {"モデルを変更する"}
-            </Button>
-          </HStack>
-          <HStack justifyContent={"space-between"}>
-            <SelectedModel
-              imageURL={selectedModel?.thumbnailImageURL ?? ""}
-              name={selectedModel?.displayName ?? ""}
-            />
-          </HStack>
-        </Stack>
-      </Card>
+      <GenerationEditorCard
+        title={"モデル"}
+        tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
+        action={
+          <Button size={"sm"} borderRadius={"full"} onClick={onOpen}>
+            {"モデルを変更する"}
+          </Button>
+        }
+      >
+        <Box overflowY={"auto"} p={2}>
+          <Stack justifyContent={"space-between"} alignItems={"flex-start"}>
+            {currentModels.map((model) => (
+              <SelectedModel
+                key={model?.id}
+                imageURL={model?.thumbnailImageURL ?? ""}
+                name={model?.displayName ?? ""}
+                isSelected={model?.id === props.selectedModelId}
+                onClick={() => {
+                  onSelectModelId(model!.id)
+                }}
+              />
+            ))}
+          </Stack>
+        </Box>
+      </GenerationEditorCard>
       <ModelsModal
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
-        selectedModelId={props.selectedImageModelId}
-        onSelect={props.onSelectImageModelId}
+        selectedModelId={props.selectedModelId}
+        onSelect={onSelectModelId}
       />
     </>
   )

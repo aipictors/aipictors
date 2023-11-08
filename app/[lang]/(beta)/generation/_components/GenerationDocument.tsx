@@ -29,7 +29,7 @@ export const GenerationDocument: React.FC<Props> = (props) => {
     "https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-banner.webp"
 
   return (
-    <Stack overflow={"hidden"} px={4} spacing={4}>
+    <Stack overflow={"hidden"} px={4} spacing={4} w={"100%"}>
       <Image borderRadius={"md"} src={imageUrl} />
       <Stack>
         <Text>{"投稿時は規約をご確認ください。"}</Text>
@@ -79,8 +79,8 @@ export const GenerationDocument: React.FC<Props> = (props) => {
           }
         </Text>
       </Stack>
-      <TableContainer>
-        <Table variant="simple">
+      <TableContainer w={"100%"} overflow={"auto"}>
+        <Table variant={"simple"} size={"sm"}>
           <Thead>
             <Tr>
               <Th>{"モデル"}</Th>

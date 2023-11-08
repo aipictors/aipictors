@@ -36,59 +36,32 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   /**
    * 選択された画像モデルのID
    */
-  const [selectedImageModelId, onSelectedImageModelId] = useState(
+  const [selectedModelId, setSelectedModelId] = useState(
     Config.defaultImageModelId,
   )
 
   /**
    * 選択されたLoRAモデルのID
    */
-  const [selectedLoraModels, selectLoraModels] = useState(() => {
-    return Config.defaultImageLoraModelIds.map((id) => {
-      return { id, value: 0 }
-    })
-  })
+  const [selectedLoraModelConfigs, setSelectedLoraModelConfigs] = useState(
+    () => {
+      return Config.defaultImageLoraModelIds.map((id) => {
+        return { id, value: 0 }
+      })
+    },
+  )
 
   const [promptText, setPromptText] = useState("")
-  console.log(promptText)
 
   const [negativePromptText, setNegativePromptText] = useState("")
 
-  const [imageSize, setImageSize] = useState<number>()
+  const [imageSize, setImageSize] = useState("SD1_512_768")
 
   const [imageVae, setImageVae] = useState<number>()
 
   const [imageSeed, setImageSeed] = useState<number>()
 
   const [selectedHistory, selectHistory] = useState("")
-
-  /**
-   * LoRAモデルを選択する
-   * @param modelId
-   */
-  const onSelectLoraModelId = (modelId: string) => {
-    const currentModelIds = selectedLoraModels.map((model) => model.id)
-    const draftIds = [...currentModelIds]
-    const index = draftIds.indexOf(modelId)
-    if (index === -1) {
-      draftIds.push(modelId)
-    } else {
-      draftIds.splice(index, 1)
-    }
-    // TODO: プランによって個数をかえる
-    // 3つ以上選択されたら、最初の要素を削除する
-    if (draftIds.length > 2) {
-      draftIds.shift()
-    }
-    const draftModels = draftIds.map((id) => {
-      const model = selectedLoraModels.find((model) => model.id === id)
-      if (model !== undefined) {
-        return model
-      }
-      return { id, value: 0 }
-    })
-    selectLoraModels(draftModels)
-  }
 
   /**
    * タスクを作成する
@@ -125,36 +98,29 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       models={
         <GenerationEditorModels
           models={props.imageModels}
-          selectedImageModelId={selectedImageModelId}
-          onSelectImageModelId={(id) => {
-            onSelectedImageModelId(id)
+          selectedModelId={selectedModelId}
+          onSelectModelId={(id) => {
+            setSelectedModelId(id)
           }}
         />
       }
       loraModels={
         <GenerationEditorLoraModels
           models={props.imageLoraModels}
-          selectedModels={selectedLoraModels}
-          onSelectModelId={onSelectLoraModelId}
-          onChangeValue={(id, value) => {
-            const draftModels = selectedLoraModels.map((model) => {
-              if (model.id === id) {
-                return { ...model, value }
-              }
-              return model
-            })
-            selectLoraModels(draftModels)
+          modelConfigs={selectedLoraModelConfigs}
+          onChangeModelConfigs={(configs) => {
+            setSelectedLoraModelConfigs(configs)
           }}
-          size={0}
-          setSize={(size) => {
+          size={""}
+          onChangeSize={(size) => {
             setImageSize(size)
           }}
           vae={0}
-          setVae={(vae) => {
+          onChangeVae={(vae) => {
             setImageVae(vae)
           }}
           seed={0}
-          setSeed={(seed) => {
+          onChangeSeed={(seed) => {
             setImageSeed(seed)
           }}
         />
@@ -163,8 +129,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         <GenerationEditorPrompt
           promptText={promptText}
           promptCategories={props.promptCategories}
-          selectedPrompts={[]}
-          onSelectPromptId={() => {}}
           onChangePromptText={setPromptText}
         />
       }

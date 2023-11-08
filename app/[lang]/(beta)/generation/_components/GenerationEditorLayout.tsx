@@ -33,8 +33,24 @@ export const GenerationEditorLayout: React.FC<Props> = (props) => {
       [area.histories, area.histories],
     ],
     xl: [
-      [area.models, area.editorPrompt, area.histories],
-      [area.loraModels, area.editorNegativePrompt, area.histories],
+      [
+        area.models,
+        area.models,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.histories,
+        area.histories,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
+        area.histories,
+        area.histories,
+      ],
     ],
   })
 
@@ -58,7 +74,7 @@ export const GenerationEditorLayout: React.FC<Props> = (props) => {
       gridTemplateColumns={{
         base: "1fr",
         lg: "1fr 1fr",
-        xl: "1fr 1fr 1fr",
+        xl: "1fr 1fr 1fr 1fr 1fr 1fr 1fr",
       }}
       w={"100%"}
       gap={2}
