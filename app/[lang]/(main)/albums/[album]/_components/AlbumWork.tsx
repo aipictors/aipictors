@@ -11,6 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 import { AlbumWorksQuery } from "__generated__/apollo"
+import { toDateTimeText } from "app/_utils/toDateTimeText"
 
 import { TbHeart } from "react-icons/tb"
 
@@ -43,10 +44,10 @@ export const AlbumWork: React.FC<Props> = (props) => {
             borderRadius={"md"}
           />
           <Stack>
-            <Text py="2">{`いいね数：${props.likesCount}`}</Text>
-            <Text py="2">{`閲覧数：${""}`}</Text>
-            <Text py="2">{`使用AI：${""}`}</Text>
-            <Text py="2">{`投稿時間：${props.createdAt}`}</Text>
+            <Text py={2}>{`いいね数：${props.likesCount}`}</Text>
+            <Text py={2}>{`閲覧数：${""}`}</Text>
+            <Text py={2}>{`使用AI：${""}`}</Text>
+            <Text py={2}>{`投稿時間：${toDateTimeText(props.createdAt)}`}</Text>
           </Stack>
         </HStack>
       </CardBody>

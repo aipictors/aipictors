@@ -10,7 +10,7 @@ type Props = {
 
 export const AlbumWorkDescription: React.FC<Props> = (props) => {
   return (
-    <Card overflow="hidden" variant="outline" size={"lg"}>
+    <Card overflow="hidden" variant="outline" size={"100%"}>
       <CardBody>
         <Stack spacing={4}>
           <HStack>
