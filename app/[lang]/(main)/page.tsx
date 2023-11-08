@@ -30,7 +30,7 @@ const HomePage = async () => {
 
   return (
     <MainPage>
-      <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
+      <HomeTagList hotTags={hotTagsQuery.data} />
       <HomeWorkSection
         title="イラスト無料生成で参考にできる作品"
         works={worksQuery.data.works!}
