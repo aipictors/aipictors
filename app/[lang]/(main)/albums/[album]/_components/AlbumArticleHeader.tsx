@@ -14,8 +14,8 @@ export const AlbumArticleHeader: React.FC<Props> = (props) => {
       <Image
         src={props.albumQuery.album?.thumbnailImage?.downloadURL!}
         alt={props.albumQuery.album?.title!}
-        boxSize={"sm"}
         borderRadius={"md"}
+        boxSize={"64%"}
       />
       <HStack justifyContent={"space-between"}>
         <Text>{props.albumQuery.album?.title}</Text>

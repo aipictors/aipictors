@@ -10,7 +10,7 @@ type Props = {
 
 export const StickerList: React.FC<Props> = (props) => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
+    <HStack as={"main"} justifyContent={"center"} w={"100%"} px={4}>
       <Stack>
         <Text>{"新着"}</Text>
         <SimpleGrid
