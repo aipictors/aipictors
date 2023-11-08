@@ -2,7 +2,7 @@
 
 type Props = {
   children: React.ReactNode
-  modal?: React.ReactNode
+  modal: React.ReactNode
 }
 
 const StickersLayout: React.FC<Props> = (props) => {
