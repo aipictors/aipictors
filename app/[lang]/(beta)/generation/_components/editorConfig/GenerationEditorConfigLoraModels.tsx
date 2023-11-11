@@ -1,10 +1,8 @@
 "use client"
 
-import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react"
+import { Button, Stack, useDisclosure } from "@chakra-ui/react"
 import type { ImageLoraModelsQuery } from "__generated__/apollo"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/GenerationEditorCard"
 import { LoraModelsModal } from "app/[lang]/(beta)/generation/_components/LoraModelsModal"
-import { LoraModelsSetting } from "app/[lang]/(beta)/generation/_components/LoraModelsSetting"
 import { SelectedLoraModel } from "app/[lang]/(beta)/generation/_components/SelectedLoraModel"
 
 type Props = {
@@ -21,24 +19,9 @@ type Props = {
    * @param configs 設定
    */
   onChangeModelConfigs(configs: { id: string; value: number }[]): void
-  /**
-   * サイズ
-   */
-  size: string
-  onChangeSize(size: string): void
-  /**
-   * VAE
-   */
-  vae: number
-  onChangeVae(vae: number): void
-  /**
-   * シード値
-   */
-  seed: number
-  onChangeSeed(seed: number): void
 }
 
-export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
+export const GenerationEditorConfigLoraModels: React.FC<Props> = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const selectedModelIds = props.modelConfigs.map((model) => model.id)
@@ -100,39 +83,30 @@ export const GenerationEditorLoraModels: React.FC<Props> = (props) => {
 
   return (
     <>
-      <GenerationEditorCard
-        title={"加工（LoRA）"}
-        tooltip={"イラストの絵柄を調整することができます。"}
-      >
-        <Box overflowY={"auto"}>
-          <Stack p={2} spacing={4}>
-            <Stack>
-              {selectedModels.map((model) => (
-                <SelectedLoraModel
-                  key={model.id}
-                  imageURL={model.thumbnailImageURL ?? ""}
-                  name={model.name}
-                  description={model.description ?? ""}
-                  value={
-                    props.modelConfigs.find((m) => m.id === model.id)?.value ??
-                    0
-                  }
-                  setValue={(value) => {
-                    onChangeModelConfig(model.id, value)
-                  }}
-                  onDelete={() => {
-                    onAddModelConfig(model.id)
-                  }}
-                />
-              ))}
-            </Stack>
-            <Button borderRadius={"full"} onClick={onOpen}>
-              {"LoRAを追加する"}
-            </Button>
-            <LoraModelsSetting />
-          </Stack>
-        </Box>
-      </GenerationEditorCard>
+      <Stack p={2} spacing={4}>
+        <Stack>
+          {selectedModels.map((model) => (
+            <SelectedLoraModel
+              key={model.id}
+              imageURL={model.thumbnailImageURL ?? ""}
+              name={model.name}
+              description={model.description ?? ""}
+              value={
+                props.modelConfigs.find((m) => m.id === model.id)?.value ?? 0
+              }
+              setValue={(value) => {
+                onChangeModelConfig(model.id, value)
+              }}
+              onDelete={() => {
+                onAddModelConfig(model.id)
+              }}
+            />
+          ))}
+        </Stack>
+        <Button borderRadius={"full"} onClick={onOpen}>
+          {"LoRAを追加する"}
+        </Button>
+      </Stack>
       <LoraModelsModal
         isOpen={isOpen}
         onClose={onClose}

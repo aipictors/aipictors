@@ -12,10 +12,10 @@ import {
 } from "__generated__/apollo"
 import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/GenerationEditorHistory"
 import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/GenerationEditorLayout"
-import { GenerationEditorLoraModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorLoraModels"
 import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components/GenerationEditorModels"
 import { GenerationEditorNegativePrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorNegativePrompt"
 import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/GenerationEditorPrompt"
+import { GenerationEditorConfig } from "app/[lang]/(beta)/generation/_components/editorConfig/GenerationEditorConfig"
 import { Config } from "config"
 import { useState } from "react"
 
@@ -105,7 +105,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         />
       }
       loraModels={
-        <GenerationEditorLoraModels
+        <GenerationEditorConfig
           models={props.imageLoraModels}
           modelConfigs={selectedLoraModelConfigs}
           onChangeModelConfigs={(configs) => {

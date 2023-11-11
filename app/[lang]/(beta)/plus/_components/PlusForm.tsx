@@ -56,6 +56,8 @@ export const PlusForm: React.FC = () => {
     }
   }
 
+  console.log("data", data)
+
   if (data.viewer === null) {
     return null
   }
