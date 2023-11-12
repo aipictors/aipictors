@@ -1,5 +1,6 @@
 "use client"
 
+import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { ImageModelCard } from "@/app/[lang]/(beta)/generation/_components/image-model-card"
 import {
   Button,
@@ -12,7 +13,6 @@ import {
   ModalOverlay,
   SimpleGrid,
 } from "@chakra-ui/react"
-import type { ImageModelsQuery } from "@/__generated__/apollo"
 
 type Props = {
   isOpen: boolean

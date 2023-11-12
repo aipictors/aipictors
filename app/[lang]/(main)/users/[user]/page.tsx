@@ -1,11 +1,11 @@
-import { UserWorkList } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list"
-import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
-import { createClient } from "@/app/_contexts/client"
 import type {
   UserWorksQuery,
   UserWorksQueryVariables,
 } from "@/__generated__/apollo"
 import { UserWorksDocument } from "@/__generated__/apollo"
+import { UserWorkList } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list"
+import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
+import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

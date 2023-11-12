@@ -1,5 +1,15 @@
 "use client"
 
+import {
+  MuteTagDocument,
+  ViewerMutedTagsDocument,
+} from "@/__generated__/apollo"
+import type {
+  MuteTagMutation,
+  MuteTagMutationVariables,
+  ViewerMutedTagsQuery,
+  ViewerMutedTagsQueryVariables,
+} from "@/__generated__/apollo"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,
@@ -13,16 +23,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react"
-import {
-  MuteTagDocument,
-  ViewerMutedTagsDocument,
-} from "@/__generated__/apollo"
-import type {
-  MuteTagMutation,
-  MuteTagMutationVariables,
-  ViewerMutedTagsQuery,
-  ViewerMutedTagsQueryVariables,
-} from "@/__generated__/apollo"
 import React, { useContext, useState } from "react"
 
 import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"

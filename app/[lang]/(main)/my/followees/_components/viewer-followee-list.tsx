@@ -1,5 +1,10 @@
 "use client"
 
+import type {
+  UserFolloweesQuery,
+  UserFolloweesQueryVariables,
+} from "@/__generated__/apollo"
+import { UserFolloweesDocument } from "@/__generated__/apollo"
 import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
 import { AppContext } from "@/app/_contexts/app-context"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
@@ -12,11 +17,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type {
-  UserFolloweesQuery,
-  UserFolloweesQueryVariables,
-} from "@/__generated__/apollo"
-import { UserFolloweesDocument } from "@/__generated__/apollo"
 import { useContext } from "react"
 
 export const ViewerFolloweeList: React.FC = () => {

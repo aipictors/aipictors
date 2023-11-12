@@ -1,12 +1,12 @@
 "use client"
 
-import { useSuspenseQuery } from "@apollo/client"
-import { Card, Stack, Text } from "@chakra-ui/react"
 import {
   MilestonesDocument,
   MilestonesQuery,
   MilestonesQueryVariables,
 } from "@/__generated__/apollo"
+import { useSuspenseQuery } from "@apollo/client"
+import { Card, Stack, Text } from "@chakra-ui/react"
 
 export const AppMilestoneList: React.FC = () => {
   const { data: milestones } = useSuspenseQuery<

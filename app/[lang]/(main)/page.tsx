@@ -1,6 +1,6 @@
-import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import type { HotTagsQuery, WorksQuery } from "@/__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "@/__generated__/apollo"
+import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
 

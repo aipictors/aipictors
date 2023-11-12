@@ -1,10 +1,10 @@
-import { UserAlbumList } from "@/app/[lang]/(main)/users/[user]/albums/_components/user-album-list"
-import { createClient } from "@/app/_contexts/client"
 import type {
   UserAlbumsQuery,
   UserAlbumsQueryVariables,
 } from "@/__generated__/apollo"
 import { UserAlbumsDocument } from "@/__generated__/apollo"
+import { UserAlbumList } from "@/app/[lang]/(main)/users/[user]/albums/_components/user-album-list"
+import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

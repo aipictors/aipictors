@@ -1,9 +1,9 @@
 "use client"
 
+import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { LoraModelsModal } from "@/app/[lang]/(beta)/generation/_components/lora-models-modal"
 import { SelectedLoraModel } from "@/app/[lang]/(beta)/generation/_components/selected-lora-model"
 import { Button, Stack, useDisclosure } from "@chakra-ui/react"
-import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 
 type Props = {
   /**

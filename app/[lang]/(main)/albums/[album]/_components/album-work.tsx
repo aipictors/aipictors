@@ -1,5 +1,6 @@
 "use client"
 
+import { AlbumWorksQuery } from "@/__generated__/apollo"
 import {
   Card,
   CardBody,
@@ -10,7 +11,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { AlbumWorksQuery } from "@/__generated__/apollo"
 
 import { TbHeart } from "react-icons/tb"
 

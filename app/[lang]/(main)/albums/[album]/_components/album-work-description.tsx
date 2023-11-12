@@ -1,8 +1,8 @@
 "use client"
 
+import { AlbumQuery } from "@/__generated__/apollo"
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { Avatar, Card, CardBody, HStack, Stack, Text } from "@chakra-ui/react"
-import { AlbumQuery } from "@/__generated__/apollo"
 
 type Props = {
   albumQuery: AlbumQuery

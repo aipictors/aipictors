@@ -1,5 +1,6 @@
 "use client"
 
+import type { WorksQuery } from "@/__generated__/apollo"
 import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import {
   Button,
@@ -11,7 +12,6 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import type { WorksQuery } from "@/__generated__/apollo"
 import Link from "next/link"
 import { TbQuestionMark } from "react-icons/tb"
 

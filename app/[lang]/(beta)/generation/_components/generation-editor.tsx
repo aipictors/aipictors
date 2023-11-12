@@ -1,5 +1,13 @@
 "use client"
 
+import {
+  CreateImageGenerationTaskDocument,
+  CreateImageGenerationTaskMutationResult,
+  CreateImageGenerationTaskMutationVariables,
+  ImageLoraModelsQuery,
+  type ImageModelsQuery,
+  type PromptCategoriesQuery,
+} from "@/__generated__/apollo"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config"
 import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
@@ -9,14 +17,6 @@ import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_componen
 import { Config } from "@/config"
 import { useMutation } from "@apollo/client"
 import { Button, Stack, useToast } from "@chakra-ui/react"
-import {
-  CreateImageGenerationTaskDocument,
-  CreateImageGenerationTaskMutationResult,
-  CreateImageGenerationTaskMutationVariables,
-  ImageLoraModelsQuery,
-  type ImageModelsQuery,
-  type PromptCategoriesQuery,
-} from "@/__generated__/apollo"
 import { useState } from "react"
 
 type Props = {

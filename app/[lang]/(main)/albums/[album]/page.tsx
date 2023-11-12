@@ -1,6 +1,3 @@
-import { AlbumArticle } from "@/app/[lang]/(main)/albums/[album]/_components/album-article"
-import { MainPage } from "@/app/_components/page/main-page"
-import { createClient } from "@/app/_contexts/client"
 import type {
   AlbumQuery,
   AlbumQueryVariables,
@@ -8,6 +5,9 @@ import type {
   AlbumWorksQueryVariables,
 } from "@/__generated__/apollo"
 import { AlbumDocument, AlbumWorksDocument } from "@/__generated__/apollo"
+import { AlbumArticle } from "@/app/[lang]/(main)/albums/[album]/_components/album-article"
+import { MainPage } from "@/app/_components/page/main-page"
+import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

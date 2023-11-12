@@ -1,5 +1,10 @@
 "use client"
 
+import type {
+  UpdateAccountPasswordMutation,
+  UpdateAccountPasswordMutationVariables,
+} from "@/__generated__/apollo"
+import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
 import { ApolloError, useMutation } from "@apollo/client"
 import {
   Button,
@@ -11,11 +16,6 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react"
-import type {
-  UpdateAccountPasswordMutation,
-  UpdateAccountPasswordMutationVariables,
-} from "@/__generated__/apollo"
-import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
 import { useState } from "react"
 import { TbEye } from "react-icons/tb"
 

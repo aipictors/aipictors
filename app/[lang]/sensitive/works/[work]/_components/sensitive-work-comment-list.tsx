@@ -1,4 +1,5 @@
 "use client"
+import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
 import {
@@ -11,7 +12,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { TbRubberStamp } from "react-icons/tb"
 
 type Props = {

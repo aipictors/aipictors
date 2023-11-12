@@ -1,5 +1,6 @@
 "use client"
 
+import type { UserQuery } from "@/__generated__/apollo"
 import { UserMuteMenu } from "@/app/[lang]/(main)/users/[user]/_components/user-mute-menu"
 import { UserPickUp } from "@/app/[lang]/(main)/users/[user]/_components/user-pick-up"
 import { FollowButton } from "@/app/_components/button/follow-button"
@@ -16,7 +17,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type { UserQuery } from "@/__generated__/apollo"
 import React from "react"
 import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
 

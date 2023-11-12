@@ -1,4 +1,3 @@
-import { SensitiveAlbumArticle } from "@/app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
 import {
   AlbumDocument,
   AlbumQuery,
@@ -7,6 +6,7 @@ import {
   AlbumWorksQuery,
   AlbumWorksQueryVariables,
 } from "@/__generated__/apollo"
+import { SensitiveAlbumArticle } from "@/app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
 
 import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"

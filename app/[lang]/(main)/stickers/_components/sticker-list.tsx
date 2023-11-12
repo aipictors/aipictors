@@ -1,7 +1,7 @@
 "use client"
+import type { StickersQuery } from "@/__generated__/apollo"
 import { StickerCard } from "@/app/[lang]/(main)/stickers/_components/sticker-card"
 import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
-import type { StickersQuery } from "@/__generated__/apollo"
 import React from "react"
 
 type Props = {

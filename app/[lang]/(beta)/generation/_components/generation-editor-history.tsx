@@ -1,5 +1,10 @@
 "use client"
 
+import {
+  ViewerImageGenerationTasksDocument,
+  ViewerImageGenerationTasksQuery,
+  ViewerImageGenerationTasksQueryVariables,
+} from "@/__generated__/apollo"
 import { InPaintingImageModal } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-modal"
 import { GenerationDownloadModal } from "@/app/[lang]/(beta)/generation/_components/generation-download-modal"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
@@ -18,11 +23,6 @@ import {
   Stack,
   useDisclosure,
 } from "@chakra-ui/react"
-import {
-  ViewerImageGenerationTasksDocument,
-  ViewerImageGenerationTasksQuery,
-  ViewerImageGenerationTasksQueryVariables,
-} from "@/__generated__/apollo"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 
 type Props = {

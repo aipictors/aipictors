@@ -1,5 +1,10 @@
 "use client"
 
+import type {
+  ViewerMessageThreadsQuery,
+  ViewerMessageThreadsQueryVariables,
+} from "@/__generated__/apollo"
+import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { useSuspenseQuery } from "@apollo/client"
 import {
@@ -12,11 +17,6 @@ import {
   Text,
   useInterval,
 } from "@chakra-ui/react"
-import type {
-  ViewerMessageThreadsQuery,
-  ViewerMessageThreadsQueryVariables,
-} from "@/__generated__/apollo"
-import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import Link from "next/link"
 import { startTransition } from "react"
 
