@@ -1,8 +1,8 @@
 "use client"
 
+import { SelectableWorkCard } from "@/app/[lang]/(main)/new/album/_components/selectable-work-card"
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
-import { SelectableWorkCard } from "app/[lang]/(main)/new/album/_components/selectable-work-card"
 
 export const NewAlbumWorkList: React.FC = () => {
   return (

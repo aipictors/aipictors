@@ -1,5 +1,5 @@
-import { RootProviders } from "app/_components/root-providers"
-import { Config } from "config"
+import { RootProviders } from "@/app/_components/root-providers"
+import { Config } from "@/config"
 import type { Metadata } from "next"
 import Script from "next/script"
 

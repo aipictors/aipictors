@@ -1,5 +1,11 @@
 "use client"
 
+import { InPaintingImageModal } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-modal"
+import { GenerationDownloadModal } from "@/app/[lang]/(beta)/generation/_components/generation-download-modal"
+import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
+import { GenerationHistoryDeleteModal } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-modal"
+import { SelectedWorkModal } from "@/app/[lang]/(beta)/generation/_components/selected-work-modal"
+import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
 import { useSuspenseQuery } from "@apollo/client"
 import {
   Box,
@@ -16,13 +22,7 @@ import {
   ViewerImageGenerationTasksDocument,
   ViewerImageGenerationTasksQuery,
   ViewerImageGenerationTasksQueryVariables,
-} from "__generated__/apollo"
-import { InPaintingImageModal } from "app/[lang]/(beta)/generation/_components/In-painting-image-modal"
-import { GenerationDownloadModal } from "app/[lang]/(beta)/generation/_components/generation-download-modal"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { GenerationHistoryDeleteModal } from "app/[lang]/(beta)/generation/_components/generation-history-delete-modal"
-import { SelectedWorkModal } from "app/[lang]/(beta)/generation/_components/selected-work-modal"
-import { GenerationHistoryCard } from "app/[lang]/(beta)/generation/history/_components/generation-history-card"
+} from "@/__generated__/apollo"
 import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
 
 type Props = {

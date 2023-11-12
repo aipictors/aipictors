@@ -1,8 +1,8 @@
 "use client"
 
+import { NavigationDrawer } from "@/app/_components/navigation-drawer"
+import { StaticNavigation } from "@/app/_components/static-navigation"
 import { useBreakpoint } from "@chakra-ui/react"
-import { NavigationDrawer } from "app/_components/navigation-drawer"
-import { StaticNavigation } from "app/_components/static-navigation"
 
 type Props = {
   children: React.ReactNode

@@ -1,4 +1,4 @@
-import { toElapsedTimeText } from "app/_utils/to-elapsed-time-text"
+import { toElapsedTimeText } from "@/app/_utils/to-elapsed-time-text"
 import { describe, expect, test } from "vitest"
 
 describe("toElapsedTimeText", () => {

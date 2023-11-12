@@ -1,5 +1,6 @@
 "use client"
 
+import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { useSuspenseQuery } from "@apollo/client"
 import {
   Avatar,
@@ -14,9 +15,8 @@ import {
 import type {
   ViewerMessageThreadsQuery,
   ViewerMessageThreadsQueryVariables,
-} from "__generated__/apollo"
-import { ViewerMessageThreadsDocument } from "__generated__/apollo"
-import { toDateTimeText } from "app/_utils/to-date-time-text"
+} from "@/__generated__/apollo"
+import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import Link from "next/link"
 import { startTransition } from "react"
 

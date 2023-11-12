@@ -1,5 +1,7 @@
 "use client"
 
+import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { HStack, Stack, useInterval, useToast } from "@chakra-ui/react"
 import type {
@@ -7,13 +9,11 @@ import type {
   CreateMessageMutationVariables,
   MessageThreadMessagesQuery,
   MessageThreadMessagesQueryVariables,
-} from "__generated__/apollo"
+} from "@/__generated__/apollo"
 import {
   CreateMessageDocument,
   MessageThreadMessagesDocument,
-} from "__generated__/apollo"
-import { MessageInput } from "app/[lang]/(beta)/support/chat/_components/message-input"
-import { SupportMessageList } from "app/[lang]/(beta)/support/chat/_components/support-message-list"
+} from "@/__generated__/apollo"
 import { startTransition } from "react"
 
 type Props = {

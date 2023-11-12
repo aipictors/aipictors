@@ -1,4 +1,4 @@
-import { toMoneyNumberText } from "app/_utils/to-money-number-text"
+import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
 import { describe, expect, test } from "vitest"
 
 describe("toMoneyNumberText", () => {

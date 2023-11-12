@@ -17,7 +17,7 @@ import {
   Tr,
   UnorderedList,
 } from "@chakra-ui/react"
-import { ImageModelsQuery } from "__generated__/apollo"
+import { ImageModelsQuery } from "@/__generated__/apollo"
 import { TbCheck } from "react-icons/tb"
 
 type Props = {

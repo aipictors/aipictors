@@ -1,5 +1,7 @@
 "use client"
 
+import { InPaintingImage } from "@/app/[lang]/(beta)/generation/_components/in-painting-image"
+import { InPaintingSetting } from "@/app/[lang]/(beta)/generation/_components/in-painting-setting"
 import {
   Button,
   HStack,
@@ -14,8 +16,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { InPaintingImage } from "app/[lang]/(beta)/generation/_components/in-painting-image"
-import { InPaintingSetting } from "app/[lang]/(beta)/generation/_components/in-painting-setting"
 
 type Props = {
   isOpen: boolean

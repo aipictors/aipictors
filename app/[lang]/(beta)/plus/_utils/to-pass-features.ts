@@ -1,5 +1,5 @@
-import { PassType } from "__generated__/apollo"
-import { Config } from "config"
+import { PassType } from "@/__generated__/apollo"
+import { Config } from "@/config"
 
 export const toPassFeatures = (passType: PassType) => {
   if (passType === "LITE") {

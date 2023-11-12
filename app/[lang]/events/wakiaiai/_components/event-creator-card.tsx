@@ -1,3 +1,6 @@
+import type { EventUser } from "@/app/[lang]/events/_types/event-user"
+import { EventUserTag } from "@/app/[lang]/events/wakiaiai/_components/event-user-tag"
+import { Config } from "@/config"
 import {
   Box,
   Button,
@@ -9,9 +12,6 @@ import {
   Image,
   Stack,
 } from "@chakra-ui/react"
-import type { EventUser } from "app/[lang]/events/_types/event-user"
-import { EventUserTag } from "app/[lang]/events/wakiaiai/_components/event-user-tag"
-import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
 

@@ -1,7 +1,7 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Stack } from "@chakra-ui/react"
-import { HomeNavigationButton } from "app/[lang]/(main)/_components/home-navigation-button"
 
 import React from "react"
 import { TbLock, TbMoodSmile, TbUser } from "react-icons/tb"

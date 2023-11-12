@@ -1,13 +1,13 @@
 "use client"
 
-import { useSuspenseQuery } from "@apollo/client"
-import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import {
   ViewerImageGenerationTasksDocument,
   ViewerImageGenerationTasksQuery,
   ViewerImageGenerationTasksQueryVariables,
-} from "__generated__/apollo"
-import { GenerationHistoryCard } from "app/[lang]/(beta)/generation/history/_components/generation-history-card"
+} from "@/__generated__/apollo"
+import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+import { useSuspenseQuery } from "@apollo/client"
+import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import React from "react"
 
 /**

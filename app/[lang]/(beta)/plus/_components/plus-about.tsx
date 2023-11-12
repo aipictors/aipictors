@@ -1,13 +1,13 @@
 "use client"
 
-import { HStack, Stack, Text, useToast } from "@chakra-ui/react"
 import {
   PassType,
   useCreatePassCheckoutSessionMutation,
-} from "__generated__/apollo"
-import { PassPlanList } from "app/[lang]/(beta)/plus/_components/pass-plan-list"
-import { PlusNoteList } from "app/[lang]/(beta)/plus/_components/plus-note-list"
-import { Config } from "config"
+} from "@/__generated__/apollo"
+import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
+import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-list"
+import { Config } from "@/config"
+import { HStack, Stack, Text, useToast } from "@chakra-ui/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
 
 export const PlusAbout: React.FC = () => {

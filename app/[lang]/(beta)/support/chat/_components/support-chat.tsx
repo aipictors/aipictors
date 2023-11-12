@@ -1,19 +1,19 @@
 "use client"
 
-import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Stack, useInterval, useToast } from "@chakra-ui/react"
 import type {
   CreateMessageMutationResult,
   CreateMessageMutationVariables,
   ViewerSupportMessagesQuery,
   ViewerSupportMessagesQueryVariables,
-} from "__generated__/apollo"
+} from "@/__generated__/apollo"
 import {
   CreateMessageDocument,
   ViewerSupportMessagesDocument,
-} from "__generated__/apollo"
-import { MessageInput } from "app/[lang]/(beta)/support/chat/_components/message-input"
-import { SupportMessageList } from "app/[lang]/(beta)/support/chat/_components/support-message-list"
+} from "@/__generated__/apollo"
+import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { Stack, useInterval, useToast } from "@chakra-ui/react"
 import { startTransition } from "react"
 
 export const SupportChat: React.FC = () => {

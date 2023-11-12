@@ -1,5 +1,7 @@
 "use client"
 
+import { ViewerAlbumList } from "@/app/[lang]/(main)/my/albums/_components/vIewer-album-list"
+import { ViewerAlbumAddModal } from "@/app/[lang]/(main)/my/albums/_components/viewer-album-add-modal"
 import {
   HStack,
   Icon,
@@ -8,8 +10,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { ViewerAlbumList } from "app/[lang]/(main)/my/albums/_components/vIewer-album-list"
-import { ViewerAlbumAddModal } from "app/[lang]/(main)/my/albums/_components/viewer-album-add-modal"
 import { TbPlus } from "react-icons/tb"
 
 export const ViewerAlbumHeader: React.FC = () => {

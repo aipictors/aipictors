@@ -1,5 +1,6 @@
 "use client"
 
+import { LoraImageModelCard } from "@/app/[lang]/(beta)/generation/_components/lora-image-model-card"
 import {
   Button,
   HStack,
@@ -14,8 +15,7 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react"
-import type { ImageLoraModelsQuery } from "__generated__/apollo"
-import { LoraImageModelCard } from "app/[lang]/(beta)/generation/_components/lora-image-model-card"
+import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { TbX } from "react-icons/tb"
 
 type Props = {

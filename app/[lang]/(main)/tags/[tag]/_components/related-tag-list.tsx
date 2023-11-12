@@ -1,8 +1,8 @@
 "use client"
 
+import { TagCard } from "@/app/[lang]/(main)/tags/[tag]/_components/tag-card"
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
-import { TagCard } from "app/[lang]/(main)/tags/[tag]/_components/tag-card"
 
 export const RelatedTagList: React.FC = () => {
   return (

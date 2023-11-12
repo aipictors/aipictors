@@ -1,5 +1,7 @@
 "use client"
 
+import { ThemeListItem } from "@/app/[lang]/(main)/themes/_components/theme-list-item"
+import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-calendar-cells"
 import {
   Button,
   HStack,
@@ -9,9 +11,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type { DailyThemesQuery } from "__generated__/apollo"
-import { ThemeListItem } from "app/[lang]/(main)/themes/_components/theme-list-item"
-import { createCalendarCells } from "app/[lang]/(main)/themes/_utils/create-calendar-cells"
+import type { DailyThemesQuery } from "@/__generated__/apollo"
 import { useRouter } from "next/navigation"
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 

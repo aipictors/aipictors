@@ -1,9 +1,9 @@
 "use client"
 
+import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
+import { PromptCategoriesModal } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-modal"
 import { Box, Button, Textarea, useDisclosure } from "@chakra-ui/react"
-import { PromptCategoriesQuery } from "__generated__/apollo"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { PromptCategoriesModal } from "app/[lang]/(beta)/generation/_components/prompt-categories-modal"
+import { PromptCategoriesQuery } from "@/__generated__/apollo"
 
 type Props = {
   promptText: string

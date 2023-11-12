@@ -1,3 +1,6 @@
+import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
+import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
+import { createClient } from "@/app/_contexts/client"
 import type {
   ImageLoraModelsQuery,
   ImageLoraModelsQueryVariables,
@@ -5,15 +8,12 @@ import type {
   ImageModelsQueryVariables,
   PromptCategoriesQuery,
   PromptCategoriesQueryVariables,
-} from "__generated__/apollo"
+} from "@/__generated__/apollo"
 import {
   ImageLoraModelsDocument,
   ImageModelsDocument,
   PromptCategoriesDocument,
-} from "__generated__/apollo"
-import { GenerationDocument } from "app/[lang]/(beta)/generation/_components/generation-document"
-import { GenerationEditor } from "app/[lang]/(beta)/generation/_components/generation-editor"
-import { createClient } from "app/_contexts/client"
+} from "@/__generated__/apollo"
 import type { Metadata } from "next"
 
 const GenerationPage = async () => {

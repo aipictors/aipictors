@@ -1,7 +1,7 @@
 "use client"
 
+import { toElapsedTimeText } from "@/app/_utils/to-elapsed-time-text"
 import { Card, HStack, Stack, Text, useColorModeValue } from "@chakra-ui/react"
-import { toElapsedTimeText } from "app/_utils/to-elapsed-time-text"
 
 type Props = {
   text: string

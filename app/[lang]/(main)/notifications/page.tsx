@@ -1,5 +1,5 @@
-import { NotificationArticle } from "app/[lang]/(main)/notifications/_components/notification-article"
-import { MainPage } from "app/_components/page/main-page"
+import { NotificationArticle } from "@/app/[lang]/(main)/notifications/_components/notification-article"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

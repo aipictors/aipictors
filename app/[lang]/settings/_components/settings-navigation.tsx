@@ -1,7 +1,7 @@
 "use client"
 
+import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
 import { Stack, useBreakpoint } from "@chakra-ui/react"
-import { SettingsRouteList } from "app/[lang]/settings/_components/settings-route-list"
 import React from "react"
 
 export const SettingsNavigation: React.FC = () => {

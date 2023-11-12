@@ -1,4 +1,4 @@
-import { MyStickers } from "app/[lang]/(main)/my/stickers/_components/my-stickers"
+import { MyStickers } from "@/app/[lang]/(main)/my/stickers/_components/my-stickers"
 import type { Metadata } from "next"
 
 const MyStickersPage = async () => {

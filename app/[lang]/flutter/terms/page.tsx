@@ -1,5 +1,5 @@
 import { join } from "path"
-import { FlutterTermsArticle } from "app/[lang]/flutter/terms/_components/flutter-terms-article"
+import { FlutterTermsArticle } from "@/app/[lang]/flutter/terms/_components/flutter-terms-article"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 

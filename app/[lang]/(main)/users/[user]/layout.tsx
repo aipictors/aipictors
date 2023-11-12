@@ -1,10 +1,10 @@
-import type { UserQuery, UserQueryVariables } from "__generated__/apollo"
-import { UserDocument } from "__generated__/apollo"
-import { UserProfile } from "app/[lang]/(main)/users/[user]/_components/user-profile"
-import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/_components/user-profile-header"
-import { UserTabs } from "app/[lang]/(main)/users/[user]/_components/user-tabs"
-import { MainPage } from "app/_components/page/main-page"
-import { createClient } from "app/_contexts/client"
+import { UserProfile } from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
+import { UserProfileHeader } from "@/app/[lang]/(main)/users/[user]/_components/user-profile-header"
+import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
+import { MainPage } from "@/app/_components/page/main-page"
+import { createClient } from "@/app/_contexts/client"
+import type { UserQuery, UserQueryVariables } from "@/__generated__/apollo"
+import { UserDocument } from "@/__generated__/apollo"
 import type { Metadata } from "next"
 
 type Props = {

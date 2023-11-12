@@ -1,7 +1,7 @@
 "use client"
 
+import { PassType } from "@/__generated__/apollo"
 import { ListItem, UnorderedList } from "@chakra-ui/react"
-import { PassType } from "__generated__/apollo"
 
 type Props = {
   passType: PassType

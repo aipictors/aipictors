@@ -1,5 +1,6 @@
 "use client"
 
+import { AlbumWorkDeleteModal } from "@/app/[lang]/(main)/my/albums/[album]/_components/album-work-delete-modal"
 import {
   Button,
   Card,
@@ -12,7 +13,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AlbumWorkDeleteModal } from "app/[lang]/(main)/my/albums/[album]/_components/album-work-delete-modal"
 import { TbTrash } from "react-icons/tb"
 
 export const ViewerAlbumWork: React.FC = () => {

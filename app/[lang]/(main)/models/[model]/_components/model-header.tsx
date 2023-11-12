@@ -1,7 +1,7 @@
 "use client"
 
 import { HStack, Stack, Switch, Text } from "@chakra-ui/react"
-import type { ImageModelQuery } from "__generated__/apollo"
+import type { ImageModelQuery } from "@/__generated__/apollo"
 
 type Props = {
   imageModelQuery: ImageModelQuery

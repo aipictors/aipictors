@@ -1,7 +1,7 @@
 "use client"
 
+import { AlbumCard } from "@/app/[lang]/(main)/albums/_components/album-card"
 import { Stack } from "@chakra-ui/react"
-import { AlbumCard } from "app/[lang]/(main)/albums/_components/album-card"
 
 export const AlbumList: React.FC = () => {
   return (

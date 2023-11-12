@@ -1,11 +1,11 @@
 "use client"
 
-import { Divider, HStack } from "@chakra-ui/react"
 // useState をインポート
-import { HomeHeader } from "app/[lang]/(main)/_components/home-header"
-import { SensitiveNavigation } from "app/[lang]/sensitive/_components/sensitive-navigation"
-import { HomeFooter } from "app/_components/home-footer"
-import { useNavigation } from "app/_hooks/use-navigation"
+import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
+import { SensitiveNavigation } from "@/app/[lang]/sensitive/_components/sensitive-navigation"
+import { HomeFooter } from "@/app/_components/home-footer"
+import { useNavigation } from "@/app/_hooks/use-navigation"
+import { Divider, HStack } from "@chakra-ui/react"
 
 type Props = {
   children: React.ReactNode

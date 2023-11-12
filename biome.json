@@ -26,6 +26,6 @@
     }
   },
   "files": {
-    "ignore": [".next", "node_modules", "__generated__"]
+    "ignore": [".next", "node_modules", "@/__generated__"]
   }
 }

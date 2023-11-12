@@ -1,8 +1,8 @@
 "use client"
 
+import { PassType } from "@/__generated__/apollo"
+import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
 import { ListItem, UnorderedList } from "@chakra-ui/react"
-import { PassType } from "__generated__/apollo"
-import { toPassFeatures } from "app/[lang]/(beta)/plus/_utils/to-pass-features"
 
 type Props = {
   passType: PassType

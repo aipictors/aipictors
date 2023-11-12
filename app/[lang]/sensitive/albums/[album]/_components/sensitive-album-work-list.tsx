@@ -1,7 +1,7 @@
 "use client"
 
-import { AlbumWorksQuery } from "__generated__/apollo"
-import { AlbumWork } from "app/[lang]/(main)/albums/[album]/_components/album-work"
+import { AlbumWork } from "@/app/[lang]/(main)/albums/[album]/_components/album-work"
+import { AlbumWorksQuery } from "@/__generated__/apollo"
 
 type Props = {
   albumWorksQuery: AlbumWorksQuery

@@ -1,5 +1,7 @@
 "use client"
 
+import { InPaintingSelectedPromptModal } from "@/app/[lang]/(beta)/generation/_components/in-painting-selected-prompt-modal"
+import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
 import {
   Button,
   HStack,
@@ -15,8 +17,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { InPaintingSelectedPromptModal } from "app/[lang]/(beta)/generation/_components/in-painting-selected-prompt-modal"
-import { StarRating } from "app/[lang]/(beta)/generation/_components/star-rating"
 import { useState } from "react"
 
 type Props = {

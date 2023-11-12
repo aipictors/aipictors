@@ -1,5 +1,7 @@
 "use client"
 
+import { AutoResizeTextarea } from "@/app/_components/auto-resize-textarea"
+import { uploadFile } from "@/app/_utils/upload-file"
 import {
   Box,
   Button,
@@ -25,8 +27,6 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
-import { AutoResizeTextarea } from "app/_components/auto-resize-textarea"
-import { uploadFile } from "app/_utils/upload-file"
 import type { SetStateAction } from "react"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone"

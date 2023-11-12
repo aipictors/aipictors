@@ -1,5 +1,5 @@
-import { AboutDocument } from "app/[lang]/(main)/about/_components/about-document"
-import { MainPage } from "app/_components/page/main-page"
+import { AboutDocument } from "@/app/[lang]/(main)/about/_components/about-document"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

@@ -1,5 +1,5 @@
+import type { EventUserType } from "@/app/[lang]/events/_types/event-user-type"
 import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/react"
-import type { EventUserType } from "app/[lang]/events/_types/event-user-type"
 import { TbFlame, TbPhoto, TbShoppingBag } from "react-icons/tb"
 
 type Props = {

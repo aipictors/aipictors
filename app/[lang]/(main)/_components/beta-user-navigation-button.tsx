@@ -1,5 +1,8 @@
 "use client"
 
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
+import { AppContext } from "@/app/_contexts/app-context"
 import {
   Avatar,
   Icon,
@@ -12,9 +15,6 @@ import {
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react"
-import { LoginModal } from "app/[lang]/(main)/_components/login-modal"
-import { LogoutModal } from "app/[lang]/(main)/_components/logout-modal"
-import { AppContext } from "app/_contexts/app-context"
 
 import Link from "next/link"
 import { useContext } from "react"

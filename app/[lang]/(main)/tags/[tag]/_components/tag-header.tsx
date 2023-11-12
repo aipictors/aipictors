@@ -1,5 +1,6 @@
 "use client"
 
+import { SearchSettingModal } from "@/app/[lang]/(main)/tags/[tag]/_components/search-setting-modal"
 import {
   Button,
   HStack,
@@ -8,7 +9,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { SearchSettingModal } from "app/[lang]/(main)/tags/[tag]/_components/search-setting-modal"
 
 export const TagHeader: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()

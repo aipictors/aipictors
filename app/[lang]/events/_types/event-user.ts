@@ -1,5 +1,5 @@
-import type { EventUserLink } from "app/[lang]/events/_types/event-user-link"
-import type { EventUserType } from "app/[lang]/events/_types/event-user-type"
+import type { EventUserLink } from "@/app/[lang]/events/_types/event-user-link"
+import type { EventUserType } from "@/app/[lang]/events/_types/event-user-type"
 
 export type EventUser = {
   name: string

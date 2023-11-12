@@ -1,8 +1,8 @@
 "use client"
 
+import { ModelButton } from "@/app/[lang]/(main)/tags/[tag]/_components/model-button"
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
-import { ModelButton } from "app/[lang]/(main)/tags/[tag]/_components/model-button"
 
 export const RelatedModelList: React.FC = () => {
   return (

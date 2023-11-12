@@ -3,7 +3,7 @@
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 
-import { SensitiveSelectableWorkCard } from "app/[lang]/sensitive/albums/new/_components/sensitive-selectable-work-card"
+import { SensitiveSelectableWorkCard } from "@/app/[lang]/sensitive/albums/new/_components/sensitive-selectable-work-card"
 
 export const SensitiveNewAlbumWorkList: React.FC = () => {
   return (

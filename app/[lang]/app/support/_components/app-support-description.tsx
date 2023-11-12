@@ -1,7 +1,7 @@
 "use client"
 
+import { useText } from "@/app/_hooks/use-text"
 import { HStack, Stack, Text } from "@chakra-ui/react"
-import { useText } from "app/_hooks/use-text"
 
 export const AppSupportDescription: React.FC = () => {
   const t = useText()

@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
-import { AlbumQuery } from "__generated__/apollo"
+import { AlbumQuery } from "@/__generated__/apollo"
 import { TbShare2 } from "react-icons/tb"
 
 type Props = {

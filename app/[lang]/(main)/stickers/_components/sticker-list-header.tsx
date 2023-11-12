@@ -1,5 +1,6 @@
 "use client"
 
+import { AddStickerModal } from "@/app/[lang]/(main)/stickers/_components/add-sticker-modal"
 import {
   Button,
   Icon,
@@ -8,7 +9,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AddStickerModal } from "app/[lang]/(main)/stickers/_components/add-sticker-modal"
 import { TbPlus } from "react-icons/tb"
 
 export const StickerListHeader: React.FC = () => {

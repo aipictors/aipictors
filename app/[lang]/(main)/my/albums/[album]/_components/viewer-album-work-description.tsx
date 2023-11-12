@@ -1,5 +1,6 @@
 "use client"
 
+import { DescriptionSettingModal } from "@/app/[lang]/(main)/my/albums/[album]/_components/description-setting-modal"
 import {
   Avatar,
   Card,
@@ -11,7 +12,6 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { DescriptionSettingModal } from "app/[lang]/(main)/my/albums/[album]/_components/description-setting-modal"
 import { TbSettings } from "react-icons/tb"
 
 export const ViewerAlbumWorkDescription: React.FC = () => {

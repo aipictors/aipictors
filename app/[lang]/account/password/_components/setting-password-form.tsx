@@ -14,8 +14,8 @@ import {
 import type {
   UpdateAccountPasswordMutation,
   UpdateAccountPasswordMutationVariables,
-} from "__generated__/apollo"
-import { UpdateAccountPasswordDocument } from "__generated__/apollo"
+} from "@/__generated__/apollo"
+import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
 import { useState } from "react"
 import { TbEye } from "react-icons/tb"
 

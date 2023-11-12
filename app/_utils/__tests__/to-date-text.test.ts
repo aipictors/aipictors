@@ -1,4 +1,4 @@
-import { toDateText } from "app/_utils/to-date-text"
+import { toDateText } from "@/app/_utils/to-date-text"
 import { describe, expect, test } from "vitest"
 
 describe("toDateText", () => {

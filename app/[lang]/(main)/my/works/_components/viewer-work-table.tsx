@@ -1,7 +1,7 @@
 "use client"
 
+import { ViewerWorkTableItem } from "@/app/[lang]/(main)/my/works/_components/viewer-work-table-item"
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react"
-import { ViewerWorkTableItem } from "app/[lang]/(main)/my/works/_components/viewer-work-table-item"
 
 export const ViewerWorkTable: React.FC = () => {
   return (

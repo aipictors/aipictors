@@ -1,5 +1,6 @@
 "use client"
 
+import { TitleWorkList } from "@/app/[lang]/(main)/my/albums/_components/title-work-list"
 import {
   Button,
   HStack,
@@ -18,7 +19,6 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react"
-import { TitleWorkList } from "app/[lang]/(main)/my/albums/_components/title-work-list"
 
 type Props = {
   isOpen: boolean

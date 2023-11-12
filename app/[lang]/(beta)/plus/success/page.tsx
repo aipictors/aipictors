@@ -1,4 +1,4 @@
-import { MainPlusDocument } from "app/[lang]/(beta)/plus/success/_components/plus-success-document"
+import { MainPlusDocument } from "@/app/[lang]/(beta)/plus/success/_components/plus-success-document"
 import type { Metadata } from "next"
 
 /**

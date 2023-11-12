@@ -1,6 +1,6 @@
 "use client"
+import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, HStack, Image, Stack, Text } from "@chakra-ui/react"
-import { toDateTimeText } from "app/_utils/to-date-time-text"
 
 type Props = {
   userIconImageURL?: string

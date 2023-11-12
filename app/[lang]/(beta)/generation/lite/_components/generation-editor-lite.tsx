@@ -1,5 +1,7 @@
 "use client"
 
+import { PromptCategoriesQuery } from "@/__generated__/apollo"
+import { PromptCategoryIcon } from "@/app/[lang]/(beta)/generation/_components/prompt-category-icon"
 import {
   Accordion,
   AccordionButton,
@@ -12,8 +14,6 @@ import {
   Text,
   Wrap,
 } from "@chakra-ui/react"
-import { PromptCategoriesQuery } from "__generated__/apollo"
-import { PromptCategoryIcon } from "app/[lang]/(beta)/generation/_components/prompt-category-icon"
 import { useState } from "react"
 
 type Props = {

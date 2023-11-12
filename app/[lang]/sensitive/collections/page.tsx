@@ -1,4 +1,4 @@
-import { PlaceholderPage } from "app/_components/placeholder-page"
+import { PlaceholderPage } from "@/app/_components/placeholder-page"
 import type { Metadata } from "next"
 
 const SensitiveCollectionsPage = async () => {

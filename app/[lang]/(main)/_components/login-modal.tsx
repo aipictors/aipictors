@@ -1,9 +1,9 @@
 "use client"
 
+import { LoginModalForm } from "@/app/[lang]/(main)/_components/login-modal-form"
+import type { FormLogin } from "@/app/_types/form-login"
 import { Modal, ModalContent, ModalOverlay, useToast } from "@chakra-ui/react"
-import { useLoginWithPasswordMutation } from "__generated__/apollo"
-import { LoginModalForm } from "app/[lang]/(main)/_components/login-modal-form"
-import type { FormLogin } from "app/_types/form-login"
+import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 
 type Props = {

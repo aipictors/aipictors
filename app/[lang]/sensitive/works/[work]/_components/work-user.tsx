@@ -1,6 +1,6 @@
 "use client"
+import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { Avatar, Button, Card, HStack, Stack, Text } from "@chakra-ui/react"
-import { PromptonRequestButton } from "app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 
 type Props = {
   userName: string

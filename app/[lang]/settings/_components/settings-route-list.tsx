@@ -1,8 +1,8 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { Config } from "@/config"
 import { Stack } from "@chakra-ui/react"
-import { HomeNavigationButton } from "app/[lang]/(main)/_components/home-navigation-button"
-import { Config } from "config"
 import React from "react"
 import {
   TbBell,

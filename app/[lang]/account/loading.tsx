@@ -1,6 +1,6 @@
 "use client"
 
-import RootLoading from "app/loading"
+import RootLoading from "@/app/loading"
 
 const AccountLoading: React.FC = () => {
   return <RootLoading />

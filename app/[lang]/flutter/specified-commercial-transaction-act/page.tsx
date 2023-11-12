@@ -1,4 +1,4 @@
-import { FlutterSctaArticle } from "app/[lang]/flutter/specified-commercial-transaction-act/_components/flutter-scta-article"
+import { FlutterSctaArticle } from "@/app/[lang]/flutter/specified-commercial-transaction-act/_components/flutter-scta-article"
 import type { Metadata } from "next"
 
 const FlutterSctaPage = async () => {

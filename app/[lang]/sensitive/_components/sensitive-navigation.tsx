@@ -1,7 +1,7 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
-import { HomeNavigationButton } from "app/[lang]/(main)/_components/home-navigation-button"
 import {
   TbAlbum,
   TbArrowBackUp,

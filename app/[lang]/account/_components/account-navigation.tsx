@@ -1,7 +1,7 @@
 "use client"
 
+import { AccountRouteList } from "@/app/[lang]/account/_components/account-route-list"
 import { Stack, useBreakpoint } from "@chakra-ui/react"
-import { AccountRouteList } from "app/[lang]/account/_components/account-route-list"
 import React from "react"
 
 export const AccountNavigation: React.FC = () => {

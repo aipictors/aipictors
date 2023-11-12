@@ -1,7 +1,7 @@
 "use client"
 
+import type { FormLogin } from "@/app/_types/form-login"
 import { Button, Input, Stack } from "@chakra-ui/react"
-import type { FormLogin } from "app/_types/form-login"
 import { useState } from "react"
 
 type Props = {

@@ -1,9 +1,9 @@
 "use client"
 
+import { PassType } from "@/__generated__/apollo"
+import { PassPlanDescription } from "@/app/[lang]/(beta)/plus/_components/pass-plan-description"
+import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
 import { Box, Stack } from "@chakra-ui/react"
-import { PassType } from "__generated__/apollo"
-import { PassPlanDescription } from "app/[lang]/(beta)/plus/_components/pass-plan-description"
-import { toPassFeatures } from "app/[lang]/(beta)/plus/_utils/to-pass-features"
 
 type Props = {
   isLoading: boolean

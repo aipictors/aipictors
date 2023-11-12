@@ -1,8 +1,8 @@
-import type { DailyThemesQuery } from "__generated__/apollo"
-import { DailyThemesDocument } from "__generated__/apollo"
-import { ThemeList } from "app/[lang]/(main)/themes/_components/theme-list"
-import { MainPage } from "app/_components/page/main-page"
-import { createClient } from "app/_contexts/client"
+import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
+import { MainPage } from "@/app/_components/page/main-page"
+import { createClient } from "@/app/_contexts/client"
+import type { DailyThemesQuery } from "@/__generated__/apollo"
+import { DailyThemesDocument } from "@/__generated__/apollo"
 import type { Metadata } from "next"
 
 const SensitiveThemesPage = async () => {

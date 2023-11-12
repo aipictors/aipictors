@@ -1,5 +1,9 @@
 "use client"
 
+import type { EventUser } from "@/app/[lang]/events/_types/event-user"
+import { EventCreatorCard } from "@/app/[lang]/events/wakiaiai/_components/event-creator-card"
+import { EventImage } from "@/app/[lang]/events/wakiaiai/_components/event-image"
+import { Config } from "@/config"
 import {
   Box,
   Button,
@@ -12,10 +16,6 @@ import {
   Text,
   useColorMode,
 } from "@chakra-ui/react"
-import type { EventUser } from "app/[lang]/events/_types/event-user"
-import { EventCreatorCard } from "app/[lang]/events/wakiaiai/_components/event-creator-card"
-import { EventImage } from "app/[lang]/events/wakiaiai/_components/event-image"
-import { Config } from "config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { useEffect } from "react"
 import { TbBrandTwitterFilled, TbExternalLink, TbMail } from "react-icons/tb"

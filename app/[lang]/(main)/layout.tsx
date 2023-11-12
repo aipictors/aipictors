@@ -1,5 +1,11 @@
 "use client"
 
+import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
+import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
+import { HomeFooter } from "@/app/_components/home-footer"
+import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import {
   Divider,
   HStack,
@@ -8,12 +14,6 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import "@splidejs/react-splide/css"
-import { HomeHeader } from "app/[lang]/(main)/_components/home-header"
-import { HomeNavigationList } from "app/[lang]/(main)/_components/home-navigation-list"
-import { LoginModal } from "app/[lang]/(main)/_components/login-modal"
-import { LogoutModal } from "app/[lang]/(main)/_components/logout-modal"
-import { HomeFooter } from "app/_components/home-footer"
-import { ResponsiveNavigation } from "app/_components/responsive-navigation"
 import { useEffect } from "react"
 
 type Props = {

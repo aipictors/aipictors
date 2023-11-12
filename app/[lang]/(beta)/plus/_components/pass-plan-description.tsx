@@ -1,7 +1,7 @@
 "use client"
 
+import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
 import { Box, Button, Card, Stack, Text } from "@chakra-ui/react"
-import { toMoneyNumberText } from "app/_utils/to-money-number-text"
 
 type Props = {
   title: string

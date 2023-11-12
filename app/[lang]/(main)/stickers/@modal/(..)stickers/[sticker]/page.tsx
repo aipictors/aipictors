@@ -1,4 +1,4 @@
-import { StickerModal } from "app/[lang]/(main)/stickers/@modal/(..)stickers/[sticker]/_components/sticker-modal"
+import { StickerModal } from "@/app/[lang]/(main)/stickers/@modal/(..)stickers/[sticker]/_components/sticker-modal"
 import type { Metadata } from "next"
 
 /**

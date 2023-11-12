@@ -1,7 +1,7 @@
 "use client"
 
+import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { Box, Button, Stack, Textarea, Wrap } from "@chakra-ui/react"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/generation-editor-card"
 
 type Props = {
   promptText: string

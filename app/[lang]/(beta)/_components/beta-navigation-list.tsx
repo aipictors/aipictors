@@ -1,8 +1,8 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { AppContext } from "@/app/_contexts/app-context"
 import { Box, Divider, Stack, useColorMode } from "@chakra-ui/react"
-import { HomeNavigationButton } from "app/[lang]/(main)/_components/home-navigation-button"
-import { AppContext } from "app/_contexts/app-context"
 import { useContext } from "react"
 import {
   TbBolt,

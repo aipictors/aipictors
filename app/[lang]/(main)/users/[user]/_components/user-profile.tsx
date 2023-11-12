@@ -1,5 +1,13 @@
 "use client"
 
+import { UserMuteMenu } from "@/app/[lang]/(main)/users/[user]/_components/user-mute-menu"
+import { UserPickUp } from "@/app/[lang]/(main)/users/[user]/_components/user-pick-up"
+import { FollowButton } from "@/app/_components/button/follow-button"
+import { LinkEmailButton } from "@/app/_components/button/link-email-button"
+import { LinkWebButton } from "@/app/_components/button/link-web-button"
+import { ShareButton } from "@/app/_components/button/share-button"
+import { SocialInstagramButton } from "@/app/_components/button/social-instagram-button"
+import { SocialTwitterButton } from "@/app/_components/button/social-twitter-button"
 import {
   Avatar,
   HStack,
@@ -8,15 +16,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type { UserQuery } from "__generated__/apollo"
-import { UserMuteMenu } from "app/[lang]/(main)/users/[user]/_components/user-mute-menu"
-import { UserPickUp } from "app/[lang]/(main)/users/[user]/_components/user-pick-up"
-import { FollowButton } from "app/_components/button/follow-button"
-import { LinkEmailButton } from "app/_components/button/link-email-button"
-import { LinkWebButton } from "app/_components/button/link-web-button"
-import { ShareButton } from "app/_components/button/share-button"
-import { SocialInstagramButton } from "app/_components/button/social-instagram-button"
-import { SocialTwitterButton } from "app/_components/button/social-twitter-button"
+import type { UserQuery } from "@/__generated__/apollo"
 import React from "react"
 import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
 

@@ -1,5 +1,12 @@
 "use client"
 
+import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config"
+import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
+import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
+import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
+import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
+import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
+import { Config } from "@/config"
 import { useMutation } from "@apollo/client"
 import { Button, Stack, useToast } from "@chakra-ui/react"
 import {
@@ -9,14 +16,7 @@ import {
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
-} from "__generated__/apollo"
-import { GenerationEditorConfig } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config"
-import { GenerationEditorHistory } from "app/[lang]/(beta)/generation/_components/generation-editor-history"
-import { GenerationEditorLayout } from "app/[lang]/(beta)/generation/_components/generation-editor-layout"
-import { GenerationEditorModels } from "app/[lang]/(beta)/generation/_components/generation-editor-models"
-import { GenerationEditorNegativePrompt } from "app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
-import { GenerationEditorPrompt } from "app/[lang]/(beta)/generation/_components/generation-editor-prompt"
-import { Config } from "config"
+} from "@/__generated__/apollo"
 import { useState } from "react"
 
 type Props = {

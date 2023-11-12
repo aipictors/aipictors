@@ -1,11 +1,11 @@
+import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
+import { UserStickerList } from "@/app/[lang]/(main)/users/[user]/stickers/_components/user-sticker-list"
+import { createClient } from "@/app/_contexts/client"
 import type {
   UserStickersQuery,
   UserStickersQueryVariables,
-} from "__generated__/apollo"
-import { UserStickersDocument } from "__generated__/apollo"
-import { UserWorkListActions } from "app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
-import { UserStickerList } from "app/[lang]/(main)/users/[user]/stickers/_components/user-sticker-list"
-import { createClient } from "app/_contexts/client"
+} from "@/__generated__/apollo"
+import { UserStickersDocument } from "@/__generated__/apollo"
 import type { Metadata } from "next"
 
 type Props = {

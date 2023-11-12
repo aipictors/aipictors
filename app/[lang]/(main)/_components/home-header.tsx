@@ -1,5 +1,7 @@
 "use client"
 
+import { BetaUserNavigationButton } from "@/app/[lang]/(main)/_components/beta-user-navigation-button"
+import { Config } from "@/config"
 import {
   Avatar,
   Box,
@@ -11,8 +13,6 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BetaUserNavigationButton } from "app/[lang]/(main)/_components/beta-user-navigation-button"
-import { Config } from "config"
 import Link from "next/link"
 import React from "react"
 import { TbBellFilled, TbFolderFilled, TbMenu2, TbSearch } from "react-icons/tb"

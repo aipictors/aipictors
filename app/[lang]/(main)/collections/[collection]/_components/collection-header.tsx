@@ -1,5 +1,6 @@
 "use client"
 
+import { FollowButton } from "@/app/_components/button/follow-button"
 import {
   Avatar,
   HStack,
@@ -9,7 +10,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { FollowButton } from "app/_components/button/follow-button"
 import { TbFlag } from "react-icons/tb"
 
 export const CollectionHeader: React.FC = () => {

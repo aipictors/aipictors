@@ -1,9 +1,9 @@
-import type { ImageModelQuery, WorksQuery } from "__generated__/apollo"
-import { ImageModelDocument, WorksDocument } from "__generated__/apollo"
-import { ModelHeader } from "app/[lang]/(main)/models/[model]/_components/model-header"
-import { WorkList } from "app/[lang]/(main)/works/_components/work-list"
-import { MainPage } from "app/_components/page/main-page"
-import { createClient } from "app/_contexts/client"
+import { ModelHeader } from "@/app/[lang]/(main)/models/[model]/_components/model-header"
+import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
+import { MainPage } from "@/app/_components/page/main-page"
+import { createClient } from "@/app/_contexts/client"
+import type { ImageModelQuery, WorksQuery } from "@/__generated__/apollo"
+import { ImageModelDocument, WorksDocument } from "@/__generated__/apollo"
 import type { Metadata } from "next"
 
 type Props = {

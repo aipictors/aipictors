@@ -1,11 +1,11 @@
 "use client"
 
+import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
+import { ModelsModal } from "@/app/[lang]/(beta)/generation/_components/models-modal"
+import { SelectedModel } from "@/app/[lang]/(beta)/generation/_components/selected-model"
+import { Config } from "@/config"
 import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react"
-import type { ImageModelsQuery } from "__generated__/apollo"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { ModelsModal } from "app/[lang]/(beta)/generation/_components/models-modal"
-import { SelectedModel } from "app/[lang]/(beta)/generation/_components/selected-model"
-import { Config } from "config"
+import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { useState } from "react"
 
 type Props = {

@@ -1,3 +1,4 @@
+import { SensitiveAlbumArticle } from "@/app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
 import {
   AlbumDocument,
   AlbumQuery,
@@ -5,11 +6,10 @@ import {
   AlbumWorksDocument,
   AlbumWorksQuery,
   AlbumWorksQueryVariables,
-} from "__generated__/apollo"
-import { SensitiveAlbumArticle } from "app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
+} from "@/__generated__/apollo"
 
-import { MainPage } from "app/_components/page/main-page"
-import { createClient } from "app/_contexts/client"
+import { MainPage } from "@/app/_components/page/main-page"
+import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
 type Props = {

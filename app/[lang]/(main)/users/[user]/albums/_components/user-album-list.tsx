@@ -1,8 +1,8 @@
 "use client"
 
+import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
-import type { UserAlbumsQuery } from "__generated__/apollo"
-import { WorkCard } from "app/[lang]/(main)/works/_components/work-card"
+import type { UserAlbumsQuery } from "@/__generated__/apollo"
 import React from "react"
 
 type Props = {

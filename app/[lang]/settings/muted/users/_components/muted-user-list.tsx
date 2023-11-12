@@ -1,5 +1,15 @@
 "use client"
 
+import {
+  MuteUserDocument,
+  MuteUserMutation,
+  MuteUserMutationVariables,
+  ViewerMutedUsersDocument,
+  ViewerMutedUsersQuery,
+  ViewerMutedUsersQueryVariables,
+} from "@/__generated__/apollo"
+import { MutedUser } from "@/app/[lang]/settings/muted/users/_components/muted-user"
+import { AppContext } from "@/app/_contexts/app-context"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   Alert,
@@ -9,18 +19,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import type {
-  MuteUserMutation,
-  MuteUserMutationVariables,
-  ViewerMutedUsersQuery,
-  ViewerMutedUsersQueryVariables,
-} from "__generated__/apollo"
-import {
-  MuteUserDocument,
-  ViewerMutedUsersDocument,
-} from "__generated__/apollo"
-import { MutedUser } from "app/[lang]/settings/muted/users/_components/muted-user"
-import { AppContext } from "app/_contexts/app-context"
 import { useContext } from "react"
 
 export const MutedUserList: React.FC = () => {

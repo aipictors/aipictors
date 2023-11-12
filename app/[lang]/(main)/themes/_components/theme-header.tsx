@@ -1,6 +1,6 @@
 "use client"
+import { ThemeCard } from "@/app/[lang]/(main)/themes/_components/theme-card"
 import { Button, Divider, HStack, Stack, Text } from "@chakra-ui/react"
-import { ThemeCard } from "app/[lang]/(main)/themes/_components/theme-card"
 
 export const ThemeHeader: React.FC = () => {
   return (

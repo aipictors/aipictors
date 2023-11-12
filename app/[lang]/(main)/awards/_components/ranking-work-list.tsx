@@ -1,8 +1,8 @@
 "use client"
 
+import { RankingCard } from "@/app/[lang]/(main)/awards/_components/ranking-card"
 import { SimpleGrid } from "@chakra-ui/react"
-import type { WorkAwardsQuery } from "__generated__/apollo"
-import { RankingCard } from "app/[lang]/(main)/awards/_components/ranking-card"
+import type { WorkAwardsQuery } from "@/__generated__/apollo"
 
 type Props = {
   awards: NonNullable<WorkAwardsQuery["workAwards"]>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Avatar, Button, HStack, Image, Stack, Text } from "@chakra-ui/react"
-import type { UserQuery } from "__generated__/apollo"
+import type { UserQuery } from "@/__generated__/apollo"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>

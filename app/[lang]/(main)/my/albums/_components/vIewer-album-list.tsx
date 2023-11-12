@@ -1,7 +1,7 @@
 "use client"
 
+import { ViewerAlbum } from "@/app/[lang]/(main)/my/albums/_components/viewer-album"
 import { HStack } from "@chakra-ui/react"
-import { ViewerAlbum } from "app/[lang]/(main)/my/albums/_components/viewer-album"
 
 export const ViewerAlbumList: React.FC = () => {
   return (

@@ -1,14 +1,14 @@
 "use client"
 
+import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
+import { GenerationEditorConfigLoraModels } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-lora-models"
+import { GenerationEditorConfigScale } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-scale"
+import { GenerationEditorConfigSeed } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-seed"
+import { GenerationEditorConfigSize } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-size"
+import { GenerationEditorConfigStep } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-step"
+import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-vae"
+import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { Box, Stack } from "@chakra-ui/react"
-import type { ImageLoraModelsQuery } from "__generated__/apollo"
-import { GenerationEditorConfigLoraModels } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-lora-models"
-import { GenerationEditorConfigScale } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-scale"
-import { GenerationEditorConfigSeed } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-seed"
-import { GenerationEditorConfigSize } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-size"
-import { GenerationEditorConfigStep } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-step"
-import { GenerationEditorConfigVae } from "app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-vae"
-import { GenerationEditorCard } from "app/[lang]/(beta)/generation/_components/generation-editor-card"
 
 type Props = {
   /**
