@@ -5,9 +5,9 @@ import type {
   WorkAwardsQueryVariables,
 } from "__generated__/apollo"
 import { WorkAwardsDocument } from "__generated__/apollo"
-import { RankingHeader } from "app/[lang]/(main)/awards/_components/RankingHeader"
-import { RankingWorkList } from "app/[lang]/(main)/awards/_components/RankingWorkList"
-import { MainPage } from "app/_components/page/MainPage"
+import { RankingHeader } from "app/[lang]/(main)/awards/_components/ranking-header"
+import { RankingWorkList } from "app/[lang]/(main)/awards/_components/ranking-work-list"
+import { MainPage } from "app/_components/page/main-page"
 import { createClient } from "app/_contexts/client"
 
 type Props = {

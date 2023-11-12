@@ -3,12 +3,12 @@
 import "@splidejs/react-splide/css"
 
 import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
-import { BetaHeader } from "app/[lang]/(beta)/_components/BetaHeader"
-import { BetaNavigationList } from "app/[lang]/(beta)/_components/BetaNavigationList"
-import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
-import { HomeFooter } from "app/_components/HomeFooter"
-import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
+import { BetaHeader } from "app/[lang]/(beta)/_components/beta-header"
+import { BetaNavigationList } from "app/[lang]/(beta)/_components/beta-navigation-list"
+import { LoginModal } from "app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "app/[lang]/(main)/_components/logout-modal"
+import { HomeFooter } from "app/_components/home-footer"
+import { ResponsiveNavigation } from "app/_components/responsive-navigation"
 
 type Props = {
   children: React.ReactNode

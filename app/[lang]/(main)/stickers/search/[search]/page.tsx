@@ -3,12 +3,12 @@ import type {
   StickersQueryVariables,
 } from "__generated__/apollo"
 import { StickersDocument } from "__generated__/apollo"
-import { StickerList } from "app/[lang]/(main)/stickers/_components/StickerList"
+import { StickerList } from "app/[lang]/(main)/stickers/_components/sticker-list"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 
 import { Stack, Text } from "@chakra-ui/react"
-import StickerSearchForm from "app/[lang]/(main)/stickers/_components/StickerSearchForm"
+import StickerSearchForm from "app/[lang]/(main)/stickers/_components/sticker-search-form"
 
 type Props = {
   params: {

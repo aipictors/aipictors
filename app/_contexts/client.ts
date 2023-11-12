@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
-import { typePolicies } from "app/_contexts/typePolicies"
+import { typePolicies } from "app/_contexts/type-policies"
 import { Config } from "config"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"

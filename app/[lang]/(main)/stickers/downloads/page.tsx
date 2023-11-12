@@ -1,4 +1,4 @@
-import { DownloadStickerList } from "app/[lang]/(main)/stickers/downloads/_components/DownloadStickerList"
+import { DownloadStickerList } from "app/[lang]/(main)/stickers/downloads/_components/download-sticker-list"
 import type { Metadata } from "next"
 
 /**

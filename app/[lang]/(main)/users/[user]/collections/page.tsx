@@ -1,4 +1,4 @@
-import { UserCollectionList } from "app/[lang]/(main)/users/[user]/collections/_components/UserCollectionList"
+import { UserCollectionList } from "app/[lang]/(main)/users/[user]/collections/_components/user-collection-list"
 import type { Metadata } from "next"
 
 const UserCollectionsPage = async () => {

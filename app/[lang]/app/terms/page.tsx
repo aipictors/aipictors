@@ -1,7 +1,7 @@
 import { join } from "path"
-import { AppFooter } from "app/[lang]/app/_components/AppFooter"
-import { AppTermsDocument } from "app/[lang]/app/terms/_components/AppTermsDocument"
-import { MainCenterPage } from "app/_components/page/MainCenterPage"
+import { AppFooter } from "app/[lang]/app/_components/app-footer"
+import { AppTermsDocument } from "app/[lang]/app/terms/_components/app-terms-document"
+import { MainCenterPage } from "app/_components/page/main-center-page"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 

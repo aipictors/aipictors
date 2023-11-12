@@ -1,9 +1,9 @@
 import type { UserQuery, UserQueryVariables } from "__generated__/apollo"
 import { UserDocument } from "__generated__/apollo"
-import { UserProfile } from "app/[lang]/(main)/users/[user]/_components/UserProfile"
-import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/_components/UserProfileHeader"
-import { UserTabs } from "app/[lang]/(main)/users/[user]/_components/UserTabs"
-import { MainPage } from "app/_components/page/MainPage"
+import { UserProfile } from "app/[lang]/(main)/users/[user]/_components/user-profile"
+import { UserProfileHeader } from "app/[lang]/(main)/users/[user]/_components/user-profile-header"
+import { UserTabs } from "app/[lang]/(main)/users/[user]/_components/user-tabs"
+import { MainPage } from "app/_components/page/main-page"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 

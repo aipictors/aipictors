@@ -1,5 +1,5 @@
-import { NovelArticle } from "app/[lang]/(main)/novels/[novel]/_components/NovelArticle"
-import { MainPage } from "app/_components/page/MainPage"
+import { NovelArticle } from "app/[lang]/(main)/novels/[novel]/_components/novel-article"
+import { MainPage } from "app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

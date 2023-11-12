@@ -8,12 +8,12 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import "@splidejs/react-splide/css"
-import { HomeHeader } from "app/[lang]/(main)/_components/HomeHeader"
-import { HomeNavigationList } from "app/[lang]/(main)/_components/HomeNavigationList"
-import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
-import { HomeFooter } from "app/_components/HomeFooter"
-import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
+import { HomeHeader } from "app/[lang]/(main)/_components/home-header"
+import { HomeNavigationList } from "app/[lang]/(main)/_components/home-navigation-list"
+import { LoginModal } from "app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "app/[lang]/(main)/_components/logout-modal"
+import { HomeFooter } from "app/_components/home-footer"
+import { ResponsiveNavigation } from "app/_components/responsive-navigation"
 import { useEffect } from "react"
 
 type Props = {

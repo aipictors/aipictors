@@ -1,5 +1,5 @@
-import { GuidelineArticle } from "app/[lang]/(main)/guideline/_components/GuidelineArticle"
-import { MainPage } from "app/_components/page/MainPage"
+import { GuidelineArticle } from "app/[lang]/(main)/guideline/_components/guideline-article"
+import { MainPage } from "app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

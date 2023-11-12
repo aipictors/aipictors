@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const STICKER = gql`
+export default gql`
   query Sticker($id: ID!) {
     sticker(id: $id) {
       id

@@ -6,9 +6,9 @@ import {
   AlbumWorksQuery,
   AlbumWorksQueryVariables,
 } from "__generated__/apollo"
-import { SensitiveAlbumArticle } from "app/[lang]/sensitive/albums/[album]/components/SensitiveAlbumArticle"
+import { SensitiveAlbumArticle } from "app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
 
-import { MainPage } from "app/_components/page/MainPage"
+import { MainPage } from "app/_components/page/main-page"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 

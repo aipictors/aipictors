@@ -1,5 +1,5 @@
-import { StickerArticle } from "app/[lang]/(main)/stickers/[sticker]/_components/StickerArticle"
-import { MainPage } from "app/_components/page/MainPage"
+import { StickerArticle } from "app/[lang]/(main)/stickers/[sticker]/_components/sticker-article"
+import { MainPage } from "app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

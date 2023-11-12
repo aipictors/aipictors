@@ -1,10 +1,10 @@
 import type { HotTagsQuery, WorksQuery } from "__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "__generated__/apollo"
-import { HomeTagList } from "app/[lang]/(main)/_components/HomeTagList"
+import { HomeTagList } from "app/[lang]/(main)/_components/home-tag-list"
 
-import { HomeWorkSection } from "app/[lang]/(main)/_components/HomeWorkSection"
+import { HomeWorkSection } from "app/[lang]/(main)/_components/home-work-section"
 
-import { MainPage } from "app/_components/page/MainPage"
+import { MainPage } from "app/_components/page/main-page"
 import { createClient } from "app/_contexts/client"
 import type { Metadata } from "next"
 

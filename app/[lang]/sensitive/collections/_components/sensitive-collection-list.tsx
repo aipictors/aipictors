@@ -1,0 +1,19 @@
+"use client"
+
+import { Divider, HStack, Stack } from "@chakra-ui/react"
+import { SensitiveCollectionCard } from "app/[lang]/sensitive/collections/_components/sensitive-collection-card"
+import { SensitiveCollectionsHeader } from "app/[lang]/sensitive/collections/_components/sensitive-collections-header"
+
+export const SensitiveCollectionList: React.FC = () => {
+  return (
+    <Stack>
+      <SensitiveCollectionsHeader />
+      <Divider />
+      <HStack>
+        <SensitiveCollectionCard />
+        <SensitiveCollectionCard />
+        <SensitiveCollectionCard />
+      </HStack>
+    </Stack>
+  )
+}

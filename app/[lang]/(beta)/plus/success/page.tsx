@@ -1,4 +1,4 @@
-import { MainPlusSuccess } from "app/[lang]/(beta)/plus/success/_components/MainPlusSuccess"
+import { MainPlusDocument } from "app/[lang]/(beta)/plus/success/_components/plus-success-document"
 import type { Metadata } from "next"
 
 /**
@@ -6,7 +6,7 @@ import type { Metadata } from "next"
  * @returns
  */
 const PlusSuccessPage = async () => {
-  return <MainPlusSuccess />
+  return <MainPlusDocument />
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {
