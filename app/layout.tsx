@@ -1,30 +1,28 @@
+import "@/app/globals.css"
+
 import { RootProviders } from "@/app/_components/root-providers"
 import { Config } from "@/config"
+import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
+import { Noto_Sans_JP } from "next/font/google"
 import Script from "next/script"
 
 type Props = {
   children: React.ReactNode
 }
 
+const notoSansJp = Noto_Sans_JP({
+  weight: ["500", "700"],
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  preload: false,
+})
+
 const RootLayout: React.FC<Props> = (props) => {
-  const notoSansJP =
-    "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap"
-
-  const pixelifySans =
-    "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&display=swap"
-
   return (
-    <html lang={"ja"}>
+    <html lang={"ja"} suppressHydrationWarning>
       <head>
-        <link rel={"preconnect"} href={"https://fonts.googleapis.com"} />
-        <link
-          rel={"preconnect"}
-          href={"https://fonts.gstatic.com"}
-          crossOrigin={""}
-        />
-        <link href={notoSansJP} rel={"stylesheet"} />
-        <link href={pixelifySans} rel="stylesheet" />
         {process.env.NODE_ENV === "production" && (
           <Script
             async
@@ -34,7 +32,12 @@ const RootLayout: React.FC<Props> = (props) => {
           />
         )}
       </head>
-      <body>
+      <body
+        className={cn(
+          "min-h-screen font-sans antialiased",
+          notoSansJp.variable,
+        )}
+      >
         <RootProviders>{props.children}</RootProviders>
       </body>
     </html>

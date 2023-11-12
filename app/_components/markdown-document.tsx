@@ -1,14 +1,4 @@
-import {
-  Box,
-  Card,
-  Heading,
-  Image,
-  Link,
-  ListItem,
-  OrderedList,
-  Text,
-  UnorderedList,
-} from "@chakra-ui/react"
+import { cn } from "@/lib/utils"
 import ReactMarkdown, { Components } from "react-markdown"
 
 type Props = {
@@ -20,152 +10,123 @@ export const MarkdownDocument: React.FC<Props> = (props) => {
     return <>{props.children}</>
   }
 
-  const fontSize = 16
-
   const components: Components = {
     li(props) {
       return (
-        <ListItem
-          fontSize={fontSize}
-          lineHeight={1.75}
-          ml={{ base: 4, md: 6 }}
-          mt={0.5}
-        >
+        <li className="text-base leading-7 ml-4 mt-0.5 md:ml-6">
           {props.children}
-        </ListItem>
+        </li>
       )
     },
     ul(props) {
       return (
-        <UnorderedList
-          ml={0}
-          mt={2}
-          marginInlineStart={"auto"}
-          fontSize={fontSize}
-        >
+        <ul className="list-disc ml-0 mt-2 mr-auto text-base">
           {props.children}
-        </UnorderedList>
+        </ul>
       )
     },
     ol(props) {
       return (
-        <OrderedList
-          ml={0}
-          mt={2}
-          marginInlineStart={"auto"}
-          fontSize={fontSize}
-        >
+        <ol className="list-decimal ml-0 mt-2 mr-auto text-base">
           {props.children}
-        </OrderedList>
+        </ol>
       )
     },
     h1(props) {
       return (
-        <Heading
-          as={"h1"}
-          fontWeight={"bold"}
-          fontSize={{ base: "2xl", md: "3xl" }}
-          mt={props.node?.position?.start.line === 1 ? 0 : 8}
-          mb={4}
+        <h1
+          className={cn(
+            "font-bold text-2xl mb-4 md:text-3xl",
+            props.node?.position?.start.line !== 1 && "mt-8",
+          )}
         >
           {props.children}
-        </Heading>
+        </h1>
       )
     },
     h2(props) {
       return (
-        <Heading
-          as={"h2"}
-          fontWeight={"bold"}
-          fontSize={{ base: "xl", md: "2xl" }}
-          mt={props.node?.position?.start.line === 1 ? 0 : 6}
-          mb={2}
+        <h2
+          className={cn(
+            "font-bold text-xl mb-2 md:text-2xl",
+            props.node?.position?.start.line !== 1 && "mt-6",
+          )}
         >
           {props.children}
-        </Heading>
+        </h2>
       )
     },
     h3(props) {
       return (
-        <Text
-          as={"p"}
-          whiteSpace={"pre-wrap"}
-          fontSize={{ base: "lg", md: "xl" }}
-          fontWeight={"bold"}
-          mt={props.node?.position?.start.line === 1 ? 0 : 6}
-          mb={1}
+        <p
+          className={cn(
+            "whitespace-pre-wrap font-bold text-lg b-1 md:text-xl",
+            props.node?.position?.start.line !== 1 && "mt-6",
+          )}
         >
           {props.children}
-        </Text>
+        </p>
       )
     },
     p(props) {
       if (typeof props.children === "string") {
         return (
-          <Text
-            mt={props.node?.position?.start.line === 1 ? 0 : 2}
-            lineHeight={2}
-            whiteSpace={"pre-wrap"}
-            fontSize={fontSize}
+          <p
+            className={cn(
+              "leading-relaxed whitespace-pre-wrap text-base",
+              props.node?.position?.start.line !== 1 && "mt-2",
+            )}
           >
             {props.children}
-          </Text>
+          </p>
         )
       }
       return <>{props.children}</>
     },
     a(props) {
       return (
-        <Link
-          color={"blue.500"}
+        <a
           href={props.href ?? ""}
-          rel={"noreferrer"}
-          target={"_blank"}
-          fontWeight={"bold"}
-          wordBreak={"break-all"}
-          fontSize={fontSize}
+          className="text-blue-500 no-underline font-bold break-all text-base"
+          rel="noreferrer"
+          target="_blank"
         >
           {props.children}
-        </Link>
+        </a>
       )
     },
     img(props) {
       return (
-        <Image
+        // biome-ignore lint/a11y/useAltText: <explanation>
+        <img
           alt={props.alt}
-          mx={"auto"}
-          w={"100%"}
-          rounded={"lg"}
-          ml={0}
-          my={4}
+          className="mx-auto w-full rounded-lg my-4"
           {...props}
         />
       )
     },
     strong(props) {
-      return <Box as={"strong"} color={"pink.500"} {...props} />
+      return <strong className="text-pink-500" {...props} />
     },
     blockquote(props) {
       return (
-        <Box as={"blockquote"} mt={4}>
-          <Box borderLeftWidth={8} pl={4} pb={4}>
-            {props.children}
-          </Box>
-        </Box>
+        <blockquote className="mt-4">
+          <div className="border-l-8 pl-4 pb-4">{props.children}</div>
+        </blockquote>
       )
     },
     pre(props) {
       return (
-        <Card as={"pre"} my={4} variant={"filled"} p={4} overflow={"auto"}>
+        <pre className="my-4 p-4 overflow-auto bg-gray-100 rounded">
           {props.children}
-        </Card>
+        </pre>
       )
     },
   }
 
   return (
-    <Box>
+    <div>
       <ReactMarkdown components={components}>{props.children}</ReactMarkdown>
-    </Box>
+    </div>
   )
 }

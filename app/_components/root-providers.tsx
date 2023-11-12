@@ -42,7 +42,9 @@ export const RootProviders: React.FC<Props> = (props) => {
     <AppContextProvider>
       <ApolloProvider client={client}>
         <CacheProvider>
-          <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
+          <ChakraProvider resetCSS={false} theme={theme}>
+            {props.children}
+          </ChakraProvider>
         </CacheProvider>
       </ApolloProvider>
     </AppContextProvider>
