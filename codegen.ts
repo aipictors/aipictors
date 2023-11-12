@@ -6,7 +6,7 @@ const config: CodegenConfig = {
   overwrite: true,
   documents: "graphql/**/*.ts",
   generates: {
-    "@/__generated__/apollo.ts": {
+    "__generated__/apollo.ts": {
       schema: endPoint,
       plugins: [
         "typescript",
