@@ -1,8 +1,8 @@
 {
   "recommendations": [
-    "ApolloGraphQL.apollo-workbench",
     "apollographql.vscode-apollo",
     "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
     "editorconfig.editorconfig",
     "mikestead.dotenv",
     "streetsidesoftware.code-spell-checker"
