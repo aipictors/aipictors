@@ -3,28 +3,21 @@
 import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { AppContext } from "@/app/_contexts/app-context"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
-  Avatar,
-  Icon,
-  IconButton,
-  Link as ChakraLink,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useColorMode,
-  useDisclosure,
-} from "@chakra-ui/react"
-
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useDisclosure } from "@chakra-ui/react"
 import Link from "next/link"
 import { useContext } from "react"
 import {
   TbLogin,
   TbLogout,
-  TbMoonFilled,
   TbSettings,
   TbSparkles,
-  TbSunFilled,
   TbUserCircle,
   TbUserCog,
 } from "react-icons/tb"
@@ -34,8 +27,6 @@ export const BetaUserNavigationButton: React.FC = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const { colorMode, toggleColorMode } = useColorMode()
-
   const {
     isOpen: isOpenLogout,
     onOpen: onOpenLogout,
@@ -43,99 +34,74 @@ export const BetaUserNavigationButton: React.FC = () => {
   } = useDisclosure()
 
   return (
-    <Menu>
-      <MenuButton
-        as={IconButton}
-        aria-label={"Account"}
-        icon={<Avatar src={""} size={"sm"} />}
-        variant={"ghost"}
-        size={"sm"}
-        borderRadius={"full"}
-      />
-      <MenuList>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar>
+          <AvatarFallback>{"Y"}</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
         {appContext.isLoggedIn && (
-          <MenuItem
-            as={ChakraLink}
-            isExternal
-            icon={<Icon as={TbUserCircle} fontSize={"lg"} />}
-            href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
-          >
-            {"マイページ"}
-          </MenuItem>
+          <DropdownMenuItem>
+            <a
+              href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
+            >
+              <TbUserCircle className="inline-block mr-2" /> マイページ
+            </a>
+          </DropdownMenuItem>
         )}
         {appContext.isLoggedIn && (
-          <MenuItem
-            as={Link}
-            icon={<Icon as={TbUserCog} fontSize={"lg"} />}
-            href={"/account"}
-          >
-            {"アカウント"}
-          </MenuItem>
+          <Link href={"/account"}>
+            <DropdownMenuItem>
+              <TbUserCog className="inline-block mr-2" /> アカウント
+            </DropdownMenuItem>
+          </Link>
         )}
         {appContext.isLoggedIn && (
-          <MenuItem
-            isDisabled={true}
-            as={Link}
-            icon={<Icon as={TbSettings} fontSize={"lg"} />}
-            href={"/settings"}
-          >
-            {"設定"}
-          </MenuItem>
+          <Link href={"/settings"}>
+            <DropdownMenuItem>
+              <TbSettings className="inline-block mr-2" /> 設定
+            </DropdownMenuItem>
+          </Link>
         )}
         {appContext.isLoggedIn && (
-          <MenuItem
-            as={Link}
-            icon={<Icon as={TbSparkles} fontSize={"lg"} />}
-            href={"/plus"}
-          >
-            {"Aipictors+"}
-          </MenuItem>
+          <Link href={"/plus"}>
+            <DropdownMenuItem>
+              <TbSparkles className="inline-block mr-2" /> Aipictors+
+            </DropdownMenuItem>
+          </Link>
         )}
-        {/* {appContext.isLoggedIn && (
-          <MenuItem
-            as={Link}
-            icon={<Icon as={TbSettings} fontSize={"lg"} />}
-            href={"/settings/login"}
+        {/* <button
+            type="button"
+            className="text-gray-700 block w-full text-left px-4 py-2 text-sm"
+            role="menuitem"
+            id="menu-item-4"
+            onClick={toggleColorMode}
           >
-            {"設定"}
-          </MenuItem>
-        )} */}
-        <MenuItem
-          icon={
-            <Icon
-              as={colorMode === "dark" ? TbSunFilled : TbMoonFilled}
-              fontSize={"lg"}
-            />
-          }
-          onClick={toggleColorMode}
-        >
-          {colorMode === "dark" ? "ライトモード" : "ダークモード"}
-        </MenuItem>
+            {colorMode === "dark" ? (
+              <TbSunFilled className="inline-block mr-2" />
+            ) : (
+              <TbMoonFilled className="inline-block mr-2" />
+            )}
+            {colorMode === "dark" ? "ライトモード" : "ダークモード"}
+          </button> */}
         {appContext.isLoggedIn && (
-          <MenuItem
-            icon={<Icon as={TbLogout} fontSize={"lg"} />}
-            onClick={onOpenLogout}
-          >
-            {"ログアウト"}
-          </MenuItem>
+          <DropdownMenuItem onClick={onOpenLogout}>
+            <TbLogout className="inline-block mr-2" /> ログアウト
+          </DropdownMenuItem>
         )}
         {appContext.isNotLoggedIn && (
-          <MenuItem
-            icon={<Icon as={TbLogin} fontSize={"lg"} />}
-            onClick={() => {
-              onOpen()
-            }}
-          >
-            {"ログイン"}
-          </MenuItem>
+          <DropdownMenuItem onClick={onOpen}>
+            <TbLogin className="inline-block mr-2" /> ログイン
+          </DropdownMenuItem>
         )}
-        <LoginModal isOpen={isOpen} onClose={onClose} />
-        <LogoutModal
-          isOpen={isOpenLogout}
-          onClose={onCloseLogout}
-          onOpen={onOpenLogout}
-        />
-      </MenuList>
-    </Menu>
+      </DropdownMenuContent>
+      <LoginModal isOpen={isOpen} onClose={onClose} />
+      <LogoutModal
+        isOpen={isOpenLogout}
+        onClose={onCloseLogout}
+        onOpen={onOpenLogout}
+      />
+    </DropdownMenu>
   )
 }

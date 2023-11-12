@@ -2,7 +2,6 @@
 
 import { PassType } from "@/__generated__/apollo"
 import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
-import { ListItem, UnorderedList } from "@chakra-ui/react"
 
 type Props = {
   passType: PassType
@@ -12,10 +11,10 @@ export const PassImageGenerationBenefitList: React.FC<Props> = (props) => {
   const features = toPassFeatures(props.passType)
 
   return (
-    <UnorderedList spacing={2} marginInlineStart={"1.5rem"}>
+    <ul className="space-y-2 ml-6 list-disc">
       {features.map((feature) => (
-        <ListItem key={feature}>{feature}</ListItem>
+        <li key={feature}>{feature}</li>
       ))}
-    </UnorderedList>
+    </ul>
   )
 }

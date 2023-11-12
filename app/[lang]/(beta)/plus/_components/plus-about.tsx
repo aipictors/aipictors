@@ -6,15 +6,15 @@ import {
 } from "@/__generated__/apollo"
 import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
 import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-list"
+import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
-import { HStack, Stack, Text, useToast } from "@chakra-ui/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
 
 export const PlusAbout: React.FC = () => {
   const [mutation, { loading: isLoading }] =
     useCreatePassCheckoutSessionMutation()
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const onSelect = async (passType: PassType) => {
     try {
@@ -28,7 +28,6 @@ export const PlusAbout: React.FC = () => {
       const pageURL = result.data?.createPassCheckoutSession ?? null
       if (pageURL === null) {
         toast({
-          status: "error",
           description: "セッションの作成に失敗しました。",
         })
         return
@@ -36,32 +35,26 @@ export const PlusAbout: React.FC = () => {
       window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
-        toast({ status: "error", description: error.message })
+        toast({ description: error.message })
       }
     }
   }
 
   return (
-    <Stack spacing={8} pb={16}>
-      <HStack
-        justifyContent={"center"}
-        fontSize={"xx-large"}
-        fontWeight={"bold"}
-      >
-        <Text>{"Aipictors+"}</Text>
-      </HStack>
-      <Stack spacing={2}>
-        <Text whiteSpace={"pre-wrap"}>
-          {"Aipictors+に加入してサービス内で特典を受けることができます。"}
-        </Text>
-      </Stack>
+    <div className="space-y-8 pb-16">
+      <div className="flex justify-center text-2xl font-bold">
+        <span>Aipictors+</span>
+      </div>
+      <div className="space-y-2">
+        <p className="whitespace-pre-wrap">
+          Aipictors+に加入してサービス内で特典を受けることができます。
+        </p>
+      </div>
       <PassPlanList onSelect={onSelect} isLoading={isLoading} />
-      <Stack spacing={2}>
-        <Text fontWeight={"bold"} fontSize={"lg"}>
-          {"注意事項"}
-        </Text>
+      <div className="space-y-2">
+        <p className="font-bold text-lg">注意事項</p>
         <PlusNoteList />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }

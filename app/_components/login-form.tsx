@@ -1,7 +1,9 @@
 "use client"
 
 import type { FormLogin } from "@/app/_types/form-login"
-import { Button, Input, Stack } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Loader2 } from "lucide-react"
 import { useState } from "react"
 
 type Props = {
@@ -19,29 +21,31 @@ export const LoginForm: React.FC<Props> = (props) => {
   }
 
   return (
-    <Stack spacing={4} p={0} w={"100%"}>
+    <div className="space-y-4 p-0 w-full">
       <Input
-        isDisabled={props.isLoading}
+        disabled={props.isLoading}
         placeholder={"ユーザID"}
-        variant={"filled"}
         value={username}
         onChange={(event) => {
           setUsername(event.target.value)
         }}
       />
       <Input
-        isDisabled={props.isLoading}
+        disabled={props.isLoading}
         placeholder={"パスワード"}
-        variant={"filled"}
         type={"password"}
         value={password}
         onChange={(event) => {
           setPassword(event.target.value)
         }}
       />
-      <Button isLoading={props.isLoading} lineHeight={1} onClick={onLogin}>
-        {"ログイン"}
+      <Button onClick={onLogin} className="w-full">
+        {props.isLoading ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <span>{"ログイン"}</span>
+        )}
       </Button>
-    </Stack>
+    </div>
   )
 }

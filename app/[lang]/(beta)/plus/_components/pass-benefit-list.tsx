@@ -1,7 +1,6 @@
 "use client"
 
 import { PassType } from "@/__generated__/apollo"
-import { ListItem, UnorderedList } from "@chakra-ui/react"
 
 type Props = {
   passType: PassType
@@ -9,9 +8,9 @@ type Props = {
 
 export const PassBenefitList: React.FC<Props> = (props) => {
   return (
-    <UnorderedList spacing={2} marginInlineStart={"1.5rem"}>
-      <ListItem>{"広告の非表示"}</ListItem>
-      <ListItem>{"認証マークの表示"}</ListItem>
-    </UnorderedList>
+    <ul className="space-y-2 ml-6 list-disc">
+      <li>広告の非表示</li>
+      <li>認証マークの表示</li>
+    </ul>
   )
 }

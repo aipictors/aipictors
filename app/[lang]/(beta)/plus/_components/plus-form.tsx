@@ -14,17 +14,13 @@ import { PlusAbout } from "@/app/[lang]/(beta)/plus/_components/plus-about"
 import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-list"
 import { toPassName } from "@/app/[lang]/(beta)/plus/_utils/to-pass-name"
 import { toDateText } from "@/app/_utils/to-date-text"
+import { Button } from "@/components/ui/button"
+import { CardContent, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/components/ui/use-toast"
+import { cn } from "@/lib/utils"
 import { useSuspenseQuery } from "@apollo/client"
-import {
-  Button,
-  Card,
-  Divider,
-  HStack,
-  Stack,
-  Tag,
-  Text,
-  useToast,
-} from "@chakra-ui/react"
+import { Card, CardHeader } from "@chakra-ui/react"
 
 export const PlusForm: React.FC = () => {
   const [mutation, { loading: isLoading }] =
@@ -35,7 +31,7 @@ export const PlusForm: React.FC = () => {
     ViewerCurrentPassQueryVariables
   >(ViewerCurrentPassDocument, {})
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const onOpenCustomerPortal = async () => {
     try {
@@ -43,7 +39,6 @@ export const PlusForm: React.FC = () => {
       const pageURL = result.data?.createCustomerPortalSession ?? null
       if (pageURL === null) {
         toast({
-          status: "error",
           description: "セッションの作成に失敗しました。",
         })
         return
@@ -51,7 +46,7 @@ export const PlusForm: React.FC = () => {
       window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
-        toast({ status: "error", description: error.message })
+        toast({ description: error.message })
       }
     }
   }
@@ -73,78 +68,67 @@ export const PlusForm: React.FC = () => {
   const currentPassName = toPassName(currentPass.type)
 
   return (
-    <Stack spacing={8} pb={16}>
-      <HStack
-        justifyContent={"center"}
-        fontSize={"xx-large"}
-        fontWeight={"bold"}
+    <div className="space-y-8 pb-16">
+      <div className="flex justify-center text-2xl font-bold">
+        <span>{"Aipictors+"}</span>
+      </div>
+      <div
+        className={cn(
+          "space-y-4 md:space-y-0 justify-between gap-4",
+          currentPass && "flex flex-col md:flex-row-reverse",
+        )}
       >
-        <Text>{"Aipictors+"}</Text>
-      </HStack>
-      <Stack
-        spacing={{ base: 4, md: 8 }}
-        direction={{ base: "column", md: "row-reverse" }}
-        justifyContent={"space-between"}
-      >
-        <Stack spacing={4} flex={1}>
-          <Text>{`現在、あなたは「${currentPassName}」をご利用中です。`}</Text>
-          <Stack>
-            <HStack>
-              <Tag>{"次回の請求日"}</Tag>
-              <Text>{nextDateText}</Text>
-            </HStack>
-            <HStack>
-              <Tag>{"次回の請求額"}</Tag>
-              <Text>{`${currentPass.price}円（税込）`}</Text>
-            </HStack>
-          </Stack>
-          <Text>
+        <div className="space-y-4 flex-1">
+          <p>{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
+          <div>
+            <div className="flex">
+              <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                次回の請求日
+              </span>
+              <p>{nextDateText}</p>
+            </div>
+            <div className="flex">
+              <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                次回の請求額
+              </span>
+              <p>{`${currentPass.price}円（税込）`}</p>
+            </div>
+          </div>
+          <p>
             {
               "決済方法の変更やプランのキャンセル及び変更はこちらのリンクから行えます。"
             }
-          </Text>
-          <Button
-            colorScheme={"green"}
-            onClick={onOpenCustomerPortal}
-            isLoading={isLoading}
-          >
+          </p>
+          <Button onClick={onOpenCustomerPortal} disabled={isLoading}>
             {"プランをキャンセルまたは変更する"}
           </Button>
-        </Stack>
-        <Card variant={"filled"} flex={1}>
-          <Stack p={4} spacing={2}>
-            <HStack justifyContent={"space-between"}>
-              <Text fontWeight={"bold"} fontSize={{ base: "md", sm: "xl" }}>
-                {`${currentPassName}の特典`}
-              </Text>
-            </HStack>
-            <Divider />
+        </div>
+        <Card className="flex-1" variant={"outline"}>
+          <CardHeader>
+            <CardTitle>{`${currentPassName}の特典`}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            <Separator />
             <PassBenefitList passType={currentPass.type} />
-            <Divider />
-            <Text fontSize={"sm"} opacity={0.6} fontWeight={"bold"}>
-              {"画像生成の特典"}
-            </Text>
+            <Separator />
+            <p className="text-sm opacity-60 font-bold">画像生成の特典</p>
             <PassImageGenerationBenefitList passType={currentPass.type} />
-            <Divider />
-            <Text fontSize={"xs"}>
+            <Separator />
+            <p className="text-xs">
               {
                 "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
               }
-            </Text>
-          </Stack>
+            </p>
+          </CardContent>
         </Card>
-      </Stack>
-      <Stack>
-        <Text>
-          {"この度はAipictorsをご利用いただき、誠にありがとうございます。"}
-        </Text>
-      </Stack>
-      <Stack spacing={2}>
-        <Text fontWeight={"bold"} fontSize={"lg"}>
-          {"注意事項"}
-        </Text>
+      </div>
+      <div>
+        <p>{"この度はAipictorsをご利用いただき、誠にありがとうございます。"}</p>
+      </div>
+      <div className="space-y-2">
+        <p className="font-bold text-lg">注意事項</p>
         <PlusNoteList />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }
