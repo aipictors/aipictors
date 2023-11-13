@@ -7,7 +7,7 @@ type Props = {
   passType: PassType
 }
 
-export const PassImageGenerationBenefitList: React.FC<Props> = (props) => {
+export const PassImageGenerationBenefitList = (props: Props) => {
   const features = toPassFeatures(props.passType)
 
   return (

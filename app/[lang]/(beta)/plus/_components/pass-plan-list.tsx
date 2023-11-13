@@ -9,7 +9,7 @@ type Props = {
   onSelect(passType: PassType): Promise<void>
 }
 
-export const PassPlanList: React.FC<Props> = (props) => {
+export const PassPlanList = (props: Props) => {
   return (
     <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
       <div className="flex-1">
