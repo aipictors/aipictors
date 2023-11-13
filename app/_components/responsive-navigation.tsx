@@ -1,6 +1,5 @@
 "use client"
 
-import { NavigationDrawer } from "@/app/_components/navigation-drawer"
 import { StaticNavigation } from "@/app/_components/static-navigation"
 import { useBreakpoint } from "@chakra-ui/react"
 
@@ -21,11 +20,11 @@ export const ResponsiveNavigation: React.FC<Props> = (props) => {
       {!isMobile && props.isOpen && (
         <StaticNavigation>{props.children}</StaticNavigation>
       )}
-      {isMobile && (
+      {/* {isMobile && (
         <NavigationDrawer isOpen={props.isOpenDrawer} onClose={props.onClose}>
           {props.children}
         </NavigationDrawer>
-      )}
+      )} */}
     </>
   )
 }

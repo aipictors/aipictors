@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Drawer, DrawerContent, DrawerOverlay } from "@chakra-ui/react"
+import { Sheet, SheetContent, SheetOverlay } from "@/components/ui/sheet"
 
 type Props = {
   children: React.ReactNode
@@ -10,13 +10,13 @@ type Props = {
 
 export const NavigationDrawer: React.FC<Props> = (props) => {
   return (
-    <Drawer isOpen={props.isOpen} onClose={props.onClose} placement="left">
-      <DrawerOverlay />
-      <DrawerContent>
-        <Box overflow={"auto"} height={"100%"} py={4}>
+    <Sheet>
+      <SheetOverlay />
+      <SheetContent>
+        <div className="h-full overflow-auto p-4 bg-white">
           {props.children}
-        </Box>
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }

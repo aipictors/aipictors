@@ -10,9 +10,9 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { init } from "@sentry/nextjs"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
-
 type Props = {
   children: React.ReactNode
 }
@@ -41,9 +41,16 @@ export const RootProviders: React.FC<Props> = (props) => {
   return (
     <AppContextProvider>
       <ApolloProvider client={client}>
-        <CacheProvider>
-          <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
-        </CacheProvider>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <CacheProvider>
+            <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
+          </CacheProvider>
+        </NextThemesProvider>
       </ApolloProvider>
     </AppContextProvider>
   )

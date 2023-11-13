@@ -38,7 +38,6 @@ export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
           variant={"ghost"}
           aria-label={"メニュー"}
           borderRadius={"full"}
-          onClick={props.onOpenNavigation}
           icon={<Icon as={TbMenu2} />}
         />
         <Box display={{ base: "none", md: "block" }}>
