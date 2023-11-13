@@ -1,39 +1,38 @@
 "use client"
 
-import { FormControl, FormLabel, Stack, Switch, Text } from "@chakra-ui/react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export const SettingNotificationForm: React.FC = () => {
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"通知・いいね"}
-      </Text>
-      <Stack>
-        <Text>{"匿名いいね"}</Text>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"全年齢いいね"}</FormLabel>
-          <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"R-18いいね"}</FormLabel>
-          <Switch />
-        </FormControl>
-      </Stack>
-      <Stack>
-        <Text>{"オフにすると次回以降の通知がされなくなります"}</Text>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"定期いいね通知"}</FormLabel>
-          <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"リアルタイムいいね通知"}</FormLabel>
-          <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"コメント"}</FormLabel>
-          <Switch />
-        </FormControl>
-      </Stack>
-    </Stack>
+    <div className="w-full space-y-8">
+      <p className="font-bold text-2xl">{"通知・いいね"}</p>
+      <div className="space-y-4">
+        <p>{"匿名いいね"}</p>
+        <div className="flex justify-between">
+          <Label>{"全年齢いいね"}</Label>
+          <Input type="checkbox" className="form-switch" />
+        </div>
+        <div className="flex justify-between">
+          <Label>{"R-18いいね"}</Label>
+          <Input type="checkbox" className="form-switch" />
+        </div>
+      </div>
+      <div className="space-y-4">
+        <p>{"オフにすると次回以降の通知がされなくなります"}</p>
+        <div className="flex justify-between">
+          <Label>{"定期いいね通知"}</Label>
+          <Input type="checkbox" className="form-switch" />
+        </div>
+        <div className="flex justify-between">
+          <Label>{"リアルタイムいいね通知"}</Label>
+          <Input type="checkbox" className="form-switch" />
+        </div>
+        <div className="flex justify-between">
+          <Label>{"コメント"}</Label>
+          <Input type="checkbox" className="form-switch" />
+        </div>
+      </div>
+    </div>
   )
 }

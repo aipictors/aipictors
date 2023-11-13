@@ -1,47 +1,46 @@
 "use client"
 
-import { FormControl, FormLabel, Stack, Switch, Text } from "@chakra-ui/react"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
 export const SettingRestrictionForm: React.FC = () => {
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"非表示対象"}
-      </Text>
-      <Stack spacing={4}>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"R-18"}</FormLabel>
+    <div className="w-full space-y-8">
+      <p className="font-bold text-2xl">{"非表示対象"}</p>
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <Label>{"R-18"}</Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"R-18G"}</FormLabel>
+        </div>
+        <div className="flex justify-between">
+          <Label>{"R-18G"}</Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"性的描写（軽度な描写も含む）"}</FormLabel>
+        </div>
+        <div className="flex justify-between">
+          <Label>{"性的描写（軽度な描写も含む）"}</Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"全年齢"}</FormLabel>
+        </div>
+        <div className="flex justify-between">
+          <Label>{"全年齢"}</Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>
+        </div>
+        <div className="flex justify-between">
+          <Label>
             {"宣伝など作品に関係のない可能性のあるキャプションは非表示"}
-          </FormLabel>
+          </Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"宣伝の可能性のある作品は非表示"}</FormLabel>
+        </div>
+        <div className="flex justify-between">
+          <Label>{"宣伝の可能性のある作品は非表示"}</Label>
           <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>
+        </div>
+        <div className="flex justify-between">
+          <Label>
             {"センシティブなコンテンツを表示する（メンテナンス中）"}
-          </FormLabel>
+          </Label>
           <Switch />
-        </FormControl>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   )
 }
