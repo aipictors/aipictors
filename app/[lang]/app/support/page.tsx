@@ -1,11 +1,15 @@
 import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
-import { AppSupportDescription } from "@/app/[lang]/app/support/_components/app-support-description"
 import type { Metadata } from "next"
 
 const AppSupportPage = async () => {
   return (
     <>
-      <AppSupportDescription />
+      <div className="flex justify-center py-8 min-h-screen">
+        <div>
+          <p className="text-center">{"お問い合わせはこちらまで"}</p>
+          <p className="text-center font-bold">hello@aipictors.com</p>
+        </div>
+      </div>
       <AppFooter />
     </>
   )

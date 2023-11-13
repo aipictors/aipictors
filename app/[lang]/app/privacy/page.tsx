@@ -1,6 +1,6 @@
 import { join } from "path"
 import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
-import { AppPrivacyDocument } from "@/app/[lang]/app/privacy/_components/app-privacy-document"
+import { MarkdownDocument } from "@/app/_components/markdown-document"
 import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
@@ -14,7 +14,10 @@ const AppPrivacyPage = async () => {
   return (
     <>
       <MainCenterPage>
-        <AppPrivacyDocument text={text} />
+        <div className="py-8 space-y-8">
+          <h1 className="text-2xl font-bold">{"プライバシー・ポリシー"}</h1>
+          <MarkdownDocument>{text}</MarkdownDocument>
+        </div>
       </MainCenterPage>
       <AppFooter />
     </>

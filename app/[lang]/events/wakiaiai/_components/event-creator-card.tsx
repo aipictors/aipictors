@@ -1,19 +1,12 @@
+"use client"
+
 import type { EventUser } from "@/app/[lang]/events/_types/event-user"
 import { EventUserTag } from "@/app/[lang]/events/wakiaiai/_components/event-user-tag"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Config } from "@/config"
-import {
-  Box,
-  Button,
-  Card,
-  HStack,
-  Heading,
-  Icon,
-  IconButton,
-  Image,
-  Stack,
-} from "@chakra-ui/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
-import { TbBrandTwitterFilled, TbClick, TbExternalLink } from "react-icons/tb"
+import { TbBrandXFilled, TbClick, TbExternalLink } from "react-icons/tb"
 
 type Props = {
   user: EventUser
@@ -21,13 +14,13 @@ type Props = {
 
 export const EventCreatorCard: React.FC<Props> = (props) => {
   return (
-    <Card overflow={"hidden"} variant={"filled"}>
-      <HStack>
-        <Box minW={40} w={40} h={40}>
-          {/** biome-ignore lint: TODO: 修正 */}
+    <Card>
+      <div className="flex space-x-2">
+        <div className="min-w-fit w-40 h-40">
+          {/* biome-ignore lint/a11y/useValidAnchor: TODO: 対応 */}
           <a
-            aria-label={"Twitter"}
-            target={"_blank"}
+            aria-label="Twitter"
+            target="_blank"
             rel="noreferrer"
             href={
               props.user.twitterId === null
@@ -43,80 +36,60 @@ export const EventCreatorCard: React.FC<Props> = (props) => {
               })
             }}
           >
-            <Image
+            <img
               alt={props.user.name}
               src={props.user.iconImageURL}
-              h={"100%"}
-              borderRadius={"md"}
-              boxShadow={"xl"}
-              w={"100%"}
+              className="h-full rounded-md shadow-xl w-full"
             />
           </a>
-        </Box>
-        <Stack
-          px={{ base: 2, md: 2 }}
-          spacing={{ base: 2, md: 4 }}
-          h={"100%"}
-          py={4}
-          overflow={"hidden"}
-        >
-          <Stack flex={1} spacing={{ base: 2, sm: 4 }}>
-            <HStack spacing={{ base: 1, sm: 2 }}>
+        </div>
+        <div className="px-2 md:px-2 space-y-2 md:space-y-4 h-full pt-4 overflow-hidden flex flex-col">
+          <div className="flex-1 space-y-2 sm:space-y-4">
+            <div className="flex space-x-1 sm:space-x-2">
               {props.user.types.map((type) => (
                 <EventUserTag key={type} type={type} />
               ))}
-            </HStack>
-            <Heading as={"h2"} fontSize={{ base: 20 }}>
-              {props.user.name}
-            </Heading>
-          </Stack>
-          <HStack>
+            </div>
+            <h2 className="font-bold text-sm">{props.user.name}</h2>
+          </div>
+          <div className="flex space-x-2">
             {props.user.twitterId !== null && (
-              <IconButton
-                aria-label={"Twitter"}
-                as={"a"}
-                borderRadius={"full"}
-                colorScheme={"blue"}
-                icon={<Icon as={TbBrandTwitterFilled} />}
-                target={"_blank"}
-                rel={"noopener"}
-                lineHeight={1}
-                size={{ base: "sm", md: "md" }}
+              <a
                 href={`https://twitter.com/${props.user.twitterId}`}
-              />
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button size={"icon"} variant={"outline"}>
+                  <TbBrandXFilled />
+                </Button>
+              </a>
             )}
             {props.user.siteURL !== null && props.user.siteTitle !== null && (
-              <Button
-                as={"a"}
-                borderRadius={"full"}
-                colorScheme={"blue"}
-                leftIcon={<Icon as={TbClick} />}
-                target={"_blank"}
-                rel={"noopener"}
-                lineHeight={1}
-                size={{ base: "sm", md: "md" }}
+              <a
                 href={props.user.siteURL}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {props.user.siteTitle}
-              </Button>
+                <Button variant={"outline"}>
+                  <TbClick className="mr-2" />
+                  {props.user.siteTitle}
+                </Button>
+              </a>
             )}
             {props.user.siteURL !== null && props.user.siteTitle === null && (
-              <IconButton
-                aria-label={"Webサイト"}
-                as={"a"}
-                borderRadius={"full"}
-                colorScheme={"blue"}
-                icon={<Icon as={TbExternalLink} />}
-                target={"_blank"}
-                rel={"noopener"}
-                lineHeight={1}
-                size={{ base: "sm", md: "md" }}
+              <a
                 href={props.user.siteURL}
-              />
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant={"outline"}>
+                  <TbExternalLink />
+                </Button>
+              </a>
             )}
-          </HStack>
-        </Stack>
-      </HStack>
+          </div>
+        </div>
+      </div>
     </Card>
   )
 }

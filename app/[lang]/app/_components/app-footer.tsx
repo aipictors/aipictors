@@ -1,35 +1,32 @@
 "use client"
 
-import { HStack, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 export const AppFooter: React.FC = () => {
   return (
-    <Stack p={4}>
-      <Stack direction={{ base: "column", md: "row" }}>
-        <HStack spacing={4}>
-          <ChakraLink as={Link} href={"/app/terms"} fontSize={"sm"}>
+    <div className="p-4 flex flex-col space-y-2">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex space-x-4">
+          <Link href={"/app/terms"} className="text-sm">
             {"利用規約"}
-          </ChakraLink>
-          <ChakraLink as={Link} href={"/app/privacy"} fontSize={"sm"}>
+          </Link>
+          <Link href={"/app/privacy"} className="text-sm">
             {"プライバシーポリシー"}
-          </ChakraLink>
-        </HStack>
-        {/* <HStack spacing={4}>
-          <Text fontSize={"sm"}>{"運営会社"}</Text>
-          <Text fontSize={"sm"}>{"特定商取引法に基づく表記"}</Text>
-        </HStack> */}
-      </Stack>
-      <Text fontSize={"sm"}>
+          </Link>
+        </div>
+        {/* <div className="flex space-x-4">
+      <p className="text-sm">{"運営会社"}</p>
+      <p className="text-sm">{"特定商取引法に基づく表記"}</p>
+    </div> */}
+      </div>
+      <p className="text-sm">
         {
           "Aipictorsアプリは、AIイラスト・AIフォト・AI小説を投稿できるSNSアプリです。"
         }
-      </Text>
-      <HStack>
-        <Text fontWeight={"bold"} fontSize={"sm"}>
-          {"© 2023 Aipictors"}
-        </Text>
-      </HStack>
-    </Stack>
+      </p>
+      <div className="flex">
+        <p className="font-bold text-sm">{"© 2023 Aipictors"}</p>
+      </div>
+    </div>
   )
 }

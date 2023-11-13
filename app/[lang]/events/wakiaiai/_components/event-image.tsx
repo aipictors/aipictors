@@ -1,8 +1,7 @@
-import type { ImageProps } from "@chakra-ui/react"
-import { Box, Button, Icon, Image } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { TbClick } from "react-icons/tb"
 
-type Props = ImageProps & {
+type Props = {
   alt: string
   imageURL: string
   linkURL: string
@@ -11,33 +10,23 @@ type Props = ImageProps & {
 
 export const EventImage: React.FC<Props> = (props) => {
   return (
-    <Box position={"relative"}>
-      <Image
+    <div className="relative">
+      <img
         alt={props.alt}
-        borderTopRadius={"md"}
-        borderBottomLeftRadius={"md"}
-        borderBottomRightRadius={"3xl"}
-        w={"100%"}
-        objectFit={"cover"}
-        objectPosition={"top"}
         src={props.imageURL}
+        className="w-full object-cover object-top rounded-t-md rounded-bl-md rounded-br-3xl"
       />
-      <Button
-        as={"a"}
+      <a
+        className="absolute bottom-4 right-4"
         href={props.linkURL}
         target={"_blank"}
-        rel={"noopener"}
-        position={"absolute"}
-        bottom={4}
-        right={4}
-        variant={"outline"}
-        colorScheme={"blue"}
-        lineHeight={1}
-        borderRadius={"full"}
-        leftIcon={<Icon as={TbClick} />}
+        rel={"noreferrer noopener"}
       >
-        {props.linkTitle}
-      </Button>
-    </Box>
+        <Button className="rounded-full">
+          <TbClick />
+          <span className="ml-2">{props.linkTitle}</span>
+        </Button>
+      </a>
+    </div>
   )
 }

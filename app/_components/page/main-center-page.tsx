@@ -1,5 +1,3 @@
-"use client"
-
 type Props = {
   children: React.ReactNode
 }
@@ -7,10 +5,10 @@ type Props = {
 export const MainCenterPage: React.FC<Props> = (props) => {
   return (
     <div
-      className="w-full min-h-full flex justify-center px-4"
-      style={{ height: "calc(100svh - 72px)" }}
+      className="w-full flex justify-center px-4"
+      style={{ minHeight: "calc(100svh - 72px)" }}
     >
-      <div className="overflow-x-hidden w-full max-w-screen-md min-h-full">
+      <div className="overflow-x-hidden w-full max-w-screen-md">
         {props.children}
       </div>
     </div>

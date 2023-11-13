@@ -1,5 +1,4 @@
 import type { EventUserType } from "@/app/[lang]/events/_types/event-user-type"
-import { Tag, TagLabel, TagLeftIcon } from "@chakra-ui/react"
 import { TbFlame, TbPhoto, TbShoppingBag } from "react-icons/tb"
 
 type Props = {
@@ -9,32 +8,26 @@ type Props = {
 export const EventUserTag: React.FC<Props> = (props) => {
   if (props.type === "SPONSOR") {
     return (
-      <Tag colorScheme={"yellow"} borderRadius={"full"} w={"fit-content"}>
-        <TagLeftIcon fontSize={20} as={TbFlame} mr={1} />
-        <TagLabel fontWeight={"bold"} lineHeight={1}>
-          {"スポンサー"}
-        </TagLabel>
-      </Tag>
+      <div className="flex items-center">
+        <TbFlame />
+        <span className="pl-1 font-bold">{"スポンサー"}</span>
+      </div>
     )
   }
 
   if (props.type === "EXHIBIT") {
     return (
-      <Tag colorScheme={"blue"} borderRadius={"full"} w={"fit-content"}>
-        <TagLeftIcon fontSize={20} as={TbPhoto} mr={1} />
-        <TagLabel fontWeight={"bold"} lineHeight={1}>
-          {"展示"}
-        </TagLabel>
-      </Tag>
+      <div className="flex items-center">
+        <TbPhoto />
+        <span className="pl-1 font-bold">{"展示"}</span>
+      </div>
     )
   }
 
   return (
-    <Tag colorScheme={"green"} borderRadius={"full"} w={"fit-content"}>
-      <TagLeftIcon fontSize={20} as={TbShoppingBag} mr={1} />
-      <TagLabel fontWeight={"bold"} lineHeight={1}>
-        {"出展"}
-      </TagLabel>
-    </Tag>
+    <div className="flex items-center">
+      <TbShoppingBag />
+      <span className="pl-1 font-bold">{"出展"}</span>
+    </div>
   )
 }

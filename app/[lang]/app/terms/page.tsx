@@ -1,6 +1,7 @@
 import { join } from "path"
 import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
-import { AppTermsDocument } from "@/app/[lang]/app/terms/_components/app-terms-document"
+
+import { MarkdownDocument } from "@/app/_components/markdown-document"
 import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
@@ -14,7 +15,10 @@ const AppTermsPage = async () => {
   return (
     <>
       <MainCenterPage>
-        <AppTermsDocument text={text} />
+        <div className="py-8 space-y-8">
+          <h1 className="text-2xl font-bold"> {"利用規約"}</h1>
+          <MarkdownDocument>{text}</MarkdownDocument>
+        </div>
       </MainCenterPage>
       <AppFooter />
     </>

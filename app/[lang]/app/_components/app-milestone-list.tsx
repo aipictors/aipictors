@@ -6,7 +6,6 @@ import {
   MilestonesQueryVariables,
 } from "@/__generated__/apollo"
 import { useSuspenseQuery } from "@apollo/client"
-import { Card, Stack, Text } from "@chakra-ui/react"
 
 export const AppMilestoneList: React.FC = () => {
   const { data: milestones } = useSuspenseQuery<
@@ -17,16 +16,19 @@ export const AppMilestoneList: React.FC = () => {
   })
 
   return (
-    <Stack p={4}>
-      <Text fontWeight={"bold"}>{"マイルストーン"}</Text>
+    <div className="p-4">
+      <p className="font-bold">マイルストーン</p>
       {milestones.milestones.map((milestone) => (
-        <Card key={milestone.id} variant={"filled"}>
-          <Stack p={4}>
-            <Text>{milestone.version}</Text>
-            <Text fontWeight={"bold"}>{milestone.title}</Text>
-          </Stack>
-        </Card>
+        <div
+          key={milestone.id}
+          className="bg-white shadow-lg rounded-lg overflow-hidden"
+        >
+          <div className="p-4">
+            <p>{milestone.version}</p>
+            <p className="font-bold">{milestone.title}</p>
+          </div>
+        </div>
       ))}
-    </Stack>
+    </div>
   )
 }
