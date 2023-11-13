@@ -1,15 +1,12 @@
 "use client"
 
-import { Avatar, Box, Button, HStack, Text } from "@chakra-ui/react"
-import React from "react"
-
 type Props = {
   name: string
   iconImageURL: string | null
   onClick(): void
 }
 
-export const MutedUser: React.FC<Props> = (props) => {
+export const MutedUser = (props: Props) => {
   return (
     <HStack justifyContent={"space-between"}>
       <HStack>
