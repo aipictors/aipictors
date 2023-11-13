@@ -1,7 +1,15 @@
 "use client"
 
 import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
-import { Box, Button, Card, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
 type Props = {
   title: string
@@ -13,51 +21,32 @@ type Props = {
   onClick(): Promise<void>
 }
 
-export const PassPlanDescription: React.FC<Props> = (props) => {
+export const PassPlanDescription = (props: Props) => {
   return (
-    <Card
-      variant={"filled"}
-      h={"100%"}
-      borderRadius={"xl"}
-      borderWidth={4}
-      borderColor={props.isPrimary ? "blue.500" : "gray.500"}
-    >
-      <Stack h={"100%"} justifyContent={"space-between"} spacing={4}>
-        <Stack spacing={4}>
-          <Stack pt={4} px={4} spacing={0}>
-            <Text fontSize={"sm"} fontWeight={"bold"}>
-              {props.title}
-            </Text>
-            <Text fontSize={"2xl"} fontWeight={"bold"}>
-              {`${toMoneyNumberText(props.price)}円（税込）`}
-            </Text>
-          </Stack>
-          <Box px={4}>
-            <Button
-              w={"100%"}
-              isDisabled={props.isDisabled ?? props.isLoading}
-              colorScheme={"blue"}
-              onClick={props.onClick}
-            >
-              {props.isDisabled ? "準備中" : "決済する"}
-            </Button>
-          </Box>
-          <Stack px={4} spacing={1}>
-            <Text>{"広告の非表示"}</Text>
-            <Text>{"認証マークの表示"}</Text>
-          </Stack>
-        </Stack>
-        <Box p={4} bg={"rgba(0,0,0,0.04)"} borderRadius={"lg"} h={"100%"}>
-          <Stack spacing={1}>
-            <Text fontSize={"sm"} fontWeight={"bold"} opacity={0.6}>
-              {"画像生成"}
-            </Text>
-            {props.features.map((feature) => (
-              <Text key={feature}>{feature}</Text>
-            ))}
-          </Stack>
-        </Box>
-      </Stack>
+    <Card className={cn("h-full", props.isPrimary && "border-blue-500")}>
+      <CardHeader className="space-y-2">
+        <CardDescription>{props.title}</CardDescription>
+        <CardTitle>{`${toMoneyNumberText(props.price)}円（税込）`}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col space-y-4">
+        <Button
+          className="w-full"
+          disabled={props.isDisabled ?? props.isLoading}
+          onClick={props.onClick}
+        >
+          {props.isDisabled ? "準備中" : "決済する"}
+        </Button>
+        <div className="space-y-1">
+          <p>{"広告の非表示"}</p>
+          <p>{"認証マークの表示"}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-bold opacity-60">{"画像生成"}</p>
+          {props.features.map((feature) => (
+            <p key={feature}>{feature}</p>
+          ))}
+        </div>
+      </CardContent>
     </Card>
   )
 }
