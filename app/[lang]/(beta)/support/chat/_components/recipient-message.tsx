@@ -1,7 +1,8 @@
 "use client"
 
 import { toElapsedTimeText } from "@/app/_utils/to-elapsed-time-text"
-import { Avatar, Card, HStack, Stack, Text } from "@chakra-ui/react"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Card } from "@/components/ui/card"
 
 type Props = {
   text: string
@@ -11,24 +12,18 @@ type Props = {
 
 export const RecipientMessage: React.FC<Props> = (props) => {
   return (
-    <HStack spacing={4} alignItems={"flex-start"}>
-      <Avatar src={props.iconImageURL} />
-      <Stack maxW={"sm"}>
-        <Card
-          variant={"filled"}
-          px={6}
-          py={2}
-          borderTopRightRadius={"xl"}
-          borderTopLeftRadius={"sm"}
-          borderBottomRightRadius={"xl"}
-          borderBottomLeftRadius={"xl"}
-        >
-          <Text whiteSpace={"pre-wrap"}>{props.text}</Text>
+    <div className="flex space-x-4 items-start">
+      <Avatar>
+        <AvatarImage src={props.iconImageURL} alt="avatar" />
+      </Avatar>
+      <div className="max-w-sm">
+        <Card className="px-6 py-2 rounded-tr-xl rounded-tl-sm rounded-br-xl rounded-bl-xl">
+          <p className="whitespace-pre-wrap">{props.text}</p>
         </Card>
-        <HStack justifyContent={"flex-end"}>
-          <Text fontSize={"2xs"}>{toElapsedTimeText(props.createdAt)}</Text>
-        </HStack>
-      </Stack>
-    </HStack>
+        <div className="flex justify-end">
+          <p className="text-xs">{toElapsedTimeText(props.createdAt)}</p>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
-import { Button, HStack, Input } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useState } from "react"
 
 type Props = {
@@ -17,11 +18,10 @@ export const MessageInput: React.FC<Props> = (props) => {
   }
 
   return (
-    <HStack>
+    <div className="flex space-x-2">
       <Input
         placeholder="メッセージを入力してください"
         value={message}
-        borderRadius={"full"}
         onChange={(event) => setMessage(event.target.value)}
       />
       {/* <IconButton
@@ -29,15 +29,9 @@ export const MessageInput: React.FC<Props> = (props) => {
         icon={<Icon as={TbPhoto} fontSize={"lg"} />}
         borderRadius={"full"}
       /> */}
-      <Button
-        colorScheme="primary"
-        borderRadius={"full"}
-        lineHeight={1}
-        isLoading={props.isLoading}
-        onClick={handleSubmit}
-      >
+      <Button disabled={props.isLoading} onClick={handleSubmit}>
         {"送信"}
       </Button>
-    </HStack>
+    </div>
   )
 }
