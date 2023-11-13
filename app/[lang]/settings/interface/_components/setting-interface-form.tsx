@@ -1,23 +1,22 @@
 "use client"
 
-import { FormControl, FormLabel, Stack, Switch, Text } from "@chakra-ui/react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export const SettingInterfaceForm: React.FC = () => {
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"UIカスタム"}
-      </Text>
-      <Stack>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"サムネイルにいいねボタンを表示"}</FormLabel>
-          <Switch />
-        </FormControl>
-        <FormControl display="flex" justifyContent={"space-between"}>
-          <FormLabel mb={0}>{"ポップアップ（作品ダイアログ）を表示"}</FormLabel>
-          <Switch />
-        </FormControl>
-      </Stack>
-    </Stack>
+    <div className="w-full space-y-8">
+      <p className="font-bold text-2xl">{"UIカスタム"}</p>
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <Label>{"サムネイルにいいねボタンを表示"}</Label>
+          <Input type="checkbox" />
+        </div>
+        <div className="flex justify-between">
+          <Label>{"ポップアップ（作品ダイアログ）を表示"}</Label>
+          <Input type="checkbox" />
+        </div>
+      </div>
+    </div>
   )
 }

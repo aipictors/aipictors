@@ -11,14 +11,6 @@ import {
 import { MutedUser } from "@/app/[lang]/settings/muted/users/_components/muted-user"
 import { AppContext } from "@/app/_contexts/app-context"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Divider,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
 import { useContext } from "react"
 
 export const MutedUserList: React.FC = () => {
@@ -48,28 +40,23 @@ export const MutedUserList: React.FC = () => {
   }
 
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"ミュートしているユーザ"}
-      </Text>
+    <div className="w-full space-y-8">
+      <p className="font-bold text-2xl">{"ミュートしているユーザ"}</p>
       {data?.viewer?.mutedUsers.length === 0 && (
-        <Alert status="info" borderRadius={"md"}>
-          <AlertIcon />
-          <AlertTitle>{"ミュートしているユーザはいません"}</AlertTitle>
-        </Alert>
+        <div className="bg-info rounded-md p-4">
+          <p>{"ミュートしているユーザはいません"}</p>
+        </div>
       )}
-      <Stack divider={<Divider />}>
+      <div className="space-y-4">
         {data?.viewer?.mutedUsers.map((user) => (
           <MutedUser
             key={user.id}
             name={user.name}
             iconImageURL={user.iconImage?.downloadURL ?? null}
-            onClick={() => {
-              handleUnmute(user.id)
-            }}
+            onClick={() => handleUnmute(user.id)}
           />
         ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }

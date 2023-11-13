@@ -1,7 +1,6 @@
 "use client"
 
-import { Avatar, Box, Button, HStack, Text } from "@chakra-ui/react"
-import React from "react"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   name: string
@@ -9,22 +8,24 @@ type Props = {
   onClick(): void
 }
 
-export const MutedUser: React.FC<Props> = (props) => {
+export const MutedUser = (props: Props) => {
   return (
-    <HStack justifyContent={"space-between"}>
-      <HStack>
-        <Avatar
-          bg="teal.500"
-          size={"sm"}
-          src={props.iconImageURL ?? undefined}
-        />
-        <Box>
-          <Text>{props.name}</Text>
-        </Box>
-      </HStack>
-      <Button borderRadius={"full"} onClick={props.onClick}>
+    <div className="flex justify-between">
+      <div className="flex items-center">
+        <div className="bg-teal-500 w-8 h-8 rounded-full overflow-hidden">
+          <img
+            src={props.iconImageURL ?? undefined}
+            alt={props.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="ml-2">
+          <p>{props.name}</p>
+        </div>
+      </div>
+      <Button className="rounded-full px-4 py-2" onClick={props.onClick}>
         {"解除"}
       </Button>
-    </HStack>
+    </div>
   )
 }

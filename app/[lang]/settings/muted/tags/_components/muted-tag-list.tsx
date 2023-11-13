@@ -10,23 +10,12 @@ import type {
   ViewerMutedTagsQuery,
   ViewerMutedTagsQueryVariables,
 } from "@/__generated__/apollo"
-import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Button,
-  Divider,
-  HStack,
-  Input,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
-
 import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
 import { AppContext } from "@/app/_contexts/app-context"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
+import { useContext, useState } from "react"
 
 export const MutedTagList: React.FC = () => {
   const appContext = useContext(AppContext)
@@ -43,7 +32,7 @@ export const MutedTagList: React.FC = () => {
 
   const count = text.length
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
     MuteTagDocument,
@@ -73,57 +62,50 @@ export const MutedTagList: React.FC = () => {
       await refetch()
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ status: "error", title: error.message })
+        toast({})
       }
     }
   }
 
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"ミュートしているタグ"}
-      </Text>
-      <Stack>
-        <HStack alignItems={"flex-start"}>
-          <Stack flex={1}>
-            <Input
-              borderRadius={"full"}
+    <div className="w-full space-y-8">
+      <p className="font-bold text-2xl">ミュートしているタグ</p>
+      <div className="space-y-4">
+        <div className="flex items-start space-x-4">
+          <div className="flex-1">
+            <input
+              className="rounded-full p-2"
+              type="text"
               value={text}
-              onChange={(e) => {
-                setText(e.target.value)
-              }}
+              onChange={(e) => setText(e.target.value)}
               placeholder="タグ"
             />
-            <HStack justifyContent={"flex-end"}>
-              <Text fontSize={"xs"}>{`${count}/12`}</Text>
-            </HStack>
-          </Stack>
+            <div className="flex justify-end">
+              <p className="text-xs">{`${count}/12`}</p>
+            </div>
+          </div>
           <Button
-            colorScheme="primary"
-            borderRadius={"full"}
+            className="bg-primary text-white rounded-full px-4 py-2"
             onClick={handleMute}
           >
             {"変更を保存"}
           </Button>
-        </HStack>
-      </Stack>
+        </div>
+      </div>
       {data?.viewer?.mutedTags.length === 0 && (
-        <Alert status="info" borderRadius={"md"}>
-          <AlertIcon />
-          <AlertTitle>{"ミュートしているタグはありません"}</AlertTitle>
-        </Alert>
+        <div className="bg-info rounded-md p-4">
+          <p>ミュートしているタグはありません</p>
+        </div>
       )}
-      <Stack divider={<Divider />}>
+      <div>
         {data?.viewer?.mutedTags.map((mutedTag) => (
           <MutedTag
             key={mutedTag.id}
             name={mutedTag.name}
-            onClick={() => {
-              handleUnmute(mutedTag.name)
-            }}
+            onClick={() => handleUnmute(mutedTag.name)}
           />
         ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }

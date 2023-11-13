@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Button, HStack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import React from "react"
 
 type Props = {
@@ -10,13 +10,13 @@ type Props = {
 
 export const MutedTag: React.FC<Props> = (props) => {
   return (
-    <HStack justifyContent={"space-between"}>
-      <Box>
-        <Text>{props.name}</Text>
-      </Box>
-      <Button borderRadius={"full"} onClick={props.onClick}>
+    <div className="flex justify-between">
+      <div>
+        <p>{props.name}</p>
+      </div>
+      <Button className="rounded-full px-4 py-2" onClick={props.onClick}>
         {"解除"}
       </Button>
-    </HStack>
+    </div>
   )
 }

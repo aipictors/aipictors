@@ -2,7 +2,6 @@
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Config } from "@/config"
-import { Stack } from "@chakra-ui/react"
 import React from "react"
 import {
   TbBell,
@@ -15,41 +14,47 @@ import {
 
 export const SettingsRouteList: React.FC = () => {
   return (
-    <Stack>
+    <div>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/notification"}
-        leftIcon={TbBell}
+        leftIcon={<TbBell />}
       >
         {"通知・いいね"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/restriction"}
-        leftIcon={TbPhoto}
+        leftIcon={<TbPhoto />}
       >
         {"表示コンテンツ"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/settings/muted/users"} leftIcon={TbUserOff}>
+      <HomeNavigationButton
+        href={"/settings/muted/users"}
+        leftIcon={<TbUserOff />}
+      >
         {"ユーザミュート"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/settings/muted/tags"} leftIcon={TbTagsOff}>
+      <HomeNavigationButton
+        href={"/settings/muted/tags"}
+        leftIcon={<TbTagsOff />}
+      >
         {"タグミュート"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/request"}
-        leftIcon={TbMedal2}
+        leftIcon={<TbMedal2 />}
       >
         {"支援リクエスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/interface"}
-        leftIcon={TbSettings}
+        leftIcon={<TbSettings />}
       >
         {"UIカスタム"}
       </HomeNavigationButton>
-    </Stack>
+    </div>
   )
 }
