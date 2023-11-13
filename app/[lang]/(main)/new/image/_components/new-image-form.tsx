@@ -302,11 +302,7 @@ const NewImageForm = () => {
 
           <Stack direction="column" mt={4}>
             <Text fontSize="sm">キャプション</Text>
-            <AutoResizeTextarea
-              minH={8}
-              maxLength={3000}
-              placeholder="キャプション"
-            />
+            <AutoResizeTextarea maxLength={3000} placeholder="キャプション" />
           </Stack>
 
           <Stack direction="column" mt={4}>
