@@ -1,24 +1,13 @@
 "use client"
 
-import { Box } from "@chakra-ui/react"
-
 type Props = {
   children: React.ReactNode
 }
 
 export const StaticNavigation: React.FC<Props> = (props) => {
   return (
-    <Box
-      as={"nav"}
-      position={"sticky"}
-      top={"64px"}
-      h={"calc(100svh - 72px)"}
-      minW={"12rem"}
-      overflowY={"auto"}
-      pb={4}
-      pl={4}
-    >
+    <div className="sticky top-16 h-calc(100vh - 72px) min-w-12rem overflow-y-auto pb-4 pl-4">
       {props.children}
-    </Box>
+    </div>
   )
 }

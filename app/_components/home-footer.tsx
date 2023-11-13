@@ -1,58 +1,61 @@
 "use client"
 
-import { HStack, Link as ChakraLink, Stack, Text } from "@chakra-ui/react"
-
 export const HomeFooter: React.FC = () => {
   return (
-    <Stack p={4}>
-      <Stack direction={{ base: "column", md: "row" }}>
-        <HStack spacing={4}>
-          <ChakraLink
+    <div className="p-4">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex space-x-4">
+          <a
             href={"https://www.aipictors.com/terms/"}
-            fontSize={"sm"}
-            isExternal
+            className="text-sm text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {"利用規約"}
-          </ChakraLink>
-          <ChakraLink
+          </a>
+          <a
             href={"https://www.aipictors.com/privacy/"}
-            fontSize={"sm"}
-            isExternal
+            className="text-sm text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {"プライバシーポリシー"}
-          </ChakraLink>
-        </HStack>
-        <HStack spacing={4}>
-          <ChakraLink
+          </a>
+        </div>
+        <div className="flex space-x-4">
+          <a
             href={"https://www.aipictors.com/company/"}
-            fontSize={"sm"}
-            isExternal
+            className="text-sm text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {"運営会社"}
-          </ChakraLink>
-          <ChakraLink
+          </a>
+          <a
             href={"https://www.aipictors.com/commercialtransaction/"}
-            fontSize={"sm"}
-            isExternal
+            className="text-sm text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {"特定商取引法に基づく表記"}
-          </ChakraLink>
-        </HStack>
-      </Stack>
-      <Text fontSize={"sm"}>
+          </a>
+        </div>
+      </div>
+      <p className="text-sm">
         {
           "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。10万以上の沢山のAIコンテンツが投稿されています！無料AIイラスト、グラビア生成機も搭載されています！"
         }
-      </Text>
-      <HStack>
-        <ChakraLink
+      </p>
+      <div>
+        <a
           href={"https://www.aipictors.com"}
-          fontWeight={"bold"}
-          fontSize={"sm"}
+          className="font-bold text-sm text-blue-500"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {"© 2023 Aipictors.com"}
-        </ChakraLink>
-      </HStack>
-    </Stack>
+        </a>
+      </div>
+    </div>
   )
 }
