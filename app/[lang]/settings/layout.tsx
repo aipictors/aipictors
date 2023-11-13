@@ -49,9 +49,9 @@ const SettingsLayout: React.FC<Props> = (props) => {
 
   return (
     <>
-      <BetaHeader title={"設定"} onOpenNavigation={onToggleDrawer} />
+      <BetaHeader title={"設定"} />
       <NavigationDrawer isOpen={isOpenDrawer} onClose={onCloseDrawer}>
-        <BetaNavigationList onOpen={onOpenLogin} onOpenLogout={onOpenLogout} />
+        <BetaNavigationList />
       </NavigationDrawer>
       <HStack alignItems={"flex-start"} spacing={0}>
         <StaticNavigation>
