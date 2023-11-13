@@ -24,7 +24,7 @@ export const PlusCancel: React.FC = () => {
       </div>
       <div className="flex justify-center">
         <Link href="/plus" replace>
-          <Button>ホームに戻る</Button>
+          <Button>{"ホームに戻る"}</Button>
         </Link>
       </div>
     </div>
