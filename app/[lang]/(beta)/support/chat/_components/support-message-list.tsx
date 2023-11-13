@@ -1,7 +1,7 @@
 import type { ViewerSupportMessagesQuery } from "@/__generated__/apollo"
 import { RecipientMessage } from "@/app/[lang]/(beta)/support/chat/_components/recipient-message"
 import { SenderMessage } from "@/app/[lang]/(beta)/support/chat/_components/sender-message"
-import { Stack } from "@chakra-ui/react"
+
 import { useEffect, useRef, useState } from "react"
 
 type Props = {
@@ -32,12 +32,7 @@ export const SupportMessageList: React.FC<Props> = (props) => {
   }, [props.messages])
 
   return (
-    <Stack
-      spacing={4}
-      height={"calc(80vh - 40px)"}
-      overflowX="auto"
-      ref={containerRef}
-    >
+    <div className="space-y-4 h-full overflow-x-auto" ref={containerRef}>
       {props.messages
         .slice()
         .sort((a, b) => {
@@ -64,6 +59,6 @@ export const SupportMessageList: React.FC<Props> = (props) => {
             />
           ),
         )}
-    </Stack>
+    </div>
   )
 }

@@ -12,9 +12,10 @@ import {
 } from "@/__generated__/apollo"
 import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
 import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
+import { useToast } from "@/components/ui/use-toast"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Stack, useInterval, useToast } from "@chakra-ui/react"
 import { startTransition } from "react"
+import { useInterval } from "usehooks-ts"
 
 export const SupportChat: React.FC = () => {
   const { data: supportMessages, refetch } = useSuspenseQuery<
@@ -38,7 +39,7 @@ export const SupportChat: React.FC = () => {
     })
   }, 4000)
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const onSubmit = async (message: string) => {
     try {
@@ -50,7 +51,7 @@ export const SupportChat: React.FC = () => {
       })
     } catch (error) {
       if (error instanceof Error) {
-        toast({ status: "error", description: error.message })
+        toast({ description: error.message })
       }
     }
   }
@@ -61,14 +62,14 @@ export const SupportChat: React.FC = () => {
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
   return (
-    <Stack w={"100%"} spacing={8} pb={16}>
-      <Stack flexDirection={{ base: "column-reverse", md: "column" }}>
+    <div className="w-full h-full space-y-8 pb-8">
+      <div className="h-full flex flex-col-reverse md:flex-col space-y-4">
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={adminAvatarURL}
         />
         <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }
