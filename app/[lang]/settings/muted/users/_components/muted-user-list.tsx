@@ -40,8 +40,7 @@ export const MutedUserList: React.FC = () => {
   }
 
   return (
-    <div className="w-full space-y-8">
-      <p className="font-bold text-2xl">{"ミュートしているユーザ"}</p>
+    <>
       {data?.viewer?.mutedUsers.length === 0 && (
         <div className="bg-info rounded-md p-4">
           <p>{"ミュートしているユーザはいません"}</p>
@@ -57,6 +56,6 @@ export const MutedUserList: React.FC = () => {
           />
         ))}
       </div>
-    </div>
+    </>
   )
 }

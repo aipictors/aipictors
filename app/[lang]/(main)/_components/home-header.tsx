@@ -1,101 +1,105 @@
 "use client"
 
-import { BetaUserNavigationButton } from "@/app/[lang]/(main)/_components/beta-user-navigation-button"
-import { Config } from "@/config"
+import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
+import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
-  Avatar,
-  Box,
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  Stack,
-  useColorModeValue,
-} from "@chakra-ui/react"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { useToast } from "@/components/ui/use-toast"
+import { Config } from "@/config"
+import { useBreakpointValue } from "@chakra-ui/react"
+import { Menu } from "lucide-react"
 import Link from "next/link"
-import React from "react"
-import { TbBellFilled, TbFolderFilled, TbMenu2, TbSearch } from "react-icons/tb"
+import React, { useEffect } from "react"
+import { TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
 
 type HomeHeaderProps = {
-  onOpenNavigation?: () => void
+  onLogin(): void
+  onLogout(): void
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
-  const backgroundColor = useColorModeValue("white", "gray.800")
+  const { toast } = useToast()
+
+  const hasSheet = useBreakpointValue({
+    base: true,
+    sm: true,
+    md: false,
+  })
+
+  useEffect(() => {
+    toast({
+      description:
+        "こちらは開発中のページです。何らかの不具合が発生する可能性があります。",
+      duration: 60 * 4 * 1000,
+    })
+  }, [])
 
   return (
-    <Stack>
-      <HStack
-        p={4}
-        spacing={4}
-        position={"sticky"}
-        top={0}
-        bg={backgroundColor}
-        zIndex={100}
-      >
-        <IconButton
-          variant={"ghost"}
-          aria-label={"メニュー"}
-          borderRadius={"full"}
-          icon={<Icon as={TbMenu2} />}
-        />
-        <Box display={{ base: "none", md: "block" }}>
-          <Link href={"/"}>
-            <Avatar src={"/icon.png"} size={"sm"} />
-          </Link>
-        </Box>
-        <Box w={"100%"} display={{ base: "none", md: "block" }}>
-          <Input placeholder={"作品を検索"} size={"sm"} borderRadius={"full"} />
-        </Box>
-        <IconButton
-          marginLeft={"auto"}
-          size={"sm"}
-          display={{ base: "block", md: "none" }}
-          borderRadius={"full"}
-          icon={<Icon as={TbSearch} />}
-          aria-label={"Search"}
-        />
-        <HStack>
+    <Card className="flex p-4 space-x-4 sticky top-0 z-100 border-none rounded-none shadow-none z-10">
+      {hasSheet && (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant={"ghost"} size={"icon"}>
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side={"left"}>
+            <SheetHeader>
+              <SheetTitle>{"ベータ"}</SheetTitle>
+              <SheetDescription>
+                <BetaNavigationList
+                  onLogin={props.onLogin}
+                  onLogout={props.onLogout}
+                />
+              </SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+      )}
+      <div className="flex items-center">
+        <Link href="https://www.aipictors.com">
+          <img src="/icon.png" className="w-8 h-8 rounded-full" alt="Avatar" />
+        </Link>
+      </div>
+      <div className="w-full hidden md:block">
+        <Input placeholder={"作品を検索"} />
+      </div>
+      <Button className="block md:hidden" size={"icon"} aria-label={"Search"}>
+        <TbSearch />
+      </Button>
+      <div className="flex space-x-2">
+        <Link href={"/generation"}>
+          <Button disabled={Config.isReleaseMode}>{"生成"}</Button>
+        </Link>
+        <Link href={"/new/image"}>
+          <Button disabled={Config.isReleaseMode}>{"投稿"}</Button>
+        </Link>
+        <Link href={"/viewer/albums"}>
           <Button
-            isDisabled={Config.isReleaseMode}
-            as={Link}
-            href={"/generation"}
-            size={"sm"}
-            borderRadius={"full"}
-          >
-            {"生成"}
-          </Button>
-          <Button
-            isDisabled={Config.isReleaseMode}
-            as={Link}
-            href={"/new/image"}
-            size={"sm"}
-            borderRadius={"full"}
-          >
-            {"投稿"}
-          </Button>
-          <IconButton
-            isDisabled={Config.isReleaseMode}
-            as={Link}
-            href={"/viewer/albums"}
-            size={"sm"}
-            borderRadius={"full"}
+            disabled={Config.isReleaseMode}
+            size={"icon"}
             aria-label={"フォルダ"}
-            fontSize={"lg"}
-            icon={<TbFolderFilled />}
-          />
-          <IconButton
-            isDisabled
-            size={"sm"}
-            borderRadius={"full"}
-            aria-label={"通知"}
-            fontSize={"lg"}
-            icon={<TbBellFilled />}
-          />
-          <BetaUserNavigationButton />
-        </HStack>
-      </HStack>
-    </Stack>
+          >
+            <TbFolderFilled />
+          </Button>
+        </Link>
+        <Button disabled size={"icon"} aria-label={"通知"}>
+          <TbBellFilled />
+        </Button>
+        <HomeUserNavigationMenu
+          onLogin={props.onLogin}
+          onLogout={props.onLogout}
+        />
+      </div>
+    </Card>
   )
 }

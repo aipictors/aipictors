@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const SettingMutedTagsPage = async () => {
   return (
     <MainCenterPage>
-      <MutedTagList />
+      <div className="w-full space-y-8">
+        <p className="font-bold text-2xl">ミュートしているタグ</p>
+        <MutedTagList />
+      </div>
     </MainCenterPage>
   )
 }

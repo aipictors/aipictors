@@ -1,28 +1,48 @@
 "use client"
 
-// useState をインポート
 import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { SensitiveNavigation } from "@/app/[lang]/sensitive/_components/sensitive-navigation"
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
+import { SensitiveNavigationList } from "@/app/[lang]/sensitive/_components/sensitive-navigation"
 import { HomeFooter } from "@/app/_components/home-footer"
-import { useNavigation } from "@/app/_hooks/use-navigation"
-import { Divider, HStack } from "@chakra-ui/react"
+import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
+import { Separator } from "@/components/ui/separator"
+import { useDisclosure } from "@chakra-ui/react"
 
 type Props = {
   children: React.ReactNode
 }
 
 const SensitiveLayout: React.FC<Props> = (props) => {
-  const [isOpenNavigation, openNavigation] = useNavigation()
+  const {
+    isOpen: isOpenLogin,
+    onOpen: onOpenLogin,
+    onClose: onCloseLogin,
+  } = useDisclosure()
+
+  const {
+    isOpen: isOpenLogout,
+    onOpen: onOpenLogout,
+    onClose: onCloseLogout,
+  } = useDisclosure()
 
   return (
     <>
-      <HomeHeader onOpenNavigation={openNavigation} />
-      <HStack alignItems={"flex-start"} spacing={0}>
-        {isOpenNavigation && <SensitiveNavigation />}
+      <HomeHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />
+      <div className="flex items-start space-x-0">
+        <ResponsiveNavigation>
+          <SensitiveNavigationList />
+        </ResponsiveNavigation>
         {props.children}
-      </HStack>
-      <Divider />
+      </div>
+      <Separator />
       <HomeFooter />
+      <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <LogoutModal
+        isOpen={isOpenLogout}
+        onClose={onCloseLogout}
+        onOpen={onOpenLogout}
+      />
     </>
   )
 }

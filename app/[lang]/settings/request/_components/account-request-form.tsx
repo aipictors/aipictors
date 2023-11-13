@@ -5,17 +5,14 @@ import { Switch } from "@/components/ui/switch"
 
 export const SettingRequestForm: React.FC = () => {
   return (
-    <div className="w-full space-y-8">
-      <h2 className="font-bold text-2xl">{"支援リクエスト"}</h2>
-      <div className="space-y-4">
-        <p>
-          {"支援リクエストを受けるには累計いいね数20必要です（現在：現在数）"}
-        </p>
-        <div className="flex">
-          <div className="flex justify-between w-full">
-            <Label>{"支援リクエストを許可する"}</Label>
-            <Switch id="airplane-mode" />
-          </div>
+    <div className="space-y-4">
+      <p>
+        {"支援リクエストを受けるには累計いいね数20必要です（現在：現在数）"}
+      </p>
+      <div className="flex">
+        <div className="flex justify-between w-full">
+          <Label>{"支援リクエストを許可する"}</Label>
+          <Switch id="airplane-mode" />
         </div>
       </div>
     </div>

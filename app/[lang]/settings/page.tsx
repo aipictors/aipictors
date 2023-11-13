@@ -1,5 +1,3 @@
-import { SettingsNavigation } from "@/app/[lang]/settings/_components/settings-navigation"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import type { Metadata } from "next"
 
 /**
@@ -7,11 +5,7 @@ import type { Metadata } from "next"
  * @returns
  */
 const SettingsPage: React.FC = async () => {
-  return (
-    <MainCenterPage>
-      <SettingsNavigation />
-    </MainCenterPage>
-  )
+  return null
 }
 
 export const generateMetadata = async (): Promise<Metadata> => {

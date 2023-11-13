@@ -12,7 +12,7 @@ export const MutedUser = (props: Props) => {
   return (
     <div className="flex justify-between">
       <div className="flex items-center">
-        <div className="bg-teal-500 w-8 h-8 rounded-full overflow-hidden">
+        <div className="w-8 h-8 rounded-full overflow-hidden">
           <img
             src={props.iconImageURL ?? undefined}
             alt={props.name}

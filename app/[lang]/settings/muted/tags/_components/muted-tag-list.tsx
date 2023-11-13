@@ -68,8 +68,7 @@ export const MutedTagList: React.FC = () => {
   }
 
   return (
-    <div className="w-full space-y-8">
-      <p className="font-bold text-2xl">ミュートしているタグ</p>
+    <>
       <div className="space-y-4">
         <div className="flex items-start space-x-4">
           <div className="flex-1">
@@ -106,6 +105,6 @@ export const MutedTagList: React.FC = () => {
           />
         ))}
       </div>
-    </div>
+    </>
   )
 }

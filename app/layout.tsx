@@ -1,4 +1,5 @@
 import "@/app/globals.css"
+import "@splidejs/react-splide/css"
 
 import { RootProviders } from "@/app/_components/root-providers"
 import { Config } from "@/config"

@@ -1,7 +1,5 @@
 "use client"
 
-import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
-import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -10,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useDisclosure } from "@chakra-ui/react"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -22,16 +19,18 @@ import {
   TbUserCog,
 } from "react-icons/tb"
 
-export const BetaUserNavigationButton: React.FC = () => {
+type Props = {
+  onLogin(): void
+  onLogout(): void
+}
+
+/**
+ * ヘッダーの右上のメニュー
+ * @param props
+ * @returns
+ */
+export const HomeUserNavigationMenu = (props: Props) => {
   const appContext = useContext(AppContext)
-
-  const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const {
-    isOpen: isOpenLogout,
-    onOpen: onOpenLogout,
-    onClose: onCloseLogout,
-  } = useDisclosure()
 
   return (
     <DropdownMenu>
@@ -46,28 +45,32 @@ export const BetaUserNavigationButton: React.FC = () => {
             <a
               href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
             >
-              <TbUserCircle className="inline-block mr-2" /> マイページ
+              <TbUserCircle className="inline-block mr-2" />
+              <span>{"マイページ"}</span>
             </a>
           </DropdownMenuItem>
         )}
         {appContext.isLoggedIn && (
           <Link href={"/account"}>
             <DropdownMenuItem>
-              <TbUserCog className="inline-block mr-2" /> アカウント
+              <TbUserCog className="inline-block mr-2" />
+              <span>{"アカウント"}</span>
             </DropdownMenuItem>
           </Link>
         )}
         {appContext.isLoggedIn && (
           <Link href={"/settings"}>
             <DropdownMenuItem>
-              <TbSettings className="inline-block mr-2" /> 設定
+              <TbSettings className="inline-block mr-2" />
+              <span>{"設定"}</span>
             </DropdownMenuItem>
           </Link>
         )}
         {appContext.isLoggedIn && (
           <Link href={"/plus"}>
             <DropdownMenuItem>
-              <TbSparkles className="inline-block mr-2" /> Aipictors+
+              <TbSparkles className="inline-block mr-2" />
+              <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
         )}
@@ -86,22 +89,18 @@ export const BetaUserNavigationButton: React.FC = () => {
             {colorMode === "dark" ? "ライトモード" : "ダークモード"}
           </button> */}
         {appContext.isLoggedIn && (
-          <DropdownMenuItem onClick={onOpenLogout}>
-            <TbLogout className="inline-block mr-2" /> ログアウト
+          <DropdownMenuItem onClick={props.onLogout}>
+            <TbLogout className="inline-block mr-2" />
+            <span>{"ログアウト"}</span>
           </DropdownMenuItem>
         )}
         {appContext.isNotLoggedIn && (
-          <DropdownMenuItem onClick={onOpen}>
-            <TbLogin className="inline-block mr-2" /> ログイン
+          <DropdownMenuItem onClick={props.onLogin}>
+            <TbLogin className="inline-block mr-2" />
+            <span>{"ログイン"}</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
-      <LoginModal isOpen={isOpen} onClose={onClose} />
-      <LogoutModal
-        isOpen={isOpenLogout}
-        onClose={onCloseLogout}
-        onOpen={onOpenLogout}
-      />
     </DropdownMenu>
   )
 }

@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const SettingMutedUsersPage = async () => {
   return (
     <MainCenterPage>
-      <MutedUserList />
+      <div className="w-full space-y-8">
+        <p className="font-bold text-2xl">{"ミュートしているユーザ"}</p>
+        <MutedUserList />
+      </div>
     </MainCenterPage>
   )
 }

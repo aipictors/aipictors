@@ -1,15 +1,12 @@
 "use client"
 
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
 import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { AccountRouteList } from "@/app/[lang]/account/_components/account-route-list"
-import { HStack, useBreakpointValue, useDisclosure } from "@chakra-ui/react"
-
-import { NavigationDrawer } from "@/app/_components/navigation-drawer"
-import { StaticNavigation } from "@/app/_components/static-navigation"
+import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import { AppContext } from "@/app/_contexts/app-context"
+import { useDisclosure } from "@chakra-ui/react"
 import React, { useContext } from "react"
 
 type Props = {
@@ -18,20 +15,6 @@ type Props = {
 
 const SettingsLayout: React.FC<Props> = (props) => {
   const appContext = useContext(AppContext)
-
-  const hasNavigation = useBreakpointValue({
-    base: false,
-    sm: false,
-    md: true,
-  })
-
-  const {
-    isOpen: isOpenDrawer,
-    onClose: onCloseDrawer,
-    onToggle: onToggleDrawer,
-  } = useDisclosure({
-    defaultIsOpen: false,
-  })
 
   const {
     isOpen: isOpenLogin,
@@ -55,18 +38,17 @@ const SettingsLayout: React.FC<Props> = (props) => {
 
   return (
     <>
-      <BetaHeader title={"アカウント"} onOpenNavigation={onToggleDrawer} />
-      <NavigationDrawer isOpen={isOpenDrawer} onClose={onCloseDrawer}>
-        <BetaNavigationList onOpen={onOpenLogin} onOpenLogout={onOpenLogout} />
-      </NavigationDrawer>
-      <HStack alignItems={"flex-start"} spacing={0}>
-        {hasNavigation && (
-          <StaticNavigation>
-            <AccountRouteList />
-          </StaticNavigation>
-        )}
+      <BetaHeader
+        title={"アカウント"}
+        onLogin={onOpenLogin}
+        onLogout={onOpenLogout}
+      />
+      <div className="flex items-start space-x-0">
+        <ResponsiveNavigation>
+          <AccountRouteList />
+        </ResponsiveNavigation>
         {props.children}
-      </HStack>
+      </div>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal
         isOpen={isOpenLogout}

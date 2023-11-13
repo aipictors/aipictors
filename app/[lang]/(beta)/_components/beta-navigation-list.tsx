@@ -3,7 +3,7 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
-
+import { Separator } from "@/components/ui/separator"
 import {
   Home,
   LogIn,
@@ -22,38 +22,43 @@ import {
   TbBrandYoutubeFilled,
 } from "react-icons/tb"
 
-export const BetaNavigationList = () => {
+type Props = {
+  onLogin(): void
+  onLogout(): void
+}
+
+export const BetaNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
 
   const { setTheme } = useTheme()
 
-  // const { colorMode, toggleColorMode } = useColorMode()
-
   return (
-    <div className="flex flex-col space-y-4 py-4">
+    <div className="flex flex-col space-y-2">
       <HomeNavigationButton
         href={"https://www.aipictors.com"}
-        leftIcon={<Home />}
+        leftIcon={<Home className="w-4" />}
       >
         {"ホーム"}
       </HomeNavigationButton>
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/plus"} leftIcon={<Rocket />}>
+        <HomeNavigationButton
+          href={"/plus"}
+          leftIcon={<Rocket className="w-4" />}
+        >
           {"Aipictors+"}
         </HomeNavigationButton>
       )}
-
       {appContext.isLoggedIn && (
         <HomeNavigationButton
           href={"/support/chat"}
-          leftIcon={<MessageCircle />}
+          leftIcon={<MessageCircle className="w-4" />}
         >
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate/"}
-        leftIcon={<Sparkles />}
+        leftIcon={<Sparkles className="w-4" />}
       >
         {"画像生成"}
       </HomeNavigationButton>
@@ -68,85 +73,59 @@ export const BetaNavigationList = () => {
       )} */}
       {appContext.isNotLoggedIn && (
         <HomeNavigationButton
-          onClick={() => {
-            ""
-          }}
-          leftIcon={<LogIn />}
+          onClick={props.onLogin}
+          leftIcon={<LogIn className="w-4" />}
         >
           {"ログイン"}
         </HomeNavigationButton>
       )}
       <Button
-        className="justify-start space-x-2 flex flex-row"
+        className="w-full justify-start"
         size={"sm"}
-        variant="secondary"
+        variant={"ghost"}
         onClick={() => setTheme("light")}
       >
-        <Sun>{"Light"}</Sun>
+        <Sun className="mr-4 w-4">{"Light"}</Sun>
         <span>{"ライトモード"}</span>
       </Button>
       <Button
-        className="justify-start space-x-2 flex flex-row"
+        className="w-full justify-start"
         size={"sm"}
-        variant="secondary"
+        variant={"ghost"}
         onClick={() => setTheme("dark")}
       >
-        <Moon>{"Dark"}</Moon>
+        <Moon className="mr-4 w-4">{"Dark"}</Moon>
         <span>{"ダークモード"}</span>
       </Button>
       <div className="py-2">
-        <hr className="border-t" />
+        <Separator />
       </div>
-      <div className="flex flex-col space-y-4 py-4">
+      <div className="flex flex-col space-y-2">
         <HomeNavigationButton
-          leftIcon={<TbBrandX />}
+          leftIcon={<TbBrandX fontSize={16} />}
           href={"https://twitter.com/Aipictors"}
         >
-          {"X（Twitter）"}
+          {"Twitter"}
         </HomeNavigationButton>
         <HomeNavigationButton
-          leftIcon={<TbBrandDiscordFilled />}
+          leftIcon={<TbBrandDiscordFilled fontSize={16} />}
           href={"https://discord.gg/CsSbTHYY"}
         >
           {"Discord"}
         </HomeNavigationButton>
         <HomeNavigationButton
           href={"https://www.threads.net/@aipictors"}
-          leftIcon={<TbBrandThreads />}
+          leftIcon={<TbBrandThreads fontSize={16} />}
         >
           {"Threads"}
         </HomeNavigationButton>
         <HomeNavigationButton
           href={"https://www.youtube.com/@aipictors"}
-          leftIcon={<TbBrandYoutubeFilled />}
+          leftIcon={<TbBrandYoutubeFilled fontSize={16} />}
         >
           {"YouTube"}
         </HomeNavigationButton>
       </div>
-      {/* <Box py={2}>
-        <Divider />
-      </Box> */}
-      {/* <Stack pl={3}>
-        <ChakraLink href={"/about"} as={Link} fontSize={"xs"}>
-          {"このサイトについて"}
-        </ChakraLink>
-        <ChakraLink href={"/about/us"} as={Link} fontSize={"xs"}>
-          {"運営会社"}
-        </ChakraLink>
-        <ChakraLink href={"/terms"} as={Link} fontSize={"xs"}>
-          {"利用規約"}
-        </ChakraLink>
-        <ChakraLink href={"/privacy"} as={Link} fontSize={"xs"}>
-          {"プライバシーポリシー"}
-        </ChakraLink>
-        <ChakraLink
-          href={"/specified-commercial-transaction-act"}
-          as={Link}
-          fontSize={"xs"}
-        >
-          {"特定商取引法に基づく表記"}
-        </ChakraLink>
-      </Stack> */}
     </div>
   )
 }

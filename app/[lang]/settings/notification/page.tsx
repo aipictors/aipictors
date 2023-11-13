@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const SettingNotificationPage = async () => {
   return (
     <MainCenterPage>
-      <SettingNotificationForm />
+      <div className="w-full space-y-8">
+        <p className="font-bold text-2xl">{"通知・いいね"}</p>
+        <SettingNotificationForm />
+      </div>
     </MainCenterPage>
   )
 }

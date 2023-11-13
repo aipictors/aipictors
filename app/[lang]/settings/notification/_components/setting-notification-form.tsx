@@ -5,8 +5,7 @@ import { Label } from "@/components/ui/label"
 
 export const SettingNotificationForm: React.FC = () => {
   return (
-    <div className="w-full space-y-8">
-      <p className="font-bold text-2xl">{"通知・いいね"}</p>
+    <>
       <div className="space-y-4">
         <p>{"匿名いいね"}</p>
         <div className="flex justify-between">
@@ -33,6 +32,6 @@ export const SettingNotificationForm: React.FC = () => {
           <Input type="checkbox" className="form-switch" />
         </div>
       </div>
-    </div>
+    </>
   )
 }

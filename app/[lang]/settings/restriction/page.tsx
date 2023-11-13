@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const SettingRestrictionPage = async () => {
   return (
     <MainCenterPage>
-      <SettingRestrictionForm />
+      <div className="w-full space-y-8">
+        <p className="font-bold text-2xl">{"非表示対象"}</p>
+        <SettingRestrictionForm />
+      </div>
     </MainCenterPage>
   )
 }

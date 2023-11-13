@@ -1,30 +1,22 @@
 "use client"
 
 import { StaticNavigation } from "@/app/_components/static-navigation"
-import { useBreakpoint } from "@chakra-ui/react"
+import { useBreakpointValue } from "@chakra-ui/react"
 
 type Props = {
   children: React.ReactNode
-  isOpen: boolean
-  isOpenDrawer: boolean
-  onClose: () => void
 }
 
 export const ResponsiveNavigation: React.FC<Props> = (props) => {
-  const breakPoint = useBreakpoint()
+  const hasNavigation = useBreakpointValue({
+    base: false,
+    sm: false,
+    md: true,
+  })
 
-  const isMobile = breakPoint === "base" || breakPoint === "sm"
+  if (!hasNavigation) {
+    return null
+  }
 
-  return (
-    <>
-      {!isMobile && props.isOpen && (
-        <StaticNavigation>{props.children}</StaticNavigation>
-      )}
-      {/* {isMobile && (
-        <NavigationDrawer isOpen={props.isOpenDrawer} onClose={props.onClose}>
-          {props.children}
-        </NavigationDrawer>
-      )} */}
-    </>
-  )
+  return <StaticNavigation>{props.children}</StaticNavigation>
 }

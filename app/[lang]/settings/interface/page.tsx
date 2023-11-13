@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const SettingInterfacePage = async () => {
   return (
     <MainCenterPage>
-      <SettingInterfaceForm />
+      <div className="w-full space-y-8">
+        <p className="font-bold text-2xl">{"UIカスタム"}</p>
+        <SettingInterfaceForm />
+      </div>
     </MainCenterPage>
   )
 }

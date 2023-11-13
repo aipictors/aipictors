@@ -14,7 +14,7 @@ import {
 
 export const SettingsRouteList: React.FC = () => {
   return (
-    <div>
+    <div className="space-y-1">
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/notification"}
