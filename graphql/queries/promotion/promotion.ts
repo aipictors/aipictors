@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const PROMOTION = gql`
+export default gql`
   query Promotion($id: ID!) {
     promotion(id: $id) {
       id

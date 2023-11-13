@@ -1,5 +1,5 @@
-import { SettingNotificationForm } from "app/[lang]/settings/notification/_components/SettingNotificationForm"
-import { MainCenterPage } from "app/_components/page/MainCenterPage"
+import { SettingNotificationForm } from "@/app/[lang]/settings/notification/_components/setting-notification-form"
+import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import type { Metadata } from "next"
 
 const SettingNotificationPage = async () => {

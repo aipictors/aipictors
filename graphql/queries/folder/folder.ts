@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const FOLDER = gql`
+export default gql`
   query Folder($id: ID!) {
     folder(id: $id) {
       id

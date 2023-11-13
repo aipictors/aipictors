@@ -1,5 +1,5 @@
-import { CollectionList } from "app/[lang]/(main)/collections/_components/CollectionList"
-import { MainPage } from "app/_components/page/MainPage"
+import { CollectionList } from "@/app/[lang]/(main)/collections/_components/collection-list"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

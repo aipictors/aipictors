@@ -11,6 +11,7 @@
     "nextjs",
     "noto",
     "ourt",
+    "pixelify",
     "prompton",
     "scta",
     "splide"
@@ -24,7 +25,8 @@
   "editor.formatOnSave": true,
   "files.associations": {
     "*.svg": "html",
-    "*.xml": "html"
+    "*.xml": "html",
+    "*.css": "tailwindcss"
   },
   "files.exclude": {
     "**/node_modules": true,

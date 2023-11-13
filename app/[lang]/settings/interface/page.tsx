@@ -1,5 +1,5 @@
-import { SettingInterfaceForm } from "app/[lang]/settings/interface/_components/SettingInterfaceForm"
-import { MainCenterPage } from "app/_components/page/MainCenterPage"
+import { SettingInterfaceForm } from "@/app/[lang]/settings/interface/_components/setting-interface-form"
+import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import type { Metadata } from "next"
 
 const SettingInterfacePage = async () => {

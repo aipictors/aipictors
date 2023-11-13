@@ -1,4 +1,4 @@
-import { AccountProfileForm } from "app/[lang]/account/profile/_components/AccountProfileForm"
+import { AccountProfileForm } from "@/app/[lang]/account/profile/_components/account-profile-form"
 import type { Metadata } from "next"
 
 const AccountProfilePage = async () => {

@@ -1,5 +1,5 @@
-import { NoteArticle } from "app/[lang]/(main)/notes/[note]/_components/NoteArticle"
-import { MainPage } from "app/_components/page/MainPage"
+import { NoteArticle } from "@/app/[lang]/(main)/notes/[note]/_components/note-article"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

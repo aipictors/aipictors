@@ -1,5 +1,5 @@
-import { AlbumList } from "app/[lang]/(main)/albums/_components/AlbumList"
-import { MainPage } from "app/_components/page/MainPage"
+import { AlbumList } from "@/app/[lang]/(main)/albums/_components/album-list"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**

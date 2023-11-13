@@ -1,4 +1,4 @@
-import { GenerationHistoryList } from "app/[lang]/(beta)/generation/history/_components/GenerationHistoryList"
+import { GenerationHistoryList } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-list"
 
 import type { Metadata } from "next"
 

@@ -1,5 +1,5 @@
-import { SctaDocument } from "app/[lang]/(main)/specified-commercial-transaction-act/_components/SctaDocument"
-import { MainPage } from "app/_components/page/MainPage"
+import { SctaDocument } from "@/app/[lang]/(main)/specified-commercial-transaction-act/_components/scta-document"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 const SctaPage = async () => {

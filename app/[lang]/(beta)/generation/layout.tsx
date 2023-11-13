@@ -7,7 +7,11 @@ type Props = {
 }
 
 const StickersLayout: React.FC<Props> = (props) => {
-  return <Stack pb={4}>{props.children}</Stack>
+  return (
+    <Stack pb={4} overflowX={"hidden"}>
+      {props.children}
+    </Stack>
+  )
 }
 
 export default StickersLayout

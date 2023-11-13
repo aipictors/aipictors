@@ -2,13 +2,13 @@
 
 import "@splidejs/react-splide/css"
 
-import { Divider, HStack, useBreakpoint, useDisclosure } from "@chakra-ui/react"
-import { BetaHeader } from "app/[lang]/(beta)/_components/BetaHeader"
-import { BetaNavigationList } from "app/[lang]/(beta)/_components/BetaNavigationList"
-import { LoginModal } from "app/[lang]/(main)/_components/LoginModal"
-import { LogoutModal } from "app/[lang]/(main)/_components/LogoutModal"
-import { HomeFooter } from "app/_components/HomeFooter"
-import { ResponsiveNavigation } from "app/_components/ResponsiveNavigation"
+import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
+import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
+import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
+import { HomeFooter } from "@/app/_components/home-footer"
+import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
+import { Divider, useBreakpoint, useDisclosure } from "@chakra-ui/react"
 
 type Props = {
   children: React.ReactNode
@@ -64,7 +64,7 @@ const BetaLayout: React.FC<Props> = (props) => {
   return (
     <>
       <BetaHeader onOpenNavigation={onToggle} />
-      <HStack alignItems={"flex-start"} spacing={0} w={"100%"}>
+      <div className="flex items-start space-x-0 w-full">
         <ResponsiveNavigation
           isOpen={isOpenNavigation}
           isOpenDrawer={isOpenDrawer}
@@ -76,7 +76,7 @@ const BetaLayout: React.FC<Props> = (props) => {
           />
         </ResponsiveNavigation>
         {props.children}
-      </HStack>
+      </div>
       <Divider />
       <HomeFooter />
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />

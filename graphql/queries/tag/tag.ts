@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const TAG = gql`
+export default gql`
   query Tag($name: String!) {
     tag(name: $name) {
       id

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const USER = gql`
+export default gql`
   query User($userId: ID!) {
     user(id: $userId) {
       ...UserFields

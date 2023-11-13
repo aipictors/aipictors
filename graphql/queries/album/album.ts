@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const ALBUM = gql`
+export default gql`
   query Album($id: ID!) {
     album(id: $id) {
       id
