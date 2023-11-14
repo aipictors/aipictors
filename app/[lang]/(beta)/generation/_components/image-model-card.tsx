@@ -1,4 +1,4 @@
-import { Box, Button, Image, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   onSelect(): void
@@ -9,23 +9,20 @@ type Props = {
 
 export const ImageModelCard = (props: Props) => {
   return (
-    <Box>
-      <Stack>
+    <div className="stack flex">
+      <div className="stack flex">
         <Button
-          p={0}
-          h={"auto"}
-          overflow={"hidden"}
+          className="p-0 h-auto overflow-hidden border-2 border-gray-200"
           variant={"outline"}
-          borderWidth={2}
-          borderColor={props.isActive ? "primary.500" : "gray.200"}
+          // borderColor={props.isActive ? "primary.500" : "gray.200"}
           onClick={() => {
             props.onSelect()
           }}
         >
-          <Image src={props.imageURL ?? ""} alt={props.name} />
+          <img src={props.imageURL ?? ""} alt={props.name} />
         </Button>
-        <Text fontSize={"sm"}>{props.name}</Text>
-      </Stack>
-    </Box>
+        <p className="text-sm">{props.name}</p>
+      </div>
+    </div>
   )
 }

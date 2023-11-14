@@ -55,8 +55,8 @@ export const GenerationEditorModels = (props: Props) => {
           </Button>
         }
       >
-        <div className="overflow-y-auto p-2">
-          <div className="flex justify-between items-start">
+        <div className="overflow-y-auto p-2 flex-col">
+          <div className="flex justify-between items-start flex-col">
             {currentModels.map((model) => (
               <SelectedModel
                 key={model?.id}

@@ -3,7 +3,9 @@
 import { PromptCategoriesQuery } from "@/__generated__/apollo"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { PromptCategoriesModal } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-modal"
-import { Box, Button, Textarea, useDisclosure } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { useDisclosure } from "@chakra-ui/react"
 
 type Props = {
   promptText: string
@@ -22,26 +24,21 @@ export const GenerationEditorPrompt = (props: Props) => {
         title={"プロンプト"}
         tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
         action={
-          <Button borderRadius={"full"} size={"sm"} onClick={onOpen}>
+          <Button className="border-radius-full size-sm" onClick={onOpen}>
             {"キーワード"}
           </Button>
         }
       >
-        <Box h={"100%"} flex={1} p={"1px"}>
+        <div className="flex-1 p-1" style={{ height: "100%" }}>
           <Textarea
-            h={"100%"}
-            p={2}
+            className="p-2 border-radius-none resize-none border-none h-100 border-bottom-md"
             placeholder={"プロンプト"}
-            borderRadius={0}
             value={props.promptText}
             onChange={(event) => {
               props.onChangePromptText(event.target.value)
             }}
-            border={"none"}
-            resize={"none"}
-            borderBottomRadius={"md"}
           />
-        </Box>
+        </div>
       </GenerationEditorCard>
       <PromptCategoriesModal
         onClose={onClose}

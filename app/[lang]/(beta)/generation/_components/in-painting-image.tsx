@@ -1,15 +1,13 @@
 "use client"
 
-import { HStack, Image } from "@chakra-ui/react"
-
 export const InPaintingImage = () => {
   return (
-    <HStack justifyContent={"center"}>
-      <Image
+    <div className="flex justify-center">
+      <img
+        className="w-full h-auto"
         src="https://source.unsplash.com/random/800x600"
         alt=""
-        boxSize={"xl"}
       />
-    </HStack>
+    </div>
   )
 }

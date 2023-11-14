@@ -14,9 +14,10 @@ import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
+import { Button } from "@/components/ui/button"
 import { Config } from "@/config"
 import { useMutation } from "@apollo/client"
-import { Button, Stack, useToast } from "@chakra-ui/react"
+import { useToast } from "@chakra-ui/react"
 import { useState } from "react"
 
 type Props = {
@@ -25,7 +26,7 @@ type Props = {
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
 
-export const GenerationEditor = (props: Props) => {
+export const GenerationEditor: React.FC<Props> = (props) => {
   const [createTask, { loading: isLoading }] = useMutation<
     CreateImageGenerationTaskMutationResult,
     CreateImageGenerationTaskMutationVariables
@@ -139,10 +140,10 @@ export const GenerationEditor = (props: Props) => {
         />
       }
       histories={
-        <Stack height={"100%"}>
+        <div className="flex-1 p-1" style={{ height: "100%" }}>
           <Button
-            colorScheme={"primary"}
-            isLoading={isLoading}
+            className="w-100 bg-primary"
+            disabled={isLoading}
             onClick={onCreateTask}
           >
             {"生成する"}
@@ -151,7 +152,7 @@ export const GenerationEditor = (props: Props) => {
             selectHistory={selectHistory}
             selectedHistory={selectedHistory}
           />
-        </Stack>
+        </div>
       }
     />
   )
