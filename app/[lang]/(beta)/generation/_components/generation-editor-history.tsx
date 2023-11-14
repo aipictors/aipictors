@@ -11,16 +11,10 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { GenerationHistoryDeleteModal } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-modal"
 import { SelectedWorkModal } from "@/app/[lang]/(beta)/generation/_components/selected-work-modal"
 import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 import { useSuspenseQuery } from "@apollo/client"
-import {
-  Box,
-  Button,
-  Divider,
-  HStack,
-  SimpleGrid,
-  Stack,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
 import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
 
 type Props = {
@@ -62,16 +56,16 @@ export const GenerationEditorHistory = (props: Props) => {
   return (
     <>
       <GenerationEditorCard title={"生成履歴"}>
-        <Box overflowY={"auto"}>
-          <HStack p={2}>
+        <div className="overflow-y-auto">
+          <div className="flex p-2">
             <Trash2 />
             <ArrowDownToLine />
-            <Button borderRadius={"full"}>{"解除"}</Button>
+            <Button className="border-radius-full">{"解除"}</Button>
             <Star />
-          </HStack>
-          <Divider />
-          <Stack p={2} spacing={4}>
-            <SimpleGrid spacing={2} columns={{ base: 1, md: 2 }}>
+          </div>
+          <Separator className="my-4" />
+          <div className="p-2 space-y-4">
+            <div className="grid gap-2 grid-cols-1 md:grid-cols-2">
               {data.viewer?.imageGenerationTasks?.map((task) => (
                 <GenerationHistoryCard
                   imageURL={"https://source.unsplash.com/random/800x600"}
@@ -80,9 +74,9 @@ export const GenerationEditorHistory = (props: Props) => {
                   }}
                 />
               ))}
-            </SimpleGrid>
-          </Stack>
-        </Box>
+            </div>
+          </div>
+        </div>
       </GenerationEditorCard>
       <SelectedWorkModal
         isOpen={isOpen}

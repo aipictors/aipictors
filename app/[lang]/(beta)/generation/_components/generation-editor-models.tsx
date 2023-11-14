@@ -4,8 +4,9 @@ import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ModelsModal } from "@/app/[lang]/(beta)/generation/_components/models-modal"
 import { SelectedModel } from "@/app/[lang]/(beta)/generation/_components/selected-model"
+import { Button } from "@/components/ui/button"
 import { Config } from "@/config"
-import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react"
+import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 
 type Props = {
@@ -49,13 +50,13 @@ export const GenerationEditorModels = (props: Props) => {
         title={"モデル"}
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
         action={
-          <Button size={"sm"} borderRadius={"full"} onClick={onOpen}>
+          <Button className="size-sm border-radius-full" onClick={onOpen}>
             {"モデルを変更する"}
           </Button>
         }
       >
-        <Box overflowY={"auto"} p={2}>
-          <Stack justifyContent={"space-between"} alignItems={"flex-start"}>
+        <div className="overflow-y-auto p-2">
+          <div className="flex justify-between items-start">
             {currentModels.map((model) => (
               <SelectedModel
                 key={model?.id}
@@ -67,8 +68,8 @@ export const GenerationEditorModels = (props: Props) => {
                 }}
               />
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       </GenerationEditorCard>
       <ModelsModal
         isOpen={isOpen}

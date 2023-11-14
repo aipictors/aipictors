@@ -1,7 +1,8 @@
 "use client"
 
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { Box, Button, Stack, Textarea, Wrap } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 type Props = {
   promptText: string
@@ -34,24 +35,19 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
       }
     >
-      <Box h={"100%"} flex={1} p={"1px"}>
-        <Stack spacing={0} h={"100%"}>
+      <div className="flex-1 p-1" style={{ height: "100%" }}>
+        <div className="space-y-0" style={{ height: "100%" }}>
           <Textarea
-            h={"100%"}
-            p={2}
+            className="p-2 border-radius-none resize-none border-none h-100"
             placeholder={"EasyNegativeなど"}
-            borderRadius={0}
             value={props.promptText}
             onChange={(event) => {
               props.onChangePromptText(event.target.value)
             }}
-            border={"none"}
-            resize={"none"}
           />
-          <Wrap p={2}>
+          <div className="wrap p-2">
             <Button
-              size={"xs"}
-              borderRadius={"full"}
+              className="size-xs border-radius-full"
               onClick={() => {
                 onAddPrompt("+bad-hands-5")
               }}
@@ -59,8 +55,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
               {"+bad-hands-5"}
             </Button>
             <Button
-              size={"xs"}
-              borderRadius={"full"}
+              className="size-xs border-radius-full"
               onClick={() => {
                 onAddPrompt("+badhandv4")
               }}
@@ -68,17 +63,16 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
               {"+badhandv4"}
             </Button>
             <Button
-              size={"xs"}
-              borderRadius={"full"}
+              className="size-xs border-radius-full"
               onClick={() => {
                 onAddPrompt("+bad_prompt_version2")
               }}
             >
               {"+bad_prompt_version2"}
             </Button>
-          </Wrap>
-        </Stack>
-      </Box>
+          </div>
+        </div>
+      </div>
     </GenerationEditorCard>
   )
 }
