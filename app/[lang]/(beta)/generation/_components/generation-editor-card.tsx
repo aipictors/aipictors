@@ -1,14 +1,13 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import {
-  Card,
-  Divider,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
   Tooltip,
-} from "@chakra-ui/react"
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 
 type Props = {
@@ -20,40 +19,32 @@ type Props = {
 
 export const GenerationEditorCard = (props: Props) => {
   return (
-    <Card
-      variant={"filled"}
-      h={"100%"}
-      overflowX={"hidden"}
-      overflowY={"auto"}
-      position={"relative"}
-    >
-      <HStack
-        position={"sticky"}
-        top={0}
-        zIndex={8}
-        bg={"rgba(255,255,255,0.1)"}
-        px={2}
-        py={2}
-        justifyContent={"space-between"}
-      >
-        <HStack alignItems={"center"}>
-          <Text fontWeight={"bold"}>{props.title}</Text>
-        </HStack>
-        <HStack>
+    <Card className="h-full overflow-x-hidden overflow-y-auto position-relative">
+      <div className="flex sticky top-0 z-8 bg-opacity-10 bg-white px-2 py-2 justify-between">
+        <div className="flex items-center">
+          <p className="fontWeight-bold">{props.title}</p>
+        </div>
+        <div>
           {props.tooltip && (
-            <Tooltip label={props.tooltip} fontSize="md">
-              <IconButton
-                size={"sm"}
-                aria-label={"メニュー"}
-                borderRadius={"full"}
-                icon={<Icon as={HelpCircle} />}
-              />
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="size-sm border-radius-full"
+                    variant={"ghost"}
+                  >
+                    <HelpCircle />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="font-size-md whitespace-pre-wrap ">
+                  {props.tooltip}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           {props.action}
-        </HStack>
-      </HStack>
-      <Divider />
+        </div>
+      </div>
       {props.children}
     </Card>
   )
