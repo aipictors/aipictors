@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { TbClick } from "react-icons/tb"
+import { MousePointerClick } from "lucide-react"
 
 type Props = {
   alt: string
@@ -23,7 +23,7 @@ export const EventImage = (props: Props) => {
         rel={"noreferrer noopener"}
       >
         <Button className="rounded-full">
-          <TbClick />
+          <MousePointerClick />
           <span className="ml-2">{props.linkTitle}</span>
         </Button>
       </a>

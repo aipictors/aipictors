@@ -1,13 +1,5 @@
-import {
-  HStack,
-  Icon,
-  IconButton,
-  Select,
-  Stack,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react"
-import { TbQuestionMark } from "react-icons/tb"
+import { HStack, Select, Stack, Text, Tooltip } from "@chakra-ui/react"
+import { HelpCircle } from "lucide-react"
 
 /**
  * VAEの設定
@@ -19,12 +11,7 @@ export const GenerationEditorConfigVae = () => {
       <HStack spacing={2}>
         <Text fontWeight={"bold"}>{"VAE"}</Text>
         <Tooltip label="出力される色や線を調整します。">
-          <IconButton
-            aria-label={"メニュー"}
-            borderRadius={"full"}
-            size={"sm"}
-            icon={<Icon as={TbQuestionMark} />}
-          />
+          <HelpCircle />
         </Tooltip>
       </HStack>
       <Select defaultValue={"option3"} borderRadius={"full"}>

@@ -1,15 +1,7 @@
 "use client"
 
-import {
-  Button,
-  Card,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Text,
-} from "@chakra-ui/react"
-import { TbTrash } from "react-icons/tb"
+import { Button, Card, HStack, Image, Text } from "@chakra-ui/react"
+import { Trash2 } from "lucide-react"
 
 export const ViewerAlbum = () => {
   return (
@@ -29,15 +21,7 @@ export const ViewerAlbum = () => {
       </Button>
       <HStack px={2} justifyContent={"space-between"}>
         <Text>{"タイトル"}</Text>
-        <IconButton
-          size={"md"}
-          aria-label={"メニュー"}
-          borderRadius={"full"}
-          icon={<Icon as={TbTrash} />}
-          onClick={() => {
-            alert("削除しますか？")
-          }}
-        />
+        <Trash2 />
       </HStack>
     </Card>
   )

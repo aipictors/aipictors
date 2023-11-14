@@ -4,7 +4,6 @@ import {
   Button,
   Divider,
   HStack,
-  Icon,
   Input,
   Modal,
   ModalBody,
@@ -16,7 +15,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { TbCheck } from "react-icons/tb"
+import { Check } from "lucide-react"
 
 type Props = {
   isOpen: boolean
@@ -39,33 +38,21 @@ export const SearchSettingModal = (props: Props) => {
           <Stack spacing={4}>
             <HStack>
               <Text>{"年齢制限："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"作品形式："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"検索対象："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
@@ -87,44 +74,28 @@ export const SearchSettingModal = (props: Props) => {
             <Divider />
             <HStack>
               <Text>{"プロンプト公開："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"フォロー関係："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"お題参加："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"テイスト："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
@@ -147,22 +118,14 @@ export const SearchSettingModal = (props: Props) => {
             <Divider />
             <HStack>
               <Text>{"表示順："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>
             <Divider />
             <HStack>
               <Text>{"投稿件数："}</Text>
-              <Button
-                leftIcon={<Icon as={TbCheck} />}
-                borderRadius={"full"}
-                size={"xs"}
-              >
+              <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
                 {"全年齢"}
               </Button>
             </HStack>

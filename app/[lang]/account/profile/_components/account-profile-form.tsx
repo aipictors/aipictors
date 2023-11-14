@@ -1,16 +1,8 @@
 "use client"
 
-import {
-  Avatar,
-  Button,
-  HStack,
-  Icon,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Avatar, Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
+import { Plus } from "lucide-react"
 import { useState } from "react"
-import { TbPlus } from "react-icons/tb"
 
 export const AccountProfileForm = () => {
   const [userName, setUserName] = useState("")
@@ -37,7 +29,7 @@ export const AccountProfileForm = () => {
       <HStack>
         <Button
           aria-label="Search database"
-          rightIcon={<Icon as={TbPlus} />}
+          rightIcon={<Plus />}
           borderRadius={"full"}
         >
           {"ヘッダー追加ボタン"}

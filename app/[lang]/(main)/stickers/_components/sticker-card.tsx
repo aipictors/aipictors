@@ -1,8 +1,7 @@
 "use client"
 
-import { Card, HStack, Icon, Image, Link, Stack, Text } from "@chakra-ui/react"
-
-import { TbDownload, TbRubberStamp } from "react-icons/tb"
+import { Card, HStack, Image, Link, Stack, Text } from "@chakra-ui/react"
+import { Download, Stamp } from "lucide-react"
 
 type Props = {
   id: string
@@ -34,11 +33,11 @@ export const StickerCard = (props: Props) => {
           </Text>
           <HStack alignItems={"center"} spacing={4}>
             <HStack>
-              <Icon as={TbDownload} />
+              <Download />
               <Text fontSize={"sm"}>{props.downloadsCount}</Text>
             </HStack>
             <HStack>
-              <Icon as={TbRubberStamp} />
+              <Stamp />
               <Text fontSize={"sm"}>{props.usesCount}</Text>
             </HStack>
           </HStack>

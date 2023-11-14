@@ -9,15 +9,14 @@ import { ApolloError, useMutation } from "@apollo/client"
 import {
   Button,
   HStack,
-  Icon,
   IconButton,
   Input,
   Stack,
   Text,
   useToast,
 } from "@chakra-ui/react"
+import { Eye } from "lucide-react"
 import { useState } from "react"
-import { TbEye } from "react-icons/tb"
 
 export const AccountPasswordForm = () => {
   const [newPassword, setNewPassword] = useState("")
@@ -73,7 +72,7 @@ export const AccountPasswordForm = () => {
           />
           <IconButton
             aria-label="Search database"
-            icon={<Icon as={TbEye} />}
+            icon={<Eye />}
             onClick={() => {
               setShowPassword(!showPassword)
             }}
@@ -93,7 +92,7 @@ export const AccountPasswordForm = () => {
           />
           <IconButton
             aria-label="Search database"
-            icon={<Icon as={TbEye} />}
+            icon={<Eye />}
             onClick={() => {
               setShowNewPassword(!showNewPassword)
             }}

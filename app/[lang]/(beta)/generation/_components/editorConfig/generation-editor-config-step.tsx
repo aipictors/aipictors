@@ -1,7 +1,5 @@
 import {
   HStack,
-  Icon,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -11,7 +9,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { TbQuestionMark } from "react-icons/tb"
+import { HelpCircle } from "lucide-react"
 
 export const GenerationEditorConfigStep = () => {
   return (
@@ -19,12 +17,7 @@ export const GenerationEditorConfigStep = () => {
       <HStack>
         <Text fontWeight={"bold"}>{"Steps"}</Text>
         <Tooltip label="Steps値を大きくするほどイラストがより洗練されます。">
-          <IconButton
-            aria-label={"メニュー"}
-            borderRadius={"full"}
-            icon={<Icon as={TbQuestionMark} />}
-            size={"sm"}
-          />
+          <HelpCircle />
         </Tooltip>
       </HStack>
       <NumberInput defaultValue={20} min={9} max={25}>

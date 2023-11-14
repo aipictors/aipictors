@@ -1,13 +1,7 @@
 "use client"
 
-import { Button, HStack, Icon, IconButton, Text } from "@chakra-ui/react"
-import {
-  TbDots,
-  TbFolderFilled,
-  TbHeartFilled,
-  TbQuestionMark,
-  TbShare2,
-} from "react-icons/tb"
+import { Button, HStack, IconButton, Text } from "@chakra-ui/react"
+import { Folder, Heart, HelpCircle, MoreHorizontal, Share } from "lucide-react"
 
 type Props = {
   workLikesCount: number
@@ -17,12 +11,12 @@ export const WorkAction = (props: Props) => {
   return (
     <HStack justifyContent={"space-between"}>
       <HStack>
-        <Button leftIcon={<Icon as={TbQuestionMark} />} borderRadius={"full"}>
+        <Button leftIcon={<HelpCircle />} borderRadius={"full"}>
           {"画像生成"}
         </Button>
       </HStack>
       <HStack>
-        <Button leftIcon={<Icon as={TbHeartFilled} />} borderRadius={"full"}>
+        <Button leftIcon={<Heart />} borderRadius={"full"}>
           <HStack spacing={2}>
             <Text>{"いいね"}</Text>
             <Text>{props.workLikesCount}</Text>
@@ -30,18 +24,18 @@ export const WorkAction = (props: Props) => {
         </Button>
         <IconButton
           aria-label={"フォルダに追加"}
-          icon={<Icon as={TbFolderFilled} />}
+          icon={<Folder />}
           borderRadius={"full"}
         />
         <IconButton
           aria-label={"シェア"}
-          icon={<Icon as={TbShare2} />}
+          icon={<Share />}
           borderRadius={"full"}
         />
         <IconButton
           aria-label={"メニュー"}
           borderRadius={"full"}
-          icon={<Icon as={TbDots} />}
+          icon={<MoreHorizontal />}
         />
       </HStack>
     </HStack>

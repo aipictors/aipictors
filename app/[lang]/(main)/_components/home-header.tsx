@@ -16,10 +16,9 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { useBreakpointValue } from "@chakra-ui/react"
-import { Menu } from "lucide-react"
+import { Bell, Folder, Menu, Search } from "lucide-react"
 import Link from "next/link"
 import { useEffect } from "react"
-import { TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
 
 type Props = {
   onLogin(): void
@@ -74,7 +73,7 @@ export const HomeHeader = (props: Props) => {
         <Input placeholder={"作品を検索"} />
       </div>
       <Button className="block md:hidden" size={"icon"} aria-label={"Search"}>
-        <TbSearch />
+        <Search />
       </Button>
       <div className="flex space-x-2">
         <Link href={"/generation"}>
@@ -89,11 +88,11 @@ export const HomeHeader = (props: Props) => {
             size={"icon"}
             aria-label={"フォルダ"}
           >
-            <TbFolderFilled />
+            <Folder />
           </Button>
         </Link>
         <Button disabled size={"icon"} aria-label={"通知"}>
-          <TbBellFilled />
+          <Bell />
         </Button>
         <HomeUserNavigationMenu
           onLogin={props.onLogin}

@@ -6,14 +6,13 @@ import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-ca
 import {
   Button,
   HStack,
-  Icon,
   IconButton,
   SimpleGrid,
   Stack,
   Text,
 } from "@chakra-ui/react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 
 type Props = {
   year: number
@@ -63,7 +62,7 @@ export const ThemeList = (props: Props) => {
       <HStack justifyContent={"center"} spacing={4}>
         <IconButton
           aria-label="previous month"
-          icon={<Icon as={TbChevronLeft} fontSize={"lg"} />}
+          icon={<ChevronLeft fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
           onClick={onPreviousMonth}
@@ -73,7 +72,7 @@ export const ThemeList = (props: Props) => {
         </Text>
         <IconButton
           aria-label="next month"
-          icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
+          icon={<ChevronRight fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
           onClick={onNextMonth}

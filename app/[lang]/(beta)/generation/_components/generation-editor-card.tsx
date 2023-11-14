@@ -9,7 +9,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { TbQuestionMark } from "react-icons/tb"
+import { HelpCircle } from "lucide-react"
 
 type Props = {
   title: string
@@ -46,7 +46,7 @@ export const GenerationEditorCard = (props: Props) => {
                 size={"sm"}
                 aria-label={"メニュー"}
                 borderRadius={"full"}
-                icon={<Icon as={TbQuestionMark} />}
+                icon={<Icon as={HelpCircle} />}
               />
             </Tooltip>
           )}

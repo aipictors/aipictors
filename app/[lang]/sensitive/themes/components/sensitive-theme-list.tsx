@@ -3,16 +3,9 @@
 import type { DailyThemesQuery } from "@/__generated__/apollo"
 import { ThemeListItem } from "@/app/[lang]/(main)/themes/_components/theme-list-item"
 import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-calendar-cells"
-import {
-  HStack,
-  Icon,
-  IconButton,
-  SimpleGrid,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { HStack, IconButton, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { TbChevronLeft, TbChevronRight } from "react-icons/tb"
 
 type Props = {
   year: number
@@ -62,7 +55,7 @@ export const SensitiveThemeList = (props: Props) => {
       <HStack justifyContent={"center"} spacing={4}>
         <IconButton
           aria-label="previous month"
-          icon={<Icon as={TbChevronLeft} fontSize={"lg"} />}
+          icon={<ChevronLeft fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
           onClick={onPreviousMonth}
@@ -73,7 +66,7 @@ export const SensitiveThemeList = (props: Props) => {
         >{`${props.year}年${props.month}月`}</Text>
         <IconButton
           aria-label="next month"
-          icon={<Icon as={TbChevronRight} fontSize={"lg"} />}
+          icon={<ChevronRight fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
           onClick={onNextMonth}

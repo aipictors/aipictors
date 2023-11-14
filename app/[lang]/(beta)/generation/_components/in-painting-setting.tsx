@@ -2,8 +2,6 @@
 
 import {
   HStack,
-  Icon,
-  IconButton,
   Radio,
   RadioGroup,
   Slider,
@@ -13,17 +11,13 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { TbRefresh } from "react-icons/tb"
+import { RefreshCcw } from "lucide-react"
 
 export const InPaintingSetting = () => {
   return (
     <HStack>
       <HStack justifyContent={"flex-start"}>
-        <IconButton
-          aria-label="previous month"
-          icon={<Icon as={TbRefresh} fontSize={"lg"} />}
-          borderRadius={"md"}
-        />
+        <RefreshCcw />
       </HStack>
       <Stack spacing={4}>
         <HStack>

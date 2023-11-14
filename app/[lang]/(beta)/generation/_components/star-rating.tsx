@@ -1,7 +1,8 @@
 "use client"
 
-import { HStack, Icon, IconButton } from "@chakra-ui/react"
-import { TbStar, TbStarFilled } from "react-icons/tb"
+import { cn } from "@/lib/utils"
+import { HStack, IconButton } from "@chakra-ui/react"
+import { Star } from "lucide-react"
 
 type Props = {
   value: number
@@ -14,7 +15,7 @@ export const StarRating = (props: Props) => {
       <IconButton
         aria-label={"お気に入り"}
         borderRadius={"full"}
-        icon={<Icon as={0 < props.value ? TbStarFilled : TbStar} />}
+        icon={<Star className={cn(0 < props.value && "fill-yellow-500")} />}
         variant={"ghost"}
         onClick={() => {
           props.onChange(1)
@@ -23,7 +24,7 @@ export const StarRating = (props: Props) => {
       <IconButton
         aria-label={"お気に入り"}
         borderRadius={"full"}
-        icon={<Icon as={1 < props.value ? TbStarFilled : TbStar} />}
+        icon={<Star className={cn(1 < props.value && "fill-yellow-500")} />}
         variant={"ghost"}
         onClick={() => {
           props.onChange(2)
@@ -32,7 +33,7 @@ export const StarRating = (props: Props) => {
       <IconButton
         aria-label={"お気に入り"}
         borderRadius={"full"}
-        icon={<Icon as={2 < props.value ? TbStarFilled : TbStar} />}
+        icon={<Star className={cn(2 < props.value && "fill-yellow-500")} />}
         variant={"ghost"}
         onClick={() => {
           props.onChange(3)
@@ -41,7 +42,7 @@ export const StarRating = (props: Props) => {
       <IconButton
         aria-label={"お気に入り"}
         borderRadius={"full"}
-        icon={<Icon as={3 < props.value ? TbStarFilled : TbStar} />}
+        icon={<Star className={cn(3 < props.value && "fill-yellow-500")} />}
         variant={"ghost"}
         onClick={() => {
           props.onChange(4)
@@ -50,7 +51,7 @@ export const StarRating = (props: Props) => {
       <IconButton
         aria-label={"お気に入り"}
         borderRadius={"full"}
-        icon={<Icon as={4 < props.value ? TbStarFilled : TbStar} />}
+        icon={<Star className={cn(4 < props.value && "fill-yellow-500")} />}
         variant={"ghost"}
         onClick={() => {
           props.onChange(5)

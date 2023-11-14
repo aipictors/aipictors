@@ -4,13 +4,12 @@ import {
   Card,
   CardBody,
   HStack,
-  Icon,
   IconButton,
   Image,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { TbHeart } from "react-icons/tb"
+import { Heart } from "lucide-react"
 
 export const SensitiveAlbumWork = () => {
   return (
@@ -19,7 +18,7 @@ export const SensitiveAlbumWork = () => {
         <Text>{"タイトル"}</Text>
         <IconButton
           aria-label="previous month"
-          icon={<Icon as={TbHeart} fontSize={"lg"} />}
+          icon={<Heart fontSize={"lg"} />}
           variant={"ghost"}
           borderRadius={"full"}
         />

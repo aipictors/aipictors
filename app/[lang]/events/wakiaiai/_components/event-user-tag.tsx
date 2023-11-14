@@ -1,5 +1,5 @@
 import type { EventUserType } from "@/app/[lang]/events/_types/event-user-type"
-import { TbFlame, TbPhoto, TbShoppingBag } from "react-icons/tb"
+import { Flame, Image, ShoppingBag } from "lucide-react"
 
 type Props = {
   type: EventUserType
@@ -9,7 +9,7 @@ export const EventUserTag = (props: Props) => {
   if (props.type === "SPONSOR") {
     return (
       <div className="flex items-center">
-        <TbFlame />
+        <Flame />
         <span className="pl-1 font-bold">{"スポンサー"}</span>
       </div>
     )
@@ -18,7 +18,7 @@ export const EventUserTag = (props: Props) => {
   if (props.type === "EXHIBIT") {
     return (
       <div className="flex items-center">
-        <TbPhoto />
+        <Image />
         <span className="pl-1 font-bold">{"展示"}</span>
       </div>
     )
@@ -26,7 +26,7 @@ export const EventUserTag = (props: Props) => {
 
   return (
     <div className="flex items-center">
-      <TbShoppingBag />
+      <ShoppingBag />
       <span className="pl-1 font-bold">{"出展"}</span>
     </div>
   )

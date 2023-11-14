@@ -1,7 +1,5 @@
 import {
   HStack,
-  Icon,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -11,7 +9,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { TbDice3, TbQuestionMark, TbRefresh } from "react-icons/tb"
+import { Dices, HelpCircle, RefreshCcw } from "lucide-react"
 
 export const GenerationEditorConfigSeed = () => {
   return (
@@ -19,12 +17,7 @@ export const GenerationEditorConfigSeed = () => {
       <HStack>
         <Text fontWeight={"bold"}>{"Seed"}</Text>
         <Tooltip label="キャラや構図などを固定したいときに使用します。">
-          <IconButton
-            aria-label={"メニュー"}
-            borderRadius={"full"}
-            icon={<Icon as={TbQuestionMark} />}
-            size={"sm"}
-          />
+          <HelpCircle />
         </Tooltip>
       </HStack>
       <HStack>
@@ -37,24 +30,10 @@ export const GenerationEditorConfigSeed = () => {
         </NumberInput>
         <HStack spacing={2}>
           <Tooltip label="Seed値をランダムにする" fontSize="md">
-            <IconButton
-              aria-label="previous month"
-              icon={<Icon as={TbDice3} fontSize={"lg"} />}
-              borderRadius={"full"}
-              onClick={() => {
-                alert("Seed値をランダムにする")
-              }}
-            />
+            <Dices />
           </Tooltip>
           <Tooltip label="前回生成に使用したSeed値を復元する" fontSize="md">
-            <IconButton
-              aria-label="previous month"
-              icon={<Icon as={TbRefresh} fontSize={"lg"} />}
-              borderRadius={"full"}
-              onClick={() => {
-                alert("前回生成に使用したSeed値を復元する")
-              }}
-            />
+            <RefreshCcw />
           </Tooltip>
         </HStack>
       </HStack>

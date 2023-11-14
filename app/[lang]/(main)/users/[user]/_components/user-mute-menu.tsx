@@ -2,19 +2,18 @@
 
 import {
   Button,
-  Icon,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   Text,
 } from "@chakra-ui/react"
-import { TbDots } from "react-icons/tb"
+import { MoreHorizontal } from "lucide-react"
 
 export const UserMuteMenu = () => {
   return (
     <Menu>
-      <MenuButton as={Button} leftIcon={<Icon as={TbDots} />} size={"sm"} />
+      <MenuButton as={Button} leftIcon={<MoreHorizontal />} size={"sm"} />
       <MenuList>
         <MenuItem>
           <Text>{"ミュートする"}</Text>

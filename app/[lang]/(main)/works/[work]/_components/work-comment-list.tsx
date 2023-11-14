@@ -7,13 +7,12 @@ import {
   Avatar,
   Button,
   HStack,
-  Icon,
   IconButton,
   Input,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { TbRubberStamp } from "react-icons/tb"
+import { Stamp } from "lucide-react"
 
 type Props = {
   work: NonNullable<WorkCommentsQuery["work"]>
@@ -29,7 +28,7 @@ export const WorkCommentList = (props: Props) => {
         <IconButton
           aria-label={"スタンプ"}
           borderRadius={"full"}
-          icon={<Icon as={TbRubberStamp} />}
+          icon={<Stamp />}
         />
         <Button colorScheme={"primary"} borderRadius={"full"}>
           {"投稿"}

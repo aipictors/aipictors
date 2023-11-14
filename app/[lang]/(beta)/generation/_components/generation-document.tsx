@@ -18,7 +18,7 @@ import {
   Tr,
   UnorderedList,
 } from "@chakra-ui/react"
-import { TbCheck } from "react-icons/tb"
+import { Check } from "lucide-react"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -62,13 +62,13 @@ export const GenerationDocument = (props: Props) => {
         <List>
           <HStack>
             <ListItem>
-              <ListIcon as={TbCheck} color="green.500" />
+              <ListIcon as={Check} color="green.500" />
               {"すべてのモデルについて個人利用可です。"}
             </ListItem>
           </HStack>
           <HStack>
             <ListItem>
-              <ListIcon as={TbCheck} color="green.500" />
+              <ListIcon as={Check} color="green.500" />
               {"すべてのモデルについて商業利用可です。"}
             </ListItem>
           </HStack>

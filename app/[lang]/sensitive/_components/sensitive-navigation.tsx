@@ -3,42 +3,44 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Separator } from "@/components/ui/separator"
 import { Box, Divider } from "@chakra-ui/react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
 import {
-  TbAlbum,
-  TbArrowBackUp,
-  TbAward,
-  TbBulb,
-  TbFolder,
-  TbHome,
-  TbMoonFilled,
-  TbSunFilled,
-} from "react-icons/tb"
+  Award,
+  Folder,
+  Home,
+  LibraryBig,
+  Lightbulb,
+  Moon,
+  Sun,
+  Undo2,
+} from "lucide-react"
+import { useTheme } from "next-themes"
 
 export const SensitiveNavigationList = () => {
   const { setTheme, theme } = useTheme()
 
   return (
     <div className="flex flex-col space-y-2">
-      <HomeNavigationButton href={"/"} leftIcon={<TbArrowBackUp />}>
+      <HomeNavigationButton href={"/"} leftIcon={<Undo2 />}>
         {"全年齢"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} leftIcon={<TbHome />}>
+      <HomeNavigationButton href={"/sensitive"} leftIcon={<Home />}>
         {"ホーム"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/themes"} leftIcon={<TbBulb />}>
+      <HomeNavigationButton href={"/sensitive/themes"} leftIcon={<Lightbulb />}>
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/awards"} leftIcon={<TbAward />}>
+      <HomeNavigationButton href={"/sensitive/awards"} leftIcon={<Award />}>
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/albums"} leftIcon={<TbAlbum />}>
+      <HomeNavigationButton
+        href={"/sensitive/albums"}
+        leftIcon={<LibraryBig />}
+      >
         {"シリーズ"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"/sensitive/collections"}
-        leftIcon={<TbFolder />}
+        leftIcon={<Folder />}
       >
         {"コレクション"}
       </HomeNavigationButton>
@@ -79,7 +81,7 @@ export const SensitiveNavigationList = () => {
         onClick={() => {
           setTheme(theme === "light" ? "dark" : "light")
         }}
-        leftIcon={theme === "dark" ? <TbSunFilled /> : <TbMoonFilled />}
+        leftIcon={theme === "dark" ? <Sun /> : <Moon />}
       >
         {theme !== "dark" && <Sun className="mr-4 w-4">{"Light"}</Sun>}
         {theme === "dark" && <Moon className="mr-4 w-4">{"Light"}</Moon>}

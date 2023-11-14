@@ -1,9 +1,8 @@
 "use client"
 
 import type { ButtonProps } from "@chakra-ui/react"
-import { Icon, IconButton } from "@chakra-ui/react"
-
-import { TbExternalLink } from "react-icons/tb"
+import { IconButton } from "@chakra-ui/react"
+import { ExternalLink } from "lucide-react"
 
 type Props = ButtonProps
 
@@ -13,7 +12,7 @@ export const LinkWebButton = (props: Props) => {
       aria-label={"email"}
       borderRadius={"full"}
       size={"sm"}
-      icon={<Icon as={TbExternalLink} />}
+      icon={<ExternalLink />}
       {...props}
     />
   )

@@ -1,9 +1,8 @@
 "use client"
 
 import { IconButton } from "@chakra-ui/react"
-import React from "react"
-import { TbShare2 } from "react-icons/tb"
+import { Share } from "lucide-react"
 
 export const ShareButton = () => {
-  return <IconButton aria-label="share" icon={<TbShare2 />} size={"sm"} />
+  return <IconButton aria-label="share" icon={<Share />} size={"sm"} />
 }

@@ -1,8 +1,8 @@
 "use client"
 
 import { AlbumQuery } from "@/__generated__/apollo"
-import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
-import { TbShare2 } from "react-icons/tb"
+import { HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Share } from "lucide-react"
 
 type Props = {
   albumQuery: AlbumQuery
@@ -18,14 +18,7 @@ export const AlbumArticleHeader = (props: Props) => {
       />
       <HStack justifyContent={"space-between"}>
         <Text>{props.albumQuery.album?.title}</Text>
-        <Button
-          leftIcon={<Icon as={TbShare2} />}
-          borderRadius={"full"}
-          colorScheme="primary"
-          size={"xs"}
-        >
-          {"Twitterでシェア"}
-        </Button>
+        <Share>{"Twitterでシェア"}</Share>
       </HStack>
     </Stack>
   )

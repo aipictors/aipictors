@@ -6,14 +6,12 @@ import {
   Card,
   CardBody,
   HStack,
-  Icon,
-  IconButton,
   Image,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbTrash } from "react-icons/tb"
+import { Trash2 } from "lucide-react"
 
 export const ViewerAlbumWork = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -32,13 +30,7 @@ export const ViewerAlbumWork = () => {
           <CardBody>
             <HStack justifyContent={"space-between"} spacing={4}>
               <Text>{"タイトル"}</Text>
-              <IconButton
-                aria-label={"削除"}
-                icon={<Icon as={TbTrash} fontSize={"lg"} />}
-                variant={"ghost"}
-                borderRadius={"full"}
-                onClick={onOpen}
-              />
+              <Trash2 />
             </HStack>
             <HStack>
               <Image

@@ -2,17 +2,8 @@
 
 import { AlbumWorksQuery } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import {
-  Card,
-  CardBody,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
-import { TbHeart } from "react-icons/tb"
+import { Card, CardBody, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Heart } from "lucide-react"
 
 type Props = {
   albumWorksQuery: AlbumWorksQuery
@@ -27,12 +18,7 @@ export const AlbumWork = (props: Props) => {
     <Card overflow="hidden" variant="outline">
       <HStack justifyContent={"space-between"} pl={4}>
         <Text>{props.title}</Text>
-        <IconButton
-          aria-label="いいね"
-          icon={<Icon as={TbHeart} fontSize={"lg"} />}
-          variant={"ghost"}
-          borderRadius={"full"}
-        />
+        <Heart />
       </HStack>
       <CardBody>
         <HStack>

@@ -4,13 +4,12 @@ import { FollowButton } from "@/app/_components/button/follow-button"
 import {
   Avatar,
   HStack,
-  Icon,
   IconButton,
   Image,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { TbFlag } from "react-icons/tb"
+import { Flag } from "lucide-react"
 
 export const SensitiveCollectionHeader = () => {
   return (
@@ -35,7 +34,7 @@ export const SensitiveCollectionHeader = () => {
         <Text>{"12個の作品"}</Text>
         <IconButton
           aria-label="report"
-          icon={<Icon as={TbFlag} fontSize={"lg"} />}
+          icon={<Flag fontSize={"lg"} />}
           borderRadius={"full"}
         />
       </HStack>

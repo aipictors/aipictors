@@ -12,13 +12,11 @@ import { SocialTwitterButton } from "@/app/_components/button/social-twitter-but
 import {
   Avatar,
   HStack,
-  Icon,
   Link as ChakraLink,
   Stack,
   Text,
 } from "@chakra-ui/react"
-
-import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
+import { Award, Eye, Heart, Medal, User } from "lucide-react"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>
@@ -54,31 +52,31 @@ export const UserProfile = (props: Props) => {
       <HStack>
         <Stack>
           <HStack>
-            <Icon as={TbHeartFilled} fontSize={"sm"} />
+            <Heart fontSize={"sm"} />
             <Text fontSize={"sm"}>{props.userReceivedLikesCount}</Text>
             <Text fontSize={"sm"}>{"いいねされた"}</Text>
           </HStack>
           <HStack>
-            <Icon as={TbEye} fontSize={"sm"} />
+            <Eye fontSize={"sm"} />
             <Text fontSize={"sm"}>{props.userReceivedViewsCount}</Text>
             <Text fontSize={"sm"}>{"閲覧された"}</Text>
           </HStack>
         </Stack>
         <Stack>
           <HStack>
-            <Icon as={TbUser} fontSize={"sm"} />
+            <User fontSize={"sm"} />
             <Text fontSize={"sm"}>{props.userFollowersCount}</Text>
             <Text fontSize={"sm"}>{"フォロワー"}</Text>
           </HStack>
           <HStack>
-            <Icon as={TbMedal2} fontSize={"sm"} />
+            <Medal fontSize={"sm"} />
             <Text fontSize={"sm"}>{props.userAwardsCount}</Text>
             <Text fontSize={"sm"}>{"入賞数"}</Text>
           </HStack>
         </Stack>
       </HStack>
       <HStack>
-        <Icon as={TbAward} fontSize={"sm"} />
+        <Award fontSize={"sm"} />
         <ChakraLink fontSize={"sm"}>{"実績・トロフィーはこちら"}</ChakraLink>
       </HStack>
       {props.userBiography && (

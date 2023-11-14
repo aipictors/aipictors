@@ -3,14 +3,12 @@
 import {
   Button,
   HStack,
-  Icon,
   IconButton,
   Input,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import React from "react"
-import { TbSearch } from "react-icons/tb"
+import { Search } from "lucide-react"
 
 export const UserWorkListActions = () => (
   <Stack spacing={4}>
@@ -32,7 +30,7 @@ export const UserWorkListActions = () => (
         aria-label={"メニュー"}
         borderRadius={"full"}
         size={"sm"}
-        icon={<Icon as={TbSearch} />}
+        icon={<Search />}
       />
       <Button borderRadius={"full"} size={"sm"}>
         {"タイルモードON"}

@@ -5,30 +5,34 @@ import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
-import { Box, Divider } from "@chakra-ui/react"
-import { Home, Moon, Sun } from "lucide-react"
+import { Box as ChakraBox, Divider } from "@chakra-ui/react"
+import {
+  AlertTriangle,
+  Award,
+  BookImage,
+  Box,
+  Camera,
+  Folder,
+  Home,
+  Image,
+  LibraryBig,
+  Lightbulb,
+  LogIn,
+  LogOut,
+  Moon,
+  Settings,
+  Sparkles,
+  Stamp,
+  Sun,
+} from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useContext } from "react"
 import {
-  TbAlbum,
-  TbAlertTriangle,
-  TbAward,
-  TbBolt,
-  TbBox,
   TbBrandDiscordFilled,
   TbBrandThreads,
   TbBrandX,
   TbBrandYoutubeFilled,
-  TbBulb,
-  TbCamera,
-  TbFolder,
-  TbLogin,
-  TbLogout,
-  TbPhoto,
-  TbPhotoPlus,
-  TbRubberStamp,
-  TbSettings,
 } from "react-icons/tb"
 
 type Props = {
@@ -43,72 +47,69 @@ export const HomeNavigationList = (props: Props) => {
 
   return (
     <div className="flex flex-col space-y-2">
-      <HomeNavigationButton href={"/"} leftIcon={<Home className="w-4" />}>
+      <HomeNavigationButton href={"/"} leftIcon={<Home />}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/themes"}
-        leftIcon={<TbBulb />}
+        leftIcon={<Lightbulb />}
       >
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/stickers"} leftIcon={<TbRubberStamp />}>
+      <HomeNavigationButton href={"/stickers"} leftIcon={<Stamp />}>
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/awards"}
-        leftIcon={<TbAward />}
+        leftIcon={<Award />}
       >
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate/"}
-        leftIcon={<TbBolt />}
+        leftIcon={<Sparkles />}
       >
         {"画像生成"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/series"}
-        leftIcon={<TbAlbum />}
+        leftIcon={<LibraryBig />}
       >
         {"シリーズ"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/collections"}
-        leftIcon={<TbFolder />}
+        leftIcon={<Folder />}
       >
         {"コレクション"}
       </HomeNavigationButton>
-      <Box py={2}>
+      <ChakraBox py={2}>
         <Divider />
-      </Box>
-      <HomeNavigationButton href={"/works/2d"} leftIcon={<TbPhoto />}>
+      </ChakraBox>
+      <HomeNavigationButton href={"/works/2d"} leftIcon={<Image />}>
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/2.5d"} leftIcon={<TbPhotoPlus />}>
+      <HomeNavigationButton href={"/works/2.5d"} leftIcon={<BookImage />}>
         {"セミリアル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/3d"} leftIcon={<TbCamera />}>
+      <HomeNavigationButton href={"/works/3d"} leftIcon={<Camera />}>
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/models"} leftIcon={<TbBox />}>
+      <HomeNavigationButton href={"/models"} leftIcon={<Box />}>
         {"モデル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} leftIcon={<TbAlertTriangle />}>
+      <HomeNavigationButton href={"/sensitive"} leftIcon={<AlertTriangle />}>
         {"センシティブ"}
       </HomeNavigationButton>
-      <Box py={2}>
+      <ChakraBox py={2}>
         <Divider />
-      </Box>
+      </ChakraBox>
       {appContext.isLoggedIn && (
-        <HomeNavigationButton
-          href={"/settings/login"}
-          leftIcon={<TbSettings />}
-        >
+        <HomeNavigationButton href={"/settings/login"} leftIcon={<Settings />}>
           {"設定"}
         </HomeNavigationButton>
       )}
@@ -117,7 +118,7 @@ export const HomeNavigationList = (props: Props) => {
           onClick={() => {
             props.onLogout()
           }}
-          leftIcon={<TbLogout />}
+          leftIcon={<LogOut />}
         >
           {"ログアウト"}
         </HomeNavigationButton>
@@ -127,7 +128,7 @@ export const HomeNavigationList = (props: Props) => {
           onClick={() => {
             props.onLogin()
           }}
-          leftIcon={<TbLogin />}
+          leftIcon={<LogIn />}
         >
           {"ログイン"}
         </HomeNavigationButton>

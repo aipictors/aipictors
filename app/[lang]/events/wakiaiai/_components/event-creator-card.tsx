@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
-import { TbBrandXFilled, TbClick, TbExternalLink } from "react-icons/tb"
+import { ExternalLink, MousePointerClick } from "lucide-react"
+import { TbBrandXFilled } from "react-icons/tb"
 
 type Props = {
   user: EventUser
@@ -71,7 +72,7 @@ export const EventCreatorCard = (props: Props) => {
                 rel="noopener noreferrer"
               >
                 <Button variant={"outline"}>
-                  <TbClick className="mr-2" />
+                  <MousePointerClick className="mr-2" />
                   {props.user.siteTitle}
                 </Button>
               </a>
@@ -83,7 +84,7 @@ export const EventCreatorCard = (props: Props) => {
                 rel="noopener noreferrer"
               >
                 <Button variant={"outline"}>
-                  <TbExternalLink />
+                  <ExternalLink />
                 </Button>
               </a>
             )}

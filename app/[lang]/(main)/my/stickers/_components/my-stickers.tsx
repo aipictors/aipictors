@@ -1,7 +1,7 @@
 "use client"
 
-import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
-import { TbPlus } from "react-icons/tb"
+import { Button, HStack, Stack, Text } from "@chakra-ui/react"
+import { Plus } from "lucide-react"
 
 export const MyStickers = () => {
   return (
@@ -11,11 +11,7 @@ export const MyStickers = () => {
           {"作成済みスタンプ"}
         </Text>
         <HStack>
-          <Button
-            aria-label="add stickers"
-            rightIcon={<Icon as={TbPlus} />}
-            size={"lg"}
-          >
+          <Button aria-label="add stickers" rightIcon={<Plus />} size={"lg"}>
             {"新しいスタンプ"}
           </Button>
         </HStack>

@@ -17,13 +17,11 @@ import {
   Button,
   Divider,
   HStack,
-  Icon,
-  IconButton,
   SimpleGrid,
   Stack,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbDownload, TbStar, TbTrash } from "react-icons/tb"
+import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
 
 type Props = {
   selectedHistory: string
@@ -66,26 +64,10 @@ export const GenerationEditorHistory = (props: Props) => {
       <GenerationEditorCard title={"生成履歴"}>
         <Box overflowY={"auto"}>
           <HStack p={2}>
-            <IconButton
-              aria-label={"削除"}
-              borderRadius={"full"}
-              icon={<Icon as={TbTrash} />}
-              onClick={onDeleteOpen}
-            />
-            <IconButton
-              aria-label={"ダウンロード"}
-              borderRadius={"full"}
-              icon={<Icon as={TbDownload} />}
-              onClick={() => {
-                onDlOpen()
-              }}
-            />
+            <Trash2 />
+            <ArrowDownToLine />
             <Button borderRadius={"full"}>{"解除"}</Button>
-            <IconButton
-              aria-label={"お気に入り"}
-              borderRadius={"full"}
-              icon={<Icon as={TbStar} />}
-            />
+            <Star />
           </HStack>
           <Divider />
           <Stack p={2} spacing={4}>

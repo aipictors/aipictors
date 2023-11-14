@@ -1,7 +1,7 @@
 "use client"
 
-import { HStack, Icon, IconButton, Stack, Switch, Text } from "@chakra-ui/react"
-import { TbPlus } from "react-icons/tb"
+import { HStack, IconButton, Stack, Switch, Text } from "@chakra-ui/react"
+import { Plus } from "lucide-react"
 
 export const UserPickUp = () => {
   return (
@@ -12,11 +12,7 @@ export const UserPickUp = () => {
         <Switch />
       </HStack>
       <HStack justifyContent={"flex-start"}>
-        <IconButton
-          aria-label={"追加"}
-          borderRadius={"full"}
-          icon={<Icon as={TbPlus} />}
-        />
+        <IconButton aria-label={"追加"} borderRadius={"full"} icon={<Plus />} />
       </HStack>
     </Stack>
   )

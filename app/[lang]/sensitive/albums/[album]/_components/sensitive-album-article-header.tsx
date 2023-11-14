@@ -1,7 +1,7 @@
 "use client"
 
-import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
-import { TbShare2 } from "react-icons/tb"
+import { Button, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Share } from "lucide-react"
 
 export const SensitiveAlbumArticleHeader = () => {
   return (
@@ -15,7 +15,7 @@ export const SensitiveAlbumArticleHeader = () => {
       <HStack justifyContent={"space-between"}>
         <Text>{"タイトル"}</Text>
         <Button
-          leftIcon={<Icon as={TbShare2} />}
+          leftIcon={<Share />}
           borderRadius={"full"}
           colorScheme="primary"
           size={"xs"}

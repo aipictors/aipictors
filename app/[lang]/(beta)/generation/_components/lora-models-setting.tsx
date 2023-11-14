@@ -1,7 +1,5 @@
 import {
   HStack,
-  Icon,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -12,7 +10,7 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react"
-import { TbDice3, TbQuestionMark, TbRefresh } from "react-icons/tb"
+import { Dices, HelpCircle, RefreshCcw } from "lucide-react"
 
 export const LoraModelsSetting = () => {
   return (
@@ -44,12 +42,7 @@ export const LoraModelsSetting = () => {
         <HStack spacing={2}>
           <Text fontWeight={"bold"}>{"VAE"}</Text>
           <Tooltip label="出力される色や線を調整します。">
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              size={"sm"}
-              icon={<Icon as={TbQuestionMark} />}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <Select defaultValue={"option3"} borderRadius={"full"}>
@@ -62,12 +55,7 @@ export const LoraModelsSetting = () => {
         <HStack>
           <Text fontWeight={"bold"}>{"Seed"}</Text>
           <Tooltip label="キャラや構図などを固定したいときに使用します。">
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbQuestionMark} />}
-              size={"sm"}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <HStack>
@@ -80,24 +68,10 @@ export const LoraModelsSetting = () => {
           </NumberInput>
           <HStack spacing={2}>
             <Tooltip label="Seed値をランダムにする" fontSize="md">
-              <IconButton
-                aria-label="previous month"
-                icon={<Icon as={TbDice3} fontSize={"lg"} />}
-                borderRadius={"full"}
-                onClick={() => {
-                  alert("Seed値をランダムにする")
-                }}
-              />
+              <Dices />
             </Tooltip>
             <Tooltip label="前回生成に使用したSeed値を復元する" fontSize="md">
-              <IconButton
-                aria-label="previous month"
-                icon={<Icon as={TbRefresh} fontSize={"lg"} />}
-                borderRadius={"full"}
-                onClick={() => {
-                  alert("前回生成に使用したSeed値を復元する")
-                }}
-              />
+              <RefreshCcw />
             </Tooltip>
           </HStack>
         </HStack>
@@ -106,12 +80,7 @@ export const LoraModelsSetting = () => {
         <HStack>
           <Text fontWeight={"bold"}>{"Steps"}</Text>
           <Tooltip label="Steps値を大きくするほどイラストがより洗練されます。">
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbQuestionMark} />}
-              size={"sm"}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <NumberInput defaultValue={20} min={9} max={25}>
@@ -129,12 +98,7 @@ export const LoraModelsSetting = () => {
             label="Scale値が小さいほど創造的な画像を生成できます。値が大きいほど、より厳密にテキストを解釈します。"
             fontSize="md"
           >
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbQuestionMark} />}
-              size={"sm"}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <NumberInput defaultValue={7} min={1} max={15}>
@@ -149,12 +113,7 @@ export const LoraModelsSetting = () => {
         <HStack>
           <Text fontWeight={"bold"}>{"Sampler"}</Text>
           <Tooltip label="ノイズの除去の手法です。">
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbQuestionMark} />}
-              size={"sm"}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <Select defaultValue={"option3"} borderRadius={"full"}>

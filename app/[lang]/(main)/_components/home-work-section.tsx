@@ -5,15 +5,13 @@ import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import {
   Button,
   HStack,
-  Icon,
-  IconButton,
   SimpleGrid,
   Stack,
   Text,
   Tooltip,
 } from "@chakra-ui/react"
+import { HelpCircle } from "lucide-react"
 import Link from "next/link"
-import { TbQuestionMark } from "react-icons/tb"
 
 type Props = {
   works: NonNullable<WorksQuery["works"]>
@@ -29,11 +27,7 @@ export const HomeWorkSection = (props: Props) => {
             {props.title}
           </Text>
           <Tooltip label="推奨作品のところに出てくる" fontSize="md">
-            <IconButton
-              aria-label={"メニュー"}
-              borderRadius={"full"}
-              icon={<Icon as={TbQuestionMark} />}
-            />
+            <HelpCircle />
           </Tooltip>
         </HStack>
         <Button fontSize="xs" fontWeight="bold" variant={"ghost"}>

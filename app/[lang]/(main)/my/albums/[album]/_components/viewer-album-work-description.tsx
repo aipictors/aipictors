@@ -6,13 +6,11 @@ import {
   Card,
   CardBody,
   HStack,
-  Icon,
-  IconButton,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
-import { TbSettings } from "react-icons/tb"
+import { Settings } from "lucide-react"
 
 export const ViewerAlbumWorkDescription = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -27,13 +25,7 @@ export const ViewerAlbumWorkDescription = () => {
                 <Avatar src="https://bit.ly/broken-link" size={"sm"} />
                 <Text>{"name"}</Text>
               </HStack>
-              <IconButton
-                size={"md"}
-                aria-label={"変更"}
-                borderRadius={"full"}
-                icon={<Icon as={TbSettings} />}
-                onClick={onOpen}
-              />
+              <Settings />
             </HStack>
             <HStack justifyContent={"flex-start"} />
             <Text>{"説明"}</Text>

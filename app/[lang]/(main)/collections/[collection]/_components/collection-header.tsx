@@ -1,16 +1,8 @@
 "use client"
 
 import { FollowButton } from "@/app/_components/button/follow-button"
-import {
-  Avatar,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
-import { TbFlag } from "react-icons/tb"
+import { Avatar, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Flag } from "lucide-react"
 
 export const CollectionHeader = () => {
   return (
@@ -33,11 +25,7 @@ export const CollectionHeader = () => {
       <Text>{"コレクションの説明"}</Text>
       <HStack>
         <Text>{"12個の作品"}</Text>
-        <IconButton
-          aria-label="report"
-          icon={<Icon as={TbFlag} fontSize={"lg"} />}
-          borderRadius={"full"}
-        />
+        <Flag />
       </HStack>
       <Text fontSize={"xs"}>{"＃銅像"}</Text>
     </Stack>
