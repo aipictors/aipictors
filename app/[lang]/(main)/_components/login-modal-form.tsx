@@ -19,7 +19,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const LoginModalForm: React.FC<Props> = (props) => {
+export const LoginModalForm = (props: Props) => {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

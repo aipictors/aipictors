@@ -4,7 +4,7 @@ import { ModelButton } from "@/app/[lang]/(main)/tags/[tag]/_components/model-bu
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 
-export const RelatedModelList: React.FC = () => {
+export const RelatedModelList = () => {
   return (
     <Stack>
       <Splide

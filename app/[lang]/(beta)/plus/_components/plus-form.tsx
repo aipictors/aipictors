@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils"
 import { useSuspenseQuery } from "@apollo/client"
 import { Card, CardHeader } from "@chakra-ui/react"
 
-export const PlusForm: React.FC = () => {
+export const PlusForm = () => {
   const [mutation, { loading: isLoading }] =
     useCreateCustomerPortalSessionMutation()
 

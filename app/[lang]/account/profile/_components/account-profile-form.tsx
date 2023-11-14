@@ -12,7 +12,7 @@ import {
 import { useState } from "react"
 import { TbPlus } from "react-icons/tb"
 
-export const AccountProfileForm: React.FC = () => {
+export const AccountProfileForm = () => {
   const [userName, setUserName] = useState("")
 
   const [userProfile, setUserProfile] = useState("")

@@ -22,7 +22,7 @@ type Props = {
 
 type Claims = ParsedToken
 
-export const AppContextProvider: React.FC<Props> = (props) => {
+export const AppContextProvider = (props: Props) => {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })

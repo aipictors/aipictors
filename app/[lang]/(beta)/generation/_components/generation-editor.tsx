@@ -25,7 +25,7 @@ type Props = {
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
 
-export const GenerationEditor: React.FC<Props> = (props) => {
+export const GenerationEditor = (props: Props) => {
   const [createTask, { loading: isLoading }] = useMutation<
     CreateImageGenerationTaskMutationResult,
     CreateImageGenerationTaskMutationVariables

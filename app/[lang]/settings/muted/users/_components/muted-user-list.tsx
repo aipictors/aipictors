@@ -13,7 +13,7 @@ import { AppContext } from "@/app/_contexts/app-context"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext } from "react"
 
-export const MutedUserList: React.FC = () => {
+export const MutedUserList = () => {
   const appContext = useContext(AppContext)
 
   const { data = null, refetch } = useSuspenseQuery<

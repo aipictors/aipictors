@@ -2,7 +2,7 @@
 
 import { Box, HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 
-export const DownloadStickerList: React.FC = () => {
+export const DownloadStickerList = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"lg"} w={"100%"} p={4} spacing={8}>

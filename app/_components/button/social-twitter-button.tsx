@@ -2,12 +2,12 @@
 
 import type { ButtonProps } from "@chakra-ui/react"
 import { Icon, IconButton } from "@chakra-ui/react"
-import React from "react"
+
 import { TbBrandX } from "react-icons/tb"
 
 type Props = ButtonProps
 
-export const SocialTwitterButton: React.FC<Props> = (props) => {
+export const SocialTwitterButton = (props: Props) => {
   return (
     <IconButton
       aria-label={"twitter"}

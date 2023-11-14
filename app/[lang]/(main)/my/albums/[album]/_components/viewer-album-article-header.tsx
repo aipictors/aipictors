@@ -3,7 +3,7 @@
 import { Button, HStack, Icon, IconButton, Stack, Text } from "@chakra-ui/react"
 import { TbPencil, TbPlus, TbShare2 } from "react-icons/tb"
 
-export const ViewerAlbumArticleHeader: React.FC = () => {
+export const ViewerAlbumArticleHeader = () => {
   return (
     <Stack spacing={4}>
       <HStack justifyContent={"space-between"}>

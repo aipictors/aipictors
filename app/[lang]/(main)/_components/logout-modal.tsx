@@ -20,7 +20,7 @@ type Props = {
   onOpen(): void
 }
 
-export const LogoutModal: React.FC<Props> = (props) => {
+export const LogoutModal = (props: Props) => {
   const cancelRef = useRef(null)
 
   const toast = useToast()

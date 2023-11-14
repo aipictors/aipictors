@@ -10,7 +10,7 @@ type Props = {
   createdAt: number
 }
 
-export const RecipientMessage: React.FC<Props> = (props) => {
+export const RecipientMessage = (props: Props) => {
   return (
     <div className="flex space-x-4 items-start">
       <Avatar>

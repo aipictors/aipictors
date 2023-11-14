@@ -8,7 +8,7 @@ type Props = {
   awards: NonNullable<WorkAwardsQuery["workAwards"]>
 }
 
-export const RankingWorkList: React.FC<Props> = (props) => {
+export const RankingWorkList = (props: Props) => {
   return (
     <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 5 }} spacing={2}>
       {props.awards.map((props) => {

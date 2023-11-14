@@ -2,7 +2,7 @@
 
 import { Spinner, Stack } from "@chakra-ui/react"
 
-const RootLoading: React.FC = () => {
+const RootLoading = () => {
   return (
     <Stack
       p={4}

@@ -17,7 +17,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import React from "react"
+
 import { TbAward, TbEye, TbHeartFilled, TbMedal2, TbUser } from "react-icons/tb"
 
 type Props = {
@@ -35,7 +35,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const UserProfile: React.FC<Props> = (props) => {
+export const UserProfile = (props: Props) => {
   return (
     <Stack>
       <Avatar

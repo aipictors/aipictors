@@ -9,7 +9,7 @@ type Props = {
   onSubmit(message: string): void
 }
 
-export const MessageInput: React.FC<Props> = (props) => {
+export const MessageInput = (props: Props) => {
   const [message, setMessage] = useState("")
 
   const handleSubmit = () => {

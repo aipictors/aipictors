@@ -10,7 +10,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const MessagesLayout: React.FC<Props> = (props) => {
+const MessagesLayout = (props: Props) => {
   const appContext = useContext(AppContext)
 
   if (appContext.isLoading) {

@@ -15,7 +15,7 @@ import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { Button, Input, Stack, Text, useToast } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 
-export const AccountLoginForm: React.FC = () => {
+export const AccountLoginForm = () => {
   const appContext = useContext(AppContext)
 
   const { data = null } = useSuspenseQuery<

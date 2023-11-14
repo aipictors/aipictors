@@ -2,7 +2,7 @@
 
 import { HStack, Image } from "@chakra-ui/react"
 
-export const InPaintingImage: React.FC = () => {
+export const InPaintingImage = () => {
   return (
     <HStack justifyContent={"center"}>
       <Image

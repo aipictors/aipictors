@@ -4,7 +4,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const StaticNavigation: React.FC<Props> = (props) => {
+export const StaticNavigation = (props: Props) => {
   return (
     <div
       className="sticky top-16 overflow-y-auto pb-4 px-4"

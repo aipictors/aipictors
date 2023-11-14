@@ -9,7 +9,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const PlusLayout: React.FC<Props> = (props) => {
+const PlusLayout = (props: Props) => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {

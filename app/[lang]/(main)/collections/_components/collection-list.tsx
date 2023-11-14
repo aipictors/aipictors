@@ -4,7 +4,7 @@ import { CollectionCard } from "@/app/[lang]/(main)/collections/_components/coll
 import { CollectionsHeader } from "@/app/[lang]/(main)/collections/_components/collections-header"
 import { Divider, HStack, Stack } from "@chakra-ui/react"
 
-export const CollectionList: React.FC = () => {
+export const CollectionList = () => {
   return (
     <Stack>
       <CollectionsHeader />

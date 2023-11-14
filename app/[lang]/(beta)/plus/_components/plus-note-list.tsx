@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-export const PlusNoteList: React.FC = () => {
+export const PlusNoteList = () => {
   return (
     <ul className="space-y-2 ml-6 list-disc">
       <li>

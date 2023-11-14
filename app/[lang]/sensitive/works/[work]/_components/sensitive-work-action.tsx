@@ -12,7 +12,7 @@ type Props = {
   workLikesCount: number
 }
 
-export const SensitiveWorkAction: React.FC<Props> = (props) => {
+export const SensitiveWorkAction = (props: Props) => {
   return (
     <HStack justifyContent={"space-between"}>
       <HStack>

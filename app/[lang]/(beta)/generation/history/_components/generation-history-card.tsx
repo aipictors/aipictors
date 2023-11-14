@@ -1,7 +1,6 @@
 "use client"
 
 import { Button, Card, Image } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   imageURL: string
@@ -12,7 +11,7 @@ type Props = {
  * 画像生成の履歴
  * @returns
  */
-export const GenerationHistoryCard: React.FC<Props> = (props) => {
+export const GenerationHistoryCard = (props: Props) => {
   return (
     <Card>
       <Button

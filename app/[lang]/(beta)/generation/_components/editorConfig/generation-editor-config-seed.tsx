@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import { TbDice3, TbQuestionMark, TbRefresh } from "react-icons/tb"
 
-export const GenerationEditorConfigSeed: React.FC = () => {
+export const GenerationEditorConfigSeed = () => {
   return (
     <Stack>
       <HStack>

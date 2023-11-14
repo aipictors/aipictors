@@ -29,7 +29,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const PromptCategoriesModal: React.FC<Props> = (props) => {
+export const PromptCategoriesModal = (props: Props) => {
   const btnRef = React.useRef(null)
 
   const [promptIds, setPromptIds] = useState<string[]>([])

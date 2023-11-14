@@ -13,7 +13,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const BetaLayout: React.FC<Props> = (props) => {
+const BetaLayout = (props: Props) => {
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,

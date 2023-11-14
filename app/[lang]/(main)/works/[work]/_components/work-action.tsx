@@ -13,7 +13,7 @@ type Props = {
   workLikesCount: number
 }
 
-export const WorkAction: React.FC<Props> = (props) => {
+export const WorkAction = (props: Props) => {
   return (
     <HStack justifyContent={"space-between"}>
       <HStack>

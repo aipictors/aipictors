@@ -14,7 +14,7 @@ type Props = {
   onSelectModelId(id: string): void
 }
 
-export const GenerationEditorModels: React.FC<Props> = (props) => {
+export const GenerationEditorModels = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   /**

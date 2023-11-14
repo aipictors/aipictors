@@ -18,7 +18,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const GenerationEditorCard: React.FC<Props> = (props) => {
+export const GenerationEditorCard = (props: Props) => {
   return (
     <Card
       variant={"filled"}

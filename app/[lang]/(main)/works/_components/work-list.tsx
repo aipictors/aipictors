@@ -8,7 +8,7 @@ type Props = {
   works: NonNullable<WorksQuery["works"]>
 }
 
-export const WorkList: React.FC<Props> = (props) => {
+export const WorkList = (props: Props) => {
   return (
     <SimpleGrid
       as={"ul"}

@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export const SettingInterfaceForm: React.FC = () => {
+export const SettingInterfaceForm = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between">

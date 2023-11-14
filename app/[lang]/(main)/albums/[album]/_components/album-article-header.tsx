@@ -8,7 +8,7 @@ type Props = {
   albumQuery: AlbumQuery
 }
 
-export const AlbumArticleHeader: React.FC<Props> = (props) => {
+export const AlbumArticleHeader = (props: Props) => {
   return (
     <Stack>
       <Image

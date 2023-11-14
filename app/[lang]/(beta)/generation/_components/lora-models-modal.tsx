@@ -26,7 +26,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const LoraModelsModal: React.FC<Props> = (props) => {
+export const LoraModelsModal = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

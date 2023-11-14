@@ -13,7 +13,7 @@ import {
 
 type Props = { name: string }
 
-export const PromptCategoryIcon: React.FC<Props> = (props) => {
+export const PromptCategoryIcon = (props: Props) => {
   const categoryIcons = new Map([
     ["キャラクター", TbFaceId],
     ["髪型", TbMoodBoy],

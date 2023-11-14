@@ -2,7 +2,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const MainCenterPage: React.FC<Props> = (props) => {
+export const MainCenterPage = (props: Props) => {
   return (
     <div
       className="w-full flex justify-center px-4"

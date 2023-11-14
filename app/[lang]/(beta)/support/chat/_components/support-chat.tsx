@@ -17,7 +17,7 @@ import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
 
-export const SupportChat: React.FC = () => {
+export const SupportChat = () => {
   const { data: supportMessages, refetch } = useSuspenseQuery<
     ViewerSupportMessagesQuery,
     ViewerSupportMessagesQueryVariables

@@ -7,7 +7,7 @@ import type { FormLogin } from "@/app/_types/form-login"
 import { useToast } from "@/components/ui/use-toast"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 
-export const LoginPage: React.FC = () => {
+export const LoginPage = () => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
   const { toast } = useToast()

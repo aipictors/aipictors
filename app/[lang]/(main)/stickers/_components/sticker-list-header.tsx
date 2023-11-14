@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { TbPlus } from "react-icons/tb"
 
-export const StickerListHeader: React.FC = () => {
+export const StickerListHeader = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (

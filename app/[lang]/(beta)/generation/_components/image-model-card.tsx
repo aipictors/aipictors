@@ -7,7 +7,7 @@ type Props = {
   isActive: boolean
 }
 
-export const ImageModelCard: React.FC<Props> = (props) => {
+export const ImageModelCard = (props: Props) => {
   return (
     <Box>
       <Stack>

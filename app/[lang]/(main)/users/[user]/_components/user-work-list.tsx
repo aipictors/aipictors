@@ -3,13 +3,12 @@
 import type { UserWorksQuery } from "@/__generated__/apollo"
 import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   works: NonNullable<UserWorksQuery["user"]>["works"]
 }
 
-export const UserWorkList: React.FC<Props> = (props) => {
+export const UserWorkList = (props: Props) => {
   return (
     <Stack>
       <HStack>

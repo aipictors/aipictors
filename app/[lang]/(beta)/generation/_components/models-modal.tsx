@@ -22,7 +22,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const ModelsModal: React.FC<Props> = (props) => {
+export const ModelsModal = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

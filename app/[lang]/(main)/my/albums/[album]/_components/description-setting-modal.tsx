@@ -16,7 +16,7 @@ type Props = {
   onClose: () => void
 }
 
-export const DescriptionSettingModal: React.FC<Props> = (props) => {
+export const DescriptionSettingModal = (props: Props) => {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose}>
       <ModalOverlay />

@@ -16,7 +16,7 @@ import {
   TbSunFilled,
 } from "react-icons/tb"
 
-export const SensitiveNavigationList: React.FC = () => {
+export const SensitiveNavigationList = () => {
   const { setTheme, theme } = useTheme()
 
   return (

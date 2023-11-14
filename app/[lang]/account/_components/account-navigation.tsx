@@ -4,7 +4,7 @@ import { AccountRouteList } from "@/app/[lang]/account/_components/account-route
 import { Stack, useBreakpoint } from "@chakra-ui/react"
 import React from "react"
 
-export const AccountNavigation: React.FC = () => {
+export const AccountNavigation = () => {
   const breakpoint = useBreakpoint()
 
   if (breakpoint !== "base" && breakpoint !== "sm") {

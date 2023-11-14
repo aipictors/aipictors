@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, Text } from "@chakra-ui/react"
 
-export const AlbumCard: React.FC = () => {
+export const AlbumCard = () => {
   return (
     <Card as={"article"}>
       <CardHeader as={"header"}>

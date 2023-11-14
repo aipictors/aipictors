@@ -2,7 +2,7 @@
 
 import { Stack, Text } from "@chakra-ui/react"
 
-export const PrivacyArticle: React.FC = () => {
+export const PrivacyArticle = () => {
   return (
     <Stack>
       <Text>{"プライバシーポリシー"}</Text>

@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const StickersLayout: React.FC<Props> = (props) => {
+const StickersLayout = (props: Props) => {
   return (
     <Stack pb={4} overflowX={"hidden"}>
       {props.children}

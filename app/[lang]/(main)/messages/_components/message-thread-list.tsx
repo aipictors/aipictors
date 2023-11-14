@@ -20,7 +20,7 @@ import {
 import Link from "next/link"
 import { startTransition } from "react"
 
-export const MessageThreadList: React.FC = () => {
+export const MessageThreadList = () => {
   const { data: threads, refetch } = useSuspenseQuery<
     ViewerMessageThreadsQuery,
     ViewerMessageThreadsQueryVariables

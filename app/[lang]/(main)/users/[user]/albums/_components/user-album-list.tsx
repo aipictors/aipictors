@@ -3,13 +3,12 @@
 import type { UserAlbumsQuery } from "@/__generated__/apollo"
 import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import { HStack, Link, SimpleGrid, Stack, Switch, Text } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   albums: NonNullable<UserAlbumsQuery["user"]>["albums"]
 }
 
-export const UserAlbumList: React.FC<Props> = (props) => {
+export const UserAlbumList = (props: Props) => {
   return (
     <Stack>
       <HStack>

@@ -2,7 +2,7 @@
 
 import { Button, Divider, HStack, Stack } from "@chakra-ui/react"
 
-export const NotificationTab: React.FC = () => {
+export const NotificationTab = () => {
   return (
     <Stack>
       <HStack>

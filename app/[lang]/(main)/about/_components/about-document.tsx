@@ -2,7 +2,7 @@
 
 import { Stack, Text } from "@chakra-ui/react"
 
-export const AboutDocument: React.FC = () => {
+export const AboutDocument = () => {
   return (
     <Stack>
       <Text>{"このサイトについて"}</Text>

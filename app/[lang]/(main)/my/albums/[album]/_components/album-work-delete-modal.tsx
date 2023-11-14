@@ -17,7 +17,7 @@ type Props = {
   onClose: () => void
 }
 
-export const AlbumWorkDeleteModal: React.FC<Props> = (props) => {
+export const AlbumWorkDeleteModal = (props: Props) => {
   return (
     <Modal isOpen={props.isOpen} onClose={props.onClose}>
       <ModalOverlay />

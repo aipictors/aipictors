@@ -13,7 +13,7 @@ import { TbQuestionMark } from "react-icons/tb"
  * VAEの設定
  * @returns
  */
-export const GenerationEditorConfigVae: React.FC = () => {
+export const GenerationEditorConfigVae = () => {
   return (
     <Stack>
       <HStack spacing={2}>

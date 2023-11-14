@@ -10,7 +10,7 @@ type Props = {
   title: string | null
 }
 
-export const ThemeListItem: React.FC<Props> = (props) => {
+export const ThemeListItem = (props: Props) => {
   const backgroundColor = useColorModeValue("gray.100", "gray.900")
 
   if (props.title === null) {

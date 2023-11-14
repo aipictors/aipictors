@@ -4,7 +4,7 @@ import type { Metadata } from "next"
  * 設定
  * @returns
  */
-const SettingsPage: React.FC = async () => {
+const SettingsPage = async () => {
   return null
 }
 

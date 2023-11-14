@@ -3,7 +3,7 @@
 import { ViewerWorkTableItem } from "@/app/[lang]/(main)/my/works/_components/viewer-work-table-item"
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react"
 
-export const ViewerWorkTable: React.FC = () => {
+export const ViewerWorkTable = () => {
   return (
     <TableContainer>
       <Table variant="simple">

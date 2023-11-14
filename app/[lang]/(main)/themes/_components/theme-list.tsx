@@ -21,7 +21,7 @@ type Props = {
   dailyThemesQuery: DailyThemesQuery
 }
 
-export const ThemeList: React.FC<Props> = (props) => {
+export const ThemeList = (props: Props) => {
   const router = useRouter()
 
   const cells = createCalendarCells(2023, 9)

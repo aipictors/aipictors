@@ -19,7 +19,7 @@ type Props = {
 
 const client = createClient()
 
-export const RootProviders: React.FC<Props> = (props) => {
+export const RootProviders = (props: Props) => {
   const pathname = usePathname()
 
   const searchParams = useSearchParams()

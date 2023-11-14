@@ -12,7 +12,7 @@ type Props = {
   userWorksCount: number
 }
 
-export const WorkUser: React.FC<Props> = (props) => {
+export const WorkUser = (props: Props) => {
   return (
     <Stack spacing={0} maxW={{ base: "auto", lg: "xs" }} w={"100%"}>
       <Card>

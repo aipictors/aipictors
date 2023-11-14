@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, Text } from "@chakra-ui/react"
 
-export const SensitiveCollectionCard: React.FC = () => {
+export const SensitiveCollectionCard = () => {
   return (
     <Card as={"article"}>
       <CardHeader as={"header"}>

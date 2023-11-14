@@ -41,7 +41,7 @@ type Props = {
   onChangeSeed(seed: number): void
 }
 
-export const GenerationEditorConfig: React.FC<Props> = (props) => {
+export const GenerationEditorConfig = (props: Props) => {
   return (
     <GenerationEditorCard
       title={"加工（LoRA）"}

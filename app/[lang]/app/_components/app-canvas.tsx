@@ -3,7 +3,7 @@
 import { runAnimation } from "@/app/[lang]/app/_utils/run-animation"
 import { useEffect, useRef } from "react"
 
-export const AppCanvas: React.FC = () => {
+export const AppCanvas = () => {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {

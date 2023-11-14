@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Skeleton, Stack } from "@chakra-ui/react"
 
-export const SelectableWorkCard: React.FC = () => {
+export const SelectableWorkCard = () => {
   return (
     <Card>
       <CardBody>

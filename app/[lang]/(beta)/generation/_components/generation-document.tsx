@@ -24,7 +24,7 @@ type Props = {
   models: ImageModelsQuery["imageModels"]
 }
 
-export const GenerationDocument: React.FC<Props> = (props) => {
+export const GenerationDocument = (props: Props) => {
   const imageUrl =
     "https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-banner.webp"
 

@@ -8,7 +8,7 @@ type Props = {
   isActive: boolean
 }
 
-export const LoraImageModelCard: React.FC<Props> = (props) => {
+export const LoraImageModelCard = (props: Props) => {
   return (
     <Box>
       <Stack>

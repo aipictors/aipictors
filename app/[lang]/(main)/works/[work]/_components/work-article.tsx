@@ -11,7 +11,7 @@ type Props = {
   work: NonNullable<WorkQuery["work"]>
 }
 
-export const WorkArticle: React.FC<Props> = (props) => {
+export const WorkArticle = (props: Props) => {
   return (
     <Stack
       direction={{ base: "column", lg: "row" }}

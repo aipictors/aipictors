@@ -9,7 +9,7 @@ type Props = {
   worksQuery: WorksQuery
 }
 
-export const HomeWorkList: React.FC<Props> = (props) => {
+export const HomeWorkList = (props: Props) => {
   return (
     <SimpleGrid
       as={"ul"}

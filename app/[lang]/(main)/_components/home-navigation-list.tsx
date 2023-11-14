@@ -36,7 +36,7 @@ type Props = {
   onLogout(): void
 }
 
-export const HomeNavigationList: React.FC<Props> = (props) => {
+export const HomeNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
 
   const { setTheme } = useTheme()

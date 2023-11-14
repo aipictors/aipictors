@@ -3,7 +3,7 @@
 import { Button, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import { TbShare2 } from "react-icons/tb"
 
-export const SensitiveAlbumArticleHeader: React.FC = () => {
+export const SensitiveAlbumArticleHeader = () => {
   return (
     <Stack>
       <Image

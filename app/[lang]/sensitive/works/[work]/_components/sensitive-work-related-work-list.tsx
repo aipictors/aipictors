@@ -2,7 +2,7 @@
 
 import { HStack, Text } from "@chakra-ui/react"
 
-export const SensitiveWorkRelatedWorkList: React.FC = () => {
+export const SensitiveWorkRelatedWorkList = () => {
   return (
     <HStack alignItems={"flex-start"}>
       <Text>{"関連作品"}</Text>

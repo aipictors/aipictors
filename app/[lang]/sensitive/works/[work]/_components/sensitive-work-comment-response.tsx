@@ -10,7 +10,7 @@ type Props = {
   createdAt: number
 }
 
-export const SensitiveWorkCommentResponse: React.FC<Props> = (props) => {
+export const SensitiveWorkCommentResponse = (props: Props) => {
   return (
     <HStack alignItems={"flex-start"} pl={16}>
       <Avatar src={props.userIconImageURL} />

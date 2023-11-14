@@ -2,7 +2,7 @@
 
 import { Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
 
-export const CollectionsHeader: React.FC = () => {
+export const CollectionsHeader = () => {
   return (
     <Stack>
       <Text>{"コレクション一覧"}</Text>

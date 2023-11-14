@@ -2,7 +2,7 @@
 
 import { Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
 
-export const SensitiveCollectionsHeader: React.FC = () => {
+export const SensitiveCollectionsHeader = () => {
   return (
     <Stack>
       <Text>{"コレクション一覧"}</Text>

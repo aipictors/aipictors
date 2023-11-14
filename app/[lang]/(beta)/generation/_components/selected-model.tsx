@@ -9,7 +9,7 @@ type Props = {
   onClick(): void
 }
 
-export const SelectedModel: React.FC<Props> = (props) => {
+export const SelectedModel = (props: Props) => {
   return (
     <Button
       w={"100%"}

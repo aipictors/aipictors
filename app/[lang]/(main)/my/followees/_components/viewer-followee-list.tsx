@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react"
 import { useContext } from "react"
 
-export const ViewerFolloweeList: React.FC = () => {
+export const ViewerFolloweeList = () => {
   const appContext = useContext(AppContext)
 
   const { data = null } = useSuspenseQuery<

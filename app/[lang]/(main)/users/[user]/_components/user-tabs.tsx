@@ -3,13 +3,13 @@
 import { Flex, Tab, TabIndicator, TabList, Tabs } from "@chakra-ui/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 
 type Props = {
   userId: string
 }
 
-export const UserTabs: React.FC<Props> = (props) => {
+export const UserTabs = (props: Props) => {
   const pathname = usePathname()
 
   const index = useMemo(() => {

@@ -2,7 +2,7 @@
 
 import { Stack, Text } from "@chakra-ui/react"
 
-export const NewTextForm: React.FC = () => {
+export const NewTextForm = () => {
   return (
     <Stack>
       <Text>{"投稿"}</Text>

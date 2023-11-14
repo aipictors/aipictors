@@ -1,14 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import React from "react"
 
 type Props = {
   name: string
   onClick(): void
 }
 
-export const MutedTag: React.FC<Props> = (props) => {
+export const MutedTag = (props: Props) => {
   return (
     <div className="flex justify-between">
       <div>

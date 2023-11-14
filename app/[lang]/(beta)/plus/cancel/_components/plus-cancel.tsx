@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Frown } from "lucide-react"
 import Link from "next/link"
 
-export const PlusCancel: React.FC = () => {
+export const PlusCancel = () => {
   return (
     <div className="space-y-16 max-w-sm w-full mx-auto px-6 pt-16">
       <div className="space-y-4">

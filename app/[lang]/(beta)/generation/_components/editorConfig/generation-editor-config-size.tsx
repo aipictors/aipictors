@@ -1,6 +1,6 @@
 import { Select, Stack, Text } from "@chakra-ui/react"
 
-export const GenerationEditorConfigSize: React.FC = () => {
+export const GenerationEditorConfigSize = () => {
   return (
     <Stack>
       <Text fontWeight={"bold"}>{"サイズ"}</Text>

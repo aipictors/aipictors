@@ -2,7 +2,7 @@
 
 import { Td, Tr } from "@chakra-ui/react"
 
-export const ViewerWorkTableItem: React.FC = () => {
+export const ViewerWorkTableItem = () => {
   return (
     <Tr>
       <Td>{""}</Td>

@@ -4,7 +4,7 @@ import { TagCard } from "@/app/[lang]/(main)/tags/[tag]/_components/tag-card"
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 
-export const RelatedTagList: React.FC = () => {
+export const RelatedTagList = () => {
   return (
     <Stack>
       <Splide

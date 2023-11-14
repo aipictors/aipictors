@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 
-export const PlusAbout: React.FC = () => {
+export const PlusAbout = () => {
   const [mutation, { loading: isLoading }] =
     useCreatePassCheckoutSessionMutation()
 

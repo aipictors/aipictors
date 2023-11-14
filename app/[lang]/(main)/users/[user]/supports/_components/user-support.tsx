@@ -14,7 +14,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const UserSupport: React.FC<Props> = (props) => {
+export const UserSupport = (props: Props) => {
   return (
     <HStack justifyContent={"center"}>
       <Stack alignItems={"center"}>

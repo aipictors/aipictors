@@ -12,7 +12,7 @@ type Props = {
   onClick(): void
 }
 
-const MyButton: React.FC<Props> = (props) => {
+const MyButton = (props: Props) => {
   const onClick = () => {
     props.onClick()
   }

@@ -8,7 +8,7 @@ type Props = {
   albumWorksQuery: AlbumWorksQuery
 }
 
-export const AlbumWorkList: React.FC<Props> = (props) => {
+export const AlbumWorkList = (props: Props) => {
   return (
     <Stack spacing={4}>
       <AlbumWork

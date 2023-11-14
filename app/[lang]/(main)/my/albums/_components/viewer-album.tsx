@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { TbTrash } from "react-icons/tb"
 
-export const ViewerAlbum: React.FC = () => {
+export const ViewerAlbum = () => {
   return (
     <Card>
       <Button

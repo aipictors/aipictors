@@ -7,7 +7,7 @@ type Props = {
   imageModelQuery: ImageModelQuery
 }
 
-export const ModelHeader: React.FC<Props> = (props) => {
+export const ModelHeader = (props: Props) => {
   return (
     <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
       <HStack as={"main"} justifyContent={"center"} w={"100%"}>

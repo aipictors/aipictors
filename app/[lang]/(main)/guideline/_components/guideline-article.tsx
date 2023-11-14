@@ -2,7 +2,7 @@
 
 import { Stack, Text } from "@chakra-ui/react"
 
-export const GuidelineArticle: React.FC = () => {
+export const GuidelineArticle = () => {
   return (
     <Stack>
       <Text>{"ガイドライン"}</Text>

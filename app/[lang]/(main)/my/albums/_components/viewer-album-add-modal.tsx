@@ -25,7 +25,7 @@ type Props = {
   onClose: () => void
 }
 
-export const ViewerAlbumAddModal: React.FC<Props> = (props) => {
+export const ViewerAlbumAddModal = (props: Props) => {
   return (
     <Modal
       isOpen={props.isOpen}

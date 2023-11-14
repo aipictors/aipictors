@@ -1,6 +1,6 @@
 import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
 
-export const AppAboutHeader: React.FC = () => {
+export const AppAboutHeader = () => {
   return (
     <div className="px-4 w-full max-w-container-xl mx-auto pb-32 relative">
       <div className="absolute inset-0 z-[-1] w-full h-full opacity-20 top-[-8%]">

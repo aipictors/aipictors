@@ -4,7 +4,7 @@ import { SensitiveCollectionCard } from "@/app/[lang]/sensitive/collections/_com
 import { SensitiveCollectionsHeader } from "@/app/[lang]/sensitive/collections/_components/sensitive-collections-header"
 import { Divider, HStack, Stack } from "@chakra-ui/react"
 
-export const SensitiveCollectionList: React.FC = () => {
+export const SensitiveCollectionList = () => {
   return (
     <Stack>
       <SensitiveCollectionsHeader />

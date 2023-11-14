@@ -3,7 +3,7 @@
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
-export const SettingRestrictionForm: React.FC = () => {
+export const SettingRestrictionForm = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between">

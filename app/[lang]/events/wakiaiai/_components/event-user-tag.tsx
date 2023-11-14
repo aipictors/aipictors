@@ -5,7 +5,7 @@ type Props = {
   type: EventUserType
 }
 
-export const EventUserTag: React.FC<Props> = (props) => {
+export const EventUserTag = (props: Props) => {
   if (props.type === "SPONSOR") {
     return (
       <div className="flex items-center">

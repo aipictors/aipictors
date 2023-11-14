@@ -3,7 +3,7 @@
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { Avatar, Card, CardBody, HStack, Stack, Text } from "@chakra-ui/react"
 
-export const SensitiveAlbumWorkDescription: React.FC = () => {
+export const SensitiveAlbumWorkDescription = () => {
   return (
     <Card overflow="hidden" variant="outline" size={"lg"}>
       <CardBody>

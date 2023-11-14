@@ -5,7 +5,7 @@ import { Stack } from "@chakra-ui/react"
 import React from "react"
 import { TbLock, TbMoodSmile, TbUser } from "react-icons/tb"
 
-export const AccountRouteList: React.FC = () => {
+export const AccountRouteList = () => {
   return (
     <Stack>
       <HomeNavigationButton href={"/account/login"} leftIcon={<TbMoodSmile />}>

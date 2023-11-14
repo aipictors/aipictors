@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react"
 import { TbSettings } from "react-icons/tb"
 
-export const ViewerAlbumWorkDescription: React.FC = () => {
+export const ViewerAlbumWorkDescription = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (

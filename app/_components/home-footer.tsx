@@ -1,6 +1,6 @@
 "use client"
 
-export const HomeFooter: React.FC = () => {
+export const HomeFooter = () => {
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row">

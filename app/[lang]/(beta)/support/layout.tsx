@@ -9,7 +9,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const SupportLayout: React.FC<Props> = (props) => {
+const SupportLayout = (props: Props) => {
   const appContext = useContext(AppContext)
 
   if (appContext.isLoading) {

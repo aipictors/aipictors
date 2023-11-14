@@ -8,7 +8,7 @@ type Props = {
   onClose: () => void
 }
 
-export const NavigationDrawer: React.FC<Props> = (props) => {
+export const NavigationDrawer = (props: Props) => {
   return (
     <Sheet>
       <SheetOverlay />

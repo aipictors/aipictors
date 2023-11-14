@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const MarkdownDocument: React.FC<Props> = (props) => {
+export const MarkdownDocument = (props: Props) => {
   if (typeof props.children !== "string") {
     return <>{props.children}</>
   }

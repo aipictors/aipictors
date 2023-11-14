@@ -14,7 +14,7 @@ type Props = {
  * @param props
  * @returns
  */
-const GenerationHistoriesLayout: React.FC<Props> = (props) => {
+const GenerationHistoriesLayout = (props: Props) => {
   const context = useContext(AppContext)
 
   if (context.isLoading) {

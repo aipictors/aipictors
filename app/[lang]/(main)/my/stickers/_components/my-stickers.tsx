@@ -3,7 +3,7 @@
 import { Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import { TbPlus } from "react-icons/tb"
 
-export const MyStickers: React.FC = () => {
+export const MyStickers = () => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"lg"} w={"100%"} p={4} spacing={8}>

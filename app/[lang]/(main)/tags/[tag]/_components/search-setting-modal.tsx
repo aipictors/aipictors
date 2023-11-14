@@ -23,7 +23,7 @@ type Props = {
   onClose(): void
 }
 
-export const SearchSettingModal: React.FC<Props> = (props) => {
+export const SearchSettingModal = (props: Props) => {
   return (
     <Modal
       isOpen={props.isOpen}

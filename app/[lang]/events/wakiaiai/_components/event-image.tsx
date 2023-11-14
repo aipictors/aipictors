@@ -8,7 +8,7 @@ type Props = {
   linkTitle: string
 }
 
-export const EventImage: React.FC<Props> = (props) => {
+export const EventImage = (props: Props) => {
   return (
     <div className="relative">
       <img

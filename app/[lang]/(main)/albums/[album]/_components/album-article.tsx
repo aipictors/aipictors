@@ -11,7 +11,7 @@ type Props = {
   albumWorksQuery: AlbumWorksQuery
 }
 
-export const AlbumArticle: React.FC<Props> = (props) => {
+export const AlbumArticle = (props: Props) => {
   return (
     <HStack alignItems={"flex-start"}>
       <Stack>

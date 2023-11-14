@@ -8,7 +8,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export const StarRating: React.FC<Props> = (props) => {
+export const StarRating = (props: Props) => {
   return (
     <HStack justifyContent={"center"}>
       <IconButton

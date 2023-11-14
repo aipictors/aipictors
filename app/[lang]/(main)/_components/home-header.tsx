@@ -18,15 +18,15 @@ import { Config } from "@/config"
 import { useBreakpointValue } from "@chakra-ui/react"
 import { Menu } from "lucide-react"
 import Link from "next/link"
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { TbBellFilled, TbFolderFilled, TbSearch } from "react-icons/tb"
 
-type HomeHeaderProps = {
+type Props = {
   onLogin(): void
   onLogout(): void
 }
 
-export const HomeHeader: React.FC<HomeHeaderProps> = (props) => {
+export const HomeHeader = (props: Props) => {
   const { toast } = useToast()
 
   const hasSheet = useBreakpointValue({

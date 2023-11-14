@@ -19,7 +19,7 @@ import {
 import { useState } from "react"
 import { TbEye } from "react-icons/tb"
 
-export const AccountPasswordForm: React.FC = () => {
+export const AccountPasswordForm = () => {
   const [newPassword, setNewPassword] = useState("")
 
   const [currentPassword, setCurrentPassword] = useState("")

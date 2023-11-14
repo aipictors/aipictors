@@ -20,7 +20,7 @@ const notoSansJp = Noto_Sans_JP({
   preload: false,
 })
 
-const RootLayout: React.FC<Props> = (props) => {
+const RootLayout = (props: Props) => {
   return (
     <html lang={"ja"} suppressHydrationWarning>
       <head>

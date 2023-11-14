@@ -4,7 +4,7 @@ import { NotificationList } from "@/app/[lang]/(main)/notifications/_components/
 import { NotificationTab } from "@/app/[lang]/(main)/notifications/_components/notification-tab"
 import { Stack } from "@chakra-ui/react"
 
-export const NotificationArticle: React.FC = () => {
+export const NotificationArticle = () => {
   return (
     <Stack>
       <NotificationTab />

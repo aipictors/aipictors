@@ -8,7 +8,7 @@ type Props = {
   albumQuery: AlbumQuery
 }
 
-export const AlbumWorkDescription: React.FC<Props> = (props) => {
+export const AlbumWorkDescription = (props: Props) => {
   return (
     <Card overflow="hidden" variant="outline" size={"100%"}>
       <CardBody>

@@ -7,7 +7,7 @@ type Props = {
   subWorkImageURLs: string[]
 }
 
-export const WorkImageView: React.FC<Props> = (props) => {
+export const WorkImageView = (props: Props) => {
   return (
     <Stack>
       <Image

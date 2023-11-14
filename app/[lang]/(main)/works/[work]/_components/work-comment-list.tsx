@@ -19,7 +19,7 @@ type Props = {
   work: NonNullable<WorkCommentsQuery["work"]>
 }
 
-export const WorkCommentList: React.FC<Props> = (props) => {
+export const WorkCommentList = (props: Props) => {
   return (
     <Stack>
       <Text>{"コメント"}</Text>

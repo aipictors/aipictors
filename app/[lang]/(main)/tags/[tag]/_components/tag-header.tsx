@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 
-export const TagHeader: React.FC = () => {
+export const TagHeader = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (

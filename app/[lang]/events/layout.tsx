@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const EventsLayout: React.FC<Props> = (props) => {
+const EventsLayout = (props: Props) => {
   const { setColorMode } = useColorMode()
 
   const searchParams = useSearchParams()

@@ -11,7 +11,7 @@ type Props = {
   onChangePromptText(text: string): void
 }
 
-export const GenerationEditorPrompt: React.FC<Props> = (props) => {
+export const GenerationEditorPrompt = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const onSelectPromptId = (promptId: string) => {}

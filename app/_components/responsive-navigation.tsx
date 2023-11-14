@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const ResponsiveNavigation: React.FC<Props> = (props) => {
+export const ResponsiveNavigation = (props: Props) => {
   const hasNavigation = useBreakpointValue({
     base: false,
     sm: false,

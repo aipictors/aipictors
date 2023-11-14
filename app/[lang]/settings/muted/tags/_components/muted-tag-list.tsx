@@ -17,7 +17,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 
-export const MutedTagList: React.FC = () => {
+export const MutedTagList = () => {
   const appContext = useContext(AppContext)
 
   const { data = null, refetch } = useSuspenseQuery<

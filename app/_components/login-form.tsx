@@ -11,7 +11,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const LoginForm: React.FC<Props> = (props) => {
+export const LoginForm = (props: Props) => {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

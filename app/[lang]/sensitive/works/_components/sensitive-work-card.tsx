@@ -4,7 +4,7 @@ type Props = {
   imageURL?: string
 }
 
-export const SensitiveWorkCard: React.FC<Props> = (props) => {
+export const SensitiveWorkCard = (props: Props) => {
   return (
     <Image
       w={"100%"}

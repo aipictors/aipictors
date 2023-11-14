@@ -14,7 +14,7 @@ type Props = {
   responsive?: string
 }
 
-export const GoogleAdsense: React.FC<Props> = (props): JSX.Element => {
+export const GoogleAdsense = (props: Props) => {
   const pathname = usePathname()
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import { NewAlbumImage } from "@/app/[lang]/(main)/new/album/_components/new-alb
 import { NewAlbumWorkList } from "@/app/[lang]/(main)/new/album/_components/new-album-work-list"
 import { Stack } from "@chakra-ui/react"
 
-export const NewAlbumForm: React.FC = () => {
+export const NewAlbumForm = () => {
   return (
     <Stack>
       <NewAlbumImage />

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { TbRefresh } from "react-icons/tb"
 
-export const InPaintingSetting: React.FC = () => {
+export const InPaintingSetting = () => {
   return (
     <HStack>
       <HStack justifyContent={"flex-start"}>

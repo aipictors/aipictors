@@ -2,7 +2,7 @@
 
 import { LoadingPage } from "@/app/_components/page/loading-page"
 
-const MessageChatLoading: React.FC = () => {
+const MessageChatLoading = () => {
   return <LoadingPage />
 }
 

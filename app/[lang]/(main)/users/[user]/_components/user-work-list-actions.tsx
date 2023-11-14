@@ -12,7 +12,7 @@ import {
 import React from "react"
 import { TbSearch } from "react-icons/tb"
 
-export const UserWorkListActions: React.FC = () => (
+export const UserWorkListActions = () => (
   <Stack spacing={4}>
     <HStack>
       <Input

@@ -3,7 +3,7 @@
 import { ViewerAlbum } from "@/app/[lang]/(main)/my/albums/_components/viewer-album"
 import { HStack } from "@chakra-ui/react"
 
-export const ViewerAlbumList: React.FC = () => {
+export const ViewerAlbumList = () => {
   return (
     <HStack spacing={4}>
       <ViewerAlbum />

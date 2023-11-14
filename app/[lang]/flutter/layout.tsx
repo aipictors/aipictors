@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const FlutterLayout: React.FC<Props> = (props) => {
+const FlutterLayout = (props: Props) => {
   const { setColorMode } = useColorMode()
 
   const searchParams = useSearchParams()

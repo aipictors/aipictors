@@ -3,7 +3,7 @@
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
-export const SettingRequestForm: React.FC = () => {
+export const SettingRequestForm = () => {
   return (
     <div className="space-y-4">
       <p>

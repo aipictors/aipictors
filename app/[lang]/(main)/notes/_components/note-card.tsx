@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, Text } from "@chakra-ui/react"
 
-export const NoteCard: React.FC = () => {
+export const NoteCard = () => {
   return (
     <Card as={"article"}>
       <CardHeader as={"header"}>

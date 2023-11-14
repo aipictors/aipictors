@@ -11,7 +11,7 @@ type Props = {
   onClose(): void
 }
 
-export const LoginModal: React.FC<Props> = (props) => {
+export const LoginModal = (props: Props) => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
   const toast = useToast()

@@ -7,7 +7,7 @@ import {
 } from "@/__generated__/apollo"
 import { useSuspenseQuery } from "@apollo/client"
 
-export const AppMilestoneList: React.FC = () => {
+export const AppMilestoneList = () => {
   const { data: milestones } = useSuspenseQuery<
     MilestonesQuery,
     MilestonesQueryVariables

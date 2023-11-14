@@ -21,7 +21,7 @@ type Props = {
   onChangeModelConfigs(configs: { id: string; value: number }[]): void
 }
 
-export const GenerationEditorConfigLoraModels: React.FC<Props> = (props) => {
+export const GenerationEditorConfigLoraModels = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const selectedModelIds = props.modelConfigs.map((model) => model.id)

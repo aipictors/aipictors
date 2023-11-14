@@ -20,7 +20,7 @@ type Props = {
   title: string
 }
 
-export const HomeWorkSection: React.FC<Props> = (props) => {
+export const HomeWorkSection = (props: Props) => {
   return (
     <Stack as={"section"}>
       <HStack justifyContent={"space-between"} alignItems={"center"}>

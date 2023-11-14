@@ -2,7 +2,7 @@
 
 import { Stack, Text } from "@chakra-ui/react"
 
-export const TagListItem: React.FC = () => {
+export const TagListItem = () => {
   return (
     <Stack>
       <Text>{"TagListItem"}</Text>

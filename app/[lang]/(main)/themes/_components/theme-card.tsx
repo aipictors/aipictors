@@ -2,7 +2,7 @@
 
 import { Avatar, Card, HStack, Image, Stack, Text } from "@chakra-ui/react"
 
-export const ThemeCard: React.FC = () => {
+export const ThemeCard = () => {
   return (
     <Card>
       <Image

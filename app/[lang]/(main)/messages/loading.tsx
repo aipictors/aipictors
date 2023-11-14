@@ -2,7 +2,7 @@
 
 import { Spinner, Stack } from "@chakra-ui/react"
 
-const MessagesLoading: React.FC = () => {
+const MessagesLoading = () => {
   return (
     <Stack
       p={4}

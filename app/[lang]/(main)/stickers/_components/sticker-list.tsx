@@ -2,13 +2,12 @@
 import type { StickersQuery } from "@/__generated__/apollo"
 import { StickerCard } from "@/app/[lang]/(main)/stickers/_components/sticker-card"
 import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   stickers: StickersQuery["stickers"]
 }
 
-export const StickerList: React.FC<Props> = (props) => {
+export const StickerList = (props: Props) => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"} px={4}>
       <Stack>

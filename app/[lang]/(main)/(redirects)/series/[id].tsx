@@ -1,5 +1,4 @@
 import { RedirectType, redirect } from "next/navigation"
-import React from "react"
 
 type Props = {
   params: {
@@ -7,7 +6,7 @@ type Props = {
   }
 }
 
-const Page: React.FC<Props> = async (props) => {
+const Page = async (props: Props) => {
   redirect(`/albums/${props.params.id}`, RedirectType.replace)
 }
 

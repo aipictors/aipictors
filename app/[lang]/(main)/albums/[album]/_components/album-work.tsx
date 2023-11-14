@@ -22,7 +22,7 @@ type Props = {
   createdAt: number
 }
 
-export const AlbumWork: React.FC<Props> = (props) => {
+export const AlbumWork = (props: Props) => {
   return (
     <Card overflow="hidden" variant="outline">
       <HStack justifyContent={"space-between"} pl={4}>

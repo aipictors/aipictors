@@ -5,7 +5,7 @@ type Props = {
   imageURL?: string
 }
 
-export const FolloweeListItem: React.FC<Props> = (props) => {
+export const FolloweeListItem = (props: Props) => {
   return (
     <HStack justifyContent={"space-between"} p={4}>
       <HStack spacing={4}>

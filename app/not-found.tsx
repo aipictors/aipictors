@@ -3,7 +3,7 @@
 import { Button, HStack, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
-const RootNotFound: React.FC = () => {
+const RootNotFound = () => {
   return (
     <Stack p={4} h={"100vh"} justifyContent={"center"} alignItems={"center"}>
       <Stack spacing={8} alignItems={"center"}>

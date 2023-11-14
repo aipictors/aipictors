@@ -9,7 +9,7 @@ type Props = {
   isRead: boolean
 }
 
-export const SenderMessage: React.FC<Props> = (props) => {
+export const SenderMessage = (props: Props) => {
   // const bg = useColorModeValue("teal.200", "teal.600")
 
   return (

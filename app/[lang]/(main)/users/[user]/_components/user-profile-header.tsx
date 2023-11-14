@@ -2,13 +2,12 @@
 
 import type { UserQuery } from "@/__generated__/apollo"
 import { Image, Stack } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>
 }
 
-export const UserProfileHeader: React.FC<Props> = (props) => {
+export const UserProfileHeader = (props: Props) => {
   return (
     <Stack>
       <Image

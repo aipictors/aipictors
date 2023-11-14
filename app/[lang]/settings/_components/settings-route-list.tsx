@@ -12,7 +12,7 @@ import {
   TbUserOff,
 } from "react-icons/tb"
 
-export const SettingsRouteList: React.FC = () => {
+export const SettingsRouteList = () => {
   return (
     <div className="space-y-1">
       <HomeNavigationButton

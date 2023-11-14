@@ -2,7 +2,7 @@
 import { ThemeCard } from "@/app/[lang]/(main)/themes/_components/theme-card"
 import { Button, Divider, HStack, Stack, Text } from "@chakra-ui/react"
 
-export const ThemeHeader: React.FC = () => {
+export const ThemeHeader = () => {
   return (
     <Stack>
       <Text fontSize={"lg"}>{"創作アイディアページ"}</Text>

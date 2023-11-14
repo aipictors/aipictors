@@ -16,14 +16,13 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   isOpen: boolean
   onClose(): void
 }
 
-export const AddStickerModal: React.FC<Props> = (props) => {
+export const AddStickerModal = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

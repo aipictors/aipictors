@@ -16,7 +16,7 @@ type Props = {
   params: { work: string }
 }
 
-const WorkPage: React.FC<Props> = async (props) => {
+const WorkPage = async (props: Props) => {
   const client = createClient()
 
   const workQuery = await client.query<WorkQuery, WorkQueryVariables>({

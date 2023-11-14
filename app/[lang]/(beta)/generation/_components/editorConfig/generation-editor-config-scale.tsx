@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import { TbQuestionMark } from "react-icons/tb"
 
-export const GenerationEditorConfigScale: React.FC = () => {
+export const GenerationEditorConfigScale = () => {
   return (
     <Stack>
       <HStack>

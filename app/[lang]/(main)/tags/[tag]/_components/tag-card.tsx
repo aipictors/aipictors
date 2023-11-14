@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Skeleton, Stack } from "@chakra-ui/react"
 
-export const TagCard: React.FC = () => {
+export const TagCard = () => {
   return (
     <Card>
       <CardBody>

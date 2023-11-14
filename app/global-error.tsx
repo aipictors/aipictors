@@ -6,7 +6,7 @@ import { CacheProvider } from "@chakra-ui/next-js"
 import { ChakraProvider } from "@chakra-ui/react"
 import type { Metadata } from "next"
 
-const RootGlobalError: React.FC = () => {
+const RootGlobalError = () => {
   const fontURL =
     "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&display=swap"
 

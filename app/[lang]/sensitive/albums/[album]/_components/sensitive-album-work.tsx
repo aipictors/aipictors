@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { TbHeart } from "react-icons/tb"
 
-export const SensitiveAlbumWork: React.FC = () => {
+export const SensitiveAlbumWork = () => {
   return (
     <Card overflow="hidden" variant="outline">
       <HStack justifyContent={"space-between"} pl={4}>

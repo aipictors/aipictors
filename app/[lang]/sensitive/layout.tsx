@@ -13,7 +13,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const SensitiveLayout: React.FC<Props> = (props) => {
+const SensitiveLayout = (props: Props) => {
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,

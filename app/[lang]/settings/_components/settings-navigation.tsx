@@ -4,7 +4,7 @@ import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-ro
 import { useBreakpoint } from "@chakra-ui/react"
 import React from "react"
 
-export const SettingsNavigation: React.FC = () => {
+export const SettingsNavigation = () => {
   const breakpoint = useBreakpoint()
 
   if (breakpoint !== "base" && breakpoint !== "sm") {

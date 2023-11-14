@@ -6,6 +6,6 @@ type Props = {
   title: string
 }
 
-export const AboutTheme: React.FC<Props> = (props) => {
+export const AboutTheme = (props: Props) => {
   return <Text>{props.title}</Text>
 }

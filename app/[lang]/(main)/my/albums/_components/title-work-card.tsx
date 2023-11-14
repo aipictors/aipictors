@@ -2,7 +2,7 @@
 
 import { Button, Card, Image, Text } from "@chakra-ui/react"
 
-export const TitleWorkCard: React.FC = () => {
+export const TitleWorkCard = () => {
   return (
     <Card>
       <Button

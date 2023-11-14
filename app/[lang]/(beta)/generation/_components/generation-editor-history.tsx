@@ -30,7 +30,7 @@ type Props = {
   selectHistory(history: string): void
 }
 
-export const GenerationEditorHistory: React.FC<Props> = (props) => {
+export const GenerationEditorHistory = (props: Props) => {
   const { data } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
     ViewerImageGenerationTasksQueryVariables

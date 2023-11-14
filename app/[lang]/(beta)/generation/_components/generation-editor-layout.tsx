@@ -10,7 +10,7 @@ type Props = {
   histories: React.ReactNode
 }
 
-export const GenerationEditorLayout: React.FC<Props> = (props) => {
+export const GenerationEditorLayout = (props: Props) => {
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",

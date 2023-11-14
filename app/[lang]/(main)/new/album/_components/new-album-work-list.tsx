@@ -4,7 +4,7 @@ import { SelectableWorkCard } from "@/app/[lang]/(main)/new/album/_components/se
 import { Box, Stack } from "@chakra-ui/react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 
-export const NewAlbumWorkList: React.FC = () => {
+export const NewAlbumWorkList = () => {
   return (
     <Stack>
       <Splide

@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { TbDots } from "react-icons/tb"
 
-export const UserMuteMenu: React.FC = () => {
+export const UserMuteMenu = () => {
   return (
     <Menu>
       <MenuButton as={Button} leftIcon={<Icon as={TbDots} />} size={"sm"} />

@@ -6,7 +6,7 @@ import type { Metadata } from "next"
  * アカウント
  * @returns
  */
-const AccountPage: React.FC = async () => {
+const AccountPage = async () => {
   return (
     <MainCenterPage>
       <AccountNavigation />

@@ -14,7 +14,7 @@ import React from "react"
  * 画像生成の履歴
  * @returns
  */
-export const GenerationHistoryList: React.FC = () => {
+export const GenerationHistoryList = () => {
   const { data } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
     ViewerImageGenerationTasksQueryVariables

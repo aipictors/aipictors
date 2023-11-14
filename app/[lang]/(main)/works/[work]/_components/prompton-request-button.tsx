@@ -2,11 +2,10 @@
 
 import type { ButtonProps } from "@chakra-ui/react"
 import { Button } from "@chakra-ui/react"
-import React from "react"
 
 type Props = ButtonProps
 
-export const PromptonRequestButton: React.FC<Props> = (props) => {
+export const PromptonRequestButton = (props: Props) => {
   return (
     <Button colorScheme="orange" borderRadius={"full"} {...props}>
       {"支援"}

@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, HStack, Icon, Image, Link, Stack, Text } from "@chakra-ui/react"
-import React from "react"
+
 import { TbDownload, TbRubberStamp } from "react-icons/tb"
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
   usesCount?: number
 }
 
-export const StickerCard: React.FC<Props> = (props) => {
+export const StickerCard = (props: Props) => {
   return (
     <>
       <Card>

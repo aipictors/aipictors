@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { TbFlag } from "react-icons/tb"
 
-export const CollectionHeader: React.FC = () => {
+export const CollectionHeader = () => {
   return (
     <Stack>
       <Image

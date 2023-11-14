@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-export const AppFooter: React.FC = () => {
+export const AppFooter = () => {
   return (
     <div className="p-4 flex flex-col space-y-2">
       <div className="flex flex-col md:flex-row">

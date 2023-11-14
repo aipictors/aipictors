@@ -11,7 +11,7 @@ type Props = {
   createdAt: number
 }
 
-export const WorkComment: React.FC<Props> = (props) => {
+export const WorkComment = (props: Props) => {
   return (
     <HStack alignItems={"flex-start"}>
       <Avatar src={props.userIconImageURL} />

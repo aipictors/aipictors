@@ -15,7 +15,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const MainLayout: React.FC<Props> = (props) => {
+const MainLayout = (props: Props) => {
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,

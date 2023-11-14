@@ -7,7 +7,7 @@ type Props = {
   albumWorksQuery: AlbumWorksQuery
 }
 
-export const SensitiveAlbumWorkList: React.FC<Props> = (props) => {
+export const SensitiveAlbumWorkList = (props: Props) => {
   return (
     <AlbumWork
       albumWorksQuery={props.albumWorksQuery}

@@ -2,7 +2,7 @@
 
 import RootLoading from "@/app/loading"
 
-const AccountLoading: React.FC = () => {
+const AccountLoading = () => {
   return <RootLoading />
 }
 

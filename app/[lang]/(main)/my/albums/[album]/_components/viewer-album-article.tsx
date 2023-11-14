@@ -5,7 +5,7 @@ import { ViewerAlbumWorkDescription } from "@/app/[lang]/(main)/my/albums/[album
 import { ViewerAlbumWorkList } from "@/app/[lang]/(main)/my/albums/[album]/_components/viewer-album-work-list"
 import { HStack, Stack } from "@chakra-ui/react"
 
-export const MyAlbum: React.FC = () => {
+export const MyAlbum = () => {
   return (
     <HStack alignItems={"flex-start"} spacing={8}>
       <Stack spacing={4}>

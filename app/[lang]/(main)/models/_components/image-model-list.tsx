@@ -8,7 +8,7 @@ type Props = {
   imageModels: ImageModelsQuery["imageModels"]
 }
 
-export const ImageModelList: React.FC<Props> = (props) => {
+export const ImageModelList = (props: Props) => {
   return (
     <HStack as={"main"} justifyContent={"center"} w={"100%"}>
       <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>

@@ -10,7 +10,7 @@ type Props = {
   work: NonNullable<WorkQuery["work"]>
 }
 
-export const SensitiveWorkArticle: React.FC<Props> = (props) => {
+export const SensitiveWorkArticle = (props: Props) => {
   return (
     <Stack
       direction={{ base: "column", lg: "row" }}

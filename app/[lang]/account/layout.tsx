@@ -13,7 +13,7 @@ type Props = {
   children: React.ReactNode
 }
 
-const SettingsLayout: React.FC<Props> = (props) => {
+const SettingsLayout = (props: Props) => {
   const appContext = useContext(AppContext)
 
   const {

@@ -13,7 +13,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const HomeTagList: React.FC<Props> = (props) => {
+export const HomeTagList = (props: Props) => {
   return (
     <Box w={"100%"} overflowX={"auto"} pb={2}>
       <HStack as={"ul"} w={"100%"} spacing={2}>

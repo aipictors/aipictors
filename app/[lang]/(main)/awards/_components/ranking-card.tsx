@@ -1,7 +1,6 @@
 "use client"
 
 import { Card, Image, Stack, Text } from "@chakra-ui/react"
-import React from "react"
 
 type Props = {
   title?: string
@@ -16,7 +15,7 @@ type Props = {
   // }
 }
 
-export const RankingCard: React.FC<Props> = (props) => (
+export const RankingCard = (props: Props) => (
   <Card>
     <Image
       src={props.imageURL ?? ""}

@@ -7,7 +7,7 @@ type Props = {
   name: string
 }
 
-export const TagButton: React.FC<Props> = (props) => {
+export const TagButton = (props: Props) => {
   return (
     <Link key={props.id} href={`/tags/${props.name}`} passHref>
       <Button as={"li"} size={"sm"} minW={"fit-content"} variant={"outline"}>

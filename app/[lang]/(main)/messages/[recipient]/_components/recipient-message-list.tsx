@@ -20,7 +20,7 @@ type Props = {
   recipientId: string
 }
 
-export const RecipientMessageList: React.FC<Props> = (props) => {
+export const RecipientMessageList = (props: Props) => {
   const { data, refetch } = useSuspenseQuery<
     MessageThreadMessagesQuery,
     MessageThreadMessagesQueryVariables

@@ -9,7 +9,7 @@ type Props = {
   messages: NonNullable<ViewerSupportMessagesQuery["viewer"]>["supportMessages"]
 }
 
-export const SupportMessageList: React.FC<Props> = (props) => {
+export const SupportMessageList = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768)
 

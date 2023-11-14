@@ -5,7 +5,7 @@ type Props = {
   modal: React.ReactNode
 }
 
-const StickersLayout: React.FC<Props> = (props) => {
+const StickersLayout = (props: Props) => {
   return (
     <>
       {props.children}

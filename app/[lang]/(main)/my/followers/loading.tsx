@@ -2,7 +2,7 @@
 
 import { Spinner, Stack } from "@chakra-ui/react"
 
-const Loading: React.FC = () => {
+const Loading = () => {
   return (
     <Stack
       p={4}

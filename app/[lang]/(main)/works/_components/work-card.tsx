@@ -4,7 +4,7 @@ type Props = {
   imageURL?: string
 }
 
-export const WorkCard: React.FC<Props> = (props) => {
+export const WorkCard = (props: Props) => {
   return (
     <Image
       w={"100%"}

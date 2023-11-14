@@ -2,7 +2,7 @@
 
 import { LoadingPage } from "@/app/_components/page/loading-page"
 
-const PlusLoading: React.FC = () => {
+const PlusLoading = () => {
   return <LoadingPage />
 }
 

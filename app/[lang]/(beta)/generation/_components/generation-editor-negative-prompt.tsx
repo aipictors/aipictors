@@ -8,7 +8,7 @@ type Props = {
   onChangePromptText(prompt: string): void
 }
 
-export const GenerationEditorNegativePrompt: React.FC<Props> = (props) => {
+export const GenerationEditorNegativePrompt = (props: Props) => {
   const onAddPrompt = (text: string) => {
     if (props.promptText.includes(text)) {
       const replacedText = props.promptText.replace(text, "")

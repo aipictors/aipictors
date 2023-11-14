@@ -13,7 +13,7 @@ type Props = {
  * @param props
  * @returns
  */
-const StickerSearchForm: React.FC<Props> = (props) => {
+const StickerSearchForm = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 
   const router = useRouter()
