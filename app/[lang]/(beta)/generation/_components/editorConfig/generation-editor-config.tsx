@@ -2,13 +2,13 @@
 
 import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-lora-models"
+import { GenerationEditorConfigSampler } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-scale"
 import { GenerationEditorConfigSeed } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-seed"
 import { GenerationEditorConfigSize } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-step"
 import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { Box, Stack } from "@chakra-ui/react"
 
 type Props = {
   /**
@@ -47,8 +47,8 @@ export const GenerationEditorConfig = (props: Props) => {
       title={"加工（LoRA）"}
       tooltip={"イラストの絵柄を調整することができます。"}
     >
-      <Box overflowY={"auto"}>
-        <Stack p={2} spacing={4}>
+      <div className="overflow-y-auto">
+        <div className="p-2 space-y-4">
           <GenerationEditorConfigLoraModels
             models={props.models}
             modelConfigs={props.modelConfigs}
@@ -59,8 +59,9 @@ export const GenerationEditorConfig = (props: Props) => {
           <GenerationEditorConfigSize />
           <GenerationEditorConfigStep />
           <GenerationEditorConfigVae />
-        </Stack>
-      </Box>
+          <GenerationEditorConfigSampler />
+        </div>
+      </div>
     </GenerationEditorCard>
   )
 }

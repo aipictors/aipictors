@@ -1,4 +1,4 @@
-import { Box, Button, Image, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   onSelect(): void
@@ -10,27 +10,23 @@ type Props = {
 
 export const LoraImageModelCard = (props: Props) => {
   return (
-    <Box>
-      <Stack>
+    <div>
+      <div className="flex flex-col">
         <Button
-          p={0}
-          h={"auto"}
-          overflow={"hidden"}
+          className="p-0 h-auto overflow-hidden border-width-2 rounded-md"
           variant={"outline"}
-          borderWidth={2}
-          borderRadius={"md"}
-          borderColor={props.isActive ? "primary.500" : "gray.200"}
+          // borderColor={props.isActive ? "primary.500" : "gray.200"}
           onClick={() => {
             props.onSelect()
           }}
         >
-          <Image src={props.imageURL ?? ""} alt={props.name} />
+          <img src={props.imageURL ?? ""} alt={props.name} />
         </Button>
-        <Stack spacing={0}>
-          <Text fontSize={"sm"}>{props.name}</Text>
-          <Text fontSize={"xs"}>{props.description}</Text>
-        </Stack>
-      </Stack>
-    </Box>
+        <div className="flex flex-col space-y-0">
+          <span className="text-sm">{props.name}</span>
+          <span className="text-sm">{props.description}</span>
+        </div>
+      </div>
+    </div>
   )
 }

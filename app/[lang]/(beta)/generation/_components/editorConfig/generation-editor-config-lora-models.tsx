@@ -3,7 +3,8 @@
 import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { LoraModelsModal } from "@/app/[lang]/(beta)/generation/_components/lora-models-modal"
 import { SelectedLoraModel } from "@/app/[lang]/(beta)/generation/_components/selected-lora-model"
-import { Button, Stack, useDisclosure } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { useDisclosure } from "@chakra-ui/react"
 
 type Props = {
   /**
@@ -83,8 +84,8 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
 
   return (
     <>
-      <Stack p={2} spacing={4}>
-        <Stack>
+      <div className="p-2 space-y-4">
+        <div>
           {selectedModels.map((model) => (
             <SelectedLoraModel
               key={model.id}
@@ -102,11 +103,11 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
               }}
             />
           ))}
-        </Stack>
-        <Button borderRadius={"full"} onClick={onOpen}>
+        </div>
+        <Button className="rounded-full" onClick={onOpen}>
           {"LoRAを追加する"}
         </Button>
-      </Stack>
+      </div>
       <LoraModelsModal
         isOpen={isOpen}
         onClose={onClose}

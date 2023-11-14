@@ -5,7 +5,6 @@ import { LoraImageModelCard } from "@/app/[lang]/(beta)/generation/_components/l
 import {
   Button,
   HStack,
-  Icon,
   IconButton,
   Modal,
   ModalBody,
@@ -16,7 +15,7 @@ import {
   SimpleGrid,
   Text,
 } from "@chakra-ui/react"
-import { TbX } from "react-icons/tb"
+import { X } from "lucide-react"
 
 type Props = {
   isOpen: boolean
@@ -41,7 +40,7 @@ export const LoraModelsModal = (props: Props) => {
             <Text>{"LoRA選択"}</Text>
             <IconButton
               aria-label={"Close"}
-              icon={<Icon fontSize={"lg"} as={TbX} />}
+              icon={<X className="text-xl" />}
               variant={"ghost"}
               onClick={props.onClose}
             />

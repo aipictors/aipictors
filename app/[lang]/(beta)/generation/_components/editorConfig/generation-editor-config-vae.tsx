@@ -1,4 +1,16 @@
-import { HStack, Select, Stack, Text, Tooltip } from "@chakra-ui/react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 
 /**
@@ -7,18 +19,30 @@ import { HelpCircle } from "lucide-react"
  */
 export const GenerationEditorConfigVae = () => {
   return (
-    <Stack>
-      <HStack spacing={2}>
-        <Text fontWeight={"bold"}>{"VAE"}</Text>
-        <Tooltip label="出力される色や線を調整します。">
-          <HelpCircle />
-        </Tooltip>
-      </HStack>
-      <Select defaultValue={"option3"} borderRadius={"full"}>
-        <option value="option1">{"なし"}</option>
-        <option value="option2">{"kl-f8-anime2"}</option>
-        <option value="option3">{"ClearVAE_V2.3"}</option>
+    <div>
+      <div className="flex space-x-2">
+        <span className="font-bold">{"VAE"}</span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{"出力される色や線を調整します。"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <Select defaultValue={"option3"}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="option1">{"なし"}</SelectItem>
+          <SelectItem value="option2">{"kl-f8-anime2"}</SelectItem>
+          <SelectItem value="option3">{"ClearVAE_V2.3"}</SelectItem>
+        </SelectContent>
       </Select>
-    </Stack>
+    </div>
   )
 }
