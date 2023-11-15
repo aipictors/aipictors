@@ -7,8 +7,6 @@ import {
 } from "@/__generated__/apollo"
 import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
 import { useSuspenseQuery } from "@apollo/client"
-import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
-import React from "react"
 
 /**
  * 画像生成の履歴
@@ -26,13 +24,13 @@ export const GenerationHistoryList = () => {
   })
 
   return (
-    <Stack spacing={4} pb={4} px={4}>
-      <Text>{"画像生成の履歴"}</Text>
-      <SimpleGrid spacing={2} columns={{ base: 2, md: 3, lg: 4, xl: 6 }}>
+    <div className="space-y-4 pb-4 px-4">
+      <p>{"画像生成の履歴"}</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
         {data.viewer?.imageGenerationTasks?.map((task) => (
           <GenerationHistoryCard imageURL={task.imageURL!} onClick={() => {}} />
         ))}
-      </SimpleGrid>
-    </Stack>
+      </div>
+    </div>
   )
 }

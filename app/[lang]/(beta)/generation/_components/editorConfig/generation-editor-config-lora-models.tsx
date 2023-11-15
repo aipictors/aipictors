@@ -1,8 +1,8 @@
 "use client"
 
 import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
-import { LoraModelsModal } from "@/app/[lang]/(beta)/generation/_components/lora-models-modal"
-import { SelectedLoraModel } from "@/app/[lang]/(beta)/generation/_components/selected-lora-model"
+import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
+import { SelectableLoraModel } from "@/app/[lang]/(beta)/generation/_components/selectable-lora-model"
 import { Button } from "@/components/ui/button"
 import { useDisclosure } from "@chakra-ui/react"
 
@@ -87,7 +87,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
       <div className="p-2 space-y-4">
         <div>
           {selectedModels.map((model) => (
-            <SelectedLoraModel
+            <SelectableLoraModel
               key={model.id}
               imageURL={model.thumbnailImageURL ?? ""}
               name={model.name}
@@ -108,7 +108,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
           {"LoRAを追加する"}
         </Button>
       </div>
-      <LoraModelsModal
+      <LoraModelsDialog
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}

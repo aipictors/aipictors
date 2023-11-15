@@ -1,20 +1,17 @@
 "use client"
 
-import { Button, HStack, Stack, Text } from "@chakra-ui/react"
-import Link from "next/link"
-
 const RootNotFound = () => {
   return (
-    <Stack p={4} h={"100vh"} justifyContent={"center"} alignItems={"center"}>
-      <Stack spacing={8} alignItems={"center"}>
-        <Text>{"ページが見つかりません"}</Text>
-        <HStack>
-          <Button as={Link} href={"/"} lineHeight={1}>
-            {"ホームに戻る"}
-          </Button>
-        </HStack>
-      </Stack>
-    </Stack>
+    <div className="p-4 h-screen flex justify-center items-center">
+      <div className="space-y-8 items-center">
+        <p>ページが見つかりません</p>
+        <div className="flex">
+          <a href="/" className="line-height[1]">
+            ホームに戻る
+          </a>
+        </div>
+      </div>
+    </div>
   )
 }
 

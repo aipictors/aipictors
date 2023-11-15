@@ -2,6 +2,11 @@ type Props = {
   children: React.ReactNode
 }
 
+/**
+ * 中央寄せのページ
+ * @param props
+ * @returns
+ */
 export const MainCenterPage = (props: Props) => {
   return (
     <div

@@ -1,6 +1,5 @@
-"use client"
-
-import { Button, Card, Image } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 type Props = {
   imageURL: string
@@ -15,20 +14,13 @@ export const GenerationHistoryCard = (props: Props) => {
   return (
     <Card>
       <Button
-        p={0}
-        h={"auto"}
-        overflow={"hidden"}
-        variant={"outline"}
-        borderWidth={2}
-        borderColor={"blue.500"}
+        className="p-0 h-auto overflow-hidden border-2 border-blue-500 outline-none"
         onClick={props.onClick}
       >
-        <Image
+        <img
           // src={props.imageURL}
           src="https://source.unsplash.com/random/800x600"
           alt=""
-          borderRadius={"md"}
-          w={"100%"}
           draggable={false}
         />
       </Button>

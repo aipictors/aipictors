@@ -2,17 +2,17 @@
 
 import {
   AlertDialog,
-  AlertDialogBody,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  Stack,
-  useToast,
-} from "@chakra-ui/react"
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+
+import { useToast } from "@/components/ui/use-toast"
 import { getAuth, signOut } from "firebase/auth"
-import { useRef } from "react"
 
 type Props = {
   isOpen: boolean
@@ -21,46 +21,32 @@ type Props = {
 }
 
 export const LogoutModal = (props: Props) => {
-  const cancelRef = useRef(null)
-
-  const toast = useToast()
+  const { toast } = useToast()
 
   const handleLogout = async () => {
     await signOut(getAuth())
     props.onClose()
-    toast({ status: "success", description: "ログアウトしました。" })
+    toast({ description: "ログアウトしました。" })
   }
 
   return (
-    <Stack>
-      <AlertDialog
-        isOpen={props.isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={props.onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {"本当にログアウトしますか？"}
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              {
-                "ログアウトすると、再度ログインするまでアップロードやコメントができなくなります。"
-              }
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button colorScheme="red" onClick={handleLogout}>
-                {"はい"}
-              </Button>
-              <Button ref={cancelRef} onClick={props.onClose} ml={3}>
-                {"やめとく"}
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </Stack>
+    <AlertDialog open={props.isOpen} onOpenChange={props.onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{"本当にログアウトしますか？"}</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          {
+            "ログアウトすると、再度ログインするまでアップロードやコメントができなくなります。"
+          }
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={handleLogout}>{"はい"}</AlertDialogAction>
+          <AlertDialogCancel onClick={props.onClose}>
+            {"やめとく"}
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

@@ -1,5 +1,3 @@
-"use client"
-
 import { Sheet, SheetContent, SheetOverlay } from "@/components/ui/sheet"
 
 type Props = {

@@ -51,8 +51,6 @@ export const PlusForm = () => {
     }
   }
 
-  console.log("data", data)
-
   if (data.viewer === null) {
     return null
   }

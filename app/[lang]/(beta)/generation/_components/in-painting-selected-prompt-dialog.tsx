@@ -17,7 +17,7 @@ type Props = {
   onClose(): void
 }
 
-export const InPaintingSelectedPromptModal = (props: Props) => {
+export const InPaintingSelectedPromptDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

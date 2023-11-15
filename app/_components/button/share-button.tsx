@@ -1,8 +1,14 @@
-"use client"
-
-import { IconButton } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { Share } from "lucide-react"
 
+/**
+ * 共有
+ * @returns
+ */
 export const ShareButton = () => {
-  return <IconButton aria-label="share" icon={<Share />} size={"sm"} />
+  return (
+    <Button aria-label="share" size={"icon"}>
+      <Share />
+    </Button>
+  )
 }

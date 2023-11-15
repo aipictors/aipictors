@@ -1,5 +1,3 @@
-"use client"
-
 export const InPaintingImage = () => {
   return (
     <div className="flex justify-center">

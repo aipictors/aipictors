@@ -2,18 +2,7 @@
 
 import { PromptCategoriesQuery } from "@/__generated__/apollo"
 import { PromptCategoryIcon } from "@/app/[lang]/(beta)/generation/_components/prompt-category-icon"
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Button,
-  HStack,
-  Stack,
-  Text,
-  Wrap,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 type Props = {
@@ -27,34 +16,30 @@ export const GenerationEditorLite = (props: Props) => {
   const [promptIds, setPromptIds] = useState<string[]>([])
 
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
-        <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {"画像生成"}
-        </Text>
-        <Accordion defaultIndex={[0]} allowToggle>
+    <main className="flex justify-center w-full">
+      <div className="max-w-[30rem] w-full p-4 space-y-8">
+        <p className="font-bold text-2xl">{"画像生成"}</p>
+        <div>
           {props.promptCategories.map((promptCategory) => (
-            <AccordionItem key={promptCategory.id}>
-              <AccordionButton>
-                <HStack flex="1">
+            <div key={promptCategory.id}>
+              <Button>
+                <div className="flex-1 flex items-center space-x-2">
                   <PromptCategoryIcon name={promptCategory.name} />
-                  <Text>{promptCategory.name}</Text>
-                  <Text>
+                  <p>{promptCategory.name}</p>
+                  <p>
                     {promptCategory.prompts
                       .filter((prompt) => promptIds.includes(prompt.id))
                       .map((prompt) => {
                         return prompt.name
                       })
                       .join(",")}
-                  </Text>
-                </HStack>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel pb={4}>
-                <Wrap>
+                  </p>
+                </div>
+              </Button>
+              <div className="pb-4">
+                <div className="flex flex-wrap">
                   {promptCategory.prompts.map((prompt) => (
                     <Button
-                      size={"xs"}
                       key={prompt.id}
                       onClick={() => {
                         const newPromptIds = promptIds.includes(prompt.id)
@@ -62,20 +47,17 @@ export const GenerationEditorLite = (props: Props) => {
                           : [...promptIds, prompt.id]
                         setPromptIds(newPromptIds)
                       }}
-                      colorScheme={
-                        promptIds.includes(prompt.id) ? "blue" : "gray"
-                      }
                     >
                       {prompt.name}
                     </Button>
                   ))}
-                </Wrap>
-              </AccordionPanel>
-            </AccordionItem>
+                </div>
+              </div>
+            </div>
           ))}
-        </Accordion>
-        <Button colorScheme={"primary"}>{"生成"}</Button>
-      </Stack>
-    </HStack>
+        </div>
+        <Button>生成</Button>
+      </div>
+    </main>
   )
 }

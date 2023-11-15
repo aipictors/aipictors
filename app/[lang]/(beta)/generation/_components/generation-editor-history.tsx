@@ -5,11 +5,11 @@ import {
   ViewerImageGenerationTasksQuery,
   ViewerImageGenerationTasksQueryVariables,
 } from "@/__generated__/apollo"
-import { InPaintingImageModal } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-modal"
+import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
 import { GenerationDownloadModal } from "@/app/[lang]/(beta)/generation/_components/generation-download-modal"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { GenerationHistoryDeleteModal } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-modal"
-import { SelectedWorkModal } from "@/app/[lang]/(beta)/generation/_components/selected-work-modal"
+import { GenerationHistoryDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-dialog"
+import { SelectedWorkDialog } from "@/app/[lang]/(beta)/generation/_components/selected-work-dialog"
 import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -78,7 +78,7 @@ export const GenerationEditorHistory = (props: Props) => {
           </div>
         </div>
       </GenerationEditorCard>
-      <SelectedWorkModal
+      <SelectedWorkDialog
         isOpen={isOpen}
         onClose={onClose}
         onOpenInPainting={() => {
@@ -87,11 +87,11 @@ export const GenerationEditorHistory = (props: Props) => {
         }}
         onChangeRating={() => {}}
       />
-      <InPaintingImageModal
+      <InPaintingImageDialog
         isOpen={isOpenInPainting}
         onClose={onCloseInPainting}
       />
-      <GenerationHistoryDeleteModal
+      <GenerationHistoryDeleteDialog
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
       />

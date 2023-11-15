@@ -1,6 +1,5 @@
 "use client"
 
-import { StaticNavigation } from "@/app/_components/static-navigation"
 import { useBreakpointValue } from "@chakra-ui/react"
 
 type Props = {
@@ -18,5 +17,16 @@ export const ResponsiveNavigation = (props: Props) => {
     return null
   }
 
-  return <StaticNavigation>{props.children}</StaticNavigation>
+  return (
+    <div
+      className="sticky top-16 overflow-y-auto pb-4 px-4"
+      style={{
+        height: "calc(100vh - 72px)",
+        width: "12rem",
+        minWidth: "12rem",
+      }}
+    >
+      {props.children}
+    </div>
+  )
 }

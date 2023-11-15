@@ -1,3 +1,5 @@
+"use client"
+
 import { AppContext } from "@/app/_contexts/app-context"
 import { Config } from "@/config"
 import { setUser } from "@sentry/nextjs"

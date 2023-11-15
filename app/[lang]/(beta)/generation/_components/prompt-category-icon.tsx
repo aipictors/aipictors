@@ -1,4 +1,3 @@
-import { Icon } from "@chakra-ui/react"
 import {
   Baby,
   Brush,
@@ -30,7 +29,7 @@ export const PromptCategoryIcon = (props: Props) => {
   const CategoryIcon = categoryIcons.get(props.name)
 
   if (CategoryIcon === undefined) {
-    return <Icon as={undefined} />
+    return undefined
   }
 
   return <CategoryIcon />

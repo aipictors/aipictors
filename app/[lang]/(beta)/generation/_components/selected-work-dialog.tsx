@@ -1,22 +1,10 @@
 "use client"
 
-import { InPaintingSelectedPromptModal } from "@/app/[lang]/(beta)/generation/_components/in-painting-selected-prompt-modal"
+import { InPaintingSelectedPromptDialog } from "@/app/[lang]/(beta)/generation/_components/in-painting-selected-prompt-dialog"
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
-import {
-  Button,
-  HStack,
-  Image,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet"
+import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 
 type Props = {
@@ -26,7 +14,7 @@ type Props = {
   onOpenInPainting(): void
 }
 
-export const SelectedWorkModal = (props: Props) => {
+export const SelectedWorkDialog = (props: Props) => {
   const {
     isOpen: isPromptOpen,
     onOpen: onPromptOpen,
@@ -37,32 +25,20 @@ export const SelectedWorkModal = (props: Props) => {
 
   return (
     <>
-      <Modal
-        onClose={props.onClose}
-        isOpen={props.isOpen}
-        scrollBehavior={"inside"}
-        size={"xl"}
+      <Sheet
+        // onClose={props.onClose}
+        open={props.isOpen}
       >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader />
-          <ModalCloseButton />
-          <ModalBody justifyContent={"center"}>
-            <Stack spacing={2} alignItems={"center"}>
-              <Image
-                boxSize={"lg"}
-                src="https://source.unsplash.com/random/800x600"
-                alt=""
-              />
-              <Text fontSize={"sm"}>
+        <SheetContent>
+          <SheetHeader>
+            <div>
+              <img src="https://source.unsplash.com/random/800x600" alt="" />
+              <p>
                 {
                   "選んだプロンプトたち：masterpiece, best quality, extremely detailed, anime, girl, skirt, donut, braids,"
                 }
-              </Text>
+              </p>
               <Button
-                size={"xs"}
-                variant={"ghost"}
-                textColor={"blue.400"}
                 onClick={() => {
                   onPromptOpen()
                   props.onClose()
@@ -70,10 +46,9 @@ export const SelectedWorkModal = (props: Props) => {
               >
                 {"more"}
               </Button>
-              <Stack spacing={2}>
-                <HStack justifyContent={"center"} spacing={2}>
+              <div className="flex flex-col">
+                <div className="flex">
                   <Button
-                    borderRadius={"md"}
                     onClick={() => {
                       alert("再利用します")
                     }}
@@ -81,27 +56,23 @@ export const SelectedWorkModal = (props: Props) => {
                     {"再利用"}
                   </Button>
                   <Button
-                    borderRadius={"md"}
                     onClick={() => {
                       alert("DLします")
                     }}
                   >
                     {"DL"}
                   </Button>
-                  <Button borderRadius={"md"}>{"投稿"}</Button>
-                  <Button borderRadius={"md"} onClick={props.onOpenInPainting}>
-                    {"一部修正"}
-                  </Button>
+                  <Button>{"投稿"}</Button>
+                  <Button onClick={props.onOpenInPainting}>{"一部修正"}</Button>
                   <Button
-                    borderRadius={"md"}
                     onClick={() => {
                       alert("生成情報付きのURLをコピーしました")
                     }}
                   >
                     {"URL"}
                   </Button>
-                </HStack>
-              </Stack>
+                </div>
+              </div>
               <StarRating
                 value={rating}
                 onChange={(value) => {
@@ -109,22 +80,20 @@ export const SelectedWorkModal = (props: Props) => {
                   props.onChangeRating(value)
                 }}
               />
-            </Stack>
-          </ModalBody>
-          <ModalFooter justifyContent={"center"}>
+            </div>
+          </SheetHeader>
+          <div>
             <Button
               onClick={() => {
                 props.onClose()
               }}
-              borderRadius={"full"}
-              colorScheme="primary"
             >
               {"OK"}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-      <InPaintingSelectedPromptModal
+          </div>
+        </SheetContent>
+      </Sheet>
+      <InPaintingSelectedPromptDialog
         isOpen={isPromptOpen}
         onClose={onPromptClose}
       />

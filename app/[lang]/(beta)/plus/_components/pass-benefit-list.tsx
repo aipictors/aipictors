@@ -1,5 +1,3 @@
-"use client"
-
 import { PassType } from "@/__generated__/apollo"
 
 type Props = {

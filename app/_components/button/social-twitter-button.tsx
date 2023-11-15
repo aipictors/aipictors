@@ -1,20 +1,17 @@
-"use client"
-
-import type { ButtonProps } from "@chakra-ui/react"
-import { Icon, IconButton } from "@chakra-ui/react"
-
+import { Button, ButtonProps } from "@/components/ui/button"
 import { TbBrandX } from "react-icons/tb"
 
 type Props = ButtonProps
 
+/**
+ * Twitter
+ * @param props
+ * @returns
+ */
 export const SocialTwitterButton = (props: Props) => {
   return (
-    <IconButton
-      aria-label={"twitter"}
-      borderRadius={"full"}
-      size={"sm"}
-      icon={<Icon as={TbBrandX} />}
-      {...props}
-    />
+    <Button aria-label={"twitter"} size={"icon"} {...props}>
+      <TbBrandX />
+    </Button>
   )
 }

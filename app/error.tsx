@@ -1,14 +1,12 @@
 "use client"
 
-import { Stack, Text } from "@chakra-ui/react"
-
 const RootError = () => {
   return (
-    <Stack p={4} h={"100vh"} justifyContent={"center"} alignItems={"center"}>
-      <Stack spacing={8} alignItems={"center"}>
-        <Text>{"エラーが発生しました"}</Text>
-      </Stack>
-    </Stack>
+    <div className="p-4 h-screen flex justify-center items-center">
+      <div className="space-y-8 items-center">
+        <p>エラーが発生しました</p>
+      </div>
+    </div>
   )
 }
 

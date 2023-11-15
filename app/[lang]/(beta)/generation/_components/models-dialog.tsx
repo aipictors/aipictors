@@ -22,7 +22,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const ModelsModal = (props: Props) => {
+export const ModelsDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

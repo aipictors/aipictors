@@ -22,7 +22,7 @@ type Props = {
   onDelete(): void
 }
 
-export const SelectedLoraModel = (props: Props) => {
+export const SelectableLoraModel = (props: Props) => {
   return (
     <HStack spacing={2}>
       <Card>

@@ -1,7 +1,5 @@
-"use client"
-
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { HStack, IconButton } from "@chakra-ui/react"
 import { Star } from "lucide-react"
 
 type Props = {
@@ -9,54 +7,64 @@ type Props = {
   onChange(value: number): void
 }
 
+/**
+ * レーティング
+ * @param props
+ * @returns
+ */
 export const StarRating = (props: Props) => {
   return (
-    <HStack justifyContent={"center"}>
-      <IconButton
+    <div>
+      <Button
         aria-label={"お気に入り"}
-        borderRadius={"full"}
-        icon={<Star className={cn(0 < props.value && "fill-yellow-500")} />}
-        variant={"ghost"}
+        size={"icon"}
+        className="ghost"
         onClick={() => {
           props.onChange(1)
         }}
-      />
-      <IconButton
+      >
+        <Star className={cn(0 < props.value && "fill-yellow-500")} />
+      </Button>
+      <Button
         aria-label={"お気に入り"}
-        borderRadius={"full"}
-        icon={<Star className={cn(1 < props.value && "fill-yellow-500")} />}
-        variant={"ghost"}
+        size={"icon"}
+        className="ghost"
         onClick={() => {
           props.onChange(2)
         }}
-      />
-      <IconButton
+      >
+        <Star className={cn(1 < props.value && "fill-yellow-500")} />
+      </Button>
+      <Button
         aria-label={"お気に入り"}
-        borderRadius={"full"}
-        icon={<Star className={cn(2 < props.value && "fill-yellow-500")} />}
-        variant={"ghost"}
+        size={"icon"}
+        className="ghost"
         onClick={() => {
           props.onChange(3)
         }}
-      />
-      <IconButton
+      >
+        <Star className={cn(2 < props.value && "fill-yellow-500")} />
+      </Button>
+      <Button
         aria-label={"お気に入り"}
-        borderRadius={"full"}
-        icon={<Star className={cn(3 < props.value && "fill-yellow-500")} />}
-        variant={"ghost"}
+        size={"icon"}
+        className="ghost"
         onClick={() => {
           props.onChange(4)
         }}
-      />
-      <IconButton
+      >
+        <Star className={cn(3 < props.value && "fill-yellow-500")} />
+      </Button>
+      <Button
         aria-label={"お気に入り"}
-        borderRadius={"full"}
-        icon={<Star className={cn(4 < props.value && "fill-yellow-500")} />}
-        variant={"ghost"}
+        size={"icon"}
+        className="ghost"
         onClick={() => {
           props.onChange(5)
         }}
-      />
-    </HStack>
+      >
+        <Star className={cn(4 < props.value && "fill-yellow-500")} />
+      </Button>
+    </div>
   )
 }

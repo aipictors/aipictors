@@ -17,7 +17,7 @@ type Props = {
   onClose(): void
 }
 
-export const GenerationHistoryDeleteModal = (props: Props) => {
+export const GenerationHistoryDeleteDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

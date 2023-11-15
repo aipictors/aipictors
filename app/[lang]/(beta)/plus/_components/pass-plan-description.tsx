@@ -1,5 +1,3 @@
-"use client"
-
 import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
 import { Button } from "@/components/ui/button"
 import {

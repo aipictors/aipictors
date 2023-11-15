@@ -1,17 +1,9 @@
-"use client"
-
-import { Stack } from "@chakra-ui/react"
-
 type Props = {
   children: React.ReactNode
 }
 
 const StickersLayout = (props: Props) => {
-  return (
-    <Stack pb={4} overflowX={"hidden"}>
-      {props.children}
-    </Stack>
-  )
+  return <div className="pb-4 overflow-x-hidden">{props.children}</div>
 }
 
 export default StickersLayout

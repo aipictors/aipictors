@@ -1,13 +1,15 @@
-"use client"
-
-import type { ButtonProps } from "@chakra-ui/react"
-import { Button } from "@chakra-ui/react"
+import { Button, ButtonProps } from "@/components/ui/button"
 
 type Props = ButtonProps
 
+/**
+ * フォロー
+ * @param props
+ * @returns
+ */
 export const FollowButton = (props: Props) => {
   return (
-    <Button colorScheme="primary" borderRadius={"full"} size={"sm"} {...props}>
+    <Button className={"rounded-full"} size={"sm"} {...props}>
       {"フォローする"}
     </Button>
   )

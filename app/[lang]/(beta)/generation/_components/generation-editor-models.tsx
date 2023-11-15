@@ -2,8 +2,8 @@
 
 import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { ModelsModal } from "@/app/[lang]/(beta)/generation/_components/models-modal"
-import { SelectedModel } from "@/app/[lang]/(beta)/generation/_components/selected-model"
+import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
+import { SelectableModel } from "@/app/[lang]/(beta)/generation/_components/selectable-model"
 import { Button } from "@/components/ui/button"
 import { Config } from "@/config"
 import { useDisclosure } from "@chakra-ui/react"
@@ -58,7 +58,7 @@ export const GenerationEditorModels = (props: Props) => {
         <div className="overflow-y-auto p-2 flex-col">
           <div className="flex justify-between items-start flex-col">
             {currentModels.map((model) => (
-              <SelectedModel
+              <SelectableModel
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
                 name={model?.displayName ?? ""}
@@ -71,7 +71,7 @@ export const GenerationEditorModels = (props: Props) => {
           </div>
         </div>
       </GenerationEditorCard>
-      <ModelsModal
+      <ModelsDialog
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}

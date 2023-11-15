@@ -6,6 +6,10 @@ import { GenerationEditorLite } from "@/app/[lang]/(beta)/generation/lite/_compo
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
+/**
+ * 画像生成・ライト
+ * @returns
+ */
 const GenerationLitePage = async () => {
   const client = createClient()
 

@@ -1,19 +1,24 @@
-"use client"
-
-import { IconButton } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 
 type Props = {
   onClick(): void
 }
 
+/**
+ * ドット
+ * @param props
+ * @returns
+ */
 export const DotButton = (props: Props) => {
   return (
-    <IconButton
+    <Button
       aria-label="menu"
-      icon={<MoreHorizontal />}
-      size={"sm"}
+      size={"icon"}
+      variant={"ghost"}
       onClick={props.onClick}
-    />
+    >
+      <MoreHorizontal />
+    </Button>
   )
 }

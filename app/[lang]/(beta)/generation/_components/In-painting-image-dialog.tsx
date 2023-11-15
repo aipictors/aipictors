@@ -22,7 +22,7 @@ type Props = {
   onClose(): void
 }
 
-export const InPaintingImageModal = (props: Props) => {
+export const InPaintingImageDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

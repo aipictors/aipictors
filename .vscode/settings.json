@@ -47,6 +47,12 @@
     "package-lock.json": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@chakra-ui/**",
+    "@emotion/**",
+    "@radix-ui/**",
+    "react-day-picker"
+  ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "workbench.editor.enablePreview": true,
   "workbench.tree.expandMode": "doubleClick"

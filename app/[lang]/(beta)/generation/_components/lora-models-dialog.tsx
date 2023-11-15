@@ -25,7 +25,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const LoraModelsModal = (props: Props) => {
+export const LoraModelsDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}

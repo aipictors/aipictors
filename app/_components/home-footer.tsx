@@ -1,5 +1,7 @@
-"use client"
-
+/**
+ * フッター
+ * @returns
+ */
 export const HomeFooter = () => {
   return (
     <div className="p-4">

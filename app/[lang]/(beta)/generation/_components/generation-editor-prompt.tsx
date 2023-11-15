@@ -2,7 +2,7 @@
 
 import { PromptCategoriesQuery } from "@/__generated__/apollo"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { PromptCategoriesModal } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-modal"
+import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useDisclosure } from "@chakra-ui/react"
@@ -40,7 +40,7 @@ export const GenerationEditorPrompt = (props: Props) => {
           />
         </div>
       </GenerationEditorCard>
-      <PromptCategoriesModal
+      <PromptCategoriesDialog
         onClose={onClose}
         isOpen={isOpen}
         promptCategories={props.promptCategories}

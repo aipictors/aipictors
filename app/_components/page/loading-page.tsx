@@ -1,5 +1,7 @@
-"use client"
-
+/**
+ * 読み込み中のページ
+ * @returns
+ */
 export const LoadingPage = () => {
   return (
     <div className="w-full p-4 h-screen flex justify-center items-center">

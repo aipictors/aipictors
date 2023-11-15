@@ -1,8 +1,14 @@
+"use client"
+
 import { Textarea } from "@/components/ui/textarea"
 import { forwardRef } from "react"
 
 type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement>
 
+/**
+ * 自動リサイズのテキストエリア
+ * TODO: 修正が必要
+ */
 export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
   (props, ref) => {
     return (
