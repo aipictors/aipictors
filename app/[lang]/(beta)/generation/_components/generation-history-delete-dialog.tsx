@@ -1,16 +1,13 @@
 "use client"
 
 import {
-  Button,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react"
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   isOpen: boolean
@@ -19,73 +16,69 @@ type Props = {
 
 export const GenerationHistoryDeleteDialog = (props: Props) => {
   return (
-    <Modal
-      onClose={props.onClose}
-      isOpen={props.isOpen}
-      scrollBehavior={"inside"}
+    <AlertDialog
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          props.onClose()
+        }
+      }}
+      open={props.isOpen}
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader />
-        <ModalBody>
-          <HStack justifyContent={"center"}>
-            <Text>{"削除する履歴を選択してください"}</Text>
-          </HStack>
-        </ModalBody>
-        <ModalFooter justifyContent={"center"}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogDescription>
+            {"削除する履歴を選択してください"}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
           <Button
-            borderRadius={"full"}
-            colorScheme="primary"
+            // colorScheme="primary"
             onClick={() => {
               props.onClose()
             }}
           >
             {"OK"}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
 
     /**
      * 対象が選択されている場合のモーダル
      */
-    // <Modal
-    //   onClose={props.onClose}
-    //   isOpen={props.isOpen}
-    //   scrollBehavior={"inside"}
-    //   size={"sm"}
+    // <AlertDialog
+    //   onOpenChange={(isOpen) => {
+    //     if (!isOpen) {
+    //       props.onClose()
+    //     }
+    //   }}
+    //   open={props.isOpen}
     // >
-    //   <ModalOverlay />
-    //   <ModalContent>
-    //     <ModalHeader />
-    //     <ModalBody alignItems={"center"} justifyContent={"center"}>
-    //       <HStack justifyContent={"center"}>
-    //         <Text>{"本当に削除しますか？"}</Text>
-    //       </HStack>
-    //     </ModalBody>
-    //     <ModalFooter justifyContent={"center"}>
-    //       <HStack justifyContent={"center"} spacing={4}>
-    //         <Button
-    //           borderRadius={"full"}
-    //           colorScheme="primary"
-    //           onClick={() => {
-    //             props.onClose()
-    //             alert("削除しました")
-    //           }}
-    //         >
-    //           {"はい"}
-    //         </Button>
-    //         <Button
-    //           borderRadius={"full"}
-    //           onClick={() => {
-    //             props.onClose()
-    //           }}
-    //         >
-    //           {"やめる"}
-    //         </Button>
-    //       </HStack>
-    //     </ModalFooter>
-    //   </ModalContent>
-    // </Modal>
+    //   <AlertDialogContent>
+    //     <AlertDialogHeader>
+    //       <AlertDialogDescription>
+    //         {"本当に削除しますか？"}
+    //       </AlertDialogDescription>
+    //     </AlertDialogHeader>
+    //     <AlertDialogFooter>
+    //       <Button
+    //         // colorScheme="primary"
+    //         onClick={() => {
+    //           props.onClose()
+    //           alert("削除しました")
+    //         }}
+    //       >
+    //         {"はい"}
+    //       </Button>
+    //       <Button
+    //         onClick={() => {
+    //           props.onClose()
+    //         }}
+    //       >
+    //         {"やめる"}
+    //       </Button>
+    //     </AlertDialogFooter>
+    //   </AlertDialogContent>
+    // </AlertDialog>
   )
 }

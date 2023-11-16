@@ -58,10 +58,28 @@ export const GenerationEditorHistory = (props: Props) => {
       <GenerationEditorCard title={"生成履歴"}>
         <div className="overflow-y-auto">
           <div className="flex p-2">
-            <Trash2 />
-            <ArrowDownToLine />
-            <Button className="border-radius-full">{"解除"}</Button>
-            <Star />
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              className="rounded-full"
+              onClick={onDeleteOpen}
+            >
+              <Trash2 />
+            </Button>
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              className="rounded-full"
+              onClick={onDlOpen}
+            >
+              <ArrowDownToLine />
+            </Button>
+            <Button variant={"ghost"} className="rounded-full">
+              {"解除"}
+            </Button>
+            <Button variant={"ghost"} size={"icon"} className="rounded-full">
+              <Star />
+            </Button>
           </div>
           <Separator className="my-4" />
           <div className="p-2 space-y-4">
