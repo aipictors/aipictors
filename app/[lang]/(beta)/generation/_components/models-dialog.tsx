@@ -56,12 +56,11 @@ export const ModelsDialog = (props: Props) => {
             })}
           </div>
         </ScrollArea>
-        <DialogFooter className="justify-center">
+        <DialogFooter>
           <Button
             onClick={() => {
               props.onClose()
             }}
-            className="rounded-full"
           >
             {"OK"}
           </Button>

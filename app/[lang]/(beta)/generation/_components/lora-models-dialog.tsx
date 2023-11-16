@@ -52,10 +52,9 @@ export const LoraModelsDialog = (props: Props) => {
             })}
           </div>
         </ScrollArea>
-        <DialogFooter className="flex justify-center">
+        <DialogFooter>
           <Button
             onClick={props.onClose}
-            className="rounded-full"
             // colorScheme="primary"
           >
             {"OK"}
