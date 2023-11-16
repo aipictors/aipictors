@@ -15,9 +15,9 @@ import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { useMutation } from "@apollo/client"
-import { useToast } from "@chakra-ui/react"
 import { useState } from "react"
 
 type Props = {
@@ -32,7 +32,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     CreateImageGenerationTaskMutationVariables
   >(CreateImageGenerationTaskDocument)
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   /**
    * 選択された画像モデルのID
@@ -86,10 +86,10 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           },
         },
       })
-      toast({ status: "success", description: "タスクを作成しました" })
+      toast({ description: "タスクを作成しました" })
     } catch (error) {
       if (error instanceof Error) {
-        toast({ status: "error", description: error.message })
+        toast({ description: error.message })
       }
     }
   }

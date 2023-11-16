@@ -1,6 +1,6 @@
 "use client"
 
-import { Grid, GridItem, useBreakpointValue } from "@chakra-ui/react"
+import { useBreakpointValue } from "@chakra-ui/react"
 
 type Props = {
   models: React.ReactNode
@@ -63,50 +63,42 @@ export const GenerationEditorLayout = (props: Props) => {
     .join("\n")
 
   return (
-    <Grid
-      as={"main"}
-      templateAreas={templateAreas}
-      gridTemplateRows={{
-        base: "auto auto auto auto auto",
-        lg: "1fr 1fr 1fr",
-        xl: "1fr 1fr",
+    <main
+      className="grid grid-cols-1 gap-2 w-full h-auto px-4 pb-4 overflow-y-auto lg:grid-rows-3 xl:grid-rows-2 lg:grid-cols-2 xl:grid-cols-7 "
+      style={{
+        gridTemplateAreas: templateAreas,
       }}
-      gridTemplateColumns={{
-        base: "1fr",
-        lg: "1fr 1fr",
-        xl: "1fr 1fr 1fr 1fr 1fr 1fr 1fr",
-      }}
-      w={"100%"}
-      gap={2}
-      h={{ base: "auto", lg: "calc(100svh - 72px)" }}
-      px={4}
-      pb={4}
-      overflowY={"auto"}
     >
-      <GridItem area={area.models} overflow={{ base: "auto", lg: "hidden" }}>
+      <div
+        style={{ gridArea: area.models }}
+        className="overflow-auto lg:overflow-hidden"
+      >
         {props.models}
-      </GridItem>
-      <GridItem
-        area={area.loraModels}
-        overflow={{ base: "auto", lg: "hidden" }}
+      </div>
+      <div
+        style={{ gridArea: area.loraModels }}
+        className="overflow-auto lg:overflow-hidden"
       >
         {props.loraModels}
-      </GridItem>
-      <GridItem
-        area={area.editorPrompt}
-        overflow={{ base: "auto", lg: "hidden" }}
+      </div>
+      <div
+        style={{ gridArea: area.editorPrompt }}
+        className="overflow-auto lg:overflow-hidden"
       >
         {props.promptEditor}
-      </GridItem>
-      <GridItem
-        area={area.editorNegativePrompt}
-        overflow={{ base: "auto", lg: "hidden" }}
+      </div>
+      <div
+        style={{ gridArea: area.editorNegativePrompt }}
+        className="overflow-auto lg:overflow-hidden"
       >
         {props.negativePromptEditor}
-      </GridItem>
-      <GridItem area={area.histories} overflow={{ base: "auto", lg: "hidden" }}>
+      </div>
+      <div
+        style={{ gridArea: area.histories }}
+        className="overflow-auto lg:overflow-hidden"
+      >
         {props.histories}
-      </GridItem>
-    </Grid>
+      </div>
+    </main>
   )
 }
