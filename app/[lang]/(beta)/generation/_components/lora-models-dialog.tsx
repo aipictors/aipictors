@@ -2,20 +2,15 @@
 
 import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { LoraImageModelCard } from "@/app/[lang]/(beta)/generation/_components/lora-image-model-card"
+import { Button } from "@/components/ui/button"
 import {
-  Button,
-  HStack,
-  IconButton,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Text,
-} from "@chakra-ui/react"
-import { X } from "lucide-react"
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
   isOpen: boolean
@@ -27,27 +22,20 @@ type Props = {
 
 export const LoraModelsDialog = (props: Props) => {
   return (
-    <Modal
-      onClose={props.onClose}
-      isOpen={props.isOpen}
-      scrollBehavior={"inside"}
-      size={"full"}
+    <Dialog
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          props.onClose()
+        }
+      }}
+      open={props.isOpen}
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          <HStack justifyContent={"space-between"}>
-            <Text>{"LoRA選択"}</Text>
-            <IconButton
-              aria-label={"Close"}
-              icon={<X className="text-xl" />}
-              variant={"ghost"}
-              onClick={props.onClose}
-            />
-          </HStack>
-        </ModalHeader>
-        <ModalBody py={0}>
-          <SimpleGrid columns={{ base: 3, sm: 5, md: 7, lg: 9 }} spacing={2}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{"LoRA選択"}</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-72">
+          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-4">
             {props.models.map((imageLoraModel) => {
               return (
                 <LoraImageModelCard
@@ -62,18 +50,18 @@ export const LoraModelsDialog = (props: Props) => {
                 />
               )
             })}
-          </SimpleGrid>
-        </ModalBody>
-        <ModalFooter justifyContent={"center"}>
+          </div>
+        </ScrollArea>
+        <DialogFooter className="flex justify-center">
           <Button
             onClick={props.onClose}
-            borderRadius={"full"}
-            colorScheme="primary"
+            className="rounded-full"
+            // colorScheme="primary"
           >
             {"OK"}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

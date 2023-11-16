@@ -3,14 +3,14 @@
 import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { ImageModelCard } from "@/app/[lang]/(beta)/generation/_components/image-model-card"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
   isOpen: boolean
@@ -22,7 +22,7 @@ type Props = {
 
 export const ModelsDialog = (props: Props) => {
   return (
-    <Sheet
+    <Dialog
       onOpenChange={(isOpen) => {
         if (!isOpen) {
           props.onClose()
@@ -30,10 +30,10 @@ export const ModelsDialog = (props: Props) => {
       }}
       open={props.isOpen}
     >
-      <SheetContent side={"bottom"}>
-        <SheetHeader>
-          <SheetTitle>{"モデル選択"}</SheetTitle>
-        </SheetHeader>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{"モデル選択"}</DialogTitle>
+        </DialogHeader>
         {/* <p>{"美少女イラスト"}</p>
           <p>{"美男子イラスト"}</p>
           <p>{"グラビア"}</p>
@@ -56,7 +56,7 @@ export const ModelsDialog = (props: Props) => {
             })}
           </div>
         </ScrollArea>
-        <SheetFooter className="justify-center">
+        <DialogFooter className="justify-center">
           <Button
             onClick={() => {
               props.onClose()
@@ -65,8 +65,8 @@ export const ModelsDialog = (props: Props) => {
           >
             {"OK"}
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
