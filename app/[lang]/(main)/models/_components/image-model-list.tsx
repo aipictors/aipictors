@@ -1,7 +1,6 @@
 "use client"
 
 import type { ImageModelsQuery } from "@/__generated__/apollo"
-import { Box, Grid, HStack, Image, Stack, Text } from "@chakra-ui/react"
 import Link from "next/link"
 
 type Props = {
@@ -10,27 +9,24 @@ type Props = {
 
 export const ImageModelList = (props: Props) => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
-        <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {"モデル"}
-        </Text>
-        <Grid templateColumns="repeat(4, 1fr)" gap={6}>
+    <div className="flex">
+      <div className="flex flex-col">
+        <p className="text-2xl">{"モデル"}</p>
+        <div className="grid-cols-4 grid-cols-1fr">
           {props.imageModels.map((imageModel) => (
-            <Box key={imageModel.id} overflow={"hidden"}>
+            <div key={imageModel.id} className="overflow-hidden">
               <Link href={`/models/${imageModel.id}`}>
-                <Image
+                <img
                   src={imageModel.thumbnailImageURL ?? ""}
                   alt={imageModel.displayName}
                   width={"100%"}
-                  borderRadius={"lg"}
                 />
               </Link>
-              <Text fontSize={"sm"}>{imageModel.displayName}</Text>
-            </Box>
+              <p className="text-sm">{imageModel.displayName}</p>
+            </div>
           ))}
-        </Grid>
-      </Stack>
-    </HStack>
+        </div>
+      </div>
+    </div>
   )
 }

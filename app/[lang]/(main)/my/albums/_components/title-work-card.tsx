@@ -1,24 +1,15 @@
 "use client"
 
-import { Button, Card, Image, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 export const TitleWorkCard = () => {
   return (
     <Card>
-      <Button
-        p={0}
-        h={"auto"}
-        overflow={"hidden"}
-        variant={"outline"}
-        borderWidth={2}
-      >
-        <Image
-          src="https://source.unsplash.com/random/800x600"
-          alt=""
-          boxSize={28}
-        />
+      <Button>
+        <img src="https://source.unsplash.com/random/800x600" alt="" />
       </Button>
-      <Text fontSize={"xs"}>{"title"}</Text>
+      <p className="text-xs">{"title"}</p>
     </Card>
   )
 }

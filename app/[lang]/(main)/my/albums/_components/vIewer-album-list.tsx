@@ -1,15 +1,14 @@
 "use client"
 
 import { ViewerAlbum } from "@/app/[lang]/(main)/my/albums/_components/viewer-album"
-import { HStack } from "@chakra-ui/react"
 
 export const ViewerAlbumList = () => {
   return (
-    <HStack spacing={4}>
+    <div className="flex">
       <ViewerAlbum />
       <ViewerAlbum />
       <ViewerAlbum />
       <ViewerAlbum />
-    </HStack>
+    </div>
   )
 }
