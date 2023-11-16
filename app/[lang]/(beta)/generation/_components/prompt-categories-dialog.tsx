@@ -4,23 +4,19 @@ import { PromptCategoriesQuery } from "@/__generated__/apollo"
 import { PromptCategoryIcon } from "@/app/[lang]/(beta)/generation/_components/prompt-category-icon"
 import {
   Accordion,
-  AccordionButton,
-  AccordionIcon,
+  AccordionContent,
   AccordionItem,
-  AccordionPanel,
-  Button,
-  HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Stack,
-  Text,
-  Wrap,
-} from "@chakra-ui/react"
-import React, { useState } from "react"
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useState } from "react"
 
 type Props = {
   isOpen: boolean
@@ -30,83 +26,81 @@ type Props = {
 }
 
 export const PromptCategoriesDialog = (props: Props) => {
-  const btnRef = React.useRef(null)
-
   const [promptIds, setPromptIds] = useState<string[]>([])
 
   return (
     <>
-      <Modal
-        onClose={props.onClose}
-        finalFocusRef={btnRef}
-        isOpen={props.isOpen}
-        scrollBehavior="inside"
-        size={"2xl"}
+      <Dialog
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            props.onClose()
+          }
+        }}
+        open={props.isOpen}
       >
-        <ModalContent>
-          <ModalHeader />
-          <ModalCloseButton />
-          <ModalBody>
-            <Accordion defaultIndex={[0]} allowToggle>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader />
+          <Accordion type="single" className="w-full">
+            <ScrollArea className="h-72">
               {props.promptCategories.map((promptCategory) => (
-                <AccordionItem key={promptCategory.id}>
-                  <AccordionButton>
-                    <HStack flex="1">
-                      <PromptCategoryIcon name={promptCategory.name} />
-                      <Text>{promptCategory.name}</Text>
-                      <Text>
-                        {promptCategory.prompts
-                          .filter((prompt) => promptIds.includes(prompt.id))
-                          .map((prompt) => {
-                            return prompt.name
-                          })
-                          .join(",")}
-                      </Text>
-                    </HStack>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <Wrap>
-                      {promptCategory.prompts.map((prompt) => (
-                        <Button
-                          size={"xs"}
-                          key={prompt.id}
-                          onClick={() => {
-                            const newPromptIds = promptIds.includes(prompt.id)
-                              ? promptIds.filter((id) => id !== prompt.id)
-                              : [...promptIds, prompt.id]
-                            setPromptIds(newPromptIds)
-                          }}
-                          colorScheme={
-                            promptIds.includes(prompt.id) ? "blue" : "gray"
-                          }
-                          onSelect={() => {
-                            props.onSelect(prompt.id)
-                          }}
-                        >
-                          {prompt.name}
-                        </Button>
-                      ))}
-                    </Wrap>
-                  </AccordionPanel>
+                <AccordionItem
+                  value={promptCategory.id}
+                  key={promptCategory.id}
+                >
+                  <AccordionTrigger>
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex">
+                        <PromptCategoryIcon name={promptCategory.name} />
+                        <p>{promptCategory.name}</p>
+                      </div>
+                      <div>
+                        <AccordionContent>
+                          {promptCategory.prompts.map((prompt) => (
+                            <Button
+                              variant={"secondary"}
+                              key={prompt.id}
+                              onClick={() => {
+                                const newPromptIds = promptIds.includes(
+                                  prompt.id,
+                                )
+                                  ? promptIds.filter((id) => id !== prompt.id)
+                                  : [...promptIds, prompt.id]
+                                setPromptIds(newPromptIds)
+                              }}
+                              // colorScheme={
+                              //   promptIds.includes(prompt.id) ? "blue" : "gray"
+                              // }
+                              onSelect={() => {
+                                props.onSelect(prompt.id)
+                              }}
+                              size={"sm"}
+                              className="rounded-full"
+                            >
+                              {prompt.name}
+                            </Button>
+                          ))}
+                        </AccordionContent>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
                 </AccordionItem>
               ))}
-            </Accordion>
-          </ModalBody>
-          <ModalFooter justifyContent={"center"}>
-            <Stack>
-              <Text fontSize={"sm"}>{"※ 50個まで選択できます。"}</Text>
+            </ScrollArea>
+          </Accordion>
+          <DialogFooter className="justify-center">
+            <div className="flex flex-col">
+              <p className="text-sm">{"※ 50個まで選択できます。"}</p>
               <Button
                 onClick={props.onClose}
-                colorScheme="primary"
-                borderRadius={"full"}
+                // colorScheme="primary"
+                className="rounded-full"
               >
                 {"OK"}
               </Button>
-            </Stack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
