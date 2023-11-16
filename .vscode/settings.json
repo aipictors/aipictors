@@ -51,7 +51,8 @@
     "@chakra-ui/**",
     "@emotion/**",
     "@radix-ui/**",
-    "react-day-picker"
+    "react-day-picker",
+    "tailwind-merge"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "workbench.editor.enablePreview": true,
