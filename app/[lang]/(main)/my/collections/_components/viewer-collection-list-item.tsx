@@ -1,11 +1,9 @@
 "use client"
 
-import { Stack, Text } from "@chakra-ui/react"
-
 export const ViewerCollectionListItem = () => {
   return (
-    <Stack>
-      <Text>{"投稿作品をシリーズにまとめてシェアしてみよう！"}</Text>
-    </Stack>
+    <div className="flex flex-col">
+      <p>{"投稿作品をシリーズにまとめてシェアしてみよう！"}</p>
+    </div>
   )
 }

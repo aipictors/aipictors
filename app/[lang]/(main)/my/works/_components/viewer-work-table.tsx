@@ -1,35 +1,39 @@
 "use client"
 
 import { ViewerWorkTableItem } from "@/app/[lang]/(main)/my/works/_components/viewer-work-table-item"
-import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react"
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 export const ViewerWorkTable = () => {
   return (
-    <TableContainer>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>{"サムネイル"}</Th>
-            <Th>{"作品名"}</Th>
-            <Th>{"形式"}</Th>
-            <Th>{"編集"}</Th>
-            <Th>{"削除"}</Th>
-            <Th>{"いいね"}</Th>
-            <Th>{"閲覧"}</Th>
-            <Th>{"コメント"}</Th>
-            <Th>{"対象"}</Th>
-            <Th>{"状態"}</Th>
-            <Th>{"予約"}</Th>
-            <Th>{"プロンプト"}</Th>
-            <Th>{"投稿日付"}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <ViewerWorkTableItem />
-          <ViewerWorkTableItem />
-          <ViewerWorkTableItem />
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{"サムネイル"}</TableHead>
+          <TableHead>{"作品名"}</TableHead>
+          <TableHead>{"形式"}</TableHead>
+          <TableHead>{"編集"}</TableHead>
+          <TableHead>{"削除"}</TableHead>
+          <TableHead>{"いいね"}</TableHead>
+          <TableHead>{"閲覧"}</TableHead>
+          <TableHead>{"コメント"}</TableHead>
+          <TableHead>{"対象"}</TableHead>
+          <TableHead>{"状態"}</TableHead>
+          <TableHead>{"予約"}</TableHead>
+          <TableHead>{"プロンプト"}</TableHead>
+          <TableHead>{"投稿日付"}</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <ViewerWorkTableItem />
+        <ViewerWorkTableItem />
+        <ViewerWorkTableItem />
+      </TableBody>
+    </Table>
   )
 }

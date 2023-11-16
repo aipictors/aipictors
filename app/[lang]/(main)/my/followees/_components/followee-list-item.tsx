@@ -1,4 +1,6 @@
-import { Avatar, Box, Button, HStack, Text } from "@chakra-ui/react"
+import { Avatar } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { AvatarImage } from "@radix-ui/react-avatar"
 
 type Props = {
   name: string
@@ -7,16 +9,18 @@ type Props = {
 
 export const FolloweeListItem = (props: Props) => {
   return (
-    <HStack justifyContent={"space-between"} p={4}>
-      <HStack spacing={4}>
-        <Avatar src={props.imageURL} bg="teal.500" size={"sm"} />
-        <Box>
-          <Text>{props.name}</Text>
-        </Box>
-      </HStack>
-      <Button size={"sm"} borderRadius={"full"}>
-        {"フォロー中"}
-      </Button>
-    </HStack>
+    <div className="flex">
+      <div className="flex">
+        <Avatar
+        //  bg="teal.500"
+        >
+          <AvatarImage src={props.imageURL} />
+        </Avatar>
+        <div>
+          <p>{props.name}</p>
+        </div>
+      </div>
+      <Button>{"フォロー中"}</Button>
+    </div>
   )
 }

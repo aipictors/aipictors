@@ -1,23 +1,23 @@
 "use client"
 
-import { Td, Tr } from "@chakra-ui/react"
+import { TableCell, TableRow } from "@/components/ui/table"
 
 export const ViewerWorkTableItem = () => {
   return (
-    <Tr>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-      <Td>{""}</Td>
-    </Tr>
+    <TableRow>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+      <TableCell>{""}</TableCell>
+    </TableRow>
   )
 }
