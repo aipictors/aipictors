@@ -74,7 +74,6 @@ export const PromptCategoriesDialog = (props: Props) => {
                                 props.onSelect(prompt.id)
                               }}
                               size={"sm"}
-                              className="rounded-full"
                             >
                               {prompt.name}
                             </Button>
@@ -87,13 +86,12 @@ export const PromptCategoriesDialog = (props: Props) => {
               ))}
             </ScrollArea>
           </Accordion>
-          <DialogFooter className="justify-center">
+          <DialogFooter>
             <div className="flex flex-col">
               <p className="text-sm">{"※ 50個まで選択できます。"}</p>
               <Button
                 onClick={props.onClose}
                 // colorScheme="primary"
-                className="rounded-full"
               >
                 {"OK"}
               </Button>
