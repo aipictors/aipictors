@@ -2,17 +2,15 @@
 
 import type { ImageModelsQuery } from "@/__generated__/apollo"
 import { ImageModelCard } from "@/app/[lang]/(beta)/generation/_components/image-model-card"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-} from "@chakra-ui/react"
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 
 type Props = {
   isOpen: boolean
@@ -24,23 +22,25 @@ type Props = {
 
 export const ModelsDialog = (props: Props) => {
   return (
-    <Modal
-      onClose={props.onClose}
-      isOpen={props.isOpen}
-      scrollBehavior={"inside"}
-      size={"xl"}
+    <Sheet
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          props.onClose()
+        }
+      }}
+      open={props.isOpen}
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{"モデル選択"}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          {/* <Text>{"美少女イラスト"}</Text>
-          <Text>{"美男子イラスト"}</Text>
-          <Text>{"グラビア"}</Text>
-          <Text>{"背景"}</Text>
-          <Text>{"獣系"}</Text> */}
-          <SimpleGrid columns={{ base: 3, sm: 3, md: 4 }} spacing={2}>
+      <SheetContent side={"bottom"}>
+        <SheetHeader>
+          <SheetTitle>{"モデル選択"}</SheetTitle>
+        </SheetHeader>
+        {/* <p>{"美少女イラスト"}</p>
+          <p>{"美男子イラスト"}</p>
+          <p>{"グラビア"}</p>
+          <p>{"背景"}</p>
+          <p>{"獣系"}</p> */}
+        <ScrollArea className="h-72">
+          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-4">
             {props.models.map((imageModel) => {
               return (
                 <ImageModelCard
@@ -54,20 +54,19 @@ export const ModelsDialog = (props: Props) => {
                 />
               )
             })}
-          </SimpleGrid>
-        </ModalBody>
-        <ModalFooter justifyContent={"center"}>
+          </div>
+        </ScrollArea>
+        <SheetFooter className="justify-center">
           <Button
             onClick={() => {
               props.onClose()
             }}
-            borderRadius={"full"}
-            colorScheme="primary"
+            className="rounded-full"
           >
             {"OK"}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   )
 }

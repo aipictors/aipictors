@@ -6,7 +6,7 @@ import {
   ViewerImageGenerationTasksQueryVariables,
 } from "@/__generated__/apollo"
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
-import { GenerationDownloadModal } from "@/app/[lang]/(beta)/generation/_components/generation-download-modal"
+import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { GenerationHistoryDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-dialog"
 import { SelectedWorkDialog } from "@/app/[lang]/(beta)/generation/_components/selected-work-dialog"
@@ -95,7 +95,7 @@ export const GenerationEditorHistory = (props: Props) => {
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
       />
-      <GenerationDownloadModal isOpen={isDlOpen} onClose={onDlClose} />
+      <GenerationDownloadDialog isOpen={isDlOpen} onClose={onDlClose} />
     </>
   )
 }

@@ -17,7 +17,7 @@ type Props = {
   onClose(): void
 }
 
-export const GenerationDownloadModal = (props: Props) => {
+export const GenerationDownloadDialog = (props: Props) => {
   return (
     <Modal
       onClose={props.onClose}
