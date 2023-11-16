@@ -2,7 +2,6 @@
 
 import { AlbumWorksQuery } from "@/__generated__/apollo"
 import { AlbumWork } from "@/app/[lang]/(main)/albums/[album]/_components/album-work"
-import { Stack } from "@chakra-ui/react"
 
 type Props = {
   albumWorksQuery: AlbumWorksQuery
@@ -10,7 +9,7 @@ type Props = {
 
 export const AlbumWorkList = (props: Props) => {
   return (
-    <Stack spacing={4}>
+    <div className="flex flex-col">
       <AlbumWork
         albumWorksQuery={props.albumWorksQuery}
         title={props.albumWorksQuery.album?.works?.[0]?.title ?? "Untitled"}
@@ -20,6 +19,6 @@ export const AlbumWorkList = (props: Props) => {
         likesCount={props.albumWorksQuery.album?.works?.[0]?.likesCount ?? 0}
         createdAt={props.albumWorksQuery.album?.works?.[0]?.createdAt ?? 0}
       />
-    </Stack>
+    </div>
   )
 }

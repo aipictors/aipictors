@@ -1,11 +1,9 @@
 "use client"
 
-import { Stack, Text } from "@chakra-ui/react"
-
 export const AboutDocument = () => {
   return (
-    <Stack>
-      <Text>{"このサイトについて"}</Text>
-    </Stack>
+    <div className="flex flex-col">
+      <p>{"このサイトについて"}</p>
+    </div>
   )
 }

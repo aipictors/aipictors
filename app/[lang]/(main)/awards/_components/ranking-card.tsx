@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, Image, Stack, Text } from "@chakra-ui/react"
+import { Card } from "@/components/ui/card"
 
 type Props = {
   title?: string
@@ -17,22 +17,13 @@ type Props = {
 
 export const RankingCard = (props: Props) => (
   <Card>
-    <Image
-      src={props.imageURL ?? ""}
-      alt={props.title ?? "no title"}
-      borderRadius={"lg"}
-      height={32}
-      minH={32}
-      objectFit="cover"
-    />
-    <Stack p={2} justifyContent={"space-between"} height={"100%"} spacing={1}>
-      <Text fontSize={"sm"} fontWeight={"bold"}>
-        {props.title ?? ""}
-      </Text>
+    <img src={props.imageURL ?? ""} alt={props.title ?? "no title"} />
+    <div className="flex flex-col">
+      <p className="text-sm">{props.title ?? ""}</p>
       {/* <UserAvatarLink
         userName={props.work.user.name}
         userIconImageURL={props.work.user.iconImage?.downloadURL ?? null}
       /> */}
-    </Stack>
+    </div>
   </Card>
 )

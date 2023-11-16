@@ -6,17 +6,11 @@ import type {
 } from "@/__generated__/apollo"
 import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+
 import { useSuspenseQuery } from "@apollo/client"
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Stack,
-  Text,
-  useInterval,
-} from "@chakra-ui/react"
+import { useInterval } from "@chakra-ui/react"
 import Link from "next/link"
 import { startTransition } from "react"
 
@@ -40,53 +34,33 @@ export const MessageThreadList = () => {
   const messageThreads = threads.viewer?.messageThreads ?? []
 
   return (
-    <Box
-      as={"aside"}
-      position={"sticky"}
-      top={"64px"}
-      h={"calc(100svh - 72px)"}
-      minW={64}
-      maxW={96}
-      overflowY={"auto"}
-      borderLeftWidth={1}
-      borderRightWidth={1}
-    >
-      <Stack divider={<Divider />} spacing={0}>
+    <aside className="sticky top-16 h-screen min-w-16 max-w-24 overflow-y-auto border-l border-r">
+      <div
+      // style={<Separator />}
+      >
         {messageThreads.map((messageThread) => (
-          <Button
-            as={Link}
-            variant={"ghost"}
-            h={"auto"}
-            justifyContent={"flex-start"}
-            p={0}
-            key={messageThread.id}
-            href={`/messages/${messageThread.id}`}
-            borderRadius={0}
-          >
-            <Stack px={4} py={4} spacing={2} overflow={"hidden"}>
-              <HStack>
-                <Avatar
-                  src={messageThread.recipient.iconImage?.downloadURL}
-                  size={"xs"}
-                />
-                <Text fontWeight={"bold"}>{messageThread.recipient.name}</Text>
-              </HStack>
-              <Stack spacing={1}>
-                <Text
-                  lineHeight={1}
-                  textOverflow={"ellipsis"}
-                  overflow={"hidden"}
-                >
-                  {messageThread.latestMessage.text}
-                </Text>
-                <Text fontSize={"xs"} opacity={0.8}>
-                  {toDateTimeText(messageThread.latestMessage.createdAt)}
-                </Text>
-              </Stack>
-            </Stack>
-          </Button>
+          <Link href={`/messages/${messageThread.id}`}>
+            <Button key={messageThread.id} variant={"ghost"}>
+              <div className="flex flex-col overflow-hidden">
+                <div className="flex">
+                  <Avatar>
+                    <AvatarImage
+                      src={messageThread.recipient.iconImage?.downloadURL}
+                    />
+                  </Avatar>
+                  <p>{messageThread.recipient.name}</p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="overflow-ellipsis overflow-hidden">
+                    {messageThread.latestMessage.text}
+                  </p>
+                  <p>{toDateTimeText(messageThread.latestMessage.createdAt)}</p>
+                </div>
+              </div>
+            </Button>
+          </Link>
         ))}
-      </Stack>
-    </Box>
+      </div>
+    </aside>
   )
 }

@@ -1,17 +1,16 @@
 "use client"
 
-import { Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export const CollectionsHeader = () => {
   return (
-    <Stack>
-      <Text>{"コレクション一覧"}</Text>
-      <HStack>
+    <div className="flex flex-col">
+      <p>{"コレクション一覧"}</p>
+      <div className="flex">
         <Input placeholder={"コレクション名"} />
-        <Button colorScheme="primary" borderRadius={"full"} size={"sm"}>
-          {"検索"}
-        </Button>
-      </HStack>
-    </Stack>
+        <Button>{"検索"}</Button>
+      </div>
+    </div>
   )
 }

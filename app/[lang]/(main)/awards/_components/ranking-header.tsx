@@ -1,6 +1,5 @@
 "use client"
 
-import { HStack, Stack, Text } from "@chakra-ui/react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 type Props = {
@@ -11,17 +10,15 @@ type Props = {
 
 export const RankingHeader = (props: Props) => {
   return (
-    <HStack justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"container.sm"} w={"100%"} p={4} spacing={8}>
-        <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {"ランキング"}
-        </Text>
-        <Stack>
-          <HStack justifyContent={"center"}>
+    <div className="flex">
+      <div className="flex flex-col">
+        <p className="text-2xl">{"ランキング"}</p>
+        <div className="flex flex-col">
+          <div className="flex">
             <ChevronLeft />
-            <Text>{`${props.year}年${props.month}月`}</Text>
+            <p>{`${props.year}年${props.month}月`}</p>
             <ChevronRight />
-          </HStack>
+          </div>
           {/* <Tabs isFitted variant="line">
             <TabPanels>
               <TabList mb="1em">
@@ -31,8 +28,8 @@ export const RankingHeader = (props: Props) => {
               </TabList>
             </TabPanels>
           </Tabs> */}
-        </Stack>
-      </Stack>
-    </HStack>
+        </div>
+      </div>
+    </div>
   )
 }

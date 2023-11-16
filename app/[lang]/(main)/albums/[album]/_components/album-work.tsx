@@ -2,7 +2,7 @@
 
 import { AlbumWorksQuery } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Card, CardBody, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Heart } from "lucide-react"
 
 type Props = {
@@ -15,27 +15,22 @@ type Props = {
 
 export const AlbumWork = (props: Props) => {
   return (
-    <Card overflow="hidden" variant="outline">
-      <HStack justifyContent={"space-between"} pl={4}>
-        <Text>{props.title}</Text>
+    <Card className="overflow-hidden">
+      <div className="flex">
+        <p>{props.title}</p>
         <Heart />
-      </HStack>
-      <CardBody>
-        <HStack>
-          <Image
-            src={props.thumbnailImageUrl}
-            alt={props.title}
-            boxSize={36}
-            borderRadius={"md"}
-          />
-          <Stack>
-            <Text py={2}>{`いいね数：${props.likesCount}`}</Text>
-            <Text py={2}>{`閲覧数：${""}`}</Text>
-            <Text py={2}>{`使用AI：${""}`}</Text>
-            <Text py={2}>{`投稿時間：${toDateTimeText(props.createdAt)}`}</Text>
-          </Stack>
-        </HStack>
-      </CardBody>
+      </div>
+      <CardContent>
+        <div className="flex">
+          <img src={props.thumbnailImageUrl} alt={props.title} />
+          <div className="flex flex-col">
+            <p>{`いいね数：${props.likesCount}`}</p>
+            <p>{`閲覧数：${""}`}</p>
+            <p>{`使用AI：${""}`}</p>
+            <p>{`投稿時間：${toDateTimeText(props.createdAt)}`}</p>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   )
 }

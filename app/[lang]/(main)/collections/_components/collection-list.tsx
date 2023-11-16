@@ -2,18 +2,18 @@
 
 import { CollectionCard } from "@/app/[lang]/(main)/collections/_components/collection-card"
 import { CollectionsHeader } from "@/app/[lang]/(main)/collections/_components/collections-header"
-import { Divider, HStack, Stack } from "@chakra-ui/react"
+import { Separator } from "@/components/ui/separator"
 
 export const CollectionList = () => {
   return (
-    <Stack>
+    <div className="flex flex-col">
       <CollectionsHeader />
-      <Divider />
-      <HStack>
+      <Separator />
+      <div className="flex">
         <CollectionCard />
         <CollectionCard />
         <CollectionCard />
-      </HStack>
-    </Stack>
+      </div>
+    </div>
   )
 }

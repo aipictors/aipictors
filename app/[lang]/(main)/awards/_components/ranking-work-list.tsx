@@ -2,7 +2,6 @@
 
 import type { WorkAwardsQuery } from "@/__generated__/apollo"
 import { RankingCard } from "@/app/[lang]/(main)/awards/_components/ranking-card"
-import { SimpleGrid } from "@chakra-ui/react"
 
 type Props = {
   awards: NonNullable<WorkAwardsQuery["workAwards"]>
@@ -10,7 +9,7 @@ type Props = {
 
 export const RankingWorkList = (props: Props) => {
   return (
-    <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 5 }} spacing={2}>
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
       {props.awards.map((props) => {
         return (
           <RankingCard
@@ -21,6 +20,6 @@ export const RankingWorkList = (props: Props) => {
           />
         )
       })}
-    </SimpleGrid>
+    </div>
   )
 }
