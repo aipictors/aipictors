@@ -104,9 +104,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             />
           ))}
         </div>
-        <Button className="rounded-full" onClick={onOpen}>
-          {"LoRAを追加する"}
-        </Button>
+        <Button onClick={onOpen}>{"LoRAを追加する"}</Button>
       </div>
       <LoraModelsDialog
         isOpen={isOpen}

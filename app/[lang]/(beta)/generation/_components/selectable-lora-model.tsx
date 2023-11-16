@@ -1,17 +1,7 @@
 "use client"
 
-import {
-  Button,
-  Card,
-  HStack,
-  Image,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
 
 type Props = {
   imageURL: string
@@ -24,78 +14,41 @@ type Props = {
 
 export const SelectableLoraModel = (props: Props) => {
   return (
-    <HStack spacing={2}>
-      <Card>
-        <Stack>
-          <Button
-            p={0}
-            h={"auto"}
-            overflow={"hidden"}
-            variant={"outline"}
-            borderWidth={2}
-            borderColor={"gray.200"}
-          >
-            <Image
-              src={props.imageURL ?? ""}
-              alt={props.name}
-              borderRadius={"md"}
-              w={"100%"}
-              maxW={24}
-              draggable={false}
-            />
-          </Button>
-        </Stack>
-      </Card>
-      <Stack
-        flex={1}
-        overflow={"hidden"}
-        justifyContent={"space-between"}
-        h={"100%"}
-        spacing={1}
+    <div className="space-x-2 flex">
+      <Button
+        className="overflow-hidden"
+        variant={"outline"}
+        // borderColor={"gray.200"}
       >
-        <Stack spacing={1}>
-          <Text
-            fontSize={"lg"}
-            fontWeight={"bold"}
-            whiteSpace={"pre-wrap"}
-            lineHeight={1.2}
-          >
-            {props.name}
-          </Text>
-          <Text
-            fontSize={"xs"}
-            opacity={0.8}
-            whiteSpace={"pre-wrap"}
-            lineHeight={1.2}
-          >
-            {props.description}
-          </Text>
-        </Stack>
-        <Stack>
-          <HStack>
+        <img
+          className="rounded-md w-full max-w-[4rem] object-cover"
+          src={props.imageURL ?? ""}
+          alt={props.name}
+          draggable={false}
+        />
+      </Button>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col">
+          <p className="text-lg font-bold whitespace-pre-wrap">{props.name}</p>
+          <p className="text-sm whitespace-pre-wrap">{props.description}</p>
+        </div>
+        <div className="flex flex-col">
+          <div className="flex">
             <Slider
               aria-label="slider-ex-2"
-              colorScheme="pink"
-              value={props.value}
+              defaultValue={[props.value]}
               min={-1}
               max={1}
               step={0.01}
-              onChange={(value) => props.setValue(value)}
-            >
-              <SliderTrack>
-                <SliderFilledTrack />
-              </SliderTrack>
-              <SliderThumb />
-            </Slider>
-            <HStack w={16} justifyContent={"flex-end"}>
-              <Text>{props.value.toFixed(2)}</Text>
-            </HStack>
-          </HStack>
-          <Button size={"xs"} onClick={props.onDelete}>
-            {"削除"}
-          </Button>
-        </Stack>
-      </Stack>
-    </HStack>
+              onChange={() => props.setValue(props.value)}
+            />
+            <div className="flex">
+              <p>{props.value.toFixed(2)}</p>
+            </div>
+          </div>
+          <Button onClick={props.onDelete}>{"削除"}</Button>
+        </div>
+      </div>
+    </div>
   )
 }

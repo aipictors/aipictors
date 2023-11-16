@@ -58,26 +58,14 @@ export const GenerationEditorHistory = (props: Props) => {
       <GenerationEditorCard title={"生成履歴"}>
         <div className="overflow-y-auto">
           <div className="flex p-2">
-            <Button
-              variant={"ghost"}
-              size={"icon"}
-              className="rounded-full"
-              onClick={onDeleteOpen}
-            >
+            <Button variant={"ghost"} size={"icon"} onClick={onDeleteOpen}>
               <Trash2 />
             </Button>
-            <Button
-              variant={"ghost"}
-              size={"icon"}
-              className="rounded-full"
-              onClick={onDlOpen}
-            >
+            <Button variant={"ghost"} size={"icon"} onClick={onDlOpen}>
               <ArrowDownToLine />
             </Button>
-            <Button variant={"ghost"} className="rounded-full">
-              {"解除"}
-            </Button>
-            <Button variant={"ghost"} size={"icon"} className="rounded-full">
+            <Button variant={"ghost"}>{"解除"}</Button>
+            <Button variant={"ghost"} size={"icon"}>
               <Star />
             </Button>
           </div>
@@ -89,7 +77,9 @@ export const GenerationEditorHistory = (props: Props) => {
                   imageURL={"https://source.unsplash.com/random/800x600"}
                   onClick={() => {
                     onOpen()
+                    props.selectHistory(task.id)
                   }}
+                  key={task.id}
                 />
               ))}
             </div>

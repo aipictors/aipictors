@@ -1,16 +1,12 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog"
 
 type Props = {
   isOpen: boolean
@@ -19,42 +15,35 @@ type Props = {
 
 export const InPaintingSelectedPromptDialog = (props: Props) => {
   return (
-    <Modal
-      onClose={props.onClose}
-      isOpen={props.isOpen}
-      scrollBehavior={"inside"}
-    >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader />
-        <ModalBody>
-          <Stack alignItems={"center"} spacing={4}>
-            <Text fontSize={"lg"}>{"選択したプロンプト"}</Text>
-            <Stack spacing={2} alignItems={"center"}>
-              <Text fontSize={"xs"}>{"Model:"}</Text>
-              <Text fontSize={"xs"}>{"VAE: "}</Text>
-              <Text fontSize={"xs"}>{"Prompts:"}</Text>
-              <Text fontSize={"xs"}>{"Negative Prompts: "}</Text>
-              <Text fontSize={"xs"}>{"Seed:"}</Text>
-              <Text fontSize={"xs"}>{"steps:"}</Text>
-              <Text fontSize={"xs"}>{"Scale:"}</Text>
-              <Text fontSize={"xs"}>{"Sampler: "}</Text>
-              <Text fontSize={"xs"}>{"Width: "}</Text>
-              <Text fontSize={"xs"}>{"Height: "}</Text>
-            </Stack>
-            <Button
-              borderRadius={"full"}
-              colorScheme="primary"
-              onClick={() => {
-                props.onClose()
-              }}
-            >
-              {"Close"}
-            </Button>
-          </Stack>
-        </ModalBody>
-        <ModalFooter justifyContent={"center"} />
-      </ModalContent>
-    </Modal>
+    <Dialog onOpenChange={props.onClose} open={props.isOpen}>
+      <DialogContent>
+        <DialogHeader />
+        <div className="flex flex-col">
+          <p className="text-lg">{"選択したプロンプト"}</p>
+          <div className="flex flex-col">
+            <p className="text-xs">{"Model:"}</p>
+            <p className="text-xs">{"VAE: "}</p>
+            <p className="text-xs">{"Prompts:"}</p>
+            <p className="text-xs">{"Negative Prompts: "}</p>
+            <p className="text-xs">{"Seed:"}</p>
+            <p className="text-xs">{"steps:"}</p>
+            <p className="text-xs">{"Scale:"}</p>
+            <p className="text-xs">{"Sampler: "}</p>
+            <p className="text-xs">{"Width: "}</p>
+            <p className="text-xs">{"Height: "}</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            // colorScheme="primary"
+            onClick={() => {
+              props.onClose()
+            }}
+          >
+            {"Close"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
