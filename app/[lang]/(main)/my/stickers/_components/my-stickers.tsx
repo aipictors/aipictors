@@ -1,21 +1,20 @@
 "use client"
 
-import { Button, HStack, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
 export const MyStickers = () => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"lg"} w={"100%"} p={4} spacing={8}>
-        <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {"作成済みスタンプ"}
-        </Text>
-        <HStack>
-          <Button aria-label="add stickers" rightIcon={<Plus />} size={"lg"}>
-            {"新しいスタンプ"}
+    <div className="flex">
+      <div className="flex flex-col">
+        <p className="text-2xl">{"作成済みスタンプ"}</p>
+        <div className="flex">
+          <Button>
+            <Plus />
+            <p>{"新しいスタンプ"}</p>
           </Button>
-        </HStack>
-      </Stack>
-    </HStack>
+        </div>
+      </div>
+    </div>
   )
 }

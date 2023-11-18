@@ -7,16 +7,9 @@ import type {
 import { UserFolloweesDocument } from "@/__generated__/apollo"
 import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
 import { AppContext } from "@/app/_contexts/app-context"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Divider,
-  HStack,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { AlertCircle } from "lucide-react"
 import { useContext } from "react"
 
 export const ViewerFolloweeList = () => {
@@ -39,18 +32,19 @@ export const ViewerFolloweeList = () => {
   )
 
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"}>
-      <Stack maxW={"lg"} w={"100%"} p={4} spacing={8}>
-        <Text fontWeight={"bold"} fontSize={"2xl"}>
-          {"フォローしているユーザ"}
-        </Text>
+    <div className="flex">
+      <div className="flex flex-col">
+        <p className="text-2xl">{"フォローしているユーザ"}</p>
         {data?.user?.followees?.length === 0 && (
-          <Alert status="info" borderRadius={"md"}>
-            <AlertIcon />
+          <Alert>
+            <AlertCircle />
             <AlertTitle>{"フォローしているユーザはいません"}</AlertTitle>
           </Alert>
         )}
-        <Stack divider={<Divider />} spacing={0}>
+        <div
+          className="flex flex-col divide-solid"
+          //  divider={<Divider />}
+        >
           {data?.user?.followees?.map((followee) => (
             <FolloweeListItem
               key={followee.id}
@@ -58,8 +52,8 @@ export const ViewerFolloweeList = () => {
               imageURL={followee.iconImage?.downloadURL}
             />
           ))}
-        </Stack>
-      </Stack>
-    </HStack>
+        </div>
+      </div>
+    </div>
   )
 }
