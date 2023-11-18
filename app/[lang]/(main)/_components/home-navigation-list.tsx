@@ -5,7 +5,6 @@ import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
-import { Box as ChakraBox, Divider } from "@chakra-ui/react"
 import {
   AlertTriangle,
   Award,
@@ -87,9 +86,9 @@ export const HomeNavigationList = (props: Props) => {
       >
         {"コレクション"}
       </HomeNavigationButton>
-      <ChakraBox py={2}>
-        <Divider />
-      </ChakraBox>
+      <div className={"py-2"}>
+        <Separator />
+      </div>
       <HomeNavigationButton href={"/works/2d"} leftIcon={<Image />}>
         {"イラスト"}
       </HomeNavigationButton>
@@ -105,9 +104,9 @@ export const HomeNavigationList = (props: Props) => {
       <HomeNavigationButton href={"/sensitive"} leftIcon={<AlertTriangle />}>
         {"センシティブ"}
       </HomeNavigationButton>
-      <ChakraBox py={2}>
-        <Divider />
-      </ChakraBox>
+      <div className={"py-2"}>
+        <Separator />
+      </div>
       {appContext.isLoggedIn && (
         <HomeNavigationButton href={"/settings/login"} leftIcon={<Settings />}>
           {"設定"}

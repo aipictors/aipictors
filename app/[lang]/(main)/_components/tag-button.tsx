@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 export const TagButton = (props: Props) => {
   return (
     <Link key={props.id} href={`/tags/${props.name}`} passHref>
-      <Button as={"li"} size={"sm"} minW={"fit-content"} variant={"outline"}>
+      <Button size={"sm"} variant={"outline"}>
         {props.name}
       </Button>
     </Link>

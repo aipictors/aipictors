@@ -1,8 +1,7 @@
 "use client"
 
 import { AccountRouteList } from "@/app/[lang]/account/_components/account-route-list"
-import { Stack, useBreakpoint } from "@chakra-ui/react"
-import React from "react"
+import { useBreakpoint } from "@chakra-ui/react"
 
 export const AccountNavigation = () => {
   const breakpoint = useBreakpoint()
@@ -12,8 +11,8 @@ export const AccountNavigation = () => {
   }
 
   return (
-    <Stack as={"main"} w={"100%"}>
+    <main className="w-full">
       <AccountRouteList />
-    </Stack>
+    </main>
   )
 }

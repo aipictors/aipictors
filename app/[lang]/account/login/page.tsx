@@ -5,7 +5,10 @@ import type { Metadata } from "next"
 const AccountLoginPage = async () => {
   return (
     <MainCenterPage>
-      <AccountLoginForm />
+      <div className="w-full space-y-8">
+        <p className="leading-none font-bold text-2xl">ユーザID</p>
+        <AccountLoginForm />
+      </div>
     </MainCenterPage>
   )
 }

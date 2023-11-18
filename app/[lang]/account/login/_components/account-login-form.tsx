@@ -11,8 +11,10 @@ import {
   ViewerUserDocument,
 } from "@/__generated__/apollo"
 import { AppContext } from "@/app/_contexts/app-context"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
-import { Button, Input, Stack, Text, useToast } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 
 export const AccountLoginForm = () => {
@@ -25,7 +27,7 @@ export const AccountLoginForm = () => {
     skip: appContext.isLoading,
   })
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const [userId, setUserId] = useState("")
 
@@ -44,29 +46,26 @@ export const AccountLoginForm = () => {
         },
       })
       setUserId("")
-      toast({ status: "success", title: "ユーザIDを変更しました" })
+      toast({ title: "ユーザIDを変更しました" })
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ status: "error", title: "ユーザIDの変更に失敗しました" })
+        toast({ title: "ユーザIDの変更に失敗しました" })
       }
     }
   }
 
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text lineHeight={1} fontWeight={"bold"} fontSize={"2xl"}>
-        {"ユーザID"}
-      </Text>
-      <Stack>
-        <Text>{"現在のユーザID"}</Text>
+    <div className="w-full space-y-8">
+      <div className="space-y-4">
+        <p>現在のユーザID</p>
         <Input
-          isReadOnly
+          readOnly
           value={data?.viewer?.user?.login}
           placeholder="ユーザID"
         />
-      </Stack>
-      <Stack>
-        <Text>{"新しいユーザID"}</Text>
+      </div>
+      <div className="space-y-4">
+        <p>新しいユーザID</p>
         <Input
           value={userId}
           placeholder="ユーザID"
@@ -74,16 +73,10 @@ export const AccountLoginForm = () => {
             setUserId(event.target.value)
           }}
         />
-      </Stack>
-      <Button
-        colorScheme="primary"
-        borderRadius={"full"}
-        lineHeight={1}
-        onClick={handleSubmit}
-        isLoading={loading}
-      >
+      </div>
+      <Button disabled={loading} onClick={handleSubmit}>
         {"変更を保存"}
       </Button>
-    </Stack>
+    </div>
   )
 }

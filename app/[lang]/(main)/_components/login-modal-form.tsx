@@ -1,15 +1,8 @@
 "use client"
 
 import type { FormLogin } from "@/app/_types/form-login"
-import {
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Image,
-  Input,
-  Stack,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { TbX } from "react-icons/tb"
 
@@ -29,46 +22,41 @@ export const LoginModalForm = (props: Props) => {
   }
 
   return (
-    <Stack p={4}>
-      <Stack spacing={8} p={0}>
-        <Stack spacing={0}>
-          <HStack justifyContent={"flex-end"}>
-            <IconButton
-              aria-label={"削除"}
-              borderRadius={"full"}
-              icon={<Icon as={TbX} />}
-              onClick={props.onClose}
-            />
-          </HStack>
-          <HStack justifyContent={"center"}>
-            <Image alt={"Logo"} src={"/icon.png"} maxW={"4rem"} />
-          </HStack>
-        </Stack>
-        <Stack spacing={4}>
+    <div className="p-4">
+      <div className="space-y-8 p-0">
+        <div className="space-y-0">
+          <div className="flex justify-end">
+            <Button aria-label={"削除"} size={"icon"} onClick={props.onClose}>
+              <TbX />
+            </Button>
+          </div>
+          <div className="flex justify-center">
+            <img alt="Logo" src="/icon.png" className="max-w-16" />
+          </div>
+        </div>
+        <div className="space-y-4">
           <Input
-            isDisabled={props.isLoading}
+            disabled={props.isLoading}
             placeholder={"ユーザID"}
-            variant={"filled"}
             value={username}
             onChange={(event) => {
               setUsername(event.target.value)
             }}
           />
           <Input
-            isDisabled={props.isLoading}
+            disabled={props.isLoading}
             placeholder={"パスワード"}
-            variant={"filled"}
             type={"password"}
             value={password}
             onChange={(event) => {
               setPassword(event.target.value)
             }}
           />
-          <Button isLoading={props.isLoading} lineHeight={1} onClick={onLogin}>
+          <Button disabled={props.isLoading} onClick={onLogin}>
             {"ログイン"}
           </Button>
-        </Stack>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   )
 }

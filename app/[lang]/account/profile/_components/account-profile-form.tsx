@@ -1,6 +1,7 @@
 "use client"
 
-import { Avatar, Button, HStack, Input, Stack, Text } from "@chakra-ui/react"
+import { Avatar } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 
@@ -22,24 +23,18 @@ export const AccountProfileForm = () => {
   const [userMail, setUserMail] = useState("")
 
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text fontWeight={"bold"} fontSize={"2xl"}>
-        {"プロフィール"}
-      </Text>
-      <HStack>
-        <Button
-          aria-label="Search database"
-          rightIcon={<Plus />}
-          borderRadius={"full"}
-        >
+    <div className="w-full space-y-8">
+      <div className="flex space-x-4">
+        <Button aria-label="Search database">
+          <Plus className="mr-2" />
           {"ヘッダー追加ボタン"}
         </Button>
-      </HStack>
-      <HStack spacing={4}>
-        <Avatar bg="teal.500" size={"md"} />
-        <Button borderRadius={"full"}>{"アイコン追加ボタン"}</Button>
-      </HStack>
-      <Stack spacing={4}>
+      </div>
+      <div className="flex space-x-4">
+        <Avatar />
+        <Button>{"アイコン追加ボタン"}</Button>
+      </div>
+      <div className="space-y-4">
         <Stack>
           <Text>{"ユーザ名"}</Text>
           <Input
@@ -120,10 +115,10 @@ export const AccountProfileForm = () => {
             }}
           />
         </Stack>
-      </Stack>
+      </div>
       <Button colorScheme="primary" borderRadius={"full"} onClick={() => {}}>
         {"変更を保存"}
       </Button>
-    </Stack>
+    </div>
   )
 }

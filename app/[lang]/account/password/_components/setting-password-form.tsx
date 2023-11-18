@@ -5,16 +5,10 @@ import type {
   UpdateAccountPasswordMutationVariables,
 } from "@/__generated__/apollo"
 import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation } from "@apollo/client"
-import {
-  Button,
-  HStack,
-  IconButton,
-  Input,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react"
 import { Eye } from "lucide-react"
 import { useState } from "react"
 
@@ -27,7 +21,7 @@ export const AccountPasswordForm = () => {
 
   const [showNewPassword, setShowNewPassword] = useState(false)
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const [mutation, { loading }] = useMutation<
     UpdateAccountPasswordMutation,
@@ -46,22 +40,19 @@ export const AccountPasswordForm = () => {
       })
       setCurrentPassword("")
       setNewPassword("")
-      toast({ status: "success", title: "パスワードを変更しました" })
+      toast({ title: "パスワードを変更しました" })
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ status: "error", title: error.message })
+        toast({ title: error.message })
       }
     }
   }
 
   return (
-    <Stack w={"100%"} spacing={8}>
-      <Text lineHeight={1} fontWeight={"bold"} fontSize={"2xl"}>
-        {"パスワード"}
-      </Text>
-      <Stack>
-        <Text>{"現在のログインパスワード"}</Text>
-        <HStack>
+    <div className="w-full space-y-8">
+      <div className="space-y-4">
+        <p>{"現在のログインパスワード"}</p>
+        <div className="flex">
           <Input
             placeholder="現在のログインパスワード"
             value={currentPassword}
@@ -70,18 +61,20 @@ export const AccountPasswordForm = () => {
               setCurrentPassword(event.target.value)
             }}
           />
-          <IconButton
-            aria-label="Search database"
-            icon={<Eye />}
+          <Button
+            aria-label="-"
+            size={"icon"}
             onClick={() => {
               setShowPassword(!showPassword)
             }}
-          />
-        </HStack>
-      </Stack>
-      <Stack>
-        <Text>{"新しいログインパスワード"}</Text>
-        <HStack>
+          >
+            <Eye />
+          </Button>
+        </div>
+      </div>
+      <div className="space-y-4">
+        <p>{"新しいログインパスワード"}</p>
+        <div className="flex">
           <Input
             placeholder="新しいログインパスワード"
             type={showNewPassword ? "text" : "password"}
@@ -90,29 +83,26 @@ export const AccountPasswordForm = () => {
               setNewPassword(event.target.value)
             }}
           />
-          <IconButton
-            aria-label="Search database"
-            icon={<Eye />}
+          <Button
+            aria-label="-"
+            size={"icon"}
             onClick={() => {
               setShowNewPassword(!showNewPassword)
             }}
-          />
-        </HStack>
+          >
+            <Eye />
+          </Button>
+        </div>
         {/* <Stack spacing={1}>
             <Progress value={80} borderRadius={"full"} />
             <Text fontSize={"xs"}>
               {"パスワード強度スコアが3以上（バーが黄色～緑色）"}
             </Text>
           </Stack> */}
-      </Stack>
-      <Button
-        colorScheme="primary"
-        borderRadius={"full"}
-        onClick={handleSubmit}
-        isLoading={loading}
-      >
+      </div>
+      <Button onClick={handleSubmit} disabled={loading}>
         {"変更を保存"}
       </Button>
-    </Stack>
+    </div>
   )
 }

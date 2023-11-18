@@ -1,11 +1,9 @@
 "use client"
 
-import { Box } from "@chakra-ui/react"
+import { Config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
 import React, { useEffect } from "react"
-
-const PUBLISHER_ID = "2116548824296763"
 
 type Props = {
   slot: string
@@ -30,7 +28,7 @@ export const GoogleAdsense = (props: Props) => {
   }, [pathname])
 
   return (
-    <Box key={pathname}>
+    <div key={pathname}>
       <ins
         className="adsbygoogle"
         style={{
@@ -38,11 +36,11 @@ export const GoogleAdsense = (props: Props) => {
           display: "block",
         }}
         data-adtest={process.env.NODE_ENV === "production" ? "off" : "on"}
-        data-ad-client={`ca-pub-${PUBLISHER_ID}`}
+        data-ad-client={Config.googleAdsenseClient}
         data-ad-slot={props.slot}
         data-ad-format={props.format}
         data-full-width-responsive={props.responsive ?? false}
       />
-    </Box>
+    </div>
   )
 }

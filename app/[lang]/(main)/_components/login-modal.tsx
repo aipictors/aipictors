@@ -3,7 +3,8 @@
 import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { LoginModalForm } from "@/app/[lang]/(main)/_components/login-modal-form"
 import type { FormLogin } from "@/app/_types/form-login"
-import { Modal, ModalContent, ModalOverlay, useToast } from "@chakra-ui/react"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { useToast } from "@/components/ui/use-toast"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
 export const LoginModal = (props: Props) => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
 
-  const toast = useToast()
+  const { toast } = useToast()
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -28,29 +29,33 @@ export const LoginModal = (props: Props) => {
       })
       const token = result.data?.loginWithPassword.token ?? null
       if (token === null) {
-        toast({ status: "error", description: "ログインに失敗しました。" })
+        toast({ description: "ログインに失敗しました。" })
         return
       }
       await signInWithCustomToken(getAuth(), token)
-      toast({ status: "success", description: "ログインしました。" })
+      toast({ description: "ログインしました。" })
       props.onClose()
     } catch (error) {
       if (error instanceof Error) {
-        toast({ status: "error", description: error.message })
+        toast({ description: error.message })
       }
     }
   }
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.onClose}>
-      <ModalOverlay />
-      <ModalContent maxW={"xs"}>
+    <Dialog
+      open={props.isOpen}
+      onOpenChange={() => {
+        props.onClose()
+      }}
+    >
+      <DialogContent>
         <LoginModalForm
           onSubmit={onLogin}
           isLoading={isLoading}
           onClose={props.onClose}
         />
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -136,6 +136,8 @@ export class Config {
     }
   }
 
+  static googleAdsenseClient = "ca-pub-2116548824296763"
+
   /**
    * GraphQLのエンドポイント
    */

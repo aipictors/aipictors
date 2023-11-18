@@ -1,12 +1,11 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { Stack } from "@chakra-ui/react"
 import { LockKeyhole, Smile, User } from "lucide-react"
 
 export const AccountRouteList = () => {
   return (
-    <Stack>
+    <div className="space-y-4">
       <HomeNavigationButton href={"/account/login"} leftIcon={<Smile />}>
         {"ユーザID"}
       </HomeNavigationButton>
@@ -23,6 +22,6 @@ export const AccountRouteList = () => {
       >
         {"プロフィール"}
       </HomeNavigationButton>
-    </Stack>
+    </div>
   )
 }
