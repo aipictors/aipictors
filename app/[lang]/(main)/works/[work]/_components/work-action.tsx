@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, HStack, IconButton, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { Folder, Heart, HelpCircle, MoreHorizontal, Share } from "lucide-react"
 
 type Props = {
@@ -9,35 +9,31 @@ type Props = {
 
 export const WorkAction = (props: Props) => {
   return (
-    <HStack justifyContent={"space-between"}>
-      <HStack>
-        <Button leftIcon={<HelpCircle />} borderRadius={"full"}>
+    <div className="flex justify-between">
+      <div className="flex">
+        <Button className="rounded-full">
+          <HelpCircle className="mr-2" />
           {"画像生成"}
         </Button>
-      </HStack>
-      <HStack>
-        <Button leftIcon={<Heart />} borderRadius={"full"}>
-          <HStack spacing={2}>
-            <Text>{"いいね"}</Text>
-            <Text>{props.workLikesCount}</Text>
-          </HStack>
+      </div>
+      <div className="flex">
+        <Button className="rounded">
+          <Heart className="mr-2" />
+          <div className={"flex space-x-2"}>
+            <span>{"いいね"}</span>
+            <span>{props.workLikesCount}</span>
+          </div>
         </Button>
-        <IconButton
-          aria-label={"フォルダに追加"}
-          icon={<Folder />}
-          borderRadius={"full"}
-        />
-        <IconButton
-          aria-label={"シェア"}
-          icon={<Share />}
-          borderRadius={"full"}
-        />
-        <IconButton
-          aria-label={"メニュー"}
-          borderRadius={"full"}
-          icon={<MoreHorizontal />}
-        />
-      </HStack>
-    </HStack>
+        <Button aria-label={"フォルダに追加"} size={"icon"}>
+          <Folder />
+        </Button>
+        <Button aria-label={"シェア"} size={"icon"}>
+          <Share />
+        </Button>
+        <Button aria-label={"メニュー"} size={"icon"}>
+          <MoreHorizontal />
+        </Button>
+      </div>
+    </div>
   )
 }

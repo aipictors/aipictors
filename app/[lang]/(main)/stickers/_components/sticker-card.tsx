@@ -1,7 +1,6 @@
-"use client"
-
-import { Card, HStack, Image, Link, Stack, Text } from "@chakra-ui/react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Download, Stamp } from "lucide-react"
+import Link from "next/link"
 
 type Props = {
   id: string
@@ -13,36 +12,29 @@ type Props = {
 
 export const StickerCard = (props: Props) => {
   return (
-    <>
-      <Card>
+    <Card>
+      <CardContent>
         <Link href={`https://www.aipictors.com/stamp/?id=${props.id}`}>
-          <Image
+          <img
+            className="rounded-lg"
             src={props.imageURL ?? ""}
             alt={props.title ?? "no title"}
-            borderRadius={"lg"}
           />
         </Link>
-        <Stack
-          p={2}
-          justifyContent={"space-between"}
-          height={"100%"}
-          spacing={1}
-        >
-          <Text fontSize={"sm"} fontWeight={"bold"}>
-            {props.title ?? "no title"}
-          </Text>
-          <HStack alignItems={"center"} spacing={4}>
-            <HStack>
+        <div className="flex flex-col justify-between h-full space-y-1 p-2">
+          <p className="text-sm font-bold">{props.title ?? "no title"}</p>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
               <Download />
-              <Text fontSize={"sm"}>{props.downloadsCount}</Text>
-            </HStack>
-            <HStack>
+              <p className="text-sm">{props.downloadsCount}</p>
+            </div>
+            <div className="flex items-center space-x-2">
               <Stamp />
-              <Text fontSize={"sm"}>{props.usesCount}</Text>
-            </HStack>
-          </HStack>
-        </Stack>
-      </Card>
-    </>
+              <p className="text-sm">{props.usesCount}</p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

@@ -3,15 +3,7 @@
 import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
-import {
-  Avatar,
-  Button,
-  HStack,
-  IconButton,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { Stamp } from "lucide-react"
 
 type Props = {
@@ -20,23 +12,23 @@ type Props = {
 
 export const WorkCommentList = (props: Props) => {
   return (
-    <Stack>
-      <Text>{"コメント"}</Text>
-      <HStack>
-        <Avatar src={""} />
-        <Input size={"sm"} placeholder="コメントする" borderRadius={"full"} />
-        <IconButton
-          aria-label={"スタンプ"}
-          borderRadius={"full"}
-          icon={<Stamp />}
+    <div className="space-y-4">
+      <p>{"コメント"}</p>
+      <div className="flex items-center space-x-2">
+        <img className="rounded-full" src="" alt="" />
+        <input
+          className="text-sm rounded-full"
+          type="text"
+          placeholder="コメントする"
         />
-        <Button colorScheme={"primary"} borderRadius={"full"}>
-          {"投稿"}
+        <Button size={"icon"}>
+          <Stamp />
         </Button>
-      </HStack>
-      <Stack>
+        <Button className="rounded-full">{"投稿"}</Button>
+      </div>
+      <div className="space-y-8">
         {props.work.comments.map((comment) => (
-          <Stack key={comment.id} spacing={8}>
+          <div key={comment.id} className="space-y-8">
             <WorkComment
               createdAt={comment.createdAt}
               stickerImageURL={comment.sticker?.image?.downloadURL}
@@ -54,9 +46,9 @@ export const WorkCommentList = (props: Props) => {
                 userName={reply.user?.name}
               />
             ))}
-          </Stack>
+          </div>
         ))}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   )
 }

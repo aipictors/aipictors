@@ -1,4 +1,4 @@
-import { AlbumList } from "@/app/[lang]/(main)/albums/_components/album-list"
+import { AlbumCard } from "@/app/[lang]/(main)/albums/_components/album-card"
 import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
@@ -9,7 +9,9 @@ import type { Metadata } from "next"
 const AlbumsPage = async () => {
   return (
     <MainPage>
-      <AlbumList />
+      <div className="flex flex-col">
+        <AlbumCard />
+      </div>
     </MainPage>
   )
 }

@@ -1,9 +1,7 @@
-"use client"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export const SelectableWorkCard = () => {
+export const TagCard = () => {
   return (
     <Card>
       <CardContent>

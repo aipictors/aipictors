@@ -1,6 +1,5 @@
-"use client"
+import { Button } from "@/components/ui/button"
 
-import { Box, Button, Text, useColorModeValue } from "@chakra-ui/react"
 import Link from "next/link"
 
 type Props = {
@@ -11,36 +10,17 @@ type Props = {
 }
 
 export const ThemeListItem = (props: Props) => {
-  const backgroundColor = useColorModeValue("gray.100", "gray.900")
-
   if (props.title === null) {
     return (
-      <Box
-        display={{ base: "none", lg: "block" }}
-        h={24}
-        bgColor={backgroundColor}
-        borderRadius={"md"}
-        p={4}
-      />
+      <div className="hidden lg:block h-24 bg-[backgroundColor] rounded-md p-4" />
     )
   }
 
   return (
     <Link href={`/themes/${props.year}/${props.month}/${props.day}`}>
-      <Button
-        h={24}
-        justifyContent={"center"}
-        alignItems={"center"}
-        borderRadius={"md"}
-        p={4}
-        w={"100%"}
-      >
-        <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
-          {props.day}
-        </Text>
-        <Text display={"block"} w={"fit-content"} fontSize={"sm"}>
-          {props.title}
-        </Text>
+      <Button>
+        <span className="block w-auto text-sm">{props.day}</span>
+        <span className="block w-auto text-sm">{props.title}</span>
       </Button>
     </Link>
   )

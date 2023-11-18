@@ -1,12 +1,10 @@
-"use client"
-
-import { Card, CardHeader, Text } from "@chakra-ui/react"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const NoteCard = () => {
   return (
-    <Card as={"article"}>
-      <CardHeader as={"header"}>
-        <Text>{"タイトル"}</Text>
+    <Card slot="article">
+      <CardHeader slot={"header"}>
+        <CardTitle>{"タイトル"}</CardTitle>
       </CardHeader>
     </Card>
   )

@@ -5,7 +5,8 @@ import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-ac
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
 import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, Button, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -13,12 +14,8 @@ type Props = {
 
 export const WorkArticle = (props: Props) => {
   return (
-    <Stack
-      direction={{ base: "column", lg: "row" }}
-      alignItems={"flex-start"}
-      overflow={"hidden"}
-    >
-      <Stack as="article" flex={1}>
+    <div className="flex flex-col lg:flex-row items-start overflow-hidden">
+      <article className="flex flex-grow">
         <WorkImageView
           workImageURL={props.work.imageURL}
           subWorkImageURLs={props.work.subWorks.map((subWork) => {
@@ -26,55 +23,43 @@ export const WorkArticle = (props: Props) => {
           })}
         />
         <WorkAction workLikesCount={props.work.likesCount} />
-        <Text fontSize={"lg"} fontWeight={"bold"}>
-          {props.work.title}
-        </Text>
-        <Text fontSize={"xs"}>{"CustomModel(その他)"}</Text>
-        <Text fontSize={"sm"}>{toDateTimeText(props.work.createdAt)}</Text>
-        <Text fontSize={"sm"}>{"デイリー入賞"}</Text>
+        <h1 className="text-lg font-bold">{props.work.title}</h1>
+        <span className="text-sm">{"CustomModel(その他)"}</span>
+        <span className="text-sm">{toDateTimeText(props.work.createdAt)}</span>
+        <span className="text-sm">{"デイリー入賞"}</span>
         {props.work.dailyTheme && (
-          <HStack>
-            <Text fontSize={"sm"}>{"参加お題:"}</Text>
-            <Button borderRadius={"full"} size={"sm"} variant={"outline"}>
-              {props.work.dailyTheme.title}
-            </Button>
-          </HStack>
+          <div className="flex">
+            <span className="text-sm">{"参加お題:"}</span>
+            <Button>{props.work.dailyTheme.title}</Button>
+          </div>
         )}
-        <HStack>
+        <div className="flex">
           {props.work.tagNames.map((tagName) => (
-            <Button
-              key={tagName}
-              borderRadius={"full"}
-              size={"sm"}
-              variant={"outline"}
-            >
-              {`#${tagName}`}
-            </Button>
+            <Button key={tagName}>{`#${tagName}`}</Button>
           ))}
-        </HStack>
-        <Text>{props.work.description}</Text>
-        <HStack justifyContent={"space-between"}>
-          <HStack>
-            <Avatar src={props.work.user.iconImage?.downloadURL} />
-            <Text>{props.work.user.name}</Text>
-            <Button colorScheme={"primary"} borderRadius={"full"} size={"sm"}>
-              {"フォローする"}
-            </Button>
-          </HStack>
-          <Text fontSize={"sm"}>{"一覧をダイアログで見る"}</Text>
-        </HStack>
-        <HStack overflowX={"auto"}>
+        </div>
+        <p className="white-space">{props.work.description}</p>
+        <div className="flex content-between">
+          <div className="flex">
+            <Avatar>
+              <AvatarImage src={props.work.user.iconImage?.downloadURL} />
+            </Avatar>
+            <span>{props.work.user.name}</span>
+            <Button size={"sm"}>{"フォローする"}</Button>
+          </div>
+          <span>{"一覧をダイアログで見る"}</span>
+        </div>
+        <div className="flex overflow-x-auto">
           {props.work.user.works.map((work) => (
-            <Image
+            <img
               key={work.id}
-              h={40}
-              borderRadius={"md"}
-              alt={""}
+              className="h-10 rounded-md"
+              alt=""
               src={work.largeThumbnailImageURL}
             />
           ))}
-        </HStack>
-      </Stack>
+        </div>
+      </article>
       <WorkUser
         userName={props.work.user.name}
         userIconImageURL={props.work.user.iconImage?.downloadURL}
@@ -83,6 +68,6 @@ export const WorkArticle = (props: Props) => {
         userPromptonId={props.work.user.promptonUser?.id}
         userWorksCount={props.work.user.worksCount}
       />
-    </Stack>
+    </div>
   )
 }

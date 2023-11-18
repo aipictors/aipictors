@@ -1,11 +1,7 @@
-"use client"
-
-import { Stack, Text } from "@chakra-ui/react"
-
 export const NovelArticle = () => {
   return (
-    <Stack>
-      <Text>{"小説"}</Text>
-    </Stack>
+    <article>
+      <h1>{"小説"}</h1>
+    </article>
   )
 }

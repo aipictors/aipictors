@@ -1,7 +1,8 @@
 "use client"
 
 import { AddStickerModal } from "@/app/[lang]/(main)/stickers/_components/add-sticker-modal"
-import { IconButton, Stack, Text, useDisclosure } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { useDisclosure } from "@chakra-ui/react"
 import { Plus } from "lucide-react"
 
 export const StickerListHeader = () => {
@@ -9,36 +10,29 @@ export const StickerListHeader = () => {
 
   return (
     <>
-      <Stack maxW={"container.lg"} w={"100%"} p={4} spacing={8}>
-        <Stack>
-          <Text fontWeight={"bold"} fontSize={"2xl"}>
-            {"AIイラストスタンプ広場"}
-          </Text>
-          <Text fontSize={"sm"}>
-            {
-              "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！"
-            }
-          </Text>
-        </Stack>
-        <Stack alignItems={"center"}>
-          <Text fontSize={"lg"}>{"自分で作ったスタンプを公開する"}</Text>
-          <IconButton
+      <div className="flex flex-col w-full p-4 space-y-8">
+        <div className="flex flex-col">
+          <p className="font-bold text-2xl">AIイラストスタンプ広場</p>
+          <p className="text-sm">
+            作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！
+          </p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <p className="text-lg">自分で作ったスタンプを公開する</p>
+          <Button
             aria-label="previous month"
-            icon={<Plus fontSize={"lg"} />}
             variant={"ghost"}
-            borderRadius={"full"}
+            size={"icon"}
             onClick={onOpen}
-          />
-          <IconButton
-            aria-label="previous month"
-            icon={<Plus fontSize={"lg"} />}
-            variant={"ghost"}
-            borderRadius={"full"}
           >
+            <Plus />
+          </Button>
+          <Button aria-label="previous month" variant={"ghost"}>
+            <Plus fontSize={"mr-2"} />
             {"スタンプを作る"}
-          </IconButton>
-        </Stack>
-      </Stack>
+          </Button>
+        </div>
+      </div>
       <AddStickerModal isOpen={isOpen} onClose={onClose} />
     </>
   )

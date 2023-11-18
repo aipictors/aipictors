@@ -53,7 +53,8 @@
     "@radix-ui",
     "react-day-picker",
     "tailwind-merge",
-    "postcss"
+    "postcss",
+    "next/dist"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "workbench.editor.enablePreview": true,

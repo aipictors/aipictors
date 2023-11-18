@@ -1,4 +1,5 @@
-import { NewAlbumForm } from "@/app/[lang]/(main)/new/album/_components/new-album-form"
+import { NewAlbumImage } from "@/app/[lang]/(main)/new/album/_components/new-album-image"
+import { NewAlbumWorkList } from "@/app/[lang]/(main)/new/album/_components/new-album-work-list"
 import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
@@ -9,7 +10,10 @@ import type { Metadata } from "next"
 const NewAlbumPage = async () => {
   return (
     <MainPage>
-      <NewAlbumForm />
+      <div className="flex flex-col">
+        <NewAlbumImage />
+        <NewAlbumWorkList />
+      </div>
     </MainPage>
   )
 }

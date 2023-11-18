@@ -1,7 +1,4 @@
-"use client"
-
 import type { UserQuery } from "@/__generated__/apollo"
-import { Image, Stack } from "@chakra-ui/react"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>
@@ -9,12 +6,11 @@ type Props = {
 
 export const UserProfileHeader = (props: Props) => {
   return (
-    <Stack>
-      <Image
+    <div>
+      <img
         src={props.user.headerImage?.downloadURL ?? ""}
         alt={props.user.name}
-        borderRadius={"md"}
       />
-    </Stack>
+    </div>
   )
 }

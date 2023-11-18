@@ -1,7 +1,8 @@
 "use client"
 
 import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
-import { Avatar, Button, Card, HStack, Stack, Text } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 
 type Props = {
   userName: string
@@ -14,29 +15,31 @@ type Props = {
 
 export const WorkUser = (props: Props) => {
   return (
-    <Stack spacing={0} maxW={{ base: "auto", lg: "xs" }} w={"100%"}>
+    <div className="space-y-0 w-full lg:max-w-xs">
       <Card>
-        <HStack justifyContent={"center"}>
-          <Stack spacing="3">
-            <Stack alignItems={"center"}>
-              <Avatar size="lg" src={props.userIconImageURL} />
-              <Text size="md">{props.userName}</Text>
-            </Stack>
-            <HStack justifyContent={"center"}>
-              <Text>{`投稿数：${props.userWorksCount}`}</Text>
-              <Text>{`フォロワー数：${props.userFollowersCount}`}</Text>
-            </HStack>
-            <HStack justifyContent={"center"}>
-              <Button colorScheme="primary" borderRadius={"full"}>
-                {"フォローする"}
-              </Button>
+        <div className="flex justify-center">
+          <div className="space-y-3">
+            <div className="flex items-center justify-center">
+              <img
+                className="w-16 h-16 rounded-full"
+                src={props.userIconImageURL}
+                alt=""
+              />
+              <p className="text-md">{props.userName}</p>
+            </div>
+            <div className="flex justify-center space-x-2">
+              <p>{`投稿数：${props.userWorksCount}`}</p>
+              <p>{`フォロワー数：${props.userFollowersCount}`}</p>
+            </div>
+            <div className="flex justify-center space-x-2">
+              <Button>{"フォローする"}</Button>
               {props.userPromptonId && <PromptonRequestButton />}
-            </HStack>
-            {props.userBiography && <Text>{props.userBiography}</Text>}
-          </Stack>
-        </HStack>
+            </div>
+            {props.userBiography && <p>{props.userBiography}</p>}
+          </div>
+        </div>
       </Card>
-      <Text>{"前後の作品"}</Text>
-    </Stack>
+      <p>{"前後の作品"}</p>
+    </div>
   )
 }

@@ -3,14 +3,7 @@
 import type { DailyThemesQuery } from "@/__generated__/apollo"
 import { ThemeListItem } from "@/app/[lang]/(main)/themes/_components/theme-list-item"
 import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-calendar-cells"
-import {
-  Button,
-  HStack,
-  IconButton,
-  SimpleGrid,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -55,37 +48,22 @@ export const ThemeList = (props: Props) => {
   }
 
   return (
-    <Stack>
-      <HStack justifyContent={"center"}>
-        <Text fontSize={"lg"}>{"お題一覧"} </Text>
-      </HStack>
-      <HStack justifyContent={"center"} spacing={4}>
-        <IconButton
-          aria-label="previous month"
-          icon={<ChevronLeft fontSize={"lg"} />}
-          variant={"ghost"}
-          borderRadius={"full"}
-          onClick={onPreviousMonth}
-        />
-        <Text fontSize={"sm"} lineHeight={1}>
+    <div className="space-y-4">
+      <div className="flex justify-center">
+        <p className="text-lg">{"お題一覧"}</p>
+      </div>
+      <div className="flex justify-center space-x-4">
+        <Button aria-label="previous month" onClick={onPreviousMonth}>
+          <ChevronLeft className="text-lg" />
+        </Button>
+        <p className="text-sm leading-none">
           {`${props.year}年${props.month}月`}
-        </Text>
-        <IconButton
-          aria-label="next month"
-          icon={<ChevronRight fontSize={"lg"} />}
-          variant={"ghost"}
-          borderRadius={"full"}
-          onClick={onNextMonth}
-        />
-      </HStack>
-      <SimpleGrid
-        as={"ul"}
-        w={"100%"}
-        spacing={2}
-        pr={4}
-        columns={{ base: 2, md: 4, lg: 7 }}
-        justifyItems={""}
-      >
+        </p>
+        <Button aria-label="next month" onClick={onNextMonth}>
+          <ChevronRight className="text-lg" />
+        </Button>
+      </div>
+      <ul className="w-full space-y-2 pr-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
         {blocks.map((block) => (
           <ThemeListItem
             key={block.id}
@@ -95,15 +73,15 @@ export const ThemeList = (props: Props) => {
             title={block.title}
           />
         ))}
-      </SimpleGrid>
-      <Stack>
-        <Text fontSize={"sm"}>
+      </ul>
+      <div className="space-y-4">
+        <p className="text-sm">
           {"毎日のお題の希望のお題がございましたら下記より受け付けております！"}
-        </Text>
-        <HStack>
-          <Button fontSize={"sm"}>{"お題アイディア投稿BOX"}</Button>
-        </HStack>
-      </Stack>
-    </Stack>
+        </p>
+        <div className="flex">
+          <Button>{"お題アイディア投稿BOX"}</Button>
+        </div>
+      </div>
+    </div>
   )
 }

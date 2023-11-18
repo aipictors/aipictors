@@ -1,4 +1,4 @@
-import { DownloadStickerList } from "@/app/[lang]/(main)/stickers/downloads/_components/download-sticker-list"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 /**
@@ -6,7 +6,13 @@ import type { Metadata } from "next"
  * @returns
  */
 const StickersDownloadsPage = async () => {
-  return <DownloadStickerList />
+  return (
+    <MainPage>
+      <div className="flex flex-col max-w-lg w-full p-4 space-y-8">
+        <p className="font-bold text-2xl">{"DL済みスタンプ"}</p>
+      </div>
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

@@ -1,30 +1,26 @@
 "use client"
 
-import { Avatar, Card, HStack, Image, Stack, Text } from "@chakra-ui/react"
+import { Card } from "@/components/ui/card"
 
 export const ThemeCard = () => {
   return (
     <Card>
-      <Image
-        boxSize={32}
-        objectFit="cover"
+      <img
+        className="w-40 object-cover rounded-lg"
         src="https://bit.ly/dan-abramov"
         alt="Dan Abramov"
-        borderRadius={"lg"}
       />
-      <Stack p={2} justifyContent={"space-between"} height={"100%"} spacing={1}>
-        <Text fontSize={"sm"} fontWeight={"bold"}>
-          {"作品名"}
-        </Text>
-        <HStack>
-          <Avatar
-            name="Dan Abrahmov"
+      <div className="p-2 flex flex-col justify-between h-full space-y-1">
+        <p className="text-sm font-bold">{"作品名"}</p>
+        <div className="flex items-center space-x-2">
+          <img
+            className="w-10 h-10 rounded-full"
             src="https://bit.ly/dan-abramov"
-            size={"sm"}
+            alt="Dan Abrahmov"
           />
-          <Text fontSize={"sm"}>{"名前"}</Text>
-        </HStack>
-      </Stack>
+          <p className="text-sm">{"名前"}</p>
+        </div>
+      </div>
     </Card>
   )
 }

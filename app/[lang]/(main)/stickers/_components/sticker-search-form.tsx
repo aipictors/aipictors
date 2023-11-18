@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, HStack, Input } from "@chakra-ui/react"
+import { Button, Input } from "@chakra-ui/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -13,7 +13,7 @@ type Props = {
  * @param props
  * @returns
  */
-const StickerSearchForm = (props: Props) => {
+export const StickerSearchForm = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 
   const router = useRouter()
@@ -26,7 +26,7 @@ const StickerSearchForm = (props: Props) => {
   }
 
   return (
-    <HStack px={4} w={"100%"}>
+    <div className="flex px-4 w-full">
       <Input
         type="text"
         value={searchTerm}
@@ -41,8 +41,6 @@ const StickerSearchForm = (props: Props) => {
         placeholder="検索キーワードを入力"
       />
       <Button onClick={handleSearch}>{"検索"}</Button>
-    </HStack>
+    </div>
   )
 }
-
-export default StickerSearchForm

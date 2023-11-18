@@ -2,7 +2,7 @@ import { StickersDocument, StickersQuery } from "@/__generated__/apollo"
 import { StickerList } from "@/app/[lang]/(main)/stickers/_components/sticker-list"
 import StickerSearchForm from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
-import { Stack, Text } from "@chakra-ui/react"
+import { Text } "@chakra-ui/react"
 import type { Metadata } from "next"
 
 /**
@@ -21,11 +21,11 @@ const StickersSearchPage = async () => {
   })
 
   return (
-    <Stack>
-      <Text>{"キーワードでスタンプを検索できます"}</Text>
+    <div className="flex flex-col">
+      <h1>{"キーワードでスタンプを検索できます"}</h1>
       <StickerSearchForm />
       <StickerList stickers={stickersQuery.data.stickers} />
-    </Stack>
+    </div>
   )
 }
 

@@ -1,27 +1,14 @@
-"use client"
-
-import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from "@chakra-ui/react"
-import { MoreHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export const UserMuteMenu = () => {
   return (
-    <Menu>
-      <MenuButton as={Button} leftIcon={<MoreHorizontal />} size={"sm"} />
-      <MenuList>
-        <MenuItem>
-          <Text>{"ミュートする"}</Text>
-        </MenuItem>
-        <MenuItem>
-          <Text>{"報告する"}</Text>
-        </MenuItem>
-      </MenuList>
-    </Menu>
+    <div>
+      <div>
+        <Button>{"ミュートする"}</Button>
+      </div>
+      <div>
+        <Button>{"報告する"}</Button>
+      </div>
+    </div>
   )
 }

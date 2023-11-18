@@ -2,18 +2,9 @@
 
 import { AutoResizeTextarea } from "@/app/_components/auto-resize-textarea"
 import { uploadFile } from "@/app/_utils/upload-file"
-import {
-  Box,
-  Button,
-  Flex,
-  Image,
-  Input,
-  Radio,
-  RadioGroup,
-  Select,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
 import {
   DndContext,
   KeyboardSensor,
@@ -32,8 +23,14 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 const NewImageForm = () => {
-  const [selectedImages, setSelectedImages] = useState([]) // 画像の配列を保持する状態
-  const [isHovered, setIsHovered] = useState(false) // ホバー状態を管理
+  /**
+   * 画像の配列を保持する状態
+   */
+  const [selectedImages, setSelectedImages] = useState([])
+  /**
+   * ホバー状態を管理
+   */
+  const [isHovered, setIsHovered] = useState(false)
   const [ageRestriction, setAgeRestriction] = useState("全年齢")
   const [publicMode, setPublicMode] = useState("全公開")
   const [taste, setTaste] = useState("イラスト系")
@@ -197,60 +194,36 @@ const NewImageForm = () => {
       id: `image-${props.id}`,
     })
     return (
-      <Box
-        ref={setNodeRef}
+      <div
         {...attributes}
         {...listeners}
-        margin="1rem"
-        w={{ base: "96px", md: "240px" }}
-        h={{ base: "96px", md: "240px" }}
-        overflow="hidden"
-        borderRadius="md"
-        position={"relative"}
+        className="m-4 w-24 h-24 md:w-60 md:h-60 overflow-hidden rounded-md relative"
       >
-        <Image
+        <img
           src={props.image}
           alt={`選択された画像 ${props.id + 1}`}
-          w={{ base: "96px", md: "240px" }}
-          h={{ base: "96px", md: "240px" }}
-          objectFit="cover"
+          className="w-24 h-24 md:w-60 md:h-60 object-cover"
         />
         <Button
-          size="sm"
+          className="text-sm absolute top-0 right-0 bg-white text-red-500 hover:bg-gray-200"
           onClick={() => handleRemoveImage(props.id)}
-          position="absolute"
-          top="0"
-          right="0"
-          colorScheme="red"
-          variant="ghost"
-          bg="whiteAlpha.500"
-          _hover={{ bg: "whiteAlpha.600" }}
         >
-          ✕
+          {"✕"}
         </Button>
-      </Box>
+      </div>
     )
   }
 
   return (
     <>
-      <Box h="100%" w="100%">
-        <Stack
-          alignItems={"center"}
-          bg="blackAlpha.700"
-          style={{ border: isHovered ? "2px dashed white" : "none" }}
+      <div>
+        <div
+          className={`items-center bg-black ${
+            isHovered ? "border-2 border-dashed border-white" : ""
+          }`}
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            padding={4}
-            margin={4}
-            background="blue.500"
-            color="white"
-            borderRadius="md"
-            cursor="pointer"
+          <div
+            className="flex flex-col items-center justify-center p-4 m-4 bg-blue-500 text-white rounded-md cursor-pointer"
             {...getRootProps()}
           >
             <input
@@ -261,9 +234,9 @@ const NewImageForm = () => {
               {...getInputProps()}
             />
             <p>画像／動画を追加</p>
-          </Box>
+          </div>
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <Flex flexWrap="wrap" justifyContent="center">
+            <div className="flex flex-wrap justify-center">
               <SortableContext
                 items={selectedImages}
                 strategy={verticalListSortingStrategy}
@@ -276,19 +249,19 @@ const NewImageForm = () => {
                   />
                 ))}
               </SortableContext>
-            </Flex>
+            </div>
           </DndContext>
-          <Stack margin={4} color="white">
-            <Text fontSize="sm">JPEG、PNG、GIF、WEBP、BMP、MP4</Text>
-            <Text fontSize="sm">
+          <div className="m-4 text-white flex flex-col">
+            <p className="text-sm">JPEG、PNG、GIF、WEBP、BMP、MP4</p>
+            <p className="text-sm">
               1枚32MB以内、最大200枚、動画は32MB、12秒まで
-            </Text>
-          </Stack>
-        </Stack>
+            </p>
+          </div>
+        </div>
 
-        <Box maxW={1200} mx={"auto"} padding={8}>
-          <Stack direction="column">
-            <Text fontSize="sm">タイトル</Text>
+        <div>
+          <div className="flex flex-col">
+            <p className="text-sm">タイトル</p>
             <Input
               id="title_input"
               minLength={1}
@@ -297,97 +270,105 @@ const NewImageForm = () => {
               type="text"
               name="title"
               placeholder="タイトル"
+              className="w-full"
             />
-          </Stack>
+          </div>
 
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">キャプション</Text>
-            <AutoResizeTextarea maxLength={3000} placeholder="キャプション" />
-          </Stack>
+          <div className="flex flex-col mt-4">
+            <p className="text-sm">キャプション</p>
+            <AutoResizeTextarea
+              maxLength={3000}
+              placeholder="キャプション"
+              className="w-full"
+            />
+          </div>
 
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">年齢制限</Text>
-            <RadioGroup
-              onChange={handleAgeRestrictionChange}
-              value={ageRestriction}
+          <div className="flex flex-col mt-4">
+            <p className="text-sm">年齢制限</p>
+            <div
+            // onChange={handleAgeRestrictionChange}
+            // value={ageRestriction}
             >
-              <Stack direction="column" spacing={2}>
-                <Radio value="全年齢">全年齢</Radio>
-                <Radio value="R-15">R-15</Radio>
-                <Radio value="R-18">R-18</Radio>
-                <Radio value="R-18G">R-18G</Radio>
-              </Stack>
-            </RadioGroup>
-          </Stack>
+              <div className="flex flex-col space-y-2">
+                <input type="radio" value="全年齢" name="ageRestriction" />
+                全年齢
+                <input type="radio" value="R-15" name="ageRestriction" />
+                R-15
+                <input type="radio" value="R-18" name="ageRestriction" />
+                R-18
+                <input type="radio" value="R-18G" name="ageRestriction" />
+                R-18G
+              </div>
+            </div>
+          </div>
 
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">公開モード</Text>
-            <RadioGroup onChange={handlePublicModeChange} value={publicMode}>
-              <Stack direction="column" spacing={2}>
-                <Radio value="全公開">全公開</Radio>
-                <Radio value="限定公開(URLのみアクセス可)">
-                  限定公開(URLのみアクセス可)
-                </Radio>
-                <Radio value="新着非表示">新着非表示</Radio>
-                <Radio value="アーカイブ">アーカイブ</Radio>
-                <Radio value="下書き">下書き</Radio>
-              </Stack>
-            </RadioGroup>
-          </Stack>
-
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">テイスト</Text>
-            <Select
+          <div className="flex flex-col mt-4">
+            <p className="text-sm">公開モード</p>
+            <div
+            // onChange={handlePublicModeChange}
+            // value={publicMode}
+            >
+              <div className="flex flex-col space-y-2">
+                <input type="radio" value="全公開" name="publicMode" />
+                全公開
+                <input
+                  type="radio"
+                  value="限定公開(URLのみアクセス可)"
+                  name="publicMode"
+                />
+                限定公開(URLのみアクセス可)
+                <input type="radio" value="新着非表示" name="publicMode" />
+                新着非表示
+                <input type="radio" value="アーカイブ" name="publicMode" />
+                アーカイブ
+                <input type="radio" value="下書き" name="publicMode" />
+                下書き
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-sm">テイスト</p>
+            <select
               onChange={(e) => handleTasteChange(e.target.value)}
               value={taste}
             >
               <option value="イラスト系">イラスト系</option>
               <option value="セミリアル系">セミリアル系</option>
               <option value="リアル系">リアル系</option>
-            </Select>
-          </Stack>
-
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">使用AI</Text>
-            <Select
+            </select>
+          </div>
+          <div className="flex flex-col mt-4">
+            <p className="text-sm">使用AI</p>
+            <select
               onChange={(e) => handleAiUsedChange(e.target.value)}
               value={aiUsed}
             >
               <option value="NovelAI">NovelAI</option>
               <option value="そのほか">そのほか</option>
-            </Select>
-          </Stack>
-
-          <Stack direction="column" mt={4}>
-            <Text fontSize="sm">予約投稿</Text>
-            <Box display={{ base: "block", md: "flex" }}>
+            </select>
+          </div>
+          <div className="flex flex-col mt-4">
+            <p className="text-sm">予約投稿</p>
+            <div className="block md:flex">
               <Input
                 type="date"
                 value={reservationDate}
                 onChange={handleReservationDateChange}
-                mr={{ base: 0, md: 2 }}
-                mt={{ base: 2, md: 0 }}
+                className="mr-0 md:mr-2 mt-2 md:mt-0"
               />
               <Input
                 type="time"
                 value={reservationTime}
                 onChange={handleReservationTimeChange}
               />
-            </Box>
-          </Stack>
+            </div>
+          </div>
           {/* Submit button */}
-          <Button
-            margin={4}
-            w="120px"
-            mx={"auto"}
-            type="submit"
-            colorScheme="blue"
-            onClick={handleUpload}
-          >
+          <Button type="submit" onClick={handleUpload}>
             投稿
           </Button>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   )
 }

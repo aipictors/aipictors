@@ -1,7 +1,3 @@
-"use client"
-
-import { Image, Stack } from "@chakra-ui/react"
-
 type Props = {
   workImageURL?: string
   subWorkImageURLs: string[]
@@ -9,25 +5,20 @@ type Props = {
 
 export const WorkImageView = (props: Props) => {
   return (
-    <Stack>
-      <Image
-        w={"100%"}
-        h={"100%"}
-        objectFit={"cover"}
-        borderRadius={"md"}
-        alt={""}
+    <div className="space-y-4">
+      <img
+        className="w-full h-full object-cover rounded-md"
+        alt=""
         src={props.workImageURL}
       />
       {props.subWorkImageURLs.map((imageURL) => (
-        <Image
+        <img
           key={imageURL}
-          w={"100%"}
-          h={"100%"}
-          borderRadius={"md"}
-          alt={""}
+          className="w-full h-full rounded-md"
+          alt=""
           src={imageURL}
         />
       ))}
-    </Stack>
+    </div>
   )
 }

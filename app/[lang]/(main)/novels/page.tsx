@@ -1,4 +1,4 @@
-import { NovelList } from "@/app/[lang]/(main)/novels/_components/novel-list"
+import { NovelCard } from "@/app/[lang]/(main)/novels/_components/novel-card"
 import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
@@ -9,7 +9,9 @@ import type { Metadata } from "next"
 const NovelsPage = async () => {
   return (
     <MainPage>
-      <NovelList />
+      <div>
+        <NovelCard />
+      </div>
     </MainPage>
   )
 }

@@ -1,7 +1,5 @@
-"use client"
-
-import { Skeleton } from "@chakra-ui/react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const NewAlbumImage = () => {
-  return <Skeleton height="200px" />
+  return <Skeleton />
 }

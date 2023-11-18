@@ -1,43 +1,28 @@
-"use client"
-
-import {
-  Button,
-  HStack,
-  IconButton,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 
 export const UserWorkListActions = () => (
-  <Stack spacing={4}>
-    <HStack>
+  <div className="space-y-4">
+    <div className="flex space-x-4">
       <Input
         placeholder="Select Date and Time"
-        size="sm"
+        className="text-sm w-48"
         type="datetime-local"
-        maxW={48}
       />
-      <Text>{"～"}</Text>
+      <p>{"～"}</p>
       <Input
         placeholder="Select Date and Time"
-        size="sm"
+        className="text-sm w-48"
         type="datetime-local"
-        maxW={48}
       />
-      <IconButton
-        aria-label={"メニュー"}
-        borderRadius={"full"}
-        size={"sm"}
-        icon={<Search />}
-      />
-      <Button borderRadius={"full"} size={"sm"}>
-        {"タイルモードON"}
+      <Button aria-label={"メニュー"} className="rounded-full text-sm">
+        <Search />
       </Button>
-      <Button borderRadius={"full"} size={"sm"}>
+      <Button className="rounded-full text-sm">{"タイルモードON"}</Button>
+      <Button className="rounded-full text-sm">
         {"いいね順（現在新しい順）"}
       </Button>
-    </HStack>
-  </Stack>
+    </div>
+  </div>
 )

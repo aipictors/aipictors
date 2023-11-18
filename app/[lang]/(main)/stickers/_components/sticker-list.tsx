@@ -1,7 +1,6 @@
 "use client"
 import type { StickersQuery } from "@/__generated__/apollo"
 import { StickerCard } from "@/app/[lang]/(main)/stickers/_components/sticker-card"
-import { HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   stickers: StickersQuery["stickers"]
@@ -9,13 +8,10 @@ type Props = {
 
 export const StickerList = (props: Props) => {
   return (
-    <HStack as={"main"} justifyContent={"center"} w={"100%"} px={4}>
-      <Stack>
-        <Text>{"新着"}</Text>
-        <SimpleGrid
-          columns={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}
-          spacing={2}
-        >
+    <main className="flex justify-center w-full px-4">
+      <div className="flex flex-col">
+        <p>新着</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
           {props.stickers.map((props) => {
             return (
               <StickerCard
@@ -28,8 +24,8 @@ export const StickerList = (props: Props) => {
               />
             )
           })}
-        </SimpleGrid>
-      </Stack>
-    </HStack>
+        </div>
+      </div>
+    </main>
   )
 }

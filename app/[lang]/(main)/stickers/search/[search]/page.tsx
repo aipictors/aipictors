@@ -8,7 +8,6 @@ import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
 import StickerSearchForm from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
-import { Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   params: {
@@ -24,7 +23,6 @@ type Props = {
 const StickersPage = async (props: Props) => {
   const client = createClient()
 
-  console.log(props.params.search)
   const stickersQuery = await client.query<
     StickersQuery,
     StickersQueryVariables
@@ -39,15 +37,14 @@ const StickersPage = async (props: Props) => {
     },
   })
 
+  const isEmpty = stickersQuery.data.stickers.length === 0
+
   return (
-    <Stack>
+    <div className="flex flex-col">
       <StickerSearchForm text={decodeURIComponent(props.params.search)} />
-      {stickersQuery.data.stickers.length === 0 ? (
-        <Text>{"スタンプが見つかりませんでした"}</Text>
-      ) : (
-        <StickerList stickers={stickersQuery.data.stickers} />
-      )}
-    </Stack>
+      {isEmpty && <p>{"スタンプが見つかりませんでした"}</p>}
+      {!isEmpty && <StickerList stickers={stickersQuery.data.stickers} />}
+    </div>
   )
 }
 

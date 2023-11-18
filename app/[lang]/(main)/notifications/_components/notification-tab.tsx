@@ -1,19 +1,16 @@
-"use client"
-
-import { Button, Divider, HStack, Stack } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 
 export const NotificationTab = () => {
   return (
-    <Stack>
-      <HStack>
-        <Button isActive>{"すべて"}</Button>
+    <div>
+      <div className="flex">
+        <Button>{"すべて"}</Button>
         <Button>{"いいね"}</Button>
         <Button>{"コメント"}</Button>
         <Button>{"返信"}</Button>
         <Button>{"フォロー"}</Button>
         <Button>{"ランキング"}</Button>
-      </HStack>
-      <Divider />
-    </Stack>
+      </div>
+    </div>
   )
 }

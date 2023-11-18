@@ -1,7 +1,4 @@
-"use client"
-
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, HStack, Image, Stack, Text } from "@chakra-ui/react"
 
 type Props = {
   userIconImageURL?: string
@@ -13,20 +10,20 @@ type Props = {
 
 export const WorkComment = (props: Props) => {
   return (
-    <HStack alignItems={"flex-start"}>
-      <Avatar src={props.userIconImageURL} />
-      <Stack spacing={0}>
-        <Text>{props.userName}</Text>
-        {props.text && <Text>{props.text}</Text>}
+    <div className="flex items-start">
+      <img className="rounded-full" src={props.userIconImageURL} alt="" />
+      <div className="space-y-0">
+        <p>{props.userName}</p>
+        {props.text && <p>{props.text}</p>}
         {props.stickerImageURL && (
-          <Image w={32} alt={""} src={props.stickerImageURL} />
+          <img className="w-8" alt="" src={props.stickerImageURL} />
         )}
-        <HStack>
-          <Text fontSize={"xs"}>{toDateTimeText(props.createdAt)}</Text>
-          <Text fontSize={"xs"}>{"返信"}</Text>
-          <Text fontSize={"xs"}>{"ダウンロード"}</Text>
-        </HStack>
-      </Stack>
-    </HStack>
+        <div className="flex space-x-2">
+          <p className="text-xs">{toDateTimeText(props.createdAt)}</p>
+          <p className="text-xs">{"返信"}</p>
+          <p className="text-xs">{"ダウンロード"}</p>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -1,16 +1,10 @@
-"use client"
-
+import { Button } from "@/components/ui/button"
 import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react"
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog"
 import { useRouter } from "next/navigation"
 
 export const StickerModal = () => {
@@ -21,22 +15,22 @@ export const StickerModal = () => {
   }
 
   return (
-    <Modal isOpen={true} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader />
-        <ModalCloseButton />
-        <ModalBody>
-          <Text>{"新着"}</Text>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Close
-          </Button>
-          <Button variant="ghost">Secondary Action</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    <Dialog
+      open={true}
+      onOpenChange={() => {
+        onClose()
+      }}
+    >
+      <DialogContent>
+        <DialogHeader />
+        <div>
+          <p>{"新着"}</p>
+        </div>
+        <DialogFooter>
+          <Button onClick={onClose}>{"Close"}</Button>
+          <Button variant="ghost">{"Secondary Action"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

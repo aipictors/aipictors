@@ -1,5 +1,3 @@
-"use client"
-
 import type { WorkAwardsQuery } from "@/__generated__/apollo"
 import { RankingCard } from "@/app/[lang]/(main)/awards/_components/ranking-card"
 

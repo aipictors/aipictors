@@ -1,21 +1,11 @@
-"use client"
-
+import { Button } from "@/components/ui/button"
 import {
-  Button,
-  Checkbox,
-  HStack,
-  Image,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 type Props = {
   isOpen: boolean
@@ -24,88 +14,49 @@ type Props = {
 
 export const AddStickerModal = (props: Props) => {
   return (
-    <Modal
-      onClose={props.onClose}
-      isOpen={props.isOpen}
-      isCentered
-      size={"xl"}
-      scrollBehavior="inside"
+    <Dialog
+      onOpenChange={() => {
+        props.onClose()
+      }}
+      open={props.isOpen}
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{"スタンプ公開"}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Stack>
-            <Text>{"非公開の作成済みスタンプ"}</Text>
-            <HStack>
-              <Image
-                boxSize={36}
-                src="gibbresh.png"
-                fallbackSrc="https://via.placeholder.com/150"
-              />
-              <Image
-                boxSize={36}
-                src="gibbresh.png"
-                fallbackSrc="https://via.placeholder.com/150"
-              />
-            </HStack>
-            <Text>{"選択スタンプ"}</Text>
-            <Image
-              boxSize={36}
-              src="gibbresh.png"
-              fallbackSrc="https://via.placeholder.com/150"
-            />
-            <Text>{"タイトル"}</Text>
-            <Input placeholder="タイトル" />
-            <Stack>
-              <Text>{"ジャンル"}</Text>
-              <HStack spacing={4}>
-                <Checkbox size="sm" colorScheme="blue">
-                  {"人物"}
-                </Checkbox>
-                <Checkbox size="sm" colorScheme="blue">
-                  {"動物"}
-                </Checkbox>
-                <Checkbox size="sm" colorScheme="blue">
-                  {"機械"}
-                </Checkbox>
-                <Checkbox size="sm" colorScheme="blue">
-                  {"背景"}
-                </Checkbox>
-                <Checkbox size="sm" colorScheme="blue">
-                  {"物"}
-                </Checkbox>
-              </HStack>
-            </Stack>
-            <Text>{"タグ"}</Text>
-            <HStack>
-              <Checkbox size="sm" colorScheme="blue">
-                {"楽しい"}
-              </Checkbox>
-              <Checkbox size="sm" colorScheme="blue">
-                {"嬉しい"}
-              </Checkbox>
-              <Checkbox size="sm" colorScheme="blue">
-                {"お祝い"}
-              </Checkbox>
-              <Checkbox size="sm" colorScheme="blue">
-                {"悲しい"}
-              </Checkbox>
-              <Checkbox size="sm" colorScheme="blue">
-                {"その他"}
-              </Checkbox>
-            </HStack>
-          </Stack>
-        </ModalBody>
-        <ModalFooter justifyContent={"center"}>
-          <HStack>
-            <Button colorScheme="primary" borderRadius={"full"}>
-              {"追加"}
-            </Button>
-          </HStack>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{"スタンプ公開"}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col">
+          <p>{"非公開の作成済みスタンプ"}</p>
+          <div className="flex">
+            <img alt={""} className="w-9 h-9" src="gibbresh.png" />
+            <img alt="" className="w-9 h-9" src="gibbresh.png" />
+          </div>
+          <p>{"選択スタンプ"}</p>
+          <img alt="" className="w-9 h-9" src="gibbresh.png" />
+          <p>{"タイトル"}</p>
+          <input className="border-2 border-gray-300" placeholder="タイトル" />
+          <div className="flex flex-col">
+            <p>{"ジャンル"}</p>
+            <div className="flex space-x-4">
+              <input type="checkbox" className="text-blue-500" /> 人物
+              <input type="checkbox" className="text-blue-500" /> 動物
+              <input type="checkbox" className="text-blue-500" /> 機械
+              <input type="checkbox" className="text-blue-500" /> 背景
+              <input type="checkbox" className="text-blue-500" /> 物
+            </div>
+          </div>
+          <p>{"タグ"}</p>
+          <div className="flex">
+            <input type="checkbox" className="text-blue-500" /> 楽しい
+            <input type="checkbox" className="text-blue-500" /> 嬉しい
+            <input type="checkbox" className="text-blue-500" /> お祝い
+            <input type="checkbox" className="text-blue-500" /> 悲しい
+            <input type="checkbox" className="text-blue-500" /> その他
+          </div>
+        </div>
+        <DialogFooter>
+          <Button>{"追加"}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -1,11 +1,16 @@
-import { TagList } from "@/app/[lang]/(main)/tags/_components/tag-list"
+import { TagListItem } from "@/app/[lang]/(main)/tags/_components/tag-list-item"
 import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 const TagsPage = async () => {
   return (
     <MainPage>
-      <TagList />
+      <article>
+        <h1>{"タグ"}</h1>
+        <div className="flex flex-col">
+          <TagListItem />
+        </div>
+      </article>
     </MainPage>
   )
 }

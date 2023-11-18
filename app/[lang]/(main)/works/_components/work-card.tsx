@@ -1,17 +1,12 @@
-import { Image } from "@chakra-ui/react"
-
 type Props = {
   imageURL?: string
 }
 
 export const WorkCard = (props: Props) => {
   return (
-    <Image
-      w={"100%"}
-      h={"100%"}
-      objectFit={"cover"}
-      borderRadius={"md"}
-      alt={""}
+    <img
+      className="w-full h-full object-cover rounded-md"
+      alt=""
       src={props.imageURL}
     />
   )

@@ -1,6 +1,4 @@
-"use client"
-
-import { Flex, Tab, TabIndicator, TabList, Tabs } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useMemo } from "react"
@@ -34,33 +32,47 @@ export const UserTabs = (props: Props) => {
   }, [pathname, props.userId])
 
   return (
-    <Flex overflowX="auto" w="100%">
-      <Tabs isFitted variant="line" index={index} w="100%">
-        <TabList>
-          <Tab as={Link} href={`/users/${props.userId}`} minW={32}>
+    <div className="flex overflow-x-auto w-full">
+      <div className="w-full">
+        <Button asChild>
+          <Link href={`/users/${props.userId}`} className={"min-w-32"}>
             {"画像"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/novels`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/users/${props.userId}/novels`} className={"min-w-32"}>
             {"小説"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/notes`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/users/${props.userId}/notes`} className={"min-w-32"}>
             {"コラム"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/albums`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/users/${props.userId}/albums`} className={"min-w-32"}>
             {"シリーズ"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/collections`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link
+            href={`/users/${props.userId}/collections`}
+            className={"min-w-32"}
+          >
             {"コレクション"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/stickers`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/users/${props.userId}/stickers`} className={"min-w-32"}>
             {"スタンプ"}
-          </Tab>
-          <Tab as={Link} href={`/users/${props.userId}/supports`} minW={32}>
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link href={`/users/${props.userId}/supports`} className={"min-w-32"}>
             {"支援応援"}
-          </Tab>
-        </TabList>
-        <TabIndicator bg="blue.500" borderRadius="full" />
-      </Tabs>
-    </Flex>
+          </Link>
+        </Button>
+      </div>
+    </div>
   )
 }
