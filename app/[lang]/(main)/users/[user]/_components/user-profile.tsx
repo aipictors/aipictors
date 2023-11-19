@@ -9,7 +9,7 @@ import { LinkWebButton } from "@/app/_components/button/link-web-button"
 import { ShareButton } from "@/app/_components/button/share-button"
 import { SocialInstagramButton } from "@/app/_components/button/social-instagram-button"
 import { SocialTwitterButton } from "@/app/_components/button/social-twitter-button"
-import { Avatar, HStack, Link as ChakraLink, Text } from "@chakra-ui/react"
+import { Avatar } from "@/components/ui/avatar"
 import { Award, Eye, Heart, Medal, User } from "lucide-react"
 
 type Props = {
@@ -41,38 +41,38 @@ export const UserProfile = (props: Props) => {
         <ShareButton />
         <UserMuteMenu />
       </div>
-      <HStack>
+      <div className="flex flex-col">
         <div className="flex flex-col">
           <div className="flex">
-            <Heart fontSize={"sm"} />
-            <Text fontSize={"sm"}>{props.userReceivedLikesCount}</Text>
-            <Text fontSize={"sm"}>{"いいねされた"}</Text>
+            <Heart className={"text-sm"} />
+            <span className={"text-sm"}>{props.userReceivedLikesCount}</span>
+            <span className={"text-sm"}>{"いいねされた"}</span>
           </div>
           <div className="flex">
-            <Eye fontSize={"sm"} />
-            <Text fontSize={"sm"}>{props.userReceivedViewsCount}</Text>
-            <Text fontSize={"sm"}>{"閲覧された"}</Text>
+            <Eye className={"w-8"} />
+            <span className={"text-sm"}>{props.userReceivedViewsCount}</span>
+            <span className={"text-sm"}>{"閲覧された"}</span>
           </div>
         </div>
         <div className="flex flex-col">
           <div className="flex">
-            <User fontSize={"sm"} />
-            <Text fontSize={"sm"}>{props.userFollowersCount}</Text>
-            <Text fontSize={"sm"}>{"フォロワー"}</Text>
+            <User className={"w-8"} />
+            <span className={"text-sm"}>{props.userFollowersCount}</span>
+            <span className={"text-sm"}>{"フォロワー"}</span>
           </div>
           <div className="flex">
-            <Medal fontSize={"sm"} />
-            <Text fontSize={"sm"}>{props.userAwardsCount}</Text>
-            <Text fontSize={"sm"}>{"入賞数"}</Text>
+            <Medal className={"w-8"} />
+            <span className={"text-sm"}>{props.userAwardsCount}</span>
+            <span className={"text-sm"}>{"入賞数"}</span>
           </div>
         </div>
-      </HStack>
+      </div>
       <div className="flex">
-        <Award fontSize={"sm"} />
-        <ChakraLink fontSize={"sm"}>{"実績・トロフィーはこちら"}</ChakraLink>
+        <Award className={"w-8"} />
+        <span className={"w-8"}>{"実績・トロフィーはこちら"}</span>
       </div>
       {props.userBiography && (
-        <Text fontSize={"sm"}>{props.userBiography}</Text>
+        <span className={"text-sm"}>{props.userBiography}</span>
       )}
       <div className="flex">
         <SocialTwitterButton />

@@ -1,8 +1,8 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import {
@@ -18,14 +18,11 @@ import {
   Lightbulb,
   LogIn,
   LogOut,
-  Moon,
   Settings,
   Sparkles,
   Stamp,
-  Sun,
   User,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useContext } from "react"
 import {
@@ -42,8 +39,6 @@ type Props = {
 
 export const HomeNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
-
-  const { setTheme, theme } = useTheme()
 
   return (
     <div className="flex flex-col space-y-1">
@@ -118,28 +113,7 @@ export const HomeNavigationList = (props: Props) => {
           {"設定"}
         </HomeNavigationButton>
       )}
-      {theme !== "light" && (
-        <Button
-          className="w-full justify-start"
-          size={"sm"}
-          variant={"ghost"}
-          onClick={() => setTheme("light")}
-        >
-          <Sun className="mr-4 w-4">{"Light"}</Sun>
-          <span>{"ライトモード"}</span>
-        </Button>
-      )}
-      {theme !== "dark" && (
-        <Button
-          className="w-full justify-start"
-          size={"sm"}
-          variant={"ghost"}
-          onClick={() => setTheme("dark")}
-        >
-          <Moon className="mr-4 w-4">{"Dark"}</Moon>
-          <span>{"ダークモード"}</span>
-        </Button>
-      )}
+      <ThemeModeButton />
       {appContext.isLoggedIn && (
         <HomeNavigationButton
           onClick={() => {

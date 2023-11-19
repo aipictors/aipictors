@@ -8,11 +8,10 @@ import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-
 import { useSuspenseQuery } from "@apollo/client"
-import { useInterval } from "@chakra-ui/react"
 import Link from "next/link"
 import { startTransition } from "react"
+import { useInterval } from "usehooks-ts"
 
 export const MessageThreadList = () => {
   const { data: threads, refetch } = useSuspenseQuery<

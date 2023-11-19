@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/sheet"
 import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
-import { useBreakpointValue } from "@chakra-ui/react"
 import { Bell, Folder, Menu, Search } from "lucide-react"
 import Link from "next/link"
 import { useEffect } from "react"
@@ -27,12 +26,6 @@ type Props = {
 
 export const HomeHeader = (props: Props) => {
   const { toast } = useToast()
-
-  const hasSheet = useBreakpointValue({
-    base: true,
-    sm: true,
-    md: false,
-  })
 
   useEffect(() => {
     toast({
@@ -46,26 +39,24 @@ export const HomeHeader = (props: Props) => {
     <header className="sticky top-0 z-50">
       <Card className="flex justify-between pl-2 pr-4 md:px-6 py-4 space-x-4 border-none rounded-none shadow-none">
         <div className="flex md:flex-1 space-x-2 items-center min-w-fit">
-          {hasSheet && (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant={"ghost"} size={"icon"}>
-                  <Menu />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side={"left"}>
-                <SheetHeader>
-                  <SheetTitle>{"ベータ"}</SheetTitle>
-                  <SheetDescription>
-                    <BetaNavigationList
-                      onLogin={props.onLogin}
-                      onLogout={props.onLogout}
-                    />
-                  </SheetDescription>
-                </SheetHeader>
-              </SheetContent>
-            </Sheet>
-          )}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="md:hidden" variant={"ghost"} size={"icon"}>
+                <Menu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side={"left"}>
+              <SheetHeader>
+                <SheetTitle>{"ベータ"}</SheetTitle>
+                <SheetDescription>
+                  <BetaNavigationList
+                    onLogin={props.onLogin}
+                    onLogout={props.onLogout}
+                  />
+                </SheetDescription>
+              </SheetHeader>
+            </SheetContent>
+          </Sheet>
           <Link href="https://www.aipictors.com">
             <img
               src="/icon.png"

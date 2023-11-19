@@ -1,9 +1,7 @@
 "use client"
 
-import { theme } from "@/app/_contexts/theme"
 import RootError from "@/app/error"
-import { CacheProvider } from "@chakra-ui/next-js"
-import { ChakraProvider } from "@chakra-ui/react"
+
 import type { Metadata } from "next"
 
 const RootGlobalError = () => {
@@ -23,11 +21,7 @@ const RootGlobalError = () => {
         <link href={"/icon.svg"} rel={"icon"} type={"image/svg+xml"} />
       </head>
       <body>
-        <CacheProvider>
-          <ChakraProvider theme={theme}>
-            <RootError />
-          </ChakraProvider>
-        </CacheProvider>
+        <RootError />
       </body>
     </html>
   )

@@ -1,19 +1,10 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  Home,
-  LogIn,
-  MessageCircle,
-  Moon,
-  Rocket,
-  Sparkles,
-  Sun,
-} from "lucide-react"
-import { useTheme } from "next-themes"
+import { Home, LogIn, MessageCircle, Rocket, Sparkles } from "lucide-react"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -29,8 +20,6 @@ type Props = {
 
 export const BetaNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
-
-  const { setTheme } = useTheme()
 
   return (
     <div className="flex flex-col space-y-2">
@@ -67,24 +56,7 @@ export const BetaNavigationList = (props: Props) => {
           {"ログイン"}
         </HomeNavigationButton>
       )}
-      <Button
-        className="w-full justify-start"
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => setTheme("light")}
-      >
-        <Sun className="mr-4 w-4">{"Light"}</Sun>
-        <span>{"ライトモード"}</span>
-      </Button>
-      <Button
-        className="w-full justify-start"
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => setTheme("dark")}
-      >
-        <Moon className="mr-4 w-4">{"Dark"}</Moon>
-        <span>{"ダークモード"}</span>
-      </Button>
+      <ThemeModeButton />
       <div className="py-2">
         <Separator />
       </div>

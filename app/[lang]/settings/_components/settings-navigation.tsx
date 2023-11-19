@@ -1,8 +1,7 @@
 "use client"
 
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
-import { useBreakpoint } from "@chakra-ui/react"
-import React from "react"
+import { useBreakpoint } from "@/app/_hooks/use-breakpoint"
 
 export const SettingsNavigation = () => {
   const breakpoint = useBreakpoint()

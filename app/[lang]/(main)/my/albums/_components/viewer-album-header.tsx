@@ -3,11 +3,11 @@
 import { ViewerAlbumList } from "@/app/[lang]/(main)/my/albums/_components/vIewer-album-list"
 import { ViewerAlbumAddDialog } from "@/app/[lang]/(main)/my/albums/_components/viewer-album-add-dialog"
 import { Button } from "@/components/ui/button"
-import { useDisclosure } from "@chakra-ui/react"
 import { Plus } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 
 export const ViewerAlbumHeader = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (
     <>

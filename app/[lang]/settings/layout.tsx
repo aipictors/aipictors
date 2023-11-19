@@ -6,8 +6,8 @@ import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
 import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import { AppContext } from "@/app/_contexts/app-context"
-import { useDisclosure } from "@chakra-ui/react"
 import React, { useContext } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   children: React.ReactNode
@@ -17,16 +17,16 @@ const SettingsLayout = (props: Props) => {
   const appContext = useContext(AppContext)
 
   const {
-    isOpen: isOpenLogin,
-    onOpen: onOpenLogin,
-    onClose: onCloseLogin,
-  } = useDisclosure()
+    value: isOpenLogin,
+    setTrue: onOpenLogin,
+    setFalse: onCloseLogin,
+  } = useBoolean()
 
   const {
-    isOpen: isOpenLogout,
-    onOpen: onOpenLogout,
-    onClose: onCloseLogout,
-  } = useDisclosure()
+    value: isOpenLogout,
+    setTrue: onOpenLogout,
+    setFalse: onCloseLogout,
+  } = useBoolean()
 
   if (appContext.isLoading) {
     return null

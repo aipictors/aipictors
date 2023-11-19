@@ -4,8 +4,8 @@ import { InPaintingSelectedPromptDialog } from "@/app/[lang]/(beta)/generation/_
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet"
-import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
@@ -16,10 +16,10 @@ type Props = {
 
 export const SelectedWorkDialog = (props: Props) => {
   const {
-    isOpen: isPromptOpen,
-    onOpen: onPromptOpen,
-    onClose: onPromptClose,
-  } = useDisclosure()
+    value: isPromptOpen,
+    setTrue: onPromptOpen,
+    setFalse: onPromptClose,
+  } = useBoolean()
 
   const [rating, setRating] = useState(0)
 

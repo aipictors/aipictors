@@ -14,8 +14,8 @@ import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_c
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useSuspenseQuery } from "@apollo/client"
-import { useDisclosure } from "@chakra-ui/react"
 import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   selectedHistory: string
@@ -33,25 +33,25 @@ export const GenerationEditorHistory = (props: Props) => {
     },
   })
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure()
+    value: isDeleteOpen,
+    setTrue: onDeleteOpen,
+    setFalse: onDeleteClose,
+  } = useBoolean()
 
   const {
-    isOpen: isDlOpen,
-    onOpen: onDlOpen,
-    onClose: onDlClose,
-  } = useDisclosure()
+    value: isDlOpen,
+    setTrue: onDlOpen,
+    setFalse: onDlClose,
+  } = useBoolean()
 
   const {
-    isOpen: isOpenInPainting,
-    onOpen: onOpenInPainting,
-    onClose: onCloseInPainting,
-  } = useDisclosure()
+    value: isOpenInPainting,
+    setTrue: onOpenInPainting,
+    setFalse: onCloseInPainting,
+  } = useBoolean()
 
   return (
     <>

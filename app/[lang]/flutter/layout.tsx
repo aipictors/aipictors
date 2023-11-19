@@ -1,6 +1,6 @@
 "use client"
 
-import { useColorMode } from "@chakra-ui/react"
+import { useTheme } from "next-themes"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
@@ -9,7 +9,7 @@ type Props = {
 }
 
 const FlutterLayout = (props: Props) => {
-  const { setColorMode } = useColorMode()
+  const { setTheme } = useTheme()
 
   const searchParams = useSearchParams()
 
@@ -17,10 +17,10 @@ const FlutterLayout = (props: Props) => {
 
   useEffect(() => {
     if (colorScheme === "dark") {
-      setColorMode("dark")
+      setTheme("dark")
     }
     if (colorScheme === "light") {
-      setColorMode("light")
+      setTheme("light")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

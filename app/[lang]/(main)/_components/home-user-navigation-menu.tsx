@@ -1,5 +1,6 @@
 "use client"
 
+import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -74,20 +75,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             </DropdownMenuItem>
           </Link>
         )}
-        {/* <button
-            type="button"
-            className="text-gray-700 block w-full text-left px-4 py-2 text-sm"
-            role="menuitem"
-            id="menu-item-4"
-            onClick={toggleColorMode}
-          >
-            {colorMode === "dark" ? (
-              <TbSunFilled className="inline-block mr-2" />
-            ) : (
-              <TbMoonFilled className="inline-block mr-2" />
-            )}
-            {colorMode === "dark" ? "ライトモード" : "ダークモード"}
-          </button> */}
+        <ThemeModeButton />
         {appContext.isLoggedIn && (
           <DropdownMenuItem onClick={props.onLogout}>
             <LogOut className="inline-block mr-2" />

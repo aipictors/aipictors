@@ -3,7 +3,6 @@
     "adsbygoogle",
     "adsense",
     "aipictors",
-    "chakra",
     "codegen",
     "followee",
     "followees",
@@ -48,7 +47,6 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.autoImportFileExcludePatterns": [
-    "@chakra-ui",
     "@emotion",
     "@radix-ui",
     "next/dist",

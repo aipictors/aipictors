@@ -4,7 +4,7 @@ import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
 import { SelectableLoraModel } from "@/app/[lang]/(beta)/generation/_components/selectable-lora-model"
 import { Button } from "@/components/ui/button"
-import { useDisclosure } from "@chakra-ui/react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   /**
@@ -23,7 +23,7 @@ type Props = {
 }
 
 export const GenerationEditorConfigLoraModels = (props: Props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const selectedModelIds = props.modelConfigs.map((model) => model.id)
 

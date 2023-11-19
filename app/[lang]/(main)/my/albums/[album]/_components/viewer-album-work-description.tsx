@@ -4,11 +4,11 @@ import { DescriptionSettingDialog } from "@/app/[lang]/(main)/my/albums/[album]/
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useDisclosure } from "@chakra-ui/react"
 import { Settings } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 
 export const ViewerAlbumWorkDescription = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (
     <>

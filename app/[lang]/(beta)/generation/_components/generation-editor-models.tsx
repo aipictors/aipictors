@@ -6,8 +6,8 @@ import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-
 import { SelectableModel } from "@/app/[lang]/(beta)/generation/_components/selectable-model"
 import { Button } from "@/components/ui/button"
 import { Config } from "@/config"
-import { useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -16,7 +16,7 @@ type Props = {
 }
 
 export const GenerationEditorModels = (props: Props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   /**
    * 表示されるモデルのID

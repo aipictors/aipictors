@@ -7,7 +7,7 @@ import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import { Separator } from "@/components/ui/separator"
-import { useDisclosure } from "@chakra-ui/react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   children: React.ReactNode
@@ -15,16 +15,16 @@ type Props = {
 
 const BetaLayout = (props: Props) => {
   const {
-    isOpen: isOpenLogin,
-    onOpen: onOpenLogin,
-    onClose: onCloseLogin,
-  } = useDisclosure()
+    value: isOpenLogin,
+    setTrue: onOpenLogin,
+    setFalse: onCloseLogin,
+  } = useBoolean()
 
   const {
-    isOpen: isOpenLogout,
-    onOpen: onOpenLogout,
-    onClose: onCloseLogout,
-  } = useDisclosure()
+    value: isOpenLogout,
+    setTrue: onOpenLogout,
+    setFalse: onCloseLogout,
+  } = useBoolean()
 
   return (
     <>

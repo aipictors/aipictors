@@ -1,6 +1,6 @@
 "use client"
 
-import { useBreakpointValue } from "@chakra-ui/react"
+import { useBreakpointValue } from "@/app/_hooks/use-breakpoint-value"
 
 type Props = {
   models: React.ReactNode

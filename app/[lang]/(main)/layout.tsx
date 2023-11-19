@@ -7,8 +7,8 @@ import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import { useToast } from "@/components/ui/use-toast"
-import { useDisclosure } from "@chakra-ui/react"
 import { useEffect } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   children: React.ReactNode
@@ -16,16 +16,16 @@ type Props = {
 
 const MainLayout = (props: Props) => {
   const {
-    isOpen: isOpenLogin,
-    onOpen: onOpenLogin,
-    onClose: onCloseLogin,
-  } = useDisclosure()
+    value: isOpenLogin,
+    setTrue: onOpenLogin,
+    setFalse: onCloseLogin,
+  } = useBoolean()
 
   const {
-    isOpen: isOpenLogout,
-    onOpen: onOpenLogout,
-    onClose: onCloseLogout,
-  } = useDisclosure()
+    value: isOpenLogout,
+    setTrue: onOpenLogout,
+    setFalse: onCloseLogout,
+  } = useBoolean()
 
   const { toast } = useToast()
 

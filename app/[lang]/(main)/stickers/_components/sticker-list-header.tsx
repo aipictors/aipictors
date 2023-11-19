@@ -2,11 +2,11 @@
 
 import { AddStickerModal } from "@/app/[lang]/(main)/stickers/_components/add-sticker-modal"
 import { Button } from "@/components/ui/button"
-import { useDisclosure } from "@chakra-ui/react"
 import { Plus } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 
 export const StickerListHeader = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (
     <>

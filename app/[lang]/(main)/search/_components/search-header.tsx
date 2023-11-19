@@ -1,10 +1,10 @@
 import { SearchConfigDialog } from "@/app/[lang]/(main)/search/_components/search-config-dialog"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useDisclosure } from "@chakra-ui/react"
+import { useBoolean } from "usehooks-ts"
 
 export const SearchHeader = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (
     <>

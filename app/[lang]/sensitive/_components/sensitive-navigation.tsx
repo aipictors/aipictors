@@ -1,6 +1,7 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { Separator } from "@/components/ui/separator"
 import {
   Award,
@@ -8,10 +9,8 @@ import {
   Home,
   LibraryBig,
   Lightbulb,
-  Moon,
   Sun,
-  Undo2,
-} from "lucide-react"
+  from "lucide-react"
 import { useTheme } from "next-themes"
 
 export const SensitiveNavigationList = () => {
@@ -70,16 +69,7 @@ export const SensitiveNavigationList = () => {
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton
-        onClick={() => {
-          setTheme(theme === "light" ? "dark" : "light")
-        }}
-        icon={theme === "dark" ? Sun : Moon}
-      >
-        {theme !== "dark" && <Sun className="mr-4 w-4">{"Light"}</Sun>}
-        {theme === "dark" && <Moon className="mr-4 w-4">{"Light"}</Moon>}
-        {theme === "dark" ? "ライトモード" : "ダークモード"}
-      </HomeNavigationButton>
+      <ThemeModeButton/>
     </div>
   )
 }

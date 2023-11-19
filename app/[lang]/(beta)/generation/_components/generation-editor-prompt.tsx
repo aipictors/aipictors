@@ -5,7 +5,7 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { useDisclosure } from "@chakra-ui/react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   promptText: string
@@ -14,7 +14,7 @@ type Props = {
 }
 
 export const GenerationEditorPrompt = (props: Props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const onSelectPromptId = (promptId: string) => {}
 
