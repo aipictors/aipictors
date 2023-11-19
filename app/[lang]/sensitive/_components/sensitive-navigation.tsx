@@ -7,7 +7,7 @@ import { Award, Folder, Home, LibraryBig, Lightbulb, Undo2 } from "lucide-react"
 
 export const SensitiveNavigationList = () => {
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-1">
       <HomeNavigationButton href={"/"} icon={Undo2}>
         {"全年齢"}
       </HomeNavigationButton>

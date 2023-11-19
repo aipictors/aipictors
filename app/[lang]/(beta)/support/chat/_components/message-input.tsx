@@ -18,7 +18,7 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="flex space-x-2">
+    <div className="px-4 md:pr-8 pb-4 flex gap-x-2">
       <Input
         placeholder="メッセージを入力してください"
         value={message}

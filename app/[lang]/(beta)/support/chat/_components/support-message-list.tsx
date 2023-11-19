@@ -11,6 +11,7 @@ type Props = {
 
 export const SupportMessageList = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
+
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768)
 
   useEffect(() => {
@@ -19,20 +20,20 @@ export const SupportMessageList = (props: Props) => {
         top: isMobileView ? 0 : containerRef.current.scrollHeight,
       })
     }
-
     const handleResize = () => {
       setIsMobileView(window.innerWidth <= 768)
     }
-
     window.addEventListener("resize", handleResize)
-
     return () => {
       window.removeEventListener("resize", handleResize)
     }
   }, [props.messages])
 
   return (
-    <div className="space-y-4 h-full overflow-x-auto" ref={containerRef}>
+    <div
+      className="overflow-y-auto flex-1 space-y-4 px-4 md:pr-8 pb-4"
+      ref={containerRef}
+    >
       {props.messages
         .slice()
         .sort((a, b) => {

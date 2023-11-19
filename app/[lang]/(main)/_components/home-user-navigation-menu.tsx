@@ -1,6 +1,5 @@
 "use client"
 
-import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -46,7 +45,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             <a
               href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
             >
-              <UserCircle className="inline-block mr-2" />
+              <UserCircle className="w-4 inline-block mr-2" />
               <span>{"マイページ"}</span>
             </a>
           </DropdownMenuItem>
@@ -54,7 +53,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/account"}>
             <DropdownMenuItem>
-              <UserCog className="inline-block mr-2" />
+              <UserCog className="w-4 inline-block mr-2" />
               <span>{"アカウント"}</span>
             </DropdownMenuItem>
           </Link>
@@ -62,7 +61,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/settings"}>
             <DropdownMenuItem>
-              <Settings className="inline-block mr-2" />
+              <Settings className="w-4 inline-block mr-2" />
               <span>{"設定"}</span>
             </DropdownMenuItem>
           </Link>
@@ -70,21 +69,20 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/plus"}>
             <DropdownMenuItem>
-              <Rocket className="inline-block mr-2" />
+              <Rocket className="w-4 inline-block mr-2" />
               <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
         )}
-        <ThemeModeButton />
         {appContext.isLoggedIn && (
           <DropdownMenuItem onClick={props.onLogout}>
-            <LogOut className="inline-block mr-2" />
+            <LogOut className="w-4 inline-block mr-2" />
             <span>{"ログアウト"}</span>
           </DropdownMenuItem>
         )}
         {appContext.isNotLoggedIn && (
           <DropdownMenuItem onClick={props.onLogin}>
-            <LogIn className="inline-block mr-2" />
+            <LogIn className="w-4 inline-block mr-2" />
             <span>{"ログイン"}</span>
           </DropdownMenuItem>
         )}

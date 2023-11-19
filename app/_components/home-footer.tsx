@@ -4,12 +4,12 @@
  */
 export const HomeFooter = () => {
   return (
-    <footer className="px-8 py-4 border-t">
+    <footer className="px-8 py-4 border-t space-y-2">
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <a
             href={"https://www.aipictors.com/terms/"}
-            className="text-sm text-blue-500"
+            className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -17,7 +17,7 @@ export const HomeFooter = () => {
           </a>
           <a
             href={"https://www.aipictors.com/privacy/"}
-            className="text-sm text-blue-500"
+            className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -27,7 +27,7 @@ export const HomeFooter = () => {
         <div className="flex space-x-4">
           <a
             href={"https://www.aipictors.com/company/"}
-            className="text-sm text-blue-500"
+            className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -35,7 +35,7 @@ export const HomeFooter = () => {
           </a>
           <a
             href={"https://www.aipictors.com/commercialtransaction/"}
-            className="text-sm text-blue-500"
+            className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -51,7 +51,7 @@ export const HomeFooter = () => {
       <div>
         <a
           href={"https://www.aipictors.com"}
-          className="font-bold text-sm text-blue-500"
+          className="font-bold text-sm"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -62,14 +62,15 @@ export const SupportChat = () => {
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
   return (
-    <div className="w-full h-full space-y-8 pb-8">
-      <div className="h-full flex flex-col-reverse md:flex-col space-y-4">
-        <SupportMessageList
-          messages={messages}
-          recipientIconImageURL={adminAvatarURL}
-        />
-        <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-      </div>
+    <div
+      style={{ height: "calc(100svh - 72px)" }}
+      className="sticky top-0 overflow-y-hidden flex flex-col-reverse md:flex-col pt-2"
+    >
+      <SupportMessageList
+        messages={messages}
+        recipientIconImageURL={adminAvatarURL}
+      />
+      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
     </div>
   )
 }

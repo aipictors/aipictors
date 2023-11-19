@@ -22,7 +22,7 @@ export const BetaNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-1">
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
@@ -60,32 +60,30 @@ export const BetaNavigationList = (props: Props) => {
       <div className="py-2">
         <Separator />
       </div>
-      <div className="flex flex-col space-y-2">
-        <HomeNavigationButton
-          icon={TbBrandX}
-          href={"https://twitter.com/Aipictors"}
-        >
-          {"Twitter"}
-        </HomeNavigationButton>
-        <HomeNavigationButton
-          icon={TbBrandDiscordFilled}
-          href={"https://discord.gg/CsSbTHYY"}
-        >
-          {"Discord"}
-        </HomeNavigationButton>
-        <HomeNavigationButton
-          href={"https://www.threads.net/@aipictors"}
-          icon={TbBrandThreads}
-        >
-          {"Threads"}
-        </HomeNavigationButton>
-        <HomeNavigationButton
-          href={"https://www.youtube.com/@aipictors"}
-          icon={TbBrandYoutubeFilled}
-        >
-          {"YouTube"}
-        </HomeNavigationButton>
-      </div>
+      <HomeNavigationButton
+        icon={TbBrandX}
+        href={"https://twitter.com/Aipictors"}
+      >
+        {"Twitter"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        icon={TbBrandDiscordFilled}
+        href={"https://discord.gg/CsSbTHYY"}
+      >
+        {"Discord"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        href={"https://www.threads.net/@aipictors"}
+        icon={TbBrandThreads}
+      >
+        {"Threads"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        href={"https://www.youtube.com/@aipictors"}
+        icon={TbBrandYoutubeFilled}
+      >
+        {"YouTube"}
+      </HomeNavigationButton>
     </div>
   )
 }

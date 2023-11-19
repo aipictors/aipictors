@@ -1,18 +1,11 @@
 "use client"
 
-import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
+import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { Bell, Folder, Menu, Search } from "lucide-react"
@@ -37,7 +30,7 @@ export const HomeHeader = (props: Props) => {
 
   return (
     <header className="sticky top-0 z-50">
-      <Card className="flex justify-between pl-2 pr-4 md:px-6 py-4 space-x-4 border-none rounded-none shadow-none">
+      <Card className="flex py-4 pl-2 md:pl-4 pr-4 md:pr-8 space-x-4 border-none rounded-none shadow-none justify-between">
         <div className="flex md:flex-1 space-x-2 items-center min-w-fit">
           <Sheet>
             <SheetTrigger asChild>
@@ -46,24 +39,21 @@ export const HomeHeader = (props: Props) => {
               </Button>
             </SheetTrigger>
             <SheetContent side={"left"}>
-              <SheetHeader>
-                <SheetTitle>{"ベータ"}</SheetTitle>
-                <SheetDescription>
-                  <BetaNavigationList
-                    onLogin={props.onLogin}
-                    onLogout={props.onLogout}
-                  />
-                </SheetDescription>
-              </SheetHeader>
+              <HomeNavigationList
+                onLogin={props.onLogin}
+                onLogout={props.onLogout}
+              />
             </SheetContent>
           </Sheet>
-          <Link href="https://www.aipictors.com">
-            <img
-              src="/icon.png"
-              className="w-8 h-8 rounded-full"
-              alt="Avatar"
-            />
-          </Link>
+          <div className="flex items-center">
+            <Link href="https://www.aipictors.com">
+              <img
+                src="/icon.png"
+                className="w-8 h-8 rounded-full"
+                alt="Avatar"
+              />
+            </Link>
+          </div>
           <div className="pl-4 flex-1 w-full hidden md:block">
             <Input placeholder={"作品を検索"} />
           </div>

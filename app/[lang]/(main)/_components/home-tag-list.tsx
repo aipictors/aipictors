@@ -1,3 +1,5 @@
+"use client"
+
 import type { HotTagsQuery } from "@/__generated__/apollo"
 import { TagButton } from "@/app/[lang]/(main)/_components/tag-button"
 import { Config } from "@/config"

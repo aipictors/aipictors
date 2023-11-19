@@ -1,4 +1,7 @@
+import { cn } from "@/lib/utils"
+
 type Props = {
+  className?: string
   children: React.ReactNode
 }
 
@@ -10,10 +13,10 @@ type Props = {
 export const MainCenterPage = (props: Props) => {
   return (
     <div
-      className="w-full flex justify-center px-4"
+      className="w-full flex justify-center"
       style={{ minHeight: "calc(100svh - 72px)" }}
     >
-      <div className="overflow-x-hidden w-full max-w-screen-md">
+      <div className={cn("w-full max-w-screen-md", props.className)}>
         {props.children}
       </div>
     </div>
