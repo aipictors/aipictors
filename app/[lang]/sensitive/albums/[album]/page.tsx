@@ -6,7 +6,9 @@ import {
   AlbumWorksQuery,
   AlbumWorksQueryVariables,
 } from "@/__generated__/apollo"
-import { SensitiveAlbumArticle } from "@/app/[lang]/sensitive/albums/[album]/_components/sensitive-album-article"
+import { AlbumArticleHeader } from "@/app/[lang]/(main)/albums/[album]/_components/album-article-header"
+import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-description"
+import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
 
 import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
@@ -42,10 +44,13 @@ const SensitiveAlbumPage = async (props: Props) => {
 
   return (
     <MainPage>
-      <SensitiveAlbumArticle
-        albumQuery={albumQuery.data}
-        albumWorksQuery={albumWorksQuery.data}
-      />
+      <article className="flex">
+        <div className="flex flex-col">
+          <AlbumArticleHeader albumQuery={albumQuery.data} />
+          <AlbumWorkList albumWorksQuery={albumWorksQuery.data} />
+        </div>
+        <AlbumWorkDescription albumQuery={albumQuery.data} />
+      </article>
     </MainPage>
   )
 }

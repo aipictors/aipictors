@@ -1,13 +1,10 @@
-"use client"
-
-import type { ButtonProps } from "@chakra-ui/react"
-import { Button } from "@chakra-ui/react"
+import { Button, ButtonProps } from "@/components/ui/button"
 
 type Props = ButtonProps
 
 export const PromptonRequestButton = (props: Props) => {
   return (
-    <Button colorScheme="orange" borderRadius={"full"} {...props}>
+    <Button variant={"destructive"} {...props}>
       {"支援"}
     </Button>
   )

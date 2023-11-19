@@ -15,12 +15,11 @@ import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-lis
 import { toPassName } from "@/app/[lang]/(beta)/plus/_utils/to-pass-name"
 import { toDateText } from "@/app/_utils/to-date-text"
 import { Button } from "@/components/ui/button"
-import { CardContent, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import { useSuspenseQuery } from "@apollo/client"
-import { Card, CardHeader } from "@chakra-ui/react"
 
 export const PlusForm = () => {
   const [mutation, { loading: isLoading }] =
@@ -101,7 +100,7 @@ export const PlusForm = () => {
             {"プランをキャンセルまたは変更する"}
           </Button>
         </div>
-        <Card className="flex-1" variant={"outline"}>
+        <Card className="flex-1">
           <CardHeader>
             <CardTitle>{`${currentPassName}の特典`}</CardTitle>
           </CardHeader>

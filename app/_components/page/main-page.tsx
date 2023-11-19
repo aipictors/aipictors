@@ -1,4 +1,7 @@
+import { cn } from "@/lib/utils"
+
 type Props = {
+  className?: string
   children: React.ReactNode
 }
 
@@ -9,8 +12,13 @@ type Props = {
  */
 export const MainPage = (props: Props) => {
   return (
-    <div className="overflow-x-hidden pl-4 w-full mx-auto max-w-container.lg">
+    <main
+      className={cn(
+        "overflow-x-hidden w-full flex flex-col pb-4",
+        props.className,
+      )}
+    >
       {props.children}
-    </div>
+    </main>
   )
 }

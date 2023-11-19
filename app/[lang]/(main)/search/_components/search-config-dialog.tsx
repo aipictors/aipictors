@@ -32,21 +32,24 @@ export const SearchConfigDialog = (props: Props) => {
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
             <span>{"年齢制限："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
+            <Button>
+              <Check className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
           <Separator />
           <div className="flex items-center space-x-2">
             <span>{"作品形式："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
+            <Button>
+              <Check className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
           <Separator />
           <div className="flex items-center space-x-2">
             <span>{"検索対象："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
+            <Button>
+              <Check className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -92,8 +95,9 @@ export const SearchConfigDialog = (props: Props) => {
           <Separator />
           <div className="flex items-center space-x-2">
             <span>{"テイスト："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
-              {"全年齢"}
+            <Button className="rounded-full">
+              <Check className="mr-2" />
+              <span>{"全年齢"}</span>
             </Button>
           </div>
           <Separator />
@@ -107,15 +111,17 @@ export const SearchConfigDialog = (props: Props) => {
           <Separator />
           <div className="flex items-center space-x-2">
             <span>{"表示順："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
-              {"全年齢"}
+            <Button className="rounded-full">
+              <Check className="mr-2" />
+              <span>{"全年齢"}</span>
             </Button>
           </div>
           <Separator />
           <div className="flex items-center space-x-2">
             <span>{"投稿件数："}</span>
-            <Button leftIcon={<Check />} borderRadius={"full"} size={"xs"}>
-              {"全年齢"}
+            <Button className="rounded-full">
+              <Check className="mr-2" />
+              <span>{"全年齢"}</span>
             </Button>
           </div>
           <Separator />

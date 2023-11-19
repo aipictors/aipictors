@@ -51,10 +51,11 @@
     "@chakra-ui",
     "@emotion",
     "@radix-ui",
+    "next/dist",
+    "postcss",
     "react-day-picker",
     "tailwind-merge",
-    "postcss",
-    "next/dist"
+    "tailwindcss"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "workbench.editor.enablePreview": true,

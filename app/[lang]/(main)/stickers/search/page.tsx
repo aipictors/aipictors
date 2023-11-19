@@ -1,8 +1,7 @@
 import { StickersDocument, StickersQuery } from "@/__generated__/apollo"
 import { StickerList } from "@/app/[lang]/(main)/stickers/_components/sticker-list"
-import StickerSearchForm from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
+import { StickerSearchForm } from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
-import { Text } "@chakra-ui/react"
 import type { Metadata } from "next"
 
 /**

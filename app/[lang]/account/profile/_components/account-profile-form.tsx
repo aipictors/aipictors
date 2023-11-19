@@ -2,6 +2,7 @@
 
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 
@@ -35,8 +36,8 @@ export const AccountProfileForm = () => {
         <Button>{"アイコン追加ボタン"}</Button>
       </div>
       <div className="space-y-4">
-        <Stack>
-          <Text>{"ユーザ名"}</Text>
+        <div>
+          <p>{"ユーザ名"}</p>
           <Input
             placeholder="ユーザ名"
             value={userName}
@@ -44,9 +45,9 @@ export const AccountProfileForm = () => {
               setUserName(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"プロフィール"}</Text>
+        </div>
+        <div>
+          <p>{"プロフィール"}</p>
           <Input
             placeholder="プロフィール"
             value={userProfile}
@@ -54,9 +55,9 @@ export const AccountProfileForm = () => {
               setUserProfile(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"英語環境向けプロフィール"}</Text>
+        </div>
+        <div>
+          <p>{"英語環境向けプロフィール"}</p>
           <Input
             placeholder="プロフィール"
             value={userProfileEn}
@@ -64,9 +65,9 @@ export const AccountProfileForm = () => {
               setUserProfileEn(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"Twitter"}</Text>
+        </div>
+        <div>
+          <p>{"Twitter"}</p>
           <Input
             placeholder="ユーザID"
             value={userTwitter}
@@ -74,9 +75,9 @@ export const AccountProfileForm = () => {
               setUserTwitter(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"Instagram"}</Text>
+        </div>
+        <div>
+          <p>{"Instagram"}</p>
           <Input
             placeholder="ユーザID"
             value={userInstagram}
@@ -84,9 +85,9 @@ export const AccountProfileForm = () => {
               setUserInstagram(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"GitHub"}</Text>
+        </div>
+        <div>
+          <p>{"GitHub"}</p>
           <Input
             placeholder="ユーザID"
             value={userGitHub}
@@ -94,9 +95,9 @@ export const AccountProfileForm = () => {
               setUserGitHub(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"ホームページ"}</Text>
+        </div>
+        <div>
+          <p>{"ホームページ"}</p>
           <Input
             placeholder="URL"
             value={userHomePage}
@@ -104,9 +105,9 @@ export const AccountProfileForm = () => {
               setUserHomePage(event.target.value)
             }}
           />
-        </Stack>
-        <Stack>
-          <Text>{"メール"}</Text>
+        </div>
+        <div>
+          <p>{"メール"}</p>
           <Input
             placeholder="メールアドレス"
             value={userMail}
@@ -114,11 +115,9 @@ export const AccountProfileForm = () => {
               setUserMail(event.target.value)
             }}
           />
-        </Stack>
+        </div>
       </div>
-      <Button colorScheme="primary" borderRadius={"full"} onClick={() => {}}>
-        {"変更を保存"}
-      </Button>
+      <Button onClick={() => {}}>{"変更を保存"}</Button>
     </div>
   )
 }

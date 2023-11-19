@@ -43,62 +43,92 @@ export const HomeHeader = (props: Props) => {
   }, [])
 
   return (
-    <Card className="flex p-4 space-x-4 sticky top-0 z-100 border-none rounded-none shadow-none z-10">
-      {hasSheet && (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant={"ghost"} size={"icon"}>
-              <Menu />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side={"left"}>
-            <SheetHeader>
-              <SheetTitle>{"ベータ"}</SheetTitle>
-              <SheetDescription>
-                <BetaNavigationList
-                  onLogin={props.onLogin}
-                  onLogout={props.onLogout}
-                />
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
-      )}
-      <div className="flex items-center">
-        <Link href="https://www.aipictors.com">
-          <img src="/icon.png" className="w-8 h-8 rounded-full" alt="Avatar" />
-        </Link>
-      </div>
-      <div className="w-full hidden md:block">
-        <Input placeholder={"作品を検索"} />
-      </div>
-      <Button className="block md:hidden" size={"icon"} aria-label={"Search"}>
-        <Search />
-      </Button>
-      <div className="flex space-x-2">
-        <Link href={"/generation"}>
-          <Button disabled={Config.isReleaseMode}>{"生成"}</Button>
-        </Link>
-        <Link href={"/new/image"}>
-          <Button disabled={Config.isReleaseMode}>{"投稿"}</Button>
-        </Link>
-        <Link href={"/viewer/albums"}>
+    <header className="sticky top-0 z-50">
+      <Card className="flex justify-between pl-2 pr-4 md:px-6 py-4 space-x-4 border-none rounded-none shadow-none">
+        <div className="flex md:flex-1 space-x-2 items-center min-w-fit">
+          {hasSheet && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant={"ghost"} size={"icon"}>
+                  <Menu />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side={"left"}>
+                <SheetHeader>
+                  <SheetTitle>{"ベータ"}</SheetTitle>
+                  <SheetDescription>
+                    <BetaNavigationList
+                      onLogin={props.onLogin}
+                      onLogout={props.onLogout}
+                    />
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
+          )}
+          <Link href="https://www.aipictors.com">
+            <img
+              src="/icon.png"
+              className="w-8 h-8 rounded-full"
+              alt="Avatar"
+            />
+          </Link>
+          <div className="pl-4 flex-1 w-full hidden md:block">
+            <Input placeholder={"作品を検索"} />
+          </div>
           <Button
-            disabled={Config.isReleaseMode}
+            className="md:hidden"
+            variant={"ghost"}
             size={"icon"}
-            aria-label={"フォルダ"}
+            aria-label={"Search"}
           >
-            <Folder />
+            <Search className="w-6" />
           </Button>
-        </Link>
-        <Button disabled size={"icon"} aria-label={"通知"}>
-          <Bell />
-        </Button>
-        <HomeUserNavigationMenu
-          onLogin={props.onLogin}
-          onLogout={props.onLogout}
-        />
-      </div>
-    </Card>
+        </div>
+        <div className="flex space-x-2">
+          {Config.isReleaseMode ? (
+            <Button variant={"secondary"} disabled>
+              {"生成"}
+            </Button>
+          ) : (
+            <Link href={"/generation"}>
+              <Button variant={"secondary"}>{"生成"}</Button>
+            </Link>
+          )}
+          {Config.isReleaseMode ? (
+            <Button variant={"secondary"} disabled>
+              {"投稿"}
+            </Button>
+          ) : (
+            <Link href={"/new/image"}>
+              <Button variant={"secondary"}>{"投稿"}</Button>
+            </Link>
+          )}
+          {Config.isReleaseMode ? (
+            <Button variant={"secondary"} disabled size={"icon"}>
+              <Folder className="w-6" />
+            </Button>
+          ) : (
+            <Link href={"/viewer/albums"}>
+              <Button variant={"secondary"} size={"icon"}>
+                <Folder className="w-6" />
+              </Button>
+            </Link>
+          )}
+          <Button
+            variant={"secondary"}
+            disabled
+            size={"icon"}
+            aria-label={"通知"}
+          >
+            <Bell className="w-6" />
+          </Button>
+          <HomeUserNavigationMenu
+            onLogin={props.onLogin}
+            onLogout={props.onLogout}
+          />
+        </div>
+      </Card>
+    </header>
   )
 }

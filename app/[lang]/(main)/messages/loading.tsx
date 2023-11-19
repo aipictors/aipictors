@@ -1,19 +1,9 @@
 "use client"
 
-import { Spinner, Stack } from "@chakra-ui/react"
+import RootLoading from "@/app/loading"
 
 const MessagesLoading = () => {
-  return (
-    <Stack
-      p={4}
-      w={"100%"}
-      h={"50vh"}
-      justifyContent={"center"}
-      alignItems={"center"}
-    >
-      <Spinner size={"xl"} color={"blue.500"} />
-    </Stack>
-  )
+  return <RootLoading />
 }
 
 export default MessagesLoading

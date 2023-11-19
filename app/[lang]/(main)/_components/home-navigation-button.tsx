@@ -1,10 +1,12 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { LucideIcon } from "lucide-react"
 import Link from "next/link"
+import { IconType } from "react-icons"
 
 type Props = {
-  leftIcon?: React.ReactNode
+  icon?: LucideIcon | IconType
   href?: string
   children: React.ReactNode
   onClick?(): void
@@ -12,6 +14,8 @@ type Props = {
 }
 
 export const HomeNavigationButton = (props: Props) => {
+  const Icon = props.icon
+
   if (props.isDisabled) {
     return (
       <Button
@@ -20,7 +24,7 @@ export const HomeNavigationButton = (props: Props) => {
         size={"sm"}
         className="w-full justify-start"
       >
-        {props.leftIcon && <span className="mr-4">{props.leftIcon}</span>}
+        {Icon && <Icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     )
@@ -35,7 +39,7 @@ export const HomeNavigationButton = (props: Props) => {
         size={"sm"}
         onClick={props.onClick}
       >
-        {props.leftIcon && <span className="mr-4">{props.leftIcon}</span>}
+        {Icon && <Icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     )
@@ -45,7 +49,7 @@ export const HomeNavigationButton = (props: Props) => {
     return (
       <a href={props.href} target="_blank" rel="noopener noreferrer">
         <Button variant={"ghost"} size={"sm"} className="w-full justify-start">
-          {props.leftIcon && <span className="mr-4">{props.leftIcon}</span>}
+          {Icon && <Icon className="w-4 mr-4" />}
           <span>{props.children}</span>
         </Button>
       </a>
@@ -60,7 +64,7 @@ export const HomeNavigationButton = (props: Props) => {
         size={"sm"}
         disabled={props.isDisabled}
       >
-        {props.leftIcon && <span className="mr-4">{props.leftIcon}</span>}
+        {Icon && <Icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     </Link>

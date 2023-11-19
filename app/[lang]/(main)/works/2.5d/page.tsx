@@ -24,8 +24,8 @@ const Works25dPage = async () => {
 
   return (
     <MainPage>
-      <HomeTagList hotTags={hotTagsQuery.data} />
-      <HomeWorkList worksQuery={worksQuery.data} />
+      <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
+      <HomeWorkList works={worksQuery.data.works} />
     </MainPage>
   )
 }

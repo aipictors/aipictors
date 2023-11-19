@@ -1,19 +1,7 @@
-"use client"
-
-import { Spinner, Stack } from "@chakra-ui/react"
+import RootLoading from "@/app/loading"
 
 const Loading = () => {
-  return (
-    <Stack
-      p={4}
-      w={"100%"}
-      h={"100vh"}
-      justifyContent={"center"}
-      alignItems={"center"}
-    >
-      <Spinner size={"xl"} color={"blue.500"} />
-    </Stack>
-  )
+  return <RootLoading />
 }
 
 export default Loading

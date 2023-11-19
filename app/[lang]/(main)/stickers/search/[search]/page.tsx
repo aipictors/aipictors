@@ -4,10 +4,9 @@ import type {
 } from "@/__generated__/apollo"
 import { StickersDocument } from "@/__generated__/apollo"
 import { StickerList } from "@/app/[lang]/(main)/stickers/_components/sticker-list"
+import { StickerSearchForm } from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
-
-import StickerSearchForm from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
 
 type Props = {
   params: {

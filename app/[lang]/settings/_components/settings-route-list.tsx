@@ -10,37 +10,34 @@ export const SettingsRouteList = () => {
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/notification"}
-        leftIcon={<Bell />}
+        icon={Bell}
       >
         {"通知・いいね"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/restriction"}
-        leftIcon={<Image />}
+        icon={Image}
       >
         {"表示コンテンツ"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/settings/muted/users"} leftIcon={<UserX />}>
+      <HomeNavigationButton href={"/settings/muted/users"} icon={UserX}>
         {"ユーザミュート"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"/settings/muted/tags"}
-        leftIcon={<BookmarkX />}
-      >
+      <HomeNavigationButton href={"/settings/muted/tags"} icon={BookmarkX}>
         {"タグミュート"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/request"}
-        leftIcon={<Medal />}
+        icon={Medal}
       >
         {"支援リクエスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/interface"}
-        leftIcon={<Settings />}
+        icon={Settings}
       >
         {"UIカスタム"}
       </HomeNavigationButton>

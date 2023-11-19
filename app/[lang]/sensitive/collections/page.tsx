@@ -1,8 +1,13 @@
-import { PlaceholderPage } from "@/app/_components/page/placeholder-page"
+import { CollectionList } from "@/app/[lang]/(main)/collections/_components/collection-list"
+import { MainPage } from "@/app/_components/page/main-page"
 import type { Metadata } from "next"
 
 const SensitiveCollectionsPage = async () => {
-  return <PlaceholderPage>{"コレクションの一覧"}</PlaceholderPage>
+  return (
+    <MainPage>
+      <CollectionList />
+    </MainPage>
+  )
 }
 
 export const metadata: Metadata = {

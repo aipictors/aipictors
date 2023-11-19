@@ -1,7 +1,5 @@
-"use client"
-
-import { Skeleton } from "@chakra-ui/react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const NotificationListItem = () => {
-  return <Skeleton height={4} />
+  return <Skeleton className="h-4" />
 }

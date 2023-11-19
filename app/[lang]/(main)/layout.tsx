@@ -6,7 +6,6 @@ import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
-import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { useDisclosure } from "@chakra-ui/react"
 import { useEffect } from "react"
@@ -47,7 +46,6 @@ const MainLayout = (props: Props) => {
         </ResponsiveNavigation>
         {props.children}
       </div>
-      <Separator />
       <HomeFooter />
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal

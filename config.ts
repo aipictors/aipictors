@@ -136,6 +136,14 @@ export class Config {
     }
   }
 
+  static splideDefaultOptions = {
+    arrows: false,
+    autoWidth: true,
+    gap: "0.5rem",
+    pagination: false,
+    rewind: true,
+  }
+
   static googleAdsenseClient = "ca-pub-2116548824296763"
 
   /**

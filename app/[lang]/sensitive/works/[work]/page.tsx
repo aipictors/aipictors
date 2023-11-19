@@ -16,7 +16,7 @@ type Props = {
   params: { work: string }
 }
 
-const WorkPage = async (props: Props) => {
+const SensitiveWorkPage = async (props: Props) => {
   const client = createClient()
 
   const workQuery = await client.query<WorkQuery, WorkQueryVariables>({
@@ -55,4 +55,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default WorkPage
+export default SensitiveWorkPage

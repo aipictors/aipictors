@@ -2,17 +2,17 @@
 
 import { AppContextProvider } from "@/app/_components/app-context-provider"
 import { createClient } from "@/app/_contexts/client"
-import { theme } from "@/app/_contexts/theme"
+
 import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
-import { CacheProvider } from "@chakra-ui/next-js"
-import { ChakraProvider } from "@chakra-ui/react"
+
 import { init } from "@sentry/nextjs"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
+
 type Props = {
   children: React.ReactNode
 }
@@ -47,9 +47,7 @@ export const RootProviders = (props: Props) => {
           enableSystem
           disableTransitionOnChange
         >
-          <CacheProvider>
-            <ChakraProvider theme={theme}>{props.children}</ChakraProvider>
-          </CacheProvider>
+          {props.children}
         </NextThemesProvider>
       </ApolloProvider>
     </AppContextProvider>

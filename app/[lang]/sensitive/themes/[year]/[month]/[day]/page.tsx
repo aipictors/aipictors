@@ -1,6 +1,5 @@
 import type { DailyThemesQuery } from "@/__generated__/apollo"
 import { DailyThemesDocument } from "@/__generated__/apollo"
-import { AboutTheme } from "@/app/[lang]/(main)/themes/[year]/[month]/[day]/_components/about-theme"
 import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
@@ -33,7 +32,9 @@ const SensitiveThemePage = async (props: Props) => {
 
   return (
     <MainPage>
-      <AboutTheme title={dailyTheme.title} />
+      <article>
+        <h1>{dailyTheme.title}</h1>
+      </article>
     </MainPage>
   )
 }

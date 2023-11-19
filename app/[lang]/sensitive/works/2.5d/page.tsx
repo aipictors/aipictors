@@ -6,7 +6,7 @@ import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
-const Works25dPage = async () => {
+const SensitiveWorks25dPage = async () => {
   const client = createClient()
 
   const worksQuery = await client.query<WorksQuery>({
@@ -24,8 +24,8 @@ const Works25dPage = async () => {
 
   return (
     <MainPage>
-      <HomeTagList hotTags={hotTagsQuery.data} />
-      <HomeWorkList worksQuery={worksQuery.data} />
+      <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
+      <HomeWorkList works={worksQuery.data.works} />
     </MainPage>
   )
 }
@@ -37,4 +37,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default Works25dPage
+export default SensitiveWorks25dPage

@@ -1,7 +1,7 @@
 import { PlaceholderPage } from "@/app/_components/page/placeholder-page"
 import type { Metadata } from "next"
 
-const WorksPage = async () => {
+const SensitiveWorksPage = async () => {
   return <PlaceholderPage>{"作品の一覧"}</PlaceholderPage>
 }
 
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default WorksPage
+export default SensitiveWorksPage

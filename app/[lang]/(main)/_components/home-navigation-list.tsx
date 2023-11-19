@@ -23,6 +23,7 @@ import {
   Sparkles,
   Stamp,
   Sun,
+  User,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -42,82 +43,109 @@ type Props = {
 export const HomeNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
 
-  const { setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
 
   return (
-    <div className="flex flex-col space-y-2">
-      <HomeNavigationButton href={"/"} leftIcon={<Home />}>
+    <div className="flex flex-col space-y-1">
+      <HomeNavigationButton href={"/"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/themes"}
-        leftIcon={<Lightbulb />}
+        icon={Lightbulb}
       >
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/stickers"} leftIcon={<Stamp />}>
+      <HomeNavigationButton href={"/stickers"} icon={Stamp}>
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/awards"}
-        leftIcon={<Award />}
+        icon={Award}
       >
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate/"}
-        leftIcon={<Sparkles />}
+        icon={Sparkles}
       >
         {"画像生成"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/series"}
-        leftIcon={<LibraryBig />}
+        icon={LibraryBig}
       >
         {"シリーズ"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/collections"}
-        leftIcon={<Folder />}
+        icon={Folder}
       >
         {"コレクション"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
       </div>
-      <HomeNavigationButton href={"/works/2d"} leftIcon={<Image />}>
+      <HomeNavigationButton href={"/works/2d"} icon={Image}>
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/2.5d"} leftIcon={<BookImage />}>
+      <HomeNavigationButton href={"/works/2.5d"} icon={BookImage}>
         {"セミリアル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/3d"} leftIcon={<Camera />}>
+      <HomeNavigationButton href={"/works/3d"} icon={Camera}>
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/models"} leftIcon={<Box />}>
+      <HomeNavigationButton href={"/models"} icon={Box}>
         {"モデル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} leftIcon={<AlertTriangle />}>
+      <HomeNavigationButton href={"/sensitive"} icon={AlertTriangle}>
         {"センシティブ"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
       </div>
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/settings/login"} leftIcon={<Settings />}>
+        <HomeNavigationButton href={"/accounts/login"} icon={User}>
+          {"アカウント"}
+        </HomeNavigationButton>
+      )}
+      {appContext.isLoggedIn && (
+        <HomeNavigationButton href={"/settings/restriction"} icon={Settings}>
           {"設定"}
         </HomeNavigationButton>
+      )}
+      {theme !== "light" && (
+        <Button
+          className="w-full justify-start"
+          size={"sm"}
+          variant={"ghost"}
+          onClick={() => setTheme("light")}
+        >
+          <Sun className="mr-4 w-4">{"Light"}</Sun>
+          <span>{"ライトモード"}</span>
+        </Button>
+      )}
+      {theme !== "dark" && (
+        <Button
+          className="w-full justify-start"
+          size={"sm"}
+          variant={"ghost"}
+          onClick={() => setTheme("dark")}
+        >
+          <Moon className="mr-4 w-4">{"Dark"}</Moon>
+          <span>{"ダークモード"}</span>
+        </Button>
       )}
       {appContext.isLoggedIn && (
         <HomeNavigationButton
           onClick={() => {
             props.onLogout()
           }}
-          leftIcon={<LogOut />}
+          icon={LogOut}
         >
           {"ログアウト"}
         </HomeNavigationButton>
@@ -127,54 +155,36 @@ export const HomeNavigationList = (props: Props) => {
           onClick={() => {
             props.onLogin()
           }}
-          leftIcon={<LogIn />}
+          icon={LogIn}
         >
           {"ログイン"}
         </HomeNavigationButton>
       )}
-      <Button
-        className="w-full justify-start"
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => setTheme("light")}
-      >
-        <Sun className="mr-4 w-4">{"Light"}</Sun>
-        <span>{"ライトモード"}</span>
-      </Button>
-      <Button
-        className="w-full justify-start"
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => setTheme("dark")}
-      >
-        <Moon className="mr-4 w-4">{"Dark"}</Moon>
-        <span>{"ダークモード"}</span>
-      </Button>
       <div className="py-2">
         <Separator />
       </div>
       <div className="flex flex-col space-y-2">
         <HomeNavigationButton
-          leftIcon={<TbBrandX fontSize={16} />}
+          icon={TbBrandX}
           href={"https://twitter.com/Aipictors"}
         >
           {"Twitter"}
         </HomeNavigationButton>
         <HomeNavigationButton
-          leftIcon={<TbBrandDiscordFilled fontSize={16} />}
+          icon={TbBrandDiscordFilled}
           href={"https://discord.gg/CsSbTHYY"}
         >
           {"Discord"}
         </HomeNavigationButton>
         <HomeNavigationButton
           href={"https://www.threads.net/@aipictors"}
-          leftIcon={<TbBrandThreads fontSize={16} />}
+          icon={TbBrandThreads}
         >
           {"Threads"}
         </HomeNavigationButton>
         <HomeNavigationButton
           href={"https://www.youtube.com/@aipictors"}
-          leftIcon={<TbBrandYoutubeFilled fontSize={16} />}
+          icon={TbBrandYoutubeFilled}
         >
           {"YouTube"}
         </HomeNavigationButton>

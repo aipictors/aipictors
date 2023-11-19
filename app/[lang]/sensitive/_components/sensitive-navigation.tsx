@@ -2,7 +2,6 @@
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Separator } from "@/components/ui/separator"
-import { Box, Divider } from "@chakra-ui/react"
 import {
   Award,
   Folder,
@@ -20,33 +19,27 @@ export const SensitiveNavigationList = () => {
 
   return (
     <div className="flex flex-col space-y-2">
-      <HomeNavigationButton href={"/"} leftIcon={<Undo2 />}>
+      <HomeNavigationButton href={"/"} icon={Undo2}>
         {"全年齢"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} leftIcon={<Home />}>
+      <HomeNavigationButton href={"/sensitive"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/themes"} leftIcon={<Lightbulb />}>
+      <HomeNavigationButton href={"/sensitive/themes"} icon={Lightbulb}>
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/awards"} leftIcon={<Award />}>
+      <HomeNavigationButton href={"/sensitive/awards"} icon={Award}>
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"/sensitive/albums"}
-        leftIcon={<LibraryBig />}
-      >
+      <HomeNavigationButton href={"/sensitive/albums"} icon={LibraryBig}>
         {"シリーズ"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"/sensitive/collections"}
-        leftIcon={<Folder />}
-      >
+      <HomeNavigationButton href={"/sensitive/collections"} icon={Folder}>
         {"コレクション"}
       </HomeNavigationButton>
-      <Box py={2}>
-        <Divider />
-      </Box>
+      <div className="py-2">
+        <Separator />
+      </div>
       <HomeNavigationButton href={"/sensitive/works/3d"}>
         {"フォト"}
       </HomeNavigationButton>
@@ -59,9 +52,9 @@ export const SensitiveNavigationList = () => {
       <HomeNavigationButton href={"/sensitive/works/3d/c"}>
         {"フォトC"}
       </HomeNavigationButton>
-      <Box py={2}>
-        <Divider />
-      </Box>
+      <div className="py-2">
+        <Separator />
+      </div>
       <HomeNavigationButton href={"/sensitive/works/2d"}>
         {"イラスト"}
       </HomeNavigationButton>
@@ -81,7 +74,7 @@ export const SensitiveNavigationList = () => {
         onClick={() => {
           setTheme(theme === "light" ? "dark" : "light")
         }}
-        leftIcon={theme === "dark" ? <Sun /> : <Moon />}
+        icon={theme === "dark" ? Sun : Moon}
       >
         {theme !== "dark" && <Sun className="mr-4 w-4">{"Light"}</Sun>}
         {theme === "dark" && <Moon className="mr-4 w-4">{"Light"}</Moon>}

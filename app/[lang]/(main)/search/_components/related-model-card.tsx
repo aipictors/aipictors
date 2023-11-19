@@ -1,9 +1,10 @@
-import { Button, Skeleton } from "@chakra-ui/react"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const RelatedModelCard = () => {
   return (
-    <Button borderRadius={"full"}>
-      <Skeleton w={16} h={4} />
+    <Button>
+      <Skeleton className="w-16 h-4" />
     </Button>
   )
 }

@@ -4,7 +4,7 @@
  */
 export const HomeFooter = () => {
   return (
-    <div className="p-4">
+    <footer className="px-8 py-4 border-t">
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <a
@@ -58,6 +58,6 @@ export const HomeFooter = () => {
           {"© 2023 Aipictors.com"}
         </a>
       </div>
-    </div>
+    </footer>
   )
 }
