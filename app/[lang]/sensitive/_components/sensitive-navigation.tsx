@@ -3,19 +3,9 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { Separator } from "@/components/ui/separator"
-import {
-  Award,
-  Folder,
-  Home,
-  LibraryBig,
-  Lightbulb,
-  Sun,
-  from "lucide-react"
-import { useTheme } from "next-themes"
+import { Award, Folder, Home, LibraryBig, Lightbulb, Undo2 } from "lucide-react"
 
 export const SensitiveNavigationList = () => {
-  const { setTheme, theme } = useTheme()
-
   return (
     <div className="flex flex-col space-y-2">
       <HomeNavigationButton href={"/"} icon={Undo2}>
@@ -69,7 +59,7 @@ export const SensitiveNavigationList = () => {
       <div className="py-2">
         <Separator />
       </div>
-      <ThemeModeButton/>
+      <ThemeModeButton />
     </div>
   )
 }
