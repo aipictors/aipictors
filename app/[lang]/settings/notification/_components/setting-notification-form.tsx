@@ -1,7 +1,6 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export const SettingNotificationForm = () => {
   return (
@@ -9,27 +8,52 @@ export const SettingNotificationForm = () => {
       <div className="space-y-4">
         <p>{"匿名いいね"}</p>
         <div className="flex justify-between">
-          <Label>{"全年齢いいね"}</Label>
-          <Input type="checkbox" className="form-switch" />
+          <label
+            htmlFor="1"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {"全年齢いいね"}
+          </label>
+          <Checkbox id="terms" />
         </div>
         <div className="flex justify-between">
-          <Label>{"R-18いいね"}</Label>
-          <Input type="checkbox" className="form-switch" />
+          <label
+            htmlFor="2"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {"R-18いいね"}
+          </label>
+          <Checkbox id="terms" />
         </div>
       </div>
       <div className="space-y-4">
         <p>{"オフにすると次回以降の通知がされなくなります"}</p>
         <div className="flex justify-between">
-          <Label>{"定期いいね通知"}</Label>
-          <Input type="checkbox" className="form-switch" />
+          <label
+            htmlFor="3"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {"定期いいね通知"}
+          </label>
+          <Checkbox id="terms" />
         </div>
         <div className="flex justify-between">
-          <Label>{"リアルタイムいいね通知"}</Label>
-          <Input type="checkbox" className="form-switch" />
+          <label
+            htmlFor="4"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {"リアルタイムいいね通知"}
+          </label>
+          <Checkbox id="terms" />
         </div>
         <div className="flex justify-between">
-          <Label>{"コメント"}</Label>
-          <Input type="checkbox" className="form-switch" />
+          <label
+            htmlFor="5"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {"コメント"}
+          </label>
+          <Checkbox id="terms" />
         </div>
       </div>
     </>

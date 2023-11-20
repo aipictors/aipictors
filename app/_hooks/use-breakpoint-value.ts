@@ -11,7 +11,7 @@ type Props<T> = {
 }
 
 export const useBreakpointValue = <T>(props: Props<T>) => {
-  const [breakpoint, setBreakpoint] = useState(getBreakpoint(window.innerWidth))
+  const [breakpoint, setBreakpoint] = useState("base")
 
   useEffect(() => {
     if (typeof window === "undefined") return

@@ -1,18 +1,27 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export const SettingInterfaceForm = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
-        <Label>{"サムネイルにいいねボタンを表示"}</Label>
-        <Input type="checkbox" />
+        <label
+          htmlFor="1"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {"サムネイルにいいねボタンを表示"}
+        </label>
+        <Checkbox id="terms" />
       </div>
       <div className="flex justify-between">
-        <Label>{"ポップアップ（作品ダイアログ）を表示"}</Label>
-        <Input type="checkbox" />
+        <label
+          htmlFor="2"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {"ポップアップ（作品ダイアログ）を表示"}
+        </label>
+        <Checkbox id="terms" />
       </div>
     </div>
   )
