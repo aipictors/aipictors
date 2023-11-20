@@ -17,7 +17,7 @@ export const AppMilestoneList = () => {
 
   return (
     <div className="p-4">
-      <p className="font-bold">マイルストーン</p>
+      <p className="font-bold">{"マイルストーン"}</p>
       {milestones.milestones.map((milestone) => (
         <div
           key={milestone.id}
