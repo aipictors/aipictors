@@ -75,13 +75,13 @@ export const PlusForm = () => {
         <div>
           <div className="flex">
             <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              次回の請求日
+              {"次回の請求日"}
             </span>
             <p>{nextDateText}</p>
           </div>
           <div className="flex">
             <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              次回の請求額
+              {"次回の請求額"}
             </span>
             <p>{`${currentPass.price}円（税込）`}</p>
           </div>
@@ -107,7 +107,7 @@ export const PlusForm = () => {
           <Separator />
           <PassBenefitList passType={currentPass.type} />
           <Separator />
-          <p className="text-sm opacity-60 font-bold">画像生成の特典</p>
+          <p className="text-sm opacity-60 font-bold">{"画像生成の特典"}</p>
           <PassImageGenerationBenefitList passType={currentPass.type} />
           <Separator />
           <p className="text-xs">

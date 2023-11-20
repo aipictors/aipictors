@@ -18,7 +18,7 @@ const PlusPage = async () => {
         <p>{"この度はAipictorsをご利用いただき、誠にありがとうございます。"}</p>
       </div>
       <div className="space-y-2">
-        <p className="font-bold text-lg">注意事項</p>
+        <p className="font-bold text-lg">{"注意事項"}</p>
         <PlusNoteList />
       </div>
     </MainCenterPage>
