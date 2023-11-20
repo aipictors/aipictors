@@ -29,7 +29,10 @@ export const MessageInput = (props: Props) => {
         icon={<Icon as={TbPhoto} fontSize={"lg"} />}
         borderRadius={"full"}
       /> */}
-      <Button disabled={props.isLoading} onClick={handleSubmit}>
+      <Button
+        disabled={message.length === 0 || props.isLoading}
+        onClick={handleSubmit}
+      >
         {"送信"}
       </Button>
     </div>

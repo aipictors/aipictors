@@ -18,7 +18,9 @@ export const RecipientMessage = (props: Props) => {
       </Avatar>
       <div className="max-w-sm">
         <Card className="px-6 py-2 rounded-tr-xl rounded-tl-sm rounded-br-xl rounded-bl-xl">
-          <p className="whitespace-pre-wrap">{props.text}</p>
+          <p className="whitespace-pre-wrap overflow-hidden break-words">
+            {props.text}
+          </p>
         </Card>
         <div className="flex justify-end">
           <p className="text-xs">{toElapsedTimeText(props.createdAt)}</p>

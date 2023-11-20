@@ -93,7 +93,7 @@ export const MutedTagList = () => {
       </div>
       {data?.viewer?.mutedTags.length === 0 && (
         <div className="bg-info rounded-md p-4">
-          <p>ミュートしているタグはありません</p>
+          <p>{"ミュートしているタグはありません"}</p>
         </div>
       )}
       <div>

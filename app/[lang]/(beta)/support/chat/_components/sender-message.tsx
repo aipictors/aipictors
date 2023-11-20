@@ -20,13 +20,13 @@ export const SenderMessage = (props: Props) => {
             "px-6 py-2 rounded-tl-xl rounded-tr-sm rounded-bl-xl rounded-br-xl"
           }
         >
-          <p className="whitespace-pre-wrap">{props.text}</p>
+          <p className="whitespace-pre-wrap overflow-hidden break-words">
+            {props.text}
+          </p>
         </Card>
-        <div className="flex justify-end">
-          <p className="text-2xs">{props.isRead ? "既読" : ""}</p>
-        </div>
-        <div className="flex justify-end">
-          <p className="text-2xs">{toElapsedTimeText(props.createdAt)}</p>
+        <div className="flex justify-end space-x-2">
+          <p className="text-xs">{props.isRead ? "既読" : ""}</p>
+          <p className="text-xs">{toElapsedTimeText(props.createdAt)}</p>
         </div>
       </div>
     </div>
