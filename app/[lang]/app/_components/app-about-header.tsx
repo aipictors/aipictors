@@ -23,7 +23,13 @@ export const AppAboutHeader = () => {
           </div>
         </div>
         <div className="flex items-center justify-center space-x-8">
-          <img src="/apple/download.svg" alt="download" className="h-12" />
+          <a
+            href={
+              "https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636"
+            }
+          >
+            <img src="/apple/download.svg" alt="download" className="h-12" />
+          </a>
           <a
             href={
               "https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja"
