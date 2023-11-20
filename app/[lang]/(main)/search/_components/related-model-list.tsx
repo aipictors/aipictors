@@ -1,3 +1,5 @@
+"use client"
+
 import { RelatedModelCard } from "@/app/[lang]/(main)/search/_components/related-model-card"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 

@@ -1,3 +1,5 @@
+"use client"
+
 import { SearchConfigDialog } from "@/app/[lang]/(main)/search/_components/search-config-dialog"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
