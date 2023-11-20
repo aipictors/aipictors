@@ -29,6 +29,7 @@ export const LoginForm = (props: Props) => {
         onChange={(event) => {
           setUsername(event.target.value)
         }}
+        className="text-lg"
       />
       <Input
         disabled={props.isLoading}
@@ -38,6 +39,7 @@ export const LoginForm = (props: Props) => {
         onChange={(event) => {
           setPassword(event.target.value)
         }}
+        className="text-lg"
       />
       <Button onClick={onLogin} className="w-full">
         {props.isLoading ? (
