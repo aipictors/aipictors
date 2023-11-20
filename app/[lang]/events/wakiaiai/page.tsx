@@ -85,7 +85,7 @@ const EventWakiaiaiPage = async () => {
       </div>
       <iframe
         title="Google Map"
-        className="rounded-md w-full h-400 border-0"
+        className="rounded w-full h-400 border-0"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d173236.96306047565!2d136.8223456376915!3d35.06173419127466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60037fbd4e27a501%3A0xced4a78d8bbf60fe!2z5aSq55Sw5bed6aeF6KW_5bqD5aC077yI5aSn5bGL5qC55bqD5aC077yJ!5e0!3m2!1sja!2sjp!4v1688692547024!5m2!1sja!2sjp"
         width="100%"
         height={400}
@@ -113,7 +113,7 @@ const EventWakiaiaiPage = async () => {
         ))}
       </div>
       <iframe
-        className="rounded-md"
+        className="rounded"
         style={{ border: 0 }}
         width="100%"
         height="400"

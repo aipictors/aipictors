@@ -1,9 +1,9 @@
 "use client"
 
 import type { ImageModelsQuery } from "@/__generated__/apollo"
+import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
-import { SelectableModel } from "@/app/[lang]/(beta)/generation/_components/selectable-model"
 import { Button } from "@/components/ui/button"
 import { Config } from "@/config"
 import { useState } from "react"
@@ -50,15 +50,15 @@ export const GenerationEditorModels = (props: Props) => {
         title={"モデル"}
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
         action={
-          <Button className="size-sm border-radius-full" onClick={onOpen}>
+          <Button size={"sm"} onClick={onOpen}>
             {"モデルを変更する"}
           </Button>
         }
       >
-        <div className="overflow-y-auto p-2 flex-col">
-          <div className="flex justify-between items-start flex-col">
+        <div className="overflow-y-auto px-2 pb-2 flex-col">
+          <div className="flex justify-between items-start flex-col gap-y-2">
             {currentModels.map((model) => (
-              <SelectableModel
+              <ConfigModel
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
                 name={model?.displayName ?? ""}

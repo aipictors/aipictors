@@ -1,14 +1,27 @@
+"use client"
+
+import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useContext } from "react"
 
 export const ThemeModeButton = () => {
+  const appContext = useContext(AppContext)
+
   const { setTheme, theme } = useTheme()
+
+  /**
+   * Hydrationを回避する為
+   */
+  if (appContext.isLoading) {
+    return null
+  }
 
   return (
     <Button
       onClick={() => {
-        setTheme(theme === "light" ? "dark" : "light")
+        setTheme(theme === "dark" ? "light" : "dark")
       }}
       variant={"ghost"}
       className="w-full justify-start"

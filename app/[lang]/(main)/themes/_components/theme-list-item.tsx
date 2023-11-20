@@ -12,7 +12,7 @@ type Props = {
 export const ThemeListItem = (props: Props) => {
   if (props.title === null) {
     return (
-      <div className="hidden lg:block h-24 bg-[backgroundColor] rounded-md p-4" />
+      <div className="hidden lg:block h-24 bg-[backgroundColor] rounded p-4" />
     )
   }
 

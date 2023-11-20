@@ -21,7 +21,7 @@ export const GenerationDocument = (props: Props) => {
 
   return (
     <div className="overflow-hidden px-4 space-y-4 w-full">
-      <img className="rounded-md w-full" src={imageUrl} alt="Aipictors Plus" />
+      <img className="rounded w-full" src={imageUrl} alt="Aipictors Plus" />
       <div>
         <p>{"投稿時は規約をご確認ください。"}</p>
         <p>{"複数アカウントでの生成は禁止です。"}</p>

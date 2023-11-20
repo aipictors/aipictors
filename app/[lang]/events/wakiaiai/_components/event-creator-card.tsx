@@ -40,7 +40,7 @@ export const EventCreatorCard = (props: Props) => {
             <img
               alt={props.user.name}
               src={props.user.iconImageURL}
-              className="h-full rounded-md shadow-xl w-full"
+              className="h-full rounded shadow-xl w-full"
             />
           </a>
         </div>

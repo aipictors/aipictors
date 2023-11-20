@@ -2,9 +2,13 @@ const { fontFamily } = require("tailwindcss/defaultTheme")
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  plugins: [require("tailwindcss-animate")],
   darkMode: ["class"],
   content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
   theme: {
+    /**
+     * shadcn/ui
+     */
     container: {
       center: true,
       padding: "2rem",
@@ -13,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      /**
+       * shadcn/ui
+       */
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -48,11 +55,17 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      /**
+       * shadcn/ui
+       */
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      /**
+       * shadcn/ui
+       */
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
@@ -63,6 +76,9 @@ module.exports = {
           to: { height: 0 },
         },
       },
+      /**
+       * shadcn/ui
+       */
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
@@ -70,7 +86,12 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      height: {
+        /**
+         * ヘッダーを除いた高さ
+         */
+        main: "calc(100vh - 72px)",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
 }

@@ -31,7 +31,7 @@ export const UserSupport = (props: Props) => {
         <p>{"支援リクエスト管理は、支援管理から確認できます"}</p>
         <p>{"使い方はこちら"}</p>
       </div>
-      <img className="rounded-md" src="gibbresh.png" alt="" />
+      <img className="rounded" src="gibbresh.png" alt="" />
     </div>
   )
 }

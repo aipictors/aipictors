@@ -13,6 +13,7 @@
     "pixelify",
     "prompton",
     "scta",
+    "shadcn",
     "splide"
   ],
   "deno.enable": false,

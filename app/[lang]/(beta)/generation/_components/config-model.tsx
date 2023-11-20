@@ -7,18 +7,18 @@ type Props = {
   onClick(): void
 }
 
-export const SelectableModel = (props: Props) => {
-  // props.isSelected
+export const ConfigModel = (props: Props) => {
   return (
     <Button
-      className="w-full p-2 h-auto overflow-hidden"
+      variant={props.isSelected ? "default" : "ghost"}
+      className="w-full p-2 h-auto overflow-y-hidden"
       onClick={props.onClick}
     >
       <div className="flex space-x-4 w-full">
         <img
           src={props.imageURL ?? ""}
           alt={props.name}
-          className="rounded-md w-full max-w-[4rem] object-cover"
+          className="rounded w-full max-w-[4rem] object-cover"
           draggable={false}
         />
         <p className="break-all text-sm font-bold whitespace-pre-wrap">

@@ -19,24 +19,21 @@ type Props = {
 
 export const GenerationEditorCard = (props: Props) => {
   return (
-    <Card className="h-full overflow-x-hidden overflow-y-auto position-relative">
-      <div className="flex sticky top-0 z-8 bg-opacity-10 bg-white px-2 py-2 justify-between">
+    <Card className="h-full flex flex-col w-full">
+      <div className="flex px-2 py-2 justify-between">
         <div className="flex items-center">
           <p className="fontWeight-bold">{props.title}</p>
         </div>
-        <div>
+        <div className="flex items-center">
           {props.tooltip && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className="size-sm border-radius-full"
-                    variant={"ghost"}
-                  >
+                  <Button size={"icon"} variant={"ghost"}>
                     <HelpCircle />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="font-size-md whitespace-pre-wrap ">
+                <TooltipContent className="font-size-md whitespace-pre-wrap">
                   {props.tooltip}
                 </TooltipContent>
               </Tooltip>

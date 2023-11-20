@@ -13,7 +13,7 @@ export const LoraImageModelCard = (props: Props) => {
     <div>
       <div className="flex flex-col">
         <Button
-          className="p-0 h-auto overflow-hidden border-width-2 rounded-md"
+          className="p-0 h-auto overflow-hidden border-width-2 rounded"
           variant={"outline"}
           // borderColor={props.isActive ? "primary.500" : "gray.200"}
           onClick={() => {

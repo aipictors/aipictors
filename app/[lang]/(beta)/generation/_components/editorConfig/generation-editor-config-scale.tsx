@@ -9,8 +9,8 @@ import { HelpCircle } from "lucide-react"
 
 export const GenerationEditorConfigScale = () => {
   return (
-    <div className="flex flex-col">
-      <div className="flex">
+    <div className="flex flex-col gap-y-2">
+      <div className="flex gap-x-2">
         <span className="font-bold">{"Scale"}</span>
         <TooltipProvider>
           <Tooltip>
@@ -18,11 +18,9 @@ export const GenerationEditorConfigScale = () => {
               <HelpCircle />
             </TooltipTrigger>
             <TooltipContent>
-              <p>
-                {
-                  "Scale値が小さいほど創造的な画像を生成できます。値が大きいほど、より厳密にテキストを解釈します。"
-                }
-              </p>
+              {
+                "Scale値が小さいほど創造的な画像を生成できます。値が大きいほど、より厳密にテキストを解釈します。"
+              }
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

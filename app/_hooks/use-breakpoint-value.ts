@@ -11,10 +11,13 @@ type Props<T> = {
 }
 
 export const useBreakpointValue = <T>(props: Props<T>) => {
-  const [breakpoint, setBreakpoint] = useState("base")
+  const [breakpoint, setBreakpoint] = useState<ReturnType<
+    typeof getBreakpoint
+  > | null>(null)
 
   useEffect(() => {
     if (typeof window === "undefined") return
+    setBreakpoint(getBreakpoint(window.innerWidth))
     const calcInnerWidth = throttle(() => {
       setBreakpoint(getBreakpoint(window.innerWidth))
     }, 128)
@@ -24,21 +27,31 @@ export const useBreakpointValue = <T>(props: Props<T>) => {
     }
   }, [])
 
-  if (breakpoint === "xl" && props.xl !== undefined) {
-    return props.xl
+  if (breakpoint === null) {
+    return null
   }
 
-  if (breakpoint === "lg" && props.lg !== undefined) {
-    return props.lg
+  console.log("breakpoint", breakpoint)
+
+  if (breakpoint === "xl") {
+    return props.xl ?? props.lg ?? props.md ?? props.sm ?? props.base ?? null
   }
 
-  if (breakpoint === "md" && props.md !== undefined) {
-    return props.md
+  if (breakpoint === "lg") {
+    return props.lg ?? props.md ?? props.sm ?? props.base ?? null
   }
 
-  if (breakpoint === "sm" && props.sm !== undefined) {
-    return props.sm
+  if (breakpoint === "md") {
+    return props.md ?? props.sm ?? props.base ?? null
   }
 
-  return props.base
+  if (breakpoint === "sm") {
+    return props.sm ?? props.base ?? null
+  }
+
+  if (breakpoint === "base") {
+    return props.base ?? null
+  }
+
+  return null
 }

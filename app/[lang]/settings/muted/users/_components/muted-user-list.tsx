@@ -42,7 +42,7 @@ export const MutedUserList = () => {
   return (
     <>
       {data?.viewer?.mutedUsers.length === 0 && (
-        <div className="bg-info rounded-md p-4">
+        <div className="bg-info rounded p-4">
           <p>{"ミュートしているユーザはいません"}</p>
         </div>
       )}

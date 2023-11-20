@@ -22,7 +22,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/[lang]/(beta)/generation/_components/selectable-model.tsx"
+    "app/[lang]/(beta)/generation/_components/config-model.tsx"
   ],
   "exclude": ["node_modules"]
 }

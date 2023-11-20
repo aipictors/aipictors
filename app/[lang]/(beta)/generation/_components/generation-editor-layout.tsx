@@ -7,14 +7,14 @@ type Props = {
   loraModels: React.ReactNode
   promptEditor: React.ReactNode
   negativePromptEditor: React.ReactNode
-  histories: React.ReactNode
+  history: React.ReactNode
 }
 
 export const GenerationEditorLayout = (props: Props) => {
   const area = {
     models: "models",
     editorPrompt: "editor-prompt",
-    histories: "histories",
+    history: "history",
     loraModels: "lora-models",
     editorNegativePrompt: "editor-negative-prompt",
   } as const
@@ -25,12 +25,12 @@ export const GenerationEditorLayout = (props: Props) => {
       [area.loraModels],
       [area.editorPrompt],
       [area.editorNegativePrompt],
-      [area.histories],
+      [area.history],
     ],
     lg: [
       [area.models, area.editorPrompt],
       [area.loraModels, area.editorNegativePrompt],
-      [area.histories, area.histories],
+      [area.history, area.history],
     ],
     xl: [
       [
@@ -39,8 +39,8 @@ export const GenerationEditorLayout = (props: Props) => {
         area.editorPrompt,
         area.editorPrompt,
         area.editorPrompt,
-        area.histories,
-        area.histories,
+        area.history,
+        area.history,
       ],
       [
         area.loraModels,
@@ -48,13 +48,13 @@ export const GenerationEditorLayout = (props: Props) => {
         area.editorNegativePrompt,
         area.editorNegativePrompt,
         area.editorNegativePrompt,
-        area.histories,
-        area.histories,
+        area.history,
+        area.history,
       ],
     ],
   })
 
-  if (responsiveAreas === undefined) {
+  if (responsiveAreas === null) {
     return null
   }
 
@@ -64,10 +64,8 @@ export const GenerationEditorLayout = (props: Props) => {
 
   return (
     <main
-      className="grid grid-cols-1 gap-2 w-full h-auto px-4 pb-4 overflow-y-auto lg:grid-rows-3 xl:grid-rows-2 lg:grid-cols-2 xl:grid-cols-7 "
-      style={{
-        gridTemplateAreas: templateAreas,
-      }}
+      className="lg:h-main grid grid-cols-1 gap-2 w-full px-4 pb-4 lg:grid-rows-3 xl:grid-rows-2 lg:grid-cols-2 xl:grid-cols-7"
+      style={{ gridTemplateAreas: templateAreas }}
     >
       <div
         style={{ gridArea: area.models }}
@@ -94,10 +92,10 @@ export const GenerationEditorLayout = (props: Props) => {
         {props.negativePromptEditor}
       </div>
       <div
-        style={{ gridArea: area.histories }}
+        style={{ gridArea: area.history }}
         className="overflow-auto lg:overflow-hidden"
       >
-        {props.histories}
+        {props.history}
       </div>
     </main>
   )

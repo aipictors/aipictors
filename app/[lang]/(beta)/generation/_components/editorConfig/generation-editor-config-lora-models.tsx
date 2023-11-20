@@ -1,8 +1,8 @@
 "use client"
 
 import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
+import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
 import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
-import { SelectableLoraModel } from "@/app/[lang]/(beta)/generation/_components/selectable-lora-model"
 import { Button } from "@/components/ui/button"
 import { useBoolean } from "usehooks-ts"
 
@@ -84,27 +84,27 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
 
   return (
     <>
-      <div className="p-2 space-y-4">
-        <div>
-          {selectedModels.map((model) => (
-            <SelectableLoraModel
-              key={model.id}
-              imageURL={model.thumbnailImageURL ?? ""}
-              name={model.name}
-              description={model.description ?? ""}
-              value={
-                props.modelConfigs.find((m) => m.id === model.id)?.value ?? 0
-              }
-              setValue={(value) => {
-                onChangeModelConfig(model.id, value)
-              }}
-              onDelete={() => {
-                onAddModelConfig(model.id)
-              }}
-            />
-          ))}
-        </div>
-        <Button onClick={onOpen}>{"LoRAを追加する"}</Button>
+      <div className="space-y-4">
+        {selectedModels.map((model) => (
+          <ConfigLoraModel
+            key={model.id}
+            imageURL={model.thumbnailImageURL ?? ""}
+            name={model.name}
+            description={model.description ?? ""}
+            value={
+              props.modelConfigs.find((m) => m.id === model.id)?.value ?? 0
+            }
+            setValue={(value) => {
+              onChangeModelConfig(model.id, value)
+            }}
+            onDelete={() => {
+              onAddModelConfig(model.id)
+            }}
+          />
+        ))}
+        <Button size={"sm"} className="w-full" onClick={onOpen}>
+          {"LoRAを追加する"}
+        </Button>
       </div>
       <LoraModelsDialog
         isOpen={isOpen}

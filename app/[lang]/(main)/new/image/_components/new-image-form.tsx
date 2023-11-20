@@ -197,7 +197,7 @@ const NewImageForm = () => {
       <div
         {...attributes}
         {...listeners}
-        className="m-4 w-24 h-24 md:w-60 md:h-60 overflow-hidden rounded-md relative"
+        className="m-4 w-24 h-24 md:w-60 md:h-60 overflow-hidden rounded relative"
       >
         <img
           src={props.image}
@@ -223,7 +223,7 @@ const NewImageForm = () => {
           }`}
         >
           <div
-            className="flex flex-col items-center justify-center p-4 m-4 bg-blue-500 text-white rounded-md cursor-pointer"
+            className="flex flex-col items-center justify-center p-4 m-4 bg-blue-500 text-white rounded cursor-pointer"
             {...getRootProps()}
           >
             <input

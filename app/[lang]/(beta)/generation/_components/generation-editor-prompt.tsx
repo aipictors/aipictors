@@ -24,14 +24,14 @@ export const GenerationEditorPrompt = (props: Props) => {
         title={"プロンプト"}
         tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
         action={
-          <Button className="border-radius-full size-sm" onClick={onOpen}>
+          <Button size={"sm"} onClick={onOpen}>
             {"キーワード"}
           </Button>
         }
       >
-        <div className="flex-1 p-1" style={{ height: "100%" }}>
+        <div className="flex flex-col px-2 pb-2 h-full">
           <Textarea
-            className="p-2 border-radius-none resize-none border-none h-100 border-bottom-md"
+            className="resize-none h-full"
             placeholder={"プロンプト"}
             value={props.promptText}
             onChange={(event) => {

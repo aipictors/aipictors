@@ -48,7 +48,7 @@ export const GenerationEditorConfig = (props: Props) => {
       tooltip={"イラストの絵柄を調整することができます。"}
     >
       <div className="overflow-y-auto">
-        <div className="p-2 space-y-4">
+        <div className="flex flex-col px-2 gap-y-4">
           <GenerationEditorConfigLoraModels
             models={props.models}
             modelConfigs={props.modelConfigs}

@@ -5,7 +5,7 @@ type Props = {
 export const WorkCard = (props: Props) => {
   return (
     <img
-      className="w-full h-full object-cover rounded-md"
+      className="w-full h-full object-cover rounded"
       alt=""
       src={props.imageURL}
     />

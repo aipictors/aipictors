@@ -139,10 +139,10 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           onChangePromptText={setNegativePromptText}
         />
       }
-      histories={
-        <div className="flex-1 p-1" style={{ height: "100%" }}>
+      history={
+        <div className="flex flex-col h-full gap-y-2">
           <Button
-            className="w-100 bg-primary"
+            className="w-full"
             disabled={isLoading}
             onClick={onCreateTask}
           >
