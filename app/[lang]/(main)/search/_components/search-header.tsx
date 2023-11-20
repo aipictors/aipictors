@@ -2,6 +2,7 @@
 
 import { SearchConfigDialog } from "@/app/[lang]/(main)/search/_components/search-config-dialog"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useBoolean } from "usehooks-ts"
 
@@ -22,9 +23,9 @@ export const SearchHeader = () => {
           <Button onClick={onOpen}>{"詳細検索設定"}</Button>
         </div>
         <div className="flex space-x-2">
-          <p>{"ぼかしを外す"}</p>
+          <Label>{"ぼかしを外す"}</Label>
           <Switch />
-          <p>{"ダイアログ"}</p>
+          <Label>{"ダイアログ"}</Label>
           <Switch />
         </div>
       </div>

@@ -4,6 +4,7 @@ import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { LoginForm } from "@/app/_components/login-form"
 import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import type { FormLogin } from "@/app/_types/form-login"
+import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 
@@ -41,16 +42,20 @@ export const LoginPage = () => {
   }
 
   return (
-    <MainCenterPage>
-      <div className="w-full flex flex-col justify-center items-center max-w-sm space-y-6 pb-16">
+    <MainCenterPage className="max-w-sm">
+      <div className="w-full flex flex-col justify-center items-center max-w-sm space-y-6 pb-16 px-4 ">
         <div className="flex justify-center">
           <img alt="Logo" src="/icon.png" className="w-32" />
         </div>
         <LoginForm onSubmit={onLogin} isLoading={isLoading} />
-        <hr className="border-t" />
-        <p className="text-sm">
-          現在、アプリでのログインはパスワード認証のみに対応しています。パスワードはサイトから設定または変更できます。
-        </p>
+        <Separator />
+        <div>
+          <p className="text-sm">
+            {
+              "現在、アプリでのログインはパスワード認証のみに対応しています。パスワードはサイトから設定または変更できます。"
+            }
+          </p>
+        </div>
       </div>
     </MainCenterPage>
   )
