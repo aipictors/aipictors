@@ -25,7 +25,7 @@ export const SenderMessage = (props: Props) => {
           </p>
         </Card>
         <div className="flex justify-end space-x-2">
-          <p className="text-xs">{props.isRead ? "既読" : ""}</p>
+          <span className="text-xs">{props.isRead ? "既読" : ""}</span>
           <p className="text-xs">{toElapsedTimeText(props.createdAt)}</p>
         </div>
       </div>

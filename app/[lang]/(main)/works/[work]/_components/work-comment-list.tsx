@@ -6,6 +6,7 @@ import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-c
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Stamp } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
@@ -27,7 +28,7 @@ export const WorkCommentList = (props: Props) => {
               alt="自分のアバターアイコン"
             />
           </Avatar>
-          <input type="text" placeholder="コメントする" />
+          <Input type="text" placeholder="コメントする" className="flex-1" />
           <Button size={"icon"} onClick={onOpen}>
             <Stamp />
           </Button>

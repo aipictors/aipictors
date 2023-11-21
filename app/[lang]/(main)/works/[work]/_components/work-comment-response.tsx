@@ -22,7 +22,9 @@ export const WorkCommentResponse = (props: Props) => {
       </Avatar>
       <div className="space-y-0">
         <p>{props.userName}</p>
-        <p className="text-sm">{props.text}</p>
+        <p className="text-sm whitespace-pre-wrap overflow-hidden break-words">
+          {props.text}
+        </p>
         {props.stickerImageURL && (
           <img className="w-20" alt="" src={props.stickerImageURL} />
         )}

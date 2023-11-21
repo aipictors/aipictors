@@ -15,10 +15,10 @@ type Props = {
 
 export const WorkUser = (props: Props) => {
   return (
-    <div className="space-y-0 w-full lg:max-w-xs">
-      <Card>
+    <div className="w-full lg:max-w-xs">
+      <Card className="p-4">
         <div className="flex justify-center">
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center justify-center">
               <img
                 className="w-16 h-16 rounded-full"
@@ -32,10 +32,16 @@ export const WorkUser = (props: Props) => {
               <p>{`フォロワー数：${props.userFollowersCount}`}</p>
             </div>
             <div className="flex justify-center space-x-2">
-              <Button>{"フォローする"}</Button>
-              {props.userPromptonId && <PromptonRequestButton />}
+              <Button className="flex-1">{"フォローする"}</Button>
+              {props.userPromptonId && (
+                <PromptonRequestButton className="flex-1" />
+              )}
             </div>
-            {props.userBiography && <p>{props.userBiography}</p>}
+            {props.userBiography && (
+              <p className="whitespace-pre-wrap overflow-hidden break-words">
+                {props.userBiography}
+              </p>
+            )}
           </div>
         </div>
       </Card>
