@@ -83,7 +83,14 @@ export const ReportDialog = (props: Props) => {
           />
         </div>
         <DialogFooter>
-          <Button onClick={props.onClose}>{"送信"}</Button>
+          <Button
+            onClick={() => {
+              alert("送信しました")
+              props.onClose
+            }}
+          >
+            {"送信"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
