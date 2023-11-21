@@ -7,6 +7,7 @@ import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -51,7 +52,9 @@ export const WorkArticle = (props: Props) => {
             <span>{props.work.user.name}</span>
             <Button size={"sm"}>{"フォローする"}</Button>
           </div>
-          <span className="text-sm">{"一覧をダイアログで見る"}</span>
+          <Button variant={"link"} className="text-sm">
+            {"一覧をダイアログで見る"}
+          </Button>
         </div>
         <div className="flex overflow-x-auto space-x-2">
           {props.work.user.works.map((work) => (
@@ -63,6 +66,7 @@ export const WorkArticle = (props: Props) => {
             />
           ))}
         </div>
+        <Separator />
       </article>
       <WorkUser
         userName={props.work.user.name}

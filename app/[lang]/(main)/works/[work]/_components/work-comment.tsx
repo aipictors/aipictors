@@ -1,4 +1,5 @@
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 type Props = {
   userIconImageURL?: string
@@ -10,18 +11,24 @@ type Props = {
 
 export const WorkComment = (props: Props) => {
   return (
-    <div className="flex items-start">
-      <img className="rounded-full" src={props.userIconImageURL} alt="" />
+    <div className="flex items-start space-x-2">
+      <Avatar>
+        <AvatarImage
+          className="rounded-full w-12"
+          src={props.userIconImageURL}
+          alt=""
+        />
+      </Avatar>
       <div className="space-y-0">
-        <p>{props.userName}</p>
-        {props.text && <p>{props.text}</p>}
+        <span>{props.userName}</span>
+        {props.text && <p className="text-sm">{props.text}</p>}
         {props.stickerImageURL && (
-          <img className="w-8" alt="" src={props.stickerImageURL} />
+          <img className="w-20" alt="" src={props.stickerImageURL} />
         )}
         <div className="flex space-x-2">
-          <p className="text-xs">{toDateTimeText(props.createdAt)}</p>
-          <p className="text-xs">{"返信"}</p>
-          <p className="text-xs">{"ダウンロード"}</p>
+          <span className="text-xs">{toDateTimeText(props.createdAt)}</span>
+          <span className="text-xs">{"返信"}</span>
+          <span className="text-xs">{"ダウンロード"}</span>
         </div>
       </div>
     </div>

@@ -18,9 +18,9 @@ export const WorkCommentList = (props: Props) => {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         <p>{"コメント"}</p>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 w-full">
           <Avatar>
             <AvatarImage
               src="https://github.com/shadcn.png"
