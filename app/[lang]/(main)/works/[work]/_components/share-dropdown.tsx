@@ -6,7 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Flag, Link } from "lucide-react"
+import { Link } from "lucide-react"
+import { TbBrandX } from "react-icons/tb"
 
 type Props = {
   isOpen: boolean
@@ -26,7 +27,7 @@ export const ShareDropdown = (props: Props) => {
       <DropdownMenuTrigger />
       <DropdownMenuContent>
         <DropdownMenuItem className=" space-x-2 ">
-          <Flag />
+          <TbBrandX />
           <span>{"X"}</span>
         </DropdownMenuItem>
         <DropdownMenuItem className=" space-x-2 ">
