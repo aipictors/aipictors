@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -83,14 +84,15 @@ export const ReportDialog = (props: Props) => {
           />
         </div>
         <DialogFooter>
-          <Button
-            onClick={() => {
-              props.onClose
-              alert("送信しました")
-            }}
-          >
-            {"送信"}
-          </Button>
+          <DialogClose>
+            <Button
+              onClick={() => {
+                alert("送信しました")
+              }}
+            >
+              {"送信"}
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
