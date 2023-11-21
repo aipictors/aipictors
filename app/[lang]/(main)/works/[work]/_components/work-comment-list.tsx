@@ -3,6 +3,7 @@
 import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Stamp } from "lucide-react"
 
@@ -15,16 +16,17 @@ export const WorkCommentList = (props: Props) => {
     <div className="space-y-4">
       <p>{"コメント"}</p>
       <div className="flex items-center space-x-2">
-        <img className="rounded-full" src="" alt="" />
-        <input
-          className="text-sm rounded-full"
-          type="text"
-          placeholder="コメントする"
-        />
+        <Avatar>
+          <AvatarImage
+            src="https://github.com/shadcn.png"
+            alt="自分のアバターアイコン"
+          />
+        </Avatar>
+        <input type="text" placeholder="コメントする" />
         <Button size={"icon"}>
           <Stamp />
         </Button>
-        <Button className="rounded-full">{"投稿"}</Button>
+        <Button>{"投稿"}</Button>
       </div>
       <div className="space-y-8">
         {props.work.comments.map((comment) => (
