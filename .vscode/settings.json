@@ -52,9 +52,11 @@
     "@radix-ui",
     "next/dist",
     "postcss",
+    "process",
     "react-day-picker",
     "tailwind-merge",
-    "tailwindcss"
+    "tailwindcss",
+    "vitest/dist"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "workbench.editor.enablePreview": true,

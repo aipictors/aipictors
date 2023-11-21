@@ -78,6 +78,30 @@ export class Config {
     } as const
   }
 
+  static generation = {
+    defaultScaleValue: 7,
+    defaultStepsValue: 20,
+    defaultSamplerValue: "DPM++ 2M",
+    samplerValues: [
+      "Euler a",
+      "Euler",
+      "Heun",
+      "DPM2",
+      "DPM2 a",
+      "DPM++ 2S a",
+      "DPM++ 2M",
+      "LMS Karras",
+      "DPM2 a Karras",
+      "DPM++ 2S a Karras",
+      "DPM++ SDE Karras",
+      "DPM++ 2M Karras",
+      "DPM++ 2M SDE Karras",
+      "DDIM",
+    ],
+    defaultVaeValue: "kl-f8-anime2",
+    vaeValues: ["kl-f8-anime2", "ClearVAE_V2.3"],
+  }
+
   /**
    * デフォルトのLoRAモデルID
    */

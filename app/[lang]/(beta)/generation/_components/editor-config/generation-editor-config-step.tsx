@@ -7,10 +7,15 @@ import {
 } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 
-export const GenerationEditorConfigStep = () => {
+type Props = {
+  value: number
+  onChange(value: number): void
+}
+
+export const GenerationEditorConfigStep = (props: Props) => {
   return (
-    <div className="flex flex-col">
-      <div className="flex">
+    <div className="flex flex-col gap-y-4">
+      <div className="flex gap-x-2">
         <span className="font-bold">{"Steps"}</span>
         <TooltipProvider>
           <Tooltip>
@@ -23,7 +28,15 @@ export const GenerationEditorConfigStep = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Input type="number" defaultValue={20} min={9} max={25} />
+      <Input
+        type="number"
+        value={props.value}
+        min={9}
+        max={25}
+        onChange={(event) => {
+          props.onChange(Number(event.target.value))
+        }}
+      />
     </div>
   )
 }

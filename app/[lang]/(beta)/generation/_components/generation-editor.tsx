@@ -8,12 +8,13 @@ import {
   type ImageModelsQuery,
   type PromptCategoriesQuery,
 } from "@/__generated__/apollo"
-import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editorConfig/generation-editor-config"
+import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
+import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-editor-config"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
@@ -44,23 +45,13 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   /**
    * 選択されたLoRAモデルのID
    */
-  const [selectedLoraModelConfigs, setSelectedLoraModelConfigs] = useState(
-    () => {
-      return Config.defaultImageLoraModelIds.map((id) => {
-        return { id, value: 0 }
-      })
-    },
-  )
+  const [loraModelConfigs, setLoraModelConfigs] = useState(() => {
+    return Config.defaultImageLoraModelIds.map((id) => {
+      return { id, value: 0 }
+    })
+  })
 
-  const [promptText, setPromptText] = useState("")
-
-  const [negativePromptText, setNegativePromptText] = useState("")
-
-  const [imageSize, setImageSize] = useState("SD1_512_768")
-
-  const [imageVae, setImageVae] = useState<number>()
-
-  const [imageSeed, setImageSeed] = useState<number>()
+  const editorConfig = useEditorConfig()
 
   const [selectedHistory, selectHistory] = useState("")
 
@@ -69,23 +60,43 @@ export const GenerationEditor: React.FC<Props> = (props) => {
    */
   const onCreateTask = async () => {
     try {
-      await createTask({
-        variables: {
-          input: {
-            count: 1,
-            model: "petitcutie_v20.safetensors [6a1f2c62a7]",
-            vae: "clearvae_v23.safetensors",
-            prompt: promptText,
-            negativePrompt: "EasyNegative, nsfw, nude, ",
-            seed: 868050328,
-            steps: 20,
-            scale: 7,
-            sampler: "DPM++ 2M Karras",
-            sizeType: "SD1_512_768",
-            type: "TEXT_TO_IMAGE",
-          },
-        },
+      const model = props.imageModels.find((model) => {
+        return model.id === selectedModelId
       })
+      if (typeof model === "undefined") {
+        throw new Error("モデルが見つかりません")
+      }
+      const inputPrompt = editorConfig.promptText
+      console.log({
+        count: 1,
+        model: model.name,
+        vae: editorConfig.vae,
+        prompt: inputPrompt,
+        negativePrompt: "EasyNegative, nsfw, nude, ",
+        seed: editorConfig.seed,
+        steps: editorConfig.steps,
+        scale: editorConfig.scale,
+        sampler: editorConfig.sampler,
+        sizeType: "SD1_512_768",
+        type: "TEXT_TO_IMAGE",
+      })
+      // await createTask({
+      //   variables: {
+      //     input: {
+      //       count: 1,
+      //       model: model.name,
+      //       vae: editorConfig.vae,
+      //       prompt: inputPrompt,
+      //       negativePrompt: "EasyNegative, nsfw, nude, ",
+      //       seed: editorConfig.seed,
+      //       steps: editorConfig.steps,
+      //       scale: editorConfig.scale,
+      //       sampler: editorConfig.sampler,
+      //       sizeType: "SD1_512_768",
+      //       type: "TEXT_TO_IMAGE",
+      //     },
+      //   },
+      // })
       toast({ description: "タスクを作成しました" })
     } catch (error) {
       if (error instanceof Error) {
@@ -108,42 +119,38 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       loraModels={
         <GenerationEditorConfig
           models={props.imageLoraModels}
-          modelConfigs={selectedLoraModelConfigs}
-          onChangeModelConfigs={(configs) => {
-            setSelectedLoraModelConfigs(configs)
-          }}
-          size={""}
-          onChangeSize={(size) => {
-            setImageSize(size)
-          }}
-          vae={0}
-          onChangeVae={(vae) => {
-            setImageVae(vae)
-          }}
-          seed={0}
-          onChangeSeed={(seed) => {
-            setImageSeed(seed)
-          }}
+          modelConfigs={loraModelConfigs}
+          onChangeModelConfigs={setLoraModelConfigs}
+          size={editorConfig.sizeType}
+          onChangeSize={editorConfig.updateSizeType}
+          vae={editorConfig.vae}
+          onChangeVae={editorConfig.updateVae}
+          seed={editorConfig.seed}
+          onChangeSeed={editorConfig.updateSeed}
+          scale={editorConfig.scale}
+          onChangeScale={editorConfig.updateScale}
+          sampler={editorConfig.sampler}
+          onChangeSampler={editorConfig.updateSampler}
         />
       }
       promptEditor={
         <GenerationEditorPrompt
-          promptText={promptText}
+          promptText={editorConfig.promptText}
           promptCategories={props.promptCategories}
-          onChangePromptText={setPromptText}
+          onChangePromptText={editorConfig.updatePrompt}
         />
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          promptText={negativePromptText}
-          onChangePromptText={setNegativePromptText}
+          promptText={editorConfig.negativePromptText}
+          onChangePromptText={editorConfig.updateNegativePrompt}
         />
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
           <Button
             className="w-full"
-            disabled={isLoading}
+            disabled={isLoading || editorConfig.isDisabled}
             onClick={onCreateTask}
           >
             {"生成する"}

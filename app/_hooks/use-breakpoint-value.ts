@@ -31,8 +31,6 @@ export const useBreakpointValue = <T>(props: Props<T>) => {
     return null
   }
 
-  console.log("breakpoint", breakpoint)
-
   if (breakpoint === "xl") {
     return props.xl ?? props.lg ?? props.md ?? props.sm ?? props.base ?? null
   }

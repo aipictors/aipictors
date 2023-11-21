@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Tooltip,
@@ -5,12 +6,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Dices, HelpCircle, RefreshCcw } from "lucide-react"
+import { Dices, HelpCircle } from "lucide-react"
 
-export const GenerationEditorConfigSeed = () => {
+type Props = {
+  value: number
+  onChange(value: number): void
+}
+
+export const GenerationEditorConfigSeed = (props: Props) => {
   return (
-    <div>
-      <div className="flex">
+    <div className="flex flex-col gap-y-4">
+      <div className="flex gap-x-2">
         <span className="font-bold">{"Seed"}</span>
         <TooltipProvider>
           <Tooltip>
@@ -23,29 +29,47 @@ export const GenerationEditorConfigSeed = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex">
-        <Input type="number" defaultValue={-3} className="flex-1" />
+      <div className="flex gap-x-2">
+        <Input
+          type="number"
+          value={props.value}
+          className="flex-1"
+          onChange={(event) => {
+            props.onChange(Number(event.target.value))
+          }}
+        />
         <div className="flex space-x-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Dices />
+                <Button
+                  size={"icon"}
+                  variant={props.value === -1 ? "default" : "secondary"}
+                  disabled={props.value === -1}
+                  onClick={() => {
+                    props.onChange(-1)
+                  }}
+                >
+                  <Dices />
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{"Seed値をランダムにする"}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <TooltipProvider>
+          {/* <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <RefreshCcw />
+                <Button size={"icon"} variant={"secondary"}>
+                  <RefreshCcw />
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{"前回生成に使用したSeed値を復元する"}</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
         </div>
       </div>
     </div>

@@ -7,9 +7,14 @@ import {
 } from "@/components/ui/tooltip"
 import { HelpCircle } from "lucide-react"
 
-export const GenerationEditorConfigScale = () => {
+type Props = {
+  value: number
+  onChange(value: number): void
+}
+
+export const GenerationEditorConfigScale = (props: Props) => {
   return (
-    <div className="flex flex-col gap-y-2">
+    <div className="flex flex-col gap-y-4">
       <div className="flex gap-x-2">
         <span className="font-bold">{"Scale"}</span>
         <TooltipProvider>
@@ -25,7 +30,15 @@ export const GenerationEditorConfigScale = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Input type="number" defaultValue={7} min={1} max={15} />
+      <Input
+        type="number"
+        value={props.value}
+        min={1}
+        max={15}
+        onChange={(event) => {
+          props.onChange(Number(event.target.value))
+        }}
+      />
     </div>
   )
 }

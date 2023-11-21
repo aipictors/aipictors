@@ -11,16 +11,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { Config } from "@/config"
 import { HelpCircle } from "lucide-react"
+
+type Props = {
+  value: string
+  onChange(value: string): void
+}
 
 /**
  * VAEの設定
  * @returns
  */
-export const GenerationEditorConfigVae = () => {
+export const GenerationEditorConfigVae = (props: Props) => {
   return (
-    <div>
-      <div className="flex space-x-2">
+    <div className="flex flex-col gap-y-4">
+      <div className="flex gap-x-2">
         <span className="font-bold">{"VAE"}</span>
         <TooltipProvider>
           <Tooltip>
@@ -33,14 +39,22 @@ export const GenerationEditorConfigVae = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Select defaultValue={"option3"}>
+      <Select
+        value={props.value}
+        onValueChange={(value) => {
+          props.onChange(value)
+        }}
+      >
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="option1">{"なし"}</SelectItem>
-          <SelectItem value="option2">{"kl-f8-anime2"}</SelectItem>
-          <SelectItem value="option3">{"ClearVAE_V2.3"}</SelectItem>
+          <SelectItem value="null">{"なし"}</SelectItem>
+          {Config.generation.vaeValues.map((value) => (
+            <SelectItem key={value} value={value}>
+              {value}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

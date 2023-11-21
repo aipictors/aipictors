@@ -7,11 +7,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export const GenerationEditorConfigSize = () => {
+type Props = {
+  value: string
+  onChange(value: string): void
+}
+
+export const GenerationEditorConfigSize = (props: Props) => {
   return (
-    <div>
+    <div className="flex flex-col gap-y-4">
       <span className="font-bold">{"サイズ"}</span>
-      <Select>
+      <Select
+        value={props.value}
+        onValueChange={(value) => {
+          props.onChange(value)
+        }}
+      >
         <SelectGroup>
           <SelectTrigger>
             <SelectValue placeholder="【正方形】768×768(upscale:1.5)" />
@@ -26,7 +36,7 @@ export const GenerationEditorConfigSize = () => {
             <SelectItem value={"SD1_768_512"}>
               {"【横長】1200×768(upscale:1.5)"}
             </SelectItem>
-            <SelectItem value={"SD2_768_768"}>
+            {/* <SelectItem value={"SD2_768_768"}>
               {"【正方形】768×768(upscale:1.5)"}
             </SelectItem>
             <SelectItem value={"SD2_768_1200"}>
@@ -34,7 +44,7 @@ export const GenerationEditorConfigSize = () => {
             </SelectItem>
             <SelectItem value={"SD2_1200_768"}>
               {"【横長】1200×768(upscale:1.5)"}
-            </SelectItem>
+            </SelectItem> */}
           </SelectContent>
         </SelectGroup>
       </Select>
