@@ -27,7 +27,7 @@ export const StickerSearchForm = (props: Props) => {
   }
 
   return (
-    <div className="flex px-4 w-full">
+    <section className="flex w-full gap-x-4">
       <Input
         type="text"
         value={searchTerm}
@@ -42,6 +42,6 @@ export const StickerSearchForm = (props: Props) => {
         placeholder="検索キーワードを入力"
       />
       <Button onClick={handleSearch}>{"検索"}</Button>
-    </div>
+    </section>
   )
 }

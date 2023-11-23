@@ -1,20 +1,20 @@
 "use client"
-
-import type { UserStickersQuery } from "@/__generated__/apollo"
+import type { StickersQuery } from "@/__generated__/apollo"
 import { StickerCard } from "@/app/[lang]/(beta)/stickers/_components/sticker-card"
-import Link from "next/link"
 
 type Props = {
-  stickers: NonNullable<UserStickersQuery["user"]>["stickers"]
+  stickers: StickersQuery["stickers"]
 }
 
-export const UserStickerList = (props: Props) => {
+export const StickerList = (props: Props) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
       {props.stickers.map((props) => (
-        <Link
+        <a
           key={props.id}
           href={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <StickerCard
             title={props.title}
@@ -22,7 +22,7 @@ export const UserStickerList = (props: Props) => {
             downloadsCount={props.downloadsCount}
             usesCount={props.usesCount}
           />
-        </Link>
+        </a>
       ))}
     </div>
   )

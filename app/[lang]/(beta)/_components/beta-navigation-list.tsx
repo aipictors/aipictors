@@ -4,7 +4,14 @@ import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navig
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Separator } from "@/components/ui/separator"
-import { Home, LogIn, MessageCircle, Rocket, Sparkles } from "lucide-react"
+import {
+  Home,
+  LogIn,
+  MessageCircle,
+  Rocket,
+  Sparkles,
+  Stamp,
+} from "lucide-react"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -26,6 +33,11 @@ export const BetaNavigationList = (props: Props) => {
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
+      {appContext.isLoggedIn && (
+        <HomeNavigationButton href={"/stickers"} icon={Stamp}>
+          {"スタンプ広場"}
+        </HomeNavigationButton>
+      )}
       {appContext.isLoggedIn && (
         <HomeNavigationButton href={"/plus"} icon={Rocket}>
           {"Aipictors+"}
