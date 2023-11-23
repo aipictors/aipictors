@@ -56,7 +56,7 @@ export const AccountLoginForm = () => {
 
   return (
     <div className="w-full space-y-8">
-      <div className="space-y-4">
+      <div className="space-y-2">
         <p>現在のユーザID</p>
         <Input
           readOnly
@@ -64,7 +64,7 @@ export const AccountLoginForm = () => {
           placeholder="ユーザID"
         />
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         <p>新しいユーザID</p>
         <Input
           value={userId}

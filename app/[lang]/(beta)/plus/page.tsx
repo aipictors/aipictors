@@ -10,9 +10,7 @@ import type { Metadata } from "next"
 const PlusPage = async () => {
   return (
     <MainCenterPage className="space-y-8 pb-16 px-4 md:pr-8">
-      <div className="flex justify-center text-2xl font-bold">
-        <span>{"Aipictors+"}</span>
-      </div>
+      <h1 className="text-2xl font-bold">{"Aipictors +"}</h1>
       <PlusForm />
       <div>
         <p>{"この度はAipictorsをご利用いただき、誠にありがとうございます。"}</p>

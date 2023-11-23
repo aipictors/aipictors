@@ -50,9 +50,9 @@ export const AccountPasswordForm = () => {
 
   return (
     <div className="w-full space-y-8">
-      <div className="space-y-4">
+      <div className="space-y-2">
         <p>{"現在のログインパスワード"}</p>
-        <div className="flex">
+        <div className="flex space-x-2">
           <Input
             placeholder="現在のログインパスワード"
             value={currentPassword}
@@ -72,9 +72,9 @@ export const AccountPasswordForm = () => {
           </Button>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-2">
         <p>{"新しいログインパスワード"}</p>
-        <div className="flex">
+        <div className="flex space-x-2">
           <Input
             placeholder="新しいログインパスワード"
             type={showNewPassword ? "text" : "password"}

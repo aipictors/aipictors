@@ -12,8 +12,6 @@ type Props = {
 }
 
 export const HomeNavigationButton = (props: Props) => {
-  const Icon = props.icon
-
   if (props.isDisabled) {
     return (
       <Button
@@ -22,7 +20,7 @@ export const HomeNavigationButton = (props: Props) => {
         size={"sm"}
         className="w-full justify-start"
       >
-        {Icon && <Icon className="w-4 mr-4" />}
+        {props.icon && <props.icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     )
@@ -32,12 +30,11 @@ export const HomeNavigationButton = (props: Props) => {
     return (
       <Button
         variant={"ghost"}
-        disabled={props.isDisabled}
         className="w-full justify-start"
         size={"sm"}
         onClick={props.onClick}
       >
-        {Icon && <Icon className="w-4 mr-4" />}
+        {props.icon && <props.icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     )
@@ -47,7 +44,7 @@ export const HomeNavigationButton = (props: Props) => {
     return (
       <a href={props.href} target="_blank" rel="noopener noreferrer">
         <Button variant={"ghost"} size={"sm"} className="w-full justify-start">
-          {Icon && <Icon className="w-4 mr-4" />}
+          {props.icon && <props.icon className="w-4 mr-4" />}
           <span>{props.children}</span>
         </Button>
       </a>
@@ -62,7 +59,7 @@ export const HomeNavigationButton = (props: Props) => {
         size={"sm"}
         disabled={props.isDisabled}
       >
-        {Icon && <Icon className="w-4 mr-4" />}
+        {props.icon && <props.icon className="w-4 mr-4" />}
         <span>{props.children}</span>
       </Button>
     </Link>

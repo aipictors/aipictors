@@ -3,7 +3,7 @@ import { LockKeyhole, Smile, User } from "lucide-react"
 
 export const AccountRouteList = () => {
   return (
-    <div className="space-y-4">
+    <div className="gap-y-2">
       <HomeNavigationButton href={"/account/login"} icon={Smile}>
         {"ユーザID"}
       </HomeNavigationButton>

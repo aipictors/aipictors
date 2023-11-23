@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Config } from "@/config"
 import {
   LogIn,
   LogOut,
@@ -36,7 +37,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarFallback>{"Y"}</AvatarFallback>
+          <AvatarFallback>{"U"}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -51,26 +52,26 @@ export const HomeUserNavigationMenu = (props: Props) => {
           </DropdownMenuItem>
         )}
         {appContext.isLoggedIn && (
-          <Link href={"/account"}>
+          <Link href={"/plus"}>
+            <DropdownMenuItem>
+              <Rocket className="w-4 inline-block mr-2" />
+              <span>{"Aipictors+"}</span>
+            </DropdownMenuItem>
+          </Link>
+        )}
+        {appContext.isLoggedIn && (
+          <Link href={"/account/login"}>
             <DropdownMenuItem>
               <UserCog className="w-4 inline-block mr-2" />
               <span>{"アカウント"}</span>
             </DropdownMenuItem>
           </Link>
         )}
-        {appContext.isLoggedIn && (
-          <Link href={"/settings"}>
+        {Config.isDevelopmentMode && appContext.isLoggedIn && (
+          <Link href={"/settings/notification"}>
             <DropdownMenuItem>
               <Settings className="w-4 inline-block mr-2" />
               <span>{"設定"}</span>
-            </DropdownMenuItem>
-          </Link>
-        )}
-        {appContext.isLoggedIn && (
-          <Link href={"/plus"}>
-            <DropdownMenuItem>
-              <Rocket className="w-4 inline-block mr-2" />
-              <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
         )}

@@ -34,7 +34,7 @@ export const BetaHeader = (props: Props) => {
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            <Link href="https://www.aipictors.com">
+            <Link href="/plus">
               <img
                 src="/icon.png"
                 className="w-8 h-8 rounded-full"
@@ -42,7 +42,7 @@ export const BetaHeader = (props: Props) => {
               />
             </Link>
           </div>
-          <div className="flex flex-row flex-grow items-center">
+          <div className="flex flex-row flex-grow items-center pl-2">
             <span className="font-bold">{props.title ?? "Beta"}</span>
           </div>
         </div>
