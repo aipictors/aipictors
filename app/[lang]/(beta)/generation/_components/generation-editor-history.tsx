@@ -56,20 +56,27 @@ export const GenerationEditorHistory = (props: Props) => {
   return (
     <>
       <GenerationEditorCard title={"生成履歴"}>
-        <div className="overflow-y-auto">
-          <div className="flex p-2">
-            <Button variant={"ghost"} size={"icon"} onClick={onDeleteOpen}>
-              <Trash2 />
+        <div className="overflow-y-auto space-y-2">
+          <div className="flex px-2 space-x-2">
+            <Button disabled variant={"secondary"}>
+              {"解除"}
             </Button>
-            <Button variant={"ghost"} size={"icon"} onClick={onDlOpen}>
-              <ArrowDownToLine />
+            <Button
+              disabled
+              variant={"ghost"}
+              size={"icon"}
+              onClick={onDeleteOpen}
+            >
+              <Trash2 className="w-4" />
             </Button>
-            <Button variant={"ghost"}>{"解除"}</Button>
-            <Button variant={"ghost"} size={"icon"}>
-              <Star />
+            <Button disabled variant={"ghost"} size={"icon"} onClick={onDlOpen}>
+              <ArrowDownToLine className="w-4" />
+            </Button>
+            <Button disabled variant={"ghost"} size={"icon"}>
+              <Star className="w-4" />
             </Button>
           </div>
-          <Separator className="my-4" />
+          <Separator />
           <div className="p-2 space-y-4">
             <div className="grid gap-2 grid-cols-1 md:grid-cols-2">
               {data.viewer?.imageGenerationTasks?.map((task) => (

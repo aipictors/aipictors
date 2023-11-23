@@ -39,8 +39,8 @@ export const ModelsDialog = (props: Props) => {
           <p>{"グラビア"}</p>
           <p>{"背景"}</p>
           <p>{"獣系"}</p> */}
-        <ScrollArea className="h-72">
-          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-4">
+        <ScrollArea className="h-full max-h-80">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {props.models.map((imageModel) => {
               return (
                 <ImageModelCard

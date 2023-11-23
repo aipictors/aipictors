@@ -9,7 +9,7 @@ type Props = {
 
 export const ImageModelCard = (props: Props) => {
   return (
-    <div className="stack flex flex-col">
+    <div className="stack flex flex-col gap-y-2">
       <Button
         className="p-0 h-auto overflow-hidden border-2 border-gray-200"
         variant={"outline"}
@@ -20,7 +20,7 @@ export const ImageModelCard = (props: Props) => {
       >
         <img src={props.imageURL ?? ""} alt={props.name} />
       </Button>
-      <p className="text-sm">{props.name}</p>
+      <span className="text-sm font-bold break-words">{props.name}</span>
     </div>
   )
 }
