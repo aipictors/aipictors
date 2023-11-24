@@ -18,7 +18,7 @@ export const StarRating = (props: Props) => {
       <Button
         aria-label={"お気に入り"}
         size={"icon"}
-        className="ghost"
+        variant="ghost"
         onClick={() => {
           props.onChange(1)
         }}
@@ -28,7 +28,7 @@ export const StarRating = (props: Props) => {
       <Button
         aria-label={"お気に入り"}
         size={"icon"}
-        className="ghost"
+        variant="ghost"
         onClick={() => {
           props.onChange(2)
         }}
@@ -38,7 +38,7 @@ export const StarRating = (props: Props) => {
       <Button
         aria-label={"お気に入り"}
         size={"icon"}
-        className="ghost"
+        variant="ghost"
         onClick={() => {
           props.onChange(3)
         }}
@@ -48,7 +48,7 @@ export const StarRating = (props: Props) => {
       <Button
         aria-label={"お気に入り"}
         size={"icon"}
-        className="ghost"
+        variant="ghost"
         onClick={() => {
           props.onChange(4)
         }}
@@ -58,7 +58,7 @@ export const StarRating = (props: Props) => {
       <Button
         aria-label={"お気に入り"}
         size={"icon"}
-        className="ghost"
+        variant="ghost"
         onClick={() => {
           props.onChange(5)
         }}

@@ -5,15 +5,14 @@ export default gql`
     id
     prompt
     negativePrompt
-    # seed
+    seed
     steps
     scale
     sampler
-    # sizeType
+    sizeType
     t2tImageBlob
     t2tMaskImageBlob
     t2tDenoisingStrengthSize
-    imageURL
     t2tInpaintingFillSize
     rating
     completedAt

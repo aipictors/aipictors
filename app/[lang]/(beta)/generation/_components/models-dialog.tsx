@@ -30,7 +30,7 @@ export const ModelsDialog = (props: Props) => {
       }}
       open={props.isOpen}
     >
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"モデル選択"}</DialogTitle>
         </DialogHeader>
@@ -39,7 +39,7 @@ export const ModelsDialog = (props: Props) => {
           <p>{"グラビア"}</p>
           <p>{"背景"}</p>
           <p>{"獣系"}</p> */}
-        <ScrollArea className="h-full max-h-80">
+        <ScrollArea className="h-full max-h-96">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {props.models.map((imageModel) => {
               return (

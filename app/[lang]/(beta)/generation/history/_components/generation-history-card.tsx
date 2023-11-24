@@ -1,8 +1,14 @@
+import { ErrorHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/error-history-card"
+import { FallbackHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/fallback-history-card"
+import { InProgressGenerationCard } from "@/app/[lang]/(beta)/generation/history/_components/in-progress-generation-card"
+import { PrivateImage } from "@/app/_components/private-image"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { ErrorBoundary } from "@sentry/nextjs"
+import { Suspense } from "react"
 
 type Props = {
-  imageURL: string
+  taskId: string
+  token: string | null
   onClick(): void
 }
 
@@ -11,19 +17,20 @@ type Props = {
  * @returns
  */
 export const GenerationHistoryCard = (props: Props) => {
+  if (props.token == null) {
+    return <InProgressGenerationCard />
+  }
+
   return (
-    <Card>
-      <Button
-        className="p-0 h-auto overflow-hidden border-2 border-blue-500 outline-none"
-        onClick={props.onClick}
-      >
-        <img
-          // src={props.imageURL}
-          src="https://source.unsplash.com/random/800x600"
-          alt=""
-          draggable={false}
-        />
-      </Button>
-    </Card>
+    <ErrorBoundary fallback={ErrorHistoryCard}>
+      <Suspense fallback={<FallbackHistoryCard />}>
+        <Button
+          className="p-0 h-auto overflow-hidden border-1 rounded outline-none"
+          onClick={props.onClick}
+        >
+          <PrivateImage taskId={props.taskId} token={props.token} alt={"-"} />
+        </Button>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

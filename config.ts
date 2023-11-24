@@ -189,6 +189,9 @@ export class Config {
     return process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT!
   }
 
+  static wordpressPrivateImageEndpoint =
+    "https://www.aipictors.com/wp-content/themes/AISite/private-image.php"
+
   /**
    * Sentry: DSN
    */

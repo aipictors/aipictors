@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type Props = {
   onSelect(): void
@@ -11,20 +12,30 @@ type Props = {
 export const LoraImageModelCard = (props: Props) => {
   return (
     <div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-2">
         <Button
-          className="p-0 h-auto overflow-hidden border-width-2 rounded"
-          variant={"outline"}
-          // borderColor={props.isActive ? "primary.500" : "gray.200"}
+          className={cn(
+            "h-auto overflow-hidden rounded",
+            props.isActive ? "p-1" : "p-0",
+          )}
+          variant={"destructive"}
           onClick={() => {
             props.onSelect()
           }}
         >
-          <img src={props.imageURL ?? ""} alt={props.name} />
+          <img
+            className="rounded"
+            src={props.imageURL ?? ""}
+            alt={props.name}
+          />
         </Button>
-        <div className="flex flex-col space-y-0">
-          <span className="text-sm">{props.name}</span>
-          <span className="text-sm">{props.description}</span>
+        <div className="flex flex-col space-y-1">
+          <span className="text-sm break-words whitespace-pre-wrap font-bold">
+            {props.name}
+          </span>
+          <span className="text-sm break-words whitespace-pre-wrap">
+            {props.description}
+          </span>
         </div>
       </div>
     </div>

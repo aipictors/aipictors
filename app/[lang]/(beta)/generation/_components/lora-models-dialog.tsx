@@ -30,12 +30,12 @@ export const LoraModelsDialog = (props: Props) => {
       }}
       open={props.isOpen}
     >
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"LoRA選択"}</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-72">
-          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-4">
+        <ScrollArea className="h-full max-h-96">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {props.models.map((imageLoraModel) => {
               return (
                 <LoraImageModelCard

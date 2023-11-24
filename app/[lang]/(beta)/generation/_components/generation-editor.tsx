@@ -4,9 +4,13 @@ import {
   CreateImageGenerationTaskDocument,
   CreateImageGenerationTaskMutationResult,
   CreateImageGenerationTaskMutationVariables,
+  ImageGenerationSizeType,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
+  ViewerImageGenerationTasksDocument,
+  ViewerImageGenerationTasksQuery,
+  ViewerImageGenerationTasksQueryVariables,
 } from "@/__generated__/apollo"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
@@ -15,11 +19,13 @@ import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-editor-config"
+import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
-import { useMutation } from "@apollo/client"
-import { useState } from "react"
+import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
+import { Suspense, startTransition, useContext, useMemo, useState } from "react"
+import { useInterval } from "usehooks-ts"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
@@ -28,6 +34,23 @@ type Props = {
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
+  const appContext = useContext(AppContext)
+
+  const { data, refetch } = useSuspenseQuery<
+    ViewerImageGenerationTasksQuery,
+    ViewerImageGenerationTasksQueryVariables
+  >(
+    ViewerImageGenerationTasksDocument,
+    appContext.isLoggedIn
+      ? {
+          variables: {
+            limit: 64,
+            offset: 0,
+          },
+        }
+      : skipToken,
+  )
+
   const [createTask, { loading: isLoading }] = useMutation<
     CreateImageGenerationTaskMutationResult,
     CreateImageGenerationTaskMutationVariables
@@ -48,6 +71,22 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   const [selectedHistory, selectHistory] = useState("")
 
+  const inProgress = useMemo(() => {
+    const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
+      return task.status === "IN_PROGRESS"
+    })
+    return index !== -1
+  }, [data?.viewer?.imageGenerationTasks])
+
+  useInterval(
+    () => {
+      startTransition(() => {
+        refetch()
+      })
+    },
+    inProgress ? 2000 : 4000,
+  )
+
   /**
    * タスクを作成する
    */
@@ -60,36 +99,26 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         throw new Error("モデルが見つかりません")
       }
       const inputPrompt = editorConfig.promptText
-      console.log({
-        count: 1,
-        model: model.name,
-        vae: editorConfig.vae,
-        prompt: inputPrompt,
-        negativePrompt: "EasyNegative, nsfw, nude, ",
-        seed: editorConfig.seed,
-        steps: editorConfig.steps,
-        scale: editorConfig.scale,
-        sampler: editorConfig.sampler,
-        sizeType: "SD1_512_768",
-        type: "TEXT_TO_IMAGE",
+      await createTask({
+        variables: {
+          input: {
+            count: 1,
+            model: model.name,
+            vae: editorConfig.vae,
+            prompt: inputPrompt,
+            negativePrompt: editorConfig.negativePromptText,
+            seed: editorConfig.seed,
+            steps: editorConfig.steps,
+            scale: editorConfig.scale,
+            sampler: editorConfig.sampler,
+            sizeType: editorConfig.sizeType as ImageGenerationSizeType,
+            type: "TEXT_TO_IMAGE",
+          },
+        },
       })
-      // await createTask({
-      //   variables: {
-      //     input: {
-      //       count: 1,
-      //       model: model.name,
-      //       vae: editorConfig.vae,
-      //       prompt: inputPrompt,
-      //       negativePrompt: "EasyNegative, nsfw, nude, ",
-      //       seed: editorConfig.seed,
-      //       steps: editorConfig.steps,
-      //       scale: editorConfig.scale,
-      //       sampler: editorConfig.sampler,
-      //       sizeType: "SD1_512_768",
-      //       type: "TEXT_TO_IMAGE",
-      //     },
-      //   },
-      // })
+      startTransition(() => {
+        refetch()
+      })
       toast({ description: "タスクを作成しました" })
     } catch (error) {
       if (error instanceof Error) {
@@ -148,15 +177,18 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         <div className="flex flex-col h-full gap-y-2">
           <Button
             className="w-full"
-            disabled={isLoading || editorConfig.isDisabled}
+            disabled={isLoading || inProgress || editorConfig.isDisabled}
             onClick={onCreateTask}
           >
-            {"生成する"}
+            {isLoading || inProgress ? "生成中.." : "生成する"}
           </Button>
-          <GenerationEditorHistory
-            selectHistory={selectHistory}
-            selectedHistory={selectedHistory}
-          />
+          <Suspense fallback={null}>
+            <GenerationEditorHistory
+              tasks={data?.viewer?.imageGenerationTasks ?? []}
+              selectHistory={selectHistory}
+              selectedHistory={selectedHistory}
+            />
+          </Suspense>
         </div>
       }
     />

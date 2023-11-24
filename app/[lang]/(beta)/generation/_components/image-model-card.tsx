@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 type Props = {
   onSelect(): void
@@ -9,18 +10,22 @@ type Props = {
 
 export const ImageModelCard = (props: Props) => {
   return (
-    <div className="stack flex flex-col gap-y-2">
+    <div className="flex flex-col gap-y-2">
       <Button
-        className="p-0 h-auto overflow-hidden border-2 border-gray-200"
-        variant={"outline"}
-        // borderColor={props.isActive ? "primary.500" : "gray.200"}
+        className={cn(
+          "h-auto overflow-hidden rounded",
+          props.isActive ? "p-1" : "p-0",
+        )}
+        variant={"destructive"}
         onClick={() => {
           props.onSelect()
         }}
       >
         <img src={props.imageURL ?? ""} alt={props.name} />
       </Button>
-      <span className="text-sm font-bold break-words">{props.name}</span>
+      <span className="text-sm font-bold break-words whitespace-pre-wrap">
+        {props.name}
+      </span>
     </div>
   )
 }

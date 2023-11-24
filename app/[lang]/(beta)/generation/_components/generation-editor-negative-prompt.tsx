@@ -37,7 +37,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
     >
       <div className="flex flex-col px-2 pb-2 gap-y-2 h-full">
         <Textarea
-          className="resize-none h-full"
+          className="resize-none h-full font-mono"
           placeholder={"EasyNegativeなど"}
           value={props.promptText}
           onChange={(event) => {
@@ -46,6 +46,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
         />
         <div className="flex flex-wrap gap-2">
           <Button
+            className="font-mono"
             size={"sm"}
             onClick={() => {
               onAddPrompt("+bad-hands-5")
@@ -54,6 +55,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
             {"+bad-hands-5"}
           </Button>
           <Button
+            className="font-mono"
             size={"sm"}
             onClick={() => {
               onAddPrompt("+badhandv4")
@@ -62,6 +64,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
             {"+badhandv4"}
           </Button>
           <Button
+            className="font-mono"
             size={"sm"}
             onClick={() => {
               onAddPrompt("+bad_prompt_version2")

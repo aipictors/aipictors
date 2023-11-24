@@ -9,6 +9,7 @@ import { GenerationEditorConfigSize } from "@/app/[lang]/(beta)/generation/_comp
 import { GenerationEditorConfigStep } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-step"
 import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
   modelType: string
@@ -52,7 +53,7 @@ export const GenerationEditorConfig = (props: Props) => {
       title={"加工（LoRA）"}
       tooltip={"イラストの絵柄を調整することができます。"}
     >
-      <div className="overflow-y-auto">
+      <ScrollArea>
         <div className="flex flex-col px-2 gap-y-4 pb-2">
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
@@ -85,7 +86,7 @@ export const GenerationEditorConfig = (props: Props) => {
             onChange={props.onChangeSampler}
           />
         </div>
-      </div>
+      </ScrollArea>
     </GenerationEditorCard>
   )
 }

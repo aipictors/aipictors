@@ -13,8 +13,10 @@ import {
 } from "@/__generated__/apollo"
 import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
 import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
+import { LoadingPage } from "@/app/_components/page/loading-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 const GenerationPage = async () => {
   const client = createClient()
@@ -45,11 +47,13 @@ const GenerationPage = async () => {
 
   return (
     <>
-      <GenerationEditor
-        promptCategories={promptCategoriesQuery.data.promptCategories}
-        imageModels={imageModelsQuery.data.imageModels}
-        imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
-      />
+      <Suspense fallback={<LoadingPage text={"準備中"} />}>
+        <GenerationEditor
+          promptCategories={promptCategoriesQuery.data.promptCategories}
+          imageModels={imageModelsQuery.data.imageModels}
+          imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
+        />
+      </Suspense>
       <GenerationDocument models={imageModelsQuery.data.imageModels} />
     </>
   )

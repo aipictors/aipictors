@@ -2,8 +2,8 @@ type Props = {
   children: React.ReactNode
 }
 
-const StickersLayout = (props: Props) => {
+const GenerationLayout = (props: Props) => {
   return <div className="pb-4 overflow-x-hidden">{props.children}</div>
 }
 
-export default StickersLayout
+export default GenerationLayout

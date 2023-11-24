@@ -5,6 +5,7 @@ import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-m
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
 import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -58,8 +59,8 @@ export const GenerationEditorModels = (props: Props) => {
           </Button>
         }
       >
-        <div className="overflow-y-auto px-2 pb-2 flex-col">
-          <div className="flex justify-between items-start flex-col gap-y-2">
+        <ScrollArea>
+          <div className="flex px-2 pb-2 justify-between items-start flex-col gap-y-2">
             {currentModels.map((model) => (
               <ConfigModel
                 key={model?.id}
@@ -72,7 +73,7 @@ export const GenerationEditorModels = (props: Props) => {
               />
             ))}
           </div>
-        </div>
+        </ScrollArea>
       </GenerationEditorCard>
       <ModelsDialog
         isOpen={isOpen}

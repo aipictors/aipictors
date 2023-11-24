@@ -2,11 +2,10 @@
 
 import { AppContextProvider } from "@/app/_components/app-context-provider"
 import { createClient } from "@/app/_contexts/client"
-
 import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
-
 import { init } from "@sentry/nextjs"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
@@ -18,6 +17,8 @@ type Props = {
 }
 
 const client = createClient()
+
+const queryClient = new QueryClient()
 
 export const RootProviders = (props: Props) => {
   const pathname = usePathname()
@@ -40,16 +41,18 @@ export const RootProviders = (props: Props) => {
 
   return (
     <AppContextProvider>
-      <ApolloProvider client={client}>
-        <NextThemesProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {props.children}
-        </NextThemesProvider>
-      </ApolloProvider>
+      <QueryClientProvider client={queryClient}>
+        <ApolloProvider client={client}>
+          <NextThemesProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {props.children}
+          </NextThemesProvider>
+        </ApolloProvider>
+      </QueryClientProvider>
     </AppContextProvider>
   )
 }

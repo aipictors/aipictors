@@ -28,7 +28,11 @@ export const GenerationHistoryList = () => {
       <p>{"画像生成の履歴"}</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
         {data.viewer?.imageGenerationTasks?.map((task) => (
-          <GenerationHistoryCard imageURL={task.imageURL!} onClick={() => {}} />
+          <GenerationHistoryCard
+            taskId={task.id}
+            token={task.token}
+            onClick={() => {}}
+          />
         ))}
       </div>
     </div>
