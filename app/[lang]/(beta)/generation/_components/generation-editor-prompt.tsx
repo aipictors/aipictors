@@ -3,6 +3,7 @@
 import { PromptCategoriesQuery } from "@/__generated__/apollo"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog"
+import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useBoolean } from "usehooks-ts"
@@ -16,7 +17,29 @@ type Props = {
 export const GenerationEditorPrompt = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
-  const onSelectPromptId = (promptId: string) => {}
+  const formattedPromptText = formatPromptText(props.promptText)
+
+  const categoryPrompts = props.promptCategories.flatMap((category) => {
+    return category.prompts
+  })
+
+  const onSelectPromptId = (promptId: string) => {
+    const categoryPrompt = categoryPrompts.find((prompt) => {
+      return prompt.id === promptId
+    })
+    const promptText = categoryPrompt?.words.join(",") ?? ""
+    const draftPromptText = formattedPromptText.includes(promptText)
+      ? formattedPromptText.replaceAll(promptText, "")
+      : [formattedPromptText, promptText].join(",")
+    const draftFormattedPromptText = formatPromptText(draftPromptText)
+    props.onChangePromptText(draftFormattedPromptText)
+  }
+
+  const currentPrompts = categoryPrompts.filter((prompt) => {
+    return formattedPromptText.includes(prompt.words.join(","))
+  })
+
+  const selectedPromptIds = currentPrompts.map((prompt) => prompt.id)
 
   return (
     <>
@@ -41,6 +64,7 @@ export const GenerationEditorPrompt = (props: Props) => {
         </div>
       </GenerationEditorCard>
       <PromptCategoriesDialog
+        selectedPromptIds={selectedPromptIds}
         onClose={onClose}
         isOpen={isOpen}
         promptCategories={props.promptCategories}

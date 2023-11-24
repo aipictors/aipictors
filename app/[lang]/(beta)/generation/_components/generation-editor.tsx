@@ -19,6 +19,7 @@ import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-editor-config"
+import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -98,14 +99,22 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       if (typeof model === "undefined") {
         throw new Error("モデルが見つかりません")
       }
-      const inputPrompt = editorConfig.promptText
+      const loraPromptTexts = loraModelConfigs.map((config) => {
+        const model = props.imageLoraModels.find((model) => {
+          return model.id === config.id
+        })
+        if (model === undefined) return null
+        return toLoraPrompt(model.name, config.value)
+      })
+      const promptTexts = [editorConfig.promptText, ...loraPromptTexts]
+      const promptText = promptTexts.join(" ")
       await createTask({
         variables: {
           input: {
             count: 1,
             model: model.name,
             vae: editorConfig.vae,
-            prompt: inputPrompt,
+            prompt: promptText,
             negativePrompt: editorConfig.negativePromptText,
             seed: editorConfig.seed,
             steps: editorConfig.steps,

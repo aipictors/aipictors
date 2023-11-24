@@ -23,12 +23,10 @@ type Props = {
 export const LoraModelsDialog = (props: Props) => {
   return (
     <Dialog
-      onOpenChange={(isOpen) => {
-        if (!isOpen) {
-          props.onClose()
-        }
-      }}
       open={props.isOpen}
+      onOpenChange={(isOpen) => {
+        props.onClose()
+      }}
     >
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
