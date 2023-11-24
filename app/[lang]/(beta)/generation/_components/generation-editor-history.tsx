@@ -11,10 +11,12 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { GenerationHistoryDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-dialog"
 import { SelectedWorkDialog } from "@/app/[lang]/(beta)/generation/_components/selected-work-dialog"
 import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { useSuspenseQuery } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
+import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -23,15 +25,24 @@ type Props = {
 }
 
 export const GenerationEditorHistory = (props: Props) => {
+  const appContext = useContext(AppContext)
+
   const { data } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
     ViewerImageGenerationTasksQueryVariables
-  >(ViewerImageGenerationTasksDocument, {
-    variables: {
-      limit: 64,
-      offset: 0,
-    },
-  })
+  >(
+    ViewerImageGenerationTasksDocument,
+    appContext.isLoggedIn
+      ? {
+          variables: {
+            limit: 64,
+            offset: 0,
+          },
+        }
+      : skipToken,
+  )
+
+  console.log(data)
 
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
@@ -52,6 +63,10 @@ export const GenerationEditorHistory = (props: Props) => {
     setTrue: onOpenInPainting,
     setFalse: onCloseInPainting,
   } = useBoolean()
+
+  if (typeof data === "undefined") {
+    return null
+  }
 
   return (
     <>

@@ -36,13 +36,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   const { toast } = useToast()
 
   /**
-   * 選択された画像モデルのID
-   */
-  const [selectedModelId, setSelectedModelId] = useState(
-    Config.defaultImageModelId,
-  )
-
-  /**
    * 選択されたLoRAモデルのID
    */
   const [loraModelConfigs, setLoraModelConfigs] = useState(() => {
@@ -61,7 +54,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   const onCreateTask = async () => {
     try {
       const model = props.imageModels.find((model) => {
-        return model.id === selectedModelId
+        return model.id === editorConfig.modelId
       })
       if (typeof model === "undefined") {
         throw new Error("モデルが見つかりません")
@@ -105,20 +98,25 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     }
   }
 
+  const selectedModel = props.imageModels.find((model) => {
+    return model.id === editorConfig.modelId
+  })
+
   return (
     <GenerationEditorLayout
       models={
         <GenerationEditorModels
           models={props.imageModels}
-          selectedModelId={selectedModelId}
+          selectedModelId={editorConfig.modelId}
           onSelectModelId={(id) => {
-            setSelectedModelId(id)
+            editorConfig.updateModelId(id)
           }}
         />
       }
       loraModels={
         <GenerationEditorConfig
-          models={props.imageLoraModels}
+          modelType={selectedModel?.type ?? "SD1"}
+          loraModels={props.imageLoraModels}
           modelConfigs={loraModelConfigs}
           onChangeModelConfigs={setLoraModelConfigs}
           size={editorConfig.sizeType}

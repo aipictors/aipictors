@@ -11,10 +11,11 @@ import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_compo
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 
 type Props = {
+  modelType: string
   /**
    * 全てのモデル
    */
-  models: ImageLoraModelsQuery["imageLoraModels"]
+  loraModels: ImageLoraModelsQuery["imageLoraModels"]
   /**
    * モデルの設定
    */
@@ -54,7 +55,7 @@ export const GenerationEditorConfig = (props: Props) => {
       <div className="overflow-y-auto">
         <div className="flex flex-col px-2 gap-y-4 pb-2">
           <GenerationEditorConfigLoraModels
-            models={props.models}
+            models={props.loraModels}
             modelConfigs={props.modelConfigs}
             onChangeModelConfigs={props.onChangeModelConfigs}
           />
@@ -67,6 +68,7 @@ export const GenerationEditorConfig = (props: Props) => {
             onChange={props.onChangeSeed}
           />
           <GenerationEditorConfigSize
+            modelType={props.modelType}
             value={props.size}
             onChange={props.onChangeSize}
           />

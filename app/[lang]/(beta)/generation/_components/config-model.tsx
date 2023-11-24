@@ -10,7 +10,7 @@ type Props = {
 export const ConfigModel = (props: Props) => {
   return (
     <Button
-      variant={props.isSelected ? "default" : "ghost"}
+      variant={props.isSelected ? "default" : "secondary"}
       className="w-full p-2 h-auto overflow-y-hidden"
       onClick={props.onClick}
     >

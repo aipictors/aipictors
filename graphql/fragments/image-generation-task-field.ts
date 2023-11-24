@@ -26,5 +26,6 @@ export default gql`
       name
     }
     vae
+    token
   }
 `

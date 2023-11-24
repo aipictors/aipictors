@@ -21,9 +21,12 @@ export const GenerationEditorModels = (props: Props) => {
   /**
    * 表示されるモデルのID
    */
-  const [currentModelIds, setCurrentModelIds] = useState(
-    Config.defaultImageModelIds,
-  )
+  const [currentModelIds, setCurrentModelIds] = useState(() => {
+    if (Config.defaultImageModelIds.includes(props.selectedModelId)) {
+      return Config.defaultImageModelIds
+    }
+    return [props.selectedModelId, ...Config.defaultImageModelIds]
+  })
 
   const currentModels = currentModelIds.map((modelId) => {
     return props.models.find((model) => {

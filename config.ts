@@ -79,6 +79,10 @@ export class Config {
   }
 
   static generation = {
+    defaultImageModelIds: ["1", "3", "19"],
+    defaultImageModelId: "1",
+    defaultPromptValue: "",
+    defaultNegativePromptValue: "",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
     defaultSamplerValue: "DPM++ 2M",
@@ -100,6 +104,14 @@ export class Config {
     ],
     defaultVaeValue: "kl-f8-anime2",
     vaeValues: ["kl-f8-anime2", "ClearVAE_V2.3"],
+    sizeValues: [
+      "SD1_512_512",
+      "SD1_512_768",
+      "SD1_768_512",
+      "SD2_768_768",
+      "SD2_768_1200",
+      "SD2_1200_768",
+    ],
   }
 
   /**

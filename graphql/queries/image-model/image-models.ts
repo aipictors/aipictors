@@ -13,6 +13,7 @@ export default gql`
       slug
       style
       thumbnailImageURL
+      type
     }
   }
 `
