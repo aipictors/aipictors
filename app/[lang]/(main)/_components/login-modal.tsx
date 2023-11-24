@@ -3,7 +3,12 @@
 import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { LoginModalForm } from "@/app/[lang]/(main)/_components/login-modal-form"
 import type { FormLogin } from "@/app/_types/form-login"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 
@@ -50,6 +55,9 @@ export const LoginModal = (props: Props) => {
       }}
     >
       <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{"ログイン"}</DialogTitle>
+        </DialogHeader>
         <LoginModalForm
           onSubmit={onLogin}
           isLoading={isLoading}

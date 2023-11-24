@@ -48,10 +48,7 @@ export const BetaNavigationList = (props: Props) => {
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
-      <HomeNavigationButton
-        href={"https://www.aipictors.com/generate/"}
-        icon={Sparkles}
-      >
+      <HomeNavigationButton href={"/generation/"} icon={Sparkles}>
         {"画像生成"}
       </HomeNavigationButton>
       {/* {appContext.isLoggedIn && (

@@ -4,7 +4,6 @@ import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
-import { TbX } from "react-icons/tb"
 
 type Props = {
   onSubmit(form: FormLogin): void
@@ -24,16 +23,6 @@ export const LoginModalForm = (props: Props) => {
   return (
     <div className="p-4">
       <div className="space-y-8 p-0">
-        <div className="space-y-0">
-          <div className="flex justify-end">
-            <Button aria-label={"削除"} size={"icon"} onClick={props.onClose}>
-              <TbX />
-            </Button>
-          </div>
-          <div className="flex justify-center">
-            <img alt="Logo" src="/icon.png" className="max-w-16" />
-          </div>
-        </div>
         <div className="space-y-4">
           <Input
             disabled={props.isLoading}
