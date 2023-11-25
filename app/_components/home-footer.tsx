@@ -4,9 +4,9 @@
  */
 export const HomeFooter = () => {
   return (
-    <footer className="px-8 py-4 border-t space-y-2">
-      <div className="flex flex-col md:flex-row">
-        <div className="flex space-x-4">
+    <footer className="px-4 md:px-8 py-4 border-t space-y-2">
+      <div className="flex flex-col md:flex-row gap-y-2 gap-x-2">
+        <div className="flex gap-x-4">
           <a
             href={"https://www.aipictors.com/terms/"}
             className="text-sm"
@@ -24,7 +24,7 @@ export const HomeFooter = () => {
             {"プライバシーポリシー"}
           </a>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex gap-x-4">
           <a
             href={"https://www.aipictors.com/company/"}
             className="text-sm"

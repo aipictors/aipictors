@@ -1,16 +1,27 @@
 "use client"
 
 import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
-import { LoginModalForm } from "@/app/[lang]/(main)/_components/login-modal-form"
+
+import { LoginForm } from "@/app/_components/login-form"
 import type { FormLogin } from "@/app/_types/form-login"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
-import { getAuth, signInWithCustomToken } from "firebase/auth"
+import { captureException } from "@sentry/nextjs"
+import {
+  GoogleAuthProvider,
+  TwitterAuthProvider,
+  getAuth,
+  signInWithCustomToken,
+  signInWithPopup,
+} from "firebase/auth"
+import Link from "next/link"
 
 type Props = {
   isOpen: boolean
@@ -47,6 +58,30 @@ export const LoginModal = (props: Props) => {
     }
   }
 
+  const onLoginWithGoogle = async () => {
+    try {
+      await signInWithPopup(getAuth(), new GoogleAuthProvider())
+      props.onClose()
+    } catch (error) {
+      captureException(error)
+      if (error instanceof Error) {
+        toast({ description: "アカウントが見つかりませんでした" })
+      }
+    }
+  }
+
+  const onLoginWithTwitter = async () => {
+    try {
+      await signInWithPopup(getAuth(), new TwitterAuthProvider())
+      props.onClose()
+    } catch (error) {
+      captureException(error)
+      if (error instanceof Error) {
+        toast({ description: "アカウントが見つかりませんでした" })
+      }
+    }
+  }
+
   return (
     <Dialog
       open={props.isOpen}
@@ -58,11 +93,30 @@ export const LoginModal = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
         </DialogHeader>
-        <LoginModalForm
-          onSubmit={onLogin}
-          isLoading={isLoading}
-          onClose={props.onClose}
-        />
+        <Button className="w-full" onClick={onLoginWithGoogle}>
+          {"Googleでログイン"}
+        </Button>
+        <Button className="w-full" onClick={onLoginWithTwitter}>
+          {"Xでログイン"}
+        </Button>
+        <Separator />
+        <div className="w-full space-y-2">
+          <p className="text-sm">{"またはパスワードでログイン"}</p>
+          <LoginForm onSubmit={onLogin} isLoading={isLoading} />
+        </div>
+        <Separator />
+        <div className={"flex flex-col w-full gap-y-2"}>
+          <p className="text-sm">{"アカウントをお持ちで無い方はこちら"}</p>
+          <Link
+            className="w-full"
+            target="_blank"
+            href={"https://www.aipictors.com/login/"}
+          >
+            <Button className="w-full" variant={"secondary"}>
+              {"アカウント作成"}
+            </Button>
+          </Link>
+        </div>
       </DialogContent>
     </Dialog>
   )

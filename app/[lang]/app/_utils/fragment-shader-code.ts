@@ -33,7 +33,7 @@ void main(void) {
 
   float beat = mod(time * SPEED_FACTOR, 1.0);
   float heartbeat = smoothstep(0.4, 0.5, beat) - smoothstep(0.4, 0.6, beat);
-  heartbeat = 1.0 - heartbeat * 0.04; // 0.7から1.0まで変動
+  heartbeat = 1.0 - heartbeat * 0.04;
 
   color *= circleShape(pos, heartbeat);
 

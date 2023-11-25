@@ -41,7 +41,6 @@ export const GenerationEditorModels = (props: Props) => {
     const index = draftIds.indexOf(modelId)
     if (index !== -1) return
     draftIds.unshift(modelId)
-    console.log("draftIds", draftIds)
     if (6 < draftIds.length) {
       draftIds.pop()
     }
