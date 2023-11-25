@@ -1,4 +1,3 @@
-import type { User } from "firebase/auth"
 import { createContext } from "react"
 
 type Value =
@@ -10,8 +9,10 @@ type Value =
       isNotLoading: false
       isLoggedIn: false
       isNotLoggedIn: false
-      currentUser: null
       userId: null
+      login: null
+      displayName: null
+      avatarPhotoURL: null
       refresh(): Promise<void>
     }
   /**
@@ -22,8 +23,10 @@ type Value =
       isNotLoading: true
       isLoggedIn: false
       isNotLoggedIn: true
-      currentUser: null
       userId: null
+      login: null
+      displayName: null
+      avatarPhotoURL: null
       refresh(): Promise<void>
     }
   /**
@@ -34,17 +37,23 @@ type Value =
       isNotLoading: true
       isLoggedIn: true
       isNotLoggedIn: false
-      currentUser: User
       userId: string
+      login: string
+      displayName: string
+      avatarPhotoURL: string | null
       refresh(): Promise<void>
     }
 
-export const AppContext = createContext<Value>({
+const defaultValue: Value = {
   isLoading: true,
   isNotLoading: false,
   isLoggedIn: false,
   isNotLoggedIn: false,
-  currentUser: null,
   userId: null,
+  login: null,
+  displayName: null,
+  avatarPhotoURL: null,
   async refresh() {},
-})
+}
+
+export const AppContext = createContext<Value>(defaultValue)

@@ -64,19 +64,14 @@ export const RecipientMessageList = (props: Props) => {
   const messages = data?.viewer?.messageThread?.messages ?? []
 
   return (
-    <div className="flex">
-      <div className="flex flex-col">
-        <div className="flex flex-col-reverse md:flex-col">
-          <SupportMessageList
-            messages={messages}
-            recipientIconImageURL={
-              data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ??
-              ""
-            }
-          />
-          <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-        </div>
-      </div>
+    <div className="sticky top-0 overflow-y-hidden h-main flex flex-col-reverse md:flex-col pt-2">
+      <SupportMessageList
+        messages={messages}
+        recipientIconImageURL={
+          data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ?? ""
+        }
+      />
+      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
     </div>
   )
 }

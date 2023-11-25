@@ -86,8 +86,10 @@ export const AppContextProvider = (props: Props) => {
       isNotLoading: false,
       isLoggedIn: false,
       isNotLoggedIn: false,
-      currentUser: null,
       userId: null,
+      login: null,
+      displayName: null,
+      avatarPhotoURL: null,
       refresh: refresh,
     } as const
     return (
@@ -106,8 +108,10 @@ export const AppContextProvider = (props: Props) => {
       isNotLoading: true,
       isLoggedIn: false,
       isNotLoggedIn: true,
-      currentUser: null,
       userId: null,
+      login: null,
+      displayName: null,
+      avatarPhotoURL: null,
       refresh: refresh,
     } as const
     return (
@@ -120,8 +124,10 @@ export const AppContextProvider = (props: Props) => {
     isNotLoading: true,
     isLoggedIn: true,
     isNotLoggedIn: false,
-    currentUser: currentUser,
     userId: claims.userId,
+    login: claims.login as string,
+    displayName: claims.name as string,
+    avatarPhotoURL: claims.picture as string,
     refresh: refresh,
   } as const
 

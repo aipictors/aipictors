@@ -1,5 +1,3 @@
-"use client"
-
 import { toElapsedTimeText } from "@/app/_utils/to-elapsed-time-text"
 import { Card } from "@/components/ui/card"
 
@@ -10,11 +8,9 @@ type Props = {
 }
 
 export const SenderMessage = (props: Props) => {
-  // const bg = useColorModeValue("teal.200", "teal.600")
-
   return (
     <div className="flex justify-end">
-      <div className="max-w-sm">
+      <div className="max-w-sm flex flex-col gap-y-2">
         <Card
           className={
             "px-6 py-2 rounded-tl-xl rounded-tr-sm rounded-bl-xl rounded-br-xl"

@@ -6,8 +6,10 @@ import type {
 } from "@/__generated__/apollo"
 import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSuspenseQuery } from "@apollo/client"
 import Link from "next/link"
 import { startTransition } from "react"
@@ -33,33 +35,38 @@ export const MessageThreadList = () => {
   const messageThreads = threads.viewer?.messageThreads ?? []
 
   return (
-    <aside className="sticky top-16 h-screen min-w-16 max-w-24 overflow-y-auto border-l border-r">
-      <div
-      // style={<Separator />}
-      >
-        {messageThreads.map((messageThread) => (
-          <Link href={`/messages/${messageThread.id}`}>
-            <Button key={messageThread.id} variant={"ghost"}>
-              <div className="flex flex-col overflow-hidden">
-                <div className="flex">
+    <aside className="sticky h-main min-w-24 pl-4 pb-4">
+      <ScrollArea className="h-full">
+        <div className="space-y-2">
+          {messageThreads.map((messageThread) => (
+            <Link className="block" href={`/messages/${messageThread.id}`}>
+              <Button
+                key={messageThread.id}
+                className="h-auto p-4 flex flex-col overflow-hidden gap-y-2"
+                variant={"secondary"}
+              >
+                <div className="w-full flex items-center gap-x-4">
                   <Avatar>
                     <AvatarImage
                       src={messageThread.recipient.iconImage?.downloadURL}
                     />
+                    <AvatarFallback>{"-"}</AvatarFallback>
                   </Avatar>
-                  <p>{messageThread.recipient.name}</p>
+                  <span className="whitespace-pre-wrap break-words">
+                    {messageThread.recipient.name}
+                  </span>
                 </div>
-                <div className="flex flex-col">
+                <div className="w-full flex flex-col items-start">
                   <p className="overflow-ellipsis overflow-hidden">
                     {messageThread.latestMessage.text}
                   </p>
                   <p>{toDateTimeText(messageThread.latestMessage.createdAt)}</p>
                 </div>
-              </div>
-            </Button>
-          </Link>
-        ))}
-      </div>
+              </Button>
+            </Link>
+          ))}
+        </div>
+      </ScrollArea>
     </aside>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { AppContext } from "@/app/_contexts/app-context"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,14 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Config } from "@/config"
-import {
-  LogIn,
-  LogOut,
-  Rocket,
-  Settings,
-  UserCircle,
-  UserCog,
-} from "lucide-react"
+import { Gem, LogIn, LogOut, Settings, UserCircle, UserCog } from "lucide-react"
 import Link from "next/link"
 import { useContext } from "react"
 
@@ -37,6 +30,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
+          <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />
           <AvatarFallback>{"U"}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -54,7 +48,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/plus"}>
             <DropdownMenuItem>
-              <Rocket className="w-4 inline-block mr-2" />
+              <Gem className="w-4 inline-block mr-2" />
               <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
