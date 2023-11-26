@@ -1,7 +1,7 @@
 "use client"
 
-import { MessageThreadList } from "@/app/[lang]/(main)/messages/_components/message-thread-list"
-import MessagesLoading from "@/app/[lang]/(main)/messages/loading"
+import { MessageThreadList } from "@/app/[lang]/(beta)/messages/_components/message-thread-list"
+import MessagesLoading from "@/app/[lang]/(beta)/messages/loading"
 import { LoginPage } from "@/app/_components/page/login-page"
 import { AppContext } from "@/app/_contexts/app-context"
 import React, { useContext } from "react"

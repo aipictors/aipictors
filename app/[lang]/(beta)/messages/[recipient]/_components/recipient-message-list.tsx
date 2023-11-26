@@ -64,7 +64,7 @@ export const RecipientMessageList = (props: Props) => {
   const messages = data?.viewer?.messageThread?.messages ?? []
 
   return (
-    <div className="sticky top-0 overflow-y-hidden h-main flex flex-col-reverse md:flex-col pt-2">
+    <div className="w-full sticky top-0 overflow-y-hidden h-main flex flex-col-reverse md:flex-col pt-2">
       <SupportMessageList
         messages={messages}
         recipientIconImageURL={
