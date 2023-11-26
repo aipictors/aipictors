@@ -44,7 +44,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
             props.onChangePromptText(event.target.value)
           }}
         />
-        <div className="flex flex-wrap gap-2">
+        <div className="hidden xl:flex flex-wrap gap-2">
           <Button
             className="font-mono"
             size={"sm"}

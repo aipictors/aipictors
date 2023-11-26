@@ -19,7 +19,7 @@ export const HomeTagList = (props: Props) => {
   return (
     <section>
       <Splide
-        className="pl-8"
+        className="pl-4"
         options={{
           ...Config.splideDefaultOptions,
           rewind: true,

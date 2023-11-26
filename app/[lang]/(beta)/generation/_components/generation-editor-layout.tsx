@@ -27,10 +27,57 @@ export const GenerationEditorLayout = (props: Props) => {
       [area.editorNegativePrompt],
       [area.history],
     ],
+    // lg: [
+    //   [area.models, area.editorPrompt],
+    //   [area.loraModels, area.editorNegativePrompt],
+    //   [area.history, area.history],
+    // ],
     lg: [
-      [area.models, area.editorPrompt],
-      [area.loraModels, area.editorNegativePrompt],
-      [area.history, area.history],
+      [
+        area.models,
+        area.models,
+        area.models,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.models,
+        area.models,
+        area.models,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.loraModels,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.loraModels,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.loraModels,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
+        area.history,
+        area.history,
+      ],
     ],
     xl: [
       [
@@ -39,6 +86,33 @@ export const GenerationEditorLayout = (props: Props) => {
         area.editorPrompt,
         area.editorPrompt,
         area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.models,
+        area.models,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.editorPrompt,
+        area.history,
+        area.history,
+      ],
+      [
+        area.loraModels,
+        area.loraModels,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
+        area.editorNegativePrompt,
         area.history,
         area.history,
       ],
@@ -64,7 +138,7 @@ export const GenerationEditorLayout = (props: Props) => {
 
   return (
     <main
-      className="lg:h-main grid grid-cols-1 gap-2 w-full px-4 pb-4 lg:grid-rows-3 xl:grid-rows-2 lg:grid-cols-2 xl:grid-cols-7"
+      className="lg:h-main grid grid-cols-1 gap-2 w-full px-4 pb-4 lg:grid-rows-5 lg:grid-cols-7"
       style={{ gridTemplateAreas: templateAreas }}
     >
       <div

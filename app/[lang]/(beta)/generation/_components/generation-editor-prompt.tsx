@@ -6,6 +6,7 @@ import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_componen
 import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { BookText } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -47,9 +48,18 @@ export const GenerationEditorPrompt = (props: Props) => {
         title={"プロンプト"}
         tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
         action={
-          <Button size={"sm"} onClick={onOpen}>
-            {"キーワード"}
-          </Button>
+          <>
+            <div className="hidden xl:block">
+              <Button size={"sm"} onClick={onOpen}>
+                {"キーワード"}
+              </Button>
+            </div>
+            <div className="block xl:hidden">
+              <Button size={"icon"} variant={"ghost"} onClick={onOpen}>
+                <BookText />
+              </Button>
+            </div>
+          </>
         }
       >
         <div className="flex flex-col px-2 pb-2 h-full">
