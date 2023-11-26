@@ -8,6 +8,7 @@ import { WorkCommentsDocument, WorkDocument } from "@/__generated__/apollo"
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
 import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import { ArticlePage } from "@/app/_components/page/article-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
@@ -41,7 +42,20 @@ const WorkPage = async (props: Props) => {
 
   return (
     <ArticlePage>
-      <WorkArticle work={workQuery.data.work} />
+      <div className="flex flex-col lg:flex-row items-start overflow-hidden space-x-4">
+        <WorkArticle work={workQuery.data.work} />
+        <div className="w-full lg:max-w-xs">
+          <WorkUser
+            userName={workQuery.data.work.user.name}
+            userIconImageURL={workQuery.data.work.user.iconImage?.downloadURL}
+            userFollowersCount={workQuery.data.work.user.followersCount}
+            userBiography={workQuery.data.work.user.biography}
+            userPromptonId={workQuery.data.work.user.promptonUser?.id}
+            userWorksCount={workQuery.data.work.user.worksCount}
+          />
+          {/* <p>{"前後の作品"}</p> */}
+        </div>
+      </div>
       <WorkCommentList work={workCommentsQuery.data.work} />
       <WorkRelatedWorkList />
     </ArticlePage>
