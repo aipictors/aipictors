@@ -14,7 +14,10 @@ export const fetchImage = async (imageURL: string, token: string) => {
     })
     const blob = await res.blob()
     return URL.createObjectURL(blob)
-  } catch (e) {
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message)
+    }
     throw new Error("画像の取得に失敗しました")
   }
 }

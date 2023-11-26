@@ -8,6 +8,9 @@ import {
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
+  ViewerCurrentPassDocument,
+  ViewerCurrentPassQuery,
+  ViewerCurrentPassQueryVariables,
   ViewerImageGenerationTasksDocument,
   ViewerImageGenerationTasksQuery,
   ViewerImageGenerationTasksQueryVariables,
@@ -23,8 +26,9 @@ import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prom
 import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
-import { Config } from "@/config"
+
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
+
 import { Suspense, startTransition, useContext, useMemo, useState } from "react"
 import { useInterval } from "usehooks-ts"
 
@@ -36,6 +40,11 @@ type Props = {
 
 export const GenerationEditor: React.FC<Props> = (props) => {
   const appContext = useContext(AppContext)
+
+  const { data: viewer } = useSuspenseQuery<
+    ViewerCurrentPassQuery,
+    ViewerCurrentPassQueryVariables
+  >(ViewerCurrentPassDocument, {})
 
   const { data, refetch } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
@@ -59,16 +68,12 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   const { toast } = useToast()
 
-  /**
-   * 選択されたLoRAモデルのID
-   */
-  const [loraModelConfigs, setLoraModelConfigs] = useState(() => {
-    return Config.defaultImageLoraModelIds.map((id) => {
-      return { id, value: 0 }
-    })
-  })
+  const passType = viewer.viewer?.currentPass?.type ?? null
 
-  const editorConfig = useEditorConfig()
+  const editorConfig = useEditorConfig({
+    passType: passType,
+    loraModels: props.imageLoraModels,
+  })
 
   const [selectedHistory, selectHistory] = useState("")
 
@@ -99,7 +104,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       if (typeof model === "undefined") {
         throw new Error("モデルが見つかりません")
       }
-      const loraPromptTexts = loraModelConfigs.map((config) => {
+      const loraPromptTexts = editorConfig.loraModelConfigs.map((config) => {
         const model = props.imageLoraModels.find((model) => {
           return model.id === config.id
         })
@@ -153,20 +158,21 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       }
       loraModels={
         <GenerationEditorConfig
-          modelType={selectedModel?.type ?? "SD1"}
           loraModels={props.imageLoraModels}
-          modelConfigs={loraModelConfigs}
-          onChangeModelConfigs={setLoraModelConfigs}
-          size={editorConfig.sizeType}
-          onChangeSize={editorConfig.updateSizeType}
-          vae={editorConfig.vae}
-          onChangeVae={editorConfig.updateVae}
-          seed={editorConfig.seed}
-          onChangeSeed={editorConfig.updateSeed}
-          scale={editorConfig.scale}
-          onChangeScale={editorConfig.updateScale}
-          sampler={editorConfig.sampler}
+          configLoraModels={editorConfig.loraModelConfigs}
+          configModelType={selectedModel?.type ?? "SD1"}
+          configSampler={editorConfig.sampler}
+          configScale={editorConfig.scale}
+          configSeed={editorConfig.seed}
+          configSize={editorConfig.sizeType}
+          configVae={editorConfig.vae}
+          onAddLoraModelConfigs={editorConfig.addLoraModelConfigs}
           onChangeSampler={editorConfig.updateSampler}
+          onChangeScale={editorConfig.updateScale}
+          onChangeSeed={editorConfig.updateSeed}
+          onChangeSize={editorConfig.updateSizeType}
+          onChangeVae={editorConfig.updateVae}
+          onUpdateLoraModelConfig={editorConfig.updateLoraModelConfig}
         />
       }
       promptEditor={

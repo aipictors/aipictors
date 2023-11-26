@@ -12,39 +12,21 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
-  modelType: string
-  /**
-   * 全てのモデル
-   */
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  /**
-   * モデルの設定
-   */
-  modelConfigs: { id: string; value: number }[]
-  /**
-   * 設定を変更する
-   * @param configs 設定
-   */
-  onChangeModelConfigs(configs: { id: string; value: number }[]): void
-  /**
-   * サイズ
-   */
-  size: string
-  onChangeSize(size: string): void
-  /**
-   * VAE
-   */
-  vae: string
-  onChangeVae(vae: string): void
-  /**
-   * シード値
-   */
-  seed: number
-  onChangeSeed(seed: number): void
-  scale: number
-  onChangeScale(scale: number): void
-  sampler: string
+  configLoraModels: { id: string; value: number }[]
+  configModelType: string
+  configSampler: string
+  configScale: number
+  configSeed: number
+  configSize: string
+  configVae: string
+  onAddLoraModelConfigs(modelId: string): void
   onChangeSampler(sampler: string): void
+  onChangeScale(scale: number): void
+  onChangeSeed(seed: number): void
+  onChangeSize(size: string): void
+  onChangeVae(vae: string): void
+  onUpdateLoraModelConfig(modelId: string, value: number): void
 }
 
 export const GenerationEditorConfig = (props: Props) => {
@@ -57,32 +39,33 @@ export const GenerationEditorConfig = (props: Props) => {
         <div className="flex flex-col px-2 gap-y-4 pb-2">
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
-            modelConfigs={props.modelConfigs}
-            onChangeModelConfigs={props.onChangeModelConfigs}
+            loraModels={props.configLoraModels}
+            onAddLoraModel={props.onAddLoraModelConfigs}
+            onUpdateLoraModel={props.onUpdateLoraModelConfig}
           />
           <GenerationEditorConfigScale
-            value={props.scale}
+            value={props.configScale}
             onChange={props.onChangeScale}
           />
           <GenerationEditorConfigSeed
-            value={props.seed}
+            value={props.configSeed}
             onChange={props.onChangeSeed}
           />
           <GenerationEditorConfigSize
-            modelType={props.modelType}
-            value={props.size}
+            modelType={props.configModelType}
+            value={props.configSize}
             onChange={props.onChangeSize}
           />
           <GenerationEditorConfigStep
-            value={props.scale}
+            value={props.configScale}
             onChange={props.onChangeScale}
           />
           <GenerationEditorConfigVae
-            value={props.vae}
+            value={props.configVae}
             onChange={props.onChangeVae}
           />
           <GenerationEditorConfigSampler
-            value={props.sampler}
+            value={props.configSampler}
             onChange={props.onChangeSampler}
           />
         </div>

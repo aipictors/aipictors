@@ -1,7 +1,13 @@
+import { ImageLoraModelsQuery } from "@/__generated__/apollo"
 import { Config } from "@/config"
 import { useState } from "react"
 
-export const useEditorConfig = () => {
+type Props = {
+  passType: string | null
+  loraModels: ImageLoraModelsQuery["imageLoraModels"]
+}
+
+export const useEditorConfig = (props: Props) => {
   /**
    * 選択された画像モデルのID
    */
@@ -13,6 +19,15 @@ export const useEditorConfig = () => {
     } catch (e) {
       return defaultValue
     }
+  })
+
+  /**
+   * 選択されたLoRAモデルのID
+   */
+  const [loraModelConfigs, setLoraModelConfigs] = useState(() => {
+    return Config.defaultImageLoraModelIds.map((id) => {
+      return { id, value: 0 }
+    })
   })
 
   const [promptText, setPromptText] = useState(() => {
@@ -142,8 +157,68 @@ export const useEditorConfig = () => {
     return false
   }
 
+  /**
+   * モデルの設定を変更する
+   * @param modelId
+   * @param value
+   */
+  const updateLoraModelConfig = (modelId: string, value: number) => {
+    const draftConfigs = loraModelConfigs.map((config) => {
+      if (config.id === modelId) {
+        return { id: modelId, value }
+      }
+      return config
+    })
+    setLoraModelConfigs(draftConfigs)
+  }
+
+  const addLoraModelConfigs = (modelId: string) => {
+    const selectedModelIds = loraModelConfigs.map((model) => model.id)
+
+    /**
+     * 選択されたLoRAモデル
+     */
+    const selectedModels = selectedModelIds.map((id) => {
+      const model = props.loraModels.find((model) => model.id === id)
+      if (model === undefined) {
+        throw new Error()
+      }
+      return model
+    })
+    const modelIds = loraModelConfigs.map((model) => model.id)
+    const draftModelIds = [...modelIds]
+    const index = draftModelIds.indexOf(modelId)
+    if (index === -1) {
+      draftModelIds.push(modelId)
+    }
+    if (index !== -1) {
+      draftModelIds.splice(index, 1)
+    }
+    if (props.passType === null && draftModelIds.length > 2) {
+      draftModelIds.shift()
+    }
+    if (props.passType === "LITE" && draftModelIds.length > 2) {
+      draftModelIds.shift()
+    }
+    if (props.passType === "STANDARD" && draftModelIds.length > 5) {
+      draftModelIds.shift()
+    }
+    if (props.passType === "PREMIUM" && draftModelIds.length > 5) {
+      draftModelIds.shift()
+    }
+    const draftModels = draftModelIds.map((id) => {
+      const model = selectedModels.find((model) => model.id === id)
+      if (model !== undefined) {
+        return { id: model.id, value: 0 }
+      }
+      return { id, value: 0 }
+    })
+    setLoraModelConfigs(draftModels)
+  }
+
   return {
     modelId,
+    loraModelConfigs,
     promptText,
     negativePromptText,
     sampler,
@@ -153,6 +228,8 @@ export const useEditorConfig = () => {
     vae,
     seed,
     updateModelId,
+    addLoraModelConfigs: addLoraModelConfigs,
+    updateLoraModelConfig: updateLoraModelConfig,
     updatePrompt,
     updateNegativePrompt,
     updateSampler,

@@ -35,9 +35,9 @@ export const MessageThreadList = () => {
   const messageThreads = threads.viewer?.messageThreads ?? []
 
   return (
-    <aside className="sticky h-main min-w-24 pl-4 pb-4">
+    <aside className="sticky h-main min-w-80 w-80 pl-4 pb-4">
       <ScrollArea className="h-full">
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           {messageThreads.map((messageThread) => (
             <Link className="block" href={`/messages/${messageThread.id}`}>
               <Button
@@ -56,8 +56,8 @@ export const MessageThreadList = () => {
                     {messageThread.recipient.name}
                   </span>
                 </div>
-                <div className="w-full flex flex-col items-start">
-                  <p className="overflow-ellipsis overflow-hidden">
+                <div className="w-full flex flex-col items-start gap-y-2">
+                  <p className="overflow-ellipsis overflow-hidden whitespace-pre-wrap break-words text-left">
                     {messageThread.latestMessage.text}
                   </p>
                   <p>{toDateTimeText(messageThread.latestMessage.createdAt)}</p>
