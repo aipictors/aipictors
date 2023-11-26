@@ -24,9 +24,9 @@ export const useEditorConfig = (props: Props) => {
   /**
    * 選択されたLoRAモデルのID
    */
-  const [loraModelConfigs, setLoraModelConfigs] = useState(() => {
-    return Config.defaultImageLoraModelIds.map((id) => {
-      return { id, value: 0 }
+  const [loraModels, setLoraModels] = useState(() => {
+    return Config.defaultImageLoraModelIds.map((modelId) => {
+      return { modelId, value: 0 }
     })
   })
 
@@ -162,18 +162,18 @@ export const useEditorConfig = (props: Props) => {
    * @param modelId
    * @param value
    */
-  const updateLoraModelConfig = (modelId: string, value: number) => {
-    const draftConfigs = loraModelConfigs.map((config) => {
-      if (config.id === modelId) {
-        return { id: modelId, value }
+  const updateLoraModel = (modelId: string, value: number) => {
+    const draftConfigs = loraModels.map((config) => {
+      if (config.modelId === modelId) {
+        return { modelId: modelId, value }
       }
       return config
     })
-    setLoraModelConfigs(draftConfigs)
+    setLoraModels(draftConfigs)
   }
 
-  const addLoraModelConfigs = (modelId: string) => {
-    const selectedModelIds = loraModelConfigs.map((model) => model.id)
+  const addLoraModel = (modelId: string) => {
+    const selectedModelIds = loraModels.map((model) => model.modelId)
 
     /**
      * 選択されたLoRAモデル
@@ -185,7 +185,7 @@ export const useEditorConfig = (props: Props) => {
       }
       return model
     })
-    const modelIds = loraModelConfigs.map((model) => model.id)
+    const modelIds = loraModels.map((model) => model.modelId)
     const draftModelIds = [...modelIds]
     const index = draftModelIds.indexOf(modelId)
     if (index === -1) {
@@ -206,19 +206,19 @@ export const useEditorConfig = (props: Props) => {
     if (props.passType === "PREMIUM" && draftModelIds.length > 5) {
       draftModelIds.shift()
     }
-    const draftModels = draftModelIds.map((id) => {
-      const model = selectedModels.find((model) => model.id === id)
+    const draftModels = draftModelIds.map((modelId) => {
+      const model = selectedModels.find((model) => model.id === modelId)
       if (model !== undefined) {
-        return { id: model.id, value: 0 }
+        return { modelId: model.id, value: 0 }
       }
-      return { id, value: 0 }
+      return { modelId: modelId, value: 0 }
     })
-    setLoraModelConfigs(draftModels)
+    setLoraModels(draftModels)
   }
 
   return {
     modelId,
-    loraModelConfigs,
+    loraModels: loraModels,
     promptText,
     negativePromptText,
     sampler,
@@ -228,8 +228,8 @@ export const useEditorConfig = (props: Props) => {
     vae,
     seed,
     updateModelId,
-    addLoraModelConfigs: addLoraModelConfigs,
-    updateLoraModelConfig: updateLoraModelConfig,
+    addLoraModel: addLoraModel,
+    updateLoraModel: updateLoraModel,
     updatePrompt,
     updateNegativePrompt,
     updateSampler,

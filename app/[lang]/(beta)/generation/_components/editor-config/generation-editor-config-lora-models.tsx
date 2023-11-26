@@ -14,7 +14,7 @@ type Props = {
   /**
    * モデルの設定
    */
-  loraModels: { id: string; value: number }[]
+  loraModels: { modelId: string; value: number }[]
   onAddLoraModel(modelId: string): void
   onUpdateLoraModel(modelId: string, value: number): void
 }
@@ -22,7 +22,7 @@ type Props = {
 export const GenerationEditorConfigLoraModels = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
-  const selectedModelIds = props.loraModels.map((model) => model.id)
+  const selectedModelIds = props.loraModels.map((model) => model.modelId)
 
   /**
    * 選択されたLoRAモデル
@@ -44,7 +44,9 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             imageURL={model.thumbnailImageURL ?? ""}
             name={model.name}
             description={model.description ?? ""}
-            value={props.loraModels.find((m) => m.id === model.id)?.value ?? 0}
+            value={
+              props.loraModels.find((m) => m.modelId === model.id)?.value ?? 0
+            }
             setValue={(value) => {
               props.onUpdateLoraModel(model.id, value)
             }}

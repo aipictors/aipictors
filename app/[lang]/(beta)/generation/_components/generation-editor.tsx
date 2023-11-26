@@ -104,9 +104,9 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       if (typeof model === "undefined") {
         throw new Error("モデルが見つかりません")
       }
-      const loraPromptTexts = editorConfig.loraModelConfigs.map((config) => {
+      const loraPromptTexts = editorConfig.loraModels.map((config) => {
         const model = props.imageLoraModels.find((model) => {
-          return model.id === config.id
+          return model.id === config.modelId
         })
         if (model === undefined) return null
         return toLoraPrompt(model.name, config.value)
@@ -159,20 +159,20 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       loraModels={
         <GenerationEditorConfig
           loraModels={props.imageLoraModels}
-          configLoraModels={editorConfig.loraModelConfigs}
+          configLoraModels={editorConfig.loraModels}
           configModelType={selectedModel?.type ?? "SD1"}
           configSampler={editorConfig.sampler}
           configScale={editorConfig.scale}
           configSeed={editorConfig.seed}
           configSize={editorConfig.sizeType}
           configVae={editorConfig.vae}
-          onAddLoraModelConfigs={editorConfig.addLoraModelConfigs}
+          onAddLoraModelConfigs={editorConfig.addLoraModel}
           onChangeSampler={editorConfig.updateSampler}
           onChangeScale={editorConfig.updateScale}
           onChangeSeed={editorConfig.updateSeed}
           onChangeSize={editorConfig.updateSizeType}
           onChangeVae={editorConfig.updateVae}
-          onUpdateLoraModelConfig={editorConfig.updateLoraModelConfig}
+          onUpdateLoraModelConfig={editorConfig.updateLoraModel}
         />
       }
       promptEditor={

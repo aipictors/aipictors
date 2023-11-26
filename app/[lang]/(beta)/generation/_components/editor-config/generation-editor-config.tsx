@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  configLoraModels: { id: string; value: number }[]
+  configLoraModels: { modelId: string; value: number }[]
   configModelType: string
   configSampler: string
   configScale: number
