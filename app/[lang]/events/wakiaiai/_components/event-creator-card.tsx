@@ -27,8 +27,8 @@ export const EventCreatorCard = (props: Props) => {
               props.user.twitterId === null
                 ? undefined
                 : props.user.aipictorsId === null
-                ? `https://twitter.com/${props.user.twitterId}`
-                : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
+                  ? `https://twitter.com/${props.user.twitterId}`
+                  : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
             }
             onClick={() => {
               logEvent(getAnalytics(), Config.logEvent.select_item, {

@@ -39,9 +39,8 @@ export const SupportMessageList = (props: Props) => {
         .sort((a, b) => {
           if (isMobileView) {
             return b.createdAt - a.createdAt
-          } else {
-            return a.createdAt - b.createdAt
           }
+          return a.createdAt - b.createdAt
         })
         .map((message) =>
           message.isViewer ? (

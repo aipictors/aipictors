@@ -16,9 +16,8 @@ export const uploadFile = async (file: File): Promise<string> => {
     if (response.ok) {
       const responseData = await response.json()
       return responseData.url
-    } else {
-      throw new Error()
     }
+    throw new Error()
   } catch (error) {
     captureException(error)
     throw new Error()
