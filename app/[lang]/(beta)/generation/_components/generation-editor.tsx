@@ -26,10 +26,8 @@ import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prom
 import { AppContext } from "@/app/_contexts/app-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
-
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
-
-import { Suspense, startTransition, useContext, useMemo, useState } from "react"
+import { Suspense, startTransition, useContext, useMemo } from "react"
 import { useInterval } from "usehooks-ts"
 
 type Props = {
@@ -74,8 +72,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     passType: passType,
     loraModels: props.imageLoraModels,
   })
-
-  const [selectedHistory, selectHistory] = useState("")
 
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
@@ -200,8 +196,13 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           <Suspense fallback={null}>
             <GenerationEditorHistory
               tasks={data?.viewer?.imageGenerationTasks ?? []}
-              selectHistory={selectHistory}
-              selectedHistory={selectedHistory}
+              onChangeSampler={editorConfig.updateSampler}
+              onChangeScale={editorConfig.updateScale}
+              onChangeSeed={editorConfig.updateSeed}
+              onChangeSize={editorConfig.updateSizeType}
+              onChangeVae={editorConfig.updateVae}
+              onChangePromptText={editorConfig.updatePrompt}
+              onChangeNegativePromptText={editorConfig.updateNegativePrompt}
             />
           </Suspense>
         </div>

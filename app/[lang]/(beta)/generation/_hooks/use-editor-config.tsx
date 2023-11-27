@@ -86,6 +86,9 @@ export const useEditorConfig = (props: Props) => {
     const defaultValue = Config.generation.defaultVaeValue
     try {
       const value = localStorage.getItem("config.generation.vae")
+      if (value === "") {
+        return null
+      }
       return value ? value : defaultValue
     } catch (e) {
       return defaultValue
@@ -131,9 +134,9 @@ export const useEditorConfig = (props: Props) => {
     setSizeType(text)
   }
 
-  const updateVae = (text: string) => {
-    localStorage.setItem("config.generation.vae", text)
-    setVae(text)
+  const updateVae = (text: string | null) => {
+    localStorage.setItem("config.generation.vae", text ?? "")
+    setVae(text === "" ? null : text)
   }
 
   const updateSeed = (value: number) => {

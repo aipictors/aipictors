@@ -15,8 +15,8 @@ import { Config } from "@/config"
 import { HelpCircle } from "lucide-react"
 
 type Props = {
-  value: string
-  onChange(value: string): void
+  value: string | null
+  onChange(value: string | null): void
 }
 
 /**
@@ -40,7 +40,7 @@ export const GenerationEditorConfigVae = (props: Props) => {
         </TooltipProvider>
       </div>
       <Select
-        value={props.value}
+        value={props.value ?? ""}
         onValueChange={(value) => {
           props.onChange(value)
         }}

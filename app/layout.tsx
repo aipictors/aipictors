@@ -40,8 +40,10 @@ const RootLayout = (props: Props) => {
           notoSansJp.variable,
         )}
       >
-        <RootProviders>{props.children}</RootProviders>
-        <Toaster />
+        <RootProviders>
+          {props.children}
+          <Toaster />
+        </RootProviders>
       </body>
     </html>
   )

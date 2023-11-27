@@ -19,13 +19,13 @@ type Props = {
   configScale: number
   configSeed: number
   configSize: string
-  configVae: string
+  configVae: string | null
   onAddLoraModelConfigs(modelId: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void
   onChangeSize(size: string): void
-  onChangeVae(vae: string): void
+  onChangeVae(vae: string | null): void
   onUpdateLoraModelConfig(modelId: string, value: number): void
 }
 

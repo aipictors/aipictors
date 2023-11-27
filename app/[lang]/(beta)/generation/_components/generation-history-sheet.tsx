@@ -28,6 +28,7 @@ type Props = {
   configVae: string | null
   isOpen: boolean
   onClose(): void
+  onUse(): void
   onChangeRating(value: number): void
   onOpenInPainting(): void
 }
@@ -49,16 +50,11 @@ export const GenerationHistorySheet = (props: Props) => {
               alt={props.taskId}
               token={props.imageToken}
             />
+            <Button size={"sm"} onClick={props.onUse}>
+              {"この設定を復元する"}
+            </Button>
             {Config.isDevelopmentMode && (
               <div className="flex gap-x-2">
-                <Button
-                  size={"sm"}
-                  onClick={() => {
-                    alert("再利用します")
-                  }}
-                >
-                  {"再利用"}
-                </Button>
                 <Button
                   size={"sm"}
                   onClick={() => {

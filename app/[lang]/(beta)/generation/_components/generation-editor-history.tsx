@@ -10,8 +10,10 @@ import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_c
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
+import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Tasks = NonNullable<
@@ -20,12 +22,19 @@ type Tasks = NonNullable<
 
 type Props = {
   tasks: Tasks
-  selectedHistory: string
-  selectHistory(history: string): void
+  onChangeSampler(sampler: string): void
+  onChangeScale(scale: number): void
+  onChangeSeed(seed: number): void
+  onChangeSize(size: string): void
+  onChangeVae(vae: string | null): void
+  onChangePromptText(prompt: string): void
+  onChangeNegativePromptText(prompt: string): void
 }
 
 export const GenerationEditorHistory = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+
+  const [selectedHistory, selectHistory] = useState<null | string>(null)
 
   const {
     value: isDeleteOpen,
@@ -45,30 +54,30 @@ export const GenerationEditorHistory = (props: Props) => {
     setFalse: onCloseInPainting,
   } = useBoolean()
 
-  const {
-    value: isPromptOpen,
-    setTrue: onPromptOpen,
-    setFalse: onPromptClose,
-  } = useBoolean()
+  const { toast } = useToast()
 
-  const onOpenPromptConfig = () => {
-    onPromptOpen()
+  const onUseConfig = () => {
+    if (typeof history === "undefined") return
+    props.onChangeSampler(history.sampler)
+    props.onChangeScale(history.scale)
+    props.onChangeSeed(history.seed)
+    props.onChangeSize(history.sizeType)
+    props.onChangeVae(history.vae)
+    props.onChangePromptText(history.prompt)
+    props.onChangeNegativePromptText(history.negativePrompt)
     onClose()
+    toast({ title: "設定を復元しました" })
   }
 
-  const history = props.tasks?.find((task) => {
-    return task.id === props.selectedHistory
+  const history = props.tasks.find((task) => {
+    return task.id === selectedHistory
   })
 
   return (
     <>
       <GenerationEditorCard
         title={"生成履歴"}
-        action={
-          <Button size={"sm"} onClick={onOpen}>
-            {"全て見る"}
-          </Button>
-        }
+        action={<Button size={"sm"}>{"全て見る"}</Button>}
       >
         {Config.isDevelopmentMode && (
           <div className="flex px-2 pb-2 space-x-2">
@@ -100,8 +109,8 @@ export const GenerationEditorHistory = (props: Props) => {
                 taskId={task.id}
                 token={task.token}
                 onClick={() => {
+                  selectHistory(task.id)
                   onOpen()
-                  props.selectHistory(task.id)
                 }}
               />
             ))}
@@ -122,8 +131,9 @@ export const GenerationEditorHistory = (props: Props) => {
           configVae={history.vae}
           isOpen={isOpen}
           onClose={onClose}
+          onUse={onUseConfig}
           onOpenInPainting={() => {
-            onClose()
+            selectHistory(null)
             onOpenInPainting()
           }}
           onChangeRating={() => {}}
