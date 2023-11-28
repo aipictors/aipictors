@@ -114,7 +114,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           input: {
             count: 1,
             model: model.name,
-            vae: editorConfig.vae,
+            vae: editorConfig.vae ?? "",
             prompt: promptText,
             negativePrompt: editorConfig.negativePromptText,
             seed: editorConfig.seed,
