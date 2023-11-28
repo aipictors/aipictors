@@ -4,7 +4,7 @@ import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navig
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AppContext } from "@/app/_contexts/app-context"
 import { Separator } from "@/components/ui/separator"
-import { Gem, Home, LogIn, MessageCircle, Sparkles, Stamp } from "lucide-react"
+import { Gem, Home, LogIn, MessageCircle, Stamp } from "lucide-react"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -41,9 +41,9 @@ export const BetaNavigationList = (props: Props) => {
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
-      <HomeNavigationButton href={"/generation/"} icon={Sparkles}>
+      {/* <HomeNavigationButton href={"/generation/"} icon={Sparkles}>
         {"画像生成"}
-      </HomeNavigationButton>
+      </HomeNavigationButton> */}
       {/* {appContext.isLoggedIn && (
         <HomeNavigationButton
           isDisabled={Config.isReleaseMode}
