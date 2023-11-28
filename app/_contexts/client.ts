@@ -15,6 +15,7 @@ const contextSetter: ContextSetter = async (_, context) => {
       headers: {
         ...context.headers,
         authorization: null,
+        platform: "web",
       },
     }
   }
@@ -26,6 +27,7 @@ const contextSetter: ContextSetter = async (_, context) => {
       headers: {
         ...context.headers,
         authorization: null,
+        platform: "web",
       },
     }
   }
@@ -36,6 +38,7 @@ const contextSetter: ContextSetter = async (_, context) => {
     headers: {
       ...context.headers,
       authorization: `Bearer ${token}`,
+      platform: "web",
     },
   }
 }
