@@ -16,7 +16,6 @@
     "shadcn",
     "splide"
   ],
-  "deno.enable": false,
   "editor.codeActionsOnSave": {
     "quickfix.biome": true,
     "source.organizeImports.biome": true
@@ -58,7 +57,5 @@
     "tailwindcss",
     "vitest/dist"
   ],
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "workbench.editor.enablePreview": true,
-  "workbench.tree.expandMode": "doubleClick"
+  "typescript.preferences.importModuleSpecifier": "non-relative"
 }
