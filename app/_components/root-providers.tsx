@@ -8,7 +8,7 @@ import { init } from "@sentry/nextjs"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProvider } from "next-themes"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
@@ -43,14 +43,14 @@ export const RootProviders = (props: Props) => {
     <AppContextProvider>
       <QueryClientProvider client={queryClient}>
         <ApolloProvider client={client}>
-          <NextThemesProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
             {props.children}
-          </NextThemesProvider>
+          </ThemeProvider>
         </ApolloProvider>
       </QueryClientProvider>
     </AppContextProvider>

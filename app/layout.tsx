@@ -14,7 +14,6 @@ type Props = {
 }
 
 const notoSansJp = Noto_Sans_JP({
-  weight: ["500", "700"],
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
