@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import TextareaAutosize from "react-textarea-autosize"
 
 type Props = {
   isLoading: boolean
@@ -19,11 +19,16 @@ export const MessageInput = (props: Props) => {
 
   return (
     <div className="px-4 md:pr-8 pb-4 flex gap-x-2">
-      <Input
-        placeholder="メッセージを入力してください"
-        value={message}
-        onChange={(event) => setMessage(event.target.value)}
-      />
+      <div className="flex-grow">
+        <TextareaAutosize
+          autoFocus
+          aria-label="Chat input box"
+          className="resize-none w-full border rounded-md p-2 h-auto"
+          placeholder="メッセージを入力してください"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+        />
+      </div>
       {/* <IconButton
         aria-label="photo"
         icon={<Icon as={TbPhoto} fontSize={"lg"} />}
