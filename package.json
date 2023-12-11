@@ -10,10 +10,7 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "check": "tsc --noEmit",
-    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write .",
-    "biome:check": "biome check --apply-unsafe .",
-    "biome:lint": "biome lint --apply-unsafe .",
-    "biome:format": "biome format --write ."
+    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write ."
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",

@@ -1,5 +1,4 @@
 import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
-import { describe, expect, test } from "vitest"
 
 describe("toMoneyNumberText", () => {
   test("数値を3桁区切りのテキストに変換する", () => {
