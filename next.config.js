@@ -10,6 +10,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
+    ppr: true,
     scrollRestoration: true,
   },
   output: "standalone",
