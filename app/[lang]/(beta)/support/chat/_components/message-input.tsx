@@ -1,7 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { useRef, useState } from "react"
+import { RxUpload } from "react-icons/rx"
 import TextareaAutosize from "react-textarea-autosize"
 
 type Props = {
@@ -15,6 +17,13 @@ export const MessageInput = (props: Props) => {
   const handleSubmit = () => {
     props.onSubmit(message)
     setMessage("")
+  }
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
   }
 
   return (
@@ -34,6 +43,18 @@ export const MessageInput = (props: Props) => {
         icon={<Icon as={TbPhoto} fontSize={"lg"} />}
         borderRadius={"full"}
       /> */}
+      <Button onClick={handleButtonClick}>
+        <div className="flex justify-center items-center">
+          <RxUpload />
+          <Input
+            ref={fileInputRef}
+            className="hidden"
+            id="fileUpload"
+            type="file"
+            accept="image/*"
+          />
+        </div>
+      </Button>
       <Button
         disabled={message.length === 0 || props.isLoading}
         onClick={handleSubmit}
