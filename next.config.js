@@ -10,7 +10,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   experimental: {
-    ppr: true,
+    // ppr: true, //Can only be enabled in canary
     scrollRestoration: true,
   },
   output: "standalone",
