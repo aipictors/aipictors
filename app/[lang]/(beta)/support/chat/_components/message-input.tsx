@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useRef, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { RxUpload } from "react-icons/rx"
 import TextareaAutosize from "react-textarea-autosize"
 
@@ -13,12 +13,27 @@ type Props = {
 
 export const MessageInput = (props: Props) => {
   const [message, setMessage] = useState("")
+  const [selectedImage, setSelectedImage] = useState<string>("")
 
   const handleSubmit = () => {
     props.onSubmit(message)
     setMessage("")
   }
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files && files.length > 0) {
+      const file = files[0]
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target) {
+          setSelectedImage(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleButtonClick = () => {
     if (fileInputRef.current) {
@@ -49,12 +64,19 @@ export const MessageInput = (props: Props) => {
           <Input
             ref={fileInputRef}
             className="hidden"
-            id="fileUpload"
+            id="imageUpload"
             type="file"
+            multiple={true}
             accept="image/*"
+            onChange={handleFileChange}
           />
         </div>
       </Button>
+      {selectedImage && (
+        <div>
+          <img src={selectedImage} alt="Selected" />
+        </div>
+      )}
       <Button
         disabled={message.length === 0 || props.isLoading}
         onClick={handleSubmit}
