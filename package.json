@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "turbo": "next dev --turbo",
     "build": "next build",
     "prebuild": "graphql-codegen -c codegen.ts",
     "start": "next start",
@@ -57,7 +58,7 @@
     "graphql": "^16.8.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.292.0",
-    "next": "^14.0.1",
+    "next": "^14.0.4",
     "next-themes": "^0.2.1",
     "postcss": "^8.4.31",
     "react": "18.2.0",
