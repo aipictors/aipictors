@@ -15,22 +15,22 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          bun-version: latest
+
       - name: Install
-        run: npm install
+        run: time bun install
+      
       - name: Prebuild
-        run: npm run prebuild
+        run: time bun run prebuild
+      
       - name: Run Type Cheking
-        run: npm run check
+        run: time bun run check
+      
       - name: Run Test
-        run: npm run test
+        run: time bun run test
