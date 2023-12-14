@@ -1,0 +1,44 @@
+name: Build Speed Comparison(pnpm)
+
+on:
+  push:
+    branches:
+      - "dev"
+
+jobs:
+  build_speed_comparison:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Predict run time
+        id: predict_run_time
+        uses: jerome-1010/workflow-time-predictor@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: ${{ github.repository_owner }}
+          repository: ${{ github.repository }}
+          workflow-file-name: "pnpm-build-test.yml"
+
+      - name: Install Dependencies (pnpm)
+        run: |
+          pnpm i
+      
+      - name: PreBuild Application (pnpm)
+        run: |
+          pnpm run prebuild
+
+      - name: Build Application (pnpm)
+        run: |
+          time pnpm run build
