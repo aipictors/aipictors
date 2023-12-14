@@ -18,23 +18,14 @@ jobs:
         with:
           node-version: 18
 
-      - name: Predict run time
-        id: predict_run_time
-        uses: jerome-1010/workflow-time-predictor@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.repository_owner }}
-          repository: ${{ github.repository }}
-          workflow-file-name: "npm-build-test.yml"
-
       - name: Install Dependencies (npm)
         run: |
-          npm i
+          time npm i
       
       - name: PreBuild Application (npm)
         run: |
-          npm run prebuild
+          time npm run prebuild
 
       - name: Build Application (npm)
         run: |
-          pnpm run build
+          time npm run build

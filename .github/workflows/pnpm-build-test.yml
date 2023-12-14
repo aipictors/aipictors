@@ -22,22 +22,13 @@ jobs:
         with:
           version: 8
 
-      - name: Predict run time
-        id: predict_run_time
-        uses: jerome-1010/workflow-time-predictor@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.repository_owner }}
-          repository: ${{ github.repository }}
-          workflow-file-name: "pnpm-build-test.yml"
-
       - name: Install Dependencies (pnpm)
         run: |
-          pnpm i
+          time pnpm i
       
       - name: PreBuild Application (pnpm)
         run: |
-          pnpm run prebuild
+          time pnpm run prebuild
 
       - name: Build Application (pnpm)
         run: |
