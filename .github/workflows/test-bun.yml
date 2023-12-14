@@ -3,7 +3,14 @@ name: Unit Tests
 on:
   push:
     branches:
-      - dev
+      - main
+    paths:
+      - "app/**/*"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app/**/*"
 
 jobs:
   run:
@@ -15,12 +22,9 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-      
-      - run: rm -f pnpm-lock.yaml
 
       - name: Install
         run: bun install
-      - run: bun add -d @types/web
       
       - name: Prebuild
         run: bun run prebuild
@@ -29,4 +33,4 @@ jobs:
         run: bun run check
       
       - name: Run Test
-        run: bun test
+        run: bun run test
