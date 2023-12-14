@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install Dependencies (npm)
+        run: |
+          rm -f pnpm-lock.yaml
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
