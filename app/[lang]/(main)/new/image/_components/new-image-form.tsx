@@ -233,7 +233,7 @@ const NewImageForm = () => {
               accept="image/*"
               {...getInputProps()}
             />
-            <p>画像／動画を追加</p>
+            <p>画像/動画を追加</p>
           </div>
           <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="flex flex-wrap justify-center">
