@@ -106,7 +106,6 @@ export const MessageInput = (props: Props) => {
       <Button
         disabled={!isSendButtonEnabled || props.isLoading}
         onClick={handleSubmit}
-        className="mt-2"
       >
         {"送信"}
       </Button>
