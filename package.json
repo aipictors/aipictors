@@ -11,8 +11,7 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "check": "tsc --noEmit",
-    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write .",
-    "analyze": "set ANALYZE=true&&next build"
+    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write ."
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",

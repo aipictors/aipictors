@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ChangeEvent, useRef, useState } from "react"
+import { IoIosCloseCircle } from "react-icons/io"
 import { RxUpload } from "react-icons/rx"
 import TextareaAutosize from "react-textarea-autosize"
 
@@ -13,25 +14,40 @@ type Props = {
 
 export const MessageInput = (props: Props) => {
   const [message, setMessage] = useState("")
-  const [selectedImage, setSelectedImage] = useState<string>("")
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const handleSubmit = () => {
-    props.onSubmit(message)
+    setSelectedImages([])
     setMessage("")
   }
+
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (files && files.length > 0) {
-      const file = files[0]
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target) {
-          setSelectedImage(e.target.result as string)
-        }
+      const promises: Promise<string>[] = []
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const promise = new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            if (e.target) {
+              resolve(e.target.result as string)
+            }
+          }
+          reader.readAsDataURL(file)
+        })
+        promises.push(promise)
       }
-      reader.readAsDataURL(file)
+
+      try {
+        const newImages = await Promise.all(promises)
+        setSelectedImages((prevImages) => [...prevImages, ...newImages])
+      } catch (error) {
+        console.error("Error loading images:", error)
+      }
     }
   }
 
@@ -41,8 +57,27 @@ export const MessageInput = (props: Props) => {
     }
   }
 
+  const isSendButtonEnabled = message.trim() !== "" || selectedImages.length > 0
+
+  const handleDeleteImage = (index: number) => {
+    const updatedImages = [...selectedImages]
+    updatedImages.splice(index, 1)
+    setSelectedImages(updatedImages)
+  }
+
   return (
     <div className="px-4 md:pr-8 pb-4 flex gap-x-2 items-center">
+      {selectedImages.map((image, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        <div key={index} className="relative">
+          <img src={image} alt={`Selected ${index}`} />
+          {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+          <IoIosCloseCircle
+            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer"
+            onClick={() => handleDeleteImage(index)}
+          />
+        </div>
+      ))}
       <TextareaAutosize
         autoFocus
         minRows={1}
@@ -53,11 +88,6 @@ export const MessageInput = (props: Props) => {
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />
-      {/* <IconButton
-        aria-label="photo"
-        icon={<Icon as={TbPhoto} fontSize={"lg"} />}
-        borderRadius={"full"}
-      /> */}
       <Button onClick={handleButtonClick}>
         <div className="flex justify-center items-center">
           <RxUpload />
@@ -72,14 +102,11 @@ export const MessageInput = (props: Props) => {
           />
         </div>
       </Button>
-      {selectedImage && (
-        <div>
-          <img src={selectedImage} alt="Selected" />
-        </div>
-      )}
+      {/* 送信ボタン */}
       <Button
-        disabled={message.length === 0 || props.isLoading}
+        disabled={!isSendButtonEnabled || props.isLoading}
         onClick={handleSubmit}
+        className="mt-2"
       >
         {"送信"}
       </Button>
