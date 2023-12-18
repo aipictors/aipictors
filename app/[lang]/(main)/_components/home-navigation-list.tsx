@@ -41,7 +41,7 @@ export const HomeNavigationList = (props: Props) => {
   const appContext = useContext(AppContext)
 
   return (
-    <div className="flex flex-col space-y-1">
+    <div className="flex flex-col space-y-1 pl-1">
       <HomeNavigationButton href={"/"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
