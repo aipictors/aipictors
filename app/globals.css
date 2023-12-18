@@ -6,7 +6,6 @@
  * テーマ
  * @see https://ui.shadcn.com/themes
  */
-
  @layer base {
   :root {
     --background: 0 0% 100%;
@@ -61,4 +60,9 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+html {
+  overscroll-behavior-y: none;
+  overflow-y: auto;
 }
