@@ -13,6 +13,7 @@ export const toPassFeatures = (passType: PassType) => {
       `${Config.passFeature.imageGenerationLoraModelsCount.standard}つのLoRAモデル`,
       `${Config.passFeature.imageGenerationHistoriesCount.standard}件のお気に入り履歴`,
       "高速生成モード⚡️",
+      "予約生成機能",
     ]
   }
 
@@ -23,6 +24,7 @@ export const toPassFeatures = (passType: PassType) => {
       `${Config.passFeature.imageGenerationLoraModelsCount.premium}つのLoRAモデル`,
       `${Config.passFeature.imageGenerationHistoriesCount.premium}件のお気に入り履歴`,
       "高速生成モード⚡️",
+      "予約生成機能",
     ]
   }
 
