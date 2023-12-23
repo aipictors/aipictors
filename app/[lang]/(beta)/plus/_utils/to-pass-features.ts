@@ -3,7 +3,10 @@ import { Config } from "@/config"
 
 export const toPassFeatures = (passType: PassType) => {
   if (passType === "LITE") {
-    return [`1日に${Config.passFeature.imageGenerationsCount.lite}枚の生成`]
+    return [
+      `1日に${Config.passFeature.imageGenerationsCount.lite}枚の生成`,
+      "画像から生成機能",
+    ]
   }
 
   if (passType === "STANDARD") {
@@ -14,6 +17,7 @@ export const toPassFeatures = (passType: PassType) => {
       `${Config.passFeature.imageGenerationHistoriesCount.standard}件のお気に入り履歴`,
       "高速生成モード⚡️",
       "予約生成機能",
+      "画像から生成機能",
     ]
   }
 
@@ -25,6 +29,7 @@ export const toPassFeatures = (passType: PassType) => {
       `${Config.passFeature.imageGenerationHistoriesCount.premium}件のお気に入り履歴`,
       "高速生成モード⚡️",
       "予約生成機能",
+      "画像から生成機能",
     ]
   }
 
