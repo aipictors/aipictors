@@ -19,12 +19,22 @@ module.exports = () => {
     env: {
       NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,
     },
-  };
-  if (process.env.ANALYZE === 'true') {
-    const withBundleAnalyzer = require('@next/bundle-analyzer')({
-      enabled: true,
-    });
-    return withBundleAnalyzer(nextConfig);
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "www.aipictors.com",
+          port: "",
+        },
+      ],
+      unoptimized: true,
+    },
   }
-  return nextConfig;
-};
+  if (process.env.ANALYZE === "true") {
+    const withBundleAnalyzer = require("@next/bundle-analyzer")({
+      enabled: true,
+    })
+    return withBundleAnalyzer(nextConfig)
+  }
+  return nextConfig
+}

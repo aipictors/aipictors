@@ -39,13 +39,15 @@ export const HomeWorkSection = (props: Props) => {
           {"すべて見る"}
         </Button>
       </div>
-      <ul className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {props.works.map((work) => (
-          <Link key={work.id} href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.largeThumbnailImageURL} />
-          </Link>
+          <div key={work.id} className="relative">
+            <Link href={`/works/${work.id}`}>
+              <WorkCard imageURL={work.largeThumbnailImageURL} />
+            </Link>
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   )
 }
