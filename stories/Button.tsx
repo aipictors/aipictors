@@ -1,51 +1,40 @@
-import './button.css';
+import { Button } from "@/components/ui/button"
 
 interface ButtonProps {
   /**
    * Is this the principal call to action on the page?
    */
-  primary?: boolean;
+  primary?: boolean
   /**
    * What background color to use
    */
-  backgroundColor?: string;
+  variant?: "secondary" | "destructive" | "outline" | "ghost" | "link"
   /**
    * How large should the button be?
    */
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large"
   /**
    * Button contents
    */
-  label: string;
+  label: string
   /**
    * Optional click handler
    */
-  onClick?: () => void;
+  onClick?: () => void
+  disable: boolean
 }
 
-/**
- * Primary UI component for user interaction
- */
-export const Button = ({
+export const shadcnButton = ({
   primary = false,
-  size = 'medium',
-  backgroundColor,
+  size = "medium",
+  variant,
   label,
+  disable,
   ...props
 }: ButtonProps) => {
-  const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
   return (
-    <button
-      type="button"
-      className={['storybook-button', `storybook-button--${size}`, mode].join(' ')}
-      {...props}
-    >
+    <Button variant={variant} {...props}>
       {label}
-      <style jsx>{`
-        button {
-          background-color: ${backgroundColor};
-        }
-      `}</style>
-    </button>
-  );
-};
+    </Button>
+  )
+}

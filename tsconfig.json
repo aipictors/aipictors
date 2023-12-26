@@ -18,6 +18,13 @@
     "paths": { "@/*": ["./*"] },
     "types": ["vitest/globals"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "stories/ExampleButton.tsx",
+    "stories/ExampleButton.stories.ts"
+  ],
   "exclude": ["node_modules"]
 }

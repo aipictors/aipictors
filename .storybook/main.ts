@@ -1,3 +1,4 @@
+import path from "path"
 import type { StorybookConfig } from "@storybook/nextjs"
 
 const config: StorybookConfig = {
@@ -11,6 +12,14 @@ const config: StorybookConfig = {
     "@storybook/addon-onboarding",
     "@storybook/addon-interactions",
     "@storybook/addon-mdx-gfm",
+    {
+      name: "@storybook/addon-postcss",
+      options: {
+        postcssLoaderOptions: {
+          implementation: require("postcss"),
+        },
+      },
+    },
   ],
   framework: {
     name: "@storybook/nextjs",
@@ -19,6 +28,15 @@ const config: StorybookConfig = {
         useSWC: true, // Enables SWC support
       },
     },
+  },
+  webpackFinal: async (config) => {
+    if (config.resolve) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@": path.resolve(__dirname, "../"),
+      }
+    }
+    return config
   },
   docs: {
     autodocs: "tag",
