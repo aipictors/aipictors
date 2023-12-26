@@ -2,6 +2,7 @@
 
 import { AppContext } from "@/app/_contexts/app-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,10 +30,12 @@ export const HomeUserNavigationMenu = (props: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />
-          <AvatarFallback>{"U"}</AvatarFallback>
-        </Avatar>
+        <Button className="rounded-full flex" size={"icon"}>
+          <Avatar>
+            <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />
+            <AvatarFallback>{"U"}</AvatarFallback>
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {appContext.isLoggedIn && (
