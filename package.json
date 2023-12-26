@@ -11,7 +11,9 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "check": "tsc --noEmit",
-    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write ."
+    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write .",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
@@ -83,10 +85,20 @@
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^4.1.0",
+    "@storybook/addon-essentials": "^7.6.6",
+    "@storybook/addon-interactions": "^7.6.6",
+    "@storybook/addon-links": "^7.6.6",
+    "@storybook/addon-mdx-gfm": "^7.6.6",
+    "@storybook/addon-onboarding": "^1.0.10",
+    "@storybook/blocks": "^7.6.6",
+    "@storybook/nextjs": "^7.6.6",
+    "@storybook/react": "^7.6.6",
+    "@storybook/test": "^7.6.6",
     "@types/lodash": "^4.14.201",
     "@types/node": "20.8.10",
     "@types/react": "18.2.35",
     "@types/react-dom": "18.2.14",
+    "storybook": "^7.6.6",
     "typescript": "5.2.2"
   },
   "volta": {
