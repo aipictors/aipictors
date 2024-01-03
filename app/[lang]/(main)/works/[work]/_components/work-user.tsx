@@ -19,8 +19,8 @@ export const WorkUser = (props: Props) => {
       <div className="p-4 flex flex-col gap-y-4">
         <div className="flex gap-x-4 items-center">
           <Avatar>
-            <AvatarImage src={props.userIconImageURL} alt=""/>
-            <AvatarFallback/>
+            <AvatarImage src={props.userIconImageURL} alt="" />
+            <AvatarFallback />
           </Avatar>
           <p className="text-md font-bold">{props.userName}</p>
         </div>
