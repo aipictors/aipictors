@@ -1,4 +1,5 @@
 import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,11 +18,10 @@ export const WorkUser = (props: Props) => {
     <Card>
       <div className="p-4 flex flex-col gap-y-4">
         <div className="flex gap-x-4 items-center">
-          <img
-            className="w-16 h-16 rounded-full"
-            src={props.userIconImageURL}
-            alt=""
-          />
+          <Avatar>
+            <AvatarImage src={props.userIconImageURL} alt=""/>
+            <AvatarFallback/>
+          </Avatar>
           <p className="text-md font-bold">{props.userName}</p>
         </div>
         <div className="flex gap-x-2">
