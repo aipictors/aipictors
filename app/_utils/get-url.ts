@@ -1,1 +1,1 @@
-export const getNoProfileImgUrl = () => "/images/noProfile.jpg"
+export const getNoProfileImgUrl = () => "/images/noProfile.webp"
