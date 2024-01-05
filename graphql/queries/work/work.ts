@@ -18,6 +18,8 @@ export const WORK = gql`
         works(offset: 0, limit: 16) {
           id
           largeThumbnailImageURL
+          largeThumbnailImageWith
+          largeThumbnailImageHeight
         }
       }
       dailyTheme {

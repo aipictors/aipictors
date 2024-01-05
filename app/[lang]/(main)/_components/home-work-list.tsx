@@ -12,7 +12,11 @@ export const HomeWorkList = (props: Props) => {
       {props.works?.map((work) => (
         <li key={work.id}>
           <Link href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.largeThumbnailImageURL} />
+            <WorkCard
+              imageURL={work.largeThumbnailImageURL}
+              imageWith={work.largeThumbnailImageWith}
+              imageHeight={work.largeThumbnailImageHeight}
+            />
           </Link>
         </li>
       ))}

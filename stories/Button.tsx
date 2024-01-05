@@ -1,39 +1,22 @@
 import { Button } from "@/components/ui/button"
 
 interface ButtonProps {
-  /**
-   * Is this the principal call to action on the page?
-   */
-  primary?: boolean
-  /**
-   * What background color to use
-   */
-  variant?: "secondary" | "destructive" | "outline" | "ghost" | "link"
-  /**
-   * How large should the button be?
-   */
-  size?: "small" | "medium" | "large"
-  /**
-   * Button contents
-   */
   label: string
-  /**
-   * Optional click handler
-   */
+  primary?: boolean
+  variant?: "secondary" | "destructive" | "outline" | "ghost" | "link"
+  disabled: boolean
   onClick?: () => void
-  disable: boolean
 }
 
 export const shadcnButton = ({
-  primary = false,
-  size = "medium",
-  variant,
   label,
-  disable,
+  primary = true,
+  variant,
+  disabled = false,
   ...props
 }: ButtonProps) => {
   return (
-    <Button variant={variant} {...props}>
+    <Button {...(primary ? {} : { variant })} disabled={disabled} {...props}>
       {label}
     </Button>
   )

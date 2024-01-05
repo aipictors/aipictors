@@ -23,8 +23,11 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "stories/ExampleButton.tsx",
-    "stories/ExampleButton.stories.ts"
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
+    "stories/*.stories.ts",
+    "stories/*.stories.tsx",
+    "stories/*.tsx"
   ],
   "exclude": ["node_modules"]
 }

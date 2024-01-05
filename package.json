@@ -12,9 +12,11 @@
     "test:watch": "vitest",
     "check": "tsc --noEmit",
     "analyze": "ANALYZE=true next build",
-    "refactor": "biome lint --apply-unsafe . && biome check --apply-unsafe . && biome format --write .",
+    "refactor": "biome check --apply-unsafe app graphql && biome format --write app",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "biome lint --apply-unsafe app graphql"
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
@@ -74,7 +76,7 @@
     "react-textarea-autosize": "^8.5.3",
     "schema-dts": "^1.1.2",
     "tailwind-merge": "^2.0.0",
-    "tailwindcss": "^3.3.5",
+    "tailwindcss": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^2.9.1",
     "vitest": "^0.34.6",
@@ -93,7 +95,6 @@
     "@storybook/addon-mdx-gfm": "^7.6.6",
     "@storybook/addon-onboarding": "^1.0.10",
     "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/addon-styling-webpack": "^0.0.5",
     "@storybook/blocks": "^7.6.6",
     "@storybook/nextjs": "^7.6.6",
     "@storybook/react": "^7.6.6",

@@ -71,7 +71,6 @@ export const MessageInput = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
           <img src={image} alt={`Selected ${index}`} />
-          {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
           <IoIosCloseCircle
             className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer"
             onClick={() => handleDeleteImage(index)}
@@ -88,7 +87,8 @@ export const MessageInput = (props: Props) => {
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />
-      <Button onClick={handleButtonClick}>
+      {/* まだアップロード処理が終えていないので、disabled */}
+      <Button disabled onClick={handleButtonClick}>
         <div className="flex justify-center items-center">
           <RxUpload />
           <Input
