@@ -14,6 +14,9 @@ type Props = {
   onClose(): void
 }
 
+/**
+ * スタンプ送信ダイアログ
+ */
 export const StampDialog = (props: Props) => {
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>

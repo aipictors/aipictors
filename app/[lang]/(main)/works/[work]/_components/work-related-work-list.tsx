@@ -1,3 +1,6 @@
+/**
+ * 作品の関連作品一覧
+ */
 export const WorkRelatedWorkList = () => {
   return (
     <div className="pb-4">

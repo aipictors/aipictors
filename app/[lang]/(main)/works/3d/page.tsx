@@ -6,6 +6,9 @@ import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
+/**
+ * リアルテイストの作品一覧画面
+ */
 const Works3dPage = async () => {
   const client = createClient()
 

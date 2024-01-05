@@ -6,6 +6,9 @@ import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
+/**
+ * イラストの作品一覧画面
+ */
 const Works2dPage = async () => {
   const client = createClient()
 

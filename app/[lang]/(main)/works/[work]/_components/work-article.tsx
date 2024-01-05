@@ -12,6 +12,9 @@ type Props = {
   work: NonNullable<WorkQuery["work"]>
 }
 
+/**
+ * 作品詳細情報
+ */
 export const WorkArticle = (props: Props) => {
   return (
     <article className="flex flex-col justify-start space-y-4">
