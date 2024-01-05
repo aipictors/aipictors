@@ -10,6 +10,9 @@ type Props = {
   createdAt: number
 }
 
+/**
+ * 作品のコメントへの返信
+ */
 export const WorkCommentResponse = (props: Props) => {
   return (
     <div className="flex items-start pl-16 space-x-2">

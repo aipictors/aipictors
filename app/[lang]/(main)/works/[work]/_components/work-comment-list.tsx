@@ -14,6 +14,9 @@ type Props = {
   work: NonNullable<WorkCommentsQuery["work"]>
 }
 
+/**
+ * 作品へのコメント一覧
+ */
 export const WorkCommentList = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 

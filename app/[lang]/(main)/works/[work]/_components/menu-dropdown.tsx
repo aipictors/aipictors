@@ -15,6 +15,9 @@ type Props = {
   onClose(): void
 }
 
+/**
+ * 作品への報告、画像ダウンロードのメニュー
+ */
 export const MenuDropdown = (props: Props) => {
   const {
     value: isReportOpen,

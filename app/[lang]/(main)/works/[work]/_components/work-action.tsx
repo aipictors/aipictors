@@ -10,6 +10,9 @@ type Props = {
   workLikesCount: number
 }
 
+/**
+ * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
+ */
 export const WorkAction = (props: Props) => {
   const {
     value: isMenuOpen,
