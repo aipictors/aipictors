@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const POPULAR_WORKS = gql`
+export default gql`
   query PopularWorks {
     popularWorks(where: {}) {
       ...PartialWorkFields

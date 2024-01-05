@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const WORK_COMMENTS = gql`
+export default gql`
   query WorkComments($workId: ID!) {
     work(id: $workId) {
       id
