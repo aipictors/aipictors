@@ -3,6 +3,3 @@
 
 # pre-commit時にrefactor
 pnpm run refactor
-
-# pre-push時にlintとcheck
-pnpm dlx husky add .husky/pre-push "pnpm run check && pnpm run lint"
