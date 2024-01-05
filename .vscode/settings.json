@@ -35,6 +35,7 @@
     ".firebase": true,
     ".idea": true,
     ".next": true,
+    ".vitepress/cache": true,
     ".yarn": true,
     "__generated__": true,
     "dist": true,
