@@ -103,17 +103,19 @@ export const GenerationEditorHistory = (props: Props) => {
         <Separator />
         <ScrollArea>
           <div className="p-2 grid gap-2 grid-cols-1 md:grid-cols-2">
-            {props.tasks?.map((task) => (
-              <GenerationHistoryCard
-                key={task.id}
-                taskId={task.id}
-                token={task.token}
-                onClick={() => {
-                  selectHistory(task.id)
-                  onOpen()
-                }}
-              />
-            ))}
+            {props.tasks
+              ?.filter((task) => !task.isDeleted)
+              .map((task) => (
+                <GenerationHistoryCard
+                  key={task.id}
+                  taskId={task.id}
+                  token={task.token}
+                  onClick={() => {
+                    selectHistory(task.id)
+                    onOpen()
+                  }}
+                />
+              ))}
           </div>
         </ScrollArea>
       </GenerationEditorCard>

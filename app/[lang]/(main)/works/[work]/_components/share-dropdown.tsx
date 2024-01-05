@@ -14,6 +14,9 @@ type Props = {
   onClose(): void
 }
 
+/**
+ * 作品のシェアメニュー
+ */
 export const ShareDropdown = (props: Props) => {
   return (
     <DropdownMenu

@@ -25,6 +25,9 @@ type Props = {
   onClose(): void
 }
 
+/**
+ * 作品の報告ダイアログ
+ */
 export const ReportDialog = (props: Props) => {
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>

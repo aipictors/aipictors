@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const BEST_WORKS = gql`
+export default gql`
   query BestWorks {
     bestWorks(where: {}) {
       ...PartialWorkFields

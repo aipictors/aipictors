@@ -12,6 +12,9 @@ type Props = {
   userWorksCount: number
 }
 
+/**
+ * 作品へ投稿しているユーザの投稿数、フォロワ数、フォローするボタン等の情報
+ */
 export const WorkUser = (props: Props) => {
   return (
     <Card>

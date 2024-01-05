@@ -6,6 +6,9 @@ type Props = {
   imageHeight?: number
 }
 
+/**
+ * 作品の画像
+ */
 export const WorkCard = (props: Props) => {
   return (
     <Image

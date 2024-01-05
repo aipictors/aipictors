@@ -1,3 +1,6 @@
+# VitePress
+/.vitepress/cache
+
 # Env
 .env.local
 

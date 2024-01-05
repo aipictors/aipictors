@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const HOT_WORKS = gql`
+export default gql`
   query HotWorks {
     hotWorks {
       ...PartialWorkFields
