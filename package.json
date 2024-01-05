@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "check": "tsc --noEmit",
     "analyze": "ANALYZE=true next build",
-    "refactor": "biome check --apply-unsafe app graphql && biome format --write app",
+    "refactor": "biome check --apply-unsafe app graphql && biome format --write app graphql",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "preinstall": "npx only-allow pnpm",
