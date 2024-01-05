@@ -11,12 +11,20 @@ type Props = {
  */
 export const WorkCard = (props: Props) => {
   return (
-    <Image
-      className="w-full h-auto object-cover rounded"
-      alt=""
-      src={props.imageURL}
-      width={props.imageWith}
-      height={props.imageHeight}
-    />
+    <div className="relative">
+      {props.imageURL ? (
+        <Image
+          className="w-full h-auto object-cover rounded"
+          alt=""
+          src={props.imageURL}
+          width={props.imageWith}
+          height={props.imageHeight}
+        />
+      ) : (
+        <div className="w-full h-auto object-cover rounded">
+          Image Not Found
+        </div>
+      )}
+    </div>
   )
 }
