@@ -9,6 +9,9 @@ type Props = {
   createdAt: number
 }
 
+/**
+ * 作品へのコメント
+ */
 export const WorkComment = (props: Props) => {
   return (
     <div className="flex items-start space-x-2">
