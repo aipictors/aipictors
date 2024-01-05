@@ -19,18 +19,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v1
+      - uses: pnpm/action-setup@v2
         with:
-          bun-version: latest
+          version: 8
 
       - name: Install
-        run: time bun install
+        run: time pnpm install
       
       - name: Prebuild
-        run: time bun run prebuild
+        run: time pnpm run prebuild
       
       - name: Run Type Cheking
-        run: time bun run check
+        run: time pnpm run check
       
       - name: Run Test
-        run: time bun run test
+        run: time pnpm run test
