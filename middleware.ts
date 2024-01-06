@@ -13,6 +13,7 @@ export const middleware = (request: NextRequest) => {
     ".svg",
     ".svg",
     ".woff2",
+    ".webp",
   ]
 
   for (const path of extensions) {
