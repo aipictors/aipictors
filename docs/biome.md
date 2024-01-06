@@ -14,7 +14,7 @@ https://marketplace.visualstudio.com/items?itemName=biomejs.biome
 こちらのコマンドで全てのファイルを整形します。
 
 ```ts
-$ npm run refactor
+$ pnpm run refactor
 ```
 
 設定は[こちら](../biome.json)のファイルに記載されます。

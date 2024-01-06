@@ -17,20 +17,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Install
-        run: npm install
+        run: time pnpm install
+      
       - name: Prebuild
-        run: npm run prebuild
+        run: time pnpm run prebuild
+      
       - name: Run Type Cheking
-        run: npm run check
+        run: time pnpm run check
+      
       - name: Run Test
-        run: npm run test
+        run: time pnpm run test

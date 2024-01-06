@@ -16,7 +16,8 @@
     "build-storybook": "storybook build",
     "docs": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@apollo/client": "^3.8.8",
