@@ -21,7 +21,7 @@ export const UserWorkList = (props: Props) => {
           <Link key={work.id} href={`/works/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}
-              imageWith={work.largeThumbnailImageWith}
+              imageWidth={work.largeThumbnailImageWidth}
               imageHeight={work.largeThumbnailImageHeight}
             />
           </Link>

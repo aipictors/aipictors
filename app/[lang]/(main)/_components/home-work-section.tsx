@@ -45,7 +45,7 @@ export const HomeWorkSection = (props: Props) => {
             <Link href={`/works/${work.id}`}>
               <WorkCard
                 imageURL={work.largeThumbnailImageURL}
-                imageWith={work.largeThumbnailImageWith}
+                imageWidth={work.largeThumbnailImageWidth}
                 imageHeight={work.largeThumbnailImageHeight}
               />
             </Link>

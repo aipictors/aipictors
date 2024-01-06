@@ -2,7 +2,7 @@ import Image from "next/image"
 
 type Props = {
   imageURL?: string
-  imageWith?: number
+  imageWidth?: number
   imageHeight?: number
 }
 
@@ -17,7 +17,7 @@ export const WorkCard = (props: Props) => {
           className="w-full h-auto object-cover rounded"
           alt=""
           src={props.imageURL}
-          width={props.imageWith}
+          width={props.imageWidth}
           height={props.imageHeight}
         />
       ) : (

@@ -9,6 +9,6 @@ export default gql`
     createdAt
     largeThumbnailImageURL
     largeThumbnailImageHeight
-    largeThumbnailImageWith
+    largeThumbnailImageWidth
   }
 `
