@@ -1,5 +1,9 @@
+import Image from "next/image"
+
 type Props = {
   imageURL?: string
+  imageWidth?: number
+  imageHeight?: number
 }
 
 /**
@@ -7,10 +11,20 @@ type Props = {
  */
 export const WorkCard = (props: Props) => {
   return (
-    <img
-      className="w-full h-full object-cover rounded"
-      alt=""
-      src={props.imageURL}
-    />
+    <div className="relative">
+      {props.imageURL ? (
+        <Image
+          className="w-full h-auto object-cover rounded"
+          alt=""
+          src={props.imageURL}
+          width={props.imageWidth}
+          height={props.imageHeight}
+        />
+      ) : (
+        <div className="w-full h-auto object-cover rounded">
+          Image Not Found
+        </div>
+      )}
+    </div>
   )
 }

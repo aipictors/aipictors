@@ -42,7 +42,11 @@ export const HomeWorkSection = (props: Props) => {
       <ul className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 w-full">
         {props.works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.largeThumbnailImageURL} />
+              <WorkCard
+                imageURL={work.largeThumbnailImageURL}
+                imageWidth={work.largeThumbnailImageWidth}
+                imageHeight={work.largeThumbnailImageHeight}
+              />
           </Link>
         ))}
       </ul>
