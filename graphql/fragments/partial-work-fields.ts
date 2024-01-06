@@ -8,5 +8,7 @@ export default gql`
     commentsCount
     createdAt
     largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
   }
 `

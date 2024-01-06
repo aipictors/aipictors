@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const WORK = gql`
   query Work($id: ID!) {
     work(id: $id) {
       id
@@ -18,6 +18,8 @@ export default gql`
         works(offset: 0, limit: 16) {
           id
           largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
         }
       }
       dailyTheme {
