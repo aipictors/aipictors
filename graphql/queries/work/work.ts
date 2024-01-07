@@ -18,6 +18,8 @@ export default gql`
         works(offset: 0, limit: 16) {
           id
           largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
         }
       }
       dailyTheme {
