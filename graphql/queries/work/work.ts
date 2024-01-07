@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export const WORK = gql`
+export default = gql`
   query Work($id: ID!) {
     work(id: $id) {
       id
