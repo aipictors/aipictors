@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default = gql`
+export default gql`
   query Work($id: ID!) {
     work(id: $id) {
       id
