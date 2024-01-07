@@ -1,4 +1,5 @@
 {
+  "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
   "formatter": {
     "indentStyle": "space"
   },
@@ -25,6 +26,13 @@
     }
   },
   "files": {
-    "ignore": [".next", "node_modules", "@/__generated__"]
+    "include": ["**/*.{ts,tsx,js,jsx,cjs,mjs,json,md,toml,html,graphql,yml}"],
+    "ignore": [
+      ".next",
+      "node_modules",
+      "@/__generated__",
+      "package-lock.{json, yaml}",
+      "storybook-static"
+    ]
   }
 }
