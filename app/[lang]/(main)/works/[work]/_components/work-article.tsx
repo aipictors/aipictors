@@ -63,7 +63,7 @@ export const WorkArticle = (props: Props) => {
         {props.work.user.works.map((work) => (
           <img
             key={work.id}
-            className="h-32 w-32 rounded"
+            className="h-32 w-auto rounded"
             alt=""
             src={work.largeThumbnailImageURL}
           />
