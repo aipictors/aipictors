@@ -9,19 +9,19 @@
 必要なモジュールを取得する。
 
 ```bash
-$ npm install
+$ pnpm install
 ```
 
 GraphQLのコードをビルドする。
 
 ```bash
-$ npm run prebuild
+$ pnpm run prebuild
 ```
 
 開発サーバーを起動する。
 
 ```bash
-$ npm run dev
+$ pnpm run dev
 ```
 
 ## その他

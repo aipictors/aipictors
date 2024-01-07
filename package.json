@@ -18,7 +18,8 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
     "prepare": "husky install",
-    "lint": "biome lint app graphql"
+    "lint": "biome lint app graphql",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@apollo/client": "^3.8.8",
