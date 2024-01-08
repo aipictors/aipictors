@@ -1,5 +1,17 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import Image from "next/image"
+
 type Props = {
   imageURL?: string
+  imageWidth?: number
+  imageHeight?: number
 }
 
 /**
@@ -7,10 +19,20 @@ type Props = {
  */
 export const WorkCard = (props: Props) => {
   return (
-    <img
-      className="w-full h-full object-cover rounded"
-      alt=""
-      src={props.imageURL}
-    />
+    <Card>
+      {props.imageURL ? (
+        <Image
+          className="w-full sm:h-auto md:h-64 xl:h-96 object-cover rounded-lg"
+          alt=""
+          src={props.imageURL}
+          width={props.imageWidth}
+          height={props.imageHeight}
+        />
+      ) : (
+        <div className="w-full sm:h-auto md:h-64 xl:h-96 object-cover rounded-lg">
+          Image Not Found
+        </div>
+      )}
+    </Card>
   )
 }
