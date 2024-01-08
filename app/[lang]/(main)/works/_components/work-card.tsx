@@ -19,7 +19,7 @@ type Props = {
  */
 export const WorkCard = (props: Props) => {
   return (
-    <Card>
+    <>
       {props.imageURL ? (
         <Image
           className="w-full sm:h-auto md:h-64 xl:h-96 object-cover rounded-lg"
@@ -33,6 +33,6 @@ export const WorkCard = (props: Props) => {
           Image Not Found
         </div>
       )}
-    </Card>
+    </>
   )
 }

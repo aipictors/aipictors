@@ -4,10 +4,12 @@ import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { StampDialog } from "@/app/[lang]/(main)/works/[work]/_components/stamp-dialog"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { AppContext } from "@/app/_contexts/app-context"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Stamp } from "lucide-react"
+import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -19,6 +21,7 @@ type Props = {
  */
 export const WorkCommentList = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+  const appContext = useContext(AppContext)
 
   return (
     <>
@@ -26,10 +29,8 @@ export const WorkCommentList = (props: Props) => {
         <p>{"コメント"}</p>
         <div className="flex items-center space-x-2 w-full">
           <Avatar>
-            <AvatarImage
-              src="https://github.com/shadcn.png"
-              alt="自分のアバターアイコン"
-            />
+            <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
+            <AvatarFallback />
           </Avatar>
           <Input type="text" placeholder="コメントする" className="flex-1" />
           <Button size={"icon"} onClick={onOpen}>

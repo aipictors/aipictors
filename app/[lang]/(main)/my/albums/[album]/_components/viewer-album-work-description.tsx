@@ -1,7 +1,7 @@
 "use client"
 
 import { DescriptionSettingDialog } from "@/app/[lang]/(main)/my/albums/[album]/_components/description-setting-dialog"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Settings } from "lucide-react"
@@ -19,6 +19,7 @@ export const ViewerAlbumWorkDescription = () => {
               <div className="flex">
                 <Avatar>
                   <AvatarImage src="https://bit.ly/broken-link" />
+                  <AvatarFallback />
                 </Avatar>
                 <p>{"name"}</p>
               </div>

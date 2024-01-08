@@ -2,7 +2,7 @@
 
 import { AlbumQuery } from "@/__generated__/apollo"
 import { FollowButton } from "@/app/_components/button/follow-button"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { AvatarImage } from "@radix-ui/react-avatar"
 
@@ -21,6 +21,7 @@ export const AlbumWorkDescription = (props: Props) => {
                 src={props.albumQuery.album?.thumbnailImage?.downloadURL ?? ""}
                 alt={props.albumQuery.album?.title}
               />
+              <AvatarFallback />
             </Avatar>
             <p>{props.albumQuery.album?.user.name}</p>
           </div>

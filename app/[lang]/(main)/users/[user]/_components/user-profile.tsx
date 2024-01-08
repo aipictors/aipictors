@@ -9,7 +9,7 @@ import { LinkWebButton } from "@/app/_components/button/link-web-button"
 import { ShareButton } from "@/app/_components/button/share-button"
 import { SocialInstagramButton } from "@/app/_components/button/social-instagram-button"
 import { SocialTwitterButton } from "@/app/_components/button/social-twitter-button"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { Award, Eye, Heart, Medal, User } from "lucide-react"
 
@@ -33,6 +33,7 @@ export const UserProfile = (props: Props) => {
     <div className="flex flex-col">
       <Avatar>
         <AvatarImage alt={props.userName} src={props.userIconImageURL ?? ""} />
+        <AvatarFallback />
       </Avatar>
       <div className="flex">
         <span className="font-bold text-lg">{props.userName}</span>

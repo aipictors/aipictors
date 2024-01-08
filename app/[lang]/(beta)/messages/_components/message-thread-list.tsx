@@ -50,7 +50,7 @@ export const MessageThreadList = () => {
                     <AvatarImage
                       src={messageThread.recipient.iconImage?.downloadURL}
                     />
-                    <AvatarFallback>{"-"}</AvatarFallback>
+                    <AvatarFallback />
                   </Avatar>
                   <span className="whitespace-pre-wrap break-words">
                     {messageThread.recipient.name}
