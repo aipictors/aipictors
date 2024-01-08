@@ -1,7 +1,7 @@
 "use client"
 
 import { MenuDropdown } from "@/app/[lang]/(main)/works/[work]/_components/menu-dropdown"
-import { ShareDropdown } from "@/app/[lang]/(main)/works/[work]/_components/share-dropdown"
+import SharePopOver from "@/app/[lang]/(main)/works/[work]/_components/share-popover"
 import { Button } from "@/components/ui/button"
 import { Folder, Heart, MoreHorizontal, Share } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
@@ -46,16 +46,13 @@ export const WorkAction = (props: Props) => {
           <Button aria-label={"フォルダに追加"} size={"icon"}>
             <Folder />
           </Button>
-          <Button aria-label={"シェア"} size={"icon"} onClick={onShareOpen}>
-            <Share />
-          </Button>
+          <SharePopOver />
           <Button aria-label={"メニュー"} size={"icon"} onClick={onMenuOpen}>
             <MoreHorizontal />
           </Button>
         </div>
       </div>
       <MenuDropdown isOpen={isMenuOpen} onClose={onMenuClose} />
-      <ShareDropdown isOpen={isShareOpen} onClose={onShareClose} />
     </>
   )
 }
