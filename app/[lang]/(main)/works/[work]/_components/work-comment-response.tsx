@@ -1,5 +1,5 @@
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { AvatarImage } from "@/components/ui/avatar"
+import { AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Avatar } from "@radix-ui/react-avatar"
 
 type Props = {
@@ -22,6 +22,7 @@ export const WorkCommentResponse = (props: Props) => {
           src={props.userIconImageURL}
           alt=""
         />
+        <AvatarFallback />
       </Avatar>
       <div className="space-y-0">
         <p>{props.userName}</p>

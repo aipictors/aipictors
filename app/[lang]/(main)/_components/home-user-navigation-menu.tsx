@@ -33,7 +33,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         <Button className="rounded-full flex" size={"icon"}>
           <Avatar>
             <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />
-            <AvatarFallback>{"U"}</AvatarFallback>
+            <AvatarFallback />
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
