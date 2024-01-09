@@ -43,5 +43,5 @@ pre-commit:
 
 pre-push:
   commands:
-    tsc:
-      run: pnpm run check
+    refactor:
+      run: pnpm run refactor && pnpm run check

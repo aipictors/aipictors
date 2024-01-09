@@ -140,9 +140,6 @@ dependencies:
   graphql:
     specifier: ^16.8.1
     version: 16.8.1
-  lefthook:
-    specifier: ^1.5.5
-    version: 1.5.5
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -268,6 +265,9 @@ devDependencies:
   '@types/react-dom':
     specifier: 18.2.18
     version: 18.2.18
+  lefthook:
+    specifier: ^1.5.5
+    version: 1.5.5
   storybook:
     specifier: ^7.6.7
     version: 7.6.7
@@ -11283,7 +11283,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-darwin-x64@1.5.5:
@@ -11291,7 +11291,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-freebsd-arm64@1.5.5:
@@ -11299,7 +11299,7 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-freebsd-x64@1.5.5:
@@ -11307,7 +11307,7 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-linux-arm64@1.5.5:
@@ -11315,7 +11315,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-linux-x64@1.5.5:
@@ -11323,7 +11323,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-windows-arm64@1.5.5:
@@ -11331,7 +11331,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook-windows-x64@1.5.5:
@@ -11339,7 +11339,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: false
+    dev: true
     optional: true
 
   /lefthook@1.5.5:
@@ -11355,7 +11355,7 @@ packages:
       lefthook-linux-x64: 1.5.5
       lefthook-windows-arm64: 1.5.5
       lefthook-windows-x64: 1.5.5
-    dev: false
+    dev: true
 
   /leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
