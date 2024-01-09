@@ -10,17 +10,16 @@ steps:
       - "IS_PRODUCTION=$_IS_PRODUCTION"
       - "TRIGGER_ID=$_TRIGGER_ID"
     id: Env
-  - name: gcr.io/cloud-builders/docker
+  - name: gcr.io/k8s-skaffold/pack
     args:
       - build
-      - "--no-cache"
-      - "-t"
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
-      - .
-      - "-f"
-      - Dockerfile
-    id: Build
+      - "--builder=gcr.io/buildpacks/builder:v1"
+      - "--network=cloudbuild"
+      - "--path=."
+    id: Buildpack
+    entrypoint: pack
   - name: gcr.io/cloud-builders/docker
     args:
       - push

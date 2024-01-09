@@ -29,7 +29,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button className="rounded-full flex" size={"icon"}>
           <Avatar>
             <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />

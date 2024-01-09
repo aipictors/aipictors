@@ -67,6 +67,10 @@ export const metadata: Metadata = {
   title: "-",
 }
 
+export const generateStaticParams = () => {
+  return []
+}
+
 export const revalidate = 60
 
 export default WorkPage

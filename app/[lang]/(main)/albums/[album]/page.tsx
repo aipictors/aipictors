@@ -5,7 +5,6 @@ import type {
   AlbumWorksQueryVariables,
 } from "@/__generated__/apollo"
 import { AlbumDocument, AlbumWorksDocument } from "@/__generated__/apollo"
-
 import { AlbumArticleHeader } from "@/app/[lang]/(main)/albums/[album]/_components/album-article-header"
 import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-description"
 import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
@@ -61,6 +60,10 @@ const AlbumPage = async (props: Props) => {
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
+}
+
+export const generateStaticParams = () => {
+  return []
 }
 
 export const revalidate = 60

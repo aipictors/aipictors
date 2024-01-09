@@ -40,7 +40,8 @@
     "__generated__": true,
     "dist": true,
     "next-env.d.ts": true,
-    "package-lock.json": true
+    "package-lock.json": true,
+    "pnpm-lock.yaml": true
   },
   "search.exclude": {
     "*.lock": true,

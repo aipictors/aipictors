@@ -3,31 +3,16 @@ import { type NextRequest, NextResponse } from "next/server"
 export const middleware = (request: NextRequest) => {
   const pathname = request.nextUrl.pathname
 
-  const extensions = [
-    ".css",
-    ".ico",
-    ".jpg",
-    ".js",
-    ".json",
-    ".png",
-    ".svg",
-    ".svg",
-    ".woff2",
-    ".webp",
-  ]
-
-  for (const path of extensions) {
-    if (pathname.endsWith(path)) return
-  }
-
-  if (pathname.startsWith("_next")) return
-
   // サイトマップ
   if (pathname === "/sitemap.xml") {
     const pageURL =
       "https://subgraph-aipictors-6ouzjmdzha-an.a.run.app/sitemap.xml"
     return NextResponse.redirect(pageURL)
   }
+
+  if (pathname.includes(".")) return
+
+  if (pathname.startsWith("_")) return
 
   // パスに「ja」が含まれる場合はリダイレクトする
   if (pathname.startsWith("/ja")) {
