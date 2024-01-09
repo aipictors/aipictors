@@ -6,10 +6,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { RiFileCopyLine, RiShareFill, RiTwitterXLine } from "react-icons/ri"
+import { usePathname } from "next/navigation"
+import { RiFileCopyLine, RiShareFill } from "react-icons/ri"
 import { toast } from "sonner"
+import { XIntent } from "./share-on-x"
 
-export default function Component() {
+type Props = {
+  title?: string
+}
+
+export const SharePopover = (props: Props) => {
+  const currentUrl = `https://www.aipictors.com${usePathname()}`
+
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl)
+      toast("URLがクリップボードにコピーされました。")
+    } catch (err) {
+      toast("URLのコピーに失敗しました。")
+      console.error(err)
+    }
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,23 +44,16 @@ export default function Component() {
             <Button
               className="flex items-center gap-2"
               variant="outline"
-              onClick={async () => {
-                try {
-                  const currentUrl = window.location.href
-                  await navigator.clipboard.writeText(currentUrl)
-                  toast("URLがクリップボードにコピーされました。")
-                } catch (err) {
-                  toast("URLのコピーに失敗しました。")
-                }
-              }}
+              onClick={handleCopyUrl}
             >
               <RiFileCopyLine />
               Copy URL
             </Button>
-            <Button className="flex items-center gap-2" variant="outline">
-              <RiTwitterXLine />
-              Share on Twitter
-            </Button>
+            <XIntent
+              text={`${props.title}\n`}
+              url={`${currentUrl}\n`}
+              hashtags={["Aipictors", "AIIllust"]}
+            />
           </div>
         </div>
       </PopoverContent>
