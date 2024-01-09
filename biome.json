@@ -1,9 +1,11 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.5.0/schema.json",
   "formatter": {
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "indentStyle": "space"
   },
   "linter": {
+    "include": ["app/*.{ts,tsx}"],
     "rules": {
       "recommended": true,
       "correctness": {
@@ -26,13 +28,13 @@
     }
   },
   "files": {
-    "include": ["**/*.{ts,tsx,js,jsx,cjs,mjs,json,md,toml,html,graphql,yml}"],
     "ignore": [
       ".next",
       "node_modules",
       "@/__generated__",
-      "package-lock.{json, yaml}",
-      "storybook-static"
+      "storybook-static",
+      "public",
+      "**/*.{yml,yaml,mdx,md,svg,ico}"
     ]
   },
   "vcs": {
