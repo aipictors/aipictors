@@ -17,9 +17,9 @@
     "docs": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "prepare": "husky install",
     "lint": "biome lint app graphql",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "lefthook install"
   },
   "dependencies": {
     "@apollo/client": "^3.8.8",
@@ -106,7 +106,7 @@
     "@types/node": "20.10.6",
     "@types/react": "18.2.46",
     "@types/react-dom": "18.2.18",
-    "husky": "^8.0.0",
+    "lefthook": "^1.5.5",
     "storybook": "^7.6.7",
     "typescript": "5.3.3",
     "vitepress": "^1.0.0-rc.35"
