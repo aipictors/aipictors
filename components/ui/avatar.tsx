@@ -1,9 +1,8 @@
 "use client"
 
-import * as AvatarPrimitive from "@radix-ui/react-avatar"
 import * as React from "react"
+import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
-import { getNoProfileImgUrl } from "@/app/_utils/get-url"
 import { cn } from "@/lib/utils"
 
 const Avatar = React.forwardRef<
@@ -44,13 +43,7 @@ const AvatarFallback = React.forwardRef<
       className,
     )}
     {...props}
-  >
-    {props.children ? (
-      props.children
-    ) : (
-      <img src={getNoProfileImgUrl()} alt="" />
-    )}
-  </AvatarPrimitive.Fallback>
+  />
 ))
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
