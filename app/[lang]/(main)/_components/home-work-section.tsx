@@ -1,3 +1,5 @@
+"use client"
+
 import type { WorksQuery } from "@/__generated__/apollo"
 import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import { Button } from "@/components/ui/button"
@@ -15,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
+import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import Link from "next/link"
 
 type Props = {
@@ -47,6 +50,7 @@ export const HomeWorkSection = (props: Props) => {
         </Button>
       </div>
       <Carousel
+        plugins={[WheelGesturesPlugin()]}
         opts={{
           align: "start",
           loop: true,
