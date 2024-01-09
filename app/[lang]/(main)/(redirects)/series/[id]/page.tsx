@@ -10,4 +10,8 @@ const Page = async (props: Props) => {
   redirect(`/albums/${props.params.id}`, RedirectType.replace)
 }
 
+export const generateStaticParams = () => {
+  return []
+}
+
 export default Page

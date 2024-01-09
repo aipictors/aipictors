@@ -35,6 +35,10 @@ const UserPage = async (props: Props) => {
   )
 }
 
+export const generateStaticParams = () => {
+  return []
+}
+
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
