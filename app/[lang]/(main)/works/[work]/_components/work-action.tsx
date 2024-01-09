@@ -1,7 +1,6 @@
 "use client"
 
-import { MenuDropdown } from "@/app/[lang]/(main)/works/[work]/_components/menu-dropdown"
-import SharePopOver from "@/app/[lang]/(main)/works/[work]/_components/share-popover"
+import SharePopover from "@/app/[lang]/(main)/works/[work]/_components/share-popover"
 import { Button } from "@/components/ui/button"
 import { Folder, Heart, MoreHorizontal, Share } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
@@ -14,18 +13,6 @@ type Props = {
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
 export const WorkAction = (props: Props) => {
-  const {
-    value: isMenuOpen,
-    setTrue: onMenuOpen,
-    setFalse: onMenuClose,
-  } = useBoolean()
-
-  const {
-    value: isShareOpen,
-    setTrue: onShareOpen,
-    setFalse: onShareClose,
-  } = useBoolean()
-
   return (
     <>
       <div className="flex justify-end">
@@ -46,13 +33,9 @@ export const WorkAction = (props: Props) => {
           <Button aria-label={"フォルダに追加"} size={"icon"}>
             <Folder />
           </Button>
-          <SharePopOver />
-          <Button aria-label={"メニュー"} size={"icon"} onClick={onMenuOpen}>
-            <MoreHorizontal />
-          </Button>
+          <SharePopover />
         </div>
       </div>
-      <MenuDropdown isOpen={isMenuOpen} onClose={onMenuClose} />
     </>
   )
 }

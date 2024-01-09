@@ -6,25 +6,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useSearchParams } from "next/navigation"
-import {
-  RiFacebookLine,
-  RiFileCopyLine,
-  RiShareFill,
-  RiTwitterXLine,
-} from "react-icons/ri"
+import { RiFileCopyLine, RiShareFill, RiTwitterXLine } from "react-icons/ri"
+import { toast } from "sonner"
 
 export default function Component() {
-  const handleCopyUrl = async () => {
-    try {
-      const currentUrl = window.location.href
-      await navigator.clipboard.writeText(currentUrl)
-      alert("URLがコピーされました")
-    } catch (err) {
-      console.error("URLのコピーに失敗しました", err)
-    }
-  }
-
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -35,13 +20,21 @@ export default function Component() {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">このイラストを共有する</h4>
+            <h4 className="font-medium leading-none">イラストを共有する</h4>
           </div>
           <div className="grid gap-2">
             <Button
               className="flex items-center gap-2"
               variant="outline"
-              onClick={handleCopyUrl}
+              onClick={async () => {
+                try {
+                  const currentUrl = window.location.href
+                  await navigator.clipboard.writeText(currentUrl)
+                  toast("URLがクリップボードにコピーされました。")
+                } catch (err) {
+                  toast("URLのコピーに失敗しました。")
+                }
+              }}
             >
               <RiFileCopyLine />
               Copy URL
@@ -49,10 +42,6 @@ export default function Component() {
             <Button className="flex items-center gap-2" variant="outline">
               <RiTwitterXLine />
               Share on Twitter
-            </Button>
-            <Button className="flex items-center gap-2" variant="outline">
-              <RiFacebookLine />
-              Share on Facebook
             </Button>
           </div>
         </div>
