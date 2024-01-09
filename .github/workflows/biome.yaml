@@ -12,8 +12,11 @@ on:
     paths:
       - "app/**/*"
 
+permissions:
+  pull-requests: write
+
 jobs:
-  run:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,6 +24,6 @@ jobs:
       - name: Setup Biome
         uses: biomejs/setup-biome@v1
         with:
-          version: 1.4.1
+          version: latest
       - name: Run Biome
         run: biome ci .

@@ -34,5 +34,10 @@
       "package-lock.{json, yaml}",
       "storybook-static"
     ]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "defaultBranch": "main"
   }
 }
