@@ -10,6 +10,11 @@ steps:
       - "IS_PRODUCTION=$_IS_PRODUCTION"
       - "TRIGGER_ID=$_TRIGGER_ID"
     id: Env
+  - name: bash
+    script: |
+      #!/usr/bin/env bash
+      sed -i 's/lefthook install/echo/g' package.json
+    id: PostInstall
   - name: gcr.io/k8s-skaffold/pack
     args:
       - build
