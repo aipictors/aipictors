@@ -6,19 +6,12 @@ import { Toaster } from "@/components/ui/sonner"
 import { Config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
-import { Noto_Sans_JP } from "next/font/google"
 import Script from "next/script"
+import { notoSansJp } from "./font"
 
 type Props = {
   children: React.ReactNode
 }
-
-const notoSansJp = Noto_Sans_JP({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-  preload: false,
-})
 
 const RootLayout = (props: Props) => {
   return (
