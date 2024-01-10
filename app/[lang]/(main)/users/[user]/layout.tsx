@@ -54,7 +54,7 @@ const UserLayout = async (props: Props) => {
                 receivedViewsCount={userQuery.data.user.receivedViewsCount}
                 awardsCount={userQuery.data.user.awardsCount}
                 followersCount={userQuery.data.user.followersCount}
-                biography={userQuery.data.user.biography || ""} // nullの場合は空文字列に設定
+                biography={userQuery.data.user.biography || ""}
               />
             </div>
             <FollowButton />
