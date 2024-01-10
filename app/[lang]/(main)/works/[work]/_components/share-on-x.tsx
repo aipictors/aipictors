@@ -40,7 +40,7 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
           {...intrinsicProps}
         >
           <RiTwitterXLine />
-          Share on Twitter
+          Xで共有する
         </a>
       </Button>
     )

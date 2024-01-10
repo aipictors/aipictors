@@ -1,53 +1,37 @@
 "use client"
 
-import { ReportDialog } from "@/app/[lang]/(main)/works/[work]/_components/report-dialog"
+import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Download, Flag } from "lucide-react"
-import { useBoolean } from "usehooks-ts"
-
-type Props = {
-  isOpen: boolean
-  onClose(): void
-}
+import { RiMoreFill } from "react-icons/ri"
+import ReportDialog from "./report-dialog"
 
 /**
  * 作品への報告、画像ダウンロードのメニュー
  */
-export const MenuDropdown = (props: Props) => {
-  const {
-    value: isReportOpen,
-    setTrue: onReportOpen,
-    setFalse: onReportClose,
-  } = useBoolean()
-
+export default function MenuPopover() {
   return (
-    <>
-      <DropdownMenu
-        onOpenChange={(isOpen) => {
-          if (!isOpen) {
-            props.onClose()
-          }
-        }}
-        open={props.isOpen}
-      >
-        <DropdownMenuTrigger />
-        <DropdownMenuContent>
-          <DropdownMenuItem className=" space-x-2 " onClick={onReportOpen}>
-            <Flag />
-            <span>{"報告"}</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className=" space-x-2 ">
-            <Download />
-            <span>{"PNGダウンロード"}</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <ReportDialog isOpen={isReportOpen} onClose={onReportClose} />
-    </>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant={"outline"}>
+          <RiMoreFill />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Button className="flex items-center gap-2" variant="outline">
+              <Download />
+              ダウンロード
+            </Button>
+            <ReportDialog />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
