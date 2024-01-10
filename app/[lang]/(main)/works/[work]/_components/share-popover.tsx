@@ -47,13 +47,21 @@ export const SharePopover = (props: Props) => {
               onClick={handleCopyUrl}
             >
               <RiFileCopyLine />
-              Copy URL
+              URLをコピー
             </Button>
             <XIntent
               text={`${props.title}\n`}
               url={`${currentUrl}\n`}
               hashtags={["Aipictors", "AIIllust"]}
             />
+            <Button
+              className="flex items-center gap-2"
+              variant="outline"
+              onClick={handleCopyUrl}
+            >
+              <RiFileCopyLine />
+              イラストをコピー
+            </Button>
           </div>
         </div>
       </PopoverContent>
