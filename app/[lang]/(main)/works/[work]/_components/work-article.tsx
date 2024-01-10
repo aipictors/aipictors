@@ -32,7 +32,11 @@ export const WorkArticle = (props: Props) => {
           return subWork.image.downloadURL
         })}
       />
-      <WorkAction workLikesCount={props.work.likesCount} />
+      <WorkAction
+        workLikesCount={props.work.likesCount}
+        title={props.work.title}
+        imageUrl={props.work.imageURL}
+      />
       <h1 className="text-lg font-bold">{props.work.title}</h1>
       <div className="flex flex-col space-y-2">
         <span className="text-sm">{"使用モデル名"}</span>

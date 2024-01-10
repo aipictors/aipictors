@@ -10,6 +10,7 @@ import { Config } from "@/config"
 import { Bell, Folder, Menu, Search } from "lucide-react"
 import Link from "next/link"
 import { useEffect } from "react"
+import { toast } from "sonner"
 
 type Props = {
   onLogin(): void
@@ -17,15 +18,11 @@ type Props = {
 }
 
 export const HomeHeader = (props: Props) => {
-  const { toast } = useToast()
-
   useEffect(() => {
-    toast({
-      description:
-        "こちらは開発中のページです。何らかの不具合が発生する可能性があります。",
-      duration: 60 * 4 * 1000,
+    toast("こちらは開発中のページです。", {
+      description: "予期せぬ不具合が発生する可能性があります。",
     })
-  }, [])
+  })
 
   return (
     <>
