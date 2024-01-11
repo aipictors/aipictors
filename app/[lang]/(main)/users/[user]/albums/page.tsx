@@ -25,6 +25,16 @@ const UserAlbumsPage = async (props: Props) => {
       userId: props.params.user,
     },
   })
+
+  // metadataをコンポーネント内で定義
+  const metadata: Metadata = {
+    robots: { index: false },
+    title: "-",
+  }
+
+  // revalidateをコンポーネント内で定義
+  const revalidate = 60
+
   return (
     <>
       <UserAlbumList albums={albumsQuery.data.user?.albums ?? []} />
@@ -32,11 +42,11 @@ const UserAlbumsPage = async (props: Props) => {
   )
 }
 
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "-",
-}
+// export const metadata: Metadata = {
+//   robots: { index: false },
+//   title: "-",
+// }
 
-export const revalidate = 60
+// export const revalidate = 60
 
 export default UserAlbumsPage

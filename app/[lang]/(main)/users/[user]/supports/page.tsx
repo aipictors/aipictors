@@ -18,6 +18,13 @@ const UserSupportsPage = async (props: Props) => {
     },
   })
 
+  const metadata: Metadata = {
+    robots: { index: false },
+    title: "-",
+  }
+
+  const revalidate = 60
+
   if (userQuery.data.user === null) {
     return <div>404</div>
   }
@@ -33,11 +40,11 @@ const UserSupportsPage = async (props: Props) => {
   )
 }
 
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "-",
-}
+// export const metadata: Metadata = {
+//   robots: { index: false },
+//   title: "-",
+// }
 
-export const revalidate = 60
+// export const revalidate = 60
 
 export default UserSupportsPage
