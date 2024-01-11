@@ -29,7 +29,7 @@ const UserLayout = async (props: Props) => {
   return (
     <MainPage>
       <div className="flex flex-col w-full justify-center">
-        <UserProfile userQuery={userQuery.data} />
+        <UserProfile user={userQuery.data.user} />
         <main className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={props.params} />
         </main>
