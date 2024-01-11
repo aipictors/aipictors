@@ -12,8 +12,6 @@ type Props = {
 }
 
 export const UserTabs = (props: Props) => {
-  // const userId = `${props.params.user}`
-
   const pathname = usePathname()
 
   const tabValues = [
