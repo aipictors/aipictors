@@ -3,6 +3,7 @@ import { UserDocument } from "@/__generated__/apollo"
 import { UserSupport } from "@/app/[lang]/(main)/users/[user]/supports/_components/user-support"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 type Props = {
   params: { user: string }
@@ -26,7 +27,7 @@ const UserSupportsPage = async (props: Props) => {
   const revalidate = 60
 
   if (userQuery.data.user === null) {
-    return <div>404</div>
+    return notFound
   }
 
   return (
