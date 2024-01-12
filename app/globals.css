@@ -8,48 +8,48 @@
  */
  @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --background: 220 15% 98%;  /* 淡いグレー */
+    --foreground: 220 15% 20%;  /* ダークグレー */
+    --card: 220 15% 98%;        /* 淡いグレー */
+    --card-foreground: 220 15% 20%; /* ダークグレー */
+    --popover: 220 15% 98%;     /* 淡いグレー */
+    --popover-foreground: 220 15% 20%; /* ダークグレー */
+    --primary: 204 100% 50%;    /* 明るいブルー */
+    --primary-foreground: 0 0% 100%; /* ホワイト */
+    --secondary: 39 100% 50%;   /* ビビッドオレンジ */
+    --secondary-foreground: 0 0% 100%; /* ホワイト */
+    --muted: 220 15% 85%;       /* 淡いグレー */
+    --muted-foreground: 220 15% 20%; /* ダークグレー */
+    --accent: 39 100% 50%;      /* ビビッドオレンジ */
+    --accent-foreground: 0 0% 100%; /* ホワイト */
+    --destructive: 0 100% 50%;  /* ビビッドレッド */
+    --destructive-foreground: 0 0% 100%; /* ホワイト */
+    --border: 220 15% 80%;      /* 中間のグレー */
+    --input: 220 15% 80%;       /* 中間のグレー */
+    --ring: 204 100% 50%;       /* 明るいブルー */
+    --radius: 0.3rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --background: 220 15% 20%;  /* ダークグレー */
+    --foreground: 0 0% 100%;    /* ホワイト */
+    --card: 220 15% 20%;        /* ダークグレー */
+    --card-foreground: 0 0% 100%; /* ホワイト */
+    --popover: 220 15% 20%;     /* ダークグレー */
+    --popover-foreground: 0 0% 100%; /* ホワイト */
+    --primary: 204 100% 30%;    /* 暗いブルー */
+    --primary-foreground: 0 0% 100%; /* ホワイト */
+    --secondary: 39 100% 30%;   /* 暗いオレンジ */
+    --secondary-foreground: 0 0% 100%; /* ホワイト */
+    --muted: 220 15% 35%;       /* ダークグレー */
+    --muted-foreground: 0 0% 100%; /* ホワイト */
+    --accent: 39 100% 30%;      /* 暗いオレンジ */
+    --accent-foreground: 0 0% 100%; /* ホワイト */
+    --destructive: 0 100% 30%;  /* 暗いレッド */
+    --destructive-foreground: 0 0% 100%; /* ホワイト */
+    --border: 220 15% 35%;      /* ダークグレー */
+    --input: 220 15% 35%;       /* ダークグレー */
+    --ring: 204 100% 30%;       /* 暗いブルー */
   }
 }
 
