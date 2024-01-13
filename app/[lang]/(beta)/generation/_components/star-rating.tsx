@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Star } from "lucide-react"
+import { StarIcon } from "lucide-react"
 
 type Props = {
   value: number
@@ -23,7 +23,7 @@ export const StarRating = (props: Props) => {
           props.onChange(1)
         }}
       >
-        <Star className={cn(0 < props.value && "fill-yellow-500")} />
+        <StarIcon className={cn(0 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
         aria-label={"お気に入り"}
@@ -33,7 +33,7 @@ export const StarRating = (props: Props) => {
           props.onChange(2)
         }}
       >
-        <Star className={cn(1 < props.value && "fill-yellow-500")} />
+        <StarIcon className={cn(1 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
         aria-label={"お気に入り"}
@@ -43,7 +43,7 @@ export const StarRating = (props: Props) => {
           props.onChange(3)
         }}
       >
-        <Star className={cn(2 < props.value && "fill-yellow-500")} />
+        <StarIcon className={cn(2 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
         aria-label={"お気に入り"}
@@ -53,7 +53,7 @@ export const StarRating = (props: Props) => {
           props.onChange(4)
         }}
       >
-        <Star className={cn(3 < props.value && "fill-yellow-500")} />
+        <StarIcon className={cn(3 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
         aria-label={"お気に入り"}
@@ -63,7 +63,7 @@ export const StarRating = (props: Props) => {
           props.onChange(5)
         }}
       >
-        <Star className={cn(4 < props.value && "fill-yellow-500")} />
+        <StarIcon className={cn(4 < props.value && "fill-yellow-500")} />
       </Button>
     </div>
   )

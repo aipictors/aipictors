@@ -8,7 +8,7 @@ import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Stamp } from "lucide-react"
+import { StampIcon } from "lucide-react"
 import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -34,7 +34,7 @@ export const WorkCommentList = (props: Props) => {
           </Avatar>
           <Input type="text" placeholder="コメントする" className="flex-1" />
           <Button size={"icon"} onClick={onOpen}>
-            <Stamp />
+            <StampIcon />
           </Button>
           <Button>{"投稿"}</Button>
         </div>

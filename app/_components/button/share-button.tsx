@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Share } from "lucide-react"
+import { ShareIcon } from "lucide-react"
 
 /**
  * 共有
@@ -8,7 +8,7 @@ import { Share } from "lucide-react"
 export const ShareButton = () => {
   return (
     <Button aria-label="share" size={"icon"}>
-      <Share />
+      <ShareIcon />
     </Button>
   )
 }

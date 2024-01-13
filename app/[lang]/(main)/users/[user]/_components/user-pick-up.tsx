@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { Plus } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 
 export const UserPickUp = () => {
   return (
@@ -14,7 +14,7 @@ export const UserPickUp = () => {
       </div>
       <div className="flex justify-start">
         <Button aria-label={"追加"} size={"icon"}>
-          <Plus />
+          <PlusIcon />
         </Button>
       </div>
     </div>

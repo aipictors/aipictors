@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
-import { Plus } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 
 type Props = {
   isOpen: boolean
@@ -30,7 +30,7 @@ export const StampDialog = (props: Props) => {
           <Button />
           <Button />
           <Button>
-            <Plus />
+            <PlusIcon />
           </Button>
         </div>
         <DialogFooter>

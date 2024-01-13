@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@/components/ui/button"
-import { Mail } from "lucide-react"
+import { MailIcon } from "lucide-react"
 
 type Props = ButtonProps
 
@@ -11,7 +11,7 @@ type Props = ButtonProps
 export const LinkEmailButton = (props: Props) => {
   return (
     <Button aria-label={"email"} size={"icon"} {...props}>
-      <Mail />
+      <MailIcon />
     </Button>
   )
 }

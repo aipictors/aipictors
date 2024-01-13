@@ -4,7 +4,14 @@ import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navig
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
-import { Gem, Home, LogIn, MessageCircle, Sparkles, Stamp } from "lucide-react"
+import {
+  GemIcon,
+  HomeIcon,
+  LogInIcon,
+  MessageCircleIcon,
+  SparklesIcon,
+  StampIcon,
+} from "lucide-react"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -23,27 +30,27 @@ export const BetaNavigationList = (props: Props) => {
 
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"https://www.aipictors.com"} icon={Home}>
+      <HomeNavigationButton href={"https://www.aipictors.com"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/stickers"} icon={Stamp}>
+        <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
           {"スタンプ広場"}
         </HomeNavigationButton>
       )}
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/plus"} icon={Gem}>
+        <HomeNavigationButton href={"/plus"} icon={GemIcon}>
           {"Aipictors+"}
         </HomeNavigationButton>
       )}
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/support/chat"} icon={MessageCircle}>
+        <HomeNavigationButton href={"/support/chat"} icon={MessageCircleIcon}>
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate"}
-        icon={Sparkles}
+        icon={SparklesIcon}
       >
         {"画像生成"}
       </HomeNavigationButton>
@@ -57,7 +64,7 @@ export const BetaNavigationList = (props: Props) => {
         </HomeNavigationButton>
       )} */}
       {appContext.isNotLoggedIn && (
-        <HomeNavigationButton onClick={props.onLogin} icon={LogIn}>
+        <HomeNavigationButton onClick={props.onLogin} icon={LogInIcon}>
           {"ログイン"}
         </HomeNavigationButton>
       )}

@@ -6,7 +6,7 @@ import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_componen
 import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { BookText } from "lucide-react"
+import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -56,7 +56,7 @@ export const GenerationEditorPrompt = (props: Props) => {
             </div>
             <div className="block xl:hidden">
               <Button size={"icon"} variant={"ghost"} onClick={onOpen}>
-                <BookText />
+                <BookTextIcon />
               </Button>
             </div>
           </>

@@ -10,7 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Config } from "@/config"
-import { Gem, LogIn, LogOut, Settings, UserCircle, UserCog } from "lucide-react"
+import {
+  GemIcon,
+  LogInIcon,
+  LogOutIcon,
+  SettingsIcon,
+  UserCircleIcon,
+  UserCogIcon,
+} from "lucide-react"
 import Link from "next/link"
 import { useContext } from "react"
 
@@ -43,7 +50,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             <a
               href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
             >
-              <UserCircle className="w-4 inline-block mr-2" />
+              <UserCircleIcon className="w-4 inline-block mr-2" />
               <span>{"マイページ"}</span>
             </a>
           </DropdownMenuItem>
@@ -51,7 +58,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/plus"}>
             <DropdownMenuItem>
-              <Gem className="w-4 inline-block mr-2" />
+              <GemIcon className="w-4 inline-block mr-2" />
               <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
@@ -59,7 +66,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/account/login"}>
             <DropdownMenuItem>
-              <UserCog className="w-4 inline-block mr-2" />
+              <UserCogIcon className="w-4 inline-block mr-2" />
               <span>{"アカウント"}</span>
             </DropdownMenuItem>
           </Link>
@@ -67,20 +74,20 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {Config.isDevelopmentMode && appContext.isLoggedIn && (
           <Link href={"/settings/notification"}>
             <DropdownMenuItem>
-              <Settings className="w-4 inline-block mr-2" />
+              <SettingsIcon className="w-4 inline-block mr-2" />
               <span>{"設定"}</span>
             </DropdownMenuItem>
           </Link>
         )}
         {appContext.isLoggedIn && (
           <DropdownMenuItem onClick={props.onLogout}>
-            <LogOut className="w-4 inline-block mr-2" />
+            <LogOutIcon className="w-4 inline-block mr-2" />
             <span>{"ログアウト"}</span>
           </DropdownMenuItem>
         )}
         {appContext.isNotLoggedIn && (
           <DropdownMenuItem onClick={props.onLogin}>
-            <LogIn className="w-4 inline-block mr-2" />
+            <LogInIcon className="w-4 inline-block mr-2" />
             <span>{"ログイン"}</span>
           </DropdownMenuItem>
         )}
