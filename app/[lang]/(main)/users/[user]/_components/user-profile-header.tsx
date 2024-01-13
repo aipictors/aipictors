@@ -1,16 +1,25 @@
-import type { UserQuery } from "@/__generated__/apollo"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import Image from "next/image"
 
 type Props = {
-  user: NonNullable<UserQuery["user"]>
+  headerImageUrl?: string
 }
 
 export const UserProfileHeader = (props: Props) => {
   return (
-    <div>
-      <img
-        src={props.user.headerImage?.downloadURL ?? ""}
-        alt={props.user.name}
-      />
-    </div>
+    <AspectRatio ratio={1500 / 500}>
+      {props.headerImageUrl ? (
+        <Image
+          alt=""
+          src={props.headerImageUrl}
+          fill
+          className="w-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-red-500">
+          Header Not Found
+        </div>
+      )}
+    </AspectRatio>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import type { UserAlbumsQuery } from "@/__generated__/apollo"
-import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
 

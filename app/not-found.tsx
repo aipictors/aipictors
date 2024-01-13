@@ -1,18 +1,20 @@
-"use client"
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/YFhY3hdw0jD
+ */
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
-const RootNotFound = () => {
+export default function NotFound() {
   return (
-    <div className="p-4 h-screen flex justify-center items-center">
-      <div className="space-y-8 items-center">
-        <p>ページが見つかりません</p>
-        <div className="flex">
-          <a href="/" className="line-height[1]">
-            ホームに戻る
-          </a>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-9xl font-bold">404</h1>
+      <p className="mt-4 text-xl">
+        おっと! お探しのページは存在しないようです。
+      </p>
+      <Button className="mt-8 px-8 py-2 rounded-md hover:bg-sky-600">
+        <Link href="/">ホームに戻る</Link>
+      </Button>
     </div>
   )
 }
-
-export default RootNotFound

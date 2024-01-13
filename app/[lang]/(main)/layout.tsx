@@ -28,16 +28,6 @@ const MainLayout = (props: Props) => {
     setFalse: onCloseLogout,
   } = useBoolean()
 
-  const { toast } = useToast()
-
-  useEffect(() => {
-    toast({
-      description:
-        "こちらは開発中のページです。何らかの不具合が発生する可能性があります。",
-      duration: 60 * 4 * 1000,
-    })
-  }, [])
-
   return (
     <>
       <HomeHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />

@@ -27,8 +27,12 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
         <CarouselContent>
           {allImageURLs.map((imageURL, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <CarouselItem key={index}>
-              <img className="w-auto h-auto rounded" alt="" src={imageURL} />
+            <CarouselItem key={index} className="lg:basis-1/2 xl:basis-1/3">
+              <img
+                className="w-auto h-auto xl:h-screen object-contain rounded"
+                alt=""
+                src={imageURL}
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -42,7 +46,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   if (workImageURL) {
     return (
       <img
-        className="w-full h-auto object-cover rounded"
+        className="w-auto h-auto xl:h-screen object-contain rounded"
         alt=""
         src={workImageURL}
       />
