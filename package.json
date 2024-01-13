@@ -17,7 +17,6 @@
     "docs": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "preinstall": "npx only-allow pnpm",
     "postinstall": "lefthook install"
   },
   "dependencies": {
@@ -80,6 +79,7 @@
     "react-hook-form": "^7.49.3",
     "react-icons": "^4.12.0",
     "react-markdown": "^9.0.1",
+    "react-photo-album": "^2.3.0",
     "react-resizable-panels": "^1.0.8",
     "react-textarea-autosize": "^8.5.3",
     "schema-dts": "^1.1.2",

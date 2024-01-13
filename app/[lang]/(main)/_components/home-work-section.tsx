@@ -1,6 +1,7 @@
 "use client"
 
 import type { WorksQuery } from "@/__generated__/apollo"
+import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
 import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,9 +17,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import work from "@/graphql/queries/work/work"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
 import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
 import Link from "next/link"
+import PhotoAlbum from "react-photo-album"
 
 type Props = {
   works: NonNullable<WorksQuery["works"]>
@@ -27,6 +30,14 @@ type Props = {
 }
 
 export const HomeWorkSection = (props: Props) => {
+  // 各作品のデータを変換
+  const photos = props.works.map((work) => ({
+    src: work.largeThumbnailImageURL,
+    width: work.largeThumbnailImageWidth,
+    height: work.largeThumbnailImageHeight,
+    workId: work.id, // 各作品のIDを追加
+  }))
+
   return (
     <section className="space-y-4 pl-4 pr-4 lg:pr-8">
       <div className="flex justify-between">
@@ -49,32 +60,18 @@ export const HomeWorkSection = (props: Props) => {
           {"すべて見る"}
         </Button>
       </div>
-      <Carousel
-        plugins={[WheelGesturesPlugin()]}
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-      >
-        <CarouselContent>
-          {props.works.map((work) => (
-            <CarouselItem
-              key={work.id}
-              className="md:basis-1/4 lg:basis-1/5 xl:basis-[12.5%]"
-            >
-              <Link href={`/works/${work.id}`}>
-                <WorkCard
-                  imageURL={work.largeThumbnailImageURL}
-                  imageWidth={work.largeThumbnailImageWidth}
-                  imageHeight={work.largeThumbnailImageHeight}
-                />
-              </Link>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+      <PhotoAlbum
+        layout="rows"
+        photos={photos}
+        renderPhoto={(photoProps) => (
+          <HomeWorkAlbum
+            {...photoProps}
+            workId={photoProps.photo.workId} // workId を渡す
+          />
+        )}
+        defaultContainerWidth={1200}
+        sizes={{ size: "calc(100vw - 240px)" }}
+      />
     </section>
   )
 }
