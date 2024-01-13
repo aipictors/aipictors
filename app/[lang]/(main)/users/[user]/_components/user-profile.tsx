@@ -3,7 +3,7 @@ import { UserProfileAvatar } from "@/app/[lang]/(main)/users/[user]/_components/
 import { FollowButton } from "@/app/_components/button/follow-button"
 // user-profile.tsx
 import React from "react"
-import { UserProfileInfo } from "./user-profile-info"
+import UserProfileInfo from "./user-profile-info"
 
 type UserProfileProps = {
   user: NonNullable<UserQuery["user"]>
@@ -11,7 +11,7 @@ type UserProfileProps = {
 
 const UserProfile = (props: UserProfileProps) => {
   return (
-    <header className="relative h-64">
+    <header className="relative h-64 px-4">
       <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center px-4 py-6 bg-gradient-to-t from-background/40">
         <div className="flex items-center gap-4">
           <UserProfileAvatar
