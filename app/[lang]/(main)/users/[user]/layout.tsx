@@ -6,7 +6,6 @@ import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs
 import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
 
 type Props = {
   children: React.ReactNode
@@ -24,7 +23,7 @@ const UserLayout = async (props: Props) => {
   })
 
   if (userQuery.data.user === null) {
-    return notFound()
+    return <div>404</div>
   }
 
   return (
