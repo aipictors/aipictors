@@ -6,9 +6,6 @@ import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
-import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
-import { useEffect } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
