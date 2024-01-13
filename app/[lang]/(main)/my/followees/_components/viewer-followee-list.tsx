@@ -6,14 +6,14 @@ import type {
 } from "@/__generated__/apollo"
 import { UserFolloweesDocument } from "@/__generated__/apollo"
 import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { AlertCircle } from "lucide-react"
 import { useContext } from "react"
 
 export const ViewerFolloweeList = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery<
     UserFolloweesQuery,

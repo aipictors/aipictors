@@ -1,7 +1,7 @@
 import localFont from "next/font/local"
 
-export const notoSansJp = localFont({
-  src: "./font/NotoSansJP-VariableFont_wght.ttf",
+export const notoSansFont = localFont({
+  src: "./NotoSansJP-VariableFont_wght.ttf",
   variable: "--font-sans",
   display: "swap",
 })

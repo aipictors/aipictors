@@ -5,7 +5,7 @@ import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { AccountRouteList } from "@/app/[lang]/account/_components/account-route-list"
 import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import React, { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -14,7 +14,7 @@ type Props = {
 }
 
 const SettingsLayout = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const {
     value: isOpenLogin,

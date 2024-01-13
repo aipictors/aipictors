@@ -1,7 +1,6 @@
 "use client"
 
 import RootError from "@/app/error"
-
 import type { Metadata } from "next"
 
 const RootGlobalError = () => {

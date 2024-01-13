@@ -56,4 +56,4 @@ const defaultValue: Value = {
   async refresh() {},
 }
 
-export const AppContext = createContext<Value>(defaultValue)
+export const AuthContext = createContext<Value>(defaultValue)

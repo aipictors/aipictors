@@ -1,14 +1,14 @@
 "use client"
 
-import { AppContextProvider } from "@/app/_components/app-context-provider"
+import { AuthContextProvider } from "@/app/_components/app-context-provider"
 import { createClient } from "@/app/_contexts/client"
+import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
 import { init } from "@sentry/nextjs"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { ThemeProvider } from "next-themes"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
@@ -40,20 +40,13 @@ export const RootProviders = (props: Props) => {
   }, [pathname, searchParams])
 
   return (
-    <AppContextProvider>
-      <QueryClientProvider client={queryClient}>
-        <ApolloProvider client={client}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {props.children}
-          </ThemeProvider>
-        </ApolloProvider>
-      </QueryClientProvider>
-    </AppContextProvider>
+    <AppThemeProvider>
+      <AuthContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <ApolloProvider client={client}>{props.children}</ApolloProvider>
+        </QueryClientProvider>
+      </AuthContextProvider>
+    </AppThemeProvider>
   )
 }
 

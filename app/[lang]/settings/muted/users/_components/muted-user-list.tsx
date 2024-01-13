@@ -9,12 +9,12 @@ import {
   ViewerMutedUsersQueryVariables,
 } from "@/__generated__/apollo"
 import { MutedUser } from "@/app/[lang]/settings/muted/users/_components/muted-user"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext } from "react"
 
 export const MutedUserList = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedUsersQuery,

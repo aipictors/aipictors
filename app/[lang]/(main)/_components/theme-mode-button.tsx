@@ -1,13 +1,13 @@
 "use client"
 
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useContext } from "react"
 
 export const ThemeModeButton = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { setTheme, theme } = useTheme()
 

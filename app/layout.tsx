@@ -2,12 +2,14 @@ import "@/app/globals.css"
 import "@splidejs/react-splide/css/core"
 
 import { RootProviders } from "@/app/_components/root-providers"
+import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
 import { Config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
 import Script from "next/script"
-import { notoSansJp } from "./font"
+import { Suspense } from "react"
+import { notoSansFont } from "./_fonts/noto-sans-font"
 
 type Props = {
   children: React.ReactNode
@@ -29,12 +31,15 @@ const RootLayout = (props: Props) => {
       <body
         className={cn(
           "min-h-screen font-sans antialiased",
-          notoSansJp.variable,
+          notoSansFont.variable,
         )}
       >
         <RootProviders>
           {props.children}
           <Toaster />
+          <Suspense fallback={null}>
+            <AppAnalytics />
+          </Suspense>
         </RootProviders>
       </body>
     </html>

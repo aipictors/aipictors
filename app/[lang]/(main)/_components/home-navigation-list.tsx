@@ -2,7 +2,7 @@
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import {
@@ -38,7 +38,7 @@ type Props = {
 }
 
 export const HomeNavigationList = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   return (
     <div className="flex flex-col space-y-1 pl-1">

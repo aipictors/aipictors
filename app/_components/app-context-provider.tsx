@@ -1,6 +1,6 @@
 "use client"
 
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Config } from "@/config"
 import { setUser } from "@sentry/nextjs"
 import {
@@ -24,7 +24,7 @@ type Props = {
 
 type Claims = ParsedToken
 
-export const AppContextProvider = (props: Props) => {
+export const AuthContextProvider = (props: Props) => {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })
@@ -93,7 +93,9 @@ export const AppContextProvider = (props: Props) => {
       refresh: refresh,
     } as const
     return (
-      <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+      <AuthContext.Provider value={value}>
+        {props.children}
+      </AuthContext.Provider>
     )
   }
 
@@ -115,7 +117,9 @@ export const AppContextProvider = (props: Props) => {
       refresh: refresh,
     } as const
     return (
-      <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+      <AuthContext.Provider value={value}>
+        {props.children}
+      </AuthContext.Provider>
     )
   }
 
@@ -132,6 +136,6 @@ export const AppContextProvider = (props: Props) => {
   } as const
 
   return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>
   )
 }

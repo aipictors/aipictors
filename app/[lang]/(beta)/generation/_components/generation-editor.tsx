@@ -23,7 +23,7 @@ import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-editor-config"
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
@@ -37,7 +37,7 @@ type Props = {
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data: viewer } = useSuspenseQuery<
     ViewerCurrentPassQuery,

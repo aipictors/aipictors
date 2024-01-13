@@ -1,6 +1,6 @@
 "use client"
 
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,7 +25,7 @@ type Props = {
  * @returns
  */
 export const HomeUserNavigationMenu = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   return (
     <DropdownMenu>

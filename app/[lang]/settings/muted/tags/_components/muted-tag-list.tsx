@@ -11,14 +11,14 @@ import type {
   ViewerMutedTagsQueryVariables,
 } from "@/__generated__/apollo"
 import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 
 export const MutedTagList = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedTagsQuery,

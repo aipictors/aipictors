@@ -10,7 +10,7 @@ import {
   UpdateAccountLoginDocument,
   ViewerUserDocument,
 } from "@/__generated__/apollo"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
@@ -18,7 +18,7 @@ import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 
 export const AccountLoginForm = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery<
     ViewerUserQuery,

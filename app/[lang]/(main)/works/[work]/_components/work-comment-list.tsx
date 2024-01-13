@@ -4,7 +4,7 @@ import type { WorkCommentsQuery } from "@/__generated__/apollo"
 import { StampDialog } from "@/app/[lang]/(main)/works/[work]/_components/stamp-dialog"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,7 @@ type Props = {
  */
 export const WorkCommentList = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   return (
     <>

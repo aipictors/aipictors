@@ -2,7 +2,7 @@
 
 import { LoadingPage } from "@/app/_components/page/loading-page"
 import { LoginPage } from "@/app/_components/page/login-page"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { useContext } from "react"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 }
 
 const NewLayout = (props: Props) => {
-  const context = useContext(AppContext)
+  const context = useContext(AuthContext)
 
   if (context.isLoading) {
     return <LoadingPage />

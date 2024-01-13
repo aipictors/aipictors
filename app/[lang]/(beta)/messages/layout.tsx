@@ -3,7 +3,7 @@
 import { MessageThreadList } from "@/app/[lang]/(beta)/messages/_components/message-thread-list"
 import MessagesLoading from "@/app/[lang]/(beta)/messages/loading"
 import { LoginPage } from "@/app/_components/page/login-page"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import React, { useContext } from "react"
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 }
 
 const MessagesLayout = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   if (appContext.isLoading) {
     return <MessagesLoading />

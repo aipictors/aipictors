@@ -5,7 +5,13 @@ import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
 import type { Metadata } from "next"
 
-const TagPage = async () => {
+type Props = {
+  params: {
+    tag: string
+  }
+}
+
+const TagPage = async (props: Props) => {
   const client = createClient()
 
   const worksQuery = await client.query<WorksQuery>({
