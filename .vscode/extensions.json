@@ -6,6 +6,7 @@
     "editorconfig.editorconfig",
     "mikestead.dotenv",
     "streetsidesoftware.code-spell-checker",
-    "ZixuanChen.vitest-explorer"
+    "ZixuanChen.vitest-explorer",
+    "yoavbls.pretty-ts-errors"
   ]
 }

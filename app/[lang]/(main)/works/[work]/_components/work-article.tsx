@@ -1,8 +1,10 @@
 "use client"
 
 import type { WorkQuery } from "@/__generated__/apollo"
+import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
+import { FollowButton } from "@/app/_components/button/follow-button"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -69,7 +71,8 @@ export const WorkArticle = (props: Props) => {
             </Link>
           </Avatar>
           <span>{props.work.user.name}</span>
-          <Button size={"sm"}>{"フォローする"}</Button>
+          <FollowButton />
+          <PromptonRequestButton />
         </div>
         <p className="text-sm">{"一覧をダイアログで見る"}</p>
       </div>
