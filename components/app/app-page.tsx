@@ -20,13 +20,12 @@ export const AppPage = (props: Props) => {
   return (
     <main
       className={cn(
-        "w-full max-w-screen-xl mx-auto pb-16 pt-2 md:pt-0",
+        "w-full max-w-page mx-auto pb-16 pt-2 md:pt-0",
         "space-y-8 md:space-y-8",
         "px-sm md:px-md",
         props.className,
       )}
     >
-      {/* <Suspense fallback={<AppLoadingSpinner />}>{props.children}</Suspense> */}
       {props.children}
     </main>
   )

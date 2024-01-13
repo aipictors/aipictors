@@ -1,8 +1,6 @@
 import { PlusForm } from "@/app/[lang]/(beta)/plus/_components/plus-form"
 import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-list"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import { AppPage } from "@/components/app/app-page"
-import { AppPageCenter } from "@/components/app/app-page-center"
 import { AppPageHeader } from "@/components/app/app-page-header"
 import type { Metadata } from "next"
 

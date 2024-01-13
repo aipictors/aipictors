@@ -1,6 +1,6 @@
 import { NoteCard } from "@/app/[lang]/(main)/notes/_components/note-card"
 
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -9,11 +9,11 @@ import type { Metadata } from "next"
  */
 const NotesPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div>
         <NoteCard />
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

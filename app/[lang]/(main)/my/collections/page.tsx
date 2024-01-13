@@ -1,12 +1,12 @@
 import { ViewerCollectionList } from "@/app/[lang]/(main)/my/collections/_components/viewer-collection-list"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const MyCollectionsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <ViewerCollectionList />
-    </MainPage>
+    </AppPage>
   )
 }
 

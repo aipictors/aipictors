@@ -1,12 +1,12 @@
 import { SupportChat } from "@/app/[lang]/(beta)/support/chat/_components/support-chat"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 const MessagePage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <SupportChat />
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

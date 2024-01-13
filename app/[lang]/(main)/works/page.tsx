@@ -1,11 +1,11 @@
-import { PlaceholderPage } from "@/app/_components/page/placeholder-page"
+import { AppPlaceholder } from "@/components/app/app-placeholder"
 import type { Metadata } from "next"
 
 /**
  * 作品一覧ページ
  */
 const WorksPage = async () => {
-  return <PlaceholderPage>{"作品の一覧"}</PlaceholderPage>
+  return <AppPlaceholder>{"作品の一覧"}</AppPlaceholder>
 }
 
 export const metadata: Metadata = {

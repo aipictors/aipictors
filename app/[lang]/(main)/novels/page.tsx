@@ -1,5 +1,5 @@
 import { NovelCard } from "@/app/[lang]/(main)/novels/_components/novel-card"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,11 +8,11 @@ import type { Metadata } from "next"
  */
 const NovelsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div>
         <NovelCard />
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

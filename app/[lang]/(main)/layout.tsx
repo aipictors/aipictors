@@ -31,7 +31,7 @@ const MainLayout = (props: Props) => {
   return (
     <>
       <HomeHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />
-      <div className="flex items-start space-x-0">
+      <div className="flex items-start space-x-0 max-w-screen-xl w-full mx-auto">
         <AppAside>
           <HomeNavigationList onLogin={onOpenLogin} onLogout={onOpenLogout} />
         </AppAside>

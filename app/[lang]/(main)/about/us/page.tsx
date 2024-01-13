@@ -1,4 +1,4 @@
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -7,11 +7,11 @@ import type { Metadata } from "next"
  */
 const AboutUsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div className="flex flex-col">
         <p>{"運営会社について"}</p>
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

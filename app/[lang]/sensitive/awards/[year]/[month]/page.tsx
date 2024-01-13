@@ -1,5 +1,5 @@
 import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const SensitiveAwardsPage = async () => {
@@ -8,9 +8,9 @@ const SensitiveAwardsPage = async () => {
   const month = new Date().getMonth() + 1
 
   return (
-    <MainPage>
+    <AppPage>
       <RankingHeader year={year} month={month} day={1} />
-    </MainPage>
+    </AppPage>
   )
 }
 
