@@ -26,7 +26,7 @@ const SensitiveThemesPage = async () => {
       <ThemeList
         year={year}
         month={month}
-        dailyThemesQuery={dailyThemesQuery.data}
+        dailyThemes={dailyThemesQuery.data.dailyThemes}
       />
     </MainPage>
   )

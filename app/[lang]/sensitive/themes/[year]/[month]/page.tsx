@@ -33,7 +33,7 @@ const SensitiveMonthThemesPage = async (props: Props) => {
       <ThemeList
         year={year}
         month={month}
-        dailyThemesQuery={dailyThemesQuery.data}
+        dailyThemes={dailyThemesQuery.data.dailyThemes}
       />
     </MainPage>
   )

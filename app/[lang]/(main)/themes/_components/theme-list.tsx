@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 type Props = {
   year: number
   month: number
-  dailyThemesQuery: DailyThemesQuery
+  dailyThemes: DailyThemesQuery["dailyThemes"]
 }
 
 export const ThemeList = (props: Props) => {
@@ -19,7 +19,7 @@ export const ThemeList = (props: Props) => {
   const cells = createCalendarCells(2023, 9)
 
   const blocks = cells.map((day, index) => {
-    const theme = props.dailyThemesQuery.dailyThemes?.find((dailyTheme) => {
+    const theme = props.dailyThemes.find((dailyTheme) => {
       return dailyTheme.day === day
     })
     return {
