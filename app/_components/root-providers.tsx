@@ -1,6 +1,6 @@
 "use client"
 
-import { AuthContextProvider } from "@/app/_components/app-context-provider"
+import { AuthContextProvider } from "@/app/_components/auth-context-provider"
 import { createClient } from "@/app/_contexts/client"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { Config } from "@/config"

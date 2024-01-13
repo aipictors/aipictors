@@ -4,8 +4,8 @@ import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
 import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
-import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import { AppAside } from "@/components/app/app-aside"
 import React, { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -44,9 +44,9 @@ const SettingsLayout = (props: Props) => {
         onLogout={onOpenLogout}
       />
       <div className="flex items-start space-x-0">
-        <ResponsiveNavigation>
+        <AppAside>
           <SettingsRouteList />
-        </ResponsiveNavigation>
+        </AppAside>
         {props.children}
       </div>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />

@@ -5,7 +5,8 @@ import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigat
 import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
-import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
+import { AppAside } from "@/components/app/app-aside"
+import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { useEffect } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -41,9 +42,9 @@ const MainLayout = (props: Props) => {
     <>
       <HomeHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />
       <div className="flex items-start space-x-0">
-        <ResponsiveNavigation>
+        <AppAside>
           <HomeNavigationList onLogin={onOpenLogin} onLogout={onOpenLogout} />
-        </ResponsiveNavigation>
+        </AppAside>
         {props.children}
       </div>
       <HomeFooter />

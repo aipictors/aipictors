@@ -5,7 +5,7 @@ import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigat
 import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
-import { ResponsiveNavigation } from "@/app/_components/responsive-navigation"
+import { AppAside } from "@/components/app/app-aside"
 import { Separator } from "@/components/ui/separator"
 import { useBoolean } from "usehooks-ts"
 
@@ -30,12 +30,11 @@ const BetaLayout = (props: Props) => {
     <>
       <BetaHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />
       <div className="flex items-start space-x-0">
-        <ResponsiveNavigation>
+        <AppAside>
           <BetaNavigationList onLogin={onOpenLogin} onLogout={onOpenLogout} />
-        </ResponsiveNavigation>
+        </AppAside>
         {props.children}
       </div>
-      <Separator />
       <HomeFooter />
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal

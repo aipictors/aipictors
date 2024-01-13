@@ -22,7 +22,7 @@ export const BetaNavigationList = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   return (
-    <div className="flex flex-col space-y-1">
+    <div className="space-y-1">
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={Home}>
         {"ホーム"}
       </HomeNavigationButton>
