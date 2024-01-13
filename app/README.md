@@ -23,3 +23,7 @@ https://nextjs.org/docs/app/building-your-application/routing/colocation#private
 
 - _utils
 - _components
+
+## Themes
+[shadcn/ui](https://ui.shadcn.com/themes)  
+[globals.css](./globals.css)

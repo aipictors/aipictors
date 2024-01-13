@@ -47,4 +47,6 @@ yarn-error.log*
 next-env.d.ts
 yarn.lock
 
+# other
 .husky
+lefthook-local.yml

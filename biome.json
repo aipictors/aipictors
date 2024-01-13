@@ -1,11 +1,11 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.5.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.5.1/schema.json",
   "formatter": {
-    "include": ["app/*.{ts,tsx,json,html,graphql}"],
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "indentStyle": "space"
   },
   "linter": {
-    "include": ["app/*.{ts,tsx}"],
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "rules": {
       "recommended": true,
       "correctness": {
