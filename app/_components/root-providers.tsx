@@ -21,24 +21,6 @@ const client = createClient()
 const queryClient = new QueryClient()
 
 export const RootProviders = (props: Props) => {
-  const pathname = usePathname()
-
-  const searchParams = useSearchParams()
-
-  /**
-   * ページビューのイベントを送信する
-   */
-  useEffect(() => {
-    if (Config.isNotClient) return
-    if (Config.isDevelopmentMode) return
-    if (getApps().length === 0) return
-    logEvent(getAnalytics(), Config.logEvent.page_view, {
-      page_path: pathname,
-      page_title: pathname,
-      page_location: window.location.href,
-    })
-  }, [pathname, searchParams])
-
   return (
     <AppThemeProvider>
       <AuthContextProvider>
