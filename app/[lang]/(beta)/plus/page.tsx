@@ -1,6 +1,9 @@
 import { PlusForm } from "@/app/[lang]/(beta)/plus/_components/plus-form"
 import { PlusNoteList } from "@/app/[lang]/(beta)/plus/_components/plus-note-list"
 import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPage } from "@/components/app/app-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
+import { AppPageHeader } from "@/components/app/app-page-header"
 import type { Metadata } from "next"
 
 /**
@@ -9,8 +12,13 @@ import type { Metadata } from "next"
  */
 const PlusPage = async () => {
   return (
-    <MainCenterPage className="space-y-8 pb-16 px-4 md:pr-8">
-      <h1 className="text-2xl font-bold">{"Aipictors +"}</h1>
+    <AppPage>
+      <AppPageHeader
+        title={"Aipictors +"}
+        description={
+          "Aipictors+に加入してサービス内で特典を受けることができます。"
+        }
+      />
       <PlusForm />
       <div>
         <p>{"この度はAipictorsをご利用いただき、誠にありがとうございます。"}</p>
@@ -19,7 +27,7 @@ const PlusPage = async () => {
         <p className="font-bold text-lg">{"注意事項"}</p>
         <PlusNoteList />
       </div>
-    </MainCenterPage>
+    </AppPage>
   )
 }
 

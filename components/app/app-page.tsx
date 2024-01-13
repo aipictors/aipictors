@@ -20,8 +20,9 @@ export const AppPage = (props: Props) => {
   return (
     <main
       className={cn(
-        "max-w-7xl mx-auto pb-16 pt-2 md:pt-4",
-        "space-y-4 md:space-y-8",
+        "w-full max-w-screen-xl mx-auto pb-16 pt-2 md:pt-0",
+        "space-y-8 md:space-y-8",
+        "px-sm md:px-md",
         props.className,
       )}
     >
