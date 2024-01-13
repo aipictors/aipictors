@@ -18,7 +18,6 @@ import { useContext } from "react"
 type Props = {
   onLogin(): void
   onLogout(): void
-  onCloseLogin(): void
 }
 
 /**
