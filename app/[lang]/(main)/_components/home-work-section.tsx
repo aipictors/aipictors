@@ -2,7 +2,7 @@
 
 import type { WorksQuery } from "@/__generated__/apollo"
 import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
-import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Button } from "@/components/ui/button"
 import {
   Carousel,
@@ -35,7 +35,7 @@ export const HomeWorkSection = (props: Props) => {
     src: work.largeThumbnailImageURL,
     width: work.largeThumbnailImageWidth,
     height: work.largeThumbnailImageHeight,
-    workId: work.id, // 各作品のIDを追加
+    workId: work.id, // 各作品のID
   }))
 
   return (
@@ -62,15 +62,17 @@ export const HomeWorkSection = (props: Props) => {
       </div>
       <PhotoAlbum
         layout="rows"
+        columns={3}
         photos={photos}
         renderPhoto={(photoProps) => (
-          <HomeWorkAlbum
-            {...photoProps}
-            workId={photoProps.photo.workId} // workId を渡す
-          />
+          // @ts-ignore 後で考える
+          <HomeWorkAlbum {...photoProps} workId={photoProps.photo.workId} />
         )}
         defaultContainerWidth={1200}
-        sizes={{ size: "calc(100vw - 240px)" }}
+        sizes={{
+          size: "calc(100vw - 240px)",
+          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+        }}
       />
     </section>
   )

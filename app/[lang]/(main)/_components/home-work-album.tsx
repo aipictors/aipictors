@@ -14,7 +14,15 @@ export default function HomeWorkAlbum({
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
       <Link href={`/works/${workId}`}>
-        <Image className="rounded" alt="" fill src={photo.src} />
+        <Image
+          fill
+          src={photo.src}
+          placeholder={"blurDataURL" in photo ? "blur" : undefined}
+          {...{
+            alt: "",
+            className: "rounded",
+          }}
+        />
       </Link>
     </div>
   )

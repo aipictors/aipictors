@@ -1,7 +1,7 @@
 "use client"
 
 import type { WorksQuery } from "@/__generated__/apollo"
-import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import Link from "next/link"
 
 type Props = {
