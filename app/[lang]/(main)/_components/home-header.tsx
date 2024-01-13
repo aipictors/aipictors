@@ -27,7 +27,7 @@ export const HomeHeader = (props: Props) => {
 
   return (
     <AppHeader>
-      <div className="flex md:flex-1 gap-x-2 items-center min-w-fit">
+      <div className="flex md:flex-1 gap-x-4 items-center min-w-fit">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -54,12 +54,12 @@ export const HomeHeader = (props: Props) => {
             alt="Avatar"
           />
         </Link>
-        <div className="pl-4 flex-1 w-full hidden md:block">
+        <div className="flex-1 w-full hidden md:block">
           <Input placeholder={"作品を検索"} />
         </div>
       </div>
-      <div className="flex space-x-4 items-center">
-        <div className="flex space-x-2">
+      <div className="flex gap-x-4 items-center">
+        <div className="flex gap-x-2">
           <Button
             className="md:hidden"
             variant={"secondary"}

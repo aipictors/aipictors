@@ -50,7 +50,7 @@ export const BetaHeader = (props: Props) => {
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
       </div>
-      <div className="flex space-x-4">
+      <div className="flex gap-x-4">
         {Config.isDevelopmentMode && (
           <Button
             variant={"secondary"}
