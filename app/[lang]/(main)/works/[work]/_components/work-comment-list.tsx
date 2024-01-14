@@ -14,6 +14,7 @@ import { useBoolean } from "usehooks-ts"
 
 type Props = {
   work: NonNullable<WorkCommentsQuery["work"]>
+  isLogout(): void
 }
 
 /**
@@ -32,7 +33,7 @@ export const WorkCommentList = (props: Props) => {
             <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
             <AvatarFallback />
           </Avatar>
-          <Input type="text" placeholder="コメントする" className="flex-1" />
+          <Input type="text" placeholder="コメントする" />
           <Button size={"icon"} onClick={onOpen}>
             <Stamp />
           </Button>

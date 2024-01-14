@@ -13,9 +13,9 @@ import {
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
+import { toast } from "sonner"
 
 export const AccountLoginForm = () => {
   const appContext = useContext(AuthContext)
@@ -26,8 +26,6 @@ export const AccountLoginForm = () => {
   >(ViewerUserDocument, {
     skip: appContext.isLoading,
   })
-
-  const { toast } = useToast()
 
   const [userId, setUserId] = useState("")
 
@@ -46,10 +44,10 @@ export const AccountLoginForm = () => {
         },
       })
       setUserId("")
-      toast({ title: "ユーザIDを変更しました" })
+      toast("ユーザIDを変更しました")
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ title: "ユーザIDの変更に失敗しました" })
+        toast("ユーザIDの変更に失敗しました")
       }
     }
   }

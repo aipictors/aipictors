@@ -14,7 +14,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import Link from "next/link"
 
@@ -25,8 +26,6 @@ type Props = {
 
 export const LoginModal = (props: Props) => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
-
-  const { toast } = useToast()
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -40,15 +39,15 @@ export const LoginModal = (props: Props) => {
       })
       const token = result.data?.loginWithPassword.token ?? null
       if (token === null) {
-        toast({ description: "ログインに失敗しました。" })
+        toast("ログインに失敗しました。")
         return
       }
       await signInWithCustomToken(getAuth(), token)
-      toast({ description: "ログインしました。" })
+      toast("ログインしました。")
       props.onClose()
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }
@@ -80,7 +79,11 @@ export const LoginModal = (props: Props) => {
             href={"https://www.aipictors.com/login/"}
           >
             {/* ここでも isLoading がtrueのときdisabled */}
-            <Button className="w-full" variant={"secondary"} disabled={isLoading}>
+            <Button
+              className="w-full"
+              variant={"secondary"}
+              disabled={isLoading}
+            >
               {"アカウント作成"}
             </Button>
           </Link>

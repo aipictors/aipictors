@@ -10,7 +10,8 @@ import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_c
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+
 import { Config } from "@/config"
 import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
 import { useState } from "react"
@@ -54,8 +55,6 @@ export const GenerationEditorHistory = (props: Props) => {
     setFalse: onCloseInPainting,
   } = useBoolean()
 
-  const { toast } = useToast()
-
   const onUseConfig = () => {
     if (typeof history === "undefined") return
     props.onChangeSampler(history.sampler)
@@ -66,7 +65,7 @@ export const GenerationEditorHistory = (props: Props) => {
     props.onChangePromptText(history.prompt)
     props.onChangeNegativePromptText(history.negativePrompt)
     onClose()
-    toast({ title: "設定を復元しました" })
+    toast("設定を復元しました")
   }
 
   const history = props.tasks.find((task) => {

@@ -3,15 +3,13 @@ import {
   useCreatePassCheckoutSessionMutation,
 } from "@/__generated__/apollo"
 import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
-import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
+import { toast } from "sonner"
 
 export const PlusAbout = () => {
   const [mutation, { loading: isLoading }] =
     useCreatePassCheckoutSessionMutation()
-
-  const { toast } = useToast()
 
   const onSelect = async (passType: PassType) => {
     try {
@@ -24,15 +22,13 @@ export const PlusAbout = () => {
       })
       const pageURL = result.data?.createPassCheckoutSession ?? null
       if (pageURL === null) {
-        toast({
-          description: "セッションの作成に失敗しました。",
-        })
+        toast("セッションの作成に失敗しました。")
         return
       }
       window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }
