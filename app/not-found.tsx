@@ -5,7 +5,11 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export default function NotFound() {
+/**
+ * next/navigationのnotFoundと名前が被るので、関数名をRootNotFoundにした。
+ * @returns
+ */
+export default function RootNotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-9xl font-bold">404</h1>

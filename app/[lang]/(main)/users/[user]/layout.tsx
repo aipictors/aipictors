@@ -1,7 +1,6 @@
 import type { UserQuery, UserQueryVariables } from "@/__generated__/apollo"
 import { UserDocument } from "@/__generated__/apollo"
 import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
-
 import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
@@ -19,7 +18,7 @@ const UserLayout = async (props: Props) => {
   const userQuery = await client.query<UserQuery, UserQueryVariables>({
     query: UserDocument,
     variables: {
-      userId: props.params.user,
+      userId: decodeURIComponent(props.params.user),
     },
   })
 
