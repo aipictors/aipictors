@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import Link from "next/link"
 
