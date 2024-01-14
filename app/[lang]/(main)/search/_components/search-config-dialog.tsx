@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Check } from "lucide-react"
+import { CheckIcon } from "lucide-react"
 
 type Props = {
   isOpen: boolean
@@ -33,7 +33,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"年齢制限："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -41,7 +41,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"作品形式："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -49,7 +49,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"検索対象："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -72,7 +72,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"プロンプト公開："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -80,7 +80,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"フォロー関係："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -88,7 +88,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"お題参加："}</span>
             <Button>
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               {"全年齢"}
             </Button>
           </div>
@@ -96,7 +96,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"テイスト："}</span>
             <Button className="rounded-full">
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               <span>{"全年齢"}</span>
             </Button>
           </div>
@@ -112,7 +112,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"表示順："}</span>
             <Button className="rounded-full">
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               <span>{"全年齢"}</span>
             </Button>
           </div>
@@ -120,7 +120,7 @@ export const SearchConfigDialog = (props: Props) => {
           <div className="flex items-center space-x-2">
             <span>{"投稿件数："}</span>
             <Button className="rounded-full">
-              <Check className="mr-2" />
+              <CheckIcon className="mr-2" />
               <span>{"全年齢"}</span>
             </Button>
           </div>

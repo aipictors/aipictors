@@ -3,7 +3,7 @@
 import { AlbumWorksQuery } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart } from "lucide-react"
+import { HeartIcon } from "lucide-react"
 
 type Props = {
   albumWorksQuery: AlbumWorksQuery
@@ -18,7 +18,7 @@ export const AlbumWork = (props: Props) => {
     <Card className="overflow-hidden">
       <div className="flex">
         <p>{props.title}</p>
-        <Heart />
+        <HeartIcon />
       </div>
       <CardContent>
         <div className="flex">

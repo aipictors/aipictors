@@ -1,15 +1,15 @@
 import { SettingNotificationForm } from "@/app/[lang]/settings/notification/_components/setting-notification-form"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 const SettingNotificationPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <div className="w-full space-y-8">
         <p className="font-bold text-2xl">{"通知・いいね"}</p>
         <SettingNotificationForm />
       </div>
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

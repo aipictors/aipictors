@@ -9,7 +9,7 @@ import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/f
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
-import { AlertCircle } from "lucide-react"
+import { AlertCircleIcon } from "lucide-react"
 import { useContext } from "react"
 
 export const ViewerFollowerList = () => {
@@ -37,7 +37,7 @@ export const ViewerFollowerList = () => {
         <p className="text-2xl">{"フォロワー"}</p>
         {data?.user?.followers?.length === 0 && (
           <Alert>
-            <AlertCircle />
+            <AlertCircleIcon />
             <AlertTitle>{"誰もあなたをフォローしていません"}</AlertTitle>
           </Alert>
         )}

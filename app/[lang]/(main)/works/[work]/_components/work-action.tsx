@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Folder, Heart, MoreHorizontal, Share } from "lucide-react"
+import { FolderIcon, HeartIcon } from "lucide-react"
 import MenuPopover from "./menu-popover"
 import { SharePopover } from "./share-popover"
 
@@ -19,14 +19,14 @@ export const WorkAction = (props: Props) => {
     <div className="flex justify-end">
       <div className="flex space-x-2">
         <Button disabled>
-          <Heart className="mr-2" />
+          <HeartIcon className="mr-2" />
           <div className={"flex space-x-2"}>
             <span>{"いいね"}</span>
             <span>{props.workLikesCount}</span>
           </div>
         </Button>
         <Button disabled aria-label={"フォルダに追加"} size={"icon"}>
-          <Folder />
+          <FolderIcon />
         </Button>
         <SharePopover title={props.title} />
         <MenuPopover />

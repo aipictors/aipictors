@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Download, Stamp } from "lucide-react"
+import { DownloadIcon, StampIcon } from "lucide-react"
 
 type Props = {
   title?: string
@@ -23,11 +23,11 @@ export const StickerCard = (props: Props) => {
           </h3>
           <div className="flex items-center space-x-4">
             <div className="flex">
-              <Download className="w-4 mr-2" />
+              <DownloadIcon className="w-4 mr-2" />
               <span>{props.downloadsCount}</span>
             </div>
             <div className="flex">
-              <Stamp className="w-4 mr-2" />
+              <StampIcon className="w-4 mr-2" />
               <span>{props.usesCount}</span>
             </div>
           </div>

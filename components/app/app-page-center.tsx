@@ -15,7 +15,7 @@ export const AppPageCenter = (props: Props) => {
     <main
       className={cn(
         "justify-center items-start mx-auto overflow-x-hidden w-full max-w-4xl",
-        "pb-16 pt-2 md:pt-4 px-sm md:px-md",
+        "pb-16 pt-2 md:pt-0 px-sm md:px-md",
         "space-y-4 md:space-y-8",
         props.className,
       )}

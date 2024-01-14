@@ -4,7 +4,7 @@ import { DescriptionSettingDialog } from "@/app/[lang]/(main)/my/albums/[album]/
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Settings } from "lucide-react"
+import { SettingsIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
 export const ViewerAlbumWorkDescription = () => {
@@ -24,7 +24,7 @@ export const ViewerAlbumWorkDescription = () => {
                 <p>{"name"}</p>
               </div>
               <Button onClick={onOpen}>
-                <Settings />
+                <SettingsIcon />
               </Button>
             </div>
             <div className="flex" />

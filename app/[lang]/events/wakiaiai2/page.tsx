@@ -4,7 +4,7 @@ import { EventImage } from "@/app/[lang]/events/wakiaiai2/_components/event-imag
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { MousePointerClick } from "lucide-react"
+import { MousePointerClickIcon } from "lucide-react"
 import type { Metadata } from "next"
 
 const EventWakiaiaiPage = async () => {
@@ -56,7 +56,7 @@ const EventWakiaiaiPage = async () => {
           >
             <Button variant={"outline"} className="text-lg font-bold m-4">
               出展・展示参加者募集中
-              <MousePointerClick className="ml-2" />
+              <MousePointerClickIcon className="ml-2" />
             </Button>
           </a>
         </div>

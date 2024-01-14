@@ -1,5 +1,5 @@
 import { AccountNavigation } from "@/app/[lang]/account/_components/account-navigation"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 /**
@@ -8,9 +8,9 @@ import type { Metadata } from "next"
  */
 const AccountPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <AccountNavigation />
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

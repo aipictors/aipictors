@@ -33,14 +33,5 @@ export const PlusAbout = () => {
     }
   }
 
-  return (
-    <div className="space-y-8 pb-8">
-      <div className="space-y-2">
-        <p className="whitespace-pre-wrap">
-          {"Aipictors+に加入してサービス内で特典を受けることができます。"}
-        </p>
-      </div>
-      <PassPlanList onSelect={onSelect} isLoading={isLoading} />
-    </div>
-  )
+  return <PassPlanList onSelect={onSelect} isLoading={isLoading} />
 }

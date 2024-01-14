@@ -8,7 +8,7 @@ import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ApolloError, useMutation } from "@apollo/client"
-import { Eye } from "lucide-react"
+import { EyeIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -66,7 +66,7 @@ export const AccountPasswordForm = () => {
               setShowPassword(!showPassword)
             }}
           >
-            <Eye />
+            <EyeIcon />
           </Button>
         </div>
       </div>
@@ -88,7 +88,7 @@ export const AccountPasswordForm = () => {
               setShowNewPassword(!showNewPassword)
             }}
           >
-            <Eye />
+            <EyeIcon />
           </Button>
         </div>
         {/* <Stack spacing={1}>

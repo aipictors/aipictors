@@ -1,4 +1,4 @@
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -7,11 +7,11 @@ import type { Metadata } from "next"
  */
 const StickersDownloadsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div className="flex flex-col max-w-lg w-full p-4 space-y-8">
         <p className="font-bold text-2xl">{"DL済みスタンプ"}</p>
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

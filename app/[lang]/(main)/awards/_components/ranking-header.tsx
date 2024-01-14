@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 type Props = {
   year: number
@@ -15,9 +15,9 @@ export const RankingHeader = (props: Props) => {
         <p className="text-2xl">{"ランキング"}</p>
         <div className="flex flex-col">
           <div className="flex">
-            <ChevronLeft />
+            <ChevronLeftIcon />
             <p>{`${props.year}年${props.month}月`}</p>
-            <ChevronRight />
+            <ChevronRightIcon />
           </div>
           {/* <Tabs isFitted variant="line">
             <TabPanels>

@@ -1,6 +1,6 @@
 import { NotificationList } from "@/app/[lang]/(main)/notifications/_components/notification-list"
 import { NotificationTab } from "@/app/[lang]/(main)/notifications/_components/notification-tab"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import { Separator } from "@/components/ui/separator"
 import type { Metadata } from "next"
 
@@ -10,13 +10,13 @@ import type { Metadata } from "next"
  */
 const NotificationsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div>
         <NotificationTab />
         <Separator />
         <NotificationList />
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 
 import { Config } from "@/config"
-import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
+import { ArrowDownToLineIcon, StarIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -89,13 +89,13 @@ export const GenerationEditorHistory = (props: Props) => {
               size={"icon"}
               onClick={onDeleteOpen}
             >
-              <Trash2 className="w-4" />
+              <Trash2Icon className="w-4" />
             </Button>
             <Button disabled variant={"ghost"} size={"icon"} onClick={onDlOpen}>
-              <ArrowDownToLine className="w-4" />
+              <ArrowDownToLineIcon className="w-4" />
             </Button>
             <Button disabled variant={"ghost"} size={"icon"}>
-              <Star className="w-4" />
+              <StarIcon className="w-4" />
             </Button>
           </div>
         )}

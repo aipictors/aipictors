@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "lucide-react"
 import { toast } from "sonner"
 
 /**
@@ -33,7 +33,7 @@ export default function ReportDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2" variant="outline">
-          <Flag />
+          <FlagIcon />
           問題を報告する
         </Button>
       </DialogTrigger>

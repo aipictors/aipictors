@@ -1,12 +1,12 @@
 import { MyAlbum } from "@/app/[lang]/(main)/my/albums/[album]/_components/viewer-album-article"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 const MyAlbumPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <MyAlbum />
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

@@ -3,7 +3,7 @@
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 export const AccountProfileForm = () => {
@@ -27,7 +27,7 @@ export const AccountProfileForm = () => {
     <div className="w-full space-y-8">
       <div className="flex space-x-4">
         <Button aria-label="Search database">
-          <Plus className="mr-2" />
+          <PlusIcon className="mr-2" />
           {"ヘッダー追加ボタン"}
         </Button>
       </div>

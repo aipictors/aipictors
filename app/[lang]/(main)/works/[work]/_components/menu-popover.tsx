@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Download, Flag } from "lucide-react"
+import { DownloadIcon } from "lucide-react"
 import { RiMoreFill } from "react-icons/ri"
 import ReportDialog from "./report-dialog"
 
@@ -25,7 +25,7 @@ export default function MenuPopover() {
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Button className="flex items-center gap-2" variant="outline">
-              <Download />
+              <DownloadIcon />
               ダウンロード
             </Button>
             <ReportDialog />

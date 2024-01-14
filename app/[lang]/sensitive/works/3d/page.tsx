@@ -2,8 +2,8 @@ import type { HotTagsQuery, WorksQuery } from "@/__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "@/__generated__/apollo"
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkList } from "@/app/[lang]/(main)/_components/home-work-list"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const SensitiveWorks3dPage = async () => {
@@ -23,10 +23,10 @@ const SensitiveWorks3dPage = async () => {
   })
 
   return (
-    <MainPage>
+    <AppPage>
       <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
       <HomeWorkList works={worksQuery.data.works} />
-    </MainPage>
+    </AppPage>
   )
 }
 

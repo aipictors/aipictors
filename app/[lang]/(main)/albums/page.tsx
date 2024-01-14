@@ -1,5 +1,5 @@
 import { AlbumCard } from "@/app/[lang]/(main)/albums/_components/album-card"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,11 +8,11 @@ import type { Metadata } from "next"
  */
 const AlbumsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <div className="flex flex-col">
         <AlbumCard />
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

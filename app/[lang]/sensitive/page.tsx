@@ -1,8 +1,8 @@
-import { PlaceholderPage } from "@/app/_components/page/placeholder-page"
+import { AppPlaceholder } from "@/components/app/app-placeholder"
 import type { Metadata } from "next"
 
 const RankingPage = async () => {
-  return <PlaceholderPage>{"センシティブ"}</PlaceholderPage>
+  return <AppPlaceholder>{"センシティブ"}</AppPlaceholder>
 }
 
 export const metadata: Metadata = {

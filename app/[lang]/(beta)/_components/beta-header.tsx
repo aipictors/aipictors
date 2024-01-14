@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Config } from "@/config"
-import { Bell, BellIcon, Menu } from "lucide-react"
+import { BellIcon, MenuIcon } from "lucide-react"
 import Link from "next/link"
 
 type Props = {
@@ -25,7 +25,7 @@ export const BetaHeader = (props: Props) => {
               variant={"secondary"}
               size={"icon"}
             >
-              <Menu />
+              <MenuIcon />
             </Button>
           </SheetTrigger>
           <SheetContent className="p-0" side={"left"}>

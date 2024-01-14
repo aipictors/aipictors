@@ -3,8 +3,8 @@ import { UserDocument } from "@/__generated__/apollo"
 import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
 
 import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -28,14 +28,14 @@ const UserLayout = async (props: Props) => {
   }
 
   return (
-    <MainPage>
+    <AppPage>
       <div className="flex flex-col w-full justify-center">
         <UserProfile user={userQuery.data.user} />
         <main className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={props.params} />
         </main>
       </div>
-    </MainPage>
+    </AppPage>
   )
 }
 

@@ -4,7 +4,7 @@ import type { DailyThemesQuery } from "@/__generated__/apollo"
 import { ThemeListItem } from "@/app/[lang]/(main)/themes/_components/theme-list-item"
 import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-calendar-cells"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 type Props = {
@@ -54,13 +54,13 @@ export const ThemeList = (props: Props) => {
       </div>
       <div className="flex justify-center space-x-4">
         <Button aria-label="previous month" onClick={onPreviousMonth}>
-          <ChevronLeft className="text-lg" />
+          <ChevronLeftIcon className="text-lg" />
         </Button>
         <p className="text-sm leading-none">
           {`${props.year}年${props.month}月`}
         </p>
         <Button aria-label="next month" onClick={onNextMonth}>
-          <ChevronRight className="text-lg" />
+          <ChevronRightIcon className="text-lg" />
         </Button>
       </div>
       <ul className="w-full space-y-2 pr-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7">

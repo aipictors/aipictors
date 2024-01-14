@@ -3,7 +3,7 @@
 import { AlbumWorkDeleteDialog } from "@/app/[lang]/(main)/my/albums/[album]/_components/album-work-delete-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Trash2 } from "lucide-react"
+import { Trash2Icon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
 export const ViewerAlbumWork = () => {
@@ -17,7 +17,7 @@ export const ViewerAlbumWork = () => {
             <div className="flex">
               <p>{"タイトル"}</p>
               <Button onClick={onOpen}>
-                <Trash2 />
+                <Trash2Icon />
               </Button>
             </div>
             <div className="flex">
