@@ -12,9 +12,9 @@ import {
 } from "@/__generated__/apollo"
 import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
 import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
-import { useToast } from "@/components/ui/use-toast"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
+import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
 export const SupportChat = () => {
@@ -39,8 +39,6 @@ export const SupportChat = () => {
     })
   }, 4000)
 
-  const { toast } = useToast()
-
   const onSubmit = async (message: string) => {
     try {
       await createMessage({
@@ -51,7 +49,7 @@ export const SupportChat = () => {
       })
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }

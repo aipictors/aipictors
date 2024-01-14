@@ -13,6 +13,7 @@ import {
 import { Config } from "@/config"
 import {
   GemIcon,
+  LogIn,
   LogInIcon,
   LogOutIcon,
   SettingsIcon,

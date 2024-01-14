@@ -13,7 +13,6 @@ import type {
 import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 
@@ -31,8 +30,6 @@ export const MutedTagList = () => {
   const [text, setText] = useState("")
 
   const count = text.length
-
-  const { toast } = useToast()
 
   const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
     MuteTagDocument,
@@ -62,7 +59,7 @@ export const MutedTagList = () => {
       await refetch()
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({})
+        console.log(error.name)
       }
     }
   }

@@ -8,7 +8,6 @@ import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
 import { captureException } from "@sentry/nextjs"
 import {
   GoogleAuthProvider,
@@ -18,6 +17,7 @@ import {
   signInWithPopup,
 } from "firebase/auth"
 import Link from "next/link"
+import { toast } from "sonner"
 
 /**
  * ログインページ
@@ -25,8 +25,6 @@ import Link from "next/link"
  */
 export const LoginPage = () => {
   const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
-
-  const { toast } = useToast()
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -40,15 +38,15 @@ export const LoginPage = () => {
       })
       const token = result.data?.loginWithPassword.token ?? null
       if (token === null) {
-        toast({ description: "ログインに失敗しました。" })
+        toast("ログインに失敗しました。")
         return
       }
       await signInWithCustomToken(getAuth(), token)
-      toast({ description: "ログインしました。" })
+      toast("ログインしました。")
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }
@@ -59,7 +57,7 @@ export const LoginPage = () => {
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
+        toast("アカウントが見つかりませんでした")
       }
     }
   }
@@ -70,7 +68,7 @@ export const LoginPage = () => {
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
+        toast("アカウントが見つかりませんでした")
       }
     }
   }
