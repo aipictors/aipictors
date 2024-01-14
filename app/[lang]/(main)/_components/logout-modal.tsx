@@ -11,7 +11,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+
 import { getAuth, signOut } from "firebase/auth"
 
 type Props = {
@@ -21,12 +22,10 @@ type Props = {
 }
 
 export const LogoutModal = (props: Props) => {
-  const { toast } = useToast()
-
   const handleLogout = async () => {
     await signOut(getAuth())
     props.onClose()
-    toast({ description: "ログアウトしました。" })
+    toast("ログアウトしました。")
   }
 
   return (

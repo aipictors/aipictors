@@ -2,25 +2,14 @@
 
 import type { WorksQuery } from "@/__generated__/apollo"
 import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
-import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Button } from "@/components/ui/button"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import work from "@/graphql/queries/work/work"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
-import { WheelGesturesPlugin } from "embla-carousel-wheel-gestures"
-import Link from "next/link"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {

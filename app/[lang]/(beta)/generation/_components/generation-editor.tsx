@@ -25,9 +25,9 @@ import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-edito
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import { Suspense, startTransition, useContext, useMemo } from "react"
+import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
 type Props = {
@@ -63,8 +63,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     CreateImageGenerationTaskMutationResult,
     CreateImageGenerationTaskMutationVariables
   >(CreateImageGenerationTaskDocument)
-
-  const { toast } = useToast()
 
   const passType = viewer.viewer?.currentPass?.type ?? null
 
@@ -129,10 +127,10 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       startTransition(() => {
         refetch()
       })
-      toast({ description: "タスクを作成しました" })
+      toast("タスクを作成しました")
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }

@@ -1,7 +1,7 @@
 "use client"
 
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 
 type Props = {
