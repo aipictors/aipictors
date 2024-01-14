@@ -1,18 +1,23 @@
 # ルール
 
-## 関数名
+いくつか開発時のルールのメモを残します。
 
-以下の変数名のルールに従って変数を定義してます。
+## コンポーネント
 
-- onXxx - Props
+基本的に以下のようなコードを書いてます。
 
+- 分割代入引数を使用しない
+- export defaultを使用しない
+- Propsの型を定義する
+
+これはサンプルのコードです。
 
 ```tsx
 type Props = {
   onClick(): void
 }
 
-const MyButton = (props: Props) => {
+export function MyButton (props: Props) {
   const onClick = () => {
     props.onClick()
   }
@@ -25,3 +30,24 @@ const MyButton = (props: Props) => {
 }
 ```
 
+## Appディレクトリ
+
+パスにならないディレクトリはアンダースコアを使用します。
+
+- _components
+- _hooks
+
+ファイル名は小文字とハイフンを使用します。
+
+- my-component.tsx
+- my-component.test.tsx
+
+pageやlayoutのようなルールのあるファイル以外は_utilsなどのディレクトリにまとめます。
+
+```
+├── page.tsx
+├── _utils
+│   └── my-util.ts
+└── _hooks
+    └── use-my-hook.ts
+```
