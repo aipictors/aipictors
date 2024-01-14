@@ -1,6 +1,8 @@
 "use client"
 
 import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
+import { LoginWithGoogle } from "@/app/[lang]/(main)/_components/login-with-google"
+import { LoginWithX } from "@/app/[lang]/(main)/_components/login-with-x"
 
 import { LoginForm } from "@/app/_components/login-form"
 import type { FormLogin } from "@/app/_types/form-login"
@@ -13,14 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
-import { captureException } from "@sentry/nextjs"
-import {
-  GoogleAuthProvider,
-  TwitterAuthProvider,
-  getAuth,
-  signInWithCustomToken,
-  signInWithPopup,
-} from "firebase/auth"
+import { getAuth, signInWithCustomToken } from "firebase/auth"
 import Link from "next/link"
 
 type Props = {
@@ -58,53 +53,25 @@ export const LoginModal = (props: Props) => {
     }
   }
 
-  const onLoginWithGoogle = async () => {
-    try {
-      await signInWithPopup(getAuth(), new GoogleAuthProvider())
-      props.onClose()
-    } catch (error) {
-      captureException(error)
-      if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
-      }
-    }
-  }
-
-  const onLoginWithTwitter = async () => {
-    try {
-      await signInWithPopup(getAuth(), new TwitterAuthProvider())
-      props.onClose()
-    } catch (error) {
-      captureException(error)
-      if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
-      }
-    }
-  }
-
   return (
-    <Dialog
-      open={props.isOpen}
-      onOpenChange={() => {
-        props.onClose()
-      }}
-    >
+    <Dialog open={props.isOpen} onOpenChange={() => props.onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
         </DialogHeader>
-        <Button className="w-full" onClick={onLoginWithGoogle}>
-          {"Googleでログイン"}
-        </Button>
-        <Button className="w-full" onClick={onLoginWithTwitter}>
-          {"Xでログイン"}
-        </Button>
+
+        <LoginWithGoogle onClose={props.onClose} disabled={isLoading} />
+        <LoginWithX onClose={props.onClose} disabled={isLoading} />
+
         <Separator />
+
         <div className="w-full space-y-2">
           <p className="text-sm">{"またはパスワードでログイン"}</p>
           <LoginForm onSubmit={onLogin} isLoading={isLoading} />
         </div>
+
         <Separator />
+
         <div className={"flex flex-col w-full gap-y-2"}>
           <p className="text-sm">{"アカウントをお持ちで無い方はこちら"}</p>
           <Link
@@ -112,7 +79,8 @@ export const LoginModal = (props: Props) => {
             target="_blank"
             href={"https://www.aipictors.com/login/"}
           >
-            <Button className="w-full" variant={"secondary"}>
+            {/* ここでも isLoading がtrueのときdisabled */}
+            <Button className="w-full" variant={"secondary"} disabled={isLoading}>
               {"アカウント作成"}
             </Button>
           </Link>

@@ -1,5 +1,6 @@
 "use client"
 
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -87,8 +88,8 @@ export const HomeUserNavigationMenu = (props: Props) => {
         )}
         {appContext.isNotLoggedIn && (
           <DropdownMenuItem onClick={props.onLogin}>
-            <LogInIcon className="w-4 inline-block mr-2" />
-            <span>{"ログイン"}</span>
+            <LogIn className="w-4 inline-block mr-2" />
+            <p>{"ログイン"}</p>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>
