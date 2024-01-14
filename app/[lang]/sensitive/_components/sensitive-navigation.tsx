@@ -3,27 +3,34 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { Separator } from "@/components/ui/separator"
-import { Award, Folder, Home, LibraryBig, Lightbulb, Undo2 } from "lucide-react"
+import {
+  AwardIcon,
+  FolderIcon,
+  HomeIcon,
+  LibraryBigIcon,
+  LightbulbIcon,
+  Undo2Icon,
+} from "lucide-react"
 
 export const SensitiveNavigationList = () => {
   return (
     <div className="flex flex-col space-y-1">
-      <HomeNavigationButton href={"/"} icon={Undo2}>
+      <HomeNavigationButton href={"/"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} icon={Home}>
+      <HomeNavigationButton href={"/sensitive"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/themes"} icon={Lightbulb}>
+      <HomeNavigationButton href={"/sensitive/themes"} icon={LightbulbIcon}>
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/awards"} icon={Award}>
+      <HomeNavigationButton href={"/sensitive/awards"} icon={AwardIcon}>
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/albums"} icon={LibraryBig}>
+      <HomeNavigationButton href={"/sensitive/albums"} icon={LibraryBigIcon}>
         {"シリーズ"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/collections"} icon={Folder}>
+      <HomeNavigationButton href={"/sensitive/collections"} icon={FolderIcon}>
         {"コレクション"}
       </HomeNavigationButton>
       <div className="py-2">

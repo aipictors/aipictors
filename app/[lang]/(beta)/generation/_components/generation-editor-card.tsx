@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { HelpCircle } from "lucide-react"
+import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
   title: string
@@ -30,7 +30,7 @@ export const GenerationEditorCard = (props: Props) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button size={"icon"} variant={"ghost"}>
-                    <HelpCircle />
+                    <HelpCircleIcon />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="font-size-md whitespace-pre-wrap">

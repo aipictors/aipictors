@@ -2,7 +2,7 @@
 
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Moon, Sun } from "lucide-react"
+import { MoonIcon, SunIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useContext } from "react"
 
@@ -27,8 +27,8 @@ export const ThemeModeButton = () => {
       className="w-full justify-start"
       size={"sm"}
     >
-      {theme !== "dark" && <Sun className="mr-4 w-4">{"Light"}</Sun>}
-      {theme === "dark" && <Moon className="mr-4 w-4">{"Light"}</Moon>}
+      {theme !== "dark" && <SunIcon className="mr-4 w-4">{"Light"}</SunIcon>}
+      {theme === "dark" && <MoonIcon className="mr-4 w-4">{"Light"}</MoonIcon>}
       <span>{theme === "dark" ? "ライトモード" : "ダークモード"}</span>
     </Button>
   )

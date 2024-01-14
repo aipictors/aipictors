@@ -2,8 +2,8 @@ import type { HotTagsQuery, WorksQuery } from "@/__generated__/apollo"
 import { HotTagsDocument, WorksDocument } from "@/__generated__/apollo"
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const HomePage = async () => {
@@ -27,7 +27,7 @@ const HomePage = async () => {
   })
 
   return (
-    <MainPage className="space-y-4">
+    <AppPage className="space-y-4">
       <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
       <HomeWorkSection
         title={"イラスト無料生成で参考にできる作品"}
@@ -49,7 +49,7 @@ const HomePage = async () => {
         title={"＃タグのおすすめ作品"}
         works={worksQuery.data.works!}
       />
-    </MainPage>
+    </AppPage>
   )
 }
 

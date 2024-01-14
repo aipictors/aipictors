@@ -4,8 +4,8 @@ import { RelatedModelList } from "@/app/[lang]/(main)/search/_components/related
 import { RelatedTagList } from "@/app/[lang]/(main)/search/_components/related-tag-list"
 import { SearchHeader } from "@/app/[lang]/(main)/search/_components/search-header"
 import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const SearchPage = async () => {
@@ -20,12 +20,12 @@ const SearchPage = async () => {
   })
 
   return (
-    <MainPage>
+    <AppPage>
       <RelatedTagList />
       <RelatedModelList />
       <SearchHeader />
       <WorkList works={worksQuery.data.works ?? []} />
-    </MainPage>
+    </AppPage>
   )
 }
 

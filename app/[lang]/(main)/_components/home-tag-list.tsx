@@ -17,9 +17,8 @@ type Props = {
  */
 export const HomeTagList = (props: Props) => {
   return (
-    <section>
+    <section className="overflow-scroll w-full">
       <Splide
-        className="pl-4"
         options={{
           ...Config.splideDefaultOptions,
           rewind: true,

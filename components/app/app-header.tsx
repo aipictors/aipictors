@@ -11,7 +11,7 @@ export const AppHeader = (props: Props) => {
         <div
           className={cn(
             "flex justify-between items-center",
-            "w-full max-w-7xl mx-auto",
+            "w-full max-w-screen-xl mx-auto",
             "py-4 px-sm md:px-md gap-x-4",
           )}
         >

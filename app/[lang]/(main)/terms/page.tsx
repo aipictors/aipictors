@@ -1,13 +1,13 @@
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 const TermsPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <article>
         <h1>{"利用規約"}</h1>
       </article>
-    </MainPage>
+    </AppPage>
   )
 }
 

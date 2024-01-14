@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Trash2 } from "lucide-react"
+import { Trash2Icon } from "lucide-react"
 
 export const ViewerAlbum = () => {
   return (
@@ -12,7 +12,7 @@ export const ViewerAlbum = () => {
       </Button>
       <div className="flex">
         <p>{"タイトル"}</p>
-        <Trash2 />
+        <Trash2Icon />
       </div>
     </Card>
   )

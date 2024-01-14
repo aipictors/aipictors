@@ -1,15 +1,15 @@
 import { SettingRestrictionForm } from "@/app/[lang]/settings/restriction/_components/account-restriction-form"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 const SettingRestrictionPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <div className="w-full space-y-8">
         <p className="font-bold text-2xl">{"非表示対象"}</p>
         <SettingRestrictionForm />
       </div>
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

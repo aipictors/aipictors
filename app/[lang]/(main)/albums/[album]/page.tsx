@@ -8,8 +8,8 @@ import { AlbumDocument, AlbumWorksDocument } from "@/__generated__/apollo"
 import { AlbumArticleHeader } from "@/app/[lang]/(main)/albums/[album]/_components/album-article-header"
 import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-description"
 import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 type Props = {
@@ -45,7 +45,7 @@ const AlbumPage = async (props: Props) => {
   })
 
   return (
-    <MainPage>
+    <AppPage>
       <article className="flex">
         <div className="flex flex-col">
           <AlbumArticleHeader albumQuery={albumQuery.data} />
@@ -53,7 +53,7 @@ const AlbumPage = async (props: Props) => {
         </div>
         <AlbumWorkDescription albumQuery={albumQuery.data} />
       </article>
-    </MainPage>
+    </AppPage>
   )
 }
 

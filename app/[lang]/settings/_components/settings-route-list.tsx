@@ -2,7 +2,14 @@
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { Config } from "@/config"
-import { Bell, BookmarkX, Image, Medal, Settings, UserX } from "lucide-react"
+import {
+  BellIcon,
+  BookmarkXIcon,
+  ImageIcon,
+  MedalIcon,
+  SettingsIcon,
+  UserXIcon,
+} from "lucide-react"
 
 export const SettingsRouteList = () => {
   return (
@@ -10,34 +17,34 @@ export const SettingsRouteList = () => {
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/notification"}
-        icon={Bell}
+        icon={BellIcon}
       >
         {"通知・いいね"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/restriction"}
-        icon={Image}
+        icon={ImageIcon}
       >
         {"表示コンテンツ"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/settings/muted/users"} icon={UserX}>
+      <HomeNavigationButton href={"/settings/muted/users"} icon={UserXIcon}>
         {"ユーザミュート"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/settings/muted/tags"} icon={BookmarkX}>
+      <HomeNavigationButton href={"/settings/muted/tags"} icon={BookmarkXIcon}>
         {"タグミュート"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/request"}
-        icon={Medal}
+        icon={MedalIcon}
       >
         {"支援リクエスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/settings/interface"}
-        icon={Settings}
+        icon={SettingsIcon}
       >
         {"UIカスタム"}
       </HomeNavigationButton>

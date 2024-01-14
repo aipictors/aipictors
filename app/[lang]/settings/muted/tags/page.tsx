@@ -1,15 +1,15 @@
 import { MutedTagList } from "@/app/[lang]/settings/muted/tags/_components/muted-tag-list"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
 const SettingMutedTagsPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <div className="w-full space-y-8">
         <p className="font-bold text-2xl">ミュートしているタグ</p>
         <MutedTagList />
       </div>
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

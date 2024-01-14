@@ -1,5 +1,5 @@
 import { GuidelineArticle } from "@/app/[lang]/(main)/guideline/_components/guideline-article"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,9 +8,9 @@ import type { Metadata } from "next"
  */
 const GuidelinePage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <GuidelineArticle />
-    </MainPage>
+    </AppPage>
   )
 }
 

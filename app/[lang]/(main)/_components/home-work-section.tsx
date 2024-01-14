@@ -28,7 +28,7 @@ export const HomeWorkSection = (props: Props) => {
   }))
 
   return (
-    <section className="space-y-4 pl-4 pr-4 lg:pr-8">
+    <section className="space-y-4">
       <div className="flex justify-between">
         <h2 className="items-center space-x-2 text-2xl font-bold">
           {props.title}
