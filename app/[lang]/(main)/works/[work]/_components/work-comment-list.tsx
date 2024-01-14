@@ -14,7 +14,6 @@ import { useBoolean } from "usehooks-ts"
 
 type Props = {
   work: NonNullable<WorkCommentsQuery["work"]>
-  isLogout(): void
 }
 
 /**
