@@ -17,6 +17,9 @@ dependencies:
   '@dnd-kit/sortable':
     specifier: ^8.0.0
     version: 8.0.0(@dnd-kit/core@6.1.0)(react@18.2.0)
+  '@graphql-typed-document-node/core':
+    specifier: ^3.2.0
+    version: 3.2.0(graphql@16.8.1)
   '@hookform/resolvers':
     specifier: ^3.3.4
     version: 3.3.4(react-hook-form@7.49.3)
