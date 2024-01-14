@@ -6,6 +6,7 @@ import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppAside } from "@/components/app/app-aside"
+import { AppColumnLayout } from "@/components/app/app-column-layout"
 import React, { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -43,12 +44,12 @@ const SettingsLayout = (props: Props) => {
         onLogin={onOpenLogin}
         onLogout={onOpenLogout}
       />
-      <div className="flex items-start space-x-0 max-w-screen-xl w-full mx-auto">
+      <AppColumnLayout>
         <AppAside>
           <SettingsRouteList />
         </AppAside>
         {props.children}
-      </div>
+      </AppColumnLayout>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal
         isOpen={isOpenLogout}

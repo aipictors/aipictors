@@ -6,6 +6,7 @@ import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
+import { AppColumnLayout } from "@/components/app/app-column-layout"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/components/ui/use-toast"
 import { useEffect } from "react"
@@ -31,12 +32,12 @@ const MainLayout = (props: Props) => {
   return (
     <>
       <HomeHeader onLogin={onOpenLogin} onLogout={onOpenLogout} />
-      <div className="flex items-start space-x-0 max-w-screen-xl w-full mx-auto">
+      <AppColumnLayout>
         <AppAside>
           <HomeNavigationList onLogin={onOpenLogin} onLogout={onOpenLogout} />
         </AppAside>
         {props.children}
-      </div>
+      </AppColumnLayout>
       <HomeFooter />
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
       <LogoutModal
