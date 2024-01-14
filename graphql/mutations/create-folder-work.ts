@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const createFolderWorkMutation = gql`
   mutation CreateFolderWork($input: CreateFolderWorkInput!) {
     createFolderWork(input: $input) {
       id

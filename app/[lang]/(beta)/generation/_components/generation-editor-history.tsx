@@ -1,6 +1,6 @@
 "use client"
 
-import { ViewerImageGenerationTasksQuery } from "@/__generated__/apollo"
+import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
 import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"

@@ -1,6 +1,6 @@
 "use client"
 
-import type { WorksQuery } from "@/__generated__/apollo"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
 import { Button } from "@/components/ui/button"
 import {

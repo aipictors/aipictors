@@ -32,7 +32,7 @@
     "ignore": [
       ".next/**",
       "node_modules/**",
-      "@/__generated__/**",
+      "**/__generated__/**",
       "storybook-static/**",
       "public/**",
       "**/*.{yml,yaml,mdx,md,svg,ico}"

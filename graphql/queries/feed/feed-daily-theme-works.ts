@@ -1,6 +1,10 @@
+import { partialFeedWorkFieldsFragment } from "@/graphql/fragments/partial-feed-work-fields"
+import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
 import { gql } from "@apollo/client"
 
-export default gql`
+export const feedDailyThemeWorksQuery = gql`
+  ${partialFeedWorkFieldsFragment}
+  ${partialUserFieldsFragment}
   query FeedDailyThemeWorks(
     $year: Int!
     $month: Int!

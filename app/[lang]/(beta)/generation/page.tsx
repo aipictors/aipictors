@@ -1,47 +1,45 @@
+import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
+import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
+import { LoadingPage } from "@/app/_components/page/loading-page"
+import { createClient } from "@/app/_contexts/client"
 import type {
   ImageLoraModelsQuery,
   ImageLoraModelsQueryVariables,
   ImageModelsQuery,
   ImageModelsQueryVariables,
-  PromptCategoriesQuery,
   PromptCategoriesQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  ImageLoraModelsDocument,
-  ImageModelsDocument,
-  PromptCategoriesDocument,
-} from "@/__generated__/apollo"
-import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
-import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
-import { LoadingPage } from "@/app/_components/page/loading-page"
-import { createClient } from "@/app/_contexts/client"
+} from "@/graphql/__generated__/graphql"
+import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
+import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
+import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
 import type { Metadata } from "next"
 import { Suspense } from "react"
 
 const GenerationPage = async () => {
   const client = createClient()
 
-  const promptCategoriesQuery = await client.query<
+  const promptCategoriesResp = await client.query<
     PromptCategoriesQuery,
     PromptCategoriesQueryVariables
   >({
-    query: PromptCategoriesDocument,
+    query: promptCategoriesQuery,
     variables: {},
   })
 
-  const imageModelsQuery = await client.query<
+  const imageModelsResp = await client.query<
     ImageModelsQuery,
     ImageModelsQueryVariables
   >({
-    query: ImageModelsDocument,
+    query: imageModelsQuery,
     variables: {},
   })
 
-  const imageLoraModelsQuery = await client.query<
+  const imageLoraModelsResp = await client.query<
     ImageLoraModelsQuery,
     ImageLoraModelsQueryVariables
   >({
-    query: ImageLoraModelsDocument,
+    query: imageLoraModelsQuery,
     variables: {},
   })
 
@@ -49,12 +47,12 @@ const GenerationPage = async () => {
     <>
       <Suspense fallback={<LoadingPage text={"準備中"} />}>
         <GenerationEditor
-          promptCategories={promptCategoriesQuery.data.promptCategories}
-          imageModels={imageModelsQuery.data.imageModels}
-          imageLoraModels={imageLoraModelsQuery.data.imageLoraModels}
+          promptCategories={promptCategoriesResp.data.promptCategories}
+          imageModels={imageModelsResp.data.imageModels}
+          imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
         />
       </Suspense>
-      <GenerationDocument models={imageModelsQuery.data.imageModels} />
+      <GenerationDocument models={imageModelsResp.data.imageModels} />
     </>
   )
 }

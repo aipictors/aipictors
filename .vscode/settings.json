@@ -40,8 +40,8 @@
     ".next": true,
     ".vitepress/cache": true,
     ".yarn": true,
-    "__generated__": true,
     "dist": true,
+    "graphql/__generated__": true,
     "next-env.d.ts": true,
     "package-lock.json": true,
     "pnpm-lock.yaml": true

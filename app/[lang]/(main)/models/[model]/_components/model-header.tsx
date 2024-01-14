@@ -1,6 +1,6 @@
 "use client"
 
-import type { ImageModelQuery } from "@/__generated__/apollo"
+import type { ImageModelQuery } from "@/graphql/__generated__/graphql"
 import { Switch } from "@/components/ui/switch"
 
 type Props = {

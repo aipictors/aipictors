@@ -1,4 +1,4 @@
-import type { WorksQuery } from "@/__generated__/apollo"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import Link from "next/link"
 

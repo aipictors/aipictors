@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const imageGenerationTaskFieldsFragment = gql`
   fragment ImageGenerationTaskFields on ImageGenerationTaskNode {
     id
     prompt

@@ -1,6 +1,6 @@
 "use client"
 
-import { PromptCategoriesQuery } from "@/__generated__/apollo"
+import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog"
 import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"

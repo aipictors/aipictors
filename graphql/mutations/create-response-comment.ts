@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const createResponseCommentMutation = gql`
   mutation CreateResponseComment($input: CreateResponseCommentInput!) {
     createResponseComment(input: $input) {
       id

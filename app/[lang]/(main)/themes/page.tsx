@@ -1,11 +1,10 @@
-import type { DailyThemesQuery } from "@/__generated__/apollo"
-import { DailyThemesDocument } from "@/__generated__/apollo"
 import { ThemeHeader } from "@/app/[lang]/(main)/themes/_components/theme-header"
 import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { AppPageHeader } from "@/components/app/app-page-header"
-import { Separator } from "@/components/ui/separator"
+import type { DailyThemesQuery } from "@/graphql/__generated__/graphql"
+import { dailyThemesQuery } from "@/graphql/queries/daily-theme/daily-themes"
 import type { Metadata } from "next"
 
 const ThemesPage = async () => {
@@ -15,8 +14,8 @@ const ThemesPage = async () => {
 
   const month = new Date().getMonth() + 1
 
-  const dailyThemesQuery = await client.query<DailyThemesQuery>({
-    query: DailyThemesDocument,
+  const dailyThemesResp = await client.query<DailyThemesQuery>({
+    query: dailyThemesQuery,
     variables: {
       offset: 0,
       limit: 31,
@@ -34,7 +33,7 @@ const ThemesPage = async () => {
       <ThemeList
         year={year}
         month={month}
-        dailyThemes={dailyThemesQuery.data.dailyThemes}
+        dailyThemes={dailyThemesResp.data.dailyThemes}
       />
     </AppPage>
   )

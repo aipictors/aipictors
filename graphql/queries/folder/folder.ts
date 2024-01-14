@@ -1,6 +1,8 @@
+import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
 import { gql } from "@apollo/client"
 
-export default gql`
+export const folderQuery = gql`
+  ${workUserFieldsFragment}
   query Folder($id: ID!) {
     folder(id: $id) {
       id

@@ -1,9 +1,7 @@
 "use client"
 
-import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { LoginWithGoogle } from "@/app/[lang]/(main)/_components/login-with-google"
 import { LoginWithX } from "@/app/[lang]/(main)/_components/login-with-x"
-
 import { LoginForm } from "@/app/_components/login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
@@ -14,9 +12,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import { toast } from "sonner"
+import {
+  LoginWithPasswordMutation,
+  LoginWithPasswordMutationVariables,
+} from "@/graphql/__generated__/graphql"
+import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
+import { useMutation } from "@apollo/client"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import Link from "next/link"
+import { toast } from "sonner"
 
 type Props = {
   isOpen: boolean
@@ -24,7 +28,10 @@ type Props = {
 }
 
 export const LoginModal = (props: Props) => {
-  const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
+  const [mutation, { loading: isLoading }] = useMutation<
+    LoginWithPasswordMutation,
+    LoginWithPasswordMutationVariables
+  >(loginWithPasswordMutation)
 
   const onLogin = async (form: FormLogin) => {
     try {

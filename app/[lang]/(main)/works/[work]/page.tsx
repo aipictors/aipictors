@@ -1,16 +1,15 @@
+import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
+import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
+import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import { createClient } from "@/app/_contexts/client"
 import type {
   WorkCommentsQuery,
   WorkCommentsQueryVariables,
   WorkQuery,
   WorkQueryVariables,
-} from "@/__generated__/apollo"
-import { WorkCommentsDocument, WorkDocument } from "@/__generated__/apollo"
-import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
-import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
-// import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
-import { ArticlePage } from "@/app/_components/page/article-page" // これ必要なのか気になる
-import { createClient } from "@/app/_contexts/client"
+} from "@/graphql/__generated__/graphql"
+import { workQuery } from "@/graphql/queries/work/work"
+import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
 import type { Metadata } from "next"
 
 type Props = {
@@ -20,30 +19,30 @@ type Props = {
 const WorkPage = async (props: Props) => {
   const client = createClient()
 
-  const workQuery = await client.query<WorkQuery, WorkQueryVariables>({
-    query: WorkDocument,
+  const workResp = await client.query<WorkQuery, WorkQueryVariables>({
+    query: workQuery,
     variables: {
       id: props.params.work,
     },
   })
 
-  const workCommentsQuery = await client.query<
+  const workCommentsResp = await client.query<
     WorkCommentsQuery,
     WorkCommentsQueryVariables
   >({
-    query: WorkCommentsDocument,
+    query: workCommentsQuery,
     variables: {
       workId: props.params.work,
     },
   })
 
-  if (workQuery.data.work === null) return null
-  if (workCommentsQuery.data.work === null) return null
+  if (workResp.data.work === null) return null
+  if (workCommentsResp.data.work === null) return null
 
   return (
     <div className="px-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row items-start">
-        <WorkArticle work={workQuery.data.work} />
+        <WorkArticle work={workResp.data.work} />
         {/* <div className="w-full lg:max-w-xs"> */}
         {/* <WorkUser
             userName={workQuery.data.work.user.name}
@@ -56,7 +55,7 @@ const WorkPage = async (props: Props) => {
         {/* <p>{"前後の作品"}</p> */}
         {/* </div> */}
       </div>
-      <WorkCommentList work={workCommentsQuery.data.work} />
+      <WorkCommentList work={workCommentsResp.data.work} />
       <WorkRelatedWorkList />
     </div>
   )

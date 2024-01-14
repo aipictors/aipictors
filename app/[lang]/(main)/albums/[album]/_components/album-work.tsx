@@ -1,6 +1,6 @@
 "use client"
 
-import { AlbumWorksQuery } from "@/__generated__/apollo"
+import { AlbumWorksQuery } from "@/graphql/__generated__/graphql"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Card, CardContent } from "@/components/ui/card"
 import { HeartIcon } from "lucide-react"

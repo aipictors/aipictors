@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const milestonesQuery = gql`
   query Milestones($repository: String!) {
     milestones(where: {repository: $repository}) {
       id

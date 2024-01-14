@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const updateAccountPasswordMutation = gql`
   mutation UpdateAccountPassword($input: UpdateAccountPasswordInput!) {
     updateAccountPassword(input: $input) {
       id

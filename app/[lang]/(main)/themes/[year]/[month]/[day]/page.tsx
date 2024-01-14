@@ -1,8 +1,7 @@
-import type { DailyThemesQuery } from "@/__generated__/apollo"
-import { DailyThemesDocument } from "@/__generated__/apollo"
-
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
+import type { DailyThemesQuery } from "@/graphql/__generated__/graphql"
+import { DailyThemesDocument as dailyThemesQuery } from "@/graphql/__generated__/graphql"
 import type { Metadata } from "next"
 
 type Props = {
@@ -16,8 +15,8 @@ type Props = {
 const ThemePage = async (props: Props) => {
   const client = createClient()
 
-  const dailyThemesQuery = await client.query<DailyThemesQuery>({
-    query: DailyThemesDocument,
+  const dailyThemesResp = await client.query<DailyThemesQuery>({
+    query: dailyThemesQuery,
     variables: {
       offset: 0,
       limit: 1,
@@ -29,7 +28,7 @@ const ThemePage = async (props: Props) => {
     },
   })
 
-  const [dailyTheme] = dailyThemesQuery.data.dailyThemes
+  const [dailyTheme] = dailyThemesResp.data.dailyThemes
 
   return (
     <AppPage>

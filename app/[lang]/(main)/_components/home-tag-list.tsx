@@ -1,6 +1,6 @@
 "use client"
 
-import type { HotTagsQuery } from "@/__generated__/apollo"
+import type { HotTagsQuery } from "@/graphql/__generated__/graphql"
 import { TagButton } from "@/app/[lang]/(main)/_components/tag-button"
 import { Config } from "@/config"
 import { Splide, SplideSlide } from "@splidejs/react-splide"

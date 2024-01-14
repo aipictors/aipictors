@@ -1,5 +1,5 @@
 "use client"
-import type { StickersQuery } from "@/__generated__/apollo"
+import type { StickersQuery } from "@/graphql/__generated__/graphql"
 import { StickerCard } from "@/app/[lang]/(beta)/stickers/_components/sticker-card"
 
 type Props = {

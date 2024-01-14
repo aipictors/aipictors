@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialFeedWorkFieldsFragment = gql`
   fragment PartialFeedWorkFields on WorkNode {
     id
     title

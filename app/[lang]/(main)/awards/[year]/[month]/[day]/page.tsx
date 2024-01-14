@@ -1,14 +1,15 @@
 import type { Metadata } from "next"
 
-import type {
-  WorkAwardsQuery,
-  WorkAwardsQueryVariables,
-} from "@/__generated__/apollo"
-import { WorkAwardsDocument } from "@/__generated__/apollo"
 import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
 import { RankingWorkList } from "@/app/[lang]/(main)/awards/_components/ranking-work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
+import type {
+  WorkAwardsQuery,
+  WorkAwardsQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { WorkAwardsDocument } from "@/graphql/__generated__/graphql"
+import { workAwardsQuery } from "@/graphql/queries/award/work-awards"
 
 type Props = {
   params: {
@@ -32,11 +33,11 @@ const DayAwardsPage = async (props: Props) => {
 
   const day = parseInt(props.params.day)
 
-  const workAwardsQuery = await client.query<
+  const workAwardsResp = await client.query<
     WorkAwardsQuery,
     WorkAwardsQueryVariables
   >({
-    query: WorkAwardsDocument,
+    query: workAwardsQuery,
     variables: {
       offset: 0,
       limit: 16,
@@ -51,7 +52,7 @@ const DayAwardsPage = async (props: Props) => {
   return (
     <AppPage>
       <RankingHeader year={year} month={month} day={day} />
-      <RankingWorkList awards={workAwardsQuery.data.workAwards} />
+      <RankingWorkList awards={workAwardsResp.data.workAwards} />
     </AppPage>
   )
 }

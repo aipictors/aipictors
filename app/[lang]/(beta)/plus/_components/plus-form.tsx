@@ -1,13 +1,5 @@
 "use client"
 
-import type {
-  ViewerCurrentPassQuery,
-  ViewerCurrentPassQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  ViewerCurrentPassDocument,
-  useCreateCustomerPortalSessionMutation,
-} from "@/__generated__/apollo"
 import { PassBenefitList } from "@/app/[lang]/(beta)/plus/_components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "@/app/[lang]/(beta)/plus/_components/pass-image-generation-benefit-list"
 import { PlusAbout } from "@/app/[lang]/(beta)/plus/_components/plus-about"
@@ -16,18 +8,29 @@ import { toDateText } from "@/app/_utils/to-date-text"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import type {
+  CreateCustomerPortalSessionMutation,
+  CreateCustomerPortalSessionMutationVariables,
+  ViewerCurrentPassQuery,
+  ViewerCurrentPassQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { ViewerCurrentPassDocument } from "@/graphql/__generated__/graphql"
+import { createCustomerPortalSessionMutation } from "@/graphql/mutations/create-customer-portal-session"
+import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { cn } from "@/lib/utils"
-import { useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { toast } from "sonner"
 
 export const PlusForm = () => {
-  const [mutation, { loading: isLoading }] =
-    useCreateCustomerPortalSessionMutation()
+  const [mutation, { loading: isLoading }] = useMutation<
+    CreateCustomerPortalSessionMutation,
+    CreateCustomerPortalSessionMutationVariables
+  >(createCustomerPortalSessionMutation)
 
   const { data } = useSuspenseQuery<
     ViewerCurrentPassQuery,
     ViewerCurrentPassQueryVariables
-  >(ViewerCurrentPassDocument, {})
+  >(viewerCurrentPassQuery, {})
 
   const onOpenCustomerPortal = async () => {
     try {

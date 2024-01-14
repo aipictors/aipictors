@@ -1,6 +1,6 @@
 "use client"
 
-import type { UserWorksQuery } from "@/__generated__/apollo"
+import type { UserWorksQuery } from "@/graphql/__generated__/graphql"
 import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"

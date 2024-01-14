@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const imageLoraModelsQuery = gql`
   query ImageLoraModels {
     imageLoraModels {
       id

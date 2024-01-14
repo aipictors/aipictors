@@ -1,6 +1,10 @@
+import { subWorkFieldsFragment } from "@/graphql/fragments/sub-work-fields"
+import { userFieldsFragment } from "@/graphql/fragments/user-fields"
 import { gql } from "@apollo/client"
 
-export default gql`
+export const workQuery = gql`
+  ${userFieldsFragment}
+  ${subWorkFieldsFragment}
   query Work($id: ID!) {
     work(id: $id) {
       id

@@ -1,17 +1,17 @@
 "use client"
 
 import {
-  MilestonesDocument,
   MilestonesQuery,
   MilestonesQueryVariables,
-} from "@/__generated__/apollo"
+} from "@/graphql/__generated__/graphql"
+import { milestonesQuery } from "@/graphql/queries/milestone/miestones"
 import { useSuspenseQuery } from "@apollo/client"
 
 export const AppMilestoneList = () => {
   const { data: milestones } = useSuspenseQuery<
     MilestonesQuery,
     MilestonesQueryVariables
-  >(MilestonesDocument, {
+  >(milestonesQuery, {
     variables: { repository: "app" },
   })
 

@@ -3,8 +3,8 @@
 import type {
   UpdateAccountPasswordMutation,
   UpdateAccountPasswordMutationVariables,
-} from "@/__generated__/apollo"
-import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
+} from "@/graphql/__generated__/graphql"
+import { UpdateAccountPasswordDocument } from "@/graphql/__generated__/graphql"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ApolloError, useMutation } from "@apollo/client"

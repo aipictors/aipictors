@@ -1,4 +1,4 @@
-import { ImageLoraModelsQuery } from "@/__generated__/apollo"
+import { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { Config } from "@/config"
 import { useState } from "react"
 

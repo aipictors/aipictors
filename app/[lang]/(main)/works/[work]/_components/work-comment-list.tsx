@@ -1,6 +1,6 @@
 "use client"
 
-import type { WorkCommentsQuery } from "@/__generated__/apollo"
+import type { WorkCommentsQuery } from "@/graphql/__generated__/graphql"
 import { StampDialog } from "@/app/[lang]/(main)/works/[work]/_components/stamp-dialog"
 import { WorkComment } from "@/app/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-response"

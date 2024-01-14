@@ -1,15 +1,16 @@
-import { WorksDocument, WorksQuery } from "@/__generated__/apollo"
 import { CollectionArticle } from "@/app/[lang]/(main)/collections/[collection]/_components/collection-article"
 import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
+import { WorksQuery } from "@/graphql/__generated__/graphql"
+import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
 
 const SensitiveCollectionPage = async () => {
   const client = createClient()
 
-  const worksQuery = await client.query<WorksQuery>({
-    query: WorksDocument,
+  const worksResp = await client.query<WorksQuery>({
+    query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
@@ -19,7 +20,7 @@ const SensitiveCollectionPage = async () => {
   return (
     <AppPage>
       <CollectionArticle />
-      <WorkList works={worksQuery.data.works ?? []} />
+      <WorkList works={worksResp.data.works ?? []} />
     </AppPage>
   )
 }

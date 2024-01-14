@@ -1,6 +1,6 @@
 "use client"
 
-import type { WorkQuery } from "@/__generated__/apollo"
+import type { WorkQuery } from "@/graphql/__generated__/graphql"
 import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"

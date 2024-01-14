@@ -1,6 +1,6 @@
 "use client"
 
-import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
+import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-lora-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-scale"

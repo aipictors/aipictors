@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageModelsQuery } from "@/__generated__/apollo"
+import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import {
   Table,
   TableBody,

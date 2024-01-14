@@ -1,9 +1,9 @@
-import type { StickersQuery } from "@/__generated__/apollo"
-import { StickersDocument } from "@/__generated__/apollo"
 import { StickerList } from "@/app/[lang]/(beta)/stickers/_components/sticker-list"
 import { StickerListHeader } from "@/app/[lang]/(beta)/stickers/_components/sticker-list-header"
 import { StickerSearchForm } from "@/app/[lang]/(beta)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
+import type { StickersQuery } from "@/graphql/__generated__/graphql"
+import { stickersQuery } from "@/graphql/queries/sticker/stickers"
 import type { Metadata } from "next"
 
 /**
@@ -13,8 +13,8 @@ import type { Metadata } from "next"
 const StickersPage = async () => {
   const client = createClient()
 
-  const stickersQuery = await client.query<StickersQuery>({
-    query: StickersDocument,
+  const stickersResp = await client.query<StickersQuery>({
+    query: stickersQuery,
     variables: {
       offset: 0,
       limit: 256,
@@ -27,7 +27,7 @@ const StickersPage = async () => {
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
         <h2 className="text-lg font-bold">{"新着"}</h2>
-        <StickerList stickers={stickersQuery.data.stickers} />
+        <StickerList stickers={stickersResp.data.stickers} />
       </section>
     </main>
   )

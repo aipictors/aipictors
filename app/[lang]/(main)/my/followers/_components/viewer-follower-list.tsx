@@ -1,13 +1,13 @@
 "use client"
 
-import type {
-  UserFollowersQuery,
-  UserFollowersQueryVariables,
-} from "@/__generated__/apollo"
-import { UserFollowersDocument } from "@/__generated__/apollo"
 import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Alert, AlertTitle } from "@/components/ui/alert"
+import type {
+  UserFollowersQuery,
+  UserFollowersQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { userFollowersQuery } from "@/graphql/queries/user/user-followers"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { AlertCircleIcon } from "lucide-react"
 import { useContext } from "react"
@@ -19,7 +19,7 @@ export const ViewerFollowerList = () => {
     UserFollowersQuery,
     UserFollowersQueryVariables
   >(
-    UserFollowersDocument,
+    userFollowersQuery,
     appContext.isLoading || appContext.userId === null
       ? skipToken
       : {

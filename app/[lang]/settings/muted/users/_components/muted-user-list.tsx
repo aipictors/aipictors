@@ -1,15 +1,15 @@
 "use client"
 
-import {
-  MuteUserDocument,
-  MuteUserMutation,
-  MuteUserMutationVariables,
-  ViewerMutedUsersDocument,
-  ViewerMutedUsersQuery,
-  ViewerMutedUsersQueryVariables,
-} from "@/__generated__/apollo"
 import { MutedUser } from "@/app/[lang]/settings/muted/users/_components/muted-user"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import {
+  MuteUserMutation,
+  MuteUserMutationVariables,
+  ViewerMutedUsersQuery,
+  ViewerMutedUsersQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { muteUserMutation } from "@/graphql/mutations/mute-user"
+import { viewerMutedUsersQuery } from "@/graphql/queries/viewer/viewer-muted-users"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext } from "react"
 
@@ -19,13 +19,13 @@ export const MutedUserList = () => {
   const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedUsersQuery,
     ViewerMutedUsersQueryVariables
-  >(ViewerMutedUsersDocument, {
+  >(viewerMutedUsersQuery, {
     skip: appContext.isLoading,
     variables: { offset: 0, limit: 128 },
   })
 
   const [mutation] = useMutation<MuteUserMutation, MuteUserMutationVariables>(
-    MuteUserDocument,
+    muteUserMutation,
   )
 
   const handleUnmute = async (userID: string) => {

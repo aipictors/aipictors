@@ -1,9 +1,9 @@
-import type { UserQuery, UserQueryVariables } from "@/__generated__/apollo"
-import { UserDocument } from "@/__generated__/apollo"
 import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
 import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
+import { UserQuery, UserQueryVariables } from "@/graphql/__generated__/graphql"
+import { userQuery } from "@/graphql/queries/user/user"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -15,21 +15,21 @@ type Props = {
 const UserLayout = async (props: Props) => {
   const client = createClient()
 
-  const userQuery = await client.query<UserQuery, UserQueryVariables>({
-    query: UserDocument,
+  const userResp = await client.query<UserQuery, UserQueryVariables>({
+    query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
     },
   })
 
-  if (userQuery.data.user === null) {
+  if (userResp.data.user === null) {
     return notFound()
   }
 
   return (
     <AppPage>
       <div className="flex flex-col w-full justify-center">
-        <UserProfile user={userQuery.data.user} />
+        <UserProfile user={userResp.data.user} />
         <main className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={props.params} />
         </main>

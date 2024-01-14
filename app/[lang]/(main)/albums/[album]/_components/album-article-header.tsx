@@ -1,6 +1,6 @@
 "use client"
 
-import { AlbumQuery } from "@/__generated__/apollo"
+import { AlbumQuery } from "@/graphql/__generated__/graphql"
 import { ShareIcon } from "lucide-react"
 
 type Props = {

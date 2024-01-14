@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const passFieldsFragment = gql`
   fragment PassFields on PassNode {
     id
     type

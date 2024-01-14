@@ -1,20 +1,5 @@
 "use client"
 
-import {
-  CreateImageGenerationTaskDocument,
-  CreateImageGenerationTaskMutationResult,
-  CreateImageGenerationTaskMutationVariables,
-  ImageGenerationSizeType,
-  ImageLoraModelsQuery,
-  type ImageModelsQuery,
-  type PromptCategoriesQuery,
-  ViewerCurrentPassDocument,
-  ViewerCurrentPassQuery,
-  ViewerCurrentPassQueryVariables,
-  ViewerImageGenerationTasksDocument,
-  ViewerImageGenerationTasksQuery,
-  ViewerImageGenerationTasksQueryVariables,
-} from "@/__generated__/apollo"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
@@ -25,6 +10,21 @@ import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-edito
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
+import {
+  CreateImageGenerationTaskMutation,
+  CreateImageGenerationTaskMutationVariables,
+  ImageGenerationSizeType,
+  ImageLoraModelsQuery,
+  type ImageModelsQuery,
+  type PromptCategoriesQuery,
+  ViewerCurrentPassQuery,
+  ViewerCurrentPassQueryVariables,
+  ViewerImageGenerationTasksQuery,
+  ViewerImageGenerationTasksQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
+import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import { Suspense, startTransition, useContext, useMemo } from "react"
 import { toast } from "sonner"
@@ -42,13 +42,13 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   const { data: viewer } = useSuspenseQuery<
     ViewerCurrentPassQuery,
     ViewerCurrentPassQueryVariables
-  >(ViewerCurrentPassDocument, {})
+  >(viewerCurrentPassQuery, {})
 
   const { data, refetch } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
     ViewerImageGenerationTasksQueryVariables
   >(
-    ViewerImageGenerationTasksDocument,
+    viewerImageGenerationTasksQuery,
     appContext.isLoggedIn
       ? {
           variables: {
@@ -60,9 +60,9 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   )
 
   const [createTask, { loading: isLoading }] = useMutation<
-    CreateImageGenerationTaskMutationResult,
+    CreateImageGenerationTaskMutation,
     CreateImageGenerationTaskMutationVariables
-  >(CreateImageGenerationTaskDocument)
+  >(createImageGenerationTaskMutation)
 
   const passType = viewer.viewer?.currentPass?.type ?? null
 

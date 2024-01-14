@@ -1,9 +1,9 @@
-import type { ImageModelsQuery } from "@/__generated__/apollo"
-import { ImageModelsDocument } from "@/__generated__/apollo"
 import { GoogleAdsense } from "@/app/[lang]/(main)/_components/google-adsense"
 import { ImageModelList } from "@/app/[lang]/(main)/models/_components/image-model-list"
 import { ArticlePage } from "@/app/_components/page/article-page"
 import { createClient } from "@/app/_contexts/client"
+import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import type { Metadata } from "next"
 
 /**
@@ -14,7 +14,7 @@ const ModelsPage = async () => {
   const client = createClient()
 
   const resp = await client.query<ImageModelsQuery>({
-    query: ImageModelsDocument,
+    query: imageModelsQuery,
     variables: {},
   })
 

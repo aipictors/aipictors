@@ -1,6 +1,5 @@
 "use client"
 
-import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
 import { LoginForm } from "@/app/_components/login-form"
 import type { FormLogin } from "@/app/_types/form-login"
@@ -8,6 +7,12 @@ import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import {
+  LoginWithPasswordMutation,
+  LoginWithPasswordMutationVariables,
+} from "@/graphql/__generated__/graphql"
+import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
+import { useMutation } from "@apollo/client"
 import { captureException } from "@sentry/nextjs"
 import {
   GoogleAuthProvider,
@@ -24,7 +29,10 @@ import { toast } from "sonner"
  * @returns
  */
 export const LoginPage = () => {
-  const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
+  const [mutation, { loading: isLoading }] = useMutation<
+    LoginWithPasswordMutation,
+    LoginWithPasswordMutationVariables
+  >(loginWithPasswordMutation)
 
   const onLogin = async (form: FormLogin) => {
     try {

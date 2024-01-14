@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialPromotionFieldsFragment = gql`
   fragment PartialPromotionFields on PromotionNode {
     id
     title

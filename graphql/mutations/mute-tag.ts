@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const muteTagMutation = gql`
   mutation MuteTag($input: MuteTagInput!) {
     muteTag(input: $input) {
       id

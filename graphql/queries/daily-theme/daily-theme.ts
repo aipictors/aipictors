@@ -1,6 +1,8 @@
+import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
 import { gql } from "@apollo/client"
 
-export default gql`
+export const dailyThemeQuery = gql`
+  ${partialWorkFieldsFragment}
   query DailyTheme($id: ID!, $offset: Int!, $limit: Int!) {
     dailyTheme(id: $id) {
       id

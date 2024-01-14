@@ -1,17 +1,15 @@
 "use client"
 
+import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
 import type {
-  CreateMessageMutationResult,
+  CreateMessageMutation,
   CreateMessageMutationVariables,
   ViewerSupportMessagesQuery,
   ViewerSupportMessagesQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  CreateMessageDocument,
-  ViewerSupportMessagesDocument,
-} from "@/__generated__/apollo"
-import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
-import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
+} from "@/graphql/__generated__/graphql"
+import { createMessageMutation } from "@/graphql/mutations/create-message"
+import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
 import { toast } from "sonner"
@@ -21,7 +19,7 @@ export const SupportChat = () => {
   const { data: supportMessages, refetch } = useSuspenseQuery<
     ViewerSupportMessagesQuery,
     ViewerSupportMessagesQueryVariables
-  >(ViewerSupportMessagesDocument, {
+  >(viewerSupportMessagesQuery, {
     variables: {
       limit: 124,
       offset: 0,
@@ -29,9 +27,9 @@ export const SupportChat = () => {
   })
 
   const [createMessage, { loading: isLoading }] = useMutation<
-    CreateMessageMutationResult,
+    CreateMessageMutation,
     CreateMessageMutationVariables
-  >(CreateMessageDocument)
+  >(createMessageMutation)
 
   useInterval(() => {
     startTransition(() => {
