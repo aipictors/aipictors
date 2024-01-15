@@ -1,5 +1,6 @@
 import "@/app/globals.css"
 import "@splidejs/react-splide/css/core"
+import Head from "next/head"
 
 import { RootProviders } from "@/app/_components/root-providers"
 import { AppAnalytics } from "@/components/app/app-analytics"
@@ -18,7 +19,10 @@ type Props = {
 const RootLayout = (props: Props) => {
   return (
     <html lang={"ja"} suppressHydrationWarning>
-      <head>
+      <Head>
+        <title>{Config.siteTitleJA}</title>
+        <meta name="description" content={Config.siteDescriptionJA} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {process.env.NODE_ENV === "production" && (
           <Script
             async
@@ -27,7 +31,8 @@ const RootLayout = (props: Props) => {
             strategy="afterInteractive"
           />
         )}
-      </head>
+        {/* 他のメタタグやリンクもここに追加 */}
+      </Head>
       <body
         className={cn(
           "min-h-screen font-sans antialiased",
@@ -45,7 +50,6 @@ const RootLayout = (props: Props) => {
     </html>
   )
 }
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.aipictors.com/"),
   title: {

@@ -1,7 +1,6 @@
 "use client"
-
-import { useLocalText } from "@/lib/app/hooks/use-local-text"
 import { AppPage } from "@/components/app/app-page"
+import { useLocalText } from "@/lib/app/hooks/use-local-text"
 import { FrownIcon } from "lucide-react"
 
 /**

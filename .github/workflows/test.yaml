@@ -40,8 +40,8 @@ jobs:
       - name: Prebuild
         run: time pnpm run prebuild
       
-      - name: Run Type Cheking
-        run: time pnpm run check
+      # - name: Run Type Cheking
+      #   run: time pnpm run check push時に無くても実行するので、一度消して様子見
       
       - name: Run Test
         run: time pnpm run test
