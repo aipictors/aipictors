@@ -72,15 +72,12 @@ export const BetaNavigationList = (props: Props) => {
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton
-        icon={TbBrandX}
-        href={"https://twitter.com/Aipictors"}
-      >
+      <HomeNavigationButton icon={TbBrandX} href={"https://x.com/Aipictors"}>
         {"Twitter"}
       </HomeNavigationButton>
       <HomeNavigationButton
         icon={TbBrandDiscordFilled}
-        href={"https://discord.gg/CsSbTHYY"}
+        href={"https://discord.com/invite/WPJFSbUNwt"}
       >
         {"Discord"}
       </HomeNavigationButton>

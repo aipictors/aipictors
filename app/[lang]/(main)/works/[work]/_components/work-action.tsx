@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { FolderIcon, HeartIcon } from "lucide-react"
-import MenuPopover from "./menu-popover"
-import { SharePopover } from "./share-popover"
+import MenuPopover from "./work-action-menu"
+import { SharePopover } from "./work-action-share"
 
 type Props = {
   title?: string
@@ -25,7 +25,7 @@ export const WorkAction = (props: Props) => {
             <span>{props.workLikesCount}</span>
           </div>
         </Button>
-        <Button disabled aria-label={"フォルダに追加"} size={"icon"}>
+        <Button aria-label={"フォルダに追加"} size={"icon"}>
           <FolderIcon />
         </Button>
         <SharePopover title={props.title} />

@@ -72,16 +72,19 @@ export const WorkArticle = (props: Props) => {
           <FollowButton />
           <PromptonRequestButton />
         </div>
-        <p className="text-sm">{"一覧をダイアログで見る"}</p>
+        {/* <p className="text-sm">{"一覧をダイアログで見る"}</p> */}
       </div>
       <Carousel>
         <CarouselContent>
           {props.work.user.works.map((work) => (
-            <CarouselItem key={work.id} className="lg:basis-1/4">
+            <CarouselItem
+              key={work.id}
+              className="basis-1/4 md:basis-1/5 lg:basis-1/6"
+            >
               <Link href={`/works/${work.id}`}>
                 <img
                   key={work.id}
-                  className="h-48 w-full object-cover rounded"
+                  className="h-24 md:h-32 lg:h-40 w-auto object-cover rounded"
                   alt=""
                   src={work.largeThumbnailImageURL}
                 />

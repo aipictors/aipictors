@@ -1,14 +1,13 @@
 "use client"
 
+import ReportDialog from "@/app/[lang]/(main)/works/[work]/_components/report-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { DownloadIcon } from "lucide-react"
-import { RiMoreFill } from "react-icons/ri"
-import ReportDialog from "./report-dialog"
+import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
 /**
  * 作品への報告、画像ダウンロードのメニュー
@@ -17,8 +16,8 @@ export default function MenuPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant={"outline"}>
-          <RiMoreFill />
+        <Button size={"icon"}>
+          <MoreHorizontal />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">

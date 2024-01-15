@@ -16,7 +16,7 @@ export default function RootNotFound() {
       <p className="mt-4 text-xl">
         おっと! お探しのページは存在しないようです。
       </p>
-      <Button className="mt-8 px-8 py-2 rounded-md hover:bg-sky-600">
+      <Button className="mt-8 px-8 py-2 rounded-md">
         <Link href="/">ホームに戻る</Link>
       </Button>
     </div>
