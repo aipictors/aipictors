@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input"
 import { ChangeEvent, useRef, useState } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
 import { RxUpload } from "react-icons/rx"
-import TextareaAutosize from "react-textarea-autosize"
+import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react"
 
 type Props = {
   isLoading: boolean
@@ -77,11 +78,7 @@ export const MessageInput = (props: Props) => {
           />
         </div>
       ))}
-      <TextareaAutosize
-        autoFocus
-        minRows={1}
-        maxRows={3}
-        aria-label="Chat input box"
+      <Textarea
         className="resize-none w-full border rounded-md p-2 h-auto"
         placeholder="メッセージを入力してください"
         value={message}

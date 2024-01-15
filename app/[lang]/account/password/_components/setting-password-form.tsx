@@ -3,14 +3,14 @@
 import type {
   UpdateAccountPasswordMutation,
   UpdateAccountPasswordMutationVariables,
-} from "@/__generated__/apollo"
-import { UpdateAccountPasswordDocument } from "@/__generated__/apollo"
+} from "@/graphql/__generated__/graphql"
+import { UpdateAccountPasswordDocument } from "@/graphql/__generated__/graphql"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
 import { ApolloError, useMutation } from "@apollo/client"
-import { Eye } from "lucide-react"
+import { EyeIcon } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export const AccountPasswordForm = () => {
   const [newPassword, setNewPassword] = useState("")
@@ -20,8 +20,6 @@ export const AccountPasswordForm = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   const [showNewPassword, setShowNewPassword] = useState(false)
-
-  const { toast } = useToast()
 
   const [mutation, { loading }] = useMutation<
     UpdateAccountPasswordMutation,
@@ -40,10 +38,10 @@ export const AccountPasswordForm = () => {
       })
       setCurrentPassword("")
       setNewPassword("")
-      toast({ title: "パスワードを変更しました" })
+      toast("パスワードを変更しました")
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ title: error.message })
+        toast(error.message)
       }
     }
   }
@@ -68,7 +66,7 @@ export const AccountPasswordForm = () => {
               setShowPassword(!showPassword)
             }}
           >
-            <Eye />
+            <EyeIcon />
           </Button>
         </div>
       </div>
@@ -90,7 +88,7 @@ export const AccountPasswordForm = () => {
               setShowNewPassword(!showNewPassword)
             }}
           >
-            <Eye />
+            <EyeIcon />
           </Button>
         </div>
         {/* <Stack spacing={1}>

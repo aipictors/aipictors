@@ -1,8 +1,12 @@
-import type { UserQuery, UserQueryVariables } from "@/__generated__/apollo"
-import { UserDocument } from "@/__generated__/apollo"
 import { UserSupport } from "@/app/[lang]/(main)/users/[user]/supports/_components/user-support"
 import { createClient } from "@/app/_contexts/client"
+import type {
+  UserQuery,
+  UserQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { userQuery } from "@/graphql/queries/user/user"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 type Props = {
   params: { user: string }
@@ -11,33 +15,40 @@ type Props = {
 const UserSupportsPage = async (props: Props) => {
   const client = createClient()
 
-  const userQuery = await client.query<UserQuery, UserQueryVariables>({
-    query: UserDocument,
+  const userResp = await client.query<UserQuery, UserQueryVariables>({
+    query: userQuery,
     variables: {
       userId: props.params.user,
     },
   })
 
-  if (userQuery.data.user === null) {
-    return <div>404</div>
+  const metadata: Metadata = {
+    robots: { index: false },
+    title: "-",
+  }
+
+  const revalidate = 60
+
+  if (userResp.data.user === null) {
+    return notFound
   }
 
   return (
     <>
       <UserSupport
-        user={userQuery.data.user}
-        userIconImageURL={userQuery.data.user.iconImage?.downloadURL ?? null}
-        userName={userQuery.data.user.name}
+        user={userResp.data.user}
+        userIconImageURL={userResp.data.user.iconImage?.downloadURL ?? null}
+        userName={userResp.data.user.name}
       />
     </>
   )
 }
 
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "-",
-}
+// export const metadata: Metadata = {
+//   robots: { index: false },
+//   title: "-",
+// }
 
-export const revalidate = 60
+// export const revalidate = 60
 
 export default UserSupportsPage

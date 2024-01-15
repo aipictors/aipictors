@@ -1,5 +1,5 @@
 import { join } from "path"
-import { MarkdownDocument } from "@/app/_components/markdown-document"
+import { AppMarkdown } from "@/components/app/app-markdown"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
@@ -12,7 +12,7 @@ const FlutterPrivacyPage = async () => {
   return (
     <div className="flex justify-center py-8 min-h-screen">
       <div className="max-w-[container.sm] mx-auto w-full px-4 md:px-12">
-        <MarkdownDocument>{text}</MarkdownDocument>
+        <AppMarkdown>{text}</AppMarkdown>
       </div>
     </div>
   )

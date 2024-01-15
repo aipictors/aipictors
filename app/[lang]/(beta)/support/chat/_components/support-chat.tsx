@@ -1,27 +1,25 @@
 "use client"
 
+import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
 import type {
-  CreateMessageMutationResult,
+  CreateMessageMutation,
   CreateMessageMutationVariables,
   ViewerSupportMessagesQuery,
   ViewerSupportMessagesQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  CreateMessageDocument,
-  ViewerSupportMessagesDocument,
-} from "@/__generated__/apollo"
-import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
-import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/graphql/__generated__/graphql"
+import { createMessageMutation } from "@/graphql/mutations/create-message"
+import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
+import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
 export const SupportChat = () => {
   const { data: supportMessages, refetch } = useSuspenseQuery<
     ViewerSupportMessagesQuery,
     ViewerSupportMessagesQueryVariables
-  >(ViewerSupportMessagesDocument, {
+  >(viewerSupportMessagesQuery, {
     variables: {
       limit: 124,
       offset: 0,
@@ -29,17 +27,15 @@ export const SupportChat = () => {
   })
 
   const [createMessage, { loading: isLoading }] = useMutation<
-    CreateMessageMutationResult,
+    CreateMessageMutation,
     CreateMessageMutationVariables
-  >(CreateMessageDocument)
+  >(createMessageMutation)
 
   useInterval(() => {
     startTransition(() => {
       refetch()
     })
   }, 4000)
-
-  const { toast } = useToast()
 
   const onSubmit = async (message: string) => {
     try {
@@ -51,7 +47,7 @@ export const SupportChat = () => {
       })
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }

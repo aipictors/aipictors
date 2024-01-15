@@ -1,6 +1,6 @@
 "use client"
 
-import type { ImageLoraModelsQuery } from "@/__generated__/apollo"
+import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { LoraImageModelCard } from "@/app/[lang]/(beta)/generation/_components/lora-image-model-card"
 import { Button } from "@/components/ui/button"
 import {

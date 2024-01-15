@@ -1,8 +1,11 @@
 {
+  "$schema": "https://biomejs.dev/schemas/1.5.1/schema.json",
   "formatter": {
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "indentStyle": "space"
   },
   "linter": {
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "rules": {
       "recommended": true,
       "correctness": {
@@ -25,6 +28,14 @@
     }
   },
   "files": {
-    "ignore": [".next", "node_modules", "@/__generated__"]
+    "ignoreUnknown": true,
+    "ignore": [
+      ".next/**",
+      "node_modules/**",
+      "**/__generated__/**",
+      "storybook-static/**",
+      "public/**",
+      "**/*.{yml,yaml,mdx,md,svg,ico}"
+    ]
   }
 }

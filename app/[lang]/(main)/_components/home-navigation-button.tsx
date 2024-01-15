@@ -52,7 +52,7 @@ export const HomeNavigationButton = (props: Props) => {
   }
 
   return (
-    <Link href={props.href}>
+    <Link className="block" href={props.href}>
       <Button
         variant={"ghost"}
         className="w-full justify-start"

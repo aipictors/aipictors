@@ -1,4 +1,4 @@
-import { PassType } from "@/__generated__/apollo"
+import { PassType } from "@/graphql/__generated__/graphql"
 import { PassPlanDescription } from "@/app/[lang]/(beta)/plus/_components/pass-plan-description"
 import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
 

@@ -1,12 +1,22 @@
 "use client"
 
-import type { WorkQuery } from "@/__generated__/apollo"
+import type { WorkQuery } from "@/graphql/__generated__/graphql"
+import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
+import { FollowButton } from "@/app/_components/button/follow-button"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -24,7 +34,11 @@ export const WorkArticle = (props: Props) => {
           return subWork.image.downloadURL
         })}
       />
-      <WorkAction workLikesCount={props.work.likesCount} />
+      <WorkAction
+        workLikesCount={props.work.likesCount}
+        title={props.work.title}
+        imageUrl={props.work.imageURL}
+      />
       <h1 className="text-lg font-bold">{props.work.title}</h1>
       <div className="flex flex-col space-y-2">
         <span className="text-sm">{"使用モデル名"}</span>
@@ -52,23 +66,32 @@ export const WorkArticle = (props: Props) => {
       <div className="flex justify-between items-center">
         <div className="flex space-x-2 items-center">
           <Avatar>
-            <AvatarImage src={props.work.user.iconImage?.downloadURL} />
+            <Link href={`/users/${props.work.user.login}`}>
+              <AvatarImage src={props.work.user.iconImage?.downloadURL} />
+            </Link>
           </Avatar>
           <span>{props.work.user.name}</span>
-          <Button size={"sm"}>{"フォローする"}</Button>
+          <FollowButton />
+          <PromptonRequestButton />
         </div>
         <p className="text-sm">{"一覧をダイアログで見る"}</p>
       </div>
-      <div className="flex overflow-x-auto space-x-2">
-        {props.work.user.works.map((work) => (
-          <img
-            key={work.id}
-            className="h-32 w-32 rounded"
-            alt=""
-            src={work.largeThumbnailImageURL}
-          />
-        ))}
-      </div>
+      <Carousel>
+        <CarouselContent>
+          {props.work.user.works.map((work) => (
+            <CarouselItem key={work.id} className="lg:basis-1/4">
+              <Link href={`/works/${work.id}`}>
+                <img
+                  key={work.id}
+                  className="h-48 w-full object-cover rounded"
+                  alt=""
+                  src={work.largeThumbnailImageURL}
+                />
+              </Link>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
       <Separator />
     </article>
   )

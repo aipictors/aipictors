@@ -1,9 +1,10 @@
-import type { HotTagsQuery, WorksQuery } from "@/__generated__/apollo"
-import { HotTagsDocument, WorksDocument } from "@/__generated__/apollo"
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
+import type { HotTagsQuery, WorksQuery } from "@/graphql/__generated__/graphql"
+import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
+import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
 
 const HomePage = async () => {
@@ -13,43 +14,43 @@ const HomePage = async () => {
   //   redirect(Config.currentWebSiteURL, RedirectType.replace)
   // }
 
-  const worksQuery = await client.query<WorksQuery>({
-    query: WorksDocument,
+  const worksResp = await client.query<WorksQuery>({
+    query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
     },
   })
 
-  const hotTagsQuery = await client.query<HotTagsQuery>({
-    query: HotTagsDocument,
+  const hotTagsResp = await client.query<HotTagsQuery>({
+    query: hotTagsQuery,
     variables: {},
   })
 
   return (
-    <MainPage className="space-y-4">
-      <HomeTagList hotTags={hotTagsQuery.data.hotTags} />
+    <AppPage className="space-y-4">
+      <HomeTagList hotTags={hotTagsResp.data.hotTags} />
       <HomeWorkSection
         title={"イラスト無料生成で参考にできる作品"}
-        works={worksQuery.data.works!}
+        works={worksResp.data.works!}
         tooltip={"イラスト無料生成で参考にできる作品です。"}
       />
-      <HomeWorkSection title={"おすすめ作品"} works={worksQuery.data.works!} />
-      <HomeWorkSection title={"推薦作品"} works={worksQuery.data.works!} />
+      <HomeWorkSection title={"おすすめ作品"} works={worksResp.data.works!} />
+      <HomeWorkSection title={"推薦作品"} works={worksResp.data.works!} />
       <HomeWorkSection
         title="先日のランキング作品"
-        works={worksQuery.data.works!}
+        works={worksResp.data.works!}
       />
-      <HomeWorkSection title={"コレクション"} works={worksQuery.data.works!} />
-      <HomeWorkSection title={"人気タグ"} works={worksQuery.data.works!} />
-      <HomeWorkSection title={"ショート動画"} works={worksQuery.data.works!} />
-      <HomeWorkSection title={"小説"} works={worksQuery.data.works!} />
-      <HomeWorkSection title={"コラム"} works={worksQuery.data.works!} />
+      <HomeWorkSection title={"コレクション"} works={worksResp.data.works!} />
+      <HomeWorkSection title={"人気タグ"} works={worksResp.data.works!} />
+      <HomeWorkSection title={"ショート動画"} works={worksResp.data.works!} />
+      <HomeWorkSection title={"小説"} works={worksResp.data.works!} />
+      <HomeWorkSection title={"コラム"} works={worksResp.data.works!} />
       <HomeWorkSection
         title={"＃タグのおすすめ作品"}
-        works={worksQuery.data.works!}
+        works={worksResp.data.works!}
       />
-    </MainPage>
+    </AppPage>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import type { UserQuery } from "@/__generated__/apollo"
+import type { UserQuery } from "@/graphql/__generated__/graphql"
 import { Button } from "@/components/ui/button"
 
 type Props = {

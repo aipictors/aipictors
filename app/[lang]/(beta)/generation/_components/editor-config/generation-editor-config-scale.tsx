@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { HelpCircle } from "lucide-react"
+import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
   value: number
@@ -20,7 +20,7 @@ export const GenerationEditorConfigScale = (props: Props) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle />
+              <HelpCircleIcon />
             </TooltipTrigger>
             <TooltipContent>
               {

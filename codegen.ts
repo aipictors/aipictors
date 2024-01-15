@@ -1,20 +1,17 @@
 import type { CodegenConfig } from "@graphql-codegen/cli"
 
-const endPoint = "https://router-6ouzjmdzha-an.a.run.app"
-
 const config: CodegenConfig = {
   overwrite: true,
-  documents: "graphql/**/*.ts",
+  schema: "https://router-6ouzjmdzha-an.a.run.app",
+  documents: "graphql/(fragments|mutations|queries)**/*.ts",
   generates: {
-    "__generated__/apollo.ts": {
-      schema: endPoint,
-      plugins: [
-        "typescript",
-        "typescript-operations",
-        "typescript-react-apollo",
-      ],
+    "graphql/__generated__/": {
+      preset: "client",
+      presetConfig: {
+        fragmentMasking: false,
+      },
       config: {
-        enumsAsConst: true,
+        enumsAsTypes: true,
         avoidOptionals: {
           defaultValue: false,
           field: true,

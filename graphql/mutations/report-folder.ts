@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const reportFolderMutation = gql`
   mutation ReportFolder($input: ReportFolderInput!) {
     reportFolder(input: $input)
   }

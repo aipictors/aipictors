@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 
 export const UserWorkListActions = () => (
   <div className="space-y-4">
@@ -17,7 +17,7 @@ export const UserWorkListActions = () => (
         type="datetime-local"
       />
       <Button aria-label={"メニュー"} className="rounded-full text-sm">
-        <Search />
+        <SearchIcon />
       </Button>
       <Button className="rounded-full text-sm">{"タイルモードON"}</Button>
       <Button className="rounded-full text-sm">

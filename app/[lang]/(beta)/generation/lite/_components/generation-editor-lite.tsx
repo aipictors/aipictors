@@ -1,6 +1,6 @@
 "use client"
 
-import { PromptCategoriesQuery } from "@/__generated__/apollo"
+import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { PromptCategoryIcon } from "@/app/[lang]/(beta)/generation/_components/prompt-category-icon"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"

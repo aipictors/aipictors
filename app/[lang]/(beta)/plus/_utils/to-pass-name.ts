@@ -1,4 +1,4 @@
-import { PassType } from "@/__generated__/apollo"
+import { PassType } from "@/graphql/__generated__/graphql"
 
 export const toPassName = (passType: PassType) => {
   if (passType === "LITE") {

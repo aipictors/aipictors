@@ -1,6 +1,6 @@
 "use client"
 
-import { ViewerImageGenerationTasksQuery } from "@/__generated__/apollo"
+import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
 import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
@@ -10,9 +10,10 @@ import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_c
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+
 import { Config } from "@/config"
-import { ArrowDownToLine, Star, Trash2 } from "lucide-react"
+import { ArrowDownToLineIcon, StarIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -54,8 +55,6 @@ export const GenerationEditorHistory = (props: Props) => {
     setFalse: onCloseInPainting,
   } = useBoolean()
 
-  const { toast } = useToast()
-
   const onUseConfig = () => {
     if (typeof history === "undefined") return
     props.onChangeSampler(history.sampler)
@@ -66,7 +65,7 @@ export const GenerationEditorHistory = (props: Props) => {
     props.onChangePromptText(history.prompt)
     props.onChangeNegativePromptText(history.negativePrompt)
     onClose()
-    toast({ title: "設定を復元しました" })
+    toast("設定を復元しました")
   }
 
   const history = props.tasks.find((task) => {
@@ -90,13 +89,13 @@ export const GenerationEditorHistory = (props: Props) => {
               size={"icon"}
               onClick={onDeleteOpen}
             >
-              <Trash2 className="w-4" />
+              <Trash2Icon className="w-4" />
             </Button>
             <Button disabled variant={"ghost"} size={"icon"} onClick={onDlOpen}>
-              <ArrowDownToLine className="w-4" />
+              <ArrowDownToLineIcon className="w-4" />
             </Button>
             <Button disabled variant={"ghost"} size={"icon"}>
-              <Star className="w-4" />
+              <StarIcon className="w-4" />
             </Button>
           </div>
         )}

@@ -1,11 +1,11 @@
 "use client"
 
+import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
 import {
-  ViewerImageGenerationTasksDocument,
   ViewerImageGenerationTasksQuery,
   ViewerImageGenerationTasksQueryVariables,
-} from "@/__generated__/apollo"
-import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+} from "@/graphql/__generated__/graphql"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 
 /**
@@ -16,7 +16,7 @@ export const GenerationHistoryList = () => {
   const { data } = useSuspenseQuery<
     ViewerImageGenerationTasksQuery,
     ViewerImageGenerationTasksQueryVariables
-  >(ViewerImageGenerationTasksDocument, {
+  >(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
       offset: 0,

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialAlbumFieldsFragment = gql`
   fragment PartialAlbumFields on AlbumNode {
     id
     title

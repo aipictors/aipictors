@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageModelsQuery } from "@/__generated__/apollo"
+import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Check } from "lucide-react"
+import { CheckIcon } from "lucide-react"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -51,13 +51,13 @@ export const GenerationDocument = (props: Props) => {
         <ul>
           <li>
             <div className="flex items-center space-x-2">
-              <Check />
+              <CheckIcon />
               {"すべてのモデルについて個人利用可です。"}
             </div>
           </li>
           <li>
             <div className="flex items-center space-x-2">
-              <Check />
+              <CheckIcon />
               {"すべてのモデルについて商業利用可です。"}
             </div>
           </li>

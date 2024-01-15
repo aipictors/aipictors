@@ -1,4 +1,4 @@
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -7,11 +7,11 @@ import type { Metadata } from "next"
  */
 const SctaPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <article>
         <h1>{"特定商取引法に基づく表記"}</h1>
       </article>
-    </MainPage>
+    </AppPage>
   )
 }
 

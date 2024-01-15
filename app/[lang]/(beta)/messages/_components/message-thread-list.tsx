@@ -1,15 +1,14 @@
 "use client"
 
-import type {
-  ViewerMessageThreadsQuery,
-  ViewerMessageThreadsQueryVariables,
-} from "@/__generated__/apollo"
-import { ViewerMessageThreadsDocument } from "@/__generated__/apollo"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-
 import { ScrollArea } from "@/components/ui/scroll-area"
+import type {
+  ViewerMessageThreadsQuery,
+  ViewerMessageThreadsQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { viewerMessageThreadsQuery } from "@/graphql/queries/viewer/viewer-message-threads"
 import { useSuspenseQuery } from "@apollo/client"
 import Link from "next/link"
 import { startTransition } from "react"
@@ -19,7 +18,7 @@ export const MessageThreadList = () => {
   const { data: threads, refetch } = useSuspenseQuery<
     ViewerMessageThreadsQuery,
     ViewerMessageThreadsQueryVariables
-  >(ViewerMessageThreadsDocument, {
+  >(viewerMessageThreadsQuery, {
     variables: {
       limit: 124,
       offset: 0,
@@ -50,7 +49,7 @@ export const MessageThreadList = () => {
                     <AvatarImage
                       src={messageThread.recipient.iconImage?.downloadURL}
                     />
-                    <AvatarFallback>{"-"}</AvatarFallback>
+                    <AvatarFallback />
                   </Avatar>
                   <span className="whitespace-pre-wrap break-words">
                     {messageThread.recipient.name}

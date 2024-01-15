@@ -1,29 +1,26 @@
 "use client"
 
-import {
-  MuteTagDocument,
-  ViewerMutedTagsDocument,
-} from "@/__generated__/apollo"
+import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
+import { AuthContext } from "@/app/_contexts/auth-context"
+import { Button } from "@/components/ui/button"
 import type {
   MuteTagMutation,
   MuteTagMutationVariables,
   ViewerMutedTagsQuery,
   ViewerMutedTagsQueryVariables,
-} from "@/__generated__/apollo"
-import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
-import { AppContext } from "@/app/_contexts/app-context"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/graphql/__generated__/graphql"
+import { muteTagMutation } from "@/graphql/mutations/mute-tag"
+import { viewerMutedTagsQuery } from "@/graphql/queries/viewer/viewer-muted-tags"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 
 export const MutedTagList = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery<
     ViewerMutedTagsQuery,
     ViewerMutedTagsQueryVariables
-  >(ViewerMutedTagsDocument, {
+  >(viewerMutedTagsQuery, {
     skip: appContext.isLoading,
     variables: { offset: 0, limit: 128 },
   })
@@ -32,10 +29,8 @@ export const MutedTagList = () => {
 
   const count = text.length
 
-  const { toast } = useToast()
-
   const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
-    MuteTagDocument,
+    muteTagMutation,
   )
 
   const handleUnmute = async (tagName: string) => {
@@ -62,7 +57,7 @@ export const MutedTagList = () => {
       await refetch()
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({})
+        console.log(error.name)
       }
     }
   }

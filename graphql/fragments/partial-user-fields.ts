@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialUserFieldsFragment = gql`
   fragment PartialUserFields on UserNode {
     id
     login

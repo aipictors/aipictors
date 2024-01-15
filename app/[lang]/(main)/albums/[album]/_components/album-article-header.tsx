@@ -1,7 +1,7 @@
 "use client"
 
-import { AlbumQuery } from "@/__generated__/apollo"
-import { Share } from "lucide-react"
+import { AlbumQuery } from "@/graphql/__generated__/graphql"
+import { ShareIcon } from "lucide-react"
 
 type Props = {
   albumQuery: AlbumQuery
@@ -16,7 +16,7 @@ export const AlbumArticleHeader = (props: Props) => {
       />
       <div className="flex">
         <p>{props.albumQuery.album?.title}</p>
-        <Share>{"Twitterでシェア"}</Share>
+        <ShareIcon>{"Twitterでシェア"}</ShareIcon>
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 "use client"
 
-import { AppContext } from "@/app/_contexts/app-context"
+import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,7 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Config } from "@/config"
-import { Gem, LogIn, LogOut, Settings, UserCircle, UserCog } from "lucide-react"
+import {
+  GemIcon,
+  LogIn,
+  LogInIcon,
+  LogOutIcon,
+  SettingsIcon,
+  UserCircleIcon,
+  UserCogIcon,
+} from "lucide-react"
 import Link from "next/link"
 import { useContext } from "react"
 
@@ -25,15 +34,15 @@ type Props = {
  * @returns
  */
 export const HomeUserNavigationMenu = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button className="rounded-full flex" size={"icon"}>
           <Avatar>
             <AvatarImage src={appContext.avatarPhotoURL ?? undefined} />
-            <AvatarFallback>{"U"}</AvatarFallback>
+            <AvatarFallback />
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -43,7 +52,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             <a
               href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
             >
-              <UserCircle className="w-4 inline-block mr-2" />
+              <UserCircleIcon className="w-4 inline-block mr-2" />
               <span>{"マイページ"}</span>
             </a>
           </DropdownMenuItem>
@@ -51,7 +60,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/plus"}>
             <DropdownMenuItem>
-              <Gem className="w-4 inline-block mr-2" />
+              <GemIcon className="w-4 inline-block mr-2" />
               <span>{"Aipictors+"}</span>
             </DropdownMenuItem>
           </Link>
@@ -59,7 +68,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {appContext.isLoggedIn && (
           <Link href={"/account/login"}>
             <DropdownMenuItem>
-              <UserCog className="w-4 inline-block mr-2" />
+              <UserCogIcon className="w-4 inline-block mr-2" />
               <span>{"アカウント"}</span>
             </DropdownMenuItem>
           </Link>
@@ -67,21 +76,21 @@ export const HomeUserNavigationMenu = (props: Props) => {
         {Config.isDevelopmentMode && appContext.isLoggedIn && (
           <Link href={"/settings/notification"}>
             <DropdownMenuItem>
-              <Settings className="w-4 inline-block mr-2" />
+              <SettingsIcon className="w-4 inline-block mr-2" />
               <span>{"設定"}</span>
             </DropdownMenuItem>
           </Link>
         )}
         {appContext.isLoggedIn && (
           <DropdownMenuItem onClick={props.onLogout}>
-            <LogOut className="w-4 inline-block mr-2" />
+            <LogOutIcon className="w-4 inline-block mr-2" />
             <span>{"ログアウト"}</span>
           </DropdownMenuItem>
         )}
         {appContext.isNotLoggedIn && (
           <DropdownMenuItem onClick={props.onLogin}>
             <LogIn className="w-4 inline-block mr-2" />
-            <span>{"ログイン"}</span>
+            <p>{"ログイン"}</p>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

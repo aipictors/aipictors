@@ -1,7 +1,7 @@
 "use client"
 
-import type { UserWorksQuery } from "@/__generated__/apollo"
-import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
+import type { UserWorksQuery } from "@/graphql/__generated__/graphql"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Switch } from "@/components/ui/switch"
 import Link from "next/link"
 
@@ -19,7 +19,11 @@ export const UserWorkList = (props: Props) => {
       <ul className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 pr-4 pb-4">
         {props.works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.largeThumbnailImageURL} />
+            <WorkCard
+              imageURL={work.largeThumbnailImageURL}
+              imageWidth={work.largeThumbnailImageWidth}
+              imageHeight={work.largeThumbnailImageHeight}
+            />
           </Link>
         ))}
       </ul>

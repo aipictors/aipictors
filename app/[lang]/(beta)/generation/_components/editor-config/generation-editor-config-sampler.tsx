@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Config } from "@/config"
-import { HelpCircle } from "lucide-react"
+import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
   value: string
@@ -27,7 +27,7 @@ export const GenerationEditorConfigSampler = (props: Props) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle />
+              <HelpCircleIcon />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"ノイズの除去の手法です。"}</p>

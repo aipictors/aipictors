@@ -1,17 +1,20 @@
-import {
-  PassType,
-  useCreatePassCheckoutSessionMutation,
-} from "@/__generated__/apollo"
 import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
-import { useToast } from "@/components/ui/use-toast"
 import { Config } from "@/config"
+import {
+  CreatePassCheckoutSessionMutation,
+  CreatePassCheckoutSessionMutationVariables,
+  PassType,
+} from "@/graphql/__generated__/graphql"
+import { createPassCheckoutSessionMutation } from "@/graphql/mutations/create-pass-checkout-session"
+import { useMutation } from "@apollo/client"
 import { getAnalytics, logEvent } from "firebase/analytics"
+import { toast } from "sonner"
 
 export const PlusAbout = () => {
-  const [mutation, { loading: isLoading }] =
-    useCreatePassCheckoutSessionMutation()
-
-  const { toast } = useToast()
+  const [mutation, { loading: isLoading }] = useMutation<
+    CreatePassCheckoutSessionMutation,
+    CreatePassCheckoutSessionMutationVariables
+  >(createPassCheckoutSessionMutation)
 
   const onSelect = async (passType: PassType) => {
     try {
@@ -24,27 +27,16 @@ export const PlusAbout = () => {
       })
       const pageURL = result.data?.createPassCheckoutSession ?? null
       if (pageURL === null) {
-        toast({
-          description: "セッションの作成に失敗しました。",
-        })
+        toast("セッションの作成に失敗しました。")
         return
       }
       window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }
 
-  return (
-    <div className="space-y-8 pb-8">
-      <div className="space-y-2">
-        <p className="whitespace-pre-wrap">
-          {"Aipictors+に加入してサービス内で特典を受けることができます。"}
-        </p>
-      </div>
-      <PassPlanList onSelect={onSelect} isLoading={isLoading} />
-    </div>
-  )
+  return <PassPlanList onSelect={onSelect} isLoading={isLoading} />
 }

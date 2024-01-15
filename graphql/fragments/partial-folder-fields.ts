@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialFolderFieldsFragment = gql`
   fragment PartialFolderFields on FolderNode {
     id
     title

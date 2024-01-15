@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const paymentFieldsFragment = gql`
   fragment PaymentFields on PaymentNode {
     id
     type

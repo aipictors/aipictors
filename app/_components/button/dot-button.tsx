@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
   onClick(): void
@@ -18,7 +18,7 @@ export const DotButton = (props: Props) => {
       variant={"ghost"}
       onClick={props.onClick}
     >
-      <MoreHorizontal />
+      <MoreHorizontalIcon />
     </Button>
   )
 }

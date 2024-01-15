@@ -1,5 +1,5 @@
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type Props = {
   userIconImageURL?: string
@@ -21,6 +21,7 @@ export const WorkComment = (props: Props) => {
           src={props.userIconImageURL}
           alt=""
         />
+        <AvatarFallback />
       </Avatar>
       <div>
         <span>{props.userName}</span>

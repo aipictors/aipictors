@@ -3,7 +3,7 @@
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Loader2 } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 
 type Props = {
@@ -41,7 +41,7 @@ export const LoginForm = (props: Props) => {
       />
       <Button onClick={onLogin} className="w-full">
         {props.isLoading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <span>{"ログイン"}</span>
         )}

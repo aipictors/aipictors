@@ -1,5 +1,5 @@
 import { StickerArticle } from "@/app/[lang]/(beta)/stickers/[sticker]/_components/sticker-article"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,9 +8,9 @@ import type { Metadata } from "next"
  */
 const StickerPage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <StickerArticle />
-    </MainPage>
+    </AppPage>
   )
 }
 

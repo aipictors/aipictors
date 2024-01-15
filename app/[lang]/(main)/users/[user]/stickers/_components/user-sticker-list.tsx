@@ -1,6 +1,6 @@
 "use client"
 
-import type { UserStickersQuery } from "@/__generated__/apollo"
+import type { UserStickersQuery } from "@/graphql/__generated__/graphql"
 import { StickerCard } from "@/app/[lang]/(beta)/stickers/_components/sticker-card"
 import Link from "next/link"
 

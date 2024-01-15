@@ -1,15 +1,16 @@
-import type {
-  WorkCommentsQuery,
-  WorkCommentsQueryVariables,
-  WorkQuery,
-  WorkQueryVariables,
-} from "@/__generated__/apollo"
-import { WorkCommentsDocument, WorkDocument } from "@/__generated__/apollo"
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
 import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
 import { ArticlePage } from "@/app/_components/page/article-page"
 import { createClient } from "@/app/_contexts/client"
+import type {
+  WorkCommentsQuery,
+  WorkCommentsQueryVariables,
+  WorkQuery,
+  WorkQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { workQuery } from "@/graphql/queries/work/work"
+import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
 import type { Metadata } from "next"
 
 type Props = {
@@ -19,30 +20,30 @@ type Props = {
 const SensitiveWorkPage = async (props: Props) => {
   const client = createClient()
 
-  const workQuery = await client.query<WorkQuery, WorkQueryVariables>({
-    query: WorkDocument,
+  const workResp = await client.query<WorkQuery, WorkQueryVariables>({
+    query: workQuery,
     variables: {
       id: props.params.work,
     },
   })
 
-  const workCommentsQuery = await client.query<
+  const workCommentsResp = await client.query<
     WorkCommentsQuery,
     WorkCommentsQueryVariables
   >({
-    query: WorkCommentsDocument,
+    query: workCommentsQuery,
     variables: {
       workId: props.params.work,
     },
   })
 
-  if (workQuery.data.work === null) return null
-  if (workCommentsQuery.data.work === null) return null
+  if (workResp.data.work === null) return null
+  if (workCommentsResp.data.work === null) return null
 
   return (
     <ArticlePage>
-      <WorkArticle work={workQuery.data.work} />
-      <WorkCommentList work={workCommentsQuery.data.work} />
+      <WorkArticle work={workResp.data.work} />
+      <WorkCommentList work={workCommentsResp.data.work} />
       <WorkRelatedWorkList />
     </ArticlePage>
   )
@@ -51,6 +52,10 @@ const SensitiveWorkPage = async (props: Props) => {
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
+}
+
+export const generateStaticParams = () => {
+  return []
 }
 
 export const revalidate = 60

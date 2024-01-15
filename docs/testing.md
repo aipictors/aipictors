@@ -7,13 +7,13 @@
 こちらのマンドでテストを実行します。
 
 ```
-$ npm run test
+$ pnpm run test
 ```
 
 継続してテストを実行する場合はこちらのコマンドを使用します。
 
 ```
-$ npm run test:watch
+$ pnpm run test:watch
 ```
 
 ## ディレクトリ

@@ -1,11 +1,11 @@
-import type {
-  UserStickersQuery,
-  UserStickersQueryVariables,
-} from "@/__generated__/apollo"
-import { UserStickersDocument } from "@/__generated__/apollo"
 import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
 import { UserStickerList } from "@/app/[lang]/(main)/users/[user]/stickers/_components/user-sticker-list"
 import { createClient } from "@/app/_contexts/client"
+import type {
+  UserStickersQuery,
+  UserStickersQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { userStickersQuery } from "@/graphql/queries/user/user-stickers"
 import type { Metadata } from "next"
 
 type Props = {
@@ -15,11 +15,11 @@ type Props = {
 const UserStickersPage = async (props: Props) => {
   const client = createClient()
 
-  const stickersQuery = await client.query<
+  const stickersResp = await client.query<
     UserStickersQuery,
     UserStickersQueryVariables
   >({
-    query: UserStickersDocument,
+    query: userStickersQuery,
     variables: {
       userId: props.params.user,
       offset: 0,
@@ -30,7 +30,7 @@ const UserStickersPage = async (props: Props) => {
   return (
     <>
       <UserWorkListActions />
-      <UserStickerList stickers={stickersQuery.data.user?.stickers ?? []} />
+      <UserStickerList stickers={stickersResp.data.user?.stickers ?? []} />
     </>
   )
 }

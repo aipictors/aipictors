@@ -83,34 +83,43 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      /**
+       * 追加: カスタムフォントに使用
+       */
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       height: {
         /**
-         * ヘッダーを除いた高さ
+         * 追加: ヘッダーを除いた高さ
          */
         main: "calc(100vh - 72px)",
         /**
-         * ヘッダーの高さ
+         * 追加: ヘッダーの高さ
          */
         header: "72px",
       },
       spacing: {
         /**
-         * 追加
+         * 追加: ページの左右の余白に使用
          */
         sm: "1rem",
         /**
-         * 追加
+         * 追加: ページの左右の余白に使用
          */
         md: "2rem",
       },
-      inset: {
+      width: {
         /**
-         * 追加
+         * 追加: 左のメニュー部分
          */
-        18: "4.5rem",
+        aide: "12rem",
+      },
+      maxWidth: {
+        /**
+         * 左の部分のメニューを除外するページの最大の幅
+         */
+        page: "calc(100% - 12rem)",
       },
     },
   },

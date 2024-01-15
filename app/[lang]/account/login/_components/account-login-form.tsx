@@ -1,40 +1,36 @@
 "use client"
 
+import { AuthContext } from "@/app/_contexts/auth-context"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import type {
   UpdateAccountLoginMutation,
   UpdateAccountLoginMutationVariables,
   ViewerUserQuery,
   ViewerUserQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  UpdateAccountLoginDocument,
-  ViewerUserDocument,
-} from "@/__generated__/apollo"
-import { AppContext } from "@/app/_contexts/app-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/graphql/__generated__/graphql"
+import { updateAccountLoginMutation } from "@/graphql/mutations/update-account-login"
+import { viewerUserQuery } from "@/graphql/queries/viewer/viewer-user"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
+import { toast } from "sonner"
 
 export const AccountLoginForm = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery<
     ViewerUserQuery,
     ViewerUserQueryVariables
-  >(ViewerUserDocument, {
+  >(viewerUserQuery, {
     skip: appContext.isLoading,
   })
-
-  const { toast } = useToast()
 
   const [userId, setUserId] = useState("")
 
   const [mutation, { loading }] = useMutation<
     UpdateAccountLoginMutation,
     UpdateAccountLoginMutationVariables
-  >(UpdateAccountLoginDocument)
+  >(updateAccountLoginMutation)
 
   const handleSubmit = async () => {
     try {
@@ -46,10 +42,10 @@ export const AccountLoginForm = () => {
         },
       })
       setUserId("")
-      toast({ title: "ユーザIDを変更しました" })
+      toast("ユーザIDを変更しました")
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast({ title: "ユーザIDの変更に失敗しました" })
+        toast("ユーザIDの変更に失敗しました")
       }
     }
   }

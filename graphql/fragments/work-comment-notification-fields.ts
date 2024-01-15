@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const workCommentNotificationFieldsFragment = gql`
   fragment WorkCommentNotificationFields on WorkCommentNotificationNode {
     id
     createdAt

@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Dices, HelpCircle } from "lucide-react"
+import { DicesIcon, HelpCircleIcon } from "lucide-react"
 
 type Props = {
   value: number
@@ -21,7 +21,7 @@ export const GenerationEditorConfigSeed = (props: Props) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle />
+              <HelpCircleIcon />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"キャラや構図などを固定したいときに使用します。"}</p>
@@ -50,7 +50,7 @@ export const GenerationEditorConfigSeed = (props: Props) => {
                     props.onChange(-1)
                   }}
                 >
-                  <Dices />
+                  <DicesIcon />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const createWorkMutation = gql`
   mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
       title

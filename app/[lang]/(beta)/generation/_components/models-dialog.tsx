@@ -1,6 +1,6 @@
 "use client"
 
-import type { ImageModelsQuery } from "@/__generated__/apollo"
+import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { ImageModelCard } from "@/app/[lang]/(beta)/generation/_components/image-model-card"
 import { Button } from "@/components/ui/button"
 import {

@@ -1,4 +1,4 @@
-import type { WorkAwardsQuery } from "@/__generated__/apollo"
+import type { WorkAwardsQuery } from "@/graphql/__generated__/graphql"
 import { RankingCard } from "@/app/[lang]/(main)/awards/_components/ranking-card"
 
 type Props = {

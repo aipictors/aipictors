@@ -1,5 +1,5 @@
-import type { WorksQuery } from "@/__generated__/apollo"
-import { WorkCard } from "@/app/[lang]/(main)/works/_components/work-card"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import Link from "next/link"
 
 type Props = {
@@ -12,7 +12,11 @@ export const HomeWorkList = (props: Props) => {
       {props.works?.map((work) => (
         <li key={work.id}>
           <Link href={`/works/${work.id}`}>
-            <WorkCard imageURL={work.largeThumbnailImageURL} />
+            <WorkCard
+              imageURL={work.largeThumbnailImageURL}
+              imageWidth={work.largeThumbnailImageWidth}
+              imageHeight={work.largeThumbnailImageHeight}
+            />
           </Link>
         </li>
       ))}

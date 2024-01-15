@@ -1,20 +1,18 @@
 "use client"
 
+import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
 import type {
-  CreateMessageMutationResult,
+  CreateMessageMutation,
   CreateMessageMutationVariables,
   MessageThreadMessagesQuery,
   MessageThreadMessagesQueryVariables,
-} from "@/__generated__/apollo"
-import {
-  CreateMessageDocument,
-  MessageThreadMessagesDocument,
-} from "@/__generated__/apollo"
-import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
-import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
-import { useToast } from "@/components/ui/use-toast"
+} from "@/graphql/__generated__/graphql"
+import { createMessageMutation } from "@/graphql/mutations/create-message"
+import { messageThreadMessagesQuery } from "@/graphql/queries/message/message-thread-messages"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
+import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
 type Props = {
@@ -25,7 +23,7 @@ export const RecipientMessageList = (props: Props) => {
   const { data, refetch } = useSuspenseQuery<
     MessageThreadMessagesQuery,
     MessageThreadMessagesQueryVariables
-  >(MessageThreadMessagesDocument, {
+  >(messageThreadMessagesQuery, {
     variables: {
       threadId: props.recipientId,
       limit: 124,
@@ -34,17 +32,15 @@ export const RecipientMessageList = (props: Props) => {
   })
 
   const [createMessage, { loading: isLoading }] = useMutation<
-    CreateMessageMutationResult,
+    CreateMessageMutation,
     CreateMessageMutationVariables
-  >(CreateMessageDocument)
+  >(createMessageMutation)
 
   useInterval(() => {
     startTransition(() => {
       refetch()
     })
   }, 4000)
-
-  const { toast } = useToast()
 
   const onSubmit = async (message: string) => {
     try {
@@ -56,7 +52,7 @@ export const RecipientMessageList = (props: Props) => {
       })
     } catch (error) {
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }

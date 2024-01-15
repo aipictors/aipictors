@@ -1,5 +1,5 @@
 import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 type Props = {
@@ -20,15 +20,19 @@ const MonthAwardsPage = async (props: Props) => {
   const month = parseInt(props.params.month)
 
   return (
-    <MainPage>
+    <AppPage>
       <RankingHeader year={year} month={month} day={0} />
-    </MainPage>
+    </AppPage>
   )
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
+}
+
+export const generateStaticParams = () => {
+  return []
 }
 
 export const revalidate = 60

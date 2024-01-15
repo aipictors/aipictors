@@ -1,5 +1,5 @@
 import { NoteArticle } from "@/app/[lang]/(main)/notes/[note]/_components/note-article"
-import { MainPage } from "@/app/_components/page/main-page"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,15 +8,19 @@ import type { Metadata } from "next"
  */
 const NotePage = async () => {
   return (
-    <MainPage>
+    <AppPage>
       <NoteArticle />
-    </MainPage>
+    </AppPage>
   )
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
+}
+
+export const generateStaticParams = () => {
+  return []
 }
 
 export const revalidate = 60

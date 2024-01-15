@@ -1,25 +1,25 @@
 "use client"
 
+import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
+import { AuthContext } from "@/app/_contexts/auth-context"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import type {
   UserFolloweesQuery,
   UserFolloweesQueryVariables,
-} from "@/__generated__/apollo"
-import { UserFolloweesDocument } from "@/__generated__/apollo"
-import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
-import { AppContext } from "@/app/_contexts/app-context"
-import { Alert, AlertTitle } from "@/components/ui/alert"
+} from "@/graphql/__generated__/graphql"
+import { userFolloweesQuery } from "@/graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
-import { AlertCircle } from "lucide-react"
+import { AlertCircleIcon } from "lucide-react"
 import { useContext } from "react"
 
 export const ViewerFolloweeList = () => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery<
     UserFolloweesQuery,
     UserFolloweesQueryVariables
   >(
-    UserFolloweesDocument,
+    userFolloweesQuery,
     appContext.isLoading || appContext.userId === null
       ? skipToken
       : {
@@ -37,7 +37,7 @@ export const ViewerFolloweeList = () => {
         <p className="text-2xl">{"フォローしているユーザ"}</p>
         {data?.user?.followees?.length === 0 && (
           <Alert>
-            <AlertCircle />
+            <AlertCircleIcon />
             <AlertTitle>{"フォローしているユーザはいません"}</AlertTitle>
           </Alert>
         )}

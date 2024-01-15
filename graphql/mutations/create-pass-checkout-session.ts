@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const createPassCheckoutSessionMutation = gql`
   mutation CreatePassCheckoutSession($input: CreatePassCheckoutSessionInput!) {
     createPassCheckoutSession(input: $input)
   }

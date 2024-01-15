@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client"
 
-export default gql`
+export const partialWorkFieldsFragment = gql`
   fragment PartialWorkFields on WorkNode {
     id
     title
@@ -8,5 +8,7 @@ export default gql`
     commentsCount
     createdAt
     largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
   }
 `

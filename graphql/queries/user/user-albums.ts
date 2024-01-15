@@ -1,6 +1,8 @@
+import { partialAlbumFieldsFragment } from "@/graphql/fragments/partial-album-fields"
 import { gql } from "@apollo/client"
 
-export default gql`
+export const userAlbumsQuery = gql`
+  ${partialAlbumFieldsFragment}
   query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id

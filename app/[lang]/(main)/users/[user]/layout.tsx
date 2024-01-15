@@ -1,11 +1,11 @@
-import type { UserQuery, UserQueryVariables } from "@/__generated__/apollo"
-import { UserDocument } from "@/__generated__/apollo"
-import { UserProfile } from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
-import { UserProfileHeader } from "@/app/[lang]/(main)/users/[user]/_components/user-profile-header"
+import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
 import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
-import { MainPage } from "@/app/_components/page/main-page"
 import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
+import { UserQuery, UserQueryVariables } from "@/graphql/__generated__/graphql"
+import { userQuery } from "@/graphql/queries/user/user"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 type Props = {
   children: React.ReactNode
@@ -15,39 +15,36 @@ type Props = {
 const UserLayout = async (props: Props) => {
   const client = createClient()
 
-  const userQuery = await client.query<UserQuery, UserQueryVariables>({
-    query: UserDocument,
+  const userResp = await client.query<UserQuery, UserQueryVariables>({
+    query: userQuery,
     variables: {
-      userId: props.params.user,
+      userId: decodeURIComponent(props.params.user),
     },
   })
 
-  if (userQuery.data.user === null) {
-    return <div>404</div>
+  if (userResp.data.user === null) {
+    return notFound()
   }
 
   return (
-    <MainPage>
-      <UserProfileHeader user={userQuery.data.user} />
-      <UserProfile
-        user={userQuery.data.user}
-        userName={userQuery.data.user.name}
-        userIconImageURL={userQuery.data.user.iconImage?.downloadURL ?? null}
-        userReceivedLikesCount={userQuery.data.user.receivedLikesCount}
-        userReceivedViewsCount={userQuery.data.user.receivedViewsCount}
-        userFollowersCount={userQuery.data.user.followersCount}
-        userAwardsCount={userQuery.data.user.awardsCount}
-        userBiography={userQuery.data.user.biography}
-      />
-      <UserTabs userId={props.params.user} />
-      {props.children}
-    </MainPage>
+    <AppPage>
+      <div className="flex flex-col w-full justify-center">
+        <UserProfile user={userResp.data.user} />
+        <main className="px-4 py-6 md:px-6 lg:py-16">
+          <UserTabs params={props.params} />
+        </main>
+      </div>
+    </AppPage>
   )
 }
 
 export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
+}
+
+export const generateStaticParams = () => {
+  return []
 }
 
 export const revalidate = 60

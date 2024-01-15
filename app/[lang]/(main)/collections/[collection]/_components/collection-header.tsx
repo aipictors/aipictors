@@ -2,7 +2,7 @@
 
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { Avatar } from "@/components/ui/avatar"
-import { Flag } from "lucide-react"
+import { FlagIcon } from "lucide-react"
 
 export const CollectionHeader = () => {
   return (
@@ -22,7 +22,7 @@ export const CollectionHeader = () => {
       <p>{"コレクションの説明"}</p>
       <div className="flex">
         <p>{"12個の作品"}</p>
-        <Flag />
+        <FlagIcon />
       </div>
       <p>{"＃銅像"}</p>
     </div>

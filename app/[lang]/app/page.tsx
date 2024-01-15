@@ -2,7 +2,7 @@ import { AppAboutHeader } from "@/app/[lang]/app/_components/app-about-header"
 import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
 import type { Metadata } from "next"
 
-const AppPage = async () => {
+const FlutterAppPage = async () => {
   return (
     <>
       <AppAboutHeader />
@@ -22,4 +22,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600
 
-export default AppPage
+export default FlutterAppPage

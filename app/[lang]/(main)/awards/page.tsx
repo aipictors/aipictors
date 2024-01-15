@@ -1,12 +1,13 @@
+import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
+import { RankingWorkList } from "@/app/[lang]/(main)/awards/_components/ranking-work-list"
+import { createClient } from "@/app/_contexts/client"
+import { AppPage } from "@/components/app/app-page"
 import type {
   WorkAwardsQuery,
   WorkAwardsQueryVariables,
-} from "@/__generated__/apollo"
-import { WorkAwardsDocument } from "@/__generated__/apollo"
-import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
-import { RankingWorkList } from "@/app/[lang]/(main)/awards/_components/ranking-work-list"
-import { MainPage } from "@/app/_components/page/main-page"
-import { createClient } from "@/app/_contexts/client"
+} from "@/graphql/__generated__/graphql"
+import { WorkAwardsDocument } from "@/graphql/__generated__/graphql"
+import { workAwardsQuery } from "@/graphql/queries/award/work-awards"
 import type { Metadata } from "next"
 
 /**
@@ -22,11 +23,11 @@ const AwardsPage = async () => {
 
   const day = new Date().getDate()
 
-  const workAwardsQuery = await client.query<
+  const workAwardsResp = await client.query<
     WorkAwardsQuery,
     WorkAwardsQueryVariables
   >({
-    query: WorkAwardsDocument,
+    query: workAwardsQuery,
     variables: {
       offset: 0,
       limit: 16,
@@ -39,10 +40,10 @@ const AwardsPage = async () => {
   })
 
   return (
-    <MainPage>
+    <AppPage>
       <RankingHeader year={year} month={month} day={day} />
-      <RankingWorkList awards={workAwardsQuery.data.workAwards} />
-    </MainPage>
+      <RankingWorkList awards={workAwardsResp.data.workAwards} />
+    </AppPage>
   )
 }
 

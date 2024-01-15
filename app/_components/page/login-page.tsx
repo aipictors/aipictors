@@ -1,14 +1,18 @@
 "use client"
 
-import { useLoginWithPasswordMutation } from "@/__generated__/apollo"
 import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
 import { LoginForm } from "@/app/_components/login-form"
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
 import type { FormLogin } from "@/app/_types/form-login"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { useToast } from "@/components/ui/use-toast"
+import {
+  LoginWithPasswordMutation,
+  LoginWithPasswordMutationVariables,
+} from "@/graphql/__generated__/graphql"
+import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
+import { useMutation } from "@apollo/client"
 import { captureException } from "@sentry/nextjs"
 import {
   GoogleAuthProvider,
@@ -18,15 +22,17 @@ import {
   signInWithPopup,
 } from "firebase/auth"
 import Link from "next/link"
+import { toast } from "sonner"
 
 /**
  * ログインページ
  * @returns
  */
 export const LoginPage = () => {
-  const [mutation, { loading: isLoading }] = useLoginWithPasswordMutation()
-
-  const { toast } = useToast()
+  const [mutation, { loading: isLoading }] = useMutation<
+    LoginWithPasswordMutation,
+    LoginWithPasswordMutationVariables
+  >(loginWithPasswordMutation)
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -40,15 +46,15 @@ export const LoginPage = () => {
       })
       const token = result.data?.loginWithPassword.token ?? null
       if (token === null) {
-        toast({ description: "ログインに失敗しました。" })
+        toast("ログインに失敗しました。")
         return
       }
       await signInWithCustomToken(getAuth(), token)
-      toast({ description: "ログインしました。" })
+      toast("ログインしました。")
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: error.message })
+        toast(error.message)
       }
     }
   }
@@ -59,7 +65,7 @@ export const LoginPage = () => {
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
+        toast("アカウントが見つかりませんでした")
       }
     }
   }
@@ -70,13 +76,13 @@ export const LoginPage = () => {
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
-        toast({ description: "アカウントが見つかりませんでした" })
+        toast("アカウントが見つかりませんでした")
       }
     }
   }
 
   return (
-    <MainCenterPage className="sm:max-w-sm lg:max-w-none w-full px-4 pb-4">
+    <AppPageCenter className="sm:max-w-sm lg:max-w-none w-full px-4 pb-4">
       <div className="w-full flex flex-col pt-4 md:pt-0 lg:h-full justify-center items-center lg:flex-row lg:items-start">
         <div className="flex-1 w-full flex flex-col items-center h-full ">
           <div className="w-full lg:w-80 space-y-4">
@@ -116,6 +122,6 @@ export const LoginPage = () => {
           </Card>
         </div>
       </div>
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }

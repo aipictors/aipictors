@@ -1,6 +1,6 @@
-import { MainCenterPage } from "@/app/_components/page/main-center-page"
+import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
-import { ThumbsUp } from "lucide-react"
+import { ThumbsUpIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 
@@ -10,11 +10,11 @@ import Link from "next/link"
  */
 const PlusSuccessPage = async () => {
   return (
-    <MainCenterPage>
+    <AppPageCenter>
       <div className="space-y-16 max-w-sm w-full mx-auto px-6 pt-16">
         <div className="space-y-4">
           <div className="w-full flex justify-center">
-            <ThumbsUp className="h-16 w-16" />
+            <ThumbsUpIcon className="h-16 w-16" />
           </div>
           <div className="space-y-2">
             <p className="text-xl font-bold flex justify-center">
@@ -33,7 +33,7 @@ const PlusSuccessPage = async () => {
           </div>
         </div>
       </div>
-    </MainCenterPage>
+    </AppPageCenter>
   )
 }
 

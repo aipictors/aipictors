@@ -1,8 +1,10 @@
 import { eventUsers } from "@/app/[lang]/events/wakiaiai2/_assets/event-users"
 import { EventCreatorCard } from "@/app/[lang]/events/wakiaiai2/_components/event-creator-card"
 import { EventImage } from "@/app/[lang]/events/wakiaiai2/_components/event-image"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { MousePointerClickIcon } from "lucide-react"
 import type { Metadata } from "next"
 
 const EventWakiaiaiPage = async () => {
@@ -35,18 +37,28 @@ const EventWakiaiaiPage = async () => {
         </div>
         <div className="flex-2 px-4 md:px-8 py-8 space-y-8">
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-blue-300">
+            <h2 className="text-lg font-bold text-green-500">
               {"2024年4月13日（土）"}
             </h2>
-            <h1 className={"text-4xl font-bold text-blue-300"}>
+            <h1 className={"text-4xl font-bold text-green-500"}>
               {"和気あいAI２"}
             </h1>
           </div>
           <p className="leading-relaxed">
             {
-              "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示・即売会、第二回"
+              "東海地方唯一の、生成AIを利用したイラストの展示やグッズ等の展示・即売会、第二回"
             }
           </p>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdgK3cGQz7T1CrGpHz1Y7IVNmylA5zT66j6sDbJ9E-LuUA63w/viewform?usp=sf_link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant={"outline"} className="text-lg font-bold m-4">
+              出展・展示参加者募集中
+              <MousePointerClickIcon className="ml-2" />
+            </Button>
+          </a>
         </div>
       </div>
       <div className={cn("grid md:grid-cols-2 md:grid-flow-col gap-2")}>
@@ -94,42 +106,35 @@ const EventWakiaiaiPage = async () => {
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
-      <EventImage
-        alt={"和気あいAI"}
-        imageURL={
-          "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp"
-        }
-        linkURL={"https://www.aipictors.com/works/66093/"}
-        linkTitle={"Aipictors"}
-      />
+
       <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2"}>
         {bUsers.map((user, index) => (
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
-      <iframe
-        className="rounded"
-        style={{ border: 0 }}
-        width="100%"
-        height="400"
-        src="https://www.youtube.com/embed/_VCTJxdKs3w"
-        title="和気あいAI、会場紹介動画"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen={true}
-      />
+
       <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2"}>
         {cUsers.map((user, index) => (
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
-      <EventImage
-        alt={"愛知県生成AIイベント「和気あいAI2」"}
-        imageURL={
-          "https://www.aipictors.com/wp-content/uploads/2023/06/FDfUikjd67cARVC30vePmGJMn4zL81.webp"
-        }
-        linkURL={"https://www.aipictors.com/works/59815/"}
-        linkTitle={"Aipictors"}
-      />
+
+      <footer className="bg-gray-200 text-center p-4">
+        <p className="text-sm text-gray-600 mt-2">
+          © 2024 和気あいAI. All rights reserved.
+        </p>
+        <div className="mt-4">
+          <a href="https://twitter.com/waki_ai_ai_kot" className="mx-2 text-sm">
+            X（Twitter）
+          </a>
+          <a
+            href="mailto:kotoba.no.aya.2022@gmail.com"
+            className="mx-2 text-sm"
+          >
+            主催Mail
+          </a>
+        </div>
+      </footer>
     </div>
   )
 }

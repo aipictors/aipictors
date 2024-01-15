@@ -1,12 +1,12 @@
-import type {
-  StickersQuery,
-  StickersQueryVariables,
-} from "@/__generated__/apollo"
-import { StickersDocument } from "@/__generated__/apollo"
 import { StickerList } from "@/app/[lang]/(beta)/stickers/_components/sticker-list"
 import { StickerListHeader } from "@/app/[lang]/(beta)/stickers/_components/sticker-list-header"
 import { StickerSearchForm } from "@/app/[lang]/(beta)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
+import type {
+  StickersQuery,
+  StickersQueryVariables,
+} from "@/graphql/__generated__/graphql"
+import { stickersQuery } from "@/graphql/queries/sticker/stickers"
 import type { Metadata } from "next"
 
 type Props = {
@@ -23,11 +23,11 @@ type Props = {
 const StickersPage = async (props: Props) => {
   const client = createClient()
 
-  const stickersQuery = await client.query<
+  const stickersResp = await client.query<
     StickersQuery,
     StickersQueryVariables
   >({
-    query: StickersDocument,
+    query: stickersQuery,
     variables: {
       offset: 0,
       limit: 256,
@@ -37,7 +37,7 @@ const StickersPage = async (props: Props) => {
     },
   })
 
-  const isEmpty = stickersQuery.data.stickers.length === 0
+  const isEmpty = stickersResp.data.stickers.length === 0
 
   return (
     <main className="flex flex-col space-y-8 pb-16 px-4 md:pr-8">
@@ -46,7 +46,7 @@ const StickersPage = async (props: Props) => {
       {isEmpty ? (
         <p>{"スタンプが見つかりませんでした"}</p>
       ) : (
-        <StickerList stickers={stickersQuery.data.stickers} />
+        <StickerList stickers={stickersResp.data.stickers} />
       )}
     </main>
   )

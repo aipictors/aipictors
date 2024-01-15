@@ -1,78 +1,60 @@
+"use client"
+
+import UserAlbumsPage from "@/app/[lang]/(main)/users/[user]/albums/page"
+import UserSupportsPage from "@/app/[lang]/(main)/users/[user]/supports/page"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
-import { useMemo } from "react"
+import { useState } from "react"
 
 type Props = {
-  userId: string
+  params: { user: string }
 }
 
 export const UserTabs = (props: Props) => {
   const pathname = usePathname()
 
-  const index = useMemo(() => {
-    switch (pathname) {
-      case `/users/${props.userId}`:
-        return 0
-      case `/users/${props.userId}/novels`:
-        return 1
-      case `/users/${props.userId}/notes`:
-        return 2
-      case `/users/${props.userId}/albums`:
-        return 3
-      case `/users/${props.userId}/collections`:
-        return 4
-      case `/users/${props.userId}/stickers`:
-        return 5
-      case `/users/${props.userId}/supports`:
-        return 6
-      default:
-        return 0
-    }
-  }, [pathname, props.userId])
+  const tabValues = [
+    "画像",
+    "小説",
+    "コラム",
+    "シリーズ",
+    "コレクション",
+    "スタンプ",
+    "支援応援",
+  ]
+
+  const [activeTab, setActiveTab] = useState("画像") // 初期値を設定
+
+  // TabTriggerがクリックされたときにactiveTabを更新
+  const handleTabClick = (value: string) => {
+    setActiveTab(value)
+  }
 
   return (
-    <div className="flex overflow-x-auto w-full">
-      <div className="w-full">
-        <Button asChild>
-          <Link href={`/users/${props.userId}`} className={"min-w-32"}>
-            {"画像"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href={`/users/${props.userId}/novels`} className={"min-w-32"}>
-            {"小説"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href={`/users/${props.userId}/notes`} className={"min-w-32"}>
-            {"コラム"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href={`/users/${props.userId}/albums`} className={"min-w-32"}>
-            {"シリーズ"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link
-            href={`/users/${props.userId}/collections`}
-            className={"min-w-32"}
+    <Tabs defaultValue="画像">
+      <TabsList className="border-b">
+        {tabValues.map((tabValue) => (
+          <TabsTrigger
+            key={tabValue}
+            value={tabValue}
+            onClick={() => handleTabClick(tabValue)}
           >
-            {"コレクション"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href={`/users/${props.userId}/stickers`} className={"min-w-32"}>
-            {"スタンプ"}
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href={`/users/${props.userId}/supports`} className={"min-w-32"}>
-            {"支援応援"}
-          </Link>
-        </Button>
-      </div>
-    </div>
+            {tabValue}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      <TabsContent value={activeTab}>
+        {activeTab === "画像" && <div>{activeTab} </div>}
+        {activeTab === "小説" && <div>{activeTab}</div>}
+        {/* {activeTab === "小説" && <UserAlbumsPage params={props.params} />} */}
+        {activeTab === "コラム" && <div>{activeTab}</div>}
+        {activeTab === "シリーズ" && <div>{activeTab}</div>}
+        {activeTab === "コレクション" && <div>{activeTab}</div>}
+        {activeTab === "スタンプ" && <div>{activeTab}</div>}
+        {/* {activeTab === "支援応援" && <UserSupportsPage params={props.params} />} */}
+        {activeTab === "支援応援" && <div>{activeTab}</div>}
+      </TabsContent>
+    </Tabs>
   )
 }

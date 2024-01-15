@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client"
 
-export default gql`
-  query promptCategories {
+export const promptCategoriesQuery = gql`
+  query PromptCategories {
     promptCategories {
       id
       name

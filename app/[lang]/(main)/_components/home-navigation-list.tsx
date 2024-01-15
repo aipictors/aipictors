@@ -2,26 +2,26 @@
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
-import { AppContext } from "@/app/_contexts/app-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import {
-  AlertTriangle,
-  Award,
-  BookImage,
-  Box,
-  Camera,
-  Folder,
-  Home,
-  Image,
-  LibraryBig,
-  Lightbulb,
-  LogIn,
-  LogOut,
-  Settings,
-  Sparkles,
-  Stamp,
-  User,
+  AlertTriangleIcon,
+  AwardIcon,
+  BookImageIcon,
+  BoxIcon,
+  CameraIcon,
+  FolderIcon,
+  HomeIcon,
+  ImageIcon,
+  LibraryBigIcon,
+  LightbulbIcon,
+  LogInIcon,
+  LogOutIcon,
+  SettingsIcon,
+  SparklesIcon,
+  StampIcon,
+  UserIcon,
 } from "lucide-react"
 import Link from "next/link"
 import { useContext } from "react"
@@ -38,78 +38,81 @@ type Props = {
 }
 
 export const HomeNavigationList = (props: Props) => {
-  const appContext = useContext(AppContext)
+  const appContext = useContext(AuthContext)
 
   return (
-    <div className="flex flex-col space-y-1 pl-1">
-      <HomeNavigationButton href={"/"} icon={Home}>
+    <div className="space-y-1">
+      <HomeNavigationButton href={"/"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/themes"}
-        icon={Lightbulb}
+        icon={LightbulbIcon}
       >
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/stickers"} icon={Stamp}>
+      <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/awards"}
-        icon={Award}
+        icon={AwardIcon}
       >
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"https://www.aipictors.com/generate/"}
-        icon={Sparkles}
+        icon={SparklesIcon}
       >
         {"画像生成"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/series"}
-        icon={LibraryBig}
+        icon={LibraryBigIcon}
       >
         {"シリーズ"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={Config.isReleaseMode}
         href={"/collections"}
-        icon={Folder}
+        icon={FolderIcon}
       >
         {"コレクション"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
       </div>
-      <HomeNavigationButton href={"/works/2d"} icon={Image}>
+      <HomeNavigationButton href={"/works/2d"} icon={ImageIcon}>
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/2.5d"} icon={BookImage}>
+      <HomeNavigationButton href={"/works/2.5d"} icon={BookImageIcon}>
         {"セミリアル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/3d"} icon={Camera}>
+      <HomeNavigationButton href={"/works/3d"} icon={CameraIcon}>
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/models"} icon={Box}>
+      <HomeNavigationButton href={"/models"} icon={BoxIcon}>
         {"モデル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} icon={AlertTriangle}>
+      <HomeNavigationButton href={"/sensitive"} icon={AlertTriangleIcon}>
         {"センシティブ"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
       </div>
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/accounts/login"} icon={User}>
+        <HomeNavigationButton href={"/accounts/login"} icon={UserIcon}>
           {"アカウント"}
         </HomeNavigationButton>
       )}
       {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/settings/restriction"} icon={Settings}>
+        <HomeNavigationButton
+          href={"/settings/restriction"}
+          icon={SettingsIcon}
+        >
           {"設定"}
         </HomeNavigationButton>
       )}
@@ -119,7 +122,7 @@ export const HomeNavigationList = (props: Props) => {
           onClick={() => {
             props.onLogout()
           }}
-          icon={LogOut}
+          icon={LogOutIcon}
         >
           {"ログアウト"}
         </HomeNavigationButton>
@@ -129,7 +132,7 @@ export const HomeNavigationList = (props: Props) => {
           onClick={() => {
             props.onLogin()
           }}
-          icon={LogIn}
+          icon={LogInIcon}
         >
           {"ログイン"}
         </HomeNavigationButton>
