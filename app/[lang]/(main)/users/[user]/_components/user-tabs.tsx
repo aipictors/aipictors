@@ -1,8 +1,5 @@
 "use client"
 
-import UserAlbumsPage from "@/app/[lang]/(main)/users/[user]/albums/page"
-import UserSupportsPage from "@/app/[lang]/(main)/users/[user]/supports/page"
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePathname } from "next/navigation"
 import { useState } from "react"

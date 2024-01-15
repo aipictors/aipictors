@@ -1,5 +1,4 @@
 import { gql } from "@/graphql/__generated__"
-import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
 
 export const folderQuery = gql(`
   query Folder($id: ID!) {

@@ -11,16 +11,10 @@ import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prom
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import {
-  CreateImageGenerationTaskMutation,
-  CreateImageGenerationTaskMutationVariables,
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
-  ViewerCurrentPassQuery,
-  ViewerCurrentPassQueryVariables,
-  ViewerImageGenerationTasksQuery,
-  ViewerImageGenerationTasksQueryVariables,
 } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"

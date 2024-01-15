@@ -1,5 +1,4 @@
 import { gql } from "@/graphql/__generated__"
-import { partialAlbumFieldsFragment } from "@/graphql/fragments/partial-album-fields"
 
 export const userAlbumsQuery = gql(`
   query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {

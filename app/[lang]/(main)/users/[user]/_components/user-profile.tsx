@@ -1,7 +1,6 @@
 import { UserProfileAvatar } from "@/app/[lang]/(main)/users/[user]/_components/user-profile-avatar"
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { UserQuery } from "@/graphql/__generated__/graphql"
-import React from "react"
 import UserProfileInfo from "./user-profile-info"
 
 type UserProfileProps = {

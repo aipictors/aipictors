@@ -2,7 +2,6 @@ import { GoogleAdsense } from "@/app/[lang]/(main)/_components/google-adsense"
 import { ImageModelList } from "@/app/[lang]/(main)/models/_components/image-model-list"
 import { ArticlePage } from "@/app/_components/page/article-page"
 import { createClient } from "@/app/_contexts/client"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import type { Metadata } from "next"
 

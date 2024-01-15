@@ -1,8 +1,8 @@
 "use client"
 
-import type { HotTagsQuery } from "@/graphql/__generated__/graphql"
 import { TagButton } from "@/app/[lang]/(main)/_components/tag-button"
 import { Config } from "@/config"
+import type { HotTagsQuery } from "@/graphql/__generated__/graphql"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 import Link from "next/link"
 

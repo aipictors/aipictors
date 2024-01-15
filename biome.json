@@ -15,7 +15,7 @@
         "noStaticOnlyClass": "off"
       },
       "nursery": {
-        "noUnusedImports": "off"
+        "noUnusedImports": "error"
       },
       "style": {
         "noNonNullAssertion": "off"

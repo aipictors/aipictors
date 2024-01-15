@@ -1,10 +1,10 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth"
+import { toast } from "sonner"
 
 type Props = {
   onClose(): void

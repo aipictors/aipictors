@@ -2,10 +2,6 @@ import { ModelHeader } from "@/app/[lang]/(main)/models/[model]/_components/mode
 import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import type {
-  ImageModelQuery,
-  WorksQuery,
-} from "@/graphql/__generated__/graphql"
 import { imageModelQuery } from "@/graphql/queries/image-model/image-model"
 import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"

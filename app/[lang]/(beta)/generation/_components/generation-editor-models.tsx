@@ -1,12 +1,12 @@
 "use client"
 
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
+import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 

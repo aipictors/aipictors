@@ -1,6 +1,5 @@
 "use client"
 
-import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import {
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { CheckIcon } from "lucide-react"
 
 type Props = {

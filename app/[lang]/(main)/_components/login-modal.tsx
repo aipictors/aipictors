@@ -12,10 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import {
-  LoginWithPasswordMutation,
-  LoginWithPasswordMutationVariables,
-} from "@/graphql/__generated__/graphql"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
 import { useMutation } from "@apollo/client"
 import { getAuth, signInWithCustomToken } from "firebase/auth"

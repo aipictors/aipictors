@@ -2,10 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type {
-  UpdateAccountPasswordMutation,
-  UpdateAccountPasswordMutationVariables,
-} from "@/graphql/__generated__/graphql"
 import { UpdateAccountPasswordDocument } from "@/graphql/__generated__/graphql"
 import { ApolloError, useMutation } from "@apollo/client"
 import { EyeIcon } from "lucide-react"

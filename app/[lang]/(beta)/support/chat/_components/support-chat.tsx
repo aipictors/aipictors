@@ -2,12 +2,6 @@
 
 import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
 import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
-import type {
-  CreateMessageMutation,
-  CreateMessageMutationVariables,
-  ViewerSupportMessagesQuery,
-  ViewerSupportMessagesQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { createMessageMutation } from "@/graphql/mutations/create-message"
 import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
 import { useMutation, useSuspenseQuery } from "@apollo/client"

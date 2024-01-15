@@ -1,6 +1,5 @@
 "use client"
 
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
 import PhotoAlbum from "react-photo-album"
 

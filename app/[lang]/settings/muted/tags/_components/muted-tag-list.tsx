@@ -3,12 +3,6 @@
 import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import type {
-  MuteTagMutation,
-  MuteTagMutationVariables,
-  ViewerMutedTagsQuery,
-  ViewerMutedTagsQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { muteTagMutation } from "@/graphql/mutations/mute-tag"
 import { viewerMutedTagsQuery } from "@/graphql/queries/viewer/viewer-muted-tags"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"

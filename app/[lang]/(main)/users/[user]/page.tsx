@@ -1,10 +1,6 @@
 import { UserWorkList } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list"
 import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  UserWorksQuery,
-  UserWorksQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { userWorksQuery } from "@/graphql/queries/user/user-works"
 import type { Metadata } from "next"
 

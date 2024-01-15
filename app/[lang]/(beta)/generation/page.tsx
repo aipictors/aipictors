@@ -2,10 +2,6 @@ import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/g
 import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
 import { LoadingPage } from "@/app/_components/page/loading-page"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  ImageLoraModelsQuery,
-  ImageLoraModelsQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"

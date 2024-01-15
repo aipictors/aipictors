@@ -2,12 +2,6 @@ import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-a
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
 import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  WorkCommentsQuery,
-  WorkCommentsQueryVariables,
-  WorkQuery,
-  WorkQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
 import type { Metadata } from "next"

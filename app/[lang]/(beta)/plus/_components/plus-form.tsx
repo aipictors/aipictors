@@ -8,13 +8,6 @@ import { toDateText } from "@/app/_utils/to-date-text"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import type {
-  CreateCustomerPortalSessionMutation,
-  CreateCustomerPortalSessionMutationVariables,
-  ViewerCurrentPassQuery,
-  ViewerCurrentPassQueryVariables,
-} from "@/graphql/__generated__/graphql"
-import { ViewerCurrentPassDocument } from "@/graphql/__generated__/graphql"
 import { createCustomerPortalSessionMutation } from "@/graphql/mutations/create-customer-portal-session"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { cn } from "@/lib/utils"

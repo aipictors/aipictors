@@ -1,9 +1,5 @@
 import { UserSupport } from "@/app/[lang]/(main)/users/[user]/supports/_components/user-support"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  UserQuery,
-  UserQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { userQuery } from "@/graphql/queries/user/user"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"

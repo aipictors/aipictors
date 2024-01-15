@@ -1,6 +1,5 @@
 "use client"
 
-import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -14,7 +13,6 @@ import { Config } from "@/config"
 import {
   GemIcon,
   LogIn,
-  LogInIcon,
   LogOutIcon,
   SettingsIcon,
   UserCircleIcon,

@@ -1,6 +1,5 @@
 "use client"
 
-import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
 import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
@@ -10,6 +9,7 @@ import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_c
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { toast } from "sonner"
 
 import { Config } from "@/config"

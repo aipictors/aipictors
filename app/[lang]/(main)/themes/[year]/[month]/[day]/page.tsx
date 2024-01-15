@@ -1,6 +1,5 @@
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import type { DailyThemesQuery } from "@/graphql/__generated__/graphql"
 import { DailyThemesDocument as dailyThemesQuery } from "@/graphql/__generated__/graphql"
 import type { Metadata } from "next"
 

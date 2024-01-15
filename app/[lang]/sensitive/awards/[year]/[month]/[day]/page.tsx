@@ -2,10 +2,6 @@ import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-he
 import { RankingWorkList } from "@/app/[lang]/(main)/awards/_components/ranking-work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import type {
-  WorkAwardsQuery,
-  WorkAwardsQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { workAwardsQuery } from "@/graphql/queries/award/work-awards"
 import type { Metadata } from "next"
 

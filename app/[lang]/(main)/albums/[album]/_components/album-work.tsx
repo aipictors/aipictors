@@ -1,8 +1,8 @@
 "use client"
 
-import { AlbumWorksQuery } from "@/graphql/__generated__/graphql"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
 import { Card, CardContent } from "@/components/ui/card"
+import { AlbumWorksQuery } from "@/graphql/__generated__/graphql"
 import { HeartIcon } from "lucide-react"
 
 type Props = {

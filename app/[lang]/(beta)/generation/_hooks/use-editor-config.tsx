@@ -1,5 +1,5 @@
-import { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { Config } from "@/config"
+import { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {

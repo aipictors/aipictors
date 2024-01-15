@@ -1,7 +1,6 @@
 import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import { DailyThemesQuery } from "@/graphql/__generated__/graphql"
 import { dailyThemesQuery } from "@/graphql/queries/daily-theme/daily-themes"
 import type { Metadata } from "next"
 

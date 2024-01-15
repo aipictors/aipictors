@@ -1,8 +1,8 @@
 "use client"
 
-import type { UserWorksQuery } from "@/graphql/__generated__/graphql"
 import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Switch } from "@/components/ui/switch"
+import type { UserWorksQuery } from "@/graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {

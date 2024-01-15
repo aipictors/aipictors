@@ -1,6 +1,5 @@
 "use client"
 
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { PromptCategoryIcon } from "@/app/[lang]/(beta)/generation/_components/prompt-category-icon"
 import {
   Accordion,
@@ -16,6 +15,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   selectedPromptIds: string[]

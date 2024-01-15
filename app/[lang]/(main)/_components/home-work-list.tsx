@@ -1,5 +1,5 @@
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {

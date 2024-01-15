@@ -1,7 +1,6 @@
 import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
 

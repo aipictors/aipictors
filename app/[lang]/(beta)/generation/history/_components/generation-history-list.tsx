@@ -1,10 +1,6 @@
 "use client"
 
 import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
-import {
-  ViewerImageGenerationTasksQuery,
-  ViewerImageGenerationTasksQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 

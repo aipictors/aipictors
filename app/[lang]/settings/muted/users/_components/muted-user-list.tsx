@@ -2,12 +2,6 @@
 
 import { MutedUser } from "@/app/[lang]/settings/muted/users/_components/muted-user"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import {
-  MuteUserMutation,
-  MuteUserMutationVariables,
-  ViewerMutedUsersQuery,
-  ViewerMutedUsersQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { muteUserMutation } from "@/graphql/mutations/mute-user"
 import { viewerMutedUsersQuery } from "@/graphql/queries/viewer/viewer-muted-users"
 import { useMutation, useSuspenseQuery } from "@apollo/client"

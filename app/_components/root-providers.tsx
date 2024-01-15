@@ -7,10 +7,8 @@ import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
 import { init } from "@sentry/nextjs"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { getAnalytics, initializeAnalytics, logEvent } from "firebase/analytics"
+import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { usePathname, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode

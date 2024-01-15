@@ -1,9 +1,9 @@
 "use client"
 
-import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
 import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
 import { Button } from "@/components/ui/button"
+import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {

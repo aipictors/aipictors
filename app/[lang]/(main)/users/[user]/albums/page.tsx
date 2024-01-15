@@ -1,9 +1,5 @@
 import { UserAlbumList } from "@/app/[lang]/(main)/users/[user]/albums/_components/user-album-list"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  UserAlbumsQuery,
-  UserAlbumsQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { userAlbumsQuery } from "@/graphql/queries/user/user-albums"
 import type { Metadata } from "next"
 

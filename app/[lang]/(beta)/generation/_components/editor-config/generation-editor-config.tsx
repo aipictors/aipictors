@@ -1,6 +1,5 @@
 "use client"
 
-import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-lora-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-scale"
@@ -10,6 +9,7 @@ import { GenerationEditorConfigStep } from "@/app/[lang]/(beta)/generation/_comp
 import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   loraModels: ImageLoraModelsQuery["imageLoraModels"]

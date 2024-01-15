@@ -1,6 +1,5 @@
 "use client"
 
-import type { WorkQuery } from "@/graphql/__generated__/graphql"
 import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
@@ -12,10 +11,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Separator } from "@/components/ui/separator"
+import type { WorkQuery } from "@/graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {

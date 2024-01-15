@@ -2,7 +2,6 @@ import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profi
 import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import { UserQuery, UserQueryVariables } from "@/graphql/__generated__/graphql"
 import { userQuery } from "@/graphql/queries/user/user"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"

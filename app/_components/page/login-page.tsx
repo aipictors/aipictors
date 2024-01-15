@@ -7,10 +7,6 @@ import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {
-  LoginWithPasswordMutation,
-  LoginWithPasswordMutationVariables,
-} from "@/graphql/__generated__/graphql"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
 import { useMutation } from "@apollo/client"
 import { captureException } from "@sentry/nextjs"

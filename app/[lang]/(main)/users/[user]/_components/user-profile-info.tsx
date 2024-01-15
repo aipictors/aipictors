@@ -3,12 +3,6 @@
 import React, { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "react-icons/ri"
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-
 type UserProfileInfoProps = {
   name: string
   receivedLikesCount: number

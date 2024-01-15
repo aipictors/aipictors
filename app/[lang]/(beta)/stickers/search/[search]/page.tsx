@@ -2,10 +2,6 @@ import { StickerList } from "@/app/[lang]/(beta)/stickers/_components/sticker-li
 import { StickerListHeader } from "@/app/[lang]/(beta)/stickers/_components/sticker-list-header"
 import { StickerSearchForm } from "@/app/[lang]/(beta)/stickers/_components/sticker-search-form"
 import { createClient } from "@/app/_contexts/client"
-import type {
-  StickersQuery,
-  StickersQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { stickersQuery } from "@/graphql/queries/sticker/stickers"
 import type { Metadata } from "next"
 

@@ -3,12 +3,6 @@
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type {
-  UpdateAccountLoginMutation,
-  UpdateAccountLoginMutationVariables,
-  ViewerUserQuery,
-  ViewerUserQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { updateAccountLoginMutation } from "@/graphql/mutations/update-account-login"
 import { viewerUserQuery } from "@/graphql/queries/viewer/viewer-user"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"

@@ -3,12 +3,6 @@ import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_compon
 import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import {
-  AlbumQuery,
-  AlbumQueryVariables,
-  AlbumWorksQuery,
-  AlbumWorksQueryVariables,
-} from "@/graphql/__generated__/graphql"
 import { albumQuery } from "@/graphql/queries/album/album"
 import { albumWorksQuery } from "@/graphql/queries/album/album-works"
 import type { Metadata } from "next"
