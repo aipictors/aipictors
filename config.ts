@@ -154,7 +154,7 @@ export class Config {
   }
 
   static get siteDescriptionJA() {
-    return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう！、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
+    return "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
   }
 
   /**
@@ -170,14 +170,6 @@ export class Config {
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
       measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     }
-  }
-
-  static splideDefaultOptions = {
-    arrows: false,
-    autoWidth: true,
-    gap: "0.5rem",
-    pagination: false,
-    rewind: true,
   }
 
   static googleAdsenseClient = "ca-pub-2116548824296763"

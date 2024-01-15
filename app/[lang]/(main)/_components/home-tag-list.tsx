@@ -1,9 +1,11 @@
 "use client"
-
 import { TagButton } from "@/app/[lang]/(main)/_components/tag-button"
-import { Config } from "@/config"
-import type { HotTagsQuery } from "@/graphql/__generated__/graphql"
-import { Splide, SplideSlide } from "@splidejs/react-splide"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel"
+import { HotTagsQuery } from "@/graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {
@@ -17,24 +19,16 @@ type Props = {
  */
 export const HomeTagList = (props: Props) => {
   return (
-    <section className="overflow-scroll w-full">
-      <Splide
-        options={{
-          ...Config.splideDefaultOptions,
-          rewind: true,
-          autoWidth: true,
-          pagination: false,
-          arrows: false,
-        }}
-      >
+    <Carousel opts={{ dragFree: true, loop: true }}>
+      <CarouselContent>
         {props.hotTags?.map((tag) => (
-          <SplideSlide key={tag.id}>
-            <Link href={`/tags/${tag.name}`} passHref>
+          <CarouselItem className="basis-auto" key={tag.id}>
+            <Link href={`/tags/${tag.name}`}>
               <TagButton name={tag.name} />
             </Link>
-          </SplideSlide>
+          </CarouselItem>
         ))}
-      </Splide>
-    </section>
+      </CarouselContent>
+    </Carousel>
   )
 }
