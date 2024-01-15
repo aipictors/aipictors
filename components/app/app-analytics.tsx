@@ -1,7 +1,6 @@
 "use client"
-
 import { Config } from "@/config"
-import { logEvent, getAnalytics } from "firebase/analytics"
+import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
