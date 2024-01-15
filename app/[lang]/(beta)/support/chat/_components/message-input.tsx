@@ -2,11 +2,10 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { ChangeEvent, useRef, useState } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
 import { RxUpload } from "react-icons/rx"
-import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
 
 type Props = {
   isLoading: boolean
