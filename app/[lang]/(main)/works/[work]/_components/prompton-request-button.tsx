@@ -10,7 +10,7 @@ export const PromptonRequestButton = (props: Props) => {
     <Button
       className={"rounded-full"}
       size={"sm"}
-      variant={"destructive"}
+      variant={"secondary"}
       {...props}
     >
       {"支援"}

@@ -33,6 +33,18 @@ export const workQuery = gql(`
       subWorks {
         ...SubWorkFields
       }
+      nextWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+      }
+      previousWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+      }
       isLiked
       isInCollection
     }
