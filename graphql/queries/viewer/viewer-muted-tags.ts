@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialTagFieldsFragment } from "@/graphql/fragments/partial-tag-fields"
-import { gql } from "@apollo/client"
 
-export const viewerMutedTagsQuery = gql`
-  ${partialTagFieldsFragment}
+export const viewerMutedTagsQuery = gql(`
   query ViewerMutedTags($offset: Int!, $limit: Int!) {
     viewer {
       mutedTags(offset: $offset, limit: $limit) {
@@ -10,4 +9,4 @@ export const viewerMutedTagsQuery = gql`
       }
     }
   }
-`
+`)

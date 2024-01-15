@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { paymentFieldsFragment } from "@/graphql/fragments/payment-fields"
-import { gql } from "@apollo/client"
 
-export const viewerPaymentsQuery = gql`
-  ${paymentFieldsFragment}
+export const viewerPaymentsQuery = gql(`
   query ViewerPayments {
     viewer {
       payments {
@@ -10,4 +9,4 @@ export const viewerPaymentsQuery = gql`
       }
     }
   }
-`
+`)

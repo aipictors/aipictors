@@ -1,11 +1,10 @@
+import { gql } from "@/graphql/__generated__"
 import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
 
-export const bestWorksQuery = gql`
-  ${partialWorkFieldsFragment}
+export const bestWorksQuery = gql(`
   query BestWorks {
     bestWorks(where: {}) {
       ...PartialWorkFields
     }
   }
-`
+`)

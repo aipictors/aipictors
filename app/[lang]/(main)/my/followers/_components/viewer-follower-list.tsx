@@ -15,10 +15,7 @@ import { useContext } from "react"
 export const ViewerFollowerList = () => {
   const appContext = useContext(AuthContext)
 
-  const { data = null } = useSuspenseQuery<
-    UserFollowersQuery,
-    UserFollowersQueryVariables
-  >(
+  const { data = null } = useSuspenseQuery(
     userFollowersQuery,
     appContext.isLoading || appContext.userId === null
       ? skipToken

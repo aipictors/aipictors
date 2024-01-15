@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const imageGenerationTaskFieldsFragment = gql`
+export const imageGenerationTaskFieldsFragment = gql(`
   fragment ImageGenerationTaskFields on ImageGenerationTaskNode {
     id
     prompt
@@ -27,4 +27,4 @@ export const imageGenerationTaskFieldsFragment = gql`
     vae
     token
   }
-`
+`)

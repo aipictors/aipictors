@@ -39,15 +39,9 @@ type Props = {
 export const GenerationEditor: React.FC<Props> = (props) => {
   const appContext = useContext(AuthContext)
 
-  const { data: viewer } = useSuspenseQuery<
-    ViewerCurrentPassQuery,
-    ViewerCurrentPassQueryVariables
-  >(viewerCurrentPassQuery, {})
+  const { data: viewer } = useSuspenseQuery(viewerCurrentPassQuery, {})
 
-  const { data, refetch } = useSuspenseQuery<
-    ViewerImageGenerationTasksQuery,
-    ViewerImageGenerationTasksQueryVariables
-  >(
+  const { data, refetch } = useSuspenseQuery(
     viewerImageGenerationTasksQuery,
     appContext.isLoggedIn
       ? {
@@ -59,10 +53,9 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       : skipToken,
   )
 
-  const [createTask, { loading: isLoading }] = useMutation<
-    CreateImageGenerationTaskMutation,
-    CreateImageGenerationTaskMutationVariables
-  >(createImageGenerationTaskMutation)
+  const [createTask, { loading: isLoading }] = useMutation(
+    createImageGenerationTaskMutation,
+  )
 
   const passType = viewer.viewer?.currentPass?.type ?? null
 

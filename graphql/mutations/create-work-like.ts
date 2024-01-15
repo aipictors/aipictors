@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const createWorkLikeMutation = gql`
+export const createWorkLikeMutation = gql(`
   mutation CreateWorkLike($input: CreateWorkLikeInput!) {
     createWorkLike(input: $input) {
       id
@@ -8,4 +8,4 @@ export const createWorkLikeMutation = gql`
       isLiked
     }
   }
-`
+`)

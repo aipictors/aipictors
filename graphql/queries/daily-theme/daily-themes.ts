@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
 
-export const dailyThemesQuery = gql`
-  ${partialWorkFieldsFragment}
+export const dailyThemesQuery = gql(`
   query DailyThemes(
     $offset: Int!
     $limit: Int!
@@ -21,4 +20,4 @@ export const dailyThemesQuery = gql`
       }
     }
   }
-`
+`)

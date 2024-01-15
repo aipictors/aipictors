@@ -13,7 +13,7 @@ import type { Metadata } from "next"
 const ModelsPage = async () => {
   const client = createClient()
 
-  const resp = await client.query<ImageModelsQuery>({
+  const resp = await client.query({
     query: imageModelsQuery,
     variables: {},
   })

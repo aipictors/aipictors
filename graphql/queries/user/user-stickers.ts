@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialStickerFieldsFragment } from "@/graphql/fragments/partial-sticker-fields"
-import { gql } from "@apollo/client"
 
-export const userStickersQuery = gql`
-  ${partialStickerFieldsFragment}
+export const userStickersQuery = gql(`
   query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id
@@ -11,4 +10,4 @@ export const userStickersQuery = gql`
       }
     }
   }
-`
+`)

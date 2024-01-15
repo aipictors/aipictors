@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const stickerQuery = gql`
+export const stickerQuery = gql(`
   query Sticker($id: ID!) {
     sticker(id: $id) {
       id
@@ -23,4 +23,4 @@ export const stickerQuery = gql`
       usesCount
     }
   }
-`
+`)

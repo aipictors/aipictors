@@ -15,16 +15,14 @@ type Props = {
 const UserPage = async (props: Props) => {
   const client = createClient()
 
-  const worksResp = await client.query<UserWorksQuery, UserWorksQueryVariables>(
-    {
-      query: userWorksQuery,
-      variables: {
-        offset: 0,
-        limit: 16,
-        userId: props.params.user,
-      },
+  const worksResp = await client.query({
+    query: userWorksQuery,
+    variables: {
+      offset: 0,
+      limit: 16,
+      userId: props.params.user,
     },
-  )
+  })
 
   return (
     <>

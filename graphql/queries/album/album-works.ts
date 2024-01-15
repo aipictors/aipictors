@@ -1,8 +1,6 @@
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const albumWorksQuery = gql`
-  ${partialWorkFieldsFragment}
+export const albumWorksQuery = gql(`
   query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
@@ -11,4 +9,4 @@ export const albumWorksQuery = gql`
       }
     }
   }
-`
+`)

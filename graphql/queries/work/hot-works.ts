@@ -1,11 +1,10 @@
+import { gql } from "@/graphql/__generated__"
 import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
 
-export const hotWorksQuery = gql`
-  ${partialWorkFieldsFragment}
+export const hotWorksQuery = gql(`
   query HotWorks {
     hotWorks {
       ...PartialWorkFields
     }
   }
-`
+`)

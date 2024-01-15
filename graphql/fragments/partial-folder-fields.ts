@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const partialFolderFieldsFragment = gql`
+export const partialFolderFieldsFragment = gql(`
   fragment PartialFolderFields on FolderNode {
     id
     title
@@ -8,4 +8,4 @@ export const partialFolderFieldsFragment = gql`
     description
     thumbnailImageURL
   }
-`
+`)

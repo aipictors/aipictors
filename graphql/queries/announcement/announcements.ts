@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const announcementsQuery = gql`
+export const announcementsQuery = gql(`
   query Announcements {
     announcements(offset: 0, limit: 16) {
       id
@@ -9,4 +9,4 @@ export const announcementsQuery = gql`
       publishedAt
     }
   }
-`
+`)

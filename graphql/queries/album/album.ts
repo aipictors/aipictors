@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
-import { gql } from "@apollo/client"
 
-export const albumQuery = gql`
-  ${workUserFieldsFragment}
+export const albumQuery = gql(`
   query Album($id: ID!) {
     album(id: $id) {
       id
@@ -22,4 +21,4 @@ export const albumQuery = gql`
       }
     }
   }
-`
+`)

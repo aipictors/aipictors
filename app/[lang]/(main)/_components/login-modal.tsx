@@ -28,10 +28,9 @@ type Props = {
 }
 
 export const LoginModal = (props: Props) => {
-  const [mutation, { loading: isLoading }] = useMutation<
-    LoginWithPasswordMutation,
-    LoginWithPasswordMutationVariables
-  >(loginWithPasswordMutation)
+  const [mutation, { loading: isLoading }] = useMutation(
+    loginWithPasswordMutation,
+  )
 
   const onLogin = async (form: FormLogin) => {
     try {

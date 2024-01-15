@@ -15,15 +15,15 @@ import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
 
 export const MessageThreadList = () => {
-  const { data: threads, refetch } = useSuspenseQuery<
-    ViewerMessageThreadsQuery,
-    ViewerMessageThreadsQueryVariables
-  >(viewerMessageThreadsQuery, {
-    variables: {
-      limit: 124,
-      offset: 0,
+  const { data: threads, refetch } = useSuspenseQuery(
+    viewerMessageThreadsQuery,
+    {
+      variables: {
+        limit: 124,
+        offset: 0,
+      },
     },
-  })
+  )
 
   useInterval(() => {
     startTransition(() => {

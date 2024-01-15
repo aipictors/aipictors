@@ -16,20 +16,19 @@ import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
 export const SupportChat = () => {
-  const { data: supportMessages, refetch } = useSuspenseQuery<
-    ViewerSupportMessagesQuery,
-    ViewerSupportMessagesQueryVariables
-  >(viewerSupportMessagesQuery, {
-    variables: {
-      limit: 124,
-      offset: 0,
+  const { data: supportMessages, refetch } = useSuspenseQuery(
+    viewerSupportMessagesQuery,
+    {
+      variables: {
+        limit: 124,
+        offset: 0,
+      },
     },
-  })
+  )
 
-  const [createMessage, { loading: isLoading }] = useMutation<
-    CreateMessageMutation,
-    CreateMessageMutationVariables
-  >(createMessageMutation)
+  const [createMessage, { loading: isLoading }] = useMutation(
+    createMessageMutation,
+  )
 
   useInterval(() => {
     startTransition(() => {

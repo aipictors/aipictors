@@ -1,9 +1,9 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const createAlbumWorkMutation = gql`
+export const createAlbumWorkMutation = gql(`
   mutation CreateAlbumWork($input: CreateAlbumWorkInput!) {
     createAlbumWork(input: $input) {
       id
     }
   }
-`
+`)

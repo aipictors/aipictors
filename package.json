@@ -1,10 +1,11 @@
 {
-  "name": "aipictors-next",
+  "name": "aipictors",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "graphql-codegen -c codegen.ts && next dev",
-    "turbo": "next dev --turbo",
+    "dev:turbo": "next dev --turbo",
+    "dev": "next dev",
+    "predev": "graphql-codegen -c codegen.ts",
     "build": "next build",
     "prebuild": "rm -rf __generated__ && graphql-codegen -c codegen.ts",
     "start": "next start",

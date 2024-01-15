@@ -8,10 +8,7 @@ import { milestonesQuery } from "@/graphql/queries/milestone/miestones"
 import { useSuspenseQuery } from "@apollo/client"
 
 export const AppMilestoneList = () => {
-  const { data: milestones } = useSuspenseQuery<
-    MilestonesQuery,
-    MilestonesQueryVariables
-  >(milestonesQuery, {
+  const { data: milestones } = useSuspenseQuery(milestonesQuery, {
     variables: { repository: "app" },
   })
 

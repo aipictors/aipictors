@@ -1,9 +1,9 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const createAccountMutation = gql`
+export const createAccountMutation = gql(`
   mutation CreateAccount($input: CreateAccountInput!) {
     createAccount(input: $input) {
       id
     }
   }
-`
+`)

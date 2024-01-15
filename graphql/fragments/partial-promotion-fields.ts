@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const partialPromotionFieldsFragment = gql`
+export const partialPromotionFieldsFragment = gql(`
   fragment PartialPromotionFields on PromotionNode {
     id
     title
@@ -10,4 +10,4 @@ export const partialPromotionFieldsFragment = gql`
     startDateTime
     endDateTime
   }
-`
+`)

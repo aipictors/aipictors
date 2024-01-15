@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
 
-export const tagWorksQuery = gql`
-  ${partialWorkFieldsFragment}
+export const tagWorksQuery = gql(`
   query TagWorks($tagName: String!, $offset: Int!, $limit: Int!) {
     tag(name: $tagName) {
       id
@@ -11,4 +10,4 @@ export const tagWorksQuery = gql`
       }
     }
   }
-`
+`)

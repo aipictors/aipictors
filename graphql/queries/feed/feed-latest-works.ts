@@ -1,10 +1,8 @@
+import { gql } from "@/graphql/__generated__"
 import { partialFeedWorkFieldsFragment } from "@/graphql/fragments/partial-feed-work-fields"
 import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
-import { gql } from "@apollo/client"
 
-export const feedLatestWorksQuery = gql`
-  ${partialFeedWorkFieldsFragment}
-  ${partialUserFieldsFragment}
+export const feedLatestWorksQuery = gql(`
   query FeedLatestWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialFeedWorkFields
@@ -18,4 +16,4 @@ export const feedLatestWorksQuery = gql`
       isInCollection
     }
   }
-`
+`)

@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const workAwardNotificationFieldsFragment = gql`
+export const workAwardNotificationFieldsFragment = gql(`
   fragment WorkAwardNotificationFields on WorkAwardNotificationNode {
     id
     createdAt
@@ -9,4 +9,4 @@ export const workAwardNotificationFieldsFragment = gql`
       ...PartialWorkFields
     }
   }
-`
+`)

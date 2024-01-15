@@ -15,10 +15,7 @@ type Props = {
 const UserStickersPage = async (props: Props) => {
   const client = createClient()
 
-  const stickersResp = await client.query<
-    UserStickersQuery,
-    UserStickersQueryVariables
-  >({
+  const stickersResp = await client.query({
     query: userStickersQuery,
     variables: {
       userId: props.params.user,

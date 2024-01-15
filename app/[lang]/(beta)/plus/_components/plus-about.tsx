@@ -11,10 +11,9 @@ import { getAnalytics, logEvent } from "firebase/analytics"
 import { toast } from "sonner"
 
 export const PlusAbout = () => {
-  const [mutation, { loading: isLoading }] = useMutation<
-    CreatePassCheckoutSessionMutation,
-    CreatePassCheckoutSessionMutationVariables
-  >(createPassCheckoutSessionMutation)
+  const [mutation, { loading: isLoading }] = useMutation(
+    createPassCheckoutSessionMutation,
+  )
 
   const onSelect = async (passType: PassType) => {
     try {

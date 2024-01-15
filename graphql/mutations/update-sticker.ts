@@ -1,10 +1,10 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const updateStickerMutation = gql`
+export const updateStickerMutation = gql(`
   mutation UpdateSticker($input: UpdateStickerInput!) {
     updateSticker(input: $input) {
       id
       title
     }
   }
-`
+`)

@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { passFieldsFragment } from "@/graphql/fragments/pass-fields"
-import { gql } from "@apollo/client"
 
-export const viewerCurrentPassQuery = gql`
-  ${passFieldsFragment}
+export const viewerCurrentPassQuery = gql(`
   query ViewerCurrentPass {
     viewer {
       currentPass {
@@ -10,4 +9,4 @@ export const viewerCurrentPassQuery = gql`
       }
     }
   }
-`
+`)

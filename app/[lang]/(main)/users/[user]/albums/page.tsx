@@ -14,10 +14,7 @@ type Props = {
 const UserAlbumsPage = async (props: Props) => {
   const client = createClient()
 
-  const albumsResp = await client.query<
-    UserAlbumsQuery,
-    UserAlbumsQueryVariables
-  >({
+  const albumsResp = await client.query({
     query: userAlbumsQuery,
     variables: {
       offset: 0,

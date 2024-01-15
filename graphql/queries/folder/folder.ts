@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
-import { gql } from "@apollo/client"
 
-export const folderQuery = gql`
-  ${workUserFieldsFragment}
+export const folderQuery = gql(`
   query Folder($id: ID!) {
     folder(id: $id) {
       id
@@ -21,4 +20,4 @@ export const folderQuery = gql`
       thumbnailImageURL
     }
   }
-`
+`)

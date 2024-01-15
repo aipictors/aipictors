@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const subWorkFieldsFragment = gql`
+export const subWorkFieldsFragment = gql(`
   fragment SubWorkFields on SubWorkNode {
     id
     image {
@@ -12,4 +12,4 @@ export const subWorkFieldsFragment = gql`
       downloadURL
     }
   }
-`
+`)

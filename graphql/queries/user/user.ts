@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { userFieldsFragment } from "@/graphql/fragments/user-fields"
-import { gql } from "@apollo/client"
 
-export const userQuery = gql`
-  ${userFieldsFragment}
+export const userQuery = gql(`
   query User($userId: ID!) {
     user(id: $userId) {
       ...UserFields
@@ -11,4 +10,4 @@ export const userQuery = gql`
       isMuted
     }
   }
-`
+`)

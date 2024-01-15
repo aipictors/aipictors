@@ -23,10 +23,7 @@ type Props = {
 const StickersPage = async (props: Props) => {
   const client = createClient()
 
-  const stickersResp = await client.query<
-    StickersQuery,
-    StickersQueryVariables
-  >({
+  const stickersResp = await client.query({
     query: stickersQuery,
     variables: {
       offset: 0,

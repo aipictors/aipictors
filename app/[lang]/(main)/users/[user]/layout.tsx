@@ -15,7 +15,7 @@ type Props = {
 const UserLayout = async (props: Props) => {
   const client = createClient()
 
-  const userResp = await client.query<UserQuery, UserQueryVariables>({
+  const userResp = await client.query({
     query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),

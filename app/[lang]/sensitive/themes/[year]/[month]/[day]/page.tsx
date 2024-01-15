@@ -15,7 +15,7 @@ type Props = {
 const SensitiveThemePage = async (props: Props) => {
   const client = createClient()
 
-  const dailyThemesResp = await client.query<DailyThemesQuery>({
+  const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

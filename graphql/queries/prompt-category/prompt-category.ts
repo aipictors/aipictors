@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const promptCategoriesQuery = gql`
+export const promptCategoriesQuery = gql(`
   query PromptCategories {
     promptCategories {
       id
@@ -12,4 +12,4 @@ export const promptCategoriesQuery = gql`
       }
     }
   }
-`
+`)

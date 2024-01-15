@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const partialWorkFieldsFragment = gql`
+export const partialWorkFieldsFragment = gql(`
   fragment PartialWorkFields on WorkNode {
     id
     title
@@ -11,4 +11,4 @@ export const partialWorkFieldsFragment = gql`
     largeThumbnailImageHeight
     largeThumbnailImageWidth
   }
-`
+`)

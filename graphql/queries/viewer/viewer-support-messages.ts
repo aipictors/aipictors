@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { messageFieldsFragment } from "@/graphql/fragments/message-fields"
-import { gql } from "@apollo/client"
 
-export const viewerSupportMessagesQuery = gql`
-  ${messageFieldsFragment}
+export const viewerSupportMessagesQuery = gql(`
   query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       supportMessages(offset: $offset, limit: $limit) {
@@ -10,4 +9,4 @@ export const viewerSupportMessagesQuery = gql`
       }
     }
   }
-`
+`)

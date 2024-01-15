@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const feedWorkFieldsFragment = gql`
+export const feedWorkFieldsFragment = gql(`
   fragment FeedWorkFields on WorkNode {
     id
     title
@@ -19,4 +19,4 @@ export const feedWorkFieldsFragment = gql`
     likesCount
     viewsCount
   }
-`
+`)

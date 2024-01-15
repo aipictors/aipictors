@@ -1,9 +1,9 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const createFolderMutation = gql`
+export const createFolderMutation = gql(`
   mutation CreateFolder($input: CreateFolderInput!) {
     createFolder(input: $input) {
       id
     }
   }
-`
+`)

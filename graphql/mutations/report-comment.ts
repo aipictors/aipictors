@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const reportCommentMutation = gql`
+export const reportCommentMutation = gql(`
   mutation ReportComment($input: ReportCommentInput!) {
     reportComment(input: $input)
   }
-`
+`)

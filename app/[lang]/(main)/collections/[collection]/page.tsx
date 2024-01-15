@@ -14,11 +14,12 @@ import type { Metadata } from "next"
 const CollectionPage = async () => {
   const client = createClient()
 
-  const worksResp = await client.query<WorksQuery>({
+  const worksResp = await client.query({
     query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
+      where: {},
     },
   })
 

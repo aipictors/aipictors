@@ -13,11 +13,12 @@ import type { Metadata } from "next"
 const StickersPage = async () => {
   const client = createClient()
 
-  const stickersResp = await client.query<StickersQuery>({
+  const stickersResp = await client.query({
     query: stickersQuery,
     variables: {
       offset: 0,
       limit: 256,
+      where: {},
     },
   })
 

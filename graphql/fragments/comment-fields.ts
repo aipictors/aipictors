@@ -1,8 +1,6 @@
-import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const commentFieldsFragment = gql`
-  ${workUserFieldsFragment}
+export const commentFieldsFragment = gql(`
   fragment CommentFields on CommentNode {
     id
     createdAt
@@ -18,4 +16,4 @@ export const commentFieldsFragment = gql`
       }
     }
   }
-`
+`)

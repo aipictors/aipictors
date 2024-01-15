@@ -1,8 +1,6 @@
-import { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const currentImageGenerationTasksQuery = gql`
-  ${imageGenerationTaskFieldsFragment}
+export const currentImageGenerationTasksQuery = gql(`
   query CurrentImageGenerationTasks {
     viewer {
       currentImageGenerationTasks {
@@ -10,4 +8,4 @@ export const currentImageGenerationTasksQuery = gql`
       }
     }
   }
-`
+`)

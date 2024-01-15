@@ -20,17 +20,14 @@ type Props = {
 const SensitiveWorkPage = async (props: Props) => {
   const client = createClient()
 
-  const workResp = await client.query<WorkQuery, WorkQueryVariables>({
+  const workResp = await client.query({
     query: workQuery,
     variables: {
       id: props.params.work,
     },
   })
 
-  const workCommentsResp = await client.query<
-    WorkCommentsQuery,
-    WorkCommentsQueryVariables
-  >({
+  const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
       workId: props.params.work,

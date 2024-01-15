@@ -22,15 +22,11 @@ import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { toast } from "sonner"
 
 export const PlusForm = () => {
-  const [mutation, { loading: isLoading }] = useMutation<
-    CreateCustomerPortalSessionMutation,
-    CreateCustomerPortalSessionMutationVariables
-  >(createCustomerPortalSessionMutation)
+  const [mutation, { loading: isLoading }] = useMutation(
+    createCustomerPortalSessionMutation,
+  )
 
-  const { data } = useSuspenseQuery<
-    ViewerCurrentPassQuery,
-    ViewerCurrentPassQueryVariables
-  >(viewerCurrentPassQuery, {})
+  const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
 
   const onOpenCustomerPortal = async () => {
     try {

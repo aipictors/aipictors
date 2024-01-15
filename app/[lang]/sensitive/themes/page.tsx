@@ -12,7 +12,7 @@ const SensitiveThemesPage = async () => {
 
   const month = new Date().getMonth() + 1
 
-  const dailyThemesResp = await client.query<DailyThemesQuery>({
+  const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

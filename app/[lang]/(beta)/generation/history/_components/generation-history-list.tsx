@@ -13,10 +13,7 @@ import { useSuspenseQuery } from "@apollo/client"
  * @returns
  */
 export const GenerationHistoryList = () => {
-  const { data } = useSuspenseQuery<
-    ViewerImageGenerationTasksQuery,
-    ViewerImageGenerationTasksQueryVariables
-  >(viewerImageGenerationTasksQuery, {
+  const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
       offset: 0,

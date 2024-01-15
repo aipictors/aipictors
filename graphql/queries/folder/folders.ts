@@ -1,10 +1,8 @@
+import { gql } from "@/graphql/__generated__"
 import { partialFolderFieldsFragment } from "@/graphql/fragments/partial-folder-fields"
 import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
-import { gql } from "@apollo/client"
 
-export const foldersQuery = gql`
-  ${partialFolderFieldsFragment}
-  ${partialUserFieldsFragment}
+export const foldersQuery = gql(`
   query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
     folders(offset: $offset, limit: $limit, where: $where) {
       ...PartialFolderFields
@@ -13,4 +11,4 @@ export const foldersQuery = gql`
       }
     }
   }
-`
+`)

@@ -1,8 +1,6 @@
-import { commentFieldsFragment } from "@/graphql/fragments/comment-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const workCommentsQuery = gql`
-  ${commentFieldsFragment}
+export const workCommentsQuery = gql(`
   query WorkComments($workId: ID!) {
     work(id: $workId) {
       id
@@ -14,4 +12,4 @@ export const workCommentsQuery = gql`
       }
     }
   }
-`
+`)

@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { messageThreadFieldsFragment } from "@/graphql/fragments/message-thread-fields"
-import { gql } from "@apollo/client"
 
-export const messageThreadQuery = gql`
-  ${messageThreadFieldsFragment}
+export const messageThreadQuery = gql(`
   query MessageThread($threadId: ID!) {
     viewer {
       messageThread(threadId: $threadId) {
@@ -10,4 +9,4 @@ export const messageThreadQuery = gql`
       }
     }
   }
-`
+`)

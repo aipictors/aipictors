@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const updateWorkMutation = gql`
+export const updateWorkMutation = gql(`
   mutation UpdateWork($input: UpdateWorkInput!) {
     updateWork(input: $input) {
       id
@@ -8,4 +8,4 @@ export const updateWorkMutation = gql`
       description
     }
   }
-`
+`)

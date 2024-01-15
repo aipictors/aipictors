@@ -19,7 +19,7 @@ const ThemesPage = async (props: Props) => {
 
   const month = parseInt(props.params.month)
 
-  const dailyThemesResp = await client.query<DailyThemesQuery>({
+  const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

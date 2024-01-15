@@ -2,7 +2,6 @@ import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
-import type { HotTagsQuery, WorksQuery } from "@/graphql/__generated__/graphql"
 import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
@@ -14,15 +13,16 @@ const HomePage = async () => {
   //   redirect(Config.currentWebSiteURL, RedirectType.replace)
   // }
 
-  const worksResp = await client.query<WorksQuery>({
+  const worksResp = await client.query({
     query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
+      where: {},
     },
   })
 
-  const hotTagsResp = await client.query<HotTagsQuery>({
+  const hotTagsResp = await client.query({
     query: hotTagsQuery,
     variables: {},
   })

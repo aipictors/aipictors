@@ -1,9 +1,9 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const updateAccountPasswordMutation = gql`
+export const updateAccountPasswordMutation = gql(`
   mutation UpdateAccountPassword($input: UpdateAccountPasswordInput!) {
     updateAccountPassword(input: $input) {
       id
     }
   }
-`
+`)

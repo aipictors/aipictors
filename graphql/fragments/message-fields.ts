@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const messageFieldsFragment = gql`
+export const messageFieldsFragment = gql(`
   fragment MessageFields on MessageNode {
     id
     createdAt
@@ -8,4 +8,4 @@ export const messageFieldsFragment = gql`
     isRead
     isViewer
   }
-`
+`)

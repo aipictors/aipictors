@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const partialStickerFieldsFragment = gql`
+export const partialStickerFieldsFragment = gql(`
   fragment PartialStickerFields on StickerNode {
     id
     title
@@ -12,4 +12,4 @@ export const partialStickerFieldsFragment = gql`
     usesCount
     likesCount
   }
-`
+`)

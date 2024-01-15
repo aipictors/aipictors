@@ -1,10 +1,10 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const muteUserMutation = gql`
+export const muteUserMutation = gql(`
   mutation MuteUser($input: MuteUserInput!) {
     muteUser(input: $input) {
       id
       isMuted
     }
   }
-`
+`)

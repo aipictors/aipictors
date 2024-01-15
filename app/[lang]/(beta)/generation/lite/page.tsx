@@ -11,7 +11,7 @@ import type { Metadata } from "next"
 const GenerationLitePage = async () => {
   const client = createClient()
 
-  const promptCategoryQuery = await client.query<PromptCategoriesQuery>({
+  const promptCategoryQuery = await client.query({
     query: promptCategoriesQuery,
     variables: {},
   })

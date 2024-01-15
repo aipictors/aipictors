@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const passFieldsFragment = gql`
+export const passFieldsFragment = gql(`
   fragment PassFields on PassNode {
     id
     type
@@ -17,4 +17,4 @@ export const passFieldsFragment = gql`
     createdAt
     price
   }
-`
+`)

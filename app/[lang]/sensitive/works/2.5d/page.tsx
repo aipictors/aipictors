@@ -10,15 +10,16 @@ import type { Metadata } from "next"
 const SensitiveWorks25dPage = async () => {
   const client = createClient()
 
-  const worksResp = await client.query<WorksQuery>({
+  const worksResp = await client.query({
     query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
+      where: {},
     },
   })
 
-  const hotTagsResp = await client.query<HotTagsQuery>({
+  const hotTagsResp = await client.query({
     query: hotTagsQuery,
     variables: {},
   })

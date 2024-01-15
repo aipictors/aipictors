@@ -18,19 +18,13 @@ import { toast } from "sonner"
 export const AccountLoginForm = () => {
   const appContext = useContext(AuthContext)
 
-  const { data = null } = useSuspenseQuery<
-    ViewerUserQuery,
-    ViewerUserQueryVariables
-  >(viewerUserQuery, {
+  const { data = null } = useSuspenseQuery(viewerUserQuery, {
     skip: appContext.isLoading,
   })
 
   const [userId, setUserId] = useState("")
 
-  const [mutation, { loading }] = useMutation<
-    UpdateAccountLoginMutation,
-    UpdateAccountLoginMutationVariables
-  >(updateAccountLoginMutation)
+  const [mutation, { loading }] = useMutation(updateAccountLoginMutation)
 
   const handleSubmit = async () => {
     try {

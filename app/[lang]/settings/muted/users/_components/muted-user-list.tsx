@@ -16,17 +16,12 @@ import { useContext } from "react"
 export const MutedUserList = () => {
   const appContext = useContext(AuthContext)
 
-  const { data = null, refetch } = useSuspenseQuery<
-    ViewerMutedUsersQuery,
-    ViewerMutedUsersQueryVariables
-  >(viewerMutedUsersQuery, {
+  const { data = null, refetch } = useSuspenseQuery(viewerMutedUsersQuery, {
     skip: appContext.isLoading,
     variables: { offset: 0, limit: 128 },
   })
 
-  const [mutation] = useMutation<MuteUserMutation, MuteUserMutationVariables>(
-    muteUserMutation,
-  )
+  const [mutation] = useMutation(muteUserMutation)
 
   const handleUnmute = async (userID: string) => {
     await mutation({

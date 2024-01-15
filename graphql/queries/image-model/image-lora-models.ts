@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const imageLoraModelsQuery = gql`
+export const imageLoraModelsQuery = gql(`
   query ImageLoraModels {
     imageLoraModels {
       id
@@ -12,4 +12,4 @@ export const imageLoraModelsQuery = gql`
       thumbnailImageURL
     }
   }
-`
+`)

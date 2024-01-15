@@ -24,18 +24,19 @@ type Props = {
 const ModelPage = async (props: Props) => {
   const client = createClient()
 
-  const resp = await client.query<ImageModelQuery>({
+  const resp = await client.query({
     query: imageModelQuery,
     variables: {
       id: props.params.model,
     },
   })
 
-  const worksResp = await client.query<WorksQuery>({
+  const worksResp = await client.query({
     query: worksQuery,
     variables: {
       offset: 0,
       limit: 16,
+      where: {},
     },
   })
 

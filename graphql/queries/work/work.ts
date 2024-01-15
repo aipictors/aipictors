@@ -1,10 +1,6 @@
-import { subWorkFieldsFragment } from "@/graphql/fragments/sub-work-fields"
-import { userFieldsFragment } from "@/graphql/fragments/user-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const workQuery = gql`
-  ${userFieldsFragment}
-  ${subWorkFieldsFragment}
+export const workQuery = gql(`
   query Work($id: ID!) {
     work(id: $id) {
       id
@@ -41,4 +37,4 @@ export const workQuery = gql`
       isInCollection
     }
   }
-`
+`)

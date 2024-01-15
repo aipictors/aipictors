@@ -20,10 +20,7 @@ type Props = {
 }
 
 export const RecipientMessageList = (props: Props) => {
-  const { data, refetch } = useSuspenseQuery<
-    MessageThreadMessagesQuery,
-    MessageThreadMessagesQueryVariables
-  >(messageThreadMessagesQuery, {
+  const { data, refetch } = useSuspenseQuery(messageThreadMessagesQuery, {
     variables: {
       threadId: props.recipientId,
       limit: 124,
@@ -31,10 +28,9 @@ export const RecipientMessageList = (props: Props) => {
     },
   })
 
-  const [createMessage, { loading: isLoading }] = useMutation<
-    CreateMessageMutation,
-    CreateMessageMutationVariables
-  >(createMessageMutation)
+  const [createMessage, { loading: isLoading }] = useMutation(
+    createMessageMutation,
+  )
 
   useInterval(() => {
     startTransition(() => {

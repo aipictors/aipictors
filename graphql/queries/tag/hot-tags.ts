@@ -1,10 +1,6 @@
-import { partialTagFieldsFragment } from "@/graphql/fragments/partial-tag-fields"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const hotTagsQuery = gql`
-  ${partialTagFieldsFragment}
-  ${partialWorkFieldsFragment}
+export const hotTagsQuery = gql(`
   query HotTags {
     hotTags {
       ...PartialTagFields
@@ -13,4 +9,4 @@ export const hotTagsQuery = gql`
       }
     }
   }
-`
+`)

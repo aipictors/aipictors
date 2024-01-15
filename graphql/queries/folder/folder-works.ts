@@ -1,8 +1,6 @@
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const folderWorksQuery = gql`
-  ${partialWorkFieldsFragment}
+export const folderWorksQuery = gql(`
   query FolderWorks($folderId: ID!, $offset: Int!, $limit: Int!) {
     folder(id: $folderId) {
       id
@@ -11,4 +9,4 @@ export const folderWorksQuery = gql`
       }
     }
   }
-`
+`)

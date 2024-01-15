@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const followNotificationFieldsFragment = gql`
+export const followNotificationFieldsFragment = gql(`
   fragment FollowNotificationFields on FollowNotificationNode {
     id
     createdAt
@@ -8,4 +8,4 @@ export const followNotificationFieldsFragment = gql`
       ...PartialUserFields
     }
   }
-`
+`)

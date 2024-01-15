@@ -1,10 +1,10 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const deleteStickerMutation = gql`
+export const deleteStickerMutation = gql(`
   mutation DeleteSticker($input: DeleteStickerInput!) {
     deleteSticker(input: $input) {
       id
       title
     }
   }
-`
+`)

@@ -26,17 +26,14 @@ type Props = {
 const AlbumPage = async (props: Props) => {
   const client = createClient()
 
-  const albumResp = await client.query<AlbumQuery, AlbumQueryVariables>({
+  const albumResp = await client.query({
     query: albumQuery,
     variables: {
       id: props.params.album,
     },
   })
 
-  const albumWorksResp = await client.query<
-    AlbumWorksQuery,
-    AlbumWorksQueryVariables
-  >({
+  const albumWorksResp = await client.query({
     query: albumWorksQuery,
     variables: {
       albumId: props.params.album,

@@ -5,11 +5,7 @@ import { createClient } from "@/app/_contexts/client"
 import type {
   ImageLoraModelsQuery,
   ImageLoraModelsQueryVariables,
-  ImageModelsQuery,
-  ImageModelsQueryVariables,
-  PromptCategoriesQueryVariables,
 } from "@/graphql/__generated__/graphql"
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
@@ -19,26 +15,17 @@ import { Suspense } from "react"
 const GenerationPage = async () => {
   const client = createClient()
 
-  const promptCategoriesResp = await client.query<
-    PromptCategoriesQuery,
-    PromptCategoriesQueryVariables
-  >({
+  const promptCategoriesResp = await client.query({
     query: promptCategoriesQuery,
     variables: {},
   })
 
-  const imageModelsResp = await client.query<
-    ImageModelsQuery,
-    ImageModelsQueryVariables
-  >({
+  const imageModelsResp = await client.query({
     query: imageModelsQuery,
     variables: {},
   })
 
-  const imageLoraModelsResp = await client.query<
-    ImageLoraModelsQuery,
-    ImageLoraModelsQueryVariables
-  >({
+  const imageLoraModelsResp = await client.query({
     query: imageLoraModelsQuery,
     variables: {},
   })

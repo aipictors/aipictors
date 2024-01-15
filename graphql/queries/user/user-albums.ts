@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialAlbumFieldsFragment } from "@/graphql/fragments/partial-album-fields"
-import { gql } from "@apollo/client"
 
-export const userAlbumsQuery = gql`
-  ${partialAlbumFieldsFragment}
+export const userAlbumsQuery = gql(`
   query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id
@@ -11,4 +10,4 @@ export const userAlbumsQuery = gql`
       }
     }
   }
-`
+`)

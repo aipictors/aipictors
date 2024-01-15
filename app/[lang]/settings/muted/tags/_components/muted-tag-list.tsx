@@ -17,10 +17,7 @@ import { useContext, useState } from "react"
 export const MutedTagList = () => {
   const appContext = useContext(AuthContext)
 
-  const { data = null, refetch } = useSuspenseQuery<
-    ViewerMutedTagsQuery,
-    ViewerMutedTagsQueryVariables
-  >(viewerMutedTagsQuery, {
+  const { data = null, refetch } = useSuspenseQuery(viewerMutedTagsQuery, {
     skip: appContext.isLoading,
     variables: { offset: 0, limit: 128 },
   })
@@ -29,9 +26,7 @@ export const MutedTagList = () => {
 
   const count = text.length
 
-  const [mutation] = useMutation<MuteTagMutation, MuteTagMutationVariables>(
-    muteTagMutation,
-  )
+  const [mutation] = useMutation(muteTagMutation)
 
   const handleUnmute = async (tagName: string) => {
     await mutation({

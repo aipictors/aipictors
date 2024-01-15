@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const viewerUserQuery = gql`
+export const viewerUserQuery = gql(`
   query ViewerUser {
     viewer {
       user {
@@ -23,4 +23,4 @@ export const viewerUserQuery = gql`
       }
     }
   }
-`
+`)

@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const partialUserFieldsFragment = gql`
+export const partialUserFieldsFragment = gql(`
   fragment PartialUserFields on UserNode {
     id
     login
@@ -10,4 +10,4 @@ export const partialUserFieldsFragment = gql`
       downloadURL
     }
   }
-`
+`)

@@ -1,11 +1,9 @@
-import { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const createImageGenerationTaskMutation = gql`
-  ${imageGenerationTaskFieldsFragment}
+export const createImageGenerationTaskMutation = gql(`
   mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
     createImageGenerationTask(input: $input) {
       ...ImageGenerationTaskFields
     }
   }
-`
+`)

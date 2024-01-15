@@ -1,8 +1,7 @@
+import { gql } from "@/graphql/__generated__"
 import { partialFolderFieldsFragment } from "@/graphql/fragments/partial-folder-fields"
-import { gql } from "@apollo/client"
 
-export const viewerFoldersQuery = gql`
-  ${partialFolderFieldsFragment}
+export const viewerFoldersQuery = gql(`
   query ViewerFolders($offset: Int!, $limit: Int!) {
     viewer {
       folders(offset: $offset, limit: $limit) {
@@ -10,4 +9,4 @@ export const viewerFoldersQuery = gql`
       }
     }
   }
-`
+`)

@@ -1,12 +1,12 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import type {
   UpdateAccountPasswordMutation,
   UpdateAccountPasswordMutationVariables,
 } from "@/graphql/__generated__/graphql"
 import { UpdateAccountPasswordDocument } from "@/graphql/__generated__/graphql"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { ApolloError, useMutation } from "@apollo/client"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
@@ -21,10 +21,7 @@ export const AccountPasswordForm = () => {
 
   const [showNewPassword, setShowNewPassword] = useState(false)
 
-  const [mutation, { loading }] = useMutation<
-    UpdateAccountPasswordMutation,
-    UpdateAccountPasswordMutationVariables
-  >(UpdateAccountPasswordDocument)
+  const [mutation, { loading }] = useMutation(UpdateAccountPasswordDocument)
 
   const handleSubmit = async () => {
     try {

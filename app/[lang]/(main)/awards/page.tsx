@@ -23,10 +23,7 @@ const AwardsPage = async () => {
 
   const day = new Date().getDate()
 
-  const workAwardsResp = await client.query<
-    WorkAwardsQuery,
-    WorkAwardsQueryVariables
-  >({
+  const workAwardsResp = await client.query({
     query: workAwardsQuery,
     variables: {
       offset: 0,

@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client"
+import { gql } from "@/graphql/__generated__"
 
-export const paymentFieldsFragment = gql`
+export const paymentFieldsFragment = gql(`
   fragment PaymentFields on PaymentNode {
     id
     type
@@ -13,4 +13,4 @@ export const paymentFieldsFragment = gql`
       type
     }
   }
-`
+`)
