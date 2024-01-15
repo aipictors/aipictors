@@ -6,11 +6,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Files, Share2 } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { RiFileCopyLine, RiShareFill } from "react-icons/ri"
-import { toast } from "sonner"
-import CopyWorkUrlButton from "./copy-work-url"
-import { XIntent } from "./share-on-x"
+import CopyWorkUrlButton from "./work-action-copy-url"
+import { XIntent } from "./work-action-share-x"
 
 type Props = {
   title?: string
@@ -22,8 +21,8 @@ export const SharePopover = (props: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          <RiShareFill />
+        <Button size={"icon"}>
+          <Share2 />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
@@ -39,13 +38,11 @@ export const SharePopover = (props: Props) => {
               hashtags={["Aipictors", "AIIllust"]}
             />
             <Button
+              disabled
               className="flex items-center gap-2"
               variant="outline"
-              onClick={() => {
-                toast("開発中につき、未実装")
-              }}
             >
-              <RiFileCopyLine />
+              <Files />
               イラストをコピー
             </Button>
           </div>
