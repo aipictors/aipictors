@@ -51,7 +51,7 @@ export const SupportChat = () => {
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
   return (
-    <div className="sticky top-0 overflow-y-hidden h-main flex flex-col-reverse md:flex-col pt-2">
+    <div className="sticky top-0 h-main flex flex-col pt-2">
       <SupportMessageList
         messages={messages}
         recipientIconImageURL={adminAvatarURL}

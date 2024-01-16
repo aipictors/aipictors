@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { ArrowUpFromLine, Send } from "lucide-react"
 import { ChangeEvent, useRef, useState } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
-import { RxUpload } from "react-icons/rx"
 
 type Props = {
   isLoading: boolean
@@ -66,7 +66,7 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="px-4 md:pr-8 pb-4 flex gap-x-2 items-center">
+    <div className="px-4 md:pr-8 pb-4 flex gap-x-4 items-center justify-center">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
@@ -78,15 +78,15 @@ export const MessageInput = (props: Props) => {
         </div>
       ))}
       <Textarea
-        className="resize-none w-full border rounded-md p-2 h-auto"
+        className="resize-none w-3/4 border rounded-md p-2 h-auto"
         placeholder="メッセージを入力してください"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />
       {/* まだアップロード処理が終えていないので、disabled */}
-      <Button disabled onClick={handleButtonClick}>
+      <Button disabled onClick={handleButtonClick} size={"icon"}>
         <div className="flex justify-center items-center">
-          <RxUpload />
+          <ArrowUpFromLine />
           <Input
             ref={fileInputRef}
             className="hidden"
@@ -102,8 +102,9 @@ export const MessageInput = (props: Props) => {
       <Button
         disabled={!isSendButtonEnabled || props.isLoading}
         onClick={handleSubmit}
+        size={"icon"}
       >
-        {"送信"}
+        <Send />
       </Button>
     </div>
   )

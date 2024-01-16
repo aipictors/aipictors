@@ -30,10 +30,7 @@ export const SupportMessageList = (props: Props) => {
   }, [props.messages])
 
   return (
-    <div
-      className="overflow-y-auto flex-1 space-y-4 px-4 md:pr-8 pb-4"
-      ref={containerRef}
-    >
+    <div className="flex-1 space-y-4 px-4 md:pr-8 pb-4" ref={containerRef}>
       {props.messages
         .slice()
         .sort((a, b) => {

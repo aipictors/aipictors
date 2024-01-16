@@ -17,7 +17,6 @@
 [package.json](./package.json)で指定されている、Node.jsとpnpmが自動的にダウンロード / インストールされます。  
 Voltaの[Getting Started](https://docs.volta.sh/guide/getting-started)に従い、環境に応じてインストールしてください。  
 
-エディタは、[Visual Studio Code](https://code.visualstudio.com/)を推奨しています。  
 
 <details>
     <summary>
@@ -31,6 +30,8 @@ Voltaの[Getting Started](https://docs.volta.sh/guide/getting-started)に従い�
 </details>
 
 ### 2. エディタを整備する
+
+エディタは、[Visual Studio Code](https://code.visualstudio.com/)を推奨しています。  
 
 [推奨されている拡張機能](.vscode/extensions.json)をインストールしてください。  
 再読み込みを要求された場合はVSCodeの再起動を行ってください。  
