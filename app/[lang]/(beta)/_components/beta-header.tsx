@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Config } from "@/config"
 import { BellIcon, MenuIcon } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
 type Props = {
@@ -39,10 +40,12 @@ export const BetaHeader = (props: Props) => {
         </Sheet>
         <div className="flex items-center">
           <Link href="/plus">
-            <img
-              src="/icon.png"
+            <Image
+              src="/icon.svg"
               className="w-10 h-10 rounded-full"
               alt="Avatar"
+              width={40}
+              height={40}
             />
           </Link>
         </div>

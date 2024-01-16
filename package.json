@@ -7,7 +7,6 @@
     "dev": "next dev",
     "predev": "graphql-codegen -c codegen.ts",
     "build": "next build",
-    "prebuild": "rm -rf __generated__ && graphql-codegen -c codegen.ts",
     "start": "next start",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -116,6 +115,7 @@
     "vitepress": "^1.0.0-rc.36"
   },
   "volta": {
-    "node": "21.5.0"
+    "node": "21.5.0",
+    "pnpm": "8.14.1"
   }
 }

@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Config } from "@/config"
 import { BellIcon, FolderIcon, MenuIcon, SearchIcon } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect } from "react"
 import { toast } from "sonner"
@@ -48,10 +49,12 @@ export const HomeHeader = (props: Props) => {
           </SheetContent>
         </Sheet>
         <Link className="flex items-center" href="https://www.aipictors.com">
-          <img
-            src="/icon.png"
+          <Image
+            src="/icon.svg"
             className="w-10 h-10 rounded-full"
             alt="Avatar"
+            width={40}
+            height={40}
           />
         </Link>
         <div className="flex-1 w-full hidden md:block">
