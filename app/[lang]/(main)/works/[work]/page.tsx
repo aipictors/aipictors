@@ -1,6 +1,8 @@
+import { NextAndPreviousWorkList } from "@/app/[lang]/(main)/works/[work]/_components/next-and-previous-work-list"
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
 import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
@@ -34,17 +36,17 @@ const WorkPage = async (props: Props) => {
     <div className="px-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row items-start">
         <WorkArticle work={workResp.data.work} />
-        {/* <div className="w-full lg:max-w-xs"> */}
-        {/* <WorkUser
-            userName={workQuery.data.work.user.name}
-            userIconImageURL={workQuery.data.work.user.iconImage?.downloadURL}
-            userFollowersCount={workQuery.data.work.user.followersCount}
-            userBiography={workQuery.data.work.user.biography}
-            userPromptonId={workQuery.data.work.user.promptonUser?.id}
-            userWorksCount={workQuery.data.work.user.worksCount}
-          /> */}
-        {/* <p>{"前後の作品"}</p> */}
-        {/* </div> */}
+        <div className="w-full lg:max-w-xs" style={{ paddingLeft: "16px" }}>
+          <WorkUser
+            userName={workResp.data.work.user.name}
+            userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}
+            userFollowersCount={workResp.data.work.user.followersCount}
+            userBiography={workResp.data.work.user.biography}
+            userPromptonId={workResp.data.work.user.promptonUser?.id}
+            userWorksCount={workResp.data.work.user.worksCount}
+          />
+          <NextAndPreviousWorkList work={workResp.data.work} />
+        </div>
       </div>
       <WorkCommentList work={workCommentsResp.data.work} />
       <WorkRelatedWorkList />
