@@ -36,7 +36,7 @@ Voltaの[Getting Started](https://docs.volta.sh/guide/getting-started)に従い�
 再読み込みを要求された場合はVSCodeの再起動を行ってください。  
 Visual Studio Codeの設定については、[settings.json](.vscode/settings.json)を参照してください。  
 
-![@recommended](./public/README/extension.png)
+![@recommended](./docs/extension.png)
 
 ### 3. 開発環境を起動する
 1. 依存関係をインストールする
