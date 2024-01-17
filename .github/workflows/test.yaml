@@ -38,7 +38,7 @@ jobs:
         run: time pnpm install
       
       - name: Prebuild
-        run: time pnpm run prebuild
+        run: time pnpm run predev
       
       # - name: Run Type Cheking
       #   run: time pnpm run check push時に無くても実行するので、一度消して様子見
