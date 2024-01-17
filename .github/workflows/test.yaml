@@ -15,33 +15,20 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20]
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install
+      - uses: oven-sh/setup-bun@v1
+      - run: time bun install
 
       - name: Install
-        run: time pnpm install
+        run: time bun install
       
       - name: Prebuild
-        run: time pnpm run predev
+        run: time bun run predev
       
-      # - name: Run Type Cheking
-      #   run: time pnpm run check push時に無くても実行するので、一度消して様子見
+      - name: Run Type Cheking
+        run: time bun run check
       
       - name: Run Test
-        run: time pnpm run test
+        run: time bun run test

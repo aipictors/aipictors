@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/sonner"
 import { Config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
-import Head from "next/head"
 import Script from "next/script"
 import { Suspense } from "react"
 import { notoSansFont } from "./_fonts/noto-sans-font"
@@ -17,10 +16,7 @@ type Props = {
 const RootLayout = (props: Props) => {
   return (
     <html lang={"ja"} suppressHydrationWarning>
-      <Head>
-        <title>{Config.siteTitleJA}</title>
-        <meta name="description" content={Config.siteDescriptionJA} />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <head>
         {process.env.NODE_ENV === "production" && (
           <Script
             async
@@ -29,8 +25,7 @@ const RootLayout = (props: Props) => {
             strategy="afterInteractive"
           />
         )}
-        {/* 他のメタタグやリンクもここに追加 */}
-      </Head>
+      </head>
       <body
         className={cn(
           "min-h-screen font-sans antialiased",
@@ -48,6 +43,7 @@ const RootLayout = (props: Props) => {
     </html>
   )
 }
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.aipictors.com/"),
   title: {
