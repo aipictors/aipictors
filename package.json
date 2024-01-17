@@ -6,7 +6,7 @@
     "dev:turbo": "next dev --turbo",
     "dev": "next dev",
     "predev": "graphql-codegen -c codegen.ts",
-    "build": "next build",
+    "build": "graphql-codegen -c codegen.ts && next build",
     "start": "next start",
     "test": "vitest --run",
     "test:watch": "vitest",
