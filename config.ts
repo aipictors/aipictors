@@ -184,6 +184,8 @@ export class Config {
   static wordpressPrivateImageEndpoint =
     "https://www.aipictors.com/wp-content/themes/AISite/private-image.php"
 
+  static wordpressWWW4Endpoint = "https://www4.aipictors.com/index.php"
+
   /**
    * Sentry: DSN
    */
