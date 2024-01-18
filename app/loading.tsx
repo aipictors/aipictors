@@ -1,10 +1,7 @@
+import { AppPageLoading } from "@/components/app/app-page-loading"
+
 const RootLoading = () => {
-  return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="animate-ping h-4 w-4 bg-gray-600 rounded-full" />
-      <p className="mt-4 text-xl">Loading...</p>
-    </div>
-  )
+  return <AppPageLoading text="読み込み中" />
 }
 
 export default RootLoading
