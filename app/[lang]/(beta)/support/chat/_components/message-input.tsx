@@ -1,10 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowUpFromLine, Send } from "lucide-react"
-import { ChangeEvent, useRef, useState } from "react"
+import { Send } from "lucide-react"
+import { useState } from "react"
 import { IoIosCloseCircle } from "react-icons/io"
 
 type Props = {
@@ -17,45 +16,47 @@ export const MessageInput = (props: Props) => {
   const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const handleSubmit = () => {
+    console.log("submit")
+    props.onSubmit(message)
     setSelectedImages([])
     setMessage("")
   }
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  // const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (files && files.length > 0) {
-      const promises: Promise<string>[] = []
+  // const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  //   const files = event.target.files
+  //   if (files && files.length > 0) {
+  //     const promises: Promise<string>[] = []
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        const promise = new Promise<string>((resolve) => {
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            if (e.target) {
-              resolve(e.target.result as string)
-            }
-          }
-          reader.readAsDataURL(file)
-        })
-        promises.push(promise)
-      }
+  //     for (let i = 0; i < files.length; i++) {
+  //       const file = files[i]
+  //       const promise = new Promise<string>((resolve) => {
+  //         const reader = new FileReader()
+  //         reader.onload = (e) => {
+  //           if (e.target) {
+  //             resolve(e.target.result as string)
+  //           }
+  //         }
+  //         reader.readAsDataURL(file)
+  //       })
+  //       promises.push(promise)
+  //     }
 
-      try {
-        const newImages = await Promise.all(promises)
-        setSelectedImages((prevImages) => [...prevImages, ...newImages])
-      } catch (error) {
-        console.error("Error loading images:", error)
-      }
-    }
-  }
+  //     try {
+  //       const newImages = await Promise.all(promises)
+  //       setSelectedImages((prevImages) => [...prevImages, ...newImages])
+  //     } catch (error) {
+  //       console.error("Error loading images:", error)
+  //     }
+  //   }
+  // }
 
-  const handleButtonClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click()
-    }
-  }
+  // const handleButtonClick = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click()
+  //   }
+  // }
 
   const isSendButtonEnabled = message.trim() !== "" || selectedImages.length > 0
 
@@ -66,7 +67,7 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="px-4 md:pr-8 pb-4 flex gap-x-4 items-center justify-center">
+    <div className="px-4 w-full md:pr-8 pb-4 flex gap-x-4 items-end">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
@@ -78,13 +79,13 @@ export const MessageInput = (props: Props) => {
         </div>
       ))}
       <Textarea
-        className="resize-none w-3/4 border rounded-md p-2 h-auto"
+        className="resize-none border rounded-md p-2 h-auto"
         placeholder="メッセージを入力してください"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />
       {/* まだアップロード処理が終えていないので、disabled */}
-      <Button disabled onClick={handleButtonClick} size={"icon"}>
+      {/* <Button disabled onClick={handleButtonClick} size={"icon"}>
         <div className="flex justify-center items-center">
           <ArrowUpFromLine />
           <Input
@@ -97,14 +98,14 @@ export const MessageInput = (props: Props) => {
             onChange={handleFileChange}
           />
         </div>
-      </Button>
+      </Button> */}
       {/* 送信ボタン */}
       <Button
         disabled={!isSendButtonEnabled || props.isLoading}
         onClick={handleSubmit}
         size={"icon"}
       >
-        <Send />
+        <Send className="w-4" />
       </Button>
     </div>
   )
