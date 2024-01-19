@@ -5,6 +5,7 @@ export const userFieldsFragment = gql(`
     id
     biography
     login
+    nanoid
     name
     receivedLikesCount
     receivedViewsCount
