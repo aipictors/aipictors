@@ -1,6 +1,6 @@
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import { ArticlePage } from "@/app/_components/page/article-page"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
@@ -35,7 +35,7 @@ const SensitiveWorkPage = async (props: Props) => {
     <ArticlePage>
       <WorkArticle work={workResp.data.work} />
       <WorkCommentList work={workCommentsResp.data.work} />
-      <WorkRelatedWorkList />
+      <WorkRelatedList works={workResp.data.work.user.works} />
     </ArticlePage>
   )
 }
