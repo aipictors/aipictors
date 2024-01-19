@@ -4,8 +4,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
 
 type Props = {
@@ -25,7 +23,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
-      <Carousel>
+      <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
           {allImageURLs.map((imageURL, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
@@ -38,8 +36,6 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
       </Carousel>
     )
   }
