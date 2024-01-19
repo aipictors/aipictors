@@ -1,6 +1,6 @@
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
@@ -31,7 +31,7 @@ const WorkPage = async (props: Props) => {
   if (workCommentsResp.data.work === null) return null
 
   return (
-    <div className="px-4 w-full max-w-fit mx-auto">
+    <div className="px-4 py-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row items-start">
         <WorkArticle work={workResp.data.work} />
         {/* <div className="w-full lg:max-w-xs"> */}
@@ -46,8 +46,8 @@ const WorkPage = async (props: Props) => {
         {/* <p>{"前後の作品"}</p> */}
         {/* </div> */}
       </div>
+      <WorkRelatedList works={workResp.data.work.user.works} />
       <WorkCommentList work={workCommentsResp.data.work} />
-      <WorkRelatedWorkList />
     </div>
   )
 }
