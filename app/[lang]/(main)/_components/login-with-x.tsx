@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
 import { TwitterAuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 import { toast } from "sonner"
@@ -27,6 +28,7 @@ export const LoginWithX = ({ onClose, disabled }: Props) => {
 
   return (
     <Button className="w-full" onClick={onLoginWithX} disabled={disabled}>
+      {disabled && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
       {"Xでログイン"}
     </Button>
   )

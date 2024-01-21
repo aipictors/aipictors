@@ -1,7 +1,6 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
@@ -116,7 +115,6 @@ export const HomeNavigationList = (props: Props) => {
           {"設定"}
         </HomeNavigationButton>
       )}
-      <ThemeModeButton />
       {appContext.isLoggedIn && (
         <HomeNavigationButton
           onClick={() => {
