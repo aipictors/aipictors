@@ -1,7 +1,6 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { Separator } from "@/components/ui/separator"
 import {
   AwardIcon,
@@ -66,7 +65,6 @@ export const SensitiveNavigationList = () => {
       <div className="py-2">
         <Separator />
       </div>
-      <ThemeModeButton />
     </div>
   )
 }

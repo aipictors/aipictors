@@ -11,10 +11,6 @@ import { Suspense } from "react"
 const HomePage = async () => {
   const client = createClient()
 
-  // if (Config.isReleaseMode) {
-  //   redirect(Config.currentWebSiteURL, RedirectType.replace)
-  // }
-
   const worksResp = await client.query({
     query: worksQuery,
     variables: {
@@ -29,30 +25,32 @@ const HomePage = async () => {
     variables: {},
   })
 
+  const sections = [
+    {
+      title: "イラスト無料生成で参考にできる作品",
+      tooltip: "イラスト無料生成で参考にできる作品です。",
+    },
+    { title: "おすすめ作品" },
+    { title: "推薦作品" },
+    { title: "コレクション" },
+    { title: "人気タグ" },
+    { title: "ショート動画" },
+    { title: "小説" },
+    { title: "コラム" },
+  ]
+
   return (
     <AppPage className="space-y-4">
       <Suspense fallback={<MainPageLoading />}>
         <HomeTagList hotTags={hotTagsResp.data.hotTags} />
-        <HomeWorkSection
-          title={"イラスト無料生成で参考にできる作品"}
-          works={worksResp.data.works!}
-          tooltip={"イラスト無料生成で参考にできる作品です。"}
-        />
-        <HomeWorkSection title={"おすすめ作品"} works={worksResp.data.works!} />
-        <HomeWorkSection title={"推薦作品"} works={worksResp.data.works!} />
-        <HomeWorkSection
-          title="先日のランキング作品"
-          works={worksResp.data.works!}
-        />
-        <HomeWorkSection title={"コレクション"} works={worksResp.data.works!} />
-        <HomeWorkSection title={"人気タグ"} works={worksResp.data.works!} />
-        <HomeWorkSection title={"ショート動画"} works={worksResp.data.works!} />
-        <HomeWorkSection title={"小説"} works={worksResp.data.works!} />
-        <HomeWorkSection title={"コラム"} works={worksResp.data.works!} />
-        <HomeWorkSection
-          title={"＃タグのおすすめ作品"}
-          works={worksResp.data.works!}
-        />
+        {sections.map((section) => (
+          <HomeWorkSection
+            key={section.title}
+            title={section.title}
+            tooltip={section.tooltip}
+            works={worksResp.data.works!}
+          />
+        ))}
       </Suspense>
     </AppPage>
   )

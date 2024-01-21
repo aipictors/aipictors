@@ -1,7 +1,6 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { ThemeModeButton } from "@/app/[lang]/(main)/_components/theme-mode-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -68,7 +67,6 @@ export const BetaNavigationList = (props: Props) => {
           {"ログイン"}
         </HomeNavigationButton>
       )}
-      <ThemeModeButton />
       <div className="py-2">
         <Separator />
       </div>
