@@ -1,7 +1,5 @@
-import { WorkNode } from "@/graphql/__generated__/graphql"
-
 type Props = {
-  work: WorkNode | null
+  work: any
   isFocus?: boolean
 }
 
@@ -15,42 +13,24 @@ type Props = {
  */
 export const SmallSquareThumbnail = (props: Props) => {
   if (props.work === null) {
-    return (
-      <div
-        style={{
-          width: "72px",
-          height: "72px",
-          marginRight: "8px",
-          overflow: "hidden",
-        }}
-      ></div>
-    )
+    return <div className="w-20 h-20 mr-2"></div>
   }
 
   return (
     <div
-      style={{
-        width: "72px",
-        height: "72px",
-        marginRight: "8px",
-        overflow: "hidden",
-        borderRadius: "8px",
-        border: props.isFocus ? "solid" : "initial",
-        borderColor: props.isFocus ? "#0090f0" : "initial",
-      }}
+      className={
+        props.isFocus
+          ? "w-20 h-20 mr-2 overflow-hidden rounded-lg border-2 border-solid border-indigo-600 opacity-75"
+          : "w-20 h-20 mr-2 overflow-hidden rounded-lg"
+      }
     >
       <img
+        className="w-20 h-20 mr-2 object-cover"
         src={
           props.work.smallThumbnailImageURL
             ? props.work.smallThumbnailImageURL
             : props.work.imageURL
         }
-        style={{
-          width: "72px",
-          height: "72px",
-          objectFit: "cover",
-          opacity: props.isFocus ? "0.72" : "initial",
-        }}
       />
     </div>
   )

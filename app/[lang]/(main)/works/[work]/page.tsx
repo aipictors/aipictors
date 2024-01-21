@@ -36,7 +36,7 @@ const WorkPage = async (props: Props) => {
     <div className="px-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row items-start">
         <WorkArticle work={workResp.data.work} />
-        <div className="w-full lg:max-w-xs" style={{ paddingLeft: "16px" }}>
+        <div className="w-full lg:max-w-xs pl-4">
           <WorkUser
             userName={workResp.data.work.user.name}
             userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}
