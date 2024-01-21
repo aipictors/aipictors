@@ -34,9 +34,12 @@ export const MessageThreadList = () => {
       <ScrollArea className="h-full">
         <div className="space-y-2 w-full">
           {messageThreads.map((messageThread) => (
-            <Link className="block" href={`/messages/${messageThread.id}`}>
+            <Link
+              key={messageThread.id}
+              className="block"
+              href={`/messages/${messageThread.id}`}
+            >
               <Button
-                key={messageThread.id}
                 className="h-auto p-4 flex flex-col overflow-hidden gap-y-2"
                 variant={"secondary"}
               >

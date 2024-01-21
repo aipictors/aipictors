@@ -30,6 +30,11 @@ module.exports = () => {
       ],
       unoptimized: true,
     },
+    logging: {
+      fetches: {
+        fullUrl: true,
+      },
+    },
   }
   if (process.env.ANALYZE === "true") {
     const withBundleAnalyzer = require("@next/bundle-analyzer")({

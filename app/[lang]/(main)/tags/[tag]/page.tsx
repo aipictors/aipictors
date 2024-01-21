@@ -1,8 +1,8 @@
-import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
+import { TagWorkSection } from "@/app/[lang]/(main)/tags/_components/tag-work-section"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { worksQuery } from "@/graphql/queries/work/works"
-import type { Metadata } from "next"
+import { Metadata } from "next"
 
 type Props = {
   params: {
@@ -17,14 +17,19 @@ const TagPage = async (props: Props) => {
     query: worksQuery,
     variables: {
       offset: 0,
-      limit: 16,
-      where: {},
+      limit: 32,
+      where: {
+        tagNames: [decodeURIComponent(props.params.tag)],
+      },
     },
   })
 
   return (
     <AppPage>
-      <WorkList works={worksResp.data.works ?? []} />
+      <TagWorkSection
+        title={decodeURIComponent(props.params.tag)}
+        works={worksResp.data.works!}
+      />
     </AppPage>
   )
 }

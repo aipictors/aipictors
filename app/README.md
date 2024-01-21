@@ -27,3 +27,7 @@ https://nextjs.org/docs/app/building-your-application/routing/colocation#private
 ## Themes
 [shadcn/ui](https://ui.shadcn.com/themes)  
 [globals.css](./globals.css)
+
+## Fonts
+
+WOFF2にした[Noto Sans JP](https://fonts.google.com/noto/specimen/Noto+Sans+JP)を使用しています。

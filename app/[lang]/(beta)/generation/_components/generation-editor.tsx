@@ -10,6 +10,7 @@ import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-edito
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
+import { Config } from "@/config"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -53,6 +54,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   const passType = viewer.viewer?.currentPass?.type ?? null
 
+  const userNanoid = viewer.viewer?.user.nanoid ?? null
+
   const editorConfig = useEditorConfig({
     passType: passType,
     loraModels: props.imageLoraModels,
@@ -78,7 +81,22 @@ export const GenerationEditor: React.FC<Props> = (props) => {
    * タスクを作成する
    */
   const onCreateTask = async () => {
+    if (userNanoid === null) {
+      toast("ログインしてください")
+      return
+    }
+
     try {
+      const formData = new FormData()
+      formData.append("id", userNanoid)
+      const response = await fetch(Config.wordpressWWW4Endpoint, {
+        method: "POST",
+        body: formData,
+      })
+      if (!response.ok) {
+        toast("通信エラーが発生しました、再度お試し下さい")
+        return
+      }
       const model = props.imageModels.find((model) => {
         return model.id === editorConfig.modelId
       })

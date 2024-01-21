@@ -1,7 +1,7 @@
 import { NextAndPreviousWorkList } from "@/app/[lang]/(main)/works/[work]/_components/next-and-previous-work-list"
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import { WorkRelatedWorkList } from "@/app/[lang]/(main)/works/[work]/_components/work-related-work-list"
+import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
@@ -33,7 +33,7 @@ const WorkPage = async (props: Props) => {
   if (workCommentsResp.data.work === null) return null
 
   return (
-    <div className="px-4 w-full max-w-fit mx-auto">
+    <div className="px-4 py-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row items-start">
         <WorkArticle work={workResp.data.work} />
         <div className="w-full lg:max-w-xs pl-4">
@@ -48,8 +48,8 @@ const WorkPage = async (props: Props) => {
           <NextAndPreviousWorkList work={workResp.data.work} />
         </div>
       </div>
+      <WorkRelatedList works={workResp.data.work.user.works} />
       <WorkCommentList work={workCommentsResp.data.work} />
-      <WorkRelatedWorkList />
     </div>
   )
 }

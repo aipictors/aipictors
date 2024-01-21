@@ -1,4 +1,5 @@
 import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
+import Image from "next/image"
 import Link from "next/link"
 
 export const AppAboutHeader = () => {
@@ -8,7 +9,13 @@ export const AppAboutHeader = () => {
         <AppCanvas />
       </div>
       <div className="flex justify-center py-16 relative">
-        <img src="/icon.png" alt="icon" className="w-16" />
+        <Image
+          src="/icon.svg"
+          alt="icon"
+          className="w-16"
+          width={64}
+          height={64}
+        />
       </div>
       <div className="space-y-8">
         <div className="flex justify-center">
