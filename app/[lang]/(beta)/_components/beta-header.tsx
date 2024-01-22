@@ -39,7 +39,7 @@ export const BetaHeader = (props: Props) => {
           </SheetContent>
         </Sheet>
         <div className="flex items-center">
-          <Link href="/plus">
+          <Link href="/">
             <Image
               src="/icon.svg"
               className="w-10 h-10 rounded-full"

@@ -39,14 +39,14 @@ export const WorkArticle = (props: Props) => {
         {props.work.dailyTheme && (
           <div className="flex items-center">
             <span className="text-sm">{"参加お題:"}</span>
-            <Button variant={"ghost"}>{props.work.dailyTheme.title}</Button>
+            <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
           </div>
         )}
-        <div className="flex">
+        <div className="flex flex-row flex-wrap">
           {props.work.tagNames.map((tagName) => (
             <Button
               key={tagName}
-              variant={"ghost"}
+              variant={"link"}
               size={"sm"}
             >{`#${tagName}`}</Button>
           ))}

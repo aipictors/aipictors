@@ -48,7 +48,7 @@ export const HomeHeader = (props: Props) => {
             </ScrollArea>
           </SheetContent>
         </Sheet>
-        <Link className="flex items-center" href="https://www.aipictors.com">
+        <Link className="flex items-center" href="/">
           <Image
             src="/icon.svg"
             className="w-10 h-10 rounded-full"
