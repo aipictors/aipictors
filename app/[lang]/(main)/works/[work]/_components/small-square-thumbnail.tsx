@@ -1,37 +1,46 @@
+import Link from "next/link"
+
 type Props = {
   work: any
   isFocus?: boolean
+  linkToWork?: boolean
 }
 
 /**
- *
- * @param props
- * @returns JSX.Element
- * @todo 正方形の中に表示する部分の調整が未対応。横長作品はtranslateX、縦長作品はtranslateYを使って調整する。おそらく"thumnailPos"というカラムに調整値の情報がある。
- * @todo [Q][E]キーでの移動は未実装
- * @todo ホバー時のアニメーション未実装
+ * @todo 画像の表示positionの調整が未実装。クエリからpositionを取得できるようになったら実装する。
  */
 export const SmallSquareThumbnail = (props: Props) => {
   if (props.work === null) {
     return <div className="w-20 h-20 mr-2"></div>
   }
 
+  const image = (
+    <img
+      className="w-20 h-20 object-cover"
+      src={
+        props.work.smallThumbnailImageURL
+          ? props.work.smallThumbnailImageURL
+          : props.work.imageURL
+      }
+    />
+  )
+
   return (
     <div
       className={
         props.isFocus
           ? "w-20 h-20 mr-2 overflow-hidden rounded-lg border-2 border-solid border-indigo-600 opacity-75"
-          : "w-20 h-20 mr-2 overflow-hidden rounded-lg"
+          : "w-20 h-20 mr-2 overflow-hidden rounded-lg hover:opacity-75 transition-all"
       }
+      style={{}}
     >
-      <img
-        className="w-20 h-20 mr-2 object-cover"
-        src={
-          props.work.smallThumbnailImageURL
-            ? props.work.smallThumbnailImageURL
-            : props.work.imageURL
-        }
-      />
+      {props.linkToWork ? (
+        <Link href={props.isFocus ? "" : `/works/${props.work.id}`}>
+          {image}
+        </Link>
+      ) : (
+        <>{image}</>
+      )}
     </div>
   )
 }
