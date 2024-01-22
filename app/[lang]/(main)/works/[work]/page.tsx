@@ -34,7 +34,7 @@ const WorkPage = async (props: Props) => {
 
   return (
     <div className="px-4 py-4 w-full max-w-fit mx-auto">
-      <div className="flex flex-col lg:flex-row items-start">
+      <div className="flex flex-col lg:flex-row">
         <WorkArticle work={workResp.data.work} />
         <div className="w-full lg:max-w-xs pl-4">
           <WorkUser

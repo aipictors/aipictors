@@ -22,14 +22,14 @@ const PlusCancelPage = async () => {
             </p>
             <p>
               {
-                "決済処理がキャンセルされました。再度決済を行う場合は、ホームに戻ってください。"
+                "決済処理がキャンセルされました。再度決済を行う場合は、Plusに戻ってください。"
               }
             </p>
           </div>
         </div>
         <div className="flex justify-center">
           <Link href="/plus" replace>
-            <Button>{"ホームに戻る"}</Button>
+            <Button>{"Plusに戻る"}</Button>
           </Link>
         </div>
       </div>

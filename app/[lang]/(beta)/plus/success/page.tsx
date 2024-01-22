@@ -28,7 +28,7 @@ const PlusSuccessPage = async () => {
           </div>
           <div className="flex justify-center">
             <Link href="/plus" replace>
-              <Button>{"ホームに戻る"}</Button>
+              <Button>{"Plusに戻る"}</Button>
             </Link>
           </div>
         </div>
