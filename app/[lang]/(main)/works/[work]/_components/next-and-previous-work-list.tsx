@@ -1,6 +1,13 @@
 "use client"
 import { SmallSquareThumbnail } from "@/app/[lang]/(main)/works/[work]/_components/small-square-thumbnail"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { WorkQuery } from "@/graphql/__generated__/graphql"
+import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
   work: WorkQuery["work"]
@@ -17,7 +24,19 @@ export const NextAndPreviousWorkList = (props: Props) => {
 
   return (
     <div>
-      <h2 className="text-md py-2">{"前後の作品"}</h2>
+      <div className="flex text-md py-2">
+        <h2>{"前後の作品"}</h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircleIcon className="ml-1" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{"[Q][E]キーで移動することもできます"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       <div className="flex mb-4">
         <SmallSquareThumbnail work={props.work.nextWork} linkToWork={true} />
         <SmallSquareThumbnail work={props.work} isFocus={true} />
