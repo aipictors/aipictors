@@ -1,4 +1,4 @@
-import { RootProviders } from "@/app/_components/root-providers"
+import { ContextProviders } from "@/app/_components/context-providers"
 import "@/app/globals.css"
 import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
@@ -32,13 +32,13 @@ const RootLayout = (props: Props) => {
           notoSansFont.variable,
         )}
       >
-        <RootProviders>
+        <ContextProviders>
           {props.children}
           <Toaster />
           <Suspense fallback={null}>
             <AppAnalytics />
           </Suspense>
-        </RootProviders>
+        </ContextProviders>
       </body>
     </html>
   )

@@ -6,6 +6,7 @@
     "codegen",
     "followee",
     "followees",
+    "immer",
     "lucide",
     "menlo",
     "nextjs",
@@ -16,7 +17,8 @@
     "scta",
     "shadcn",
     "sonner",
-    "usehooks"
+    "usehooks",
+    "xstate"
   ],
   "editor.codeActionsOnSave": {
     "quickfix.biome": "explicit",

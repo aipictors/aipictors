@@ -2,6 +2,7 @@
 
 import { AuthContextProvider } from "@/app/_components/auth-context-provider"
 import { createClient } from "@/app/_contexts/client"
+import { ImageGenerationContext } from "@/app/_contexts/image-generation-context"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
@@ -18,12 +19,16 @@ const client = createClient()
 
 const queryClient = new QueryClient()
 
-export const RootProviders = (props: Props) => {
+export const ContextProviders = (props: Props) => {
   return (
     <AppThemeProvider>
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
-          <ApolloProvider client={client}>{props.children}</ApolloProvider>
+          <ApolloProvider client={client}>
+            <ImageGenerationContext.Provider>
+              {props.children}
+            </ImageGenerationContext.Provider>
+          </ApolloProvider>
         </QueryClientProvider>
       </AuthContextProvider>
     </AppThemeProvider>
