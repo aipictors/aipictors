@@ -13,7 +13,7 @@ type Props = {
   work: WorkQuery["work"]
 }
 
-export const NextAndPreviousWorkList = (props: Props) => {
+export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
 
   if (typeof document !== "undefined") {
@@ -59,3 +59,5 @@ function keyDownHandler(e: KeyboardEvent, work: WorkQuery["work"]): void {
     }
   }
 }
+
+export default WorkNextAndPrevious

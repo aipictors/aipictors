@@ -1,6 +1,6 @@
-import { NextAndPreviousWorkList } from "@/app/[lang]/(main)/works/[work]/_components/next-and-previous-work-list"
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
+import WorkNextAndPrevious from "@/app/[lang]/(main)/works/[work]/_components/work-next-and-previous"
 import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import { createClient } from "@/app/_contexts/client"
@@ -45,7 +45,7 @@ const WorkPage = async (props: Props) => {
             userPromptonId={workResp.data.work.user.promptonUser?.id}
             userWorksCount={workResp.data.work.user.worksCount}
           />
-          <NextAndPreviousWorkList work={workResp.data.work} />
+          <WorkNextAndPrevious work={workResp.data.work} />
         </div>
       </div>
       <WorkRelatedList works={workResp.data.work.user.works} />
