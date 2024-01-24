@@ -13,7 +13,7 @@ type Props = {
   work: WorkQuery["work"]
 }
 
-export const NextAndPreviousWorkList = (props: Props) => {
+export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
 
   if (typeof document !== "undefined") {
@@ -23,7 +23,7 @@ export const NextAndPreviousWorkList = (props: Props) => {
   }
 
   return (
-    <div>
+    <div className="invisible lg:visible">
       <div className="flex text-md py-2">
         <h2>{"前後の作品"}</h2>
         <TooltipProvider>
@@ -59,3 +59,5 @@ function keyDownHandler(e: KeyboardEvent, work: WorkQuery["work"]): void {
     }
   }
 }
+
+export default WorkNextAndPrevious
