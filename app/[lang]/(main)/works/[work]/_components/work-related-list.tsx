@@ -36,7 +36,7 @@ export default function WorkRelatedList({ works }: WorkRelatedListProps) {
               <Link href={`/works/${work.id}`}>
                 <Image
                   key={work.id}
-                  className="h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40  object-cover rounded"
+                  className="h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 object-cover rounded"
                   alt=""
                   src={work.largeThumbnailImageURL}
                   height={work.largeThumbnailImageHeight}

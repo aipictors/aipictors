@@ -9,7 +9,7 @@ type Props = ButtonProps
  */
 export const FollowButton = (props: Props) => {
   return (
-    <Button className={"rounded-full"} size={"sm"} {...props}>
+    <Button size={"sm"} {...props}>
       {"フォローする"}
     </Button>
   )

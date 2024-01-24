@@ -7,12 +7,7 @@ type Props = ButtonProps
  */
 export const PromptonRequestButton = (props: Props) => {
   return (
-    <Button
-      className={"rounded-full"}
-      size={"sm"}
-      variant={"secondary"}
-      {...props}
-    >
+    <Button size={"sm"} variant={"secondary"} {...props}>
       {"支援"}
     </Button>
   )

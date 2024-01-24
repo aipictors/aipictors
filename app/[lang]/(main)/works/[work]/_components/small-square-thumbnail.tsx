@@ -23,13 +23,23 @@ export const SmallSquareThumbnail = (props: Props) => {
           : props.work.imageURL
       }
     />
+    // <Image
+    //   className="w-20 h-20 object-cover"
+    //   src={
+    //     props.work.smallThumbnailImageURL
+    //       ? props.work.smallThumbnailImageURL
+    //       : props.work.imageURL
+    //   }
+    //   width={props.work.smallThumbnailImageWidth}
+    //   height={props.work.smallThumbnailImageHeight}
+    // />
   )
 
   return (
     <div
       className={
         props.isFocus
-          ? "w-20 h-20 mr-2 overflow-hidden rounded-lg border-2 border-solid border-indigo-600 opacity-75"
+          ? "w-20 h-20 mr-2 overflow-hidden rounded-lg border-2 border-solid border-primary opacity-75"
           : "w-20 h-20 mr-2 overflow-hidden rounded-lg hover:opacity-75 transition-all"
       }
       style={{}}
