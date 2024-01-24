@@ -76,7 +76,11 @@ export const GenerationEditorHistory = (props: Props) => {
     <>
       <GenerationEditorCard
         title={"生成履歴"}
-        action={<Button size={"sm"}>{"全て見る"}</Button>}
+        action={
+          <Button variant={"secondary"} size={"sm"}>
+            {"全て見る"}
+          </Button>
+        }
       >
         {Config.isDevelopmentMode && (
           <div className="flex px-2 pb-2 space-x-2">

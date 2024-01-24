@@ -53,7 +53,7 @@ export const GenerationEditorModels = (props: Props) => {
         title={"モデル"}
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
         action={
-          <Button size={"sm"} onClick={onOpen}>
+          <Button variant={"secondary"} size={"sm"} onClick={onOpen}>
             {"モデルを変更する"}
           </Button>
         }

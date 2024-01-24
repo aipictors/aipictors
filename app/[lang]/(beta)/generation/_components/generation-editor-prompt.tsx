@@ -50,7 +50,7 @@ export const GenerationEditorPrompt = (props: Props) => {
         action={
           <>
             <div className="hidden xl:block">
-              <Button size={"sm"} onClick={onOpen}>
+              <Button variant={"secondary"} size={"sm"} onClick={onOpen}>
                 {"キーワード"}
               </Button>
             </div>

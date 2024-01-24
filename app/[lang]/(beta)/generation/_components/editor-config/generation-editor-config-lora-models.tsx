@@ -55,7 +55,12 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             }}
           />
         ))}
-        <Button size={"sm"} className="w-full" onClick={onOpen}>
+        <Button
+          variant={"secondary"}
+          size={"sm"}
+          className="w-full"
+          onClick={onOpen}
+        >
           {"LoRAを追加する"}
         </Button>
       </div>

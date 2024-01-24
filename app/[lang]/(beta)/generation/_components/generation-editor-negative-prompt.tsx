@@ -48,6 +48,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
           <Button
             className="font-mono"
             size={"sm"}
+            variant={"secondary"}
             onClick={() => {
               onAddPrompt("+bad-hands-5")
             }}
@@ -57,6 +58,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
           <Button
             className="font-mono"
             size={"sm"}
+            variant={"secondary"}
             onClick={() => {
               onAddPrompt("+badhandv4")
             }}
@@ -66,6 +68,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
           <Button
             className="font-mono"
             size={"sm"}
+            variant={"secondary"}
             onClick={() => {
               onAddPrompt("+bad_prompt_version2")
             }}

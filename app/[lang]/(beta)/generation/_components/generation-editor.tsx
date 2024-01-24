@@ -6,7 +6,7 @@ import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
-import { useEditorConfig } from "@/app/[lang]/(beta)/generation/_hooks/use-editor-config"
+import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
@@ -32,13 +32,19 @@ type Props = {
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
-  const appContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
+
+  // const imageGenerationState = ImageGenerationContext.useSelector((state) => {
+  //   return state.context
+  // })
+
+  // const imageGenerationRef = ImageGenerationContext.useActorRef()
 
   const { data: viewer } = useSuspenseQuery(viewerCurrentPassQuery, {})
 
   const { data, refetch } = useSuspenseQuery(
     viewerImageGenerationTasksQuery,
-    appContext.isLoggedIn
+    authContext.isLoggedIn
       ? {
           variables: {
             limit: 64,
@@ -48,18 +54,20 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       : skipToken,
   )
 
+  const machine = useImageGenerationMachine({
+    passType: viewer.viewer?.currentPass?.type ?? null,
+  })
+
   const [createTask, { loading: isLoading }] = useMutation(
     createImageGenerationTaskMutation,
   )
 
-  const passType = viewer.viewer?.currentPass?.type ?? null
-
   const userNanoid = viewer.viewer?.user.nanoid ?? null
 
-  const editorConfig = useEditorConfig({
-    passType: passType,
-    loraModels: props.imageLoraModels,
-  })
+  // const editorConfig = useEditorConfig({
+  //   passType: passType,
+  //   loraModels: props.imageLoraModels,
+  // })
 
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
@@ -98,33 +106,33 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         return
       }
       const model = props.imageModels.find((model) => {
-        return model.id === editorConfig.modelId
+        return model.id === machine.state.context.modelId
       })
       if (typeof model === "undefined") {
         throw new Error("モデルが見つかりません")
       }
-      const loraPromptTexts = editorConfig.loraModels.map((config) => {
+      const loraPromptTexts = machine.state.context.loraModels.map((config) => {
         const model = props.imageLoraModels.find((model) => {
           return model.id === config.modelId
         })
         if (model === undefined) return null
         return toLoraPrompt(model.name, config.value)
       })
-      const promptTexts = [editorConfig.promptText, ...loraPromptTexts]
+      const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
       const promptText = promptTexts.join(" ")
       await createTask({
         variables: {
           input: {
             count: 1,
             model: model.name,
-            vae: editorConfig.vae ?? "",
+            vae: machine.state.context.vae ?? "",
             prompt: promptText,
-            negativePrompt: editorConfig.negativePromptText,
-            seed: editorConfig.seed,
-            steps: editorConfig.steps,
-            scale: editorConfig.scale,
-            sampler: editorConfig.sampler,
-            sizeType: editorConfig.sizeType as ImageGenerationSizeType,
+            negativePrompt: machine.state.context.negativePromptText,
+            seed: machine.state.context.seed,
+            steps: machine.state.context.steps,
+            scale: machine.state.context.scale,
+            sampler: machine.state.context.sampler,
+            sizeType: machine.state.context.sizeType as ImageGenerationSizeType,
             type: "TEXT_TO_IMAGE",
           },
         },
@@ -141,7 +149,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   }
 
   const selectedModel = props.imageModels.find((model) => {
-    return model.id === editorConfig.modelId
+    return model.id === machine.state.context.modelId
   })
 
   return (
@@ -149,49 +157,49 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       models={
         <GenerationEditorModels
           models={props.imageModels}
-          selectedModelId={editorConfig.modelId}
-          onSelectModelId={(id) => {
-            editorConfig.updateModelId(id)
-          }}
+          selectedModelId={machine.state.context.modelId}
+          onSelectModelId={machine.updateModelId}
         />
       }
       loraModels={
         <GenerationEditorConfig
           loraModels={props.imageLoraModels}
-          configLoraModels={editorConfig.loraModels}
+          configLoraModels={machine.state.context.loraModels}
           configModelType={selectedModel?.type ?? "SD1"}
-          configSampler={editorConfig.sampler}
-          configScale={editorConfig.scale}
-          configSeed={editorConfig.seed}
-          configSize={editorConfig.sizeType}
-          configVae={editorConfig.vae}
-          onAddLoraModelConfigs={editorConfig.addLoraModel}
-          onChangeSampler={editorConfig.updateSampler}
-          onChangeScale={editorConfig.updateScale}
-          onChangeSeed={editorConfig.updateSeed}
-          onChangeSize={editorConfig.updateSizeType}
-          onChangeVae={editorConfig.updateVae}
-          onUpdateLoraModelConfig={editorConfig.updateLoraModel}
+          configSampler={machine.state.context.sampler}
+          configScale={machine.state.context.scale}
+          configSeed={machine.state.context.seed}
+          configSize={machine.state.context.sizeType}
+          configVae={machine.state.context.vae}
+          onAddLoraModelConfigs={machine.addLoraModel}
+          onChangeSampler={machine.updateSampler}
+          onChangeScale={machine.updateScale}
+          onChangeSeed={machine.updateSeed}
+          onChangeSize={machine.updateSizeType}
+          onChangeVae={machine.updateVae}
+          onUpdateLoraModelConfig={machine.updateLoraModel}
         />
       }
       promptEditor={
         <GenerationEditorPrompt
-          promptText={editorConfig.promptText}
+          promptText={machine.state.context.promptText}
           promptCategories={props.promptCategories}
-          onChangePromptText={editorConfig.updatePrompt}
+          onChangePromptText={machine.updatePrompt}
         />
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          promptText={editorConfig.negativePromptText}
-          onChangePromptText={editorConfig.updateNegativePrompt}
+          promptText={machine.state.context.negativePromptText}
+          onChangePromptText={machine.updateNegativePrompt}
         />
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
           <Button
             className="w-full"
-            disabled={isLoading || inProgress || editorConfig.isDisabled}
+            disabled={
+              isLoading || inProgress || machine.state.context.isDisabled
+            }
             onClick={onCreateTask}
           >
             {isLoading || inProgress ? "生成中.." : "生成する"}
@@ -199,13 +207,13 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           <Suspense fallback={null}>
             <GenerationEditorHistory
               tasks={data?.viewer?.imageGenerationTasks ?? []}
-              onChangeSampler={editorConfig.updateSampler}
-              onChangeScale={editorConfig.updateScale}
-              onChangeSeed={editorConfig.updateSeed}
-              onChangeSize={editorConfig.updateSizeType}
-              onChangeVae={editorConfig.updateVae}
-              onChangePromptText={editorConfig.updatePrompt}
-              onChangeNegativePromptText={editorConfig.updateNegativePrompt}
+              onChangeSampler={machine.updateSampler}
+              onChangeScale={machine.updateScale}
+              onChangeSeed={machine.updateSeed}
+              onChangeSize={machine.updateSizeType}
+              onChangeVae={machine.updateVae}
+              onChangePromptText={machine.updatePrompt}
+              onChangeNegativePromptText={machine.updateNegativePrompt}
             />
           </Suspense>
         </div>
