@@ -3,10 +3,12 @@ import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/wo
 import WorkNextAndPrevious from "@/app/[lang]/(main)/works/[work]/_components/work-next-and-previous"
 import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
+import WorkPageLoading from "@/app/[lang]/(main)/works/[work]/loading"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 type Props = {
   params: { work: string }
@@ -35,8 +37,10 @@ const WorkPage = async (props: Props) => {
   return (
     <div className="px-4 py-4 w-full max-w-fit mx-auto">
       <div className="flex flex-col lg:flex-row">
-        <WorkArticle work={workResp.data.work} />
-        <div className="w-full lg:max-w-xs pl-4">
+        <Suspense fallback={<WorkPageLoading />}>
+          <WorkArticle work={workResp.data.work} />
+        </Suspense>
+        <div className="w-full lg:max-w-xs pl-4 invisible lg:visible">
           <WorkUser
             userName={workResp.data.work.user.name}
             userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}

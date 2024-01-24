@@ -5,7 +5,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-
 type Props = {
   workImageURL?: string
   subWorkImageURLs: string[]

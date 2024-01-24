@@ -1,4 +1,4 @@
-import WorkPageLoading from "@/app/[lang]/(main)/works/loading"
+import WorksPageLoading from "@/app/[lang]/(main)/works/loading"
 import { AppPlaceholder } from "@/components/app/app-placeholder"
 import type { Metadata } from "next"
 import { Suspense } from "react"
@@ -8,7 +8,7 @@ import { Suspense } from "react"
  */
 const WorksPage = async () => {
   return (
-    <Suspense fallback={<WorkPageLoading />}>
+    <Suspense fallback={<WorksPageLoading />}>
       <AppPlaceholder>{"作品の一覧"}</AppPlaceholder>
     </Suspense>
   )

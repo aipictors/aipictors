@@ -23,7 +23,7 @@ export const WorkNextAndPrevious = (props: Props) => {
   }
 
   return (
-    <div>
+    <div className="invisible lg:visible">
       <div className="flex text-md py-2">
         <h2>{"前後の作品"}</h2>
         <TooltipProvider>
