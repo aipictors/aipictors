@@ -25,8 +25,9 @@ import {
   UserCircleIcon,
   UserCogIcon,
 } from "lucide-react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 
 type Props = {
   onLogin(): void
@@ -49,33 +50,26 @@ const MenuItemLink = ({ href, icon, label }: MenuItemLinkProps) => (
 )
 
 export const HomeUserNavigationMenu = (props: Props) => {
-  const appContext = useContext(AuthContext)
-  const { isLoggedIn } = appContext
+  const authContext = useContext(AuthContext)
 
-  const [theme, setTheme] = useState("system")
-
-  useEffect(() => {
-    const root = document.documentElement
-    root.classList.remove("light", "dark", "system")
-    root.classList.add(theme)
-  }, [theme])
+  const { theme, setTheme } = useTheme()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          {appContext.avatarPhotoURL ? (
-            <AvatarImage src={appContext.avatarPhotoURL} />
+          {authContext.avatarPhotoURL ? (
+            <AvatarImage src={authContext.avatarPhotoURL} />
           ) : (
             <AvatarFallback />
           )}
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {isLoggedIn ? (
+        {authContext.isLoggedIn ? (
           <>
             <MenuItemLink
-              href={`https://www.aipictors.com/users/?id=${appContext.userId}`}
+              href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
               icon={<UserCircleIcon className="w-4 inline-block mr-2" />}
               label="マイページ"
             />
@@ -109,7 +103,6 @@ export const HomeUserNavigationMenu = (props: Props) => {
         )}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            {" "}
             {theme !== "dark" && (
               <SunIcon className="w-4 inline-block mr-2">{"Light"}</SunIcon>
             )}
