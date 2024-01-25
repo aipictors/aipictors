@@ -33,7 +33,7 @@ type Props = {
   onOpenInPainting(): void
 }
 
-export const GenerationHistorySheet = (props: Props) => {
+export const GenerationResultSheet = (props: Props) => {
   const [rating, setRating] = useState(0)
 
   return (

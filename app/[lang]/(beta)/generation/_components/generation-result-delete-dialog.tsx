@@ -14,7 +14,7 @@ type Props = {
   onClose(): void
 }
 
-export const GenerationHistoryDeleteDialog = (props: Props) => {
+export const GenerationResultDeleteDialog = (props: Props) => {
   return (
     <AlertDialog
       onOpenChange={(isOpen) => {

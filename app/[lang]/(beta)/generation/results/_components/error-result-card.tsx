@@ -5,7 +5,7 @@ import { FrownIcon } from "lucide-react"
  * エラーになった履歴
  * @returns
  */
-export const ErrorHistoryCard = () => {
+export const ErrorResultCard = () => {
   return (
     <Card>
       <div className="p-4 flex flex-col gap-y-2">

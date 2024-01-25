@@ -1,11 +1,11 @@
 "use client"
 
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
-import { GenerationEditorHistory } from "@/app/[lang]/(beta)/generation/_components/generation-editor-history"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
+import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -205,7 +205,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
             {isLoading || inProgress ? "生成中.." : "生成する"}
           </Button>
           <Suspense fallback={null}>
-            <GenerationEditorHistory
+            <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}
               onChangeSampler={machine.updateSampler}
               onChangeScale={machine.updateScale}

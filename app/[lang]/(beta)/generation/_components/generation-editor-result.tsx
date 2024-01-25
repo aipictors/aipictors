@@ -3,9 +3,9 @@
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
 import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { GenerationHistoryDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-history-delete-dialog"
-import { GenerationHistorySheet } from "@/app/[lang]/(beta)/generation/_components/generation-history-sheet"
-import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+import { GenerationResultDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-result-delete-dialog"
+import { GenerationResultSheet } from "@/app/[lang]/(beta)/generation/_components/generation-result-sheet"
+import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/results/_components/generation-result-card"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -32,7 +32,7 @@ type Props = {
   onChangeNegativePromptText(prompt: string): void
 }
 
-export const GenerationEditorHistory = (props: Props) => {
+export const GenerationEditorResult = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const [selectedHistory, selectHistory] = useState<null | string>(null)
@@ -109,7 +109,7 @@ export const GenerationEditorHistory = (props: Props) => {
             {props.tasks
               ?.filter((task) => !task.isDeleted)
               .map((task) => (
-                <GenerationHistoryCard
+                <GenerationResultCard
                   key={task.id}
                   taskId={task.id}
                   token={task.token}
@@ -123,7 +123,7 @@ export const GenerationEditorHistory = (props: Props) => {
         </ScrollArea>
       </GenerationEditorCard>
       {history?.token && (
-        <GenerationHistorySheet
+        <GenerationResultSheet
           taskId={history.id}
           imageToken={history.token}
           promptText={history.prompt}
@@ -148,7 +148,7 @@ export const GenerationEditorHistory = (props: Props) => {
         isOpen={isOpenInPainting}
         onClose={onCloseInPainting}
       />
-      <GenerationHistoryDeleteDialog
+      <GenerationResultDeleteDialog
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
       />

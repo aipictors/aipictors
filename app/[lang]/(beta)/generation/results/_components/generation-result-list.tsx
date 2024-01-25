@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationHistoryCard } from "@/app/[lang]/(beta)/generation/history/_components/generation-history-card"
+import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/results/_components/generation-result-card"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 
@@ -8,7 +8,7 @@ import { useSuspenseQuery } from "@apollo/client"
  * 画像生成の履歴
  * @returns
  */
-export const GenerationHistoryList = () => {
+export const GenerationResultList = () => {
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
@@ -21,7 +21,7 @@ export const GenerationHistoryList = () => {
       <p>{"画像生成の履歴"}</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
         {data.viewer?.imageGenerationTasks?.map((task) => (
-          <GenerationHistoryCard
+          <GenerationResultCard
             taskId={task.id}
             token={task.token}
             onClick={() => {}}
