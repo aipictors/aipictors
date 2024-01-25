@@ -1,5 +1,4 @@
-import { createClient } from "@/app/_contexts/client"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { ImageGenerationTaskResult } from "@/app/[lang]/(beta)/generation/results/[result]/_components/image-generation-task-result"
 import type { Metadata } from "next"
 
 type Props = {
@@ -7,18 +6,9 @@ type Props = {
 }
 
 const ResultPage = async (props: Props) => {
-  const client = createClient()
-
-  const generationResult = await client.query({
-    query: imageGenerationTaskQuery,
-    variables: { id: props.params.result },
-  })
-
   return (
     <div className="px-4 py-4 w-full max-w-fit mx-auto">
-      <div className="flex flex-col lg:flex-row">
-        {generationResult.data.imageGenerationTask.id}
-      </div>
+      <ImageGenerationTaskResult taskId={props.params.result} />
     </div>
   )
 }
@@ -28,6 +18,6 @@ export const metadata: Metadata = {
   title: "-",
 }
 
-export const revalidate = 60
+export const revalidate = 0
 
 export default ResultPage
