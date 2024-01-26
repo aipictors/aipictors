@@ -1,5 +1,3 @@
-import { ImageGenerationSizeType } from "@/__generated__/apollo"
-
 export type GenerationParameters = {
   prompt: string
   negativePrompt: string
@@ -7,6 +5,6 @@ export type GenerationParameters = {
   steps: number
   scale: number
   sampler: string
-  sizeType: ImageGenerationSizeType
+  sizeType: string
   modelName: string
 }
