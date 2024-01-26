@@ -7,6 +7,7 @@ type Props = {
   onClick?(): void
   title?: string
   className?: string
+  text?: string
 }
 
 export const GenerationMenuButton = (props: Props) => {
@@ -20,6 +21,7 @@ export const GenerationMenuButton = (props: Props) => {
       <div className="pad-8">
         {props.icon && <props.icon className="m-auto w-4 h-4" />}
       </div>
+      <p className="ml-1">{props.text}</p>
     </Button>
   )
 }
