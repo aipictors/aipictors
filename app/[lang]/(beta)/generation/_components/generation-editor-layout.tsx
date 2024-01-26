@@ -3,8 +3,7 @@
 import { useBreakpointValue } from "@/app/_hooks/use-breakpoint-value"
 
 type Props = {
-  models: React.ReactNode
-  loraModels: React.ReactNode
+  config: React.ReactNode
   promptEditor: React.ReactNode
   negativePromptEditor: React.ReactNode
   history: React.ReactNode
@@ -12,17 +11,15 @@ type Props = {
 
 export const GenerationEditorLayout = (props: Props) => {
   const area = {
-    models: "models",
+    config: "config",
     editorPrompt: "editor-prompt",
     history: "history",
-    loraModels: "lora-models",
     editorNegativePrompt: "editor-negative-prompt",
   } as const
 
   const responsiveAreas = useBreakpointValue({
     base: [
-      [area.models],
-      [area.loraModels],
+      [area.config],
       [area.editorPrompt],
       [area.editorNegativePrompt],
       [area.history],
@@ -32,57 +29,57 @@ export const GenerationEditorLayout = (props: Props) => {
     //   [area.loraModels, area.editorNegativePrompt],
     //   [area.history, area.history],
     // ],
+    // lg: [
+    //   [
+    //     area.config,
+    //     area.config,
+    //     area.config,
+    //     area.editorPrompt,
+    //     area.editorPrompt,
+    //     area.history,
+    //     area.history,
+    //   ],
+    //   [
+    //     area.config,
+    //     area.config,
+    //     area.config,
+    //     area.editorPrompt,
+    //     area.editorPrompt,
+    //     area.history,
+    //     area.history,
+    //   ],
+    //   [
+    //     area.config,
+    //     area.config,
+    //     area.config,
+    //     area.editorPrompt,
+    //     area.editorPrompt,
+    //     area.history,
+    //     area.history,
+    //   ],
+    //   [
+    //     area.config,
+    //     area.config,
+    //     area.config,
+    //     area.editorNegativePrompt,
+    //     area.editorNegativePrompt,
+    //     area.history,
+    //     area.history,
+    //   ],
+    //   [
+    //     area.config,
+    //     area.config,
+    //     area.config,
+    //     area.editorNegativePrompt,
+    //     area.editorNegativePrompt,
+    //     area.history,
+    //     area.history,
+    //   ],
+    // ],
     lg: [
       [
-        area.models,
-        area.models,
-        area.models,
-        area.editorPrompt,
-        area.editorPrompt,
-        area.history,
-        area.history,
-      ],
-      [
-        area.models,
-        area.models,
-        area.models,
-        area.editorPrompt,
-        area.editorPrompt,
-        area.history,
-        area.history,
-      ],
-      [
-        area.loraModels,
-        area.loraModels,
-        area.loraModels,
-        area.editorPrompt,
-        area.editorPrompt,
-        area.history,
-        area.history,
-      ],
-      [
-        area.loraModels,
-        area.loraModels,
-        area.loraModels,
-        area.editorNegativePrompt,
-        area.editorNegativePrompt,
-        area.history,
-        area.history,
-      ],
-      [
-        area.loraModels,
-        area.loraModels,
-        area.loraModels,
-        area.editorNegativePrompt,
-        area.editorNegativePrompt,
-        area.history,
-        area.history,
-      ],
-    ],
-    xl: [
-      [
-        area.models,
-        area.models,
+        area.config,
+        area.config,
         area.editorPrompt,
         area.editorPrompt,
         area.editorPrompt,
@@ -90,8 +87,8 @@ export const GenerationEditorLayout = (props: Props) => {
         area.history,
       ],
       [
-        area.models,
-        area.models,
+        area.config,
+        area.config,
         area.editorPrompt,
         area.editorPrompt,
         area.editorPrompt,
@@ -99,8 +96,8 @@ export const GenerationEditorLayout = (props: Props) => {
         area.history,
       ],
       [
-        area.loraModels,
-        area.loraModels,
+        area.config,
+        area.config,
         area.editorPrompt,
         area.editorPrompt,
         area.editorPrompt,
@@ -108,8 +105,8 @@ export const GenerationEditorLayout = (props: Props) => {
         area.history,
       ],
       [
-        area.loraModels,
-        area.loraModels,
+        area.config,
+        area.config,
         area.editorNegativePrompt,
         area.editorNegativePrompt,
         area.editorNegativePrompt,
@@ -117,8 +114,8 @@ export const GenerationEditorLayout = (props: Props) => {
         area.history,
       ],
       [
-        area.loraModels,
-        area.loraModels,
+        area.config,
+        area.config,
         area.editorNegativePrompt,
         area.editorNegativePrompt,
         area.editorNegativePrompt,
@@ -142,16 +139,10 @@ export const GenerationEditorLayout = (props: Props) => {
       style={{ gridTemplateAreas: templateAreas }}
     >
       <div
-        style={{ gridArea: area.models }}
+        style={{ gridArea: area.config }}
         className="overflow-auto lg:overflow-hidden"
       >
-        {props.models}
-      </div>
-      <div
-        style={{ gridArea: area.loraModels }}
-        className="overflow-auto lg:overflow-hidden"
-      >
-        {props.loraModels}
+        {props.config}
       </div>
       <div
         style={{ gridArea: area.editorPrompt }}

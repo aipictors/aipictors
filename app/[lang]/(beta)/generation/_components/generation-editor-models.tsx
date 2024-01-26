@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { produce } from "immer"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
-  selectedModelId: string
+  currentModelId: string
   onSelectModelId(id: string): void
 }
 
@@ -23,10 +24,10 @@ export const GenerationEditorModels = (props: Props) => {
    * 表示されるモデルのID
    */
   const [currentModelIds, setCurrentModelIds] = useState(() => {
-    if (Config.defaultImageModelIds.includes(props.selectedModelId)) {
+    if (Config.defaultImageModelIds.includes(props.currentModelId)) {
       return Config.defaultImageModelIds
     }
-    return [props.selectedModelId, ...Config.defaultImageModelIds]
+    return [props.currentModelId, ...Config.defaultImageModelIds]
   })
 
   const currentModels = currentModelIds.map((modelId) => {
@@ -35,15 +36,28 @@ export const GenerationEditorModels = (props: Props) => {
     })
   })
 
+  /**
+   * モデルを追加する
+   * 選択中のモデルが3個未満の場合は末尾に追加する
+   * 3個以上の場合は選択中のモデルを置換する
+   * @param modelId
+   */
   const onSelectModelId = (modelId: string) => {
     props.onSelectModelId(modelId)
-    const draftIds = [...currentModelIds]
-    const index = draftIds.indexOf(modelId)
-    if (index !== -1) return
-    draftIds.unshift(modelId)
-    if (6 < draftIds.length) {
-      draftIds.pop()
-    }
+
+    const draftIds = produce(currentModelIds, (draft) => {
+      if (!draft.includes(modelId)) {
+        if (draft.length < 3) {
+          draft.push(modelId)
+        }
+        if (3 <= draft.length) {
+          const currentModelIndex = draft.findIndex((id) => {
+            return id === props.currentModelId
+          })
+          draft[currentModelIndex] = modelId
+        }
+      }
+    })
     setCurrentModelIds(draftIds)
   }
 
@@ -54,7 +68,7 @@ export const GenerationEditorModels = (props: Props) => {
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
         action={
           <Button variant={"secondary"} size={"sm"} onClick={onOpen}>
-            {"モデルを変更する"}
+            {"すべて"}
           </Button>
         }
       >
@@ -65,7 +79,7 @@ export const GenerationEditorModels = (props: Props) => {
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
                 name={model?.displayName ?? ""}
-                isSelected={model?.id === props.selectedModelId}
+                isSelected={model?.id === props.currentModelId}
                 onClick={() => {
                   onSelectModelId(model!.id)
                 }}
@@ -78,7 +92,7 @@ export const GenerationEditorModels = (props: Props) => {
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
-        selectedModelId={props.selectedModelId}
+        selectedModelId={props.currentModelId}
         onSelect={onSelectModelId}
       />
     </>

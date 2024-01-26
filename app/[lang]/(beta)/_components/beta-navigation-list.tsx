@@ -32,11 +32,9 @@ export const BetaNavigationList = (props: Props) => {
       <HomeNavigationButton href={"/"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
-      {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
-          {"スタンプ広場"}
-        </HomeNavigationButton>
-      )}
+      <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
+        {"スタンプ広場"}
+      </HomeNavigationButton>
       {appContext.isLoggedIn && (
         <HomeNavigationButton href={"/plus"} icon={GemIcon}>
           {"Aipictors+"}
@@ -47,12 +45,14 @@ export const BetaNavigationList = (props: Props) => {
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
-      <HomeNavigationButton
-        href={"https://www.aipictors.com/generate"}
-        icon={SparklesIcon}
-      >
-        {"画像生成"}
-      </HomeNavigationButton>
+      {appContext.isLoggedIn && (
+        <HomeNavigationButton
+          href={"https://www.aipictors.com/generate"}
+          icon={SparklesIcon}
+        >
+          {"画像生成"}
+        </HomeNavigationButton>
+      )}
       {/* {appContext.isLoggedIn && (
         <HomeNavigationButton
           isDisabled={Config.isReleaseMode}

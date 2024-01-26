@@ -64,7 +64,7 @@ export const GenerationEditorPrompt = (props: Props) => {
       >
         <div className="flex flex-col px-2 pb-2 h-full">
           <Textarea
-            className="resize-none h-full font-mono"
+            className="resize-none h-full font-mono min-h-40"
             placeholder={"プロンプト"}
             value={props.promptText}
             onChange={(event) => {

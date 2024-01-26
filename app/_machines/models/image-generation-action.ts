@@ -112,7 +112,10 @@ export class ImageGenerationAction {
       return model
     })
 
-    const availableLoraModelCount = this.state.availableLoraModelCount
+    // 選択可能な数を超えている場合
+    if (this.state.availableLoraModelsCount < selectedModels.length) {
+      return this.state
+    }
 
     const loraModelIds = produce(this.state.loraModelIds, (loraModelIds) => {
       const index = loraModelIds.indexOf(modelId)
@@ -121,12 +124,9 @@ export class ImageGenerationAction {
       } else {
         loraModelIds.splice(index, 1)
       }
-      if (availableLoraModelCount < index) {
-        loraModelIds.shift()
-      }
     })
 
-    const loraModels = loraModelIds.map((modelId) => {
+    const loraConfigs = loraModelIds.map((modelId) => {
       const model = selectedModels.find((model) => model.modelId === modelId)
       if (model !== undefined) {
         return { modelId: model.modelId, value: 0 }
@@ -136,7 +136,7 @@ export class ImageGenerationAction {
 
     return new ImageGenerationConfig({
       ...this.state,
-      loraConfigs: loraModels,
+      loraConfigs: loraConfigs,
     })
   }
 

@@ -47,21 +47,21 @@ export class ImageGenerationConfig implements Props {
   /**
    * 利用できるLoraModelの数
    */
-  readonly availableLoraModelCount: number
+  readonly availableLoraModelsCount: number
 
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
     this.loraModelIds = this.loraConfigs.map((x) => x.modelId)
-    this.availableLoraModelCount = 2
+    this.availableLoraModelsCount = 2
     if (this.passType === "LITE") {
-      this.availableLoraModelCount = 2
+      this.availableLoraModelsCount = 2
     }
     if (this.passType === "STANDARD") {
-      this.availableLoraModelCount = 5
+      this.availableLoraModelsCount = 5
     }
     if (this.passType === "PREMIUM") {
-      this.availableLoraModelCount = 5
+      this.availableLoraModelsCount = 5
     }
   }
 }

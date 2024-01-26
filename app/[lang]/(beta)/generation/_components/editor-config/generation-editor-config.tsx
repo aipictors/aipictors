@@ -20,6 +20,7 @@ type Props = {
   configSeed: number
   configSize: string
   configVae: string | null
+  availableLoraModelsCount: number
   onAddLoraModelConfigs(modelId: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -32,7 +33,7 @@ type Props = {
 export const GenerationEditorConfig = (props: Props) => {
   return (
     <GenerationEditorCard
-      title={"加工（LoRA）"}
+      title={"設定"}
       tooltip={"イラストの絵柄を調整することができます。"}
     >
       <ScrollArea>
@@ -40,8 +41,14 @@ export const GenerationEditorConfig = (props: Props) => {
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
             loraModels={props.configLoraModels}
+            availableLoraModelsCount={props.availableLoraModelsCount}
             onAddLoraModel={props.onAddLoraModelConfigs}
             onUpdateLoraModel={props.onUpdateLoraModelConfig}
+          />
+          <GenerationEditorConfigSize
+            modelType={props.configModelType}
+            value={props.configSize}
+            onChange={props.onChangeSize}
           />
           <GenerationEditorConfigScale
             value={props.configScale}
@@ -50,11 +57,6 @@ export const GenerationEditorConfig = (props: Props) => {
           <GenerationEditorConfigSeed
             value={props.configSeed}
             onChange={props.onChangeSeed}
-          />
-          <GenerationEditorConfigSize
-            modelType={props.configModelType}
-            value={props.configSize}
-            onChange={props.onChangeSize}
           />
           <GenerationEditorConfigStep
             value={props.configScale}

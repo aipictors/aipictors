@@ -91,6 +91,19 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       )
       const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
       const promptText = promptTexts.join(" ")
+      console.log({
+        count: 1,
+        model: model.name,
+        vae: machine.state.context.vae ?? "",
+        prompt: promptText,
+        negativePrompt: machine.state.context.negativePromptText,
+        seed: machine.state.context.seed,
+        steps: machine.state.context.steps,
+        scale: machine.state.context.scale,
+        sampler: machine.state.context.sampler,
+        sizeType: machine.state.context.sizeType as ImageGenerationSizeType,
+        type: "TEXT_TO_IMAGE",
+      })
       await createTask({
         variables: {
           input: {
@@ -125,31 +138,34 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   return (
     <GenerationEditorLayout
-      models={
-        <GenerationEditorModels
-          models={props.imageModels}
-          selectedModelId={machine.state.context.modelId}
-          onSelectModelId={machine.updateModelId}
-        />
-      }
-      loraModels={
-        <GenerationEditorConfig
-          loraModels={props.imageLoraModels}
-          configLoraModels={machine.state.context.loraConfigs}
-          configModelType={currentModel?.type ?? "SD1"}
-          configSampler={machine.state.context.sampler}
-          configScale={machine.state.context.scale}
-          configSeed={machine.state.context.seed}
-          configSize={machine.state.context.sizeType}
-          configVae={machine.state.context.vae}
-          onAddLoraModelConfigs={machine.addLoraModel}
-          onChangeSampler={machine.updateSampler}
-          onChangeScale={machine.updateScale}
-          onChangeSeed={machine.updateSeed}
-          onChangeSize={machine.updateSizeType}
-          onChangeVae={machine.updateVae}
-          onUpdateLoraModelConfig={machine.updateLoraModel}
-        />
+      config={
+        <div className="grid gap-y-2 h-full">
+          <GenerationEditorModels
+            models={props.imageModels}
+            currentModelId={machine.state.context.modelId}
+            onSelectModelId={machine.updateModelId}
+          />
+          <GenerationEditorConfig
+            loraModels={props.imageLoraModels}
+            configLoraModels={machine.state.context.loraConfigs}
+            configModelType={currentModel?.type ?? "SD1"}
+            configSampler={machine.state.context.sampler}
+            configScale={machine.state.context.scale}
+            configSeed={machine.state.context.seed}
+            configSize={machine.state.context.sizeType}
+            configVae={machine.state.context.vae}
+            availableLoraModelsCount={
+              machine.state.context.availableLoraModelsCount
+            }
+            onAddLoraModelConfigs={machine.addLoraConfig}
+            onChangeSampler={machine.updateSampler}
+            onChangeScale={machine.updateScale}
+            onChangeSeed={machine.updateSeed}
+            onChangeSize={machine.updateSizeType}
+            onChangeVae={machine.updateVae}
+            onUpdateLoraModelConfig={machine.updateLoraModel}
+          />
+        </div>
       }
       promptEditor={
         <GenerationEditorPrompt
@@ -166,13 +182,18 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <Button
-            className="w-full"
-            disabled={loading || inProgress || machine.state.context.isDisabled}
-            onClick={onCreateTask}
-          >
-            {loading || inProgress ? "生成中.." : "生成する"}
-          </Button>
+          <div>
+            <Button
+              className="w-full"
+              size={"lg"}
+              disabled={
+                loading || inProgress || machine.state.context.isDisabled
+              }
+              onClick={onCreateTask}
+            >
+              {loading || inProgress ? "生成中.." : "生成する"}
+            </Button>
+          </div>
           <Suspense fallback={null}>
             <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}

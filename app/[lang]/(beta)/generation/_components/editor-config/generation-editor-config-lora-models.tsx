@@ -15,6 +15,7 @@ type Props = {
    * モデルの設定
    */
   loraModels: { modelId: string; value: number }[]
+  availableLoraModelsCount: number
   onAddLoraModel(modelId: string): void
   onUpdateLoraModel(modelId: string, value: number): void
 }
@@ -55,14 +56,16 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             }}
           />
         ))}
-        <Button
-          variant={"secondary"}
-          size={"sm"}
-          className="w-full"
-          onClick={onOpen}
-        >
-          {"LoRAを追加する"}
-        </Button>
+        {selectedModels.length < props.availableLoraModelsCount && (
+          <Button
+            variant={"secondary"}
+            size={"sm"}
+            className="w-full"
+            onClick={onOpen}
+          >
+            {"LoRAを追加する"}
+          </Button>
+        )}
       </div>
       <LoraModelsDialog
         isOpen={isOpen}

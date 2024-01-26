@@ -30,14 +30,14 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
 
   return (
     <GenerationEditorCard
-      title={"ネガティブ"}
+      title={"ネガティブプロンプト"}
       tooltip={
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
       }
     >
       <div className="flex flex-col px-2 pb-2 gap-y-2 h-full">
         <Textarea
-          className="resize-none h-full font-mono"
+          className="resize-none h-full font-mono min-h-40"
           placeholder={"EasyNegativeなど"}
           value={props.promptText}
           onChange={(event) => {

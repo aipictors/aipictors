@@ -120,7 +120,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * LoRAモデルを追加する
    * @param modelId
    */
-  const addLoraModel = (modelId: string) => {
+  const addLoraConfig = (modelId: string) => {
     const value = action.addLoraModel(modelId)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -128,7 +128,7 @@ export const useImageGenerationMachine = (props: Props) => {
   return {
     state,
     updateModelId,
-    addLoraModel: addLoraModel,
+    addLoraConfig: addLoraConfig,
     updateLoraModel: updateLoraModel,
     updatePrompt,
     updateNegativePrompt,
