@@ -23,12 +23,12 @@ jobs:
 
       - name: Install
         run: time bun install
-      
+
       - name: Prebuild
         run: time bun run predev
-      
+
       - name: Run Type Cheking
         run: time bun run check
-      
+
       - name: Run Test
         run: time bun run test
