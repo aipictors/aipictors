@@ -7,12 +7,11 @@ import {
   GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-size"
-import { LoadingPage } from "@/app/_components/page/loading-page"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Separator } from "@/components/ui/separator"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { ApolloError, useMutation, useQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -167,19 +166,17 @@ export const ImageGenerationTaskResult = (props: Props) => {
         },
       })
     } catch (error) {
-      if (error instanceof ApolloError) {
-        console.log(error.name)
+      if (error instanceof Error) {
+        toast(error.message)
       }
     }
   }
 
-  const { data, loading, error } = useQuery(imageGenerationTaskQuery, {
+  const { data, error } = useSuspenseQuery(imageGenerationTaskQuery, {
     variables: {
       id: props.taskId,
     },
   })
-
-  const [rating, setRating] = useState(0)
 
   const onReference = () => {
     window.location.href = "/generation/?ref=" + props.taskId
@@ -189,12 +186,13 @@ export const ImageGenerationTaskResult = (props: Props) => {
     window.location.href = "/new/image?ref=" + props.taskId
   }
 
-  if (loading) return <LoadingPage />
   if (error) return <div>{"エラーが発生しました"}</div>
 
   if (!data || data.imageGenerationTask.token == null) {
     return <div>{"画像が見つかりませんでした"}</div>
   }
+
+  const [rating, setRating] = useState(data.imageGenerationTask.rating)
 
   const generationSize: GenerationSize = parseGenerationSize(
     data.imageGenerationTask.sizeType,
@@ -249,7 +247,7 @@ export const ImageGenerationTaskResult = (props: Props) => {
         />
       </div>
       <StarRating
-        value={rating}
+        value={rating ?? 0}
         onChange={(value) => {
           setRating(value)
           onChangeRating(value, props.taskId)
