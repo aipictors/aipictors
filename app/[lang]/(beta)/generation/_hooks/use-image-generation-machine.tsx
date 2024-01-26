@@ -1,5 +1,5 @@
-import { ImageGenerationAction } from "@/app/_machines/contexts/image-generation-action"
 import { imageGenerationMachine } from "@/app/_machines/image-generation-machine"
+import { ImageGenerationAction } from "@/app/_machines/models/image-generation-action"
 import { useMachine } from "@xstate/react"
 
 type Props = {

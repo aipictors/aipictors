@@ -1,16 +1,17 @@
+import { Config } from "@/config"
+
 type Props = {
   nanoid: string
 }
 
 export async function activeImageGeneration(props: Props) {
-  const url = "https://www4.aipictors.com/index.php"
+  const formData = new FormData()
 
-  const response = await fetch(url, {
+  formData.append("id", props.nanoid)
+
+  const response = await fetch(Config.wordpressWWW4Endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-    },
-    body: `id=${props.nanoid}`,
+    body: formData,
   })
 
   if (!response.ok) {

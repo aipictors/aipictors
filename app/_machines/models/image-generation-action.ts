@@ -1,19 +1,19 @@
-import { ImageGenerationState } from "@/app/_machines/contexts/image-generation-state"
+import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
 import { Config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 import { produce } from "immer"
 
 export class ImageGenerationAction {
-  constructor(private state: ImageGenerationState) {}
+  constructor(private state: ImageGenerationConfig) {}
 
   updatePrompt(text: string) {
     localStorage.setItem("config.generation.prompt", text)
-    return new ImageGenerationState({ ...this.state, promptText: text })
+    return new ImageGenerationConfig({ ...this.state, promptText: text })
   }
 
   updateNegativePrompt(text: string) {
     localStorage.setItem("config.generation.negative-prompt", text)
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       negativePromptText: text,
     })
@@ -21,7 +21,7 @@ export class ImageGenerationAction {
 
   updateSampler(text: string) {
     localStorage.setItem("config.generation.sampler", text)
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       sampler: text,
     })
@@ -29,7 +29,7 @@ export class ImageGenerationAction {
 
   updateSteps(value: number) {
     localStorage.setItem("config.generation.steps", value.toString())
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       steps: value,
     })
@@ -37,7 +37,7 @@ export class ImageGenerationAction {
 
   updateScale(value: number) {
     localStorage.setItem("config.generation.scale", value.toString())
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       scale: value,
     })
@@ -45,7 +45,7 @@ export class ImageGenerationAction {
 
   updateSizeType(text: string) {
     localStorage.setItem("config.generation.sizeType", text)
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       sizeType: text,
     })
@@ -53,7 +53,7 @@ export class ImageGenerationAction {
 
   updateVae(text: string | null) {
     localStorage.setItem("config.generation.vae", text ?? "")
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       vae: text,
     })
@@ -61,7 +61,7 @@ export class ImageGenerationAction {
 
   updateSeed(value: number) {
     localStorage.setItem("config.generation.seed", value.toString())
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       seed: value,
     })
@@ -71,12 +71,12 @@ export class ImageGenerationAction {
     localStorage.setItem("config.generation.model", id)
     const isSd2 = id === "22" || id === "23" || id === "24"
     if (isSd2 && this.state.sizeType.includes("SD1")) {
-      return new ImageGenerationState({
+      return new ImageGenerationConfig({
         ...this.state,
         sizeType: "SD2_768_768",
       })
     }
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
       modelId: id,
     })
@@ -88,15 +88,15 @@ export class ImageGenerationAction {
    * @param modelValue
    */
   updateLoraModel(modelId: string, modelValue: number) {
-    const draftConfigs = this.state.loraModels.map((config) => {
+    const draftConfigs = this.state.loraConfigs.map((config) => {
       if (config.modelId === modelId) {
         return { modelId: modelId, value: modelValue }
       }
       return config
     })
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
-      loraModels: draftConfigs,
+      loraConfigs: draftConfigs,
     })
   }
 
@@ -105,7 +105,7 @@ export class ImageGenerationAction {
      * 選択されたLoRAモデル
      */
     const selectedModels = this.state.loraModelIds.map((id) => {
-      const model = this.state.loraModels.find((model) => model.modelId === id)
+      const model = this.state.loraConfigs.find((model) => model.modelId === id)
       if (model === undefined) {
         throw new Error()
       }
@@ -134,9 +134,9 @@ export class ImageGenerationAction {
       return { modelId: modelId, value: 0 }
     })
 
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       ...this.state,
-      loraModels: loraModels,
+      loraConfigs: loraModels,
     })
   }
 
@@ -157,9 +157,9 @@ export class ImageGenerationAction {
   // }
 
   static restore(props: { passType: string | null }) {
-    return new ImageGenerationState({
+    return new ImageGenerationConfig({
       passType: props.passType,
-      loraModels: Config.defaultImageLoraModelIds.map((modelId) => {
+      loraConfigs: Config.defaultImageLoraModelIds.map((modelId) => {
         return { modelId, value: 0 }
       }),
       modelId: this.restoreModelId(),

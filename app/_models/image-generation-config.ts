@@ -1,14 +1,10 @@
+import { zLoraModelConfig } from "@/app/_models/validations/lora-model-config"
 import { z } from "zod"
-
-const zLoraModel = z.object({
-  modelId: z.string(),
-  value: z.number(),
-})
 
 const zProps = z.object({
   passType: z.string().nullable(),
   modelId: z.string(),
-  loraModels: z.array(zLoraModel),
+  loraConfigs: z.array(zLoraModelConfig),
   promptText: z.string(),
   negativePromptText: z.string(),
   sampler: z.string(),
@@ -21,12 +17,12 @@ const zProps = z.object({
 
 type Props = z.infer<typeof zProps>
 
-export class ImageGenerationState implements Props {
+export class ImageGenerationConfig implements Props {
   readonly passType!: Props["passType"]
 
   readonly modelId!: Props["modelId"]
 
-  readonly loraModels!: Props["loraModels"]
+  readonly loraConfigs!: Props["loraConfigs"]
 
   readonly promptText!: Props["promptText"]
 
@@ -56,7 +52,7 @@ export class ImageGenerationState implements Props {
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.loraModelIds = this.loraModels.map((x) => x.modelId)
+    this.loraModelIds = this.loraConfigs.map((x) => x.modelId)
     this.availableLoraModelCount = 2
     if (this.passType === "LITE") {
       this.availableLoraModelCount = 2

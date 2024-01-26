@@ -7,10 +7,10 @@ import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
-import { toLoraPrompt } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt"
+import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
+import { toLoraPromptTexts } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt-texts"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Config } from "@/config"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -45,12 +45,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
   const { data, refetch } = useSuspenseQuery(
     viewerImageGenerationTasksQuery,
     authContext.isLoggedIn
-      ? {
-          variables: {
-            limit: 64,
-            offset: 0,
-          },
-        }
+      ? { variables: { limit: 64, offset: 0 } }
       : skipToken,
   )
 
@@ -58,16 +53,9 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     passType: viewer.viewer?.currentPass?.type ?? null,
   })
 
-  const [createTask, { loading: isLoading }] = useMutation(
+  const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
   )
-
-  const userNanoid = viewer.viewer?.user.nanoid ?? null
-
-  // const editorConfig = useEditorConfig({
-  //   passType: passType,
-  //   loraModels: props.imageLoraModels,
-  // })
 
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
@@ -89,35 +77,18 @@ export const GenerationEditor: React.FC<Props> = (props) => {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    if (userNanoid === null) {
-      toast("ログインしてください")
-      return
-    }
-
+    const userNanoid = viewer.viewer?.user.nanoid ?? null
+    if (userNanoid === null) return
     try {
-      const formData = new FormData()
-      formData.append("id", userNanoid)
-      const response = await fetch(Config.wordpressWWW4Endpoint, {
-        method: "POST",
-        body: formData,
-      })
-      if (!response.ok) {
-        toast("通信エラーが発生しました、再度お試し下さい")
-        return
-      }
+      await activeImageGeneration({ nanoid: userNanoid })
       const model = props.imageModels.find((model) => {
         return model.id === machine.state.context.modelId
       })
-      if (typeof model === "undefined") {
-        throw new Error("モデルが見つかりません")
-      }
-      const loraPromptTexts = machine.state.context.loraModels.map((config) => {
-        const model = props.imageLoraModels.find((model) => {
-          return model.id === config.modelId
-        })
-        if (model === undefined) return null
-        return toLoraPrompt(model.name, config.value)
-      })
+      if (typeof model === "undefined") return
+      const loraPromptTexts = toLoraPromptTexts(
+        props.imageLoraModels,
+        machine.state.context.loraConfigs,
+      )
       const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
       const promptText = promptTexts.join(" ")
       await createTask({
@@ -148,7 +119,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     }
   }
 
-  const selectedModel = props.imageModels.find((model) => {
+  const currentModel = props.imageModels.find((model) => {
     return model.id === machine.state.context.modelId
   })
 
@@ -164,8 +135,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       loraModels={
         <GenerationEditorConfig
           loraModels={props.imageLoraModels}
-          configLoraModels={machine.state.context.loraModels}
-          configModelType={selectedModel?.type ?? "SD1"}
+          configLoraModels={machine.state.context.loraConfigs}
+          configModelType={currentModel?.type ?? "SD1"}
           configSampler={machine.state.context.sampler}
           configScale={machine.state.context.scale}
           configSeed={machine.state.context.seed}
@@ -197,12 +168,10 @@ export const GenerationEditor: React.FC<Props> = (props) => {
         <div className="flex flex-col h-full gap-y-2">
           <Button
             className="w-full"
-            disabled={
-              isLoading || inProgress || machine.state.context.isDisabled
-            }
+            disabled={loading || inProgress || machine.state.context.isDisabled}
             onClick={onCreateTask}
           >
-            {isLoading || inProgress ? "生成中.." : "生成する"}
+            {loading || inProgress ? "生成中.." : "生成する"}
           </Button>
           <Suspense fallback={null}>
             <GenerationEditorResult
