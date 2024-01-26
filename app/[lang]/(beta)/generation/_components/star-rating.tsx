@@ -4,6 +4,7 @@ import { StarIcon } from "lucide-react"
 
 type Props = {
   value: number
+  className?: string
   onChange(value: number): void
 }
 
@@ -14,7 +15,7 @@ type Props = {
  */
 export const StarRating = (props: Props) => {
   return (
-    <div>
+    <div className={props.className}>
       <Button
         aria-label={"お気に入り"}
         size={"icon"}

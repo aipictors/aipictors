@@ -1,5 +1,6 @@
 "use client"
 
+import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
 import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/results/[result]/_components/generation-menu-button"
 import { GenerationParameters } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-parameters"
 import {
@@ -9,14 +10,15 @@ import {
 import { LoadingPage } from "@/app/_components/page/loading-page"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Separator } from "@/components/ui/separator"
+import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { useQuery } from "@apollo/client"
+import { ApolloError, useMutation, useQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
-  Pencil,
 } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { CopyButton } from "./copy-button"
 
@@ -153,11 +155,31 @@ export const postGenerationImage = async (
 }
 
 export const ImageGenerationTaskResult = (props: Props) => {
+  const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
+  const onChangeRating = async (rating: number, taskId: string) => {
+    try {
+      await mutation({
+        variables: {
+          input: {
+            id: taskId,
+            rating: rating,
+          },
+        },
+      })
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        console.log(error.name)
+      }
+    }
+  }
+
   const { data, loading, error } = useQuery(imageGenerationTaskQuery, {
     variables: {
       id: props.taskId,
     },
   })
+
+  const [rating, setRating] = useState(0)
 
   const onReference = () => {
     window.location.href = "/generation/?ref=" + props.taskId
@@ -206,14 +228,15 @@ export const ImageGenerationTaskResult = (props: Props) => {
           text="参照生成"
           icon={ArrowUpRightSquare}
         />
-        <GenerationMenuButton
+        {/* <GenerationMenuButton
           title="投稿する"
+          disabled={true}
           onClick={() =>
             postGenerationImage(GenerationParameters, props.taskId)
           }
           text="投稿"
           icon={Pencil}
-        />
+        /> */}
         <GenerationMenuButton
           title="生成情報をコピーする"
           onClick={() => copyGeneration(GenerationParameters)}
@@ -224,6 +247,16 @@ export const ImageGenerationTaskResult = (props: Props) => {
           onClick={() => saveGenerationImage(props.taskId)}
           icon={ArrowDownToLine}
         />
+      </div>
+      <StarRating
+        value={rating}
+        onChange={(value) => {
+          setRating(value)
+          onChangeRating(value, props.taskId)
+        }}
+      />
+      <div className="py-2">
+        <Separator />
       </div>
       <div className="mb-1">
         <p className="mb-1 font-semibold">{"Size"}</p>

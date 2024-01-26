@@ -10,7 +10,7 @@ type Props = {
   }
 }
 
-const TagPage = async (props: Props) => {
+const TagCommentPage = async (props: Props) => {
   const client = createClient()
 
   const worksResp = await client.query({
@@ -41,4 +41,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default TagPage
+export default TagCommentPage

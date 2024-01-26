@@ -8,6 +8,7 @@ type Props = {
   title?: string
   className?: string
   text?: string
+  disabled?: boolean
 }
 
 export const GenerationMenuButton = (props: Props) => {
@@ -16,6 +17,7 @@ export const GenerationMenuButton = (props: Props) => {
       title={props.title}
       variant={"ghost"}
       onClick={props.onClick}
+      disabled={props.disabled}
       className={`${props.className} pad-0`}
     >
       <div className="pad-8">
