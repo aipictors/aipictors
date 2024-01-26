@@ -69,7 +69,7 @@ export const ImageGenerationTaskResult = (props: Props) => {
       data.imageGenerationTask.seed +
       ", " +
       "Model:" +
-      data.imageGenerationTask.model +
+      data.imageGenerationTask.model?.name +
       ", " +
       "Sampler:" +
       data.imageGenerationTask.sampler +
