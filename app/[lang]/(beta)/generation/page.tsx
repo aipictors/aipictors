@@ -1,7 +1,7 @@
 import { join } from "path"
 import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
 import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
-import { LoadingPage } from "@/app/_components/page/loading-page"
+import GenerationPageLoading from "@/app/[lang]/(beta)/generation/loading"
 import { createClient } from "@/app/_contexts/client"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
@@ -38,7 +38,7 @@ const GenerationPage = async () => {
 
   return (
     <>
-      <Suspense fallback={<LoadingPage text={"準備中"} />}>
+      <Suspense fallback={<GenerationPageLoading />}>
         <GenerationEditor
           termsMarkdownText={termsMarkdownText}
           promptCategories={promptCategoriesResp.data.promptCategories}
