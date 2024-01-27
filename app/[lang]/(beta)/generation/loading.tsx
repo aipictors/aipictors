@@ -2,8 +2,6 @@
 
 import AppLoadingIcon from "@/components/app/app-loading-icon"
 
-const MessagesLoading = () => {
+export default function GenerationPageLoading() {
   return <AppLoadingIcon />
 }
-
-export default MessagesLoading

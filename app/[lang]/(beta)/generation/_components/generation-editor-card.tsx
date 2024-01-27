@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
   Tooltip,
@@ -28,10 +27,8 @@ export const GenerationEditorCard = (props: Props) => {
           {props.tooltip && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size={"icon"} variant={"ghost"}>
-                    <HelpCircleIcon />
-                  </Button>
+                <TooltipTrigger>
+                  <HelpCircleIcon />
                 </TooltipTrigger>
                 <TooltipContent className="font-size-md whitespace-pre-wrap">
                   {props.tooltip}
@@ -39,7 +36,6 @@ export const GenerationEditorCard = (props: Props) => {
               </Tooltip>
             </TooltipProvider>
           )}
-          {props.action}
         </div>
       </div>
       {props.children}

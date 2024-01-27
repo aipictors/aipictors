@@ -2,7 +2,6 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
 import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
-import { Button } from "@/components/ui/button"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 
@@ -56,16 +55,6 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             }}
           />
         ))}
-        {selectedModels.length < props.availableLoraModelsCount && (
-          <Button
-            variant={"secondary"}
-            size={"sm"}
-            className="w-full"
-            onClick={onOpen}
-          >
-            {"LoRAを追加する"}
-          </Button>
-        )}
       </div>
       <LoraModelsDialog
         isOpen={isOpen}
