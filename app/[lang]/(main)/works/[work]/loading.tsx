@@ -1,5 +1,5 @@
-import AppLoadingIcon from "@/components/app/app-loading-icon"
+import { AppLoading } from "@/components/app/app-loading"
 
 export default function WorkPageLoading() {
-  return <AppLoadingIcon />
+  return <AppLoading />
 }

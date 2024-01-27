@@ -1,5 +1,6 @@
-import { ContextProviders } from "@/app/_components/context-providers"
 import "@/app/globals.css"
+
+import { ContextProviders } from "@/app/_components/context-providers"
 import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
 import { Config } from "@/config"
