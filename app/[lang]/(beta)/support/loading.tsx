@@ -1,9 +1,9 @@
 "use client"
 
-import { LoadingPage } from "@/app/_components/page/loading-page"
+import AppLoadingIcon from "@/components/app/app-loading-icon"
 
 const MessagesLoading = () => {
-  return <LoadingPage />
+  return <AppLoadingIcon />
 }
 
 export default MessagesLoading
