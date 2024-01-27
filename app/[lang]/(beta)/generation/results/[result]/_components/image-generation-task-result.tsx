@@ -17,6 +17,7 @@ import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  Pencil,
 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -184,7 +185,8 @@ export const ImageGenerationTaskResult = (props: Props) => {
   }
 
   const onPost = () => {
-    window.location.href = "/new/image?ref=" + props.taskId
+    window.location.href =
+      "https://www.aipictors.com/post?generation=" + props.taskId
   }
 
   if (error) return <div>{"エラーが発生しました"}</div>
@@ -227,15 +229,12 @@ export const ImageGenerationTaskResult = (props: Props) => {
           text="参照生成"
           icon={ArrowUpRightSquare}
         />
-        {/* <GenerationMenuButton
+        <GenerationMenuButton
           title="投稿する"
-          disabled={true}
-          onClick={() =>
-            postGenerationImage(GenerationParameters, props.taskId)
-          }
+          onClick={onPost}
           text="投稿"
           icon={Pencil}
-        /> */}
+        />
         <GenerationMenuButton
           title="生成情報をコピーする"
           onClick={() => copyGeneration(GenerationParameters)}
