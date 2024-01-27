@@ -5,7 +5,7 @@ import React from "react"
 import markdownToHtml from "zenn-markdown-html"
 
 type Props = {
-  className: string
+  className?: string
   children: React.ReactNode
 }
 
