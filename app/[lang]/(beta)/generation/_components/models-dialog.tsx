@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageModelCard } from "@/app/[lang]/(beta)/generation/_components/image-model-card"
+import { ImageModelsList } from "@/app/[lang]/(beta)/generation/_components/image-models-list"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -33,7 +33,7 @@ export const ModelsDialog = (props: Props) => {
             使用するモデルを選択してください
           </DialogDescription>
         </DialogHeader>
-        <ImageModelCard
+        <ImageModelsList
           models={props.models}
           onSelect={props.onSelect}
           selectedModelId={props.selectedModelId}

@@ -1,6 +1,6 @@
 "use client"
 
-import { LoraImageModelCard } from "@/app/[lang]/(beta)/generation/_components/lora-image-model-card"
+import { LoraImageModelsList } from "@/app/[lang]/(beta)/generation/_components/lora-image-models-list"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -29,7 +29,7 @@ export const LoraModelsDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"LoRA選択"}</DialogTitle>
         </DialogHeader>
-        <LoraImageModelCard
+        <LoraImageModelsList
           models={props.models}
           selectedModelIds={props.selectedModelIds}
           onSelect={props.onSelect}
