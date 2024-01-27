@@ -1,10 +1,8 @@
+import { resolve } from "path"
 import type { StorybookConfig } from "@storybook/nextjs"
 
 const config: StorybookConfig = {
-  stories: [
-    "../stories/**/*.mdx",
-    "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-  ],
+  stories: ["../components/**/*.stories.tsx", "../app/**/*.stories.tsx"],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
@@ -14,14 +12,21 @@ const config: StorybookConfig = {
   ],
   framework: {
     name: "@storybook/nextjs",
-    options: {
-      builder: {
-        useSWC: true, // Enables SWC support
-      },
-    },
+    options: {},
   },
   docs: {
     autodocs: "tag",
   },
+  async webpackFinal(config) {
+    if (config.resolve === undefined) {
+      return config
+    }
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": resolve(__dirname, ".."),
+    }
+    return config
+  },
 }
+
 export default config

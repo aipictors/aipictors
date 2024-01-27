@@ -20,10 +20,12 @@ export const CopyButton = (props: Props) => {
 
   return (
     <Button
-      className={`${props.className} whitespace-normal border w-full border-gray dark:border-white bg-transparent text-black dark:text-white p-4 hover:bg-black hover:bg-opacity-50 dark:hover:bg-white dark:hover:bg-opacity-50`}
+      variant={"secondary"}
+      size={"sm"}
+      className={`${props.className} pad-16 whitespace-normal w-full`}
       onClick={copyToClipboard}
     >
-      <p className="ta-l">{props.text}</p>
+      <p className="break-all text-left">コピー</p>
     </Button>
   )
 }
