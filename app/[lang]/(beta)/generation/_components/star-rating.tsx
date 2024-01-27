@@ -21,7 +21,7 @@ export const StarRating = (props: Props) => {
         size={"icon"}
         variant="ghost"
         onClick={() => {
-          props.onChange(1)
+          props.value === 1 ? props.onChange(0) : props.onChange(1)
         }}
       >
         <StarIcon className={cn(0 < props.value && "fill-yellow-500")} />
@@ -31,7 +31,7 @@ export const StarRating = (props: Props) => {
         size={"icon"}
         variant="ghost"
         onClick={() => {
-          props.onChange(2)
+          props.value === 2 ? props.onChange(1) : props.onChange(2)
         }}
       >
         <StarIcon className={cn(1 < props.value && "fill-yellow-500")} />
@@ -41,7 +41,7 @@ export const StarRating = (props: Props) => {
         size={"icon"}
         variant="ghost"
         onClick={() => {
-          props.onChange(3)
+          props.value === 3 ? props.onChange(2) : props.onChange(3)
         }}
       >
         <StarIcon className={cn(2 < props.value && "fill-yellow-500")} />
@@ -51,7 +51,7 @@ export const StarRating = (props: Props) => {
         size={"icon"}
         variant="ghost"
         onClick={() => {
-          props.onChange(4)
+          props.value === 4 ? props.onChange(3) : props.onChange(4)
         }}
       >
         <StarIcon className={cn(3 < props.value && "fill-yellow-500")} />
@@ -61,7 +61,7 @@ export const StarRating = (props: Props) => {
         size={"icon"}
         variant="ghost"
         onClick={() => {
-          props.onChange(5)
+          props.value === 5 ? props.onChange(4) : props.onChange(5)
         }}
       >
         <StarIcon className={cn(4 < props.value && "fill-yellow-500")} />
