@@ -1,7 +1,7 @@
 "use client"
 
-import AppLoadingIcon from "@/components/app/app-loading-icon"
+import { AppLoading } from "@/components/app/app-loading"
 
 export default function RootLoading() {
-  return <AppLoadingIcon />
+  return <AppLoading />
 }

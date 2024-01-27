@@ -1,7 +1,7 @@
-import AppLoadingIcon from "@/components/app/app-loading-icon"
+import { AppLoading } from "@/components/app/app-loading"
 
 const PlusLoading = () => {
-  return <AppLoadingIcon />
+  return <AppLoading />
 }
 
 export default PlusLoading
