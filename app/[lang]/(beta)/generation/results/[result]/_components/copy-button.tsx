@@ -20,6 +20,8 @@ export const CopyButton = (props: Props) => {
 
   return (
     <Button
+      variant={"secondary"}
+      size={"sm"}
       className={`${props.className} pad-16 whitespace-normal w-full`}
       onClick={copyToClipboard}
     >
