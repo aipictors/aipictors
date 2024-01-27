@@ -1,6 +1,6 @@
 "use client"
 
-import { InPaintingImage } from "@/app/[lang]/(beta)/generation/_components/in-painting-image"
+import { InPaintingEditImage } from "@/app/[lang]/(beta)/generation/_components/in-painting-edit-image"
 import { InPaintingSetting } from "@/app/[lang]/(beta)/generation/_components/in-painting-setting"
 import { Button } from "@/components/ui/button"
 import {
@@ -37,7 +37,7 @@ export const InPaintingImageDialog = (props: Props) => {
             <Input placeholder="一部修正" />
           </div>
           <InPaintingSetting />
-          <InPaintingImage />
+          <InPaintingEditImage />
         </div>
         <DialogFooter>
           <Button
