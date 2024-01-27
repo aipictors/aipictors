@@ -3,18 +3,19 @@ import { fabric } from "fabric"
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react"
 import { useState } from "react"
 
-export const InPaintingEditImage = () => {
+type Props = {
+  imageUrl: string
+}
+
+export const InPaintingEditImage = (props: Props) => {
   const { editor, onReady } = useFabricJSEditor()
   const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null)
 
   const setupCanvas = (canvas: fabric.Canvas) => {
-    fabric.Image.fromURL(
-      "https://source.unsplash.com/random/800x600",
-      (oImg) => {
-        oImg.selectable = false
-        canvas.add(oImg)
-      },
-    )
+    fabric.Image.fromURL(props.imageUrl, (oImg) => {
+      oImg.selectable = false
+      canvas.add(oImg)
+    })
     canvas.isDrawingMode = true
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
     canvas.freeDrawingBrush.color = "black"

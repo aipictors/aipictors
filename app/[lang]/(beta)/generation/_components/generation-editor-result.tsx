@@ -9,14 +9,12 @@ import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/results/_co
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
-import { toast } from "sonner"
-
 import { Config } from "@/config"
+import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { ArrowDownToLineIcon, StarIcon, Trash2Icon } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
-
 type Tasks = NonNullable<
   ViewerImageGenerationTasksQuery["viewer"]
 >["imageGenerationTasks"]
@@ -138,7 +136,6 @@ export const GenerationEditorResult = (props: Props) => {
           onClose={onClose}
           onUse={onUseConfig}
           onOpenInPainting={() => {
-            selectHistory(null)
             onOpenInPainting()
           }}
           onChangeRating={() => {}}
@@ -147,6 +144,8 @@ export const GenerationEditorResult = (props: Props) => {
       <InPaintingImageDialog
         isOpen={isOpenInPainting}
         onClose={onCloseInPainting}
+        taskId={history?.id ?? ""}
+        token={history?.token ?? ""}
       />
       <GenerationResultDeleteDialog
         isOpen={isDeleteOpen}
