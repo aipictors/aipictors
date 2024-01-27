@@ -11,6 +11,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
@@ -44,17 +45,19 @@ export const InPaintingImageDialog = (props: Props) => {
             </p>
           </div>
           <div>
-            <div className="flex">
-              <p>{"修正内容のキーワード（英単語）:"}</p>
-            </div>
-            <Input placeholder="一部修正" />
+            <Input placeholder="修正内容のキーワード（英単語）" />
+          </div>
+          <div className="py-2">
+            <Separator />
           </div>
           <InPaintingSetting />
+          <div className="py-2">
+            <Separator />
+          </div>
           <InPaintingEditImage imageUrl={data} />
         </div>
         <DialogFooter>
           <Button
-            // colorScheme="primary"
             onClick={() => {
               props.onClose()
             }}

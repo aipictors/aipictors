@@ -15,6 +15,13 @@ export const InPaintingEditImage = (props: Props) => {
     fabric.Image.fromURL(props.imageUrl, (oImg) => {
       oImg.selectable = false
       canvas.add(oImg)
+      const scale = 0.4
+      const width = (oImg.width || 0) * scale
+      const height = (oImg.height || 0) * scale
+
+      canvas.setWidth(width)
+      canvas.setHeight(height)
+      canvas.setZoom(scale)
     })
     canvas.isDrawingMode = true
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas)
@@ -33,6 +40,7 @@ export const InPaintingEditImage = (props: Props) => {
           min={1}
           max={100}
           step={0.1}
+          defaultValue={[10]}
           onValueChange={(value) => {
             if (fabricCanvas != null) {
               fabricCanvas.freeDrawingBrush = new fabric.PencilBrush(
@@ -45,7 +53,7 @@ export const InPaintingEditImage = (props: Props) => {
         />
       </div>
       <div className="flex justify-center">
-        <div className="w-full h-auto">
+        <div className="w-full max-h-64 max-w-96 overflow-auto h-auto m-auto">
           <FabricJSCanvas className="sample-canvas" onReady={setupCanvas} />
         </div>
       </div>
