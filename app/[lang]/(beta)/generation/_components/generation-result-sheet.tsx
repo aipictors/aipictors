@@ -1,11 +1,6 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
-import { PrivateImage } from "@/app/_components/private-image"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { GenerationResultBody } from "@/app/[lang]/(beta)/generation/_components/generation-result-body"
 import {
   Sheet,
   SheetContent,
@@ -13,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Config } from "@/config"
-import { useState } from "react"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   taskId: string
@@ -34,96 +29,35 @@ type Props = {
 }
 
 export const GenerationResultSheet = (props: Props) => {
-  const [rating, setRating] = useState(0)
+  const isDesktop = useMediaQuery(Config.mediaQuery.isDesktop)
+
+  if (isDesktop) {
+    // コンポーネントを切り替える
+  }
 
   return (
     <Sheet onOpenChange={props.onClose} open={props.isOpen}>
-      <SheetContent side={"left"} className="flex flex-col gap-y-4">
-        <SheetHeader>
+      <SheetContent side={"left"} className="p-0 flex flex-col gap-0">
+        <SheetHeader className="p-4">
           <SheetTitle>{props.taskId}</SheetTitle>
         </SheetHeader>
-        <ScrollArea>
-          <div className="flex flex-col gap-y-4">
-            <PrivateImage
-              taskId={props.taskId}
-              className={"rounded"}
-              alt={props.taskId}
-              token={props.imageToken}
-            />
-            <Button size={"sm"} onClick={props.onUse}>
-              {"この設定を復元する"}
-            </Button>
-            {Config.isDevelopmentMode && (
-              <div className="flex gap-x-2">
-                <Button
-                  size={"sm"}
-                  onClick={() => {
-                    alert("DLします")
-                  }}
-                >
-                  {"DL"}
-                </Button>
-                <Button size={"sm"}>{"投稿"}</Button>
-                <Button size={"sm"} onClick={props.onOpenInPainting}>
-                  {"一部修正"}
-                </Button>
-                <Button
-                  size={"sm"}
-                  onClick={() => {
-                    alert("生成情報付きのURLをコピーしました")
-                  }}
-                >
-                  {"URL"}
-                </Button>
-              </div>
-            )}
-            <StarRating
-              value={rating}
-              onChange={(value) => {
-                setRating(value)
-                props.onChangeRating(value)
-              }}
-            />
-            <Card>
-              <CardContent className="p-2">
-                <pre className="whitespace-pre-wrap">{props.promptText}</pre>
-              </CardContent>
-            </Card>
-            {props.negativePromptText && (
-              <Card>
-                <CardContent className="p-2">
-                  <pre className="whitespace-pre-wrap">
-                    {props.negativePromptText}
-                  </pre>
-                </CardContent>
-              </Card>
-            )}
-            <div className="flex gap-x-4">
-              <Badge>{"seed"}</Badge>
-              <span>{props.configSeed}</span>
-            </div>
-            <div className="flex gap-x-4">
-              <Badge>{"scale"}</Badge>
-              <span>{props.configScale}</span>
-            </div>
-            <div className="flex gap-x-4">
-              <Badge>{"sampler"}</Badge>
-              <span>{props.configSampler}</span>
-            </div>
-            <div className="flex gap-x-4">
-              <Badge>{"size"}</Badge>
-              <span>{props.configSizeType}</span>
-            </div>
-            <div className="flex gap-x-4 items-center">
-              <Badge>{"model"}</Badge>
-              <span className="break-words">{props.configModel}</span>
-            </div>
-            <div className="flex gap-x-4">
-              <Badge>{"VAE"}</Badge>
-              <span>{props.configVae}</span>
-            </div>
-          </div>
-        </ScrollArea>
+        <GenerationResultBody
+          taskId={props.taskId}
+          imageToken={props.imageToken}
+          promptText={props.promptText}
+          negativePromptText={props.negativePromptText}
+          configSeed={props.configSeed}
+          configSampler={props.configSampler}
+          configScale={props.configScale}
+          configSizeType={props.configSizeType}
+          configModel={props.configModel}
+          configVae={props.configVae}
+          isOpen={props.isOpen}
+          onClose={props.onClose}
+          onUse={props.onUse}
+          onChangeRating={props.onChangeRating}
+          onOpenInPainting={props.onOpenInPainting}
+        />
       </SheetContent>
     </Sheet>
   )

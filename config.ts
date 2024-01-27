@@ -69,6 +69,10 @@ export class Config {
     }
   }
 
+  static mediaQuery = {
+    isDesktop: "(min-width: 768px)",
+  }
+
   static get logEvent() {
     return {
       page_view: "page_view",
