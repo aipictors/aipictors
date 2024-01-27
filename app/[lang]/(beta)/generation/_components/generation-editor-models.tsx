@@ -3,7 +3,6 @@
 import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
-import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
@@ -66,11 +65,6 @@ export const GenerationEditorModels = (props: Props) => {
       <GenerationEditorCard
         title={"モデル"}
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
-        action={
-          <Button variant={"secondary"} size={"sm"} onClick={onOpen}>
-            {"すべて"}
-          </Button>
-        }
       >
         <ScrollArea>
           <div className="flex px-2 pb-2 justify-between items-start flex-col gap-y-2">

@@ -1,31 +1,48 @@
-import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 
-type Props = {
-  onSelect(): void
-  name: string
-  imageURL: string | null
-  isActive: boolean
+type ImageModel = {
+  id: string
+  displayName: string | null
+  thumbnailImageURL: string | null
 }
 
-export const ImageModelCard = (props: Props) => {
+type Props = {
+  models: ImageModel[]
+  onSelect(id: string): void
+  selectedModelId: string | null
+}
+
+export const ImageModelCard = ({
+  models,
+  onSelect,
+  selectedModelId,
+}: Props) => {
   return (
-    <div className="flex flex-col gap-y-2">
-      <Button
-        className={cn(
-          "h-auto overflow-hidden rounded",
-          props.isActive ? "p-1" : "p-0",
-        )}
-        variant={"destructive"}
-        onClick={() => {
-          props.onSelect()
-        }}
-      >
-        <img src={props.imageURL ?? ""} alt={props.name} />
-      </Button>
-      <span className="text-sm font-bold break-words whitespace-pre-wrap">
-        {props.name}
-      </span>
-    </div>
+    <ScrollArea className="max-h-96 rounded-md overflow-visible">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {models.map((imageModel) => (
+          <div key={imageModel.id} className="relative">
+            <img
+              className={cn(
+                "h-auto rounded cursor-pointer transition duration-300",
+                selectedModelId === imageModel.id
+                  ? "ring shadow-lg transform-gpu scale-105 z-10"
+                  : "hover:shadow-md",
+              )}
+              src={imageModel.thumbnailImageURL ?? ""}
+              alt={imageModel.displayName ?? ""}
+              onClick={() => onSelect(imageModel.id)}
+              style={{
+                transformOrigin: "center",
+              }}
+            />
+            <span className="text-sm font-bold break-words whitespace-pre-wrap">
+              {imageModel.displayName ?? ""}
+            </span>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
   )
 }
