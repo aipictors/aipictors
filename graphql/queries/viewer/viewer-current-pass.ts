@@ -6,6 +6,7 @@ export const viewerCurrentPassQuery = gql(`
       user {
         id
         nanoid
+        hasSignedImageGenerationTerms
       }
       currentPass {
         ...PassFields

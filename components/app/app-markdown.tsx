@@ -1,9 +1,11 @@
 import "zenn-content-css"
 
+import { cn } from "@/lib/utils"
 import React from "react"
 import markdownToHtml from "zenn-markdown-html"
 
 type Props = {
+  className: string
   children: React.ReactNode
 }
 
@@ -16,7 +18,7 @@ export const AppMarkdown = (props: Props) => {
 
   return (
     <div
-      className="znc font-medium"
+      className={cn("znc font-medium", props.className)}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
       dangerouslySetInnerHTML={{ __html: html }}
     />

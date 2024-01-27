@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/drawer/generation-terms-dialog"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
@@ -18,6 +19,7 @@ import {
   type PromptCategoriesQuery,
 } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
+import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
@@ -29,6 +31,7 @@ type Props = {
   imageModels: ImageModelsQuery["imageModels"]
   promptCategories: PromptCategoriesQuery["promptCategories"]
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
+  termsMarkdownText: string
 }
 
 export const GenerationEditor: React.FC<Props> = (props) => {
@@ -40,7 +43,10 @@ export const GenerationEditor: React.FC<Props> = (props) => {
 
   // const imageGenerationRef = ImageGenerationContext.useActorRef()
 
-  const { data: viewer } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
+    viewerCurrentPassQuery,
+    {},
+  )
 
   const { data, refetch } = useSuspenseQuery(
     viewerImageGenerationTasksQuery,
@@ -48,6 +54,8 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       ? { variables: { limit: 64, offset: 0 } }
       : skipToken,
   )
+
+  const [signTerms] = useMutation(signImageGenerationTermsMutation)
 
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
@@ -73,10 +81,27 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     inProgress ? 2000 : 4000,
   )
 
+  const onSignImageGenerationTerms = async () => {
+    try {
+      await signTerms({ variables: { input: { version: 1 } } })
+      startTransition(() => {
+        refetchViewer()
+      })
+      toast("画像生成の利用規約に同意しました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  const hasSignedTerms = viewer.viewer?.user.hasSignedImageGenerationTerms
+
   /**
    * タスクを作成する
    */
   const onCreateTask = async () => {
+    if (!hasSignedTerms) return
     const userNanoid = viewer.viewer?.user.nanoid ?? null
     if (userNanoid === null) return
     try {
@@ -91,19 +116,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       )
       const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
       const promptText = promptTexts.join(" ")
-      console.log({
-        count: 1,
-        model: model.name,
-        vae: machine.state.context.vae ?? "",
-        prompt: promptText,
-        negativePrompt: machine.state.context.negativePromptText,
-        seed: machine.state.context.seed,
-        steps: machine.state.context.steps,
-        scale: machine.state.context.scale,
-        sampler: machine.state.context.sampler,
-        sizeType: machine.state.context.sizeType as ImageGenerationSizeType,
-        type: "TEXT_TO_IMAGE",
-      })
       await createTask({
         variables: {
           input: {
@@ -183,16 +195,22 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       history={
         <div className="flex flex-col h-full gap-y-2">
           <div>
-            <Button
-              className="w-full"
-              size={"lg"}
-              disabled={
-                loading || inProgress || machine.state.context.isDisabled
-              }
-              onClick={onCreateTask}
+            <GenerationTermsDialog
+              termsMarkdownText={props.termsMarkdownText}
+              isDisabled={hasSignedTerms}
+              onSubmit={onSignImageGenerationTerms}
             >
-              {loading || inProgress ? "生成中.." : "生成する"}
-            </Button>
+              <Button
+                className="w-full"
+                size={"lg"}
+                disabled={
+                  loading || inProgress || machine.state.context.isDisabled
+                }
+                onClick={hasSignedTerms ? onCreateTask : undefined}
+              >
+                {loading || inProgress ? "生成中.." : "生成する"}
+              </Button>
+            </GenerationTermsDialog>
           </div>
           <Suspense fallback={null}>
             <GenerationEditorResult
