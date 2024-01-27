@@ -36,6 +36,14 @@ const GenerationPage = async () => {
     "utf-8",
   )
 
+  /**
+   * 説明
+   */
+  const descriptionMarkdownText = await readFile(
+    join(process.cwd(), "assets/image-generation-description.md"),
+    "utf-8",
+  )
+
   return (
     <>
       <Suspense fallback={<GenerationPageLoading />}>
@@ -46,7 +54,10 @@ const GenerationPage = async () => {
           imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
         />
       </Suspense>
-      <GenerationDocument models={imageModelsResp.data.imageModels} />
+      <GenerationDocument
+        markdownText={descriptionMarkdownText}
+        models={imageModelsResp.data.imageModels}
+      />
     </>
   )
 }

@@ -7,7 +7,7 @@ import type { Metadata } from "next"
 
 const AppPrivacyPage = async () => {
   const text = await readFile(
-    join(process.cwd(), "app/[lang]/flutter/_assets/privacy.md"),
+    join(process.cwd(), "assets/flutter/privacy.md"),
     "utf-8",
   )
 

@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 
 const FlutterTermsPage = async () => {
   const text = await readFile(
-    join(process.cwd(), "app/[lang]/flutter/_assets/terms.md"),
+    join(process.cwd(), "assets/flutter/terms.md"),
     "utf-8",
   )
 
