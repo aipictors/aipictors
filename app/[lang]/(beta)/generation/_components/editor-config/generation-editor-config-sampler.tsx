@@ -21,13 +21,13 @@ type Props = {
 
 export const GenerationEditorConfigSampler = (props: Props) => {
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
-        <span className="font-bold">{"Sampler"}</span>
+        <span className="font-bold text-sm">{"Sampler"}</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircleIcon />
+              <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"ノイズの除去の手法です。"}</p>

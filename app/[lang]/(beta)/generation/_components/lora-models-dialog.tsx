@@ -1,7 +1,6 @@
 "use client"
 
 import { LoraImageModelsList } from "@/app/[lang]/(beta)/generation/_components/lora-image-models-list"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -17,14 +16,13 @@ type Props = {
   models: ImageLoraModelsQuery["imageLoraModels"]
   selectedModelIds: string[]
   onSelect(id: string): void
+  children: React.ReactNode
 }
 
 export const LoraModelsDialog = (props: Props) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button>LoRAを追加</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"LoRA選択"}</DialogTitle>

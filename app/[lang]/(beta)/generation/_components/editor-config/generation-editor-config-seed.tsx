@@ -15,13 +15,13 @@ type Props = {
 
 export const GenerationEditorConfigSeed = (props: Props) => {
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
-        <span className="font-bold">{"Seed"}</span>
+        <span className="font-bold text-sm">{"Seed"}</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircleIcon />
+              <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"キャラや構図などを固定したいときに使用します。"}</p>

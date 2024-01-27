@@ -15,8 +15,8 @@ type Props = {
 
 export const GenerationEditorConfigSize = (props: Props) => {
   return (
-    <div className="flex flex-col gap-y-4">
-      <span className="font-bold">{"サイズ"}</span>
+    <div className="flex flex-col gap-y-2">
+      <span className="font-bold text-sm">{"サイズ"}</span>
       <Select value={props.value} onValueChange={props.onChange}>
         <SelectGroup>
           <SelectTrigger>

@@ -2,6 +2,7 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
 import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
+import { Button } from "@/components/ui/button"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 
@@ -36,33 +37,35 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
   })
 
   return (
-    <>
-      <div className="space-y-4">
-        {selectedModels.map((model) => (
-          <ConfigLoraModel
-            key={model.id}
-            imageURL={model.thumbnailImageURL ?? ""}
-            name={model.name}
-            description={model.description ?? ""}
-            value={
-              props.loraModels.find((m) => m.modelId === model.id)?.value ?? 0
-            }
-            setValue={(value) => {
-              props.onUpdateLoraModel(model.id, value)
-            }}
-            onDelete={() => {
-              props.onAddLoraModel(model.id)
-            }}
-          />
-        ))}
-      </div>
+    <div className="space-y-2">
+      {selectedModels.map((model) => (
+        <ConfigLoraModel
+          key={model.id}
+          imageURL={model.thumbnailImageURL ?? ""}
+          name={model.name}
+          description={model.description ?? ""}
+          value={
+            props.loraModels.find((m) => m.modelId === model.id)?.value ?? 0
+          }
+          setValue={(value) => {
+            props.onUpdateLoraModel(model.id, value)
+          }}
+          onDelete={() => {
+            props.onAddLoraModel(model.id)
+          }}
+        />
+      ))}
       <LoraModelsDialog
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
         selectedModelIds={selectedModelIds}
         onSelect={props.onAddLoraModel}
-      />
-    </>
+      >
+        <Button size={"sm"} className="w-full" variant={"secondary"}>
+          LoRAを追加
+        </Button>
+      </LoraModelsDialog>
+    </div>
   )
 }

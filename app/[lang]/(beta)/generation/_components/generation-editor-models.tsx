@@ -2,7 +2,8 @@
 
 import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { ModelsDialog } from "@/app/[lang]/(beta)/generation/_components/models-dialog"
+import { GenerationModelsDialog } from "@/app/[lang]/(beta)/generation/_components/generation-models-dialog"
+import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
@@ -81,14 +82,20 @@ export const GenerationEditorModels = (props: Props) => {
             ))}
           </div>
         </ScrollArea>
+        <div className="px-2 pb-2 w-full">
+          <GenerationModelsDialog
+            isOpen={isOpen}
+            onClose={onClose}
+            models={props.models}
+            selectedModelId={props.currentModelId}
+            onSelect={onSelectModelId}
+          >
+            <Button size={"sm"} className="w-full" variant={"secondary"}>
+              {"すべてのモデル"}
+            </Button>
+          </GenerationModelsDialog>
+        </div>
       </GenerationEditorCard>
-      <ModelsDialog
-        isOpen={isOpen}
-        onClose={onClose}
-        models={props.models}
-        selectedModelId={props.currentModelId}
-        onSelect={onSelectModelId}
-      />
     </>
   )
 }

@@ -14,13 +14,13 @@ type Props = {
 
 export const GenerationEditorConfigScale = (props: Props) => {
   return (
-    <div className="flex flex-col gap-y-4">
-      <div className="flex gap-x-2">
-        <span className="font-bold">{"Scale"}</span>
+    <div className="flex flex-col gap-y-2">
+      <div className="flex gap-x-2 items-center">
+        <span className="font-bold text-sm">{"Scale"}</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircleIcon />
+              <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
               {

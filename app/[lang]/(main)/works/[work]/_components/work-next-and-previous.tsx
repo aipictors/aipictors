@@ -29,7 +29,7 @@ export const WorkNextAndPrevious = (props: Props) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircleIcon className="ml-1" />
+              <HelpCircleIcon className="w-4 ml-1" />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"[Q][E]キーで移動することもできます"}</p>

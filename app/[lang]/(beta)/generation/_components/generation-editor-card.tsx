@@ -28,7 +28,7 @@ export const GenerationEditorCard = (props: Props) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <HelpCircleIcon />
+                  <HelpCircleIcon className="w-4" />
                 </TooltipTrigger>
                 <TooltipContent className="font-size-md whitespace-pre-wrap">
                   {props.tooltip}

@@ -1,7 +1,6 @@
 "use client"
 
 import { ImageModelsList } from "@/app/[lang]/(beta)/generation/_components/image-models-list"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -18,14 +17,13 @@ type Props = {
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
   onSelect(id: string): void
+  children: React.ReactNode
 }
 
-export const ModelsDialog = (props: Props) => {
+export const GenerationModelsDialog = (props: Props) => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button>{"すべてのモデル"}</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"モデルを選択"}</DialogTitle>
