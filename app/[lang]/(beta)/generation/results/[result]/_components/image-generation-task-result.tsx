@@ -9,6 +9,7 @@ import {
 } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Separator } from "@/components/ui/separator"
+import { Textarea } from "@/components/ui/textarea"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
@@ -273,11 +274,15 @@ export const ImageGenerationTaskResult = (props: Props) => {
         <Separator />
       </div>
       <p className="mb-1 font-semibold">{"prompt"}</p>
+      <Textarea disabled={true}>{data.imageGenerationTask.prompt}</Textarea>
       <CopyButton className="mb-4" text={data.imageGenerationTask.prompt} />
       <div className="py-2">
         <Separator />
       </div>
       <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
+      <Textarea disabled={true}>
+        {data.imageGenerationTask.negativePrompt}
+      </Textarea>
       <CopyButton
         className="mb-4"
         text={data.imageGenerationTask.negativePrompt}
@@ -287,15 +292,15 @@ export const ImageGenerationTaskResult = (props: Props) => {
       </div>
       <div className="flex space-x-4">
         <div className="w-full">
-          <p className="mb-1">{"Seed"}</p>
+          <p className="mb-1 font-semibold">{"Seed"}</p>
           <p>{data.imageGenerationTask.seed}</p>
         </div>
         <div className="w-full">
-          <p className="mb-1">{"Sampler"}</p>
+          <p className="mb-1 font-semibold">{"Sampler"}</p>
           <p>{data.imageGenerationTask.sampler}</p>
         </div>
         <div className="w-full">
-          <p className="mb-1">{"Scale"}</p>
+          <p className="mb-1 font-semibold">{"Scale"}</p>
           <p>{data.imageGenerationTask.scale}</p>
         </div>
       </div>
