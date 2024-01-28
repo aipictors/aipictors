@@ -2,7 +2,7 @@
 
 import { Slider } from "@/components/ui/slider"
 import { KonvaEventObject } from "konva/lib/Node"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Image, Layer, Line, Stage } from "react-konva"
 import useImage from "use-image"
 
@@ -13,6 +13,7 @@ type Props = {
 type LineObject = {
   tool: string
   points: number[]
+  brushSize: number
 }
 
 /**
@@ -25,33 +26,60 @@ export default function InPaintingEditImage(props: Props) {
   const [image] = useImage(props.imageUrl)
   const [lines, setLines] = useState<LineObject[]>([])
   const [brushSize, setBrushSize] = useState(10)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    if (image) {
+      setImageSize({ width: image.width, height: image.height })
+    }
+  }, [image])
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-    if (!e || !e.target) return
-    const stage = e.target.getStage()
-    if (!stage) return
+    setIsDrawing(true)
     const pos = e.target.getStage()?.getPointerPosition()
     if (pos) {
-      setLines([...lines, { tool: "pen", points: [pos.x, pos.y] }])
+      setLines([...lines, { tool: "pen", points: [pos.x, pos.y], brushSize }])
     }
   }
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if (!lines.length) return
-    const stage = e.target.getStage()
-    const point = stage?.getPointerPosition()
-    const lastLine = lines[lines.length - 1]
+    if (!isDrawing) return
+    const point = e.target.getStage()?.getPointerPosition()
     if (point) {
+      const lastLine = lines[lines.length - 1]
       lastLine.points = lastLine.points.concat([point.x, point.y])
+      lines.splice(lines.length - 1, 1, lastLine)
+      setLines(lines.concat())
     }
-    lines.splice(lines.length - 1, 1, lastLine)
-    setLines(lines.concat())
   }
 
   const handleMouseUp = () => {
-    // 線の描画終了
+    setIsDrawing(false)
   }
 
+  const handleStart = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    setIsDrawing(true)
+    const pos = e.target.getStage()?.getPointerPosition()
+    if (pos) {
+      setLines([...lines, { tool: "pen", points: [pos.x, pos.y], brushSize }])
+    }
+  }
+
+  const handleMove = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    if (!isDrawing) return
+    const point = e.target.getStage()?.getPointerPosition()
+    if (point) {
+      const lastLine = lines[lines.length - 1]
+      lastLine.points = lastLine.points.concat([point.x, point.y])
+      lines.splice(lines.length - 1, 1, lastLine)
+      setLines(lines.concat())
+    }
+  }
+
+  const handleEnd = () => {
+    setIsDrawing(false)
+  }
   return (
     <div>
       <div className="flex">
@@ -74,6 +102,9 @@ export default function InPaintingEditImage(props: Props) {
             onMouseDown={handleMouseDown}
             onMousemove={handleMouseMove}
             onMouseup={handleMouseUp}
+            onTouchStart={handleStart}
+            onTouchMove={handleMove}
+            onTouchEnd={handleEnd}
           >
             <Layer>
               <Image image={image} />
