@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 
 const MessagePage = async () => {
   return (
-    <AppPageCenter>
+    <AppPageCenter className="pt-0 pb-0">
       <SupportChat />
     </AppPageCenter>
   )

@@ -67,7 +67,7 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="px-4 w-full md:pr-8 pb-4 flex gap-x-4 items-end">
+    <div className="w-full pb-sm md:pb-md flex gap-x-4 items-end">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
@@ -100,13 +100,15 @@ export const MessageInput = (props: Props) => {
         </div>
       </Button> */}
       {/* 送信ボタン */}
-      <Button
-        disabled={!isSendButtonEnabled || props.isLoading}
-        onClick={handleSubmit}
-        size={"icon"}
-      >
-        <Send className="w-4" />
-      </Button>
+      <div>
+        <Button
+          disabled={!isSendButtonEnabled || props.isLoading}
+          onClick={handleSubmit}
+          size={"icon"}
+        >
+          <Send className="w-4" />
+        </Button>
+      </div>
     </div>
   )
 }

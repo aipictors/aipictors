@@ -2,7 +2,7 @@ import { RecipientMessage } from "@/app/[lang]/(beta)/support/chat/_components/r
 import { SenderMessage } from "@/app/[lang]/(beta)/support/chat/_components/sender-message"
 import type { ViewerSupportMessagesQuery } from "@/graphql/__generated__/graphql"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
 type Props = {
   recipientIconImageURL: string
@@ -12,50 +12,36 @@ type Props = {
 export const SupportMessageList = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768)
-
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        top: isMobileView ? 0 : containerRef.current.scrollHeight,
-      })
-    }
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 768)
-    }
-    window.addEventListener("resize", handleResize)
-    return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [props.messages])
+    if (containerRef.current === null) return
+    containerRef.current.scrollTo({
+      top: containerRef.current.scrollHeight,
+    })
+  }, [props.messages.length])
+
+  const messages = props.messages
+    .slice()
+    .sort((a, b) => a.createdAt - b.createdAt)
 
   return (
-    <div className="flex-1 space-y-4 px-4 md:pr-8 pb-4" ref={containerRef}>
-      {props.messages
-        .slice()
-        .sort((a, b) => {
-          if (isMobileView) {
-            return b.createdAt - a.createdAt
-          }
-          return a.createdAt - b.createdAt
-        })
-        .map((message) =>
-          message.isViewer ? (
-            <SenderMessage
-              key={message.id}
-              createdAt={message.createdAt}
-              isRead={message.isRead}
-              text={message.text ?? "-"}
-            />
-          ) : (
-            <RecipientMessage
-              key={message.id}
-              text={message.text ?? "-"}
-              createdAt={message.createdAt}
-              iconImageURL={props.recipientIconImageURL}
-            />
-          ),
-        )}
+    <div className="flex-1 space-y-4" ref={containerRef}>
+      {messages.map((message) =>
+        message.isViewer ? (
+          <SenderMessage
+            key={message.id}
+            createdAt={message.createdAt}
+            isRead={message.isRead}
+            text={message.text ?? "-"}
+          />
+        ) : (
+          <RecipientMessage
+            key={message.id}
+            text={message.text ?? "-"}
+            createdAt={message.createdAt}
+            iconImageURL={props.recipientIconImageURL}
+          />
+        ),
+      )}
     </div>
   )
 }
