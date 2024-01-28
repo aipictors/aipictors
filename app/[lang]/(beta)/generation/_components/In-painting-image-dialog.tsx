@@ -1,6 +1,5 @@
 "use client"
 
-import { InPaintingEditImage } from "@/app/[lang]/(beta)/generation/_components/in-painting-edit-image"
 import { InPaintingSetting } from "@/app/[lang]/(beta)/generation/_components/in-painting-setting"
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
 import { Button } from "@/components/ui/button"
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import dynamic from "next/dynamic"
 
 type Props = {
   isOpen: boolean
@@ -69,3 +69,12 @@ export const InPaintingImageDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+const InPaintingEditImage = dynamic(
+  () => {
+    return import(
+      "@/app/[lang]/(beta)/generation/_components/in-painting-edit-image"
+    )
+  },
+  { ssr: false },
+)

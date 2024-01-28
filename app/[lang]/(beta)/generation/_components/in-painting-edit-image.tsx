@@ -1,3 +1,5 @@
+"use client"
+
 import { Slider } from "@/components/ui/slider"
 import { KonvaEventObject } from "konva/lib/Node"
 import { useState } from "react"
@@ -13,8 +15,14 @@ type LineObject = {
   points: number[]
 }
 
-export const InPaintingEditImage = ({ imageUrl }: Props) => {
-  const [image] = useImage(imageUrl)
+/**
+ * Konvaを使った画像編集コンポーネント
+ * Dynamic-Importで呼び出すのでexport-defaultにしている
+ * @param props
+ * @returns
+ */
+export default function InPaintingEditImage(props: Props) {
+  const [image] = useImage(props.imageUrl)
   const [lines, setLines] = useState<LineObject[]>([])
   const [brushSize, setBrushSize] = useState(10)
 
@@ -61,8 +69,8 @@ export const InPaintingEditImage = ({ imageUrl }: Props) => {
       <div className="flex justify-center">
         <div className="w-full max-h-64 max-w-96 overflow-auto h-auto m-auto">
           <Stage
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={typeof window !== "undefined" ? window.innerWidth : 0}
+            height={typeof window !== "undefined" ? window.innerHeight : 0}
             onMouseDown={handleMouseDown}
             onMousemove={handleMouseMove}
             onMouseup={handleMouseUp}
