@@ -24,7 +24,10 @@ export const SupportMessageList = (props: Props) => {
     .sort((a, b) => a.createdAt - b.createdAt)
 
   return (
-    <div className="flex-1 space-y-4" ref={containerRef}>
+    <div
+      className="flex-1 overflow-x-auto h-full space-y-4 mb-16"
+      ref={containerRef}
+    >
       {messages.map((message) =>
         message.isViewer ? (
           <SenderMessage
