@@ -2,6 +2,7 @@
 
 import { InPaintingSetting } from "@/app/[lang]/(beta)/generation/_components/in-painting-setting"
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
+import { uploadImage } from "@/app/_utils/upload-image"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,13 +14,26 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { getAuth, getIdToken } from "firebase/auth"
 import dynamic from "next/dynamic"
+import { useState } from "react"
 
 type Props = {
   isOpen: boolean
   onClose(): void
   taskId: string
   token: string
+}
+
+export const getRandomStr = (count: number) => {
+  const characters =
+    "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz0123456789"
+  let result = ""
+  const charactersLength = characters.length
+  for (let i = 0; i < count; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
 }
 
 export const InPaintingImageDialog = (props: Props) => {
@@ -30,6 +44,10 @@ export const InPaintingImageDialog = (props: Props) => {
       return fetchImage(Config.wordpressPrivateImageEndpoint, props.token)
     },
   })
+  const [paintImageBase64, setPaintImageBase64] = useState("")
+  const onChangePaint = (imageBase64: string) => {
+    setPaintImageBase64(imageBase64)
+  }
 
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
@@ -54,11 +72,29 @@ export const InPaintingImageDialog = (props: Props) => {
           <div className="py-2">
             <Separator />
           </div>
-          <InPaintingEditImage imageUrl={data} />
+          <InPaintingEditImage
+            onChange={(imageBase64: string) => onChangePaint(imageBase64)}
+            imageUrl={data}
+          />
         </div>
         <DialogFooter>
           <Button
-            onClick={() => {
+            onClick={async () => {
+              // TODO: ファイルアップロードがうまくいかないので修正する
+              // ※ サーバ側でtokenからユーザIDを復元できない
+              const currentUser = getAuth().currentUser
+              if (!currentUser) return
+              const token = await getIdToken(currentUser, true)
+              const fileName = getRandomStr(30) + "_inpaint_mask_src.png"
+              try {
+                await uploadImage(paintImageBase64, fileName, token)
+              } catch (error) {
+                console.log(error)
+              }
+              console.log(paintImageBase64) // ペイント軌跡の色を反転して背景を黒く染めた画像(マスク用)
+              console.log(fileName)
+              console.log(token)
+
               props.onClose()
             }}
           >

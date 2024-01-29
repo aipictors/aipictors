@@ -190,6 +190,9 @@ export class Config {
 
   static wordpressWWW4Endpoint = "https://www4.aipictors.com/index.php"
 
+  static wordpressUploadPrivateImageEndpoint =
+    "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php"
+
   /**
    * Sentry: DSN
    */
