@@ -1,7 +1,7 @@
 import { gql } from "@/graphql/__generated__"
 
 export const deleteImageGenerationTaskMutation = gql(`
-  mutation DeleteImageGenerationTask($input: DeleteImageGenerationTask!) {
+  mutation DeleteImageGenerationTask($input: DeleteImageGenerationTaskInput!) {
     deleteImageGenerationTask(input: $input)
   }
 `)
