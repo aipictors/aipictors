@@ -10,8 +10,8 @@ export const imageGenerationTaskFieldsFragment = gql(`
     scale
     sampler
     sizeType
-    t2tImageBlob
-    t2tMaskImageBlob
+    t2tImageUrl
+    t2tMaskImageUrl
     t2tDenoisingStrengthSize
     t2tInpaintingFillSize
     rating
