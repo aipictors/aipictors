@@ -21,6 +21,7 @@ type Tasks = NonNullable<
 
 type Props = {
   tasks: Tasks
+  userNanoid: string | null
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void
@@ -146,6 +147,7 @@ export const GenerationEditorResult = (props: Props) => {
         onClose={onCloseInPainting}
         taskId={history?.id ?? ""}
         token={history?.token ?? ""}
+        userNanoid={props.userNanoid}
       />
       <GenerationResultDeleteDialog
         isOpen={isDeleteOpen}

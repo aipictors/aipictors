@@ -8,7 +8,7 @@ import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
-import { Suspense } from "react"
+import { Suspense, useContext } from "react"
 
 const GenerationPage = async () => {
   const client = createClient()

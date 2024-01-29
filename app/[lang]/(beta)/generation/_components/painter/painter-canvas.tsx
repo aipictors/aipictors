@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Slider } from "@/components/ui/slider"
 import Konva from "konva"
 import { useEffect, useRef, useState } from "react"
@@ -22,6 +23,8 @@ type Props = {
   imageUrl: string
   status: string
   onChange(value: string): void
+  isLoading: boolean
+  onLoaded(): void
 }
 
 export type LineObject = {
@@ -58,6 +61,7 @@ export const PainterCanvas = (props: Props) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
   useEffect(() => {
     if (image) {
+      props.onLoaded()
       setImageSize({ width: image.width, height: image.height })
     }
   }, [image])
@@ -179,6 +183,10 @@ export const PainterCanvas = (props: Props) => {
       </div>
       <div className="flex justify-center">
         <div className="w-full h-[800px] relative max-h-64 max-w-96 overflow-auto m-auto">
+          {props.isLoading && (
+            <Skeleton className="h-[120px] w-[240px] rounded-xl" />
+          )}
+
           <Stage
             className="absolute"
             width={imageSize.width}

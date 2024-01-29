@@ -14,17 +14,23 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { getAuth, getIdToken } from "firebase/auth"
 import dynamic from "next/dynamic"
 import { useState } from "react"
+import { toast } from "sonner"
 
 type Props = {
   isOpen: boolean
   onClose(): void
   taskId: string
   token: string
+  userNanoid: string | null
 }
 
+/**
+ * ランダムな文字列を取得
+ * @param count
+ * @returns
+ */
 export const getRandomStr = (count: number) => {
   const characters =
     "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz0123456789"
@@ -36,6 +42,68 @@ export const getRandomStr = (count: number) => {
   return result
 }
 
+export const getBase64FromImageUrl = (url: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.setAttribute("crossOrigin", "anonymous")
+    img.onload = () => {
+      const canvas = document.createElement("canvas")
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext("2d")
+      if (ctx) {
+        ctx.drawImage(img, 0, 0)
+        const dataURL = canvas.toDataURL("image/png")
+        resolve(dataURL)
+      } else {
+        reject("ctx is null")
+      }
+    }
+    img.src = url
+  })
+}
+
+export const requestInpaintGenerationTask = async (
+  userNanoid: string,
+  paintMaskImageBase64: string,
+  paintImageBase64: string,
+) => {
+  return new Promise(async (resolve, reject) => {
+    if (!userNanoid) {
+      toast("ログインしてから実行してください")
+      return
+    }
+    const fileMaskName = getRandomStr(30) + "_inpaint_mask_src.png"
+    try {
+      const fileMaskPath = await uploadImage(
+        paintMaskImageBase64,
+        fileMaskName,
+        userNanoid,
+      )
+      if (fileMaskPath != "") {
+        const fileSrcName = getRandomStr(30) + "_img2img_src.png"
+        const fileSrcPath = await uploadImage(
+          paintImageBase64,
+          fileSrcName,
+          userNanoid,
+        )
+        if (fileSrcPath != "") {
+          // ここでリクエストする
+          console.log(fileMaskPath)
+          console.log(fileSrcPath)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+}
+
+/**
+ * インペイント用のダイアログ
+ * @param count
+ * @returns
+ */
 export const InPaintingImageDialog = (props: Props) => {
   if (props.taskId === "" || props.token === "") return null
   const { data } = useSuspenseQuery({
@@ -48,6 +116,8 @@ export const InPaintingImageDialog = (props: Props) => {
   const onChangePaint = (imageBase64: string) => {
     setPaintImageBase64(imageBase64)
   }
+
+  const [isLoading, setIsLoading] = useState(true)
 
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
@@ -73,29 +143,28 @@ export const InPaintingImageDialog = (props: Props) => {
             <Separator />
           </div>
           <InPaintingEditImage
+            onLoaded={() => setIsLoading(false)}
+            isLoading={isLoading}
             onChange={(imageBase64: string) => onChangePaint(imageBase64)}
             imageUrl={data}
           />
         </div>
         <DialogFooter>
           <Button
+            disabled={isLoading}
             onClick={async () => {
-              // TODO: ファイルアップロードがうまくいかないので修正する
-              // ※ サーバ側でtokenからユーザIDを復元できない
-              const currentUser = getAuth().currentUser
-              if (!currentUser) return
-              const token = await getIdToken(currentUser, true)
-              const fileName = getRandomStr(30) + "_inpaint_mask_src.png"
-              try {
-                await uploadImage(paintImageBase64, fileName, token)
-              } catch (error) {
-                console.log(error)
+              if (props.userNanoid === null) {
+                toast("ログインしてから実行してください")
+                return
               }
-              console.log(paintImageBase64) // ペイント軌跡の色を反転して背景を黒く染めた画像(マスク用)
-              console.log(fileName)
-              console.log(token)
-
+              const srcImageBase64 = await getBase64FromImageUrl(data)
+              if (srcImageBase64 === "") return
               props.onClose()
+              await requestInpaintGenerationTask(
+                props.userNanoid,
+                srcImageBase64,
+                paintImageBase64,
+              )
             }}
           >
             {"修正する"}

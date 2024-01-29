@@ -7,11 +7,6 @@ type LineObject = {
   brushSize: number
 }
 
-type Point = {
-  x: number
-  y: number
-}
-
 const usePainter = (initialBrushSize = 10) => {
   const [lines, setLines] = useState<LineObject[]>([])
   const [isDrawing, setIsDrawing] = useState(false)

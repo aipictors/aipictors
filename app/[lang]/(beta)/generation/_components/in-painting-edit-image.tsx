@@ -5,6 +5,8 @@ import { PainterCanvas } from "@/app/[lang]/(beta)/generation/_components/painte
 type Props = {
   imageUrl: string
   onChange(value: string): void
+  onLoaded(): void
+  isLoading: boolean
 }
 
 /**
@@ -18,6 +20,8 @@ export default function InPaintingEditImage(props: Props) {
       <PainterCanvas
         status={"reverse-draw"}
         onChange={props.onChange}
+        onLoaded={props.onLoaded}
+        isLoading={props.isLoading}
         imageUrl={props.imageUrl}
       />
     </>

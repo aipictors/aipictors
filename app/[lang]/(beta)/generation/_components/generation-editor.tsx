@@ -21,6 +21,7 @@ import {
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
+import { userQuery } from "@/graphql/queries/user/user"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import { Suspense, startTransition, useContext, useMemo } from "react"
@@ -55,6 +56,16 @@ export const GenerationEditor: React.FC<Props> = (props) => {
       : skipToken,
   )
 
+  const appContext = useContext(AuthContext)
+  const { data: userData, refetch: refetchUserData } = useSuspenseQuery(
+    userQuery,
+    {
+      variables: {
+        userId: appContext.userId ?? "",
+      },
+    },
+  )
+
   const [signTerms] = useMutation(signImageGenerationTermsMutation)
 
   const machine = useImageGenerationMachine({
@@ -76,10 +87,17 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     () => {
       startTransition(() => {
         refetch()
+        refetchUserData()
       })
     },
     inProgress ? 2000 : 4000,
   )
+
+  useInterval(() => {
+    startTransition(() => {
+      refetchUserData()
+    })
+  }, 40000)
 
   const onSignImageGenerationTerms = async () => {
     try {
@@ -215,6 +233,7 @@ export const GenerationEditor: React.FC<Props> = (props) => {
           <Suspense fallback={null}>
             <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}
+              userNanoid={!userData.user ? null : userData.user.nanoid}
               onChangeSampler={machine.updateSampler}
               onChangeScale={machine.updateScale}
               onChangeSeed={machine.updateSeed}
