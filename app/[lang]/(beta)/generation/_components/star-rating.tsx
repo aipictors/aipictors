@@ -6,6 +6,7 @@ type Props = {
   value: number
   className?: string
   onChange(value: number): void
+  disabled?: boolean
 }
 
 /**
@@ -17,6 +18,7 @@ export const StarRating = (props: Props) => {
   return (
     <div className={props.className}>
       <Button
+        disabled={props.disabled}
         aria-label={"お気に入り"}
         size={"icon"}
         variant="ghost"
@@ -27,6 +29,7 @@ export const StarRating = (props: Props) => {
         <StarIcon className={cn(0 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
+        disabled={props.disabled}
         aria-label={"お気に入り"}
         size={"icon"}
         variant="ghost"
@@ -37,6 +40,7 @@ export const StarRating = (props: Props) => {
         <StarIcon className={cn(1 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
+        disabled={props.disabled}
         aria-label={"お気に入り"}
         size={"icon"}
         variant="ghost"
@@ -47,6 +51,7 @@ export const StarRating = (props: Props) => {
         <StarIcon className={cn(2 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
+        disabled={props.disabled}
         aria-label={"お気に入り"}
         size={"icon"}
         variant="ghost"
@@ -57,6 +62,7 @@ export const StarRating = (props: Props) => {
         <StarIcon className={cn(3 < props.value && "fill-yellow-500")} />
       </Button>
       <Button
+        disabled={props.disabled}
         aria-label={"お気に入り"}
         size={"icon"}
         variant="ghost"
