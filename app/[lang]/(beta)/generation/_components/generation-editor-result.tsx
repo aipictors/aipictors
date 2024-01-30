@@ -1,7 +1,6 @@
 "use client"
 
 import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
-import { GenerationDownloadDialog } from "@/app/[lang]/(beta)/generation/_components/generation-download-dialog"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { GenerationResultDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-result-delete-dialog"
 import { GenerationResultSheet } from "@/app/[lang]/(beta)/generation/_components/generation-result-sheet"
@@ -153,7 +152,7 @@ export const GenerationEditorResult = (props: Props) => {
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
       />
-      <GenerationDownloadDialog isOpen={isDlOpen} onClose={onDlClose} />
+      {/* <GenerationDownloadDialog isOpen={isDlOpen} onClose={onDlClose} /> */}
       {/* <InPaintingSelectedPromptDialog
         isOpen={isPromptOpen}
         onClose={onPromptClose}

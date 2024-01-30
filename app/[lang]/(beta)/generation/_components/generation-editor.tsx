@@ -38,12 +38,6 @@ type Props = {
 export const GenerationEditor: React.FC<Props> = (props) => {
   const authContext = useContext(AuthContext)
 
-  // const imageGenerationState = ImageGenerationContext.useSelector((state) => {
-  //   return state.context
-  // })
-
-  // const imageGenerationRef = ImageGenerationContext.useActorRef()
-
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
     {},
@@ -92,12 +86,6 @@ export const GenerationEditor: React.FC<Props> = (props) => {
     },
     inProgress ? 2000 : 4000,
   )
-
-  useInterval(() => {
-    startTransition(() => {
-      refetchUserData()
-    })
-  }, 40000)
 
   const onSignImageGenerationTerms = async () => {
     try {
