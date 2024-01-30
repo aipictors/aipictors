@@ -1,8 +1,6 @@
 import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import WorkNextAndPrevious from "@/app/[lang]/(main)/works/[work]/_components/work-next-and-previous"
 import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
-import { WorkUser } from "@/app/[lang]/(main)/works/[work]/_components/work-user"
 import WorkPageLoading from "@/app/[lang]/(main)/works/[work]/loading"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
@@ -34,26 +32,32 @@ const WorkPage = async (props: Props) => {
   if (workResp.data.work === null) return null
   if (workCommentsResp.data.work === null) return null
 
+  /**
+   * @todo WorkCardのせいでコンポーネントの位置関係が壊れるので一度コメントアウト
+   */
+
   return (
-    <div className="px-4 py-4 w-full max-w-fit mx-auto">
-      <div className="flex flex-col lg:flex-row">
-        <Suspense fallback={<WorkPageLoading />}>
-          <WorkArticle work={workResp.data.work} />
-        </Suspense>
-        <div className="w-full lg:max-w-xs pl-4 invisible lg:visible">
-          <WorkUser
-            userName={workResp.data.work.user.name}
-            userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}
-            userFollowersCount={workResp.data.work.user.followersCount}
-            userBiography={workResp.data.work.user.biography}
-            userPromptonId={workResp.data.work.user.promptonUser?.id}
-            userWorksCount={workResp.data.work.user.worksCount}
-          />
-          <WorkNextAndPrevious work={workResp.data.work} />
+    <div className="px-4 py-4 w-full">
+      <div className="flex justify-center items-center flex-col">
+        <div className="w-full max-w-screen-lg mx-auto">
+          <Suspense fallback={<WorkPageLoading />}>
+            <WorkArticle work={workResp.data.work} />
+          </Suspense>
+          <WorkRelatedList works={workResp.data.work.user.works} />
+          <WorkCommentList work={workCommentsResp.data.work} />
         </div>
       </div>
-      <WorkRelatedList works={workResp.data.work.user.works} />
-      <WorkCommentList work={workCommentsResp.data.work} />
+      {/* <div className="w-full lg:max-w-xs pl-4 invisible lg:visible items-start">
+        <WorkUser
+          userName={workResp.data.work.user.name}
+          userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}
+          userFollowersCount={workResp.data.work.user.followersCount}
+          userBiography={workResp.data.work.user.biography}
+          userPromptonId={workResp.data.work.user.promptonUser?.id}
+          userWorksCount={workResp.data.work.user.worksCount}
+        />
+        <WorkNextAndPrevious work={workResp.data.work} />
+      </div> */}
     </div>
   )
 }
