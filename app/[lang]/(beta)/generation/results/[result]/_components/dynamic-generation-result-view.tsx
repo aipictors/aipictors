@@ -247,6 +247,14 @@ export default function DynamicImageGenerationResultView(props: Props) {
     return <div>{"画像が見つかりませんでした"}</div>
   }
 
+  if (data?.imageGenerationTask.status === "CANCELED") {
+    return <p className="mb-1 font-semibold text-center">{"キャンセル済み"}</p>
+  }
+
+  if (data?.imageGenerationTask.status === "ERROR") {
+    return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
+  }
+
   // if (error) return <div>{"エラーが発生しました"}</div>
 
   const generationSize: GenerationSize = parseGenerationSize(
@@ -264,14 +272,6 @@ export default function DynamicImageGenerationResultView(props: Props) {
     width: generationSize.width,
     height: generationSize.height,
     modelName: data.imageGenerationTask.model?.name ?? "",
-  }
-
-  if (data?.imageGenerationTask.status === "CANCELED") {
-    return <p className="mb-1 font-semibold text-center">{"キャンセル済み"}</p>
-  }
-
-  if (data?.imageGenerationTask.status === "ERROR") {
-    return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
   }
 
   if (data?.imageGenerationTask.status === "IN_PROGRESS") {
