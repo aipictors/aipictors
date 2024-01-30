@@ -2,6 +2,7 @@
 
 import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
+import WorkArticleTags from "@/app/[lang]/(main)/works/[work]/_components/work-article-tags"
 import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { toDateTimeText } from "@/app/_utils/to-date-time-text"
@@ -19,7 +20,7 @@ type Props = {
  */
 export const WorkArticle = (props: Props) => {
   return (
-    <article className="flex flex-col justify-start space-y-4">
+    <article className="flex flex-col space-y-4">
       <WorkImageView
         workImageURL={props.work.imageURL}
         subWorkImageURLs={props.work.subWorks.map((subWork) => {
@@ -42,15 +43,7 @@ export const WorkArticle = (props: Props) => {
             <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
           </div>
         )}
-        <div className="flex flex-row flex-wrap">
-          {props.work.tagNames.map((tagName) => (
-            <Button
-              key={tagName}
-              variant={"link"}
-              size={"sm"}
-            >{`#${tagName}`}</Button>
-          ))}
-        </div>
+        <WorkArticleTags tagNames={props.work.tagNames} />
       </div>
       <p className="whitespace-pre-wrap overflow-hidden break-words">
         {props.work.description}

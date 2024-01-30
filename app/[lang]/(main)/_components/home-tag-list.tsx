@@ -6,7 +6,8 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel"
 import { HotTagsQuery } from "@/graphql/__generated__/graphql"
-import Link from "next/link"
+import Autoplay from "embla-carousel-autoplay"
+import React from "react"
 
 type Props = {
   hotTags: HotTagsQuery["hotTags"]
@@ -18,14 +19,21 @@ type Props = {
  * @returns
  */
 export const HomeTagList = (props: Props) => {
+  const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true }),
+  )
+
   return (
-    <Carousel opts={{ dragFree: true, loop: true }}>
+    <Carousel
+      opts={{ dragFree: true, loop: true }}
+      plugins={[plugin.current]}
+      onMouseEnter={plugin.current.stop}
+      onMouseLeave={plugin.current.reset}
+    >
       <CarouselContent>
         {props.hotTags?.map((tag) => (
           <CarouselItem className="basis-auto" key={tag.id}>
-            <Link href={`/tags/${tag.name}`}>
-              <TagButton name={tag.name} />
-            </Link>
+            <TagButton name={tag.name} />
           </CarouselItem>
         ))}
       </CarouselContent>

@@ -25,7 +25,7 @@ export const WorkCommentList = (props: Props) => {
 
   return (
     <>
-      <div className="space-y-4 w-full">
+      <div className="space-y-4">
         <p>{"コメント"}</p>
         <div className="flex items-center space-x-2 w-full">
           <Avatar>
