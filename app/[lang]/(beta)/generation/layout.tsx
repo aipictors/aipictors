@@ -20,7 +20,7 @@ const GenerationLayout = (props: Props) => {
     return <LoginPage />
   }
 
-  return <div className="pb-4 overflow-x-hidden">{props.children}</div>
+  return props.children
 }
 
 export default GenerationLayout

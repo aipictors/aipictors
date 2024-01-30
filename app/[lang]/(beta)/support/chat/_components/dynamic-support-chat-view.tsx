@@ -13,7 +13,7 @@ import { useInterval } from "usehooks-ts"
  * use Dynamic Import
  * @returns
  */
-export default function DynamicSupportChatView() {
+export function SupportChatView() {
   const { data: supportMessages, refetch } = useSuspenseQuery(
     viewerSupportMessagesQuery,
     {

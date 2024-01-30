@@ -10,7 +10,6 @@ import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_componen
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
 import { toLoraPromptTexts } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt-texts"
-import { AuthContext } from "@/app/_contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import {
   ImageGenerationSizeType,
@@ -22,8 +21,8 @@ import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-im
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
-import { Suspense, startTransition, useContext, useMemo } from "react"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { Suspense, startTransition, useMemo } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -34,23 +33,17 @@ type Props = {
 }
 
 /**
- * use Dynamic Import
  * @param props
  */
-export default function DynamicGenerationView(props: Props) {
-  const authContext = useContext(AuthContext)
-
+export function GenerationEditor(props: Props) {
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
     {},
   )
 
-  const { data, refetch } = useSuspenseQuery(
-    viewerImageGenerationTasksQuery,
-    authContext.isLoggedIn
-      ? { variables: { limit: 64, offset: 0 } }
-      : skipToken,
-  )
+  const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
+    variables: { limit: 64, offset: 0 },
+  })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation)
 

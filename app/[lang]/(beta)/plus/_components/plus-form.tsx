@@ -15,8 +15,6 @@ import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { toast } from "sonner"
 
 export const PlusForm = () => {
-  console.log("クライアントサイド")
-
   const [mutation, { loading: isLoading }] = useMutation(
     createCustomerPortalSessionMutation,
   )

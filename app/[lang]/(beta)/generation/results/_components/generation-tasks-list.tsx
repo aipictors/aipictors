@@ -9,7 +9,7 @@ import { useSuspenseQuery } from "@apollo/client"
  * 画像生成の履歴
  * @returns
  */
-export default function DynamicGenerationTasksView() {
+export function GenerationTasksList() {
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,

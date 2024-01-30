@@ -167,7 +167,7 @@ export const postGenerationImage = async (
  * @param props
  * @returns
  */
-export default function DynamicImageGenerationResultView(props: Props) {
+export function GenerationTaskView(props: Props) {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
   const onChangeRating = async (rating: number, taskId: string) => {

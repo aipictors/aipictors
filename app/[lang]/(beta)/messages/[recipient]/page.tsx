@@ -1,13 +1,5 @@
+import { ChatMessageView } from "@/app/[lang]/(beta)/messages/[recipient]/_components/chat-message-view"
 import type { Metadata } from "next"
-import dynamic from "next/dynamic"
-
-const DynamicMessageView = dynamic(
-  () =>
-    import(
-      "@/app/[lang]/(beta)/messages/[recipient]/_components/dynamic-message-view"
-    ),
-  { ssr: false },
-)
 
 type Props = {
   params: {
@@ -23,7 +15,7 @@ type Props = {
 const RecipientMessagesPage = async (props: Props) => {
   const recipientId = props.params.recipient
 
-  return <DynamicMessageView recipientId={recipientId} />
+  return <ChatMessageView recipientId={recipientId} />
 }
 
 export const metadata: Metadata = {

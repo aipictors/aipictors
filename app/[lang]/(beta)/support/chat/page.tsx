@@ -1,20 +1,11 @@
+import { SupportChatView } from "@/app/[lang]/(beta)/support/chat/_components/dynamic-support-chat-view"
 import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
-import dynamic from "next/dynamic"
-
-const DynamicSupportChatView = dynamic(
-  () => {
-    return import(
-      "@/app/[lang]/(beta)/support/chat/_components/dynamic-support-chat-view"
-    )
-  },
-  { ssr: false },
-)
 
 const MessagePage = async () => {
   return (
     <AppPageCenter className="pt-0 pb-0">
-      <DynamicSupportChatView />
+      <SupportChatView />
     </AppPageCenter>
   )
 }
