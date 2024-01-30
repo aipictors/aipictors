@@ -1,4 +1,4 @@
-import usePainter from "@/app/[lang]/(beta)/generation/_components/painter/use-painter"
+import { usePainter } from "@/app/[lang]/(beta)/generation/_hooks/use-painter"
 import { Button } from "@/components/ui/button"
 import {
   Select,

@@ -1,5 +1,14 @@
-import { ImageGenerationTaskResult } from "@/app/[lang]/(beta)/generation/results/[result]/_components/image-generation-task-result"
 import type { Metadata } from "next"
+import dynamic from "next/dynamic"
+
+const DynamicImageGenerationResultView = dynamic(
+  () => {
+    return import(
+      "@/app/[lang]/(beta)/generation/results/[result]/_components/dynamic-generation-result-view"
+    )
+  },
+  { ssr: false },
+)
 
 type Props = {
   params: { result: string }
@@ -8,7 +17,7 @@ type Props = {
 const ResultPage = async (props: Props) => {
   return (
     <div className="px-4 py-4 w-full max-w-fit mx-auto">
-      <ImageGenerationTaskResult taskId={props.params.result} />
+      <DynamicImageGenerationResultView taskId={props.params.result} />
     </div>
   )
 }

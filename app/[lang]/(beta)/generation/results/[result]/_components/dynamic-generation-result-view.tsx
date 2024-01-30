@@ -162,8 +162,14 @@ export const postGenerationImage = async (
   window.location.href = "https://www.aipictors.com/post"
 }
 
-export const ImageGenerationTaskResult = (props: Props) => {
+/**
+ * use Dynamic Import
+ * @param props
+ * @returns
+ */
+export default function DynamicImageGenerationResultView(props: Props) {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
+
   const onChangeRating = async (rating: number, taskId: string) => {
     try {
       await mutation({

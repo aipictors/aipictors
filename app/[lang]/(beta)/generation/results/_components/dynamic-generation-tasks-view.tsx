@@ -5,10 +5,11 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generat
 import { useSuspenseQuery } from "@apollo/client"
 
 /**
+ * use Dynamic Import
  * 画像生成の履歴
  * @returns
  */
-export const GenerationResultList = () => {
+export default function DynamicGenerationTasksView() {
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,

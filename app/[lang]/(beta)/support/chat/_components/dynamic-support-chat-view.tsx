@@ -9,7 +9,11 @@ import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
-export const SupportChat = () => {
+/**
+ * use Dynamic Import
+ * @returns
+ */
+export default function DynamicSupportChatView() {
   const { data: supportMessages, refetch } = useSuspenseQuery(
     viewerSupportMessagesQuery,
     {

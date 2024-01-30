@@ -33,7 +33,11 @@ type Props = {
   termsMarkdownText: string
 }
 
-export const GenerationEditor: React.FC<Props> = (props) => {
+/**
+ * use Dynamic Import
+ * @param props
+ */
+export default function DynamicGenerationView(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(

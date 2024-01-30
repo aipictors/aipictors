@@ -13,7 +13,12 @@ type Props = {
   recipientId: string
 }
 
-export const RecipientMessageList = (props: Props) => {
+/**
+ * use Dynamic Import
+ * @param props
+ * @returns
+ */
+export default function DynamicMessageView(props: Props) {
   const { data, refetch } = useSuspenseQuery(messageThreadMessagesQuery, {
     variables: {
       threadId: props.recipientId,

@@ -7,7 +7,7 @@ type LineObject = {
   brushSize: number
 }
 
-const usePainter = (initialBrushSize = 10) => {
+export const usePainter = (initialBrushSize = 10) => {
   const [lines, setLines] = useState<LineObject[]>([])
   const [isDrawing, setIsDrawing] = useState(false)
   const [brushSize, setBrushSize] = useState(initialBrushSize) // これは使わなくていい
@@ -89,5 +89,3 @@ const usePainter = (initialBrushSize = 10) => {
     setTool,
   }
 }
-
-export default usePainter

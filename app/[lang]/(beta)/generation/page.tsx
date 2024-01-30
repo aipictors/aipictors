@@ -1,14 +1,21 @@
 import { join } from "path"
 import { GenerationDocument } from "@/app/[lang]/(beta)/generation/_components/generation-document"
-import { GenerationEditor } from "@/app/[lang]/(beta)/generation/_components/generation-editor"
-import GenerationPageLoading from "@/app/[lang]/(beta)/generation/loading"
 import { createClient } from "@/app/_contexts/client"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
-import { Suspense, useContext } from "react"
+import dynamic from "next/dynamic"
+
+const DynamicGenerationView = dynamic(
+  () => {
+    return import(
+      "@/app/[lang]/(beta)/generation/_components/dynamic-generation-view"
+    )
+  },
+  { ssr: false },
+)
 
 const GenerationPage = async () => {
   const client = createClient()
@@ -46,14 +53,12 @@ const GenerationPage = async () => {
 
   return (
     <>
-      <Suspense fallback={<GenerationPageLoading />}>
-        <GenerationEditor
-          termsMarkdownText={termsMarkdownText}
-          promptCategories={promptCategoriesResp.data.promptCategories}
-          imageModels={imageModelsResp.data.imageModels}
-          imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
-        />
-      </Suspense>
+      <DynamicGenerationView
+        termsMarkdownText={termsMarkdownText}
+        promptCategories={promptCategoriesResp.data.promptCategories}
+        imageModels={imageModelsResp.data.imageModels}
+        imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
+      />
       <GenerationDocument
         markdownText={descriptionMarkdownText}
         models={imageModelsResp.data.imageModels}
