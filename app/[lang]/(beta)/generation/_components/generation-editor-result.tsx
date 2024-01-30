@@ -105,7 +105,11 @@ export const GenerationEditorResult = (props: Props) => {
         <ScrollArea>
           <div className="p-2 grid gap-2 grid-cols-1 md:grid-cols-2">
             {props.tasks
-              ?.filter((task) => !task.isDeleted)
+              ?.filter(
+                (task) =>
+                  !task.isDeleted &&
+                  (task.status === "IN_PROGRESS" || task.status === "DONE"),
+              )
               .map((task) => (
                 <GenerationResultCard
                   key={task.id}
