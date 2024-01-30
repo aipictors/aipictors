@@ -6,7 +6,6 @@ import { ImageGenerationContext } from "@/app/_contexts/image-generation-context
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { Config } from "@/config"
 import { ApolloProvider } from "@apollo/client"
-import { init } from "@sentry/nextjs"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
@@ -35,18 +34,18 @@ export const ContextProviders = (props: Props) => {
   )
 }
 
-init({
-  dsn: Config.sentryDSN,
-  environment: Config.sentryEnvironment,
-  tracesSampleRate: 1.0,
-  attachStacktrace: true,
-  normalizeDepth: 5,
-  release: Config.sentryRelease,
-  beforeSend(event) {
-    if (Config.isDevelopmentMode) return null
-    return event
-  },
-})
+// init({
+//   dsn: Config.sentryDSN,
+//   environment: Config.sentryEnvironment,
+//   tracesSampleRate: 1.0,
+//   attachStacktrace: true,
+//   normalizeDepth: 5,
+//   release: Config.sentryRelease,
+//   beforeSend(event) {
+//     if (Config.isDevelopmentMode) return null
+//     return event
+//   },
+// })
 
 if (typeof window !== "undefined" && getApps().length === 0) {
   initializeApp(Config.firebaseConfig)
