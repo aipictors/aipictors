@@ -1,6 +1,11 @@
 "use client"
 
-const RootError = () => {
+type Props = {
+  error: Error
+  reset(): void
+}
+
+export default function RootError(props: Props) {
   return (
     <div className="p-4 h-screen flex justify-center items-center">
       <div className="space-y-8 items-center">
@@ -9,5 +14,3 @@ const RootError = () => {
     </div>
   )
 }
-
-export default RootError

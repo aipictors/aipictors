@@ -1,16 +1,18 @@
 "use client"
 
-import RootError from "@/app/error"
 import type { Metadata } from "next"
 
-const RootGlobalError = () => {
+type Props = {
+  error: Error & { digest?: string }
+  reset(): void
+}
+
+export default function RootGlobalError(props: Props) {
   return (
-    <html lang={"ja"}>
-      <head>
-        <link href={"/icon.svg"} rel={"icon"} type={"image/svg+xml"} />
-      </head>
+    <html>
       <body>
-        <RootError />
+        <h2>Something went wrong!</h2>
+        <button onClick={() => props.reset()}>Try again</button>
       </body>
     </html>
   )
@@ -19,5 +21,3 @@ const RootGlobalError = () => {
 export const metadata: Metadata = {
   title: "エラー",
 }
-
-export default RootGlobalError
