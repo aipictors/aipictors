@@ -10,6 +10,8 @@ const httpLink = createHttpLink({
 })
 
 const contextSetter: ContextSetter = async (_, context) => {
+  console.log("getApps().length", getApps().length)
+
   if (getApps().length === 0) {
     return {
       headers: {
@@ -21,6 +23,8 @@ const contextSetter: ContextSetter = async (_, context) => {
   }
 
   const currentUser = getAuth().currentUser
+
+  console.log("currentUser", currentUser)
 
   if (currentUser === null) {
     return {

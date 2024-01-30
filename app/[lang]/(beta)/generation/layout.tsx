@@ -2,6 +2,7 @@
 
 import { LoginPage } from "@/app/_components/page/login-page"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import { AppLoading } from "@/components/app/app-loading"
 import { useContext } from "react"
 
 type Props = {
@@ -10,6 +11,10 @@ type Props = {
 
 const GenerationLayout = (props: Props) => {
   const context = useContext(AuthContext)
+
+  if (context.isLoading) {
+    return <AppLoading />
+  }
 
   if (context.isNotLoggedIn) {
     return <LoginPage />
