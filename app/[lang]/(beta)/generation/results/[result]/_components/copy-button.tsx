@@ -4,6 +4,7 @@ import { toast } from "sonner"
 type Props = {
   text: string
   className?: string
+  disabled?: boolean
 }
 
 export const CopyButton = (props: Props) => {
@@ -21,6 +22,7 @@ export const CopyButton = (props: Props) => {
   return (
     <Button
       variant={"secondary"}
+      disabled={props.disabled}
       size={"sm"}
       className={`${props.className} pad-16 whitespace-normal w-full`}
       onClick={copyToClipboard}

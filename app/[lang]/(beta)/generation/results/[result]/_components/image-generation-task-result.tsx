@@ -2,25 +2,32 @@
 
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
 import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/results/[result]/_components/generation-menu-button"
+import { InProgressImageGenerationTaskResult } from "@/app/[lang]/(beta)/generation/results/[result]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-parameters"
 import {
   GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
+import { AuthContext } from "@/app/_contexts/auth-context"
+import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { AppLoading } from "@/components/app/app-loading"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
   Pencil,
+  Trash2,
 } from "lucide-react"
-import { useState } from "react"
+import { startTransition, useContext, useState } from "react"
 import { toast } from "sonner"
+import { useInterval } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
 
 type Props = {
@@ -174,11 +181,26 @@ export const ImageGenerationTaskResult = (props: Props) => {
     }
   }
 
-  const { data, error } = useSuspenseQuery(imageGenerationTaskQuery, {
-    variables: {
-      id: props.taskId,
-    },
-  })
+  const authContext = useContext(AuthContext)
+
+  const { data, error, refetch } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn
+      ? {
+          variables: {
+            id: props.taskId,
+          },
+        }
+      : skipToken,
+  )
+
+  useInterval(() => {
+    startTransition(() => {
+      refetch()
+    })
+  }, 4000)
+
+  const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
 
   const onReference = () => {
     window.location.href = "/generation/?ref=" + props.taskId
@@ -189,13 +211,37 @@ export const ImageGenerationTaskResult = (props: Props) => {
       "https://www.aipictors.com/post?generation=" + props.taskId
   }
 
-  if (error) return <div>{"エラーが発生しました"}</div>
+  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
 
-  if (!data || data.imageGenerationTask.token == null) {
+  const onDelete = async () => {
+    await deleteTask({
+      variables: {
+        input: {
+          id: props.taskId,
+        },
+      },
+    })
+    refetch()
+  }
+
+  if (!data) {
+    return (
+      <div>
+        <>
+          <AppLoading />
+        </>
+      </div>
+    )
+  }
+
+  if (
+    data.imageGenerationTask == null ||
+    data.imageGenerationTask.token == null
+  ) {
     return <div>{"画像が見つかりませんでした"}</div>
   }
 
-  const [rating, setRating] = useState(data.imageGenerationTask.rating)
+  // if (error) return <div>{"エラーが発生しました"}</div>
 
   const generationSize: GenerationSize = parseGenerationSize(
     data.imageGenerationTask.sizeType,
@@ -214,6 +260,22 @@ export const ImageGenerationTaskResult = (props: Props) => {
     modelName: data.imageGenerationTask.model?.name ?? "",
   }
 
+  if (data?.imageGenerationTask.status === "CANCELED") {
+    return <p className="mb-1 font-semibold text-center">{"キャンセル済み"}</p>
+  }
+
+  if (data?.imageGenerationTask.status === "ERROR") {
+    return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
+  }
+
+  if (data?.imageGenerationTask.status === "IN_PROGRESS") {
+    return (
+      <>
+        <InProgressImageGenerationTaskResult />
+      </>
+    )
+  }
+
   return (
     <div className="px-4 py-4 w-full max-w-fit mx-auto">
       <PrivateImage
@@ -224,27 +286,41 @@ export const ImageGenerationTaskResult = (props: Props) => {
       />
       <div className="my-4 flex justify-end">
         <GenerationMenuButton
-          title="同じ情報で生成する"
+          title={"同じ情報で生成する"}
           onClick={onReference}
-          text="参照生成"
+          text={"参照生成"}
           icon={ArrowUpRightSquare}
         />
         <GenerationMenuButton
-          title="投稿する"
+          title={"投稿する"}
           onClick={onPost}
-          text="投稿"
+          text={"投稿"}
           icon={Pencil}
         />
         <GenerationMenuButton
-          title="生成情報をコピーする"
+          title={"生成情報をコピーする"}
           onClick={() => copyGeneration(GenerationParameters)}
           icon={ClipboardCopy}
         />
         <GenerationMenuButton
-          title="画像を保存する"
+          title={"画像を保存する"}
           onClick={() => saveGenerationImage(props.taskId)}
           icon={ArrowDownToLine}
         />
+        <AppConfirmDialog
+          title={"確認"}
+          description={"本当に削除しますか？"}
+          onNext={() => {
+            onDelete()
+          }}
+          onCancel={() => {}}
+        >
+          <GenerationMenuButton
+            title={"生成履歴を削除する"}
+            onClick={() => () => {}}
+            icon={Trash2}
+          />
+        </AppConfirmDialog>
       </div>
       <StarRating
         value={rating ?? 0}

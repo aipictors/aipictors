@@ -49,10 +49,20 @@ const MenuItemLink = ({ href, icon, label }: MenuItemLinkProps) => (
   </Link>
 )
 
+const THEME_DARK = "dark"
+
 export const HomeUserNavigationMenu = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const { theme, setTheme } = useTheme()
+
+  const getThemeIcon = () => {
+    return theme === THEME_DARK ? (
+      <MoonIcon className="w-4 inline-block mr-2" />
+    ) : (
+      <SunIcon className="w-4 inline-block mr-2" />
+    )
+  }
 
   return (
     <DropdownMenu>
@@ -103,12 +113,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
         )}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            {theme !== "dark" && (
-              <SunIcon className="w-4 inline-block mr-2">{"Light"}</SunIcon>
-            )}
-            {theme === "dark" && (
-              <MoonIcon className="w-4 inline-block mr-2">{"Light"}</MoonIcon>
-            )}
+            {getThemeIcon()}
             <p>テーマ</p>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
@@ -122,9 +127,6 @@ export const HomeUserNavigationMenu = (props: Props) => {
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="dark">
                   ダーク
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="system">
-                  システム
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>

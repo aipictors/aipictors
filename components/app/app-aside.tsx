@@ -10,15 +10,7 @@ type Props = {
  */
 export const AppAside = (props: Props) => {
   return (
-    <nav
-      className="sticky overflow-y-auto pl-5 hidden md:block"
-      style={{
-        top: "72px",
-        height: "calc(100svh - 72px)",
-        width: "12rem",
-        minWidth: "12rem",
-      }}
-    >
+    <nav className="pl-5 sticky overflow-y-auto hidden md:block top-20 h-screen pb-[72px] min-w-48 w-48">
       <div className="pb-4">{props.children}</div>
     </nav>
   )
