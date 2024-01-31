@@ -1,8 +1,15 @@
 {
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
-  "formatter": {
-    "include": ["**/*.{ts,tsx,json,html,graphql}"],
-    "indentStyle": "space"
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": [
+      "**/*.{yml,yaml,mdx,md,svg,ico}",
+      "**/__generated__/**",
+      ".next/**",
+      "node_modules/**",
+      "public/**",
+      "storybook-static/**"
+    ]
   },
   "linter": {
     "include": ["**/*.{ts,tsx,json,html,graphql}"],
@@ -22,20 +29,16 @@
       }
     }
   },
+  "formatter": {
+    "include": ["**/*.{ts,tsx,json,html,graphql}"],
+    "indentStyle": "space"
+  },
+  "organizeImports": {
+    "enabled": false
+  },
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded"
     }
-  },
-  "files": {
-    "ignoreUnknown": true,
-    "ignore": [
-      ".next/**",
-      "node_modules/**",
-      "**/__generated__/**",
-      "storybook-static/**",
-      "public/**",
-      "**/*.{yml,yaml,mdx,md,svg,ico}"
-    ]
   }
 }

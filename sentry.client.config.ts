@@ -29,8 +29,8 @@ Sentry.init({
   //   }),
   // ],
 
-  environment: Config.sentryEnvironment,
-  release: Config.sentryRelease,
+  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT!,
+  release: process.env.NEXT_PUBLIC_SENTRY_RELEASE!,
   beforeSend(event) {
     if (process.env.NODE_ENV !== "production") return null
     return event
