@@ -145,13 +145,22 @@ export const GenerationEditorResult = (props: Props) => {
           onChangeRating={() => {}}
         />
       )}
-      <InPaintingImageDialog
-        isOpen={isOpenInPainting}
-        onClose={onCloseInPainting}
-        taskId={history?.id ?? ""}
-        token={history?.token ?? ""}
-        userNanoid={props.userNanoid}
-      />
+      {history?.token && (
+        <InPaintingImageDialog
+          isOpen={isOpenInPainting}
+          onClose={onCloseInPainting}
+          taskId={history?.id ?? ""}
+          token={history?.token ?? ""}
+          userNanoid={props.userNanoid}
+          configSeed={history.seed}
+          configSampler={history.sampler}
+          configScale={history.scale}
+          configSteps={history.steps}
+          configSizeType={history.sizeType}
+          configModel={history.model?.name ?? null}
+          configVae={history.vae}
+        />
+      )}
       <GenerationResultDeleteDialog
         isOpen={isDeleteOpen}
         onClose={onDeleteClose}
