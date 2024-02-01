@@ -4,12 +4,6 @@ import { InPaintingSetting } from "@/app/[lang]/(beta)/generation/_components/in
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
 import { uploadImage } from "@/app/_utils/upload-image"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
@@ -74,11 +68,11 @@ export const getBase64FromImageUrl = (url: string): Promise<string> => {
 }
 
 /**
- * インペイント用のダイアログ
+ * インペイント用のフォーム
  * @param count
  * @returns
  */
-export const InPaintingImageDialog = (props: Props) => {
+export const InPaintingImageForm = (props: Props) => {
   if (
     props.taskId === "" ||
     props.token === "" ||
@@ -183,78 +177,75 @@ export const InPaintingImageDialog = (props: Props) => {
   }
 
   return (
-    <Dialog onOpenChange={props.onClose} open={props.isOpen}>
-      <DialogContent>
-        <DialogHeader />
-        <div className="flex flex-col">
-          <div>
-            <p className="text-lg">{"一部修正"}</p>
-            <p className="text-md">
-              {
-                "画像の修正したい箇所を塗潰して置き換えたい内容のキーワードを入力してください"
-              }
-            </p>
-          </div>
-          <div>
-            <Input
-              onChange={(e) => handlePromptTextChange(e.target.value)}
-              placeholder="修正内容のキーワード（英単語）"
-            />
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <InPaintingSetting
-            onChangeDenoisingStrengthSize={handleDenoisingStrengthSizeChange}
-            onChangeMaskType={handleMaskTypeChange}
-          />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <InPaintingEditImage
-            onLoaded={() => setIsLoading(false)}
-            isLoading={isLoading}
-            onChange={(imageBase64: string) => onChangePaint(imageBase64)}
-            imageUrl={data}
+    <>
+      <div className="flex flex-col">
+        <div>
+          <p className="text-lg">{"一部修正"}</p>
+          <p className="text-md">
+            {
+              "画像の修正したい箇所を塗潰して置き換えたい内容のキーワードを入力してください"
+            }
+          </p>
+        </div>
+        <div>
+          <Input
+            onChange={(e) => handlePromptTextChange(e.target.value)}
+            placeholder="修正内容のキーワード（英単語）"
           />
         </div>
-        <DialogFooter>
-          <Button
-            disabled={isLoading}
-            onClick={async () => {
-              if (props.userNanoid === null) {
-                toast("ログインしてから実行してください")
-                return
-              }
-              if (!props.configModel || !props.configVae) {
-                toast("モデル情報が正しく取得できませんでした")
-                return
-              }
-              const srcImageBase64 = await getBase64FromImageUrl(data)
-              if (srcImageBase64 === "") return
-              props.onClose()
-              await requestInpaintGenerationTask(
-                props.userNanoid,
-                promptText,
-                props.configSteps,
-                srcImageBase64,
-                paintImageBase64,
-                props.configSeed,
-                props.configSampler,
-                props.configScale,
-                props.configSizeType,
-                props.configModel,
-                props.configVae,
-                denoisingStrengthSize,
-                maskType,
-              )
-            }}
-          >
-            {"修正する"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <div className="py-2">
+          <Separator />
+        </div>
+        <InPaintingSetting
+          onChangeDenoisingStrengthSize={handleDenoisingStrengthSizeChange}
+          onChangeMaskType={handleMaskTypeChange}
+        />
+        <div className="py-2">
+          <Separator />
+        </div>
+        <InPaintingEditImage
+          onLoaded={() => setIsLoading(false)}
+          isLoading={isLoading}
+          onChange={(imageBase64: string) => onChangePaint(imageBase64)}
+          imageUrl={data}
+        />
+      </div>
+      <div>
+        <Button
+          disabled={isLoading}
+          onClick={async () => {
+            if (props.userNanoid === null) {
+              toast("ログインしてから実行してください")
+              return
+            }
+            if (!props.configModel || !props.configVae) {
+              toast("モデル情報が正しく取得できませんでした")
+              return
+            }
+            const srcImageBase64 = await getBase64FromImageUrl(data)
+            if (srcImageBase64 === "") return
+            props.onClose()
+            await requestInpaintGenerationTask(
+              props.userNanoid,
+              promptText,
+              props.configSteps,
+              srcImageBase64,
+              paintImageBase64,
+              props.configSeed,
+              props.configSampler,
+              props.configScale,
+              props.configSizeType,
+              props.configModel,
+              props.configVae,
+              denoisingStrengthSize,
+              maskType,
+            )
+          }}
+        >
+          {"修正する"}
+        </Button>
+      </div>
+    </>
   )
 }
 
