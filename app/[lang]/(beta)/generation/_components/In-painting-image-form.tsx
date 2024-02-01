@@ -135,13 +135,9 @@ export const InPaintingImageForm = (props: Props) => {
       )
       if (fileSrcPath === "") return
 
-      // ここでリクエストする
-      console.log(fileMaskPath)
-      console.log(fileSrcPath)
       await createTask({
         variables: {
           input: {
-            // propsから直接プロパティを展開
             count: 1,
             model: props.configModel,
             vae: props.configVae,
