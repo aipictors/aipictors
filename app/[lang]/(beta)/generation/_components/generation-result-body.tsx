@@ -1,13 +1,16 @@
 "use client"
 
+import { InPaintingImageForm } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-form"
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Config } from "@/config"
 import { useState } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   taskId: string
@@ -20,15 +23,16 @@ type Props = {
   configSizeType: string
   configModel: string | null
   configVae: string | null
-  isOpen: boolean
-  onClose(): void
-  onUse(): void
+  configSteps: number
+  userNanoId: string | null
   onChangeRating(value: number): void
-  onOpenInPainting(): void
+  onRestore(): void
 }
 
 export const GenerationResultBody = (props: Props) => {
   const [rating, setRating] = useState(0)
+
+  const [isDialogOpen, setDialogOpen] = useState(false)
 
   return (
     <ScrollArea>
@@ -39,7 +43,7 @@ export const GenerationResultBody = (props: Props) => {
           alt={props.taskId}
           token={props.imageToken}
         />
-        <Button size={"sm"} onClick={props.onUse}>
+        <Button size={"sm"} onClick={props.onRestore}>
           {"この設定を復元する"}
         </Button>
         {Config.isDevelopmentMode && (
@@ -53,9 +57,28 @@ export const GenerationResultBody = (props: Props) => {
               {"DL"}
             </Button>
             <Button size={"sm"}>{"投稿"}</Button>
-            <Button size={"sm"} onClick={props.onOpenInPainting}>
-              {"一部修正"}
-            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size={"sm"}>{"一部修正"}</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <InPaintingImageForm
+                  taskId={props.taskId ?? ""}
+                  token={props.imageToken ?? ""}
+                  userNanoid={props.userNanoId}
+                  configSeed={props.configSeed}
+                  configSampler={props.configSampler}
+                  configScale={props.configScale}
+                  configSteps={props.configSteps}
+                  configSizeType={props.configSizeType}
+                  configModel={props.configModel ?? null}
+                  configVae={props.configVae}
+                  onClose={() => {
+                    setDialogOpen(false)
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
             <Button
               size={"sm"}
               onClick={() => {

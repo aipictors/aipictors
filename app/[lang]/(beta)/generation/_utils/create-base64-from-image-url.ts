@@ -1,4 +1,4 @@
-export function createBase64ImageFromURL(imageURL: string): Promise<string> {
+export function createBase64FromImageURL(imageURL: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.setAttribute("crossOrigin", "anonymous")

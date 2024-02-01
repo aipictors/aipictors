@@ -22,11 +22,7 @@ export function GenerationTasksList() {
       <p>{"画像生成の履歴"}</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
         {data.viewer?.imageGenerationTasks?.map((task) => (
-          <GenerationResultCard
-            taskId={task.id}
-            token={task.token}
-            onClick={() => {}}
-          />
+          <GenerationResultCard taskId={task.id} token={task.token} />
         ))}
       </div>
     </div>

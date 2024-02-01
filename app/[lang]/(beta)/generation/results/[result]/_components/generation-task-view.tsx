@@ -170,7 +170,7 @@ export const postGenerationImage = async (
 export function GenerationTaskView(props: Props) {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
-  const onChangeRating = async (rating: number, taskId: string) => {
+  const onChangeRating = async (taskId: string, rating: number) => {
     try {
       await mutation({
         variables: {
@@ -332,7 +332,7 @@ export function GenerationTaskView(props: Props) {
         value={rating ?? 0}
         onChange={(value) => {
           setRating(value)
-          onChangeRating(value, props.taskId)
+          onChangeRating(props.taskId, value)
         }}
       />
       <div className="py-2">
