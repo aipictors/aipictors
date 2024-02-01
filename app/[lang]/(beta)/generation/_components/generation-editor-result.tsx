@@ -1,11 +1,11 @@
 "use client"
 
-import { InPaintingImageDialog } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-dialog"
+import { InPaintingImageForm } from "@/app/[lang]/(beta)/generation/_components/In-painting-image-form"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { GenerationResultDeleteDialog } from "@/app/[lang]/(beta)/generation/_components/generation-result-delete-dialog"
 import { GenerationResultSheet } from "@/app/[lang]/(beta)/generation/_components/generation-result-sheet"
 import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/results/_components/generation-result-card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Config } from "@/config"
@@ -34,18 +34,6 @@ export const GenerationEditorResult = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const [selectedHistory, selectHistory] = useState<null | string>(null)
-
-  const {
-    value: isDeleteOpen,
-    setTrue: onDeleteOpen,
-    setFalse: onDeleteClose,
-  } = useBoolean()
-
-  const {
-    value: isDlOpen,
-    setTrue: onDlOpen,
-    setFalse: onDlClose,
-  } = useBoolean()
 
   const {
     value: isOpenInPainting,
@@ -85,15 +73,10 @@ export const GenerationEditorResult = (props: Props) => {
             <Button disabled variant={"secondary"}>
               {"解除"}
             </Button>
-            <Button
-              disabled
-              variant={"ghost"}
-              size={"icon"}
-              onClick={onDeleteOpen}
-            >
+            <Button disabled variant={"ghost"} size={"icon"}>
               <Trash2Icon className="w-4" />
             </Button>
-            <Button disabled variant={"ghost"} size={"icon"} onClick={onDlOpen}>
+            <Button disabled variant={"ghost"} size={"icon"}>
               <ArrowDownToLineIcon className="w-4" />
             </Button>
             <Button disabled variant={"ghost"} size={"icon"}>
@@ -145,22 +128,26 @@ export const GenerationEditorResult = (props: Props) => {
           onChangeRating={() => {}}
         />
       )}
-      <InPaintingImageDialog
-        isOpen={isOpenInPainting}
-        onClose={onCloseInPainting}
-        taskId={history?.id ?? ""}
-        token={history?.token ?? ""}
-        userNanoid={props.userNanoid}
-      />
-      <GenerationResultDeleteDialog
-        isOpen={isDeleteOpen}
-        onClose={onDeleteClose}
-      />
-      {/* <GenerationDownloadDialog isOpen={isDlOpen} onClose={onDlClose} /> */}
-      {/* <InPaintingSelectedPromptDialog
-        isOpen={isPromptOpen}
-        onClose={onPromptClose}
-      /> */}
+      {history?.token && (
+        <Dialog onOpenChange={onCloseInPainting} open={isOpenInPainting}>
+          <DialogContent>
+            <InPaintingImageForm
+              isOpen={isOpenInPainting}
+              onClose={onCloseInPainting}
+              taskId={history?.id ?? ""}
+              token={history?.token ?? ""}
+              userNanoid={props.userNanoid}
+              configSeed={history.seed}
+              configSampler={history.sampler}
+              configScale={history.scale}
+              configSteps={history.steps}
+              configSizeType={history.sizeType}
+              configModel={history.model?.name ?? null}
+              configVae={history.vae}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   )
 }
