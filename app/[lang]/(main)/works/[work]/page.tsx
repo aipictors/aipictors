@@ -5,7 +5,7 @@ import WorkPageLoading from "@/app/[lang]/(main)/works/[work]/loading"
 import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
-import type { Metadata } from "next"
+import type { Metadata, ResolvingMetadata } from "next"
 import { Suspense } from "react"
 
 type Props = {
@@ -62,9 +62,37 @@ const WorkPage = async (props: Props) => {
   )
 }
 
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "-",
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const client = createClient()
+
+  const workResp = await client.query({
+    query: workQuery,
+    variables: {
+      id: props.params.work,
+    },
+  })
+
+  if (workResp.data.work === null) return {}
+
+  return {
+    robots: { index: true },
+    title: workResp.data.work.title,
+    description: workResp.data.work.description,
+    openGraph: {
+      type: "website",
+      images: [
+        {
+          url: workResp.data.work.imageURL,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+    },
+  }
 }
 
 export const generateStaticParams = () => {
