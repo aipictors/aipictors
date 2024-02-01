@@ -18,7 +18,7 @@ export const InPaintingSetting = (props: Props) => {
   }
 
   props.onChangeMaskType("1")
-  props.onChangeDenoisingStrengthSize("50")
+  props.onChangeDenoisingStrengthSize("0.5")
 
   return (
     <div className="flex">
@@ -30,7 +30,9 @@ export const InPaintingSetting = (props: Props) => {
             onChange={handleStrengthSizeChange}
             className="color-pink w-32"
             aria-label="slider-ex-2"
-            defaultValue={[50]}
+            max={1}
+            min={0.1}
+            defaultValue={[0.5]}
           />
           <p>{"強"}</p>
         </div>
