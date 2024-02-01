@@ -30,6 +30,22 @@ type Props = {
   configVae: string | null
 }
 
+interface RequestInpaintGenerationTaskProps {
+  userNanoid: string
+  promptText: string
+  configSteps: number
+  paintMaskImageBase64: string
+  paintImageBase64: string
+  configSeed: number
+  configSampler: string
+  configScale: number
+  configSizeType: string
+  configModel: string
+  configVae: string
+  t2tDenoisingStrengthSize: string
+  t2tInpaintingFillSize: string
+}
+
 /**
  * ランダムな文字列を取得
  * @param count
@@ -79,7 +95,7 @@ export const InPaintingImageForm = (props: Props) => {
     !props.configModel ||
     !props.configVae
   )
-    return null
+    throw new Error()
   const { data } = useSuspenseQuery({
     queryKey: [props.taskId],
     queryFn() {
@@ -93,73 +109,57 @@ export const InPaintingImageForm = (props: Props) => {
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
   )
+
   const requestInpaintGenerationTask = async (
-    userNanoid: string,
-    promptText: string,
-    configSteps: number,
-    paintMaskImageBase64: string,
-    paintImageBase64: string,
-    configSeed: number,
-    configSampler: string,
-    configScale: number,
-    configSizeType: string,
-    configModel: string,
-    configVae: string,
-    t2tDenoisingStrengthSize: string,
-    t2tInpaintingFillSize: string,
+    props: RequestInpaintGenerationTaskProps,
   ) => {
-    return new Promise(async (resolve, reject) => {
-      if (!userNanoid) {
-        toast("ログインしてから実行してください")
-        return
-      }
-      const fileMaskName = getRandomStr(30) + "_inpaint_mask_src.png"
-      try {
-        const fileMaskPath = await uploadImage(
-          paintMaskImageBase64,
-          fileMaskName,
-          userNanoid,
-        )
-        if (fileMaskPath != "") {
-          const fileSrcName = getRandomStr(30) + "_img2img_src.png"
-          const fileSrcPath = await uploadImage(
-            paintImageBase64,
-            fileSrcName,
-            userNanoid,
-          )
-          if (fileSrcPath != "") {
-            // ここでリクエストする
-            console.log(fileMaskPath)
-            console.log(fileSrcPath)
-            await createTask({
-              variables: {
-                input: {
-                  count: 1,
-                  model: configModel,
-                  vae: configVae,
-                  prompt: promptText,
-                  negativePrompt: "",
-                  seed: configSeed,
-                  steps: configSteps,
-                  scale: configScale,
-                  sampler: configSampler,
-                  sizeType: configSizeType as ImageGenerationSizeType,
-                  type: "INPAINTING",
-                  t2tImageUrl: fileSrcPath,
-                  t2tMaskImageUrl: fileMaskPath,
-                  t2tDenoisingStrengthSize: t2tDenoisingStrengthSize,
-                  t2tInpaintingFillSize: t2tInpaintingFillSize,
-                },
-              },
-            })
-            toast("生成リクエストしました")
-            return
-          }
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    })
+    if (!props.userNanoid) {
+      toast("ログインしてから実行してください")
+      return
+    }
+
+    const fileMaskName = getRandomStr(30) + "_inpaint_mask_src.png"
+    try {
+      const fileMaskPath = await uploadImage(
+        props.paintMaskImageBase64,
+        fileMaskName,
+        props.userNanoid,
+      )
+      if (fileMaskPath === "") return
+
+      const fileSrcName = getRandomStr(30) + "_img2img_src.png"
+      const fileSrcPath = await uploadImage(
+        props.paintImageBase64,
+        fileSrcName,
+        props.userNanoid,
+      )
+      if (fileSrcPath === "") return
+
+      await createTask({
+        variables: {
+          input: {
+            count: 1,
+            model: props.configModel,
+            vae: props.configVae,
+            prompt: props.promptText,
+            negativePrompt: "",
+            seed: props.configSeed,
+            steps: props.configSteps,
+            scale: props.configScale,
+            sampler: props.configSampler,
+            sizeType: props.configSizeType as ImageGenerationSizeType,
+            type: "INPAINTING",
+            t2tImageUrl: fileSrcPath,
+            t2tMaskImageUrl: fileMaskPath,
+            t2tDenoisingStrengthSize: props.t2tDenoisingStrengthSize,
+            t2tInpaintingFillSize: props.t2tInpaintingFillSize,
+          },
+        },
+      })
+      toast("生成リクエストしました")
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const [isLoading, setIsLoading] = useState(true)
@@ -225,21 +225,21 @@ export const InPaintingImageForm = (props: Props) => {
             const srcImageBase64 = await getBase64FromImageUrl(data)
             if (srcImageBase64 === "") return
             props.onClose()
-            await requestInpaintGenerationTask(
-              props.userNanoid,
-              promptText,
-              props.configSteps,
-              srcImageBase64,
-              paintImageBase64,
-              props.configSeed,
-              props.configSampler,
-              props.configScale,
-              props.configSizeType,
-              props.configModel,
-              props.configVae,
-              denoisingStrengthSize,
-              maskType,
-            )
+            await requestInpaintGenerationTask({
+              userNanoid: props.userNanoid,
+              promptText: promptText,
+              configSteps: props.configSteps,
+              paintMaskImageBase64: srcImageBase64,
+              paintImageBase64: paintImageBase64,
+              configSeed: props.configSeed,
+              configSampler: props.configSampler,
+              configScale: props.configScale,
+              configSizeType: props.configSizeType,
+              configModel: props.configModel,
+              configVae: props.configVae,
+              t2tDenoisingStrengthSize: denoisingStrengthSize,
+              t2tInpaintingFillSize: maskType,
+            })
           }}
         >
           {"修正する"}
