@@ -127,7 +127,7 @@ export const GenerationEditorResult = (props: Props) => {
                         configSampler={task.sampler}
                         configScale={task.scale}
                         configSizeType={task.sizeType}
-                        configModel={task.model!.name}
+                        configModel={task.model ? task.model.name : null}
                         configVae={task.vae}
                         userNanoId={props.userNanoid}
                         onRestore={() => {
