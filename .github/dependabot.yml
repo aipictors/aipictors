@@ -10,7 +10,7 @@ updates:
     target-branch: "main"
     labels:
       - "Dependabot"
-    group:
+    groups:
       production-dependencies:
         dependency-type: production
           patterns:
