@@ -138,17 +138,17 @@ dependencies:
     specifier: ^3.2.0
     version: 3.3.1
   embla-carousel:
-    specifier: 8.0.0-rc21
-    version: 8.0.0-rc21
+    specifier: 8.0.0-rc22
+    version: 8.0.0-rc22
   embla-carousel-autoplay:
-    specifier: 8.0.0-rc21
-    version: 8.0.0-rc21(embla-carousel@8.0.0-rc21)
+    specifier: 8.0.0-rc22
+    version: 8.0.0-rc22(embla-carousel@8.0.0-rc22)
   embla-carousel-react:
     specifier: 8.0.0-rc22
     version: 8.0.0-rc22(react@18.2.0)
   embla-carousel-wheel-gestures:
     specifier: 8.0.0-rc05
-    version: 8.0.0-rc05(embla-carousel@8.0.0-rc21)
+    version: 8.0.0-rc05(embla-carousel@8.0.0-rc22)
   firebase:
     specifier: ^10.7.2
     version: 10.7.2
@@ -9910,12 +9910,12 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     dev: true
 
-  /embla-carousel-autoplay@8.0.0-rc21(embla-carousel@8.0.0-rc21):
-    resolution: {integrity: sha512-o8T3+cpkZyJZfpN1PqxRDOdep/wlLvBQTIr0KUQbtk/y44esiAdZEGCjR/GJDJbl2huMIB/GzxkC7JQYEHZPxQ==}
+  /embla-carousel-autoplay@8.0.0-rc22(embla-carousel@8.0.0-rc22):
+    resolution: {integrity: sha512-UFR9ocKapxuYwcAOv8mb6Rmy7TENpzzHTymKADzB1L5dAJJxjUtOci/OpE3KrZedQaniLMz3HIO9hHqgj1h/3w==}
     peerDependencies:
-      embla-carousel: 8.0.0-rc21
+      embla-carousel: 8.0.0-rc22
     dependencies:
-      embla-carousel: 8.0.0-rc21
+      embla-carousel: 8.0.0-rc22
     dev: false
 
   /embla-carousel-react@8.0.0-rc22(react@18.2.0):
@@ -9936,13 +9936,13 @@ packages:
       embla-carousel: 8.0.0-rc22
     dev: false
 
-  /embla-carousel-wheel-gestures@8.0.0-rc05(embla-carousel@8.0.0-rc21):
+  /embla-carousel-wheel-gestures@8.0.0-rc05(embla-carousel@8.0.0-rc22):
     resolution: {integrity: sha512-KfPlGuOvMterlg01FDd+Iws5wefInkyks4ai3p4n4B5WAiyel+DHs4AFu09UmshcnHpIH5cLJQ6VJCbp/kyy1A==}
     engines: {node: '>=10'}
     peerDependencies:
       embla-carousel: ^8.0.0 || ~8.0.0-rc03
     dependencies:
-      embla-carousel: 8.0.0-rc21
+      embla-carousel: 8.0.0-rc22
       wheel-gestures: 2.2.5
     dev: false
 
