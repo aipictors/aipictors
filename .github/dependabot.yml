@@ -1,14 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-  directory: "/"
-  schedule:
-    interval: "daily"
-    time: "09:00"
-    # Use Japan Standard Time (UTC +09:00)
-    timezone: "Asia/Tokyo"
-  target:
-    branches:
-      - "main"
-  labels:
-    - "Dependabot"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      # Use Japan Standard Time (UTC +09:00)
+      timezone: "Asia/Tokyo"
+    target-branch: "main"
+    labels:
+      - "Dependabot"
