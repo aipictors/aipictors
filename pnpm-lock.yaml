@@ -240,8 +240,8 @@ dependencies:
     specifier: ^5.5.2
     version: 5.5.2
   zenn-content-css:
-    specifier: ^0.1.151
-    version: 0.1.151
+    specifier: ^0.1.152
+    version: 0.1.152
   zenn-markdown-html:
     specifier: ^0.1.151
     version: 0.1.151(@types/markdown-it@13.0.7)
@@ -16524,8 +16524,8 @@ packages:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
     dev: false
 
-  /zenn-content-css@0.1.151:
-    resolution: {integrity: sha512-8GHl1CuXWQpNoMsTCGNc85++lEJi28eoH17Qydu4ThRDT0gO4hQ7vZccHP2yFq4DeFsiMet+vu+oQW4X0sIu6g==}
+  /zenn-content-css@0.1.152:
+    resolution: {integrity: sha512-bE6AsgEwX0Lf9w/xHyFVItj3vZGOMebABZHDIOFcZZj5jLYZV5CFLKbbKRA+ul70VFqepGxXQ7DPZKukhftWcw==}
     dev: false
 
   /zenn-markdown-html@0.1.151(@types/markdown-it@13.0.7):
