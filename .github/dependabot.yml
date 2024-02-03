@@ -10,3 +10,12 @@ updates:
     target-branch: "main"
     labels:
       - "Dependabot"
+    group:
+      production-dependencies:
+        dependency-type: production
+          patterns:
+            - "*"
+      dev-dependencies:
+        dependency-type: development
+          patterns:
+            - "*"
