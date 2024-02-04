@@ -16,7 +16,7 @@ type Props = {
 }
 
 export const SharePopover = (props: Props) => {
-  const currentUrl = `https://www.aipictors.com${usePathname()}`
+  const currentUrl = `https://beta.aipictors.com${usePathname()}`
 
   return (
     <Popover>
