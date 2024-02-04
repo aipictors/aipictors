@@ -85,7 +85,7 @@ export async function generateMetadata(
       type: "website",
       images: [
         {
-          url: workResp.data.work.imageURL,
+          url: workResp.data.work.largeThumbnailImageURL,
         },
       ],
     },
