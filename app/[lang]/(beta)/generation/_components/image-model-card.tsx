@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type Props = {
@@ -10,7 +11,7 @@ type Props = {
 
 export const ImageModelCard = (props: Props) => {
   return (
-    <div className="relative">
+    <Button className="relative focus:outline-none" onClick={props.onSelect}>
       <img
         className={cn(
           "h-auto rounded cursor-pointer transition duration-300",
@@ -20,7 +21,6 @@ export const ImageModelCard = (props: Props) => {
         )}
         src={props.thumbnailImageURL ?? ""}
         alt={props.displayName ?? ""}
-        onClick={props.onSelect}
         style={{ transformOrigin: "center" }}
       />
       <div className="flex flex-col space-y-1">
@@ -33,6 +33,6 @@ export const ImageModelCard = (props: Props) => {
           </span>
         )}
       </div>
-    </div>
+    </Button>
   )
 }

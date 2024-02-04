@@ -11,7 +11,7 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "check": "tsc --noEmit",
-    "refactor": "biome check --apply app lib graphql && biome format --write app lib graphql",
+    "refactor": "biome check --apply ./app ./graphql && biome format ./app ./graphql --write",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "docs": "vitepress dev",

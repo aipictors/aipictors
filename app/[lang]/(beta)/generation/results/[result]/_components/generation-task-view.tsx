@@ -39,32 +39,7 @@ type Props = {
  * @param generationParameters
  */
 export const copyGeneration = (generationParameters: GenerationParameters) => {
-  const text =
-    generationParameters.prompt +
-    "\n" +
-    "Negative prompt:" +
-    generationParameters.negativePrompt +
-    "," +
-    "\n" +
-    "Steps:" +
-    generationParameters.steps +
-    ", " +
-    "Size:" +
-    generationParameters.width +
-    "x" +
-    generationParameters.height +
-    ", " +
-    "Seed:" +
-    generationParameters.seed +
-    ", " +
-    "Model:" +
-    generationParameters.modelName +
-    ", " +
-    "Sampler:" +
-    generationParameters.sampler +
-    ", " +
-    "CFG scale:" +
-    generationParameters.scale
+  const text = `${generationParameters.prompt}\nNegative prompt:${generationParameters.negativePrompt},\nSteps:${generationParameters.steps}, Size:${generationParameters.width}x${generationParameters.height}, Seed:${generationParameters.seed}, Model:${generationParameters.modelName}, Sampler:${generationParameters.sampler}, CFG scale:${generationParameters.scale}`
 
   navigator.clipboard
     .writeText(text)
@@ -83,7 +58,7 @@ export const copyGeneration = (generationParameters: GenerationParameters) => {
  */
 export const saveGenerationImage = (taskId: string) => {
   const imageElement = document.querySelector(
-    ".generation-image-" + taskId,
+    `.generation-image-${taskId}`,
   ) as HTMLImageElement
   console.log(imageElement)
   if (!imageElement) {
@@ -92,7 +67,7 @@ export const saveGenerationImage = (taskId: string) => {
   const imageUrl = imageElement.src
   const link = document.createElement("a")
   link.href = imageUrl
-  link.download = taskId + ".png"
+  link.download = `${taskId}.png`
   link.click()
 }
 
@@ -130,7 +105,7 @@ export const postGenerationImage = async (
   }
 
   const imageElement = document.querySelector(
-    ".generation-image-" + taskId,
+    `.generation-image-${taskId}`,
   ) as HTMLImageElement
   console.log(imageElement)
   if (!imageElement) {
@@ -209,12 +184,11 @@ export function GenerationTaskView(props: Props) {
   const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
 
   const onReference = () => {
-    window.location.href = "/generation/?ref=" + props.taskId
+    window.location.href = `/generation/?ref=${props.taskId}`
   }
 
   const onPost = () => {
-    window.location.href =
-      "https://www.aipictors.com/post?generation=" + props.taskId
+    window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)

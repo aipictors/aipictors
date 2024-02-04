@@ -90,14 +90,14 @@ export const InPaintingImageForm = (props: Props) => {
     try {
       const srcImageBase64 = await createBase64FromImageURL(data)
       if (srcImageBase64 === "") return
-      const srcFileName = createRandomString(30) + "_inpaint_mask_src.png"
+      const srcFileName = `${createRandomString(30)}_inpaint_mask_src.png`
       const srcImageURL = await uploadImage(
         srcImageBase64,
         srcFileName,
         props.userNanoid,
       )
       if (srcImageURL === "") return
-      const maskFileName = createRandomString(30) + "_img2img_src.png"
+      const maskFileName = `${createRandomString(30)}_img2img_src.png`
       const maskImageURL = await uploadImage(
         maskImageBase64,
         maskFileName,

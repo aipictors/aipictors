@@ -6,11 +6,12 @@ on:
       - main
     paths:
       - "app/**/*"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "app/**/*"
+      - "graphql/**/*"
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "app/**/*"
 
 jobs:
   run:

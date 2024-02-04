@@ -1,6 +1,5 @@
 "use client"
 
-import { GenerationResultBody } from "@/app/[lang]/(beta)/generation/_components/generation-result-body"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"

@@ -1,4 +1,3 @@
-import { config } from "@/config"
 import { useEffect, useState } from "react"
 
 export const useNavigation = () => {

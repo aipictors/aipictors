@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { captureException } from "@sentry/nextjs"
 import type { Metadata } from "next"
 import { useEffect } from "react"
@@ -15,10 +16,10 @@ export default function RootGlobalError(props: Props) {
   }, [props.error])
 
   return (
-    <html>
+    <html lang="ja">
       <body>
         <h2>Something went wrong!</h2>
-        <button onClick={() => props.reset()}>Try again</button>
+        <Button onClick={() => props.reset()}>Try again</Button>
       </body>
     </html>
   )

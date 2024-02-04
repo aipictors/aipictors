@@ -23,10 +23,16 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
 const NewImageForm = () => {
+  // 画像の状態を保持するための型
+  type ImageItem = {
+    id: string
+    url: string
+  }
+
   /**
    * 画像の配列を保持する状態
    */
-  const [selectedImages, setSelectedImages] = useState([])
+  const [selectedImages, setSelectedImages] = useState<ImageItem[]>([])
   /**
    * ホバー状態を管理
    */
@@ -241,11 +247,11 @@ const NewImageForm = () => {
                 items={selectedImages}
                 strategy={verticalListSortingStrategy}
               >
-                {selectedImages.map((image, index) => (
+                {selectedImages.map((imageItem) => (
                   <SelectedImageItem
-                    key={`image-${index}`}
-                    image={image}
-                    id={index}
+                    key={imageItem.id}
+                    image={imageItem.url}
+                    id={imageItem.id}
                   />
                 ))}
               </SortableContext>
