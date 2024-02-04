@@ -138,7 +138,7 @@ export const PainterCanvas = (props: Props) => {
   }
 
   useEffect(() => {
-    if (stageRef && stageRef.current && lines.length > 0) {
+    if (stageRef?.current && lines.length > 0) {
       const dataURL = stageRef.current.toDataURL()
       invertImageColors(dataURL).then((invertedBase64: string) => {
         props.onChange(invertedBase64)
@@ -211,6 +211,7 @@ export const PainterCanvas = (props: Props) => {
             <Layer>
               {lines.map((line, i) => (
                 <Line
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                   key={i}
                   points={line.points}
                   stroke={"black"}

@@ -1,5 +1,10 @@
 {
-  "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "ignoreUnknown": true,
     "ignore": [
@@ -12,7 +17,6 @@
     ]
   },
   "linter": {
-    "include": ["**/*.{ts,tsx,json,html,graphql}"],
     "rules": {
       "recommended": true,
       "correctness": {
@@ -30,15 +34,17 @@
     }
   },
   "formatter": {
-    "include": ["**/*.{ts,tsx,json,html,graphql}"],
-    "indentStyle": "space"
-  },
-  "organizeImports": {
-    "enabled": false
+    "indentStyle": "space",
+    "lineEnding": "lf"
   },
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded"
+    }
+  },
+  "json": {
+    "parser": {
+      "allowTrailingCommas": true
     }
   }
 }

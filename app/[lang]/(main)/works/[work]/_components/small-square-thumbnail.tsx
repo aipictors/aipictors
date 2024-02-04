@@ -1,6 +1,8 @@
+import Image from "next/image"
 import Link from "next/link"
 
 type Props = {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   work: any
   isFocus?: boolean
   linkToWork?: boolean
@@ -11,28 +13,30 @@ type Props = {
  */
 export const SmallSquareThumbnail = (props: Props) => {
   if (props.work === null) {
-    return <div className="w-20 h-20 mr-2"></div>
+    return <div className="w-20 h-20 mr-2" />
   }
 
   const image = (
-    <img
-      className="w-20 h-20 object-cover"
-      src={
-        props.work.smallThumbnailImageURL
-          ? props.work.smallThumbnailImageURL
-          : props.work.imageURL
-      }
-    />
-    // <Image
+    // <img
     //   className="w-20 h-20 object-cover"
     //   src={
     //     props.work.smallThumbnailImageURL
     //       ? props.work.smallThumbnailImageURL
     //       : props.work.imageURL
     //   }
-    //   width={props.work.smallThumbnailImageWidth}
-    //   height={props.work.smallThumbnailImageHeight}
+    //   alt=""
     // />
+    <Image
+      className="w-20 h-20 object-cover"
+      src={
+        props.work.smallThumbnailImageURL
+          ? props.work.smallThumbnailImageURL
+          : props.work.imageURL
+      }
+      width={props.work.smallThumbnailImageWidth}
+      height={props.work.smallThumbnailImageHeight}
+      alt=""
+    />
   )
 
   return (

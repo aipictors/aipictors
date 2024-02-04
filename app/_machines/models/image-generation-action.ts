@@ -164,15 +164,15 @@ export class ImageGenerationAction {
           return { modelId, value: 0 }
         },
       ),
-      modelId: this.restoreModelId(),
-      promptText: this.restorePrompt(),
-      negativePromptText: this.restoreNegativePrompt(),
-      sampler: this.restoreSampler(),
-      scale: this.restoreScale(),
-      seed: this.restoreSeed(),
-      sizeType: this.restoreSizeType(),
-      steps: this.restoreSteps(),
-      vae: this.restoreVae(),
+      modelId: ImageGenerationAction.restoreModelId(),
+      promptText: ImageGenerationAction.restorePrompt(),
+      negativePromptText: ImageGenerationAction.restoreNegativePrompt(),
+      sampler: ImageGenerationAction.restoreSampler(),
+      scale: ImageGenerationAction.restoreScale(),
+      seed: ImageGenerationAction.restoreSeed(),
+      sizeType: ImageGenerationAction.restoreSizeType(),
+      steps: ImageGenerationAction.restoreSteps(),
+      vae: ImageGenerationAction.restoreVae(),
     })
   }
 

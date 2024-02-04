@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { useState } from "react"
-import { useBoolean } from "usehooks-ts"
 
 type Props = {
   taskId: string
