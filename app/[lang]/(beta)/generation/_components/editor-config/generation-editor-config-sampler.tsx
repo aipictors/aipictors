@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
@@ -45,7 +45,7 @@ export const GenerationEditorConfigSampler = (props: Props) => {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {Config.generation.samplerValues.map((sampler) => (
+          {config.generationFeature.samplerValues.map((sampler) => (
             <SelectItem key={sampler} value={sampler}>
               {sampler}
             </SelectItem>

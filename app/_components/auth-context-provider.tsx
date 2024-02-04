@@ -1,7 +1,7 @@
 "use client"
 
 import { AuthContext } from "@/app/_contexts/auth-context"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { setUser } from "@sentry/nextjs"
 import {
   getAnalytics,
@@ -47,7 +47,7 @@ export const AuthContextProvider = (props: Props) => {
   }
 
   useEffect(() => {
-    if (Config.isNotClient) return
+    if (typeof window === "undefined") return
     onAuthStateChanged(getAuth(), (user) => {
       setUserId(getAnalytics(), user?.uid ?? null)
       if (user === null) {
@@ -56,7 +56,7 @@ export const AuthContextProvider = (props: Props) => {
         setLoadingState(false)
         return
       }
-      logEvent(getAnalytics(), Config.logEvent.login, {
+      logEvent(getAnalytics(), config.logEvent.login, {
         method: user.providerId,
       })
       getIdTokenResult(user, true).then((result) => {

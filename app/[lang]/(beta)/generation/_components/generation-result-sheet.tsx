@@ -2,7 +2,7 @@
 
 import { GenerationResultBody } from "@/app/[lang]/(beta)/generation/_components/generation-result-body"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -24,7 +24,7 @@ type Props = {
 }
 
 export const GenerationResultSheet = (props: Props) => {
-  const isDesktop = useMediaQuery(Config.mediaQuery.isDesktop)
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   if (isDesktop) {
     // コンポーネントを切り替える

@@ -1,6 +1,6 @@
 "use client"
 
-import { Config } from "@/config"
+import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
 import React, { useEffect } from "react"
@@ -36,7 +36,7 @@ export const GoogleAdsense = (props: Props) => {
           display: "block",
         }}
         data-adtest={process.env.NODE_ENV === "production" ? "off" : "on"}
-        data-ad-client={Config.googleAdsenseClient}
+        data-ad-client={config.googleAdsense.client}
         data-ad-slot={props.slot}
         data-ad-format={props.format}
         data-full-width-responsive={props.responsive ?? false}

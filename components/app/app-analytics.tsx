@@ -1,5 +1,5 @@
 "use client"
-import { Config } from "@/config"
+
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"
@@ -11,8 +11,8 @@ export const AppAnalytics = () => {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (Config.isNotClient) return
-    if (Config.isDevelopmentMode) return
+    if (typeof window === "undefined") return
+    if (process.env.NODE_ENV === "development") return
     if (getApps().length === 0) return
     logEvent(getAnalytics(), "page_view", {
       page_path: pathname,

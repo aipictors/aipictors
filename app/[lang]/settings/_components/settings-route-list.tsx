@@ -1,7 +1,7 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { Config } from "@/config"
+import { config } from "@/config"
 import {
   BellIcon,
   BookmarkXIcon,
@@ -15,14 +15,14 @@ export const SettingsRouteList = () => {
   return (
     <div className="space-y-1">
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/settings/notification"}
         icon={BellIcon}
       >
         {"通知・いいね"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/settings/restriction"}
         icon={ImageIcon}
       >
@@ -35,14 +35,14 @@ export const SettingsRouteList = () => {
         {"タグミュート"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/settings/request"}
         icon={MedalIcon}
       >
         {"支援リクエスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/settings/interface"}
         icon={SettingsIcon}
       >

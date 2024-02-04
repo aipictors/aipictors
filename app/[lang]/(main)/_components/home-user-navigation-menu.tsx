@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Config } from "@/config"
+import { config } from "@/config"
 import {
   GemIcon,
   LogIn,
@@ -93,7 +93,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
               icon={<UserCogIcon className="w-4 inline-block mr-2" />}
               label="アカウント"
             />
-            {Config.isDevelopmentMode && (
+            {config.isDevelopmentMode && (
               <MenuItemLink
                 href="/settings/notification"
                 icon={<SettingsIcon className="w-4 inline-block mr-2" />}

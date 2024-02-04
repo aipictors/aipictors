@@ -3,7 +3,7 @@ import "@/app/globals.css"
 import { ContextProviders } from "@/app/_components/context-providers"
 import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
 import Script from "next/script"
@@ -48,19 +48,19 @@ const RootLayout = (props: Props) => {
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.aipictors.com/"),
   title: {
-    template: Config.siteTitleTemplateJA,
-    default: Config.siteTitleJA,
+    template: config.metadata.titleTemplateJA,
+    default: config.metadata.titleJA,
   },
-  description: Config.siteDescriptionJA,
+  description: config.metadata.descriptionJA,
   openGraph: {
     type: "website",
-    siteName: Config.siteTitleJA,
+    siteName: config.metadata.titleJA,
   },
   twitter: {
     card: "summary_large_image",
     creator: "@aipictors",
-    title: Config.siteNameJA,
-    description: Config.siteDescriptionJA,
+    title: config.metadata.nameJA,
+    description: config.metadata.descriptionJA,
   },
 }
 

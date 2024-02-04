@@ -1,4 +1,4 @@
-import { Config } from "@/config"
+import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 
 /**
@@ -21,7 +21,7 @@ export const uploadImage = async (
   formData.append("nanoid", nanoid)
 
   try {
-    const endpoint = Config.wordpressUploadPrivateImageEndpoint
+    const endpoint = config.wordpressEndpoint.uploadPrivateImage
 
     const response = await fetch(endpoint, {
       method: "POST",

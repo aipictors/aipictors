@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -46,7 +46,7 @@ export const GenerationResultBody = (props: Props) => {
         <Button size={"sm"} onClick={props.onRestore}>
           {"この設定を復元する"}
         </Button>
-        {Config.isDevelopmentMode && (
+        {config.isDevelopmentMode && (
           <div className="flex gap-x-2">
             <Button
               size={"sm"}

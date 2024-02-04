@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { useMutation } from "@apollo/client"
@@ -82,7 +82,7 @@ export const GenerationEditorResult = (props: Props) => {
           </Button>
         }
       >
-        {Config.isDevelopmentMode && (
+        {config.isDevelopmentMode && (
           <div className="flex px-2 pb-2 space-x-2">
             <Button disabled variant={"secondary"}>
               {"解除"}

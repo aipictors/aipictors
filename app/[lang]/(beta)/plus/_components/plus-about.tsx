@@ -1,5 +1,5 @@
 import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { PassType } from "@/graphql/__generated__/graphql"
 import { createPassCheckoutSessionMutation } from "@/graphql/mutations/create-pass-checkout-session"
 import { useMutation } from "@apollo/client"
@@ -13,7 +13,7 @@ export const PlusAbout = () => {
 
   const onSelect = async (passType: PassType) => {
     try {
-      logEvent(getAnalytics(), Config.logEvent.select_item, {
+      logEvent(getAnalytics(), config.logEvent.select_item, {
         item_list_id: passType,
         items: [{ item_id: passType, item_name: passType }],
       })

@@ -4,7 +4,7 @@ import type { EventUser } from "@/app/[lang]/events/_types/event-user"
 import { EventUserTag } from "@/app/[lang]/events/wakiaiai/_components/event-user-tag"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { ExternalLinkIcon, MousePointerClickIcon } from "lucide-react"
 import { TbBrandXFilled } from "react-icons/tb"
@@ -31,7 +31,7 @@ export const EventCreatorCard = (props: Props) => {
                   : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
             }
             onClick={() => {
-              logEvent(getAnalytics(), Config.logEvent.select_item, {
+              logEvent(getAnalytics(), config.logEvent.select_item, {
                 item_list_id: props.user.twitterId ?? "-",
                 item_list_name: props.user.name,
               })

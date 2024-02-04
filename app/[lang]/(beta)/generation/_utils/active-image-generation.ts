@@ -1,4 +1,4 @@
-import { Config } from "@/config"
+import { config } from "@/config"
 
 type Props = {
   nanoid: string
@@ -9,7 +9,7 @@ export async function activeImageGeneration(props: Props) {
 
   formData.append("id", props.nanoid)
 
-  const response = await fetch(Config.wordpressWWW4Endpoint, {
+  const response = await fetch(config.wordpressEndpoint.www4, {
     method: "POST",
     body: formData,
   })

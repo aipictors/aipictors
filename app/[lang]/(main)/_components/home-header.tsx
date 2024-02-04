@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { BellIcon, FolderIcon, MenuIcon, SearchIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -71,7 +71,7 @@ export const HomeHeader = (props: Props) => {
           >
             <SearchIcon className="w-4" />
           </Button>
-          {Config.isReleaseMode ? (
+          {config.isReleaseMode ? (
             <Button variant={"secondary"} disabled>
               {"生成"}
             </Button>
@@ -80,7 +80,7 @@ export const HomeHeader = (props: Props) => {
               <Button variant={"secondary"}>{"生成"}</Button>
             </Link>
           )}
-          {Config.isReleaseMode ? (
+          {config.isReleaseMode ? (
             <Button variant={"secondary"} disabled>
               {"投稿"}
             </Button>
@@ -89,7 +89,7 @@ export const HomeHeader = (props: Props) => {
               <Button variant={"secondary"}>{"投稿"}</Button>
             </Link>
           )}
-          {Config.isReleaseMode ? (
+          {config.isReleaseMode ? (
             <Button variant={"secondary"} disabled size={"icon"}>
               <FolderIcon className="w-4" />
             </Button>
@@ -100,7 +100,7 @@ export const HomeHeader = (props: Props) => {
               </Button>
             </Link>
           )}
-          {Config.isDevelopmentMode && (
+          {config.isDevelopmentMode && (
             <Button
               variant={"secondary"}
               disabled

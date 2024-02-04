@@ -8,7 +8,7 @@ import { uploadImage } from "@/app/_utils/upload-image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { useMutation } from "@apollo/client"
@@ -49,7 +49,7 @@ export const InPaintingImageForm = (props: Props) => {
   const { data } = useSuspenseQuery({
     queryKey: [props.taskId],
     queryFn() {
-      return fetchImage(Config.wordpressPrivateImageEndpoint, props.token)
+      return fetchImage(config.wordpressEndpoint.privateImage, props.token)
     },
   })
 

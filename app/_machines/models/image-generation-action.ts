@@ -1,5 +1,5 @@
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 import { produce } from "immer"
 
@@ -159,9 +159,11 @@ export class ImageGenerationAction {
   static restore(props: { passType: string | null }) {
     return new ImageGenerationConfig({
       passType: props.passType,
-      loraConfigs: Config.defaultImageLoraModelIds.map((modelId) => {
-        return { modelId, value: 0 }
-      }),
+      loraConfigs: config.generationFeature.defaultImageLoraModelIds.map(
+        (modelId) => {
+          return { modelId, value: 0 }
+        },
+      ),
       modelId: this.restoreModelId(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(),
@@ -175,12 +177,12 @@ export class ImageGenerationAction {
   }
 
   static restoreLoraModelIds() {
-    const defaultValue = Config.defaultImageLoraModelIds
+    const defaultValue = config.generationFeature.defaultImageLoraModelIds
     return defaultValue
   }
 
   static restoreModelId() {
-    const defaultValue = Config.defaultImageModelId
+    const defaultValue = config.generationFeature.defaultImageModelId
     try {
       const value = localStorage.getItem("config.generation.model")
       return value ?? defaultValue
@@ -219,7 +221,7 @@ export class ImageGenerationAction {
   }
 
   static restoreSampler() {
-    const defaultValue = Config.generation.defaultSamplerValue
+    const defaultValue = config.generationFeature.defaultSamplerValue
     try {
       const value = localStorage.getItem("config.generation.sampler")
       return value ?? defaultValue
@@ -232,7 +234,7 @@ export class ImageGenerationAction {
   }
 
   static restoreSteps() {
-    const defaultValue = Config.generation.defaultStepsValue
+    const defaultValue = config.generationFeature.defaultStepsValue
     try {
       const value = localStorage.getItem("config.generation.steps")
       if (value === null) {
@@ -248,7 +250,7 @@ export class ImageGenerationAction {
   }
 
   static restoreScale() {
-    const defaultValue = Config.generation.defaultScaleValue
+    const defaultValue = config.generationFeature.defaultScaleValue
     try {
       const value = localStorage.getItem("config.generation.scale")
       if (value === null) {
@@ -264,7 +266,7 @@ export class ImageGenerationAction {
   }
 
   static restoreVae() {
-    const defaultValue = Config.generation.defaultVaeValue
+    const defaultValue = config.generationFeature.defaultVaeValue
     try {
       const value = localStorage.getItem("config.generation.vae")
       return value ?? defaultValue

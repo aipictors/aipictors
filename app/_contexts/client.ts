@@ -1,12 +1,12 @@
 import { typePolicies } from "@/app/_contexts/type-policies"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
 
 const httpLink = createHttpLink({
-  uri: Config.graphqlEndpoint,
+  uri: config.graphql.endpoint,
 })
 
 const contextSetter: ContextSetter = async (_, context) => {

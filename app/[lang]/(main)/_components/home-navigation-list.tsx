@@ -3,7 +3,7 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
-import { Config } from "@/config"
+import { config } from "@/config"
 import {
   AlertTriangleIcon,
   AwardIcon,
@@ -45,7 +45,7 @@ export const HomeNavigationList = (props: Props) => {
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/themes"}
         icon={LightbulbIcon}
       >
@@ -55,7 +55,7 @@ export const HomeNavigationList = (props: Props) => {
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/awards"}
         icon={AwardIcon}
       >
@@ -68,14 +68,14 @@ export const HomeNavigationList = (props: Props) => {
         {"画像生成"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/series"}
         icon={LibraryBigIcon}
       >
         {"シリーズ"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={Config.isReleaseMode}
+        isDisabled={config.isReleaseMode}
         href={"/collections"}
         icon={FolderIcon}
       >

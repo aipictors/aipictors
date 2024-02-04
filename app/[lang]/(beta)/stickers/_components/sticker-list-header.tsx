@@ -2,7 +2,7 @@
 
 import { AddStickerModal } from "@/app/[lang]/(beta)/stickers/_components/add-sticker-modal"
 import { Button } from "@/components/ui/button"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { PlusIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
@@ -19,7 +19,7 @@ export const StickerListHeader = () => {
           }
         </p>
       </section>
-      {Config.isDevelopmentMode && (
+      {config.isDevelopmentMode && (
         <section className="flex items-center space-x-4">
           <Button aria-label="previous month" onClick={onOpen}>
             <span>自分で作ったスタンプを公開する</span>

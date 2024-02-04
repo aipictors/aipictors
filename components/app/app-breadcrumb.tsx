@@ -1,4 +1,4 @@
-import { Config } from "@/config"
+import { config } from "@/config"
 import Link from "next/link"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
@@ -20,9 +20,9 @@ export const AppBreadcrumb = (props: Props) => {
           <>
             <Link
               href={
-                item.item === Config.siteURL
+                item.item === config.siteURL
                   ? "/"
-                  : item.item.replace(Config.siteURL, "")
+                  : item.item.replace(config.siteURL, "")
               }
               className="hover:underline"
             >

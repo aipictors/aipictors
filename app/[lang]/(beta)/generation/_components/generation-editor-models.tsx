@@ -5,7 +5,7 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { GenerationModelsDialog } from "@/app/[lang]/(beta)/generation/_components/generation-models-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Config } from "@/config"
+import { config } from "@/config"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { produce } from "immer"
 import { useState } from "react"
@@ -24,10 +24,17 @@ export const GenerationEditorModels = (props: Props) => {
    * 表示されるモデルのID
    */
   const [currentModelIds, setCurrentModelIds] = useState(() => {
-    if (Config.defaultImageModelIds.includes(props.currentModelId)) {
-      return Config.defaultImageModelIds
+    if (
+      config.generationFeature.defaultImageModelIds.includes(
+        props.currentModelId,
+      )
+    ) {
+      return config.generationFeature.defaultImageModelIds
     }
-    return [props.currentModelId, ...Config.defaultImageModelIds]
+    return [
+      props.currentModelId,
+      ...config.generationFeature.defaultImageModelIds,
+    ]
   })
 
   const currentModels = currentModelIds.map((modelId) => {

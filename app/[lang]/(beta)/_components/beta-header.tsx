@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/app/app-header"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { BellIcon, MenuIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -54,7 +54,7 @@ export const BetaHeader = (props: Props) => {
         </div>
       </div>
       <div className="flex gap-x-4">
-        {Config.isDevelopmentMode && (
+        {config.isDevelopmentMode && (
           <Button
             variant={"secondary"}
             disabled

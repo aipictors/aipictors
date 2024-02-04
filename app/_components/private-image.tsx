@@ -1,5 +1,5 @@
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
-import { Config } from "@/config"
+import { config } from "@/config"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { memo } from "react"
 
@@ -14,7 +14,7 @@ const Component = (props: Props) => {
   const { data } = useSuspenseQuery({
     queryKey: [props.taskId],
     queryFn() {
-      return fetchImage(Config.wordpressPrivateImageEndpoint, props.token)
+      return fetchImage(config.wordpressEndpoint.privateImage, props.token)
     },
   })
 
