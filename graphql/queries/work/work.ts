@@ -7,6 +7,7 @@ export const workQuery = gql(`
       title
       description
       imageURL
+      largeThumbnailImageURL
       user {
         promptonUser {
           id
