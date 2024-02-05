@@ -1,45 +1,51 @@
 "use client"
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
+import { WorkImageThumbnailCarousel } from "@/app/[lang]/(main)/works/[work]/_components/work-image-thumbnail-carousel"
+import React, { useState } from "react"
+
 type Props = {
   workImageURL?: string
   subWorkImageURLs: string[]
 }
 
 export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
-  // 全ての画像URLを1つの配列に
   const allImageURLs = workImageURL
     ? [workImageURL, ...subWorkImageURLs]
     : subWorkImageURLs
-
-  // カルーセルを表示する条件
   const shouldRenderCarousel = allImageURLs.length > 1
+
+  const [selectedImage, setSelectedImage] = useState<string>(allImageURLs[0])
+
+  // 画像選択関数
+  const handleSelectImage = (imageURL: string) => {
+    setSelectedImage(imageURL)
+  }
+
+  // キーボードイベントハンドラー
+  const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleSelectImage(imageURL)
+    }
+  }
 
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
-      <Carousel opts={{ dragFree: true }}>
-        <CarouselContent>
-          {allImageURLs.map((imageURL, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <CarouselItem key={index} className="lg:basis-1/2 xl:basis-1/3">
-              <img
-                className="w-auto h-auto xl:h-screen object-contain rounded"
-                alt=""
-                src={imageURL}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+      <div>
+        <img
+          className="bg-card w-auto h-full xl:h-screen object-contain rounded"
+          alt="Selected work"
+          src={selectedImage}
+        />
+        <WorkImageThumbnailCarousel
+          allImageURLs={allImageURLs}
+          selectedImage={selectedImage}
+          onSelectImage={handleSelectImage}
+        />
+      </div>
     )
   }
 
-  // 単一画像のレンダリング
   if (workImageURL) {
     return (
       <img
@@ -50,6 +56,5 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
     )
   }
 
-  // 画像がない場合は何も表示しない
   return null
 }
