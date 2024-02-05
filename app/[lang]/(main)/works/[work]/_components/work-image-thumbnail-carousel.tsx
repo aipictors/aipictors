@@ -20,7 +20,8 @@ export const WorkImageThumbnailCarousel: React.FC<
   const getBasisClassName = (totalImages: number): string => {
     const basisXlValue = totalImages
     const basisLgValue = totalImages - 1 // 画像の枚数から2を引く
-    return `lg:basis-1/${basisLgValue} xl:basis-1/${basisXlValue}` // Tailwind CSSのbasisクラス名を生成
+    const basisMdValue = totalImages - 2
+    return `w-64 h-32 basis-1/${basisXlValue} md:basis-1/${basisXlValue} lg:basis-1/${basisXlValue} xl:basis-1/${basisXlValue}` // Tailwind CSSのbasisクラス名を生成
   }
 
   // キーボードイベントハンドラー
