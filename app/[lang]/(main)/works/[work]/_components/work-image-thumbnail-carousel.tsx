@@ -16,22 +16,12 @@ type WorkImageThumbnailCarouselProps = {
 export const WorkImageThumbnailCarousel: React.FC<
   WorkImageThumbnailCarouselProps
 > = ({ allImageURLs, selectedImage, onSelectImage }) => {
-  // 画像の枚数からbasisの分母を計算する関数
-  const getBasisClassName = (totalImages: number): string => {
-    const basisXlValue = totalImages
-    const basisLgValue = totalImages - 1 // 画像の枚数から2を引く
-    return `lg:basis-1/${basisLgValue} xl:basis-1/${basisXlValue}` // Tailwind CSSのbasisクラス名を生成
-  }
-
   // キーボードイベントハンドラー
   const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       onSelectImage(imageURL)
     }
   }
-
-  // 画像の枚数に基づいてbasisクラス名を取得
-  const basisClassName = getBasisClassName(allImageURLs.length)
 
   return (
     <Carousel opts={{ dragFree: true }}>
@@ -47,7 +37,7 @@ export const WorkImageThumbnailCarousel: React.FC<
             <CarouselItem
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
-              className={`${basisClassName} ${
+              className={`w-64 h-32 basis-1/4 ${
                 isSelected ? "selected-style" : ""
               }`}
             >
