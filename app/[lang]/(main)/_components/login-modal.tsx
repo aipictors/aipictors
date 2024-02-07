@@ -1,32 +1,45 @@
 "use client"
 
-import { LoginWithGoogle } from "@/app/[lang]/(main)/_components/login-with-google"
-import { LoginWithX } from "@/app/[lang]/(main)/_components/login-with-x"
+import { LoginWithProvider } from "@/app/[lang]/(main)/_components/login-with-provider"
 import { LoginForm } from "@/app/_components/login-form"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import type { FormLogin } from "@/app/_types/form-login"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
 import { useMutation } from "@apollo/client"
-import { getAuth, signInWithCustomToken } from "firebase/auth"
+import {
+  GoogleAuthProvider,
+  TwitterAuthProvider,
+  getAuth,
+  signInWithCustomToken,
+} from "firebase/auth"
 import Link from "next/link"
+import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 
-type Props = {
-  isOpen: boolean
-  onClose(): void
-}
+export const LoginModal = () => {
+  const [dialogOpen, setDialogOpen] = useState(true)
+  const authContext = useContext(AuthContext)
 
-export const LoginModal = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
+
+  useEffect(() => {
+    // isLoggedInがtrueの場合、ダイアログを閉じる
+    if (authContext.isLoggedIn) {
+      setDialogOpen(false)
+    }
+  }, [authContext.isLoggedIn])
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -45,7 +58,7 @@ export const LoginModal = (props: Props) => {
       }
       await signInWithCustomToken(getAuth(), token)
       toast("ログインしました。")
-      props.onClose()
+      setDialogOpen(false)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -54,14 +67,27 @@ export const LoginModal = (props: Props) => {
   }
 
   return (
-    <Dialog open={props.isOpen} onOpenChange={() => props.onClose()}>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger asChild>
+        <Avatar>
+          <AvatarFallback />
+        </Avatar>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
         </DialogHeader>
 
-        <LoginWithGoogle onClose={props.onClose} disabled={isLoading} />
-        <LoginWithX onClose={props.onClose} disabled={isLoading} />
+        <LoginWithProvider
+          disabled={isLoading}
+          provider={new GoogleAuthProvider()}
+          buttonText="Googleでログイン"
+        />
+        <LoginWithProvider
+          disabled={isLoading}
+          provider={new TwitterAuthProvider()}
+          buttonText="Twitterでログイン"
+        />
 
         <Separator />
 
@@ -73,7 +99,9 @@ export const LoginModal = (props: Props) => {
         <Separator />
 
         <div className={"flex flex-col w-full gap-y-2"}>
-          <p className="text-sm">{"アカウントをお持ちで無い方はこちら"}</p>
+          <span className="text-sm">
+            {"アカウントをお持ちで無い方はこちら"}
+          </span>
           <Link
             className="w-full"
             target="_blank"

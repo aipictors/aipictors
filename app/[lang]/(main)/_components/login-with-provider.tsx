@@ -3,21 +3,25 @@
 import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
-import { TwitterAuthProvider, getAuth, signInWithPopup } from "firebase/auth"
+import { AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 import { toast } from "sonner"
 
 type Props = {
-  onClose(): void
   disabled: boolean
+  provider: AuthProvider
+  buttonText: string
 }
 
-export const LoginWithX = ({ onClose, disabled }: Props) => {
-  const onLoginWithX = async () => {
+export const LoginWithProvider = ({
+  disabled,
+  provider,
+  buttonText,
+}: Props) => {
+  const onLogin = async () => {
     if (disabled) return
 
     try {
-      await signInWithPopup(getAuth(), new TwitterAuthProvider())
-      onClose()
+      await signInWithPopup(getAuth(), provider)
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
@@ -27,9 +31,9 @@ export const LoginWithX = ({ onClose, disabled }: Props) => {
   }
 
   return (
-    <Button className="w-full" onClick={onLoginWithX} disabled={disabled}>
+    <Button className="w-full" onClick={onLogin} disabled={disabled}>
       {disabled && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-      {"Xでログイン"}
+      {buttonText}
     </Button>
   )
 }

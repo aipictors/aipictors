@@ -37,7 +37,7 @@ const SensitiveLayout = (props: Props) => {
       </div>
       <Separator />
       <HomeFooter />
-      <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <LoginModal />
       <LogoutModal
         isOpen={isOpenLogout}
         onClose={onCloseLogout}

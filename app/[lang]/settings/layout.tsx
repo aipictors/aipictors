@@ -50,7 +50,7 @@ const SettingsLayout = (props: Props) => {
         </AppAside>
         {props.children}
       </AppColumnLayout>
-      <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <LoginModal />
       <LogoutModal
         isOpen={isOpenLogout}
         onClose={onCloseLogout}
