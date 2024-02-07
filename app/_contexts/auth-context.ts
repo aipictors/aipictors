@@ -40,7 +40,7 @@ type Value =
       userId: string
       login: string
       displayName: string
-      avatarPhotoURL: string | null
+      avatarPhotoURL: string
       refresh(): Promise<void>
     }
 
