@@ -7,13 +7,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { DrawerClose, DrawerFooter } from "@/components/ui/drawer"
 
 type Props = {
   termsMarkdownText: string
-  isDisabled?: boolean
   children: React.ReactNode
   onSubmit(): void
 }
@@ -24,13 +22,9 @@ type Props = {
  * @returns
  */
 export const GenerationTermsDialog = (props: Props) => {
-  if (props.isDisabled) {
-    return props.children
-  }
-
   return (
     <Dialog>
-      <DialogTrigger asChild>{props.children}</DialogTrigger>
+      {props.children}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"規約確認"}</DialogTitle>
