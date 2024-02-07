@@ -22,8 +22,7 @@
     "xstate"
   ],
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.organizeImports.biome": "always"
   },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,

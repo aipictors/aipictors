@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,23 +24,16 @@ import {
   signInWithCustomToken,
 } from "firebase/auth"
 import Link from "next/link"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
+import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
 
 export const LoginModal = () => {
-  const [dialogOpen, setDialogOpen] = useState(true)
   const authContext = useContext(AuthContext)
 
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
-
-  useEffect(() => {
-    // isLoggedInがtrueの場合、ダイアログを閉じる
-    if (authContext.isLoggedIn) {
-      setDialogOpen(false)
-    }
-  }, [authContext.isLoggedIn])
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -58,7 +52,6 @@ export const LoginModal = () => {
       }
       await signInWithCustomToken(getAuth(), token)
       toast("ログインしました。")
-      setDialogOpen(false)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -67,32 +60,41 @@ export const LoginModal = () => {
   }
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Avatar>
+        <Avatar className="cursor-pointer">
           <AvatarFallback />
         </Avatar>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
+          <DialogDescription>ログインする</DialogDescription>
         </DialogHeader>
 
-        <LoginWithProvider
-          disabled={isLoading}
-          provider={new GoogleAuthProvider()}
-          buttonText="Googleでログイン"
-        />
-        <LoginWithProvider
-          disabled={isLoading}
-          provider={new TwitterAuthProvider()}
-          buttonText="Twitterでログイン"
-        />
+        <div className="my-2 space-y-2">
+          <p className="text-sm">{"SNSアカウントでログイン"}</p>
+          <div className="flex flex-row justify-center">
+            <LoginWithProvider
+              disabled={isLoading}
+              provider={new GoogleAuthProvider()}
+              buttonText="Googleでログイン"
+              icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
+            />
+
+            <LoginWithProvider
+              disabled={isLoading}
+              provider={new TwitterAuthProvider()}
+              buttonText="𝕏(Twitter)でログイン"
+              icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
+            />
+          </div>
+        </div>
 
         <Separator />
 
-        <div className="w-full space-y-2">
-          <p className="text-sm">{"またはパスワードでログイン"}</p>
+        <div className="w-full my-2 space-y-2">
+          <p className="text-sm">{"またはアカウント情報でログイン"}</p>
           <LoginForm onSubmit={onLogin} isLoading={isLoading} />
         </div>
 
@@ -107,7 +109,6 @@ export const LoginModal = () => {
             target="_blank"
             href={"https://www.aipictors.com/login/"}
           >
-            {/* ここでも isLoading がtrueのときdisabled */}
             <Button
               className="w-full"
               variant={"secondary"}
