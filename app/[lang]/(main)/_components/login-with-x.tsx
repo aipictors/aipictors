@@ -29,7 +29,7 @@ export const LoginWithX = ({ onClose, disabled }: Props) => {
   return (
     <Button className="w-full" onClick={onLoginWithX} disabled={disabled}>
       {disabled && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-      {"Xでログイン"}
+      {"これはテストです"}
     </Button>
   )
 }
