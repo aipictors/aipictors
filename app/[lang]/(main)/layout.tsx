@@ -36,7 +36,7 @@ const MainLayout = (props: Props) => {
         {props.children}
       </AppColumnLayout>
       <HomeFooter />
-      <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
+      <LoginModal />
       <LogoutModal
         isOpen={isOpenLogout}
         onClose={onCloseLogout}
