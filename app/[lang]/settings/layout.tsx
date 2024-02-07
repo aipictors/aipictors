@@ -1,8 +1,7 @@
 "use client"
 
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { LoginModal } from "@/app/[lang]/(main)/_components/login-modal"
-import { LogoutModal } from "@/app/[lang]/(main)/_components/logout-modal"
+import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppAside } from "@/components/app/app-aside"
@@ -15,47 +14,25 @@ type Props = {
 }
 
 const SettingsLayout = (props: Props) => {
-  const appContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext)
 
-  const {
-    value: isOpenLogin,
-    setTrue: onOpenLogin,
-    setFalse: onCloseLogin,
-  } = useBoolean()
-
-  const {
-    value: isOpenLogout,
-    setTrue: onOpenLogout,
-    setFalse: onCloseLogout,
-  } = useBoolean()
-
-  if (appContext.isLoading) {
+  if (authContext.isLoading) {
     return null
   }
 
-  if (appContext.isNotLoggedIn) {
+  if (authContext.isNotLoggedIn) {
     return null
   }
 
   return (
     <>
-      <BetaHeader
-        title={"設定"}
-        onLogin={onOpenLogin}
-        onLogout={onOpenLogout}
-      />
+      <BetaHeader title={"設定"} />
       <AppColumnLayout>
         <AppAside>
           <SettingsRouteList />
         </AppAside>
         {props.children}
       </AppColumnLayout>
-      <LoginModal />
-      <LogoutModal
-        isOpen={isOpenLogout}
-        onClose={onCloseLogout}
-        onOpen={onOpenLogout}
-      />
     </>
   )
 }

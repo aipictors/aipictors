@@ -2,8 +2,13 @@
 
 import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
+import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
+import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
+import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppHeader } from "@/components/app/app-header"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -11,15 +16,19 @@ import { config } from "@/config"
 import { BellIcon, FolderIcon, MenuIcon, SearchIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 import { toast } from "sonner"
+import { useBoolean } from "usehooks-ts"
 
-type Props = {
-  onLogin(): void
-  onLogout(): void
-}
+export const HomeHeader = () => {
+  const authContext = useContext(AuthContext)
 
-export const HomeHeader = (props: Props) => {
+  const {
+    value: isOpenLogoutDialog,
+    setTrue: onOpenLogoutDialog,
+    setFalse: onCloseLogoutDialog,
+  } = useBoolean()
+
   useEffect(() => {
     toast("こちらは開発中のページです。", {
       description: "予期せぬ不具合が発生する可能性があります。",
@@ -41,10 +50,7 @@ export const HomeHeader = (props: Props) => {
           </SheetTrigger>
           <SheetContent className="p-0" side={"left"}>
             <ScrollArea className="h-full p-4">
-              <HomeNavigationList
-                onLogin={props.onLogin}
-                onLogout={props.onLogout}
-              />
+              <HomeNavigationList />
             </ScrollArea>
           </SheetContent>
         </Sheet>
@@ -111,11 +117,20 @@ export const HomeHeader = (props: Props) => {
             </Button>
           )}
         </div>
-        <HomeUserNavigationMenu
-          onLogin={props.onLogin}
-          onLogout={props.onLogout}
-        />
+        {authContext.isLoggedIn && (
+          <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        )}
+        {authContext.isNotLoggedIn && (
+          <LoginDialog>
+            <LoginDialogButton />
+          </LoginDialog>
+        )}
       </div>
+      <LogoutDialogLegacy
+        isOpen={isOpenLogoutDialog}
+        onClose={onCloseLogoutDialog}
+        onOpen={onOpenLogoutDialog}
+      />
     </AppHeader>
   )
 }

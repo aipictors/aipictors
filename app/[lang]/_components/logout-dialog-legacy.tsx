@@ -10,10 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
-import { toast } from "sonner"
-
 import { getAuth, signOut } from "firebase/auth"
+import { toast } from "sonner"
 
 type Props = {
   isOpen: boolean
@@ -21,7 +19,12 @@ type Props = {
   onOpen(): void
 }
 
-export const LogoutModal = (props: Props) => {
+/**
+ * ログアウト・ダイアログ
+ * @param props
+ * @returns
+ */
+export const LogoutDialogLegacy = (props: Props) => {
   const handleLogout = async () => {
     await signOut(getAuth())
     props.onClose()

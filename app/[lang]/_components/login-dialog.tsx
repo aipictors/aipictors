@@ -1,10 +1,8 @@
 "use client"
 
-import { LoginWithProvider } from "@/app/[lang]/(main)/_components/login-with-provider"
+import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import { LoginForm } from "@/app/_components/login-form"
-import { AuthContext } from "@/app/_contexts/auth-context"
 import type { FormLogin } from "@/app/_types/form-login"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
@@ -24,13 +21,19 @@ import {
   signInWithCustomToken,
 } from "firebase/auth"
 import Link from "next/link"
-import { useContext } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
 
-export const LoginModal = () => {
-  const authContext = useContext(AuthContext)
+type Props = {
+  children: React.ReactNode
+}
 
+/**
+ * ログイン
+ * @param props
+ * @returns
+ */
+export const LoginDialog = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
@@ -61,28 +64,25 @@ export const LoginModal = () => {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Avatar className="cursor-pointer">
-          <AvatarFallback />
-        </Avatar>
-      </DialogTrigger>
+      {props.children}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
-          <DialogDescription>ログインする</DialogDescription>
+          <DialogDescription>
+            {"ここから先はログインが必要みたい。"}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="my-2 space-y-2">
           <p className="text-sm">{"SNSアカウントでログイン"}</p>
-          <div className="flex flex-row justify-center">
-            <LoginWithProvider
+          <div className="flex flex-col md:flex-row gap-2">
+            <SocialLoginButton
               disabled={isLoading}
               provider={new GoogleAuthProvider()}
               buttonText="Googleでログイン"
               icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
             />
-
-            <LoginWithProvider
+            <SocialLoginButton
               disabled={isLoading}
               provider={new TwitterAuthProvider()}
               buttonText="𝕏(Twitter)でログイン"
