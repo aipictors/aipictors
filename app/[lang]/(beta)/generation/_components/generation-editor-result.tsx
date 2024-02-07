@@ -17,6 +17,7 @@ import { ErrorBoundary } from "@sentry/nextjs"
 import { ArrowDownToLineIcon, StarIcon, Trash2Icon } from "lucide-react"
 import { Suspense } from "react"
 import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
 
 type Tasks = NonNullable<
   ViewerImageGenerationTasksQuery["viewer"]
@@ -67,10 +68,16 @@ export const GenerationEditorResult = (props: Props) => {
     }
   }
 
+  const onMoveHistory = (taskId: string) => {
+    window.location.href = `/generation/results/${taskId}`
+  }
+
   const activeTasks = props.tasks?.filter((task) => {
     if (task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
+
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <>
@@ -100,45 +107,60 @@ export const GenerationEditorResult = (props: Props) => {
         )}
         <Separator />
         <ScrollArea>
-          <div className="p-2 grid gap-2 grid-cols-1 md:grid-cols-2">
+          <div className="p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
             {activeTasks.map((task) => (
               <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
                 <Suspense fallback={<FallbackResultCard />}>
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button className="p-0 h-auto overflow-hidden border-1 rounded outline-none">
-                        <GenerationResultCard
+                  {isDesktop && (
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button className="p-0 h-auto overflow-hidden border-1 rounded outline-none">
+                          <GenerationResultCard
+                            taskId={task.id}
+                            token={task.token}
+                          />
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent
+                        side={"left"}
+                        className="p-0 flex flex-col gap-0"
+                      >
+                        <GenerationResultBody
                           taskId={task.id}
-                          token={task.token}
+                          imageToken={task.token ?? ""}
+                          promptText={task.prompt}
+                          negativePromptText={task.negativePrompt}
+                          configSteps={task.steps}
+                          configSeed={task.seed}
+                          configSampler={task.sampler}
+                          configScale={task.scale}
+                          configSizeType={task.sizeType}
+                          configModel={task.model ? task.model.name : null}
+                          configVae={task.vae}
+                          userNanoId={props.userNanoid}
+                          onRestore={() => {
+                            onRestore(task.id)
+                          }}
+                          onChangeRating={(value) => {
+                            onChangeRating(task.id, value)
+                          }}
                         />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent
-                      side={"left"}
-                      className="p-0 flex flex-col gap-0"
+                      </SheetContent>
+                    </Sheet>
+                  )}
+                  {!isDesktop && (
+                    <Button
+                      onClick={() => {
+                        onMoveHistory(task.token ?? "")
+                      }}
+                      className="p-0 h-auto overflow-hidden border-1 rounded outline-none"
                     >
-                      <GenerationResultBody
+                      <GenerationResultCard
                         taskId={task.id}
-                        imageToken={task.token ?? ""}
-                        promptText={task.prompt}
-                        negativePromptText={task.negativePrompt}
-                        configSteps={task.steps}
-                        configSeed={task.seed}
-                        configSampler={task.sampler}
-                        configScale={task.scale}
-                        configSizeType={task.sizeType}
-                        configModel={task.model ? task.model.name : null}
-                        configVae={task.vae}
-                        userNanoId={props.userNanoid}
-                        onRestore={() => {
-                          onRestore(task.id)
-                        }}
-                        onChangeRating={(value) => {
-                          onChangeRating(task.id, value)
-                        }}
+                        token={task.token}
                       />
-                    </SheetContent>
-                  </Sheet>
+                    </Button>
+                  )}
                 </Suspense>
               </ErrorBoundary>
             ))}
