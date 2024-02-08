@@ -8,37 +8,36 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from "@/components/ui/dialog"
+import { DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   selectedPromptIds: string[]
-  isOpen: boolean
   onClose(): void
   promptCategories: PromptCategoriesQuery["promptCategories"]
   onSelect(id: string): void
 }
 
-export const PromptCategoriesDialog = (props: Props) => {
-  //  {props.promptTexts.includes(prompt.name)}
+export const PromptCategoriesDialogContents = (props: Props) => {
+  const defaultOpenCategories = props.promptCategories
+    .filter((category) =>
+      category.prompts.some((prompt) =>
+        props.selectedPromptIds.includes(prompt.id),
+      ),
+    )
+    .map((category) => category.id)
 
   return (
-    <Dialog
-      open={props.isOpen}
-      onOpenChange={() => {
-        props.onClose()
-      }}
-    >
+    <>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader />
         <ScrollArea className="h-full max-h-96">
-          <Accordion type="single" className="w-full">
+          <Accordion
+            type="multiple"
+            className="w-full"
+            defaultValue={defaultOpenCategories}
+          >
             {props.promptCategories.map((promptCategory) => (
               <AccordionItem value={promptCategory.id} key={promptCategory.id}>
                 <AccordionTrigger>
@@ -71,18 +70,7 @@ export const PromptCategoriesDialog = (props: Props) => {
             ))}
           </Accordion>
         </ScrollArea>
-        <DialogFooter>
-          <div className="flex flex-col">
-            <p className="text-sm">{"※ 50個まで選択できます。"}</p>
-            <Button
-              onClick={props.onClose}
-              // colorScheme="primary"
-            >
-              {"OK"}
-            </Button>
-          </div>
-        </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </>
   )
 }

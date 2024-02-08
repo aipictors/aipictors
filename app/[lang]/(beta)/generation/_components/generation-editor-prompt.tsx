@@ -1,13 +1,14 @@
 "use client"
 
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { PromptCategoriesDialog } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog"
+import { PromptCategoriesDialogContents } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog-contents"
 import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+import { Dialog } from "@radix-ui/react-dialog"
 import { BookTextIcon } from "lucide-react"
-import { useBoolean } from "usehooks-ts"
 
 type Props = {
   promptText: string
@@ -16,8 +17,6 @@ type Props = {
 }
 
 export const GenerationEditorPrompt = (props: Props) => {
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-
   const formattedPromptText = formatPromptText(props.promptText)
 
   const categoryPrompts = props.promptCategories.flatMap((category) => {
@@ -41,6 +40,9 @@ export const GenerationEditorPrompt = (props: Props) => {
   })
 
   const selectedPromptIds = currentPrompts.map((prompt) => prompt.id)
+
+  const onOpen = () => {}
+  const onClose = () => {}
 
   return (
     <>
@@ -72,14 +74,20 @@ export const GenerationEditorPrompt = (props: Props) => {
             }}
           />
         </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant={"secondary"} size={"sm"} className="w-full">
+              {"キーワードから選ぶ"}
+            </Button>
+          </DialogTrigger>
+          <PromptCategoriesDialogContents
+            selectedPromptIds={selectedPromptIds}
+            onClose={onClose}
+            promptCategories={props.promptCategories}
+            onSelect={onSelectPromptId}
+          />
+        </Dialog>
       </GenerationEditorCard>
-      <PromptCategoriesDialog
-        selectedPromptIds={selectedPromptIds}
-        onClose={onClose}
-        isOpen={isOpen}
-        promptCategories={props.promptCategories}
-        onSelect={onSelectPromptId}
-      />
     </>
   )
 }
