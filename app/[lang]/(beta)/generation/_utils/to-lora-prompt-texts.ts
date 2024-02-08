@@ -9,6 +9,12 @@ type LoraModel = {
   name: string
 }
 
+/**
+ * LoRAのプロンプトテキストを生成する
+ * @param loraModels
+ * @param configs
+ * @returns
+ */
 export const toLoraPromptTexts = (
   loraModels: LoraModel[],
   configs: LoraModelConfig[],

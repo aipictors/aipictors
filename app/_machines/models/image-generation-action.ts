@@ -1,74 +1,108 @@
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
-import { config } from "@/config"
-import { captureException } from "@sentry/nextjs"
 import { produce } from "immer"
 
 export class ImageGenerationAction {
   constructor(private state: ImageGenerationConfig) {}
 
+  /**
+   * プロンプトを変更する
+   * @param text
+   * @returns
+   */
   updatePrompt(text: string) {
-    localStorage.setItem("config.generation.prompt", text)
     return new ImageGenerationConfig({ ...this.state, promptText: text })
   }
 
+  /**
+   * ネガティブプロンプトを変更する
+   * @param text
+   * @returns
+   */
   updateNegativePrompt(text: string) {
-    localStorage.setItem("config.generation.negative-prompt", text)
     return new ImageGenerationConfig({
       ...this.state,
       negativePromptText: text,
     })
   }
 
+  /**
+   * サンプラを変更する
+   * @param text
+   * @returns
+   */
   updateSampler(text: string) {
-    localStorage.setItem("config.generation.sampler", text)
     return new ImageGenerationConfig({
       ...this.state,
       sampler: text,
     })
   }
 
+  /**
+   * ステップ数を変更する
+   * @param value
+   * @returns
+   */
   updateSteps(value: number) {
-    localStorage.setItem("config.generation.steps", value.toString())
     return new ImageGenerationConfig({
       ...this.state,
       steps: value,
     })
   }
 
+  /**
+   * スケールを変更する
+   * @param value
+   * @returns
+   */
   updateScale(value: number) {
-    localStorage.setItem("config.generation.scale", value.toString())
     return new ImageGenerationConfig({
       ...this.state,
       scale: value,
     })
   }
 
+  /**
+   * サイズを変更する
+   * @param text
+   * @returns
+   */
   updateSizeType(text: string) {
-    localStorage.setItem("config.generation.sizeType", text)
     return new ImageGenerationConfig({
       ...this.state,
       sizeType: text,
     })
   }
 
+  /**
+   * VAEを変更する
+   * @param text
+   * @returns
+   */
   updateVae(text: string | null) {
-    localStorage.setItem("config.generation.vae", text ?? "")
     return new ImageGenerationConfig({
       ...this.state,
       vae: text,
     })
   }
 
+  /**
+   * シード値を変更する
+   * @param value
+   * @returns
+   */
   updateSeed(value: number) {
-    localStorage.setItem("config.generation.seed", value.toString())
     return new ImageGenerationConfig({
       ...this.state,
       seed: value,
     })
   }
 
+  /**
+   * モデルIDを変更する
+   * @param id
+   * @returns
+   */
   updateModelId(id: string) {
-    localStorage.setItem("config.generation.model", id)
     const isSd2 = id === "22" || id === "23" || id === "24"
     if (isSd2 && this.state.sizeType.includes("SD1")) {
       return new ImageGenerationConfig({
@@ -117,6 +151,12 @@ export class ImageGenerationAction {
     })
   }
 
+  /**
+   * LoRAモデルを追加する
+   * @param name
+   * @param isAdded
+   * @returns
+   */
   addLoraModel(name: string, isAdded: boolean) {
     /**
      * 選択されたLoRAモデル
@@ -181,141 +221,5 @@ export class ImageGenerationAction {
       .map((config) => `<lora:${config.name}:${config.value}>`)
       .join(" ")
     return `${cleanText} ${loraString}`.trim()
-  }
-
-  static restore(props: { passType: string | null }) {
-    return new ImageGenerationConfig({
-      passType: props.passType,
-      loraConfigs: config.generationFeature.defaultImageLoraModelNames.map(
-        (name) => {
-          return { name, value: 0 }
-        },
-      ),
-      modelId: ImageGenerationAction.restoreModelId(),
-      promptText: ImageGenerationAction.restorePrompt(),
-      negativePromptText: ImageGenerationAction.restoreNegativePrompt(),
-      sampler: ImageGenerationAction.restoreSampler(),
-      scale: ImageGenerationAction.restoreScale(),
-      seed: ImageGenerationAction.restoreSeed(),
-      sizeType: ImageGenerationAction.restoreSizeType(),
-      steps: ImageGenerationAction.restoreSteps(),
-      vae: ImageGenerationAction.restoreVae(),
-    })
-  }
-
-  static restoreLoraModelIds() {
-    const defaultValue = config.generationFeature.defaultImageLoraModelNames
-    return defaultValue
-  }
-
-  static restoreModelId() {
-    const defaultValue = config.generationFeature.defaultImageModelId
-    try {
-      const value = localStorage.getItem("config.generation.model")
-      return value ?? defaultValue
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restorePrompt() {
-    const defaultValue = ""
-    try {
-      const value = localStorage.getItem("config.generation.prompt")
-      return value ?? defaultValue
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreNegativePrompt() {
-    const defaultValue = ""
-    try {
-      const value = localStorage.getItem("config.generation.negativePrompt")
-      return value ?? defaultValue
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreSampler() {
-    const defaultValue = config.generationFeature.defaultSamplerValue
-    try {
-      const value = localStorage.getItem("config.generation.sampler")
-      return value ?? defaultValue
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreSteps() {
-    const defaultValue = config.generationFeature.defaultStepsValue
-    try {
-      const value = localStorage.getItem("config.generation.steps")
-      if (value === null) {
-        return defaultValue
-      }
-      return parseInt(value)
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreScale() {
-    const defaultValue = config.generationFeature.defaultScaleValue
-    try {
-      const value = localStorage.getItem("config.generation.scale")
-      if (value === null) {
-        return defaultValue
-      }
-      return parseInt(value)
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreVae() {
-    const defaultValue = config.generationFeature.defaultVaeValue
-    try {
-      const value = localStorage.getItem("config.generation.vae")
-      return value ?? defaultValue
-    } catch (error) {
-      if (error instanceof Error) {
-        captureException(error)
-      }
-      return defaultValue
-    }
-  }
-
-  static restoreSeed() {
-    const defaultValue = -1
-    try {
-      const value = localStorage.getItem("config.generation.seed")
-      return value !== null ? Number(value) : defaultValue
-    } catch (e) {
-      return defaultValue
-    }
-  }
-
-  static restoreSizeType() {
-    return "SD1_512_768"
   }
 }

@@ -1,5 +1,6 @@
 import { imageGenerationMachine } from "@/app/_machines/image-generation-machine"
 import { ImageGenerationAction } from "@/app/_machines/models/image-generation-action"
+import { ImageGenerationCache } from "@/app/_machines/models/image-generation-cache"
 import { useMachine } from "@xstate/react"
 
 type Props = {
@@ -7,8 +8,10 @@ type Props = {
 }
 
 export const useImageGenerationMachine = (props: Props) => {
+  const cacheStorage = new ImageGenerationCache({ passType: props.passType })
+
   const [state, send] = useMachine(imageGenerationMachine, {
-    input: ImageGenerationAction.restore({ passType: props.passType }),
+    input: cacheStorage.restore(),
   })
 
   const action = new ImageGenerationAction(state.context)
@@ -18,7 +21,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param text
    */
   const updatePrompt = (text: string) => {
-    localStorage.setItem("config.generation.prompt", text)
+    cacheStorage.savePrompt(text)
     const value = action.updatePrompt(text)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -28,7 +31,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param text
    */
   const updateNegativePrompt = (text: string) => {
-    localStorage.setItem("config.generation.negativePrompt", text)
+    cacheStorage.saveNegativePrompt(text)
     const value = action.updateNegativePrompt(text)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -38,7 +41,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param text
    */
   const updateSampler = (text: string) => {
-    localStorage.setItem("config.generation.sampler", text)
+    cacheStorage.saveSampler(text)
     const value = action.updateSampler(text)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -48,7 +51,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param step
    */
   const updateSteps = (step: number) => {
-    localStorage.setItem("config.generation.steps", step.toString())
+    cacheStorage.saveSteps(step)
     const value = action.updateSteps(step)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -58,7 +61,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param scale
    */
   const updateScale = (scale: number) => {
-    localStorage.setItem("config.generation.scale", scale.toString())
+    cacheStorage.saveScale(scale)
     const value = action.updateScale(scale)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -77,7 +80,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param vae
    */
   const updateVae = (vae: string | null) => {
-    localStorage.setItem("config.generation.vae", vae ?? "")
+    cacheStorage.saveVae(vae)
     const value = action.updateVae(vae)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -87,7 +90,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param seed
    */
   const updateSeed = (seed: number) => {
-    localStorage.setItem("config.generation.seed", seed.toString())
+    cacheStorage.saveSeed(seed)
     const value = action.updateSeed(seed)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -97,7 +100,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param modelId
    */
   const updateModelId = (modelId: string) => {
-    localStorage.setItem("config.generation.model", modelId)
+    cacheStorage.saveModelId(modelId)
     const value = action.updateModelId(modelId)
     send({ type: "UPDATE_CONFIG", value })
     const isSd2 = modelId === "22" || modelId === "23" || modelId === "24"
