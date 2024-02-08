@@ -7,7 +7,7 @@ type Props = {
 export const AppHeader = (props: Props) => {
   return (
     <>
-      <header className="fixed z-50 w-full">
+      <header className="fixed z-50 w-full bg-card">
         <div
           className={cn(
             "flex justify-between items-center w-full max-w-screen-xl mx-auto py-4 px-sm md:px-md gap-x-4",
