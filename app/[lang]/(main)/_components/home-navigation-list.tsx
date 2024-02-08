@@ -1,7 +1,10 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
+import { LogoutDialog } from "@/app/[lang]/_components/logout-dialog"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import { AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
 import {
@@ -31,12 +34,7 @@ import {
   TbBrandYoutubeFilled,
 } from "react-icons/tb"
 
-type Props = {
-  onLogin(): void
-  onLogout(): void
-}
-
-export const HomeNavigationList = (props: Props) => {
+export const HomeNavigationList = () => {
   const appContext = useContext(AuthContext)
 
   return (
@@ -99,9 +97,11 @@ export const HomeNavigationList = (props: Props) => {
       <HomeNavigationButton href={"/sensitive"} icon={AlertTriangleIcon}>
         {"センシティブ"}
       </HomeNavigationButton>
-      <div className={"py-2"}>
-        <Separator />
-      </div>
+      {appContext.isLoggedIn && (
+        <div className={"py-2"}>
+          <Separator />
+        </div>
+      )}
       {appContext.isLoggedIn && (
         <HomeNavigationButton href={"/accounts/login"} icon={UserIcon}>
           {"アカウント"}
@@ -116,24 +116,20 @@ export const HomeNavigationList = (props: Props) => {
         </HomeNavigationButton>
       )}
       {appContext.isLoggedIn && (
-        <HomeNavigationButton
-          onClick={() => {
-            props.onLogout()
-          }}
-          icon={LogOutIcon}
-        >
-          {"ログアウト"}
-        </HomeNavigationButton>
+        <LogoutDialog>
+          <AlertDialogTrigger asChild>
+            <HomeNavigationButton icon={LogOutIcon}>
+              {"ログアウト"}
+            </HomeNavigationButton>
+          </AlertDialogTrigger>
+        </LogoutDialog>
       )}
       {appContext.isNotLoggedIn && (
-        <HomeNavigationButton
-          onClick={() => {
-            props.onLogin()
-          }}
-          icon={LogInIcon}
-        >
-          {"ログイン"}
-        </HomeNavigationButton>
+        <LoginDialog>
+          <HomeNavigationButton icon={LogInIcon}>
+            {"ログイン"}
+          </HomeNavigationButton>
+        </LoginDialog>
       )}
       <div className="py-2">
         <Separator />

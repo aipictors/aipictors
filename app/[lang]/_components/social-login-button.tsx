@@ -1,4 +1,3 @@
-// LoginWithProvider.tsx
 import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
@@ -13,17 +12,18 @@ type Props = {
   icon?: ReactElement
 }
 
-export const LoginWithProvider = ({
-  disabled,
-  provider,
-  buttonText,
-  icon,
-}: Props) => {
+/**
+ * ソーシャルログインボタン
+ * Googleでログインするなど
+ * @param props
+ * @returns
+ */
+export const SocialLoginButton = (props: Props) => {
   const onLogin = async () => {
-    if (disabled) return
+    if (props.disabled) return
 
     try {
-      await signInWithPopup(getAuth(), provider)
+      await signInWithPopup(getAuth(), props.provider)
     } catch (error) {
       captureException(error)
       if (error instanceof Error) {
@@ -34,12 +34,16 @@ export const LoginWithProvider = ({
 
   return (
     <Button
-      className="w-full mx-4 flex items-center justify-center"
+      className="w-full flex items-center justify-center"
       onClick={onLogin}
-      disabled={disabled}
+      disabled={props.disabled}
     >
-      {disabled ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> : icon}
-      {buttonText}
+      {props.disabled ? (
+        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        props.icon
+      )}
+      {props.buttonText}
     </Button>
   )
 }

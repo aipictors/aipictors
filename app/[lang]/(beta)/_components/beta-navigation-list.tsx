@@ -1,6 +1,7 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -19,13 +20,8 @@ import {
   TbBrandYoutubeFilled,
 } from "react-icons/tb"
 
-type Props = {
-  onLogin(): void
-  onLogout(): void
-}
-
-export const BetaNavigationList = (props: Props) => {
-  const appContext = useContext(AuthContext)
+export const BetaNavigationList = () => {
+  const authContext = useContext(AuthContext)
 
   return (
     <div className="space-y-1">
@@ -35,17 +31,17 @@ export const BetaNavigationList = (props: Props) => {
       <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
         {"スタンプ広場"}
       </HomeNavigationButton>
-      {appContext.isLoggedIn && (
+      {authContext.isLoggedIn && (
         <HomeNavigationButton href={"/plus"} icon={GemIcon}>
           {"Aipictors+"}
         </HomeNavigationButton>
       )}
-      {appContext.isLoggedIn && (
+      {authContext.isLoggedIn && (
         <HomeNavigationButton href={"/support/chat"} icon={MessageCircleIcon}>
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
-      {appContext.isLoggedIn && (
+      {authContext.isLoggedIn && (
         <HomeNavigationButton
           href={"https://www.aipictors.com/generate"}
           icon={SparklesIcon}
@@ -62,10 +58,12 @@ export const BetaNavigationList = (props: Props) => {
           {"設定"}
         </HomeNavigationButton>
       )} */}
-      {appContext.isNotLoggedIn && (
-        <HomeNavigationButton onClick={props.onLogin} icon={LogInIcon}>
-          {"ログイン"}
-        </HomeNavigationButton>
+      {authContext.isNotLoggedIn && (
+        <LoginDialog>
+          <HomeNavigationButton icon={LogInIcon}>
+            {"ログイン"}
+          </HomeNavigationButton>
+        </LoginDialog>
       )}
       <div className="py-2">
         <Separator />

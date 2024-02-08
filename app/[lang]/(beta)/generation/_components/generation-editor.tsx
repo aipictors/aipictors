@@ -1,16 +1,18 @@
 "use client"
 
-import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/drawer/generation-terms-dialog"
+import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/dialogs/generation-terms-dialog"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
+import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_components/generation-submit-button"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
 import { toLoraPromptTexts } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt-texts"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -176,22 +178,23 @@ export function GenerationEditor(props: Props) {
       history={
         <div className="flex flex-col h-full gap-y-2">
           <div>
-            <GenerationTermsDialog
-              termsMarkdownText={props.termsMarkdownText}
-              isDisabled={hasSignedTerms}
-              onSubmit={onSignImageGenerationTerms}
-            >
-              <Button
-                className="w-full"
-                size={"lg"}
-                disabled={
-                  loading || inProgress || machine.state.context.isDisabled
-                }
-                onClick={hasSignedTerms ? onCreateTask : undefined}
+            {hasSignedTerms && (
+              <GenerationSubmitButton
+                inProgress={inProgress}
+                isLoading={loading}
+                isDisabled={machine.state.context.isDisabled}
+              />
+            )}
+            {!hasSignedTerms && (
+              <GenerationTermsDialog
+                termsMarkdownText={props.termsMarkdownText}
+                onSubmit={onSignImageGenerationTerms}
               >
-                {loading || inProgress ? "生成中.." : "生成する"}
-              </Button>
-            </GenerationTermsDialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full">{"生成する"}</Button>
+                </DialogTrigger>
+              </GenerationTermsDialog>
+            )}
           </div>
           <Suspense fallback={null}>
             <GenerationEditorResult

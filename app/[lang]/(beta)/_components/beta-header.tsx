@@ -1,5 +1,9 @@
 import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
+import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
+import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
+import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppHeader } from "@/components/app/app-header"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -8,14 +12,22 @@ import { config } from "@/config"
 import { BellIcon, MenuIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useContext } from "react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   title?: string
-  onLogin(): void
-  onLogout(): void
 }
 
 export const BetaHeader = (props: Props) => {
+  const authContext = useContext(AuthContext)
+
+  const {
+    value: isOpenLogoutDialog,
+    setTrue: onOpenLogoutDialog,
+    setFalse: onCloseLogoutDialog,
+  } = useBoolean()
+
   return (
     <AppHeader>
       <div className="flex md:flex-1 gap-x-2 items-center min-w-fit">
@@ -31,10 +43,7 @@ export const BetaHeader = (props: Props) => {
           </SheetTrigger>
           <SheetContent className="p-0" side={"left"}>
             <ScrollArea className="h-full p-4">
-              <BetaNavigationList
-                onLogin={props.onLogin}
-                onLogout={props.onLogout}
-              />
+              <BetaNavigationList />
             </ScrollArea>
           </SheetContent>
         </Sheet>
@@ -53,22 +62,31 @@ export const BetaHeader = (props: Props) => {
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
       </div>
-      <div className="flex gap-x-4">
-        {config.isDevelopmentMode && (
-          <Button
-            variant={"secondary"}
-            disabled
-            size={"icon"}
-            aria-label={"通知"}
-          >
-            <BellIcon className="w-4" />
-          </Button>
-        )}
-        <HomeUserNavigationMenu
-          onLogin={props.onLogin}
-          onLogout={props.onLogout}
-        />
-      </div>
+      {authContext.isLoggedIn && (
+        <div className="flex gap-x-4">
+          {config.isDevelopmentMode && (
+            <Button
+              variant={"secondary"}
+              disabled
+              size={"icon"}
+              aria-label={"通知"}
+            >
+              <BellIcon className="w-4" />
+            </Button>
+          )}
+          <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        </div>
+      )}
+      {authContext.isNotLoggedIn && (
+        <LoginDialog>
+          <LoginDialogButton />
+        </LoginDialog>
+      )}
+      <LogoutDialogLegacy
+        isOpen={isOpenLogoutDialog}
+        onClose={onCloseLogoutDialog}
+        onOpen={onOpenLogoutDialog}
+      />
     </AppHeader>
   )
 }
