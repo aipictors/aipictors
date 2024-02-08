@@ -21,7 +21,7 @@ type Props = {
   configSize: string
   configVae: string | null
   availableLoraModelsCount: number
-  onAddLoraModelConfigs(modelId: string): void
+  onAddLoraModelConfigs(modelName: string, isAdded: boolean): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void

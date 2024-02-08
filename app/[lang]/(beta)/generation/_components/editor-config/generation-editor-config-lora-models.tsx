@@ -16,7 +16,7 @@ type Props = {
    */
   loraModels: { name: string; value: number }[]
   availableLoraModelsCount: number
-  onAddLoraModel(modelName: string): void
+  onAddLoraModel(modelName: string, isAdded: boolean): void
   onUpdateLoraModel(modelName: string, value: number): void
 }
 
@@ -51,7 +51,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             props.onUpdateLoraModel(model.name, value)
           }}
           onDelete={() => {
-            props.onAddLoraModel(model.name)
+            props.onAddLoraModel(model.name, false)
           }}
         />
       ))}

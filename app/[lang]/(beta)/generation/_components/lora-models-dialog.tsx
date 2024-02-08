@@ -15,7 +15,7 @@ type Props = {
   onClose(): void
   models: ImageLoraModelsQuery["imageLoraModels"]
   selectedModelNames: string[]
-  onSelect(id: string): void
+  onSelect(name: string, isAdded: boolean): void
   children: React.ReactNode
 }
 

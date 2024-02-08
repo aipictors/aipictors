@@ -95,16 +95,29 @@ export class ImageGenerationAction {
       return config
     })
 
-    console.log(name) // 新しいモデル
-    console.log(this.state.loraConfigs) // 現在の設定
+    const selectedModels = this.state.loraModelNames.map((name) => {
+      const model = this.state.loraConfigs.find((model) => model.name === name)
+      if (model === undefined) {
+        throw new Error()
+      }
+      return model
+    })
+
+    for (const model of selectedModels) {
+      if (model.name === name) {
+        model.value = modelValue
+      }
+    }
+    const promptText = this.getGenerateLoraPrompts(selectedModels)
 
     return new ImageGenerationConfig({
       ...this.state,
       loraConfigs: draftConfigs,
+      promptText: promptText,
     })
   }
 
-  addLoraModel(name: string) {
+  addLoraModel(name: string, isAdded: boolean) {
     /**
      * 選択されたLoRAモデル
      */
@@ -141,8 +154,18 @@ export class ImageGenerationAction {
       return { name: name, value: 0 }
     })
 
-    const promptText = this.getGenerateLoraPrompts()
+    if (isAdded) {
+      selectedModels.push({ name: name, value: 0 })
+      const promptText = this.getGenerateLoraPrompts(selectedModels)
+      return new ImageGenerationConfig({
+        ...this.state,
+        loraConfigs: loraConfigs,
+        promptText: promptText,
+      })
+    }
 
+    const models = selectedModels.filter((lora) => lora.name !== name)
+    const promptText = this.getGenerateLoraPrompts(models)
     return new ImageGenerationConfig({
       ...this.state,
       loraConfigs: loraConfigs,
@@ -150,39 +173,15 @@ export class ImageGenerationAction {
     })
   }
 
-  getGenerateLoraPrompts() {
-    const selectedModels = this.state.loraModelNames.map((name) => {
-      const model = this.state.loraConfigs.find((model) => model.name === name)
-      if (model === undefined) {
-        throw new Error()
-      }
-      return model
-    })
-
+  getGenerateLoraPrompts(models: Array<{ name: string; value: number }>) {
     const regex = /<lora:[^>]*>/g
     const cleanText = this.state.promptText.replace(regex, "").trim()
 
-    const loraString = selectedModels
-      .map((config) => `<lora:${config.name}:${0}>`)
+    const loraString = models
+      .map((config) => `<lora:${config.name}:${config.value}>`)
       .join(" ")
     return `${cleanText} ${loraString}`.trim()
   }
-
-  // static fallback() {
-  //   return new ImageGenerationState({
-  //     passType: null,
-  //     loraModels: [],
-  //     modelId: "",
-  //     promptText: "",
-  //     negativePromptText: "",
-  //     sampler: "",
-  //     scale: 0,
-  //     seed: -1,
-  //     sizeType: "",
-  //     steps: 0,
-  //     vae: "",
-  //   })
-  // }
 
   static restore(props: { passType: string | null }) {
     return new ImageGenerationConfig({

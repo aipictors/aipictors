@@ -11,7 +11,7 @@ type Model = {
 type Props = {
   models: Model[]
   selectedModelNames: string[]
-  onSelect(id: string): void
+  onSelect(name: string, isAdded: boolean): void
 }
 
 export const LoraImageModelsList = (props: Props) => {
@@ -26,7 +26,10 @@ export const LoraImageModelsList = (props: Props) => {
             thumbnailImageURL={model.thumbnailImageURL}
             description={model.description}
             onSelect={() => {
-              props.onSelect(model.name)
+              props.onSelect(
+                model.name,
+                !props.selectedModelNames.includes(model.name),
+              )
             }}
           />
         ))}
