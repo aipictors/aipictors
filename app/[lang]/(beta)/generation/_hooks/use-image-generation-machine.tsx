@@ -103,10 +103,6 @@ export const useImageGenerationMachine = (props: Props) => {
     cacheStorage.saveModelId(modelId)
     const value = action.updateModelId(modelId)
     send({ type: "UPDATE_CONFIG", value })
-    const isSd2 = modelId === "22" || modelId === "23" || modelId === "24"
-    if (isSd2 && state.context.sizeType.includes("SD1")) {
-      updateSizeType("SD2_768_768")
-    }
   }
 
   /**
@@ -123,15 +119,15 @@ export const useImageGenerationMachine = (props: Props) => {
    * LoRAモデルを追加する
    * @param modelName
    */
-  const addLoraConfig = (modelName: string, isAdded: boolean) => {
-    const value = action.addLoraModel(modelName, isAdded)
+  const changeLoraConfig = (modelName: string) => {
+    const value = action.changeLoraModel(modelName)
     send({ type: "UPDATE_CONFIG", value })
   }
 
   return {
     state,
     updateModelId,
-    addLoraConfig: addLoraConfig,
+    changeLoraModel: changeLoraConfig,
     updateLoraModel: updateLoraModel,
     updatePrompt,
     updateNegativePrompt,

@@ -103,11 +103,25 @@ export class ImageGenerationAction {
    * @returns
    */
   updateModelId(id: string) {
-    const isSd2 = id === "22" || id === "23" || id === "24"
-    if (isSd2 && this.state.sizeType.includes("SD1")) {
+    if (this.state.sizeType.includes("SD1")) {
+      return new ImageGenerationConfig({
+        ...this.state,
+        sizeType: "SD1_512_512",
+        modelId: id,
+      })
+    }
+    if (this.state.sizeType.includes("SD2")) {
       return new ImageGenerationConfig({
         ...this.state,
         sizeType: "SD2_768_768",
+        modelId: id,
+      })
+    }
+    if (this.state.sizeType.includes("SDXL")) {
+      return new ImageGenerationConfig({
+        ...this.state,
+        sizeType: "SD3_1024_1024",
+        modelId: id,
       })
     }
     return new ImageGenerationConfig({
@@ -152,15 +166,21 @@ export class ImageGenerationAction {
   }
 
   /**
-   * LoRAモデルを追加する
+   * LoRAモデルを変更する
    * @param name
-   * @param isAdded
    * @returns
    */
-  addLoraModel(name: string, isAdded: boolean) {
-    /**
-     * 選択されたLoRAモデル
-     */
+  changeLoraModel(name: string) {
+    const isAdded = !this.state.loraModelNames.includes(name)
+
+    if (isAdded) {
+      return this.addLoraModel(name)
+    }
+
+    return this.removeLoraModel(name)
+  }
+
+  addLoraModel(name: string) {
     const selectedModels = this.state.loraModelNames.map((name) => {
       const model = this.state.loraConfigs.find((model) => model.name === name)
       if (model === undefined) {
@@ -194,15 +214,43 @@ export class ImageGenerationAction {
       return { name: name, value: 0 }
     })
 
-    if (isAdded) {
-      selectedModels.push({ name: name, value: 0 })
-      const promptText = this.getGenerateLoraPrompts(selectedModels)
-      return new ImageGenerationConfig({
-        ...this.state,
-        loraConfigs: loraConfigs,
-        promptText: promptText,
-      })
-    }
+    selectedModels.push({ name: name, value: 0 })
+    const promptText = this.getGenerateLoraPrompts(selectedModels)
+    return new ImageGenerationConfig({
+      ...this.state,
+      loraConfigs: loraConfigs,
+      promptText: promptText,
+    })
+  }
+
+  removeLoraModel(name: string) {
+    const selectedModels = this.state.loraModelNames.map((name) => {
+      const model = this.state.loraConfigs.find((model) => model.name === name)
+      if (model === undefined) {
+        throw new Error()
+      }
+      return model
+    })
+
+    const loraModelNames = produce(
+      this.state.loraModelNames,
+      (loraModelNames) => {
+        const index = loraModelNames.indexOf(name)
+        if (index === -1) {
+          loraModelNames.push(name)
+        } else {
+          loraModelNames.splice(index, 1)
+        }
+      },
+    )
+
+    const loraConfigs = loraModelNames.map((name) => {
+      const model = selectedModels.find((model) => model.name === name)
+      if (model !== undefined) {
+        return { name: model.name, value: 0 }
+      }
+      return { name: name, value: 0 }
+    })
 
     const models = selectedModels.filter((lora) => lora.name !== name)
     const promptText = this.getGenerateLoraPrompts(models)

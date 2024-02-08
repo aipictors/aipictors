@@ -21,7 +21,7 @@ type Props = {
   configSize: string
   configVae: string | null
   availableLoraModelsCount: number
-  onAddLoraModelConfigs(modelName: string, isAdded: boolean): void
+  onChangeLoraModelConfigs(modelName: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void
@@ -42,7 +42,7 @@ export const GenerationEditorConfig = (props: Props) => {
             models={props.loraModels}
             loraModels={props.configLoraModels}
             availableLoraModelsCount={props.availableLoraModelsCount}
-            onAddLoraModel={props.onAddLoraModelConfigs}
+            onChangeLoraModel={props.onChangeLoraModelConfigs}
             onUpdateLoraModel={props.onUpdateLoraModelConfig}
           />
           <GenerationEditorConfigSize

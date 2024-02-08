@@ -152,7 +152,7 @@ export function GenerationEditor(props: Props) {
             availableLoraModelsCount={
               machine.state.context.availableLoraModelsCount
             }
-            onAddLoraModelConfigs={machine.addLoraConfig}
+            onChangeLoraModelConfigs={machine.changeLoraModel}
             onChangeSampler={machine.updateSampler}
             onChangeScale={machine.updateScale}
             onChangeSeed={machine.updateSeed}

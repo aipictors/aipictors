@@ -16,7 +16,7 @@ type Props = {
    */
   loraModels: { name: string; value: number }[]
   availableLoraModelsCount: number
-  onAddLoraModel(modelName: string, isAdded: boolean): void
+  onChangeLoraModel(modelName: string): void
   onUpdateLoraModel(modelName: string, value: number): void
 }
 
@@ -51,7 +51,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
             props.onUpdateLoraModel(model.name, value)
           }}
           onDelete={() => {
-            props.onAddLoraModel(model.name, false)
+            props.onChangeLoraModel(model.name)
           }}
         />
       ))}
@@ -60,7 +60,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
         onClose={onClose}
         models={props.models}
         selectedModelNames={selectedModelNames}
-        onSelect={props.onAddLoraModel}
+        onSelect={props.onChangeLoraModel}
       >
         <Button size={"sm"} className="w-full" variant={"secondary"}>
           LoRAを追加
