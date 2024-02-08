@@ -15,7 +15,7 @@ export const toLoraPromptTexts = (
 ) => {
   return configs.map((config) => {
     const model = loraModels.find((model) => {
-      return model.id === config.modelId
+      return model.name === config.name
     })
     if (model === undefined) return null
     return toLoraPromptText(model.name, config.value)

@@ -89,9 +89,9 @@ export const config = {
      */
     defaultImageModelId: "1",
     /**
-     * デフォルトのLoRAモデルID
+     * デフォルトのLoRAモデル名
      */
-    defaultImageLoraModelIds: ["25", "26"],
+    defaultImageLoraModelNames: ["flat1", "flatBG"],
     defaultPromptValue: "",
     defaultNegativePromptValue: "",
     defaultScaleValue: 7,

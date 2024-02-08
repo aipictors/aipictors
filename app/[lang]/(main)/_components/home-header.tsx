@@ -8,7 +8,6 @@ import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legac
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppHeader } from "@/components/app/app-header"
 import { Button } from "@/components/ui/button"
-import { DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"

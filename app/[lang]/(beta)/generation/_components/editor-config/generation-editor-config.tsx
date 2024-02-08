@@ -13,7 +13,7 @@ import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  configLoraModels: { modelId: string; value: number }[]
+  configLoraModels: { name: string; value: number }[]
   configModelType: string
   configSampler: string
   configScale: number

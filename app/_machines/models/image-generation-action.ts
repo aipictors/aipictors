@@ -84,28 +84,32 @@ export class ImageGenerationAction {
 
   /**
    * モデルの設定を変更する
-   * @param modelId
+   * @param name
    * @param modelValue
    */
-  updateLoraModel(modelId: string, modelValue: number) {
+  updateLoraModel(name: string, modelValue: number) {
     const draftConfigs = this.state.loraConfigs.map((config) => {
-      if (config.modelId === modelId) {
-        return { modelId: modelId, value: modelValue }
+      if (config.name === name) {
+        return { name: name, value: modelValue }
       }
       return config
     })
+
+    console.log(name) // 新しいモデル
+    console.log(this.state.loraConfigs) // 現在の設定
+
     return new ImageGenerationConfig({
       ...this.state,
       loraConfigs: draftConfigs,
     })
   }
 
-  addLoraModel(modelId: string) {
+  addLoraModel(name: string) {
     /**
      * 選択されたLoRAモデル
      */
-    const selectedModels = this.state.loraModelIds.map((id) => {
-      const model = this.state.loraConfigs.find((model) => model.modelId === id)
+    const selectedModels = this.state.loraModelNames.map((name) => {
+      const model = this.state.loraConfigs.find((model) => model.name === name)
       if (model === undefined) {
         throw new Error()
       }
@@ -117,27 +121,51 @@ export class ImageGenerationAction {
       return this.state
     }
 
-    const loraModelIds = produce(this.state.loraModelIds, (loraModelIds) => {
-      const index = loraModelIds.indexOf(modelId)
-      if (index === -1) {
-        loraModelIds.push(modelId)
-      } else {
-        loraModelIds.splice(index, 1)
+    const loraModelNames = produce(
+      this.state.loraModelNames,
+      (loraModelNames) => {
+        const index = loraModelNames.indexOf(name)
+        if (index === -1) {
+          loraModelNames.push(name)
+        } else {
+          loraModelNames.splice(index, 1)
+        }
+      },
+    )
+
+    const loraConfigs = loraModelNames.map((name) => {
+      const model = selectedModels.find((model) => model.name === name)
+      if (model !== undefined) {
+        return { name: model.name, value: 0 }
       }
+      return { name: name, value: 0 }
     })
 
-    const loraConfigs = loraModelIds.map((modelId) => {
-      const model = selectedModels.find((model) => model.modelId === modelId)
-      if (model !== undefined) {
-        return { modelId: model.modelId, value: 0 }
-      }
-      return { modelId: modelId, value: 0 }
-    })
+    const promptText = this.getGenerateLoraPrompts()
 
     return new ImageGenerationConfig({
       ...this.state,
       loraConfigs: loraConfigs,
+      promptText: promptText,
     })
+  }
+
+  getGenerateLoraPrompts() {
+    const selectedModels = this.state.loraModelNames.map((name) => {
+      const model = this.state.loraConfigs.find((model) => model.name === name)
+      if (model === undefined) {
+        throw new Error()
+      }
+      return model
+    })
+
+    const regex = /<lora:[^>]*>/g
+    const cleanText = this.state.promptText.replace(regex, "").trim()
+
+    const loraString = selectedModels
+      .map((config) => `<lora:${config.name}:${0}>`)
+      .join(" ")
+    return `${cleanText} ${loraString}`.trim()
   }
 
   // static fallback() {
@@ -159,9 +187,9 @@ export class ImageGenerationAction {
   static restore(props: { passType: string | null }) {
     return new ImageGenerationConfig({
       passType: props.passType,
-      loraConfigs: config.generationFeature.defaultImageLoraModelIds.map(
-        (modelId) => {
-          return { modelId, value: 0 }
+      loraConfigs: config.generationFeature.defaultImageLoraModelNames.map(
+        (name) => {
+          return { name, value: 0 }
         },
       ),
       modelId: ImageGenerationAction.restoreModelId(),
@@ -177,7 +205,7 @@ export class ImageGenerationAction {
   }
 
   static restoreLoraModelIds() {
-    const defaultValue = config.generationFeature.defaultImageLoraModelIds
+    const defaultValue = config.generationFeature.defaultImageLoraModelNames
     return defaultValue
   }
 

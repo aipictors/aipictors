@@ -14,7 +14,7 @@ type Props = {
   isOpen: boolean
   onClose(): void
   models: ImageLoraModelsQuery["imageLoraModels"]
-  selectedModelIds: string[]
+  selectedModelNames: string[]
   onSelect(id: string): void
   children: React.ReactNode
 }
@@ -29,7 +29,7 @@ export const LoraModelsDialog = (props: Props) => {
         </DialogHeader>
         <LoraImageModelsList
           models={props.models}
-          selectedModelIds={props.selectedModelIds}
+          selectedModelNames={props.selectedModelNames}
           onSelect={props.onSelect}
         />
       </DialogContent>

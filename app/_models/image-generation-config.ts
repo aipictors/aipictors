@@ -42,7 +42,7 @@ export class ImageGenerationConfig implements Props {
 
   readonly isDisabled: boolean
 
-  readonly loraModelIds: string[]
+  readonly loraModelNames: string[]
 
   /**
    * 利用できるLoraModelの数
@@ -52,7 +52,7 @@ export class ImageGenerationConfig implements Props {
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.loraModelIds = this.loraConfigs.map((x) => x.modelId)
+    this.loraModelNames = this.loraConfigs.map((x) => x.name)
     this.availableLoraModelsCount = 2
     if (this.passType === "LITE") {
       this.availableLoraModelsCount = 2
