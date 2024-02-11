@@ -172,11 +172,7 @@ export function GenerationEditor(props: Props) {
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          promptText={
-            machine.state.context.negativePromptText === ""
-              ? "EasyNegative"
-              : machine.state.context.negativePromptText
-          }
+          promptText={machine.state.context.negativePromptText}
           onChangePromptText={machine.updateNegativePrompt}
         />
       }

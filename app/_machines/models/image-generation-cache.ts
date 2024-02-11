@@ -10,12 +10,27 @@ type Props = { passType: string | null }
 export class ImageGenerationCache {
   constructor(private props: Props) {}
 
+  getDefaultNegativePrompt(modelType: string) {
+    if (modelType === "SD1") {
+      return "EasyNegative"
+    }
+    if (modelType === "SD2") {
+      return "Mayng"
+    }
+    if (modelType === "SDXL") {
+      return "negativeXL_D"
+    }
+    return "EasyNegative"
+  }
+
   /**
    * 復元する
    * @returns
    */
   restore() {
     const loraModelNames = config.generationFeature.defaultImageLoraModelNames
+    const negativePromptText = this.restoreNegativePrompt()
+
     return new ImageGenerationConfig({
       passType: this.props.passType,
       loraConfigs: loraModelNames.map((name) => {
@@ -23,7 +38,10 @@ export class ImageGenerationCache {
       }),
       modelId: this.restoreModelId(),
       promptText: this.restorePrompt(),
-      negativePromptText: this.restoreNegativePrompt(),
+      negativePromptText:
+        negativePromptText === ""
+          ? this.getDefaultNegativePrompt(this.restoreModelType())
+          : negativePromptText,
       sampler: this.restoreSampler(),
       scale: this.restoreScale(),
       seed: this.restoreSeed(),
