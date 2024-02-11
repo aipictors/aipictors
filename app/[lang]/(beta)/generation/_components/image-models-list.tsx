@@ -23,18 +23,50 @@ type Props = {
   selectedModelId: string | null
 }
 
+export const getTypeName = (type: string) => {
+  if (type === "ILLUSTRATION_GIRL") {
+    return "美少女イラスト"
+  }
+  if (type === "ANIMAL") {
+    return "獣系"
+  }
+  if (type === "BIKINI_MODEL") {
+    return "グラビア"
+  }
+  if (type === "ILLUSTRATION_BOY") {
+    return "美男子イラスト"
+  }
+  if (type === "FIGURE") {
+    return "美少女フィギュア"
+  }
+  if (type === "BACKGROUND") {
+    return "背景"
+  }
+  return type
+}
+
 export const ImageModelsList = (props: Props) => {
   const [selectedTypeFilter, setSelectedTypeFilter] = useState("all")
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all")
 
   const uniqueTypes = useMemo(() => {
     const types = new Set(props.models.map((model) => model.type))
-    return ["all", ...Array.from(types)]
+    return [
+      "all",
+      ...Array.from(types).flatMap((item) => {
+        return item === null ? [] : [item]
+      }),
+    ]
   }, [props.models])
 
   const uniqueCategories = useMemo(() => {
     const categories = new Set(props.models.map((model) => model.category))
-    return ["all", ...Array.from(categories)]
+    return [
+      "all",
+      ...Array.from(categories).flatMap((item) => {
+        return item === null ? [] : [item]
+      }),
+    ]
   }, [props.models])
 
   const filteredModels = props.models.filter(
@@ -65,8 +97,8 @@ export const ImageModelsList = (props: Props) => {
           </SelectTrigger>
           <SelectContent>
             {uniqueCategories.map((category) => (
-              <SelectItem key={category} value={category as string}>
-                {category}
+              <SelectItem key={category} value={category}>
+                {getTypeName(category ?? "")}
               </SelectItem>
             ))}
           </SelectContent>
@@ -77,7 +109,7 @@ export const ImageModelsList = (props: Props) => {
           </SelectTrigger>
           <SelectContent>
             {uniqueTypes.map((type) => (
-              <SelectItem key={type} value={type as string}>
+              <SelectItem key={type} value={type}>
                 {type}
               </SelectItem>
             ))}
@@ -88,7 +120,7 @@ export const ImageModelsList = (props: Props) => {
         {/* 種別ごとにモデルを表示 */}
         {Array.from(groupedModels.entries()).map(([type, models]) => (
           <div key={type}>
-            <p className="font-bold pl-4">{type}</p>
+            <p className="font-bold pl-4">{getTypeName(type)}</p>
             <div className="grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
               {models.map(
                 (imageModel: {
