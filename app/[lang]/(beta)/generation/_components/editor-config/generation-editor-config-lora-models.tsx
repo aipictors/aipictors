@@ -24,7 +24,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
 
   const currentModels = props.loraModels.map((model) => {
     const [name, value] = model.split(":")
-    return { name, value: parseInt(value) }
+    return { name, value: parseFloat(value) }
   })
 
   const currentLoraModelNames = props.loraModels.map((model) => {
@@ -38,6 +38,8 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
   const selectedModels = props.models.filter((model) => {
     return currentLoraModelNames.includes(model.name)
   })
+
+  console.log(currentModels)
 
   return (
     <div className="space-y-2">

@@ -113,6 +113,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateLoraModel = (modelName: string, modelValue: number) => {
     const value = action.updateLoraModelValue(modelName, modelValue)
+    cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -122,6 +123,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const changeLoraConfig = (modelName: string) => {
     const value = action.changeLoraModel(modelName)
+    cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
 
