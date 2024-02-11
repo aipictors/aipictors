@@ -47,11 +47,11 @@ export function GenerationEditor(props: Props) {
     variables: { limit: 64, offset: 0 },
   })
 
-  const [signTerms] = useMutation(signImageGenerationTermsMutation)
-
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
   })
+
+  const [signTerms] = useMutation(signImageGenerationTermsMutation)
 
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
@@ -163,7 +163,7 @@ export function GenerationEditor(props: Props) {
           />
           <GenerationEditorConfig
             loraModels={props.imageLoraModels}
-            configLoraModels={machine.state.context.loraConfigs}
+            configLoRAModels={machine.state.context.loraModels}
             configModelType={currentModel?.type ?? "SD1"}
             configSampler={machine.state.context.sampler}
             configScale={machine.state.context.scale}

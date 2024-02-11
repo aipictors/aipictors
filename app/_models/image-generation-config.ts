@@ -1,10 +1,8 @@
-import { zLoraModelConfig } from "@/app/_models/validations/lora-model-config"
 import { z } from "zod"
 
 const zProps = z.object({
   passType: z.string().nullable(),
   modelId: z.string(),
-  loraConfigs: z.array(zLoraModelConfig),
   promptText: z.string(),
   negativePromptText: z.string(),
   sampler: z.string(),
@@ -22,8 +20,6 @@ export class ImageGenerationConfig implements Props {
   readonly passType!: Props["passType"]
 
   readonly modelId!: Props["modelId"]
-
-  readonly loraConfigs!: Props["loraConfigs"]
 
   readonly promptText!: Props["promptText"]
 
@@ -45,26 +41,46 @@ export class ImageGenerationConfig implements Props {
 
   readonly isDisabled: boolean
 
-  readonly loraModelNames: string[]
-
   /**
    * 利用できるLoraModelの数
    */
   readonly availableLoraModelsCount: number
 
+  readonly loraModels: string[]
+
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.loraModelNames = this.loraConfigs.map((x) => x.name)
-    this.availableLoraModelsCount = 2
+    this.availableLoraModelsCount = this.getAvailableLoraModelsCount()
+    this.loraModels = this.getLoraModels()
+  }
+
+  getAvailableLoraModelsCount() {
     if (this.passType === "LITE") {
-      this.availableLoraModelsCount = 2
+      return 2
     }
     if (this.passType === "STANDARD") {
-      this.availableLoraModelsCount = 5
+      return 5
     }
     if (this.passType === "PREMIUM") {
-      this.availableLoraModelsCount = 5
+      return 5
     }
+    return 2
+  }
+
+  /**
+   * LoRAの設定
+   * @return ['flat2:0', 'hairdetailer:0.15']
+   */
+  getLoraModels() {
+    const promptText = this.promptText
+    const regex = /<lora:[^>]+>/g
+    const regExpMatchArray = promptText.match(regex)
+    if (regExpMatchArray === null) {
+      return []
+    }
+    return Array.from(regExpMatchArray).map((text) => {
+      return text.replace(/<lora:|>/g, "")
+    })
   }
 }
