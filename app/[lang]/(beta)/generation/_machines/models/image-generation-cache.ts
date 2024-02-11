@@ -278,14 +278,22 @@ export class ImageGenerationCache {
    * サイズを保存する
    * @param sizeType
    */
-  saveSizeType(sizeType: string) {}
+  saveSizeType(sizeType: string) {
+    localStorage.setItem("config.generation.size-type", sizeType)
+  }
 
   /**
    * サイズを復元する
    * @returns
    */
   restoreSizeType() {
-    return "SD1_512_768"
+    const defaultValue = "SD1_512_768"
+    try {
+      const value = localStorage.getItem("config.generation.size-type")
+      return value || defaultValue
+    } catch (e) {
+      return defaultValue
+    }
   }
 
   /**

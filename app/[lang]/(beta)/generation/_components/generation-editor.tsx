@@ -46,11 +46,11 @@ export function GenerationEditor(props: Props) {
     variables: { limit: 64, offset: 0 },
   })
 
-  const [signTerms] = useMutation(signImageGenerationTermsMutation)
-
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
   })
+
+  const [signTerms] = useMutation(signImageGenerationTermsMutation)
 
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
