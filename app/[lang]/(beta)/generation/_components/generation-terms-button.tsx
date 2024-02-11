@@ -7,12 +7,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { DrawerClose, DrawerFooter } from "@/components/ui/drawer"
 
 type Props = {
   termsMarkdownText: string
-  children: React.ReactNode
   onSubmit(): void
 }
 
@@ -21,10 +21,12 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationTermsDialog = (props: Props) => {
+export const GenerationTermsButton = (props: Props) => {
   return (
     <Dialog>
-      {props.children}
+      <DialogTrigger asChild>
+        <Button className="w-full">{"生成する"}</Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"規約確認"}</DialogTitle>

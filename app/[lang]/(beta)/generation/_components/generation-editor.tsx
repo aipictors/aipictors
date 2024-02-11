@@ -1,6 +1,5 @@
 "use client"
 
-import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/dialogs/generation-terms-dialog"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
@@ -8,6 +7,7 @@ import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
 import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_components/generation-submit-button"
+import { GenerationTermsButton } from "@/app/[lang]/(beta)/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { Button } from "@/components/ui/button"
@@ -165,36 +165,32 @@ export function GenerationEditor(props: Props) {
   return (
     <GenerationEditorLayout
       config={
-        <div className="grid gap-y-2 h-full">
-          <GenerationEditorModels
-            models={props.imageModels}
-            currentModelId={machine.state.context.modelId}
-            currentModelIds={machine.state.context.modelIds}
-            onSelectModelId={machine.updateModelId}
-          />
-          <GenerationEditorConfig
-            loraModels={props.imageLoraModels}
-            configLoRAModels={machine.state.context.loraModels}
-            configModelType={currentModel?.type ?? "SD1"}
-            configSampler={machine.state.context.sampler}
-            configScale={machine.state.context.scale}
-            configSeed={machine.state.context.seed}
-            configSize={machine.state.context.sizeType}
-            configVae={machine.state.context.vae}
-            configSteps={machine.state.context.steps}
-            availableLoraModelsCount={
-              machine.state.context.availableLoraModelsCount
-            }
-            onChangeLoraModelConfigs={machine.changeLoraModel}
-            onChangeSampler={machine.updateSampler}
-            onChangeScale={machine.updateScale}
-            onChangeSeed={machine.updateSeed}
-            onChangeSize={machine.updateSizeType}
-            onChangeVae={machine.updateVae}
-            onChangeSteps={machine.updateSteps}
-            onUpdateLoraModelConfig={machine.updateLoraModel}
-          />
-        </div>
+        <GenerationEditorConfig
+          models={props.imageModels}
+          currentModelId={machine.state.context.modelId}
+          currentModelIds={machine.state.context.modelIds}
+          onSelectModelId={machine.updateModelId}
+          loraModels={props.imageLoraModels}
+          configLoRAModels={machine.state.context.loraModels}
+          configModelType={currentModel?.type ?? "SD1"}
+          configSampler={machine.state.context.sampler}
+          configScale={machine.state.context.scale}
+          configSeed={machine.state.context.seed}
+          configSize={machine.state.context.sizeType}
+          configVae={machine.state.context.vae}
+          configSteps={machine.state.context.steps}
+          availableLoraModelsCount={
+            machine.state.context.availableLoraModelsCount
+          }
+          onChangeLoraModelConfigs={machine.changeLoraModel}
+          onChangeSampler={machine.updateSampler}
+          onChangeScale={machine.updateScale}
+          onChangeSeed={machine.updateSeed}
+          onChangeSize={machine.updateSizeType}
+          onChangeVae={machine.updateVae}
+          onChangeSteps={machine.updateSteps}
+          onUpdateLoraModelConfig={machine.updateLoraModel}
+        />
       }
       promptEditor={
         <GenerationEditorPrompt
@@ -221,14 +217,10 @@ export function GenerationEditor(props: Props) {
               />
             )}
             {!hasSignedTerms && (
-              <GenerationTermsDialog
+              <GenerationTermsButton
                 termsMarkdownText={props.termsMarkdownText}
                 onSubmit={onSignImageGenerationTerms}
-              >
-                <DialogTrigger asChild>
-                  <Button className="w-full">{"生成する"}</Button>
-                </DialogTrigger>
-              </GenerationTermsDialog>
+              />
             )}
           </div>
           <Suspense fallback={null}>
