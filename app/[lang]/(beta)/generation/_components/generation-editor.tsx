@@ -65,6 +65,7 @@ export function GenerationEditor(props: Props) {
   }, [data?.viewer?.imageGenerationTasks])
 
   const onSignImageGenerationTerms = async () => {
+    console.log("onSignImageGenerationTerms")
     try {
       await signTerms({ variables: { input: { version: 1 } } })
       startTransition(() => {
@@ -171,7 +172,11 @@ export function GenerationEditor(props: Props) {
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          promptText={machine.state.context.negativePromptText}
+          promptText={
+            machine.state.context.negativePromptText === ""
+              ? "EasyNegative"
+              : machine.state.context.negativePromptText
+          }
           onChangePromptText={machine.updateNegativePrompt}
         />
       }
@@ -180,6 +185,7 @@ export function GenerationEditor(props: Props) {
           <div>
             {hasSignedTerms && (
               <GenerationSubmitButton
+                onClick={onCreateTask}
                 inProgress={inProgress}
                 isLoading={loading}
                 isDisabled={machine.state.context.isDisabled}
