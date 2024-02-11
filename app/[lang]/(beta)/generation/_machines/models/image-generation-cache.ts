@@ -19,6 +19,7 @@ export class ImageGenerationCache {
     return new ImageGenerationConfig({
       passType: this.props.passType,
       modelId: this.restoreModelId(),
+      modelIds: this.restoreCurrentModelIds(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(modelType),
       sampler: this.restoreSampler(),
@@ -48,7 +49,7 @@ export class ImageGenerationCache {
   }
 
   /**
-   * モデルIDを復元する
+   * モデルのIDを復元する
    * @returns
    */
   restoreModelId() {
@@ -61,6 +62,26 @@ export class ImageGenerationCache {
         captureException(error)
       }
       return defaultValue
+    }
+  }
+
+  /**
+   * 選択中のモデルのID（最大3つ）を復元する
+   * @returns
+   */
+  restoreCurrentModelIds() {
+    const defaultValues = config.generationFeature.defaultImageModelIds
+    try {
+      const value = localStorage.getItem("config.generation.models")
+      if (value === null) {
+        return defaultValues
+      }
+      return value.split(",").map((t) => t.trim())
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValues
     }
   }
 
