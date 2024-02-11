@@ -100,7 +100,14 @@ export function GenerationEditor(props: Props) {
   const onCancelTask = async () => {
     const userNanoid = viewer.viewer?.user.nanoid ?? null
     if (userNanoid === null) return
-    await cancelTask()
+    try {
+      await cancelTask()
+    } catch (error) {
+      toast(
+        "現在リクエストを受け付けて生成実行中です、1分以上時間をおいて生成を待つか、キャンセル下さい",
+      )
+      return
+    }
     startTransition(() => {
       refetch()
     })
