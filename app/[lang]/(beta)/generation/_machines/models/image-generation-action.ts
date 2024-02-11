@@ -1,4 +1,5 @@
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
+import { produce } from "immer"
 
 /**
  * 画像生成の状態を作成する
@@ -106,11 +107,22 @@ export class ImageGenerationAction {
    * @returns
    */
   updateModelId(id: string, modelType: string) {
+    const modelIds = produce(this.state.modelIds, (draft) => {
+      const index = draft.findIndex((modelId) => {
+        return this.state.modelId === modelId
+      })
+      if (index === -1) return
+      if (!draft.includes(id)) {
+        draft[index] = id
+      }
+    })
+
     if (this.state.modelType !== modelType) {
       return new ImageGenerationConfig({
         ...this.state,
         sizeType: this.getModelSizeType(this.state.sizeType, modelType),
         modelId: id,
+        modelIds: modelIds,
         modelType: modelType,
         negativePromptText: this.getNegativePromptText(
           modelType,
@@ -121,6 +133,7 @@ export class ImageGenerationAction {
     return new ImageGenerationConfig({
       ...this.state,
       modelId: id,
+      modelIds: modelIds,
       modelType: modelType,
       negativePromptText: this.getNegativePromptText(
         modelType,
@@ -178,6 +191,11 @@ export class ImageGenerationAction {
     return this.removeLoraModel(name)
   }
 
+  /**
+   * モデルの種類を変更する
+   * @param modelType SD1など
+   * @returns
+   */
   changeModelType(modelType: string) {
     return new ImageGenerationConfig({
       ...this.state,

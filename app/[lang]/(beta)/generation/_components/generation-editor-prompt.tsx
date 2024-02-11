@@ -64,10 +64,18 @@ export const GenerationEditorPrompt = (props: Props) => {
           </>
         }
       >
-        <div className="flex flex-col px-2 pb-2 h-full">
+        <div className="flex flex-col px-2 pb-2 h-full gap-y-2">
+          <Textarea
+            className="resize-none h-full font-mono min-h-40"
+            placeholder={"プロンプト"}
+            value={props.promptText}
+            onChange={(event) => {
+              props.onChangePromptText(event.target.value)
+            }}
+          />
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"secondary"} size={"sm"} className="w-full mb-4">
+              <Button variant={"secondary"} size={"sm"} className="w-full">
                 {"キーワードから選ぶ"}
               </Button>
             </DialogTrigger>
@@ -78,15 +86,6 @@ export const GenerationEditorPrompt = (props: Props) => {
               onSelect={onSelectPromptId}
             />
           </Dialog>
-
-          <Textarea
-            className="resize-none h-full font-mono min-h-40"
-            placeholder={"プロンプト"}
-            value={props.promptText}
-            onChange={(event) => {
-              props.onChangePromptText(event.target.value)
-            }}
-          />
         </div>
       </GenerationEditorCard>
     </>
