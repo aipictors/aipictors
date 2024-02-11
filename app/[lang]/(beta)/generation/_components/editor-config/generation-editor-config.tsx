@@ -1,5 +1,6 @@
 "use client"
 
+import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-lora-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-scale"
@@ -8,10 +9,23 @@ import { GenerationEditorConfigSize } from "@/app/[lang]/(beta)/generation/_comp
 import { GenerationEditorConfigStep } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-step"
 import { GenerationEditorConfigVae } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
+import { GenerationModelsButton } from "@/app/[lang]/(beta)/generation/_components/generation-models-button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
+import { Separator } from "@/components/ui/separator"
+import type {
+  ImageLoraModelsQuery,
+  ImageModelsQuery,
+} from "@/graphql/__generated__/graphql"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
+  models: ImageModelsQuery["imageModels"]
+  currentModelId: string
+  /**
+   * 表示されるモデルのID（最大3個）
+   */
+  currentModelIds: string[]
+  onSelectModelId(id: string, type: string): void
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
   configLoRAModels: string[]
   /**
@@ -37,6 +51,14 @@ type Props = {
 }
 
 export const GenerationEditorConfig = (props: Props) => {
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+
+  const currentModels = props.currentModelIds.map((modelId) => {
+    return props.models.find((model) => {
+      return model.id === modelId
+    })
+  })
+
   return (
     <GenerationEditorCard
       title={"設定"}
@@ -44,6 +66,27 @@ export const GenerationEditorConfig = (props: Props) => {
     >
       <ScrollArea>
         <div className="flex flex-col px-2 gap-y-4 pb-2">
+          <div className="grid gap-y-2">
+            {currentModels.map((model) => (
+              <ConfigModel
+                key={model?.id}
+                imageURL={model?.thumbnailImageURL ?? ""}
+                name={model?.displayName ?? ""}
+                isSelected={model?.id === props.currentModelId}
+                onClick={() => {
+                  props.onSelectModelId(model!.id, model!.type)
+                }}
+              />
+            ))}
+            <GenerationModelsButton
+              isOpen={isOpen}
+              onClose={onClose}
+              models={props.models}
+              selectedModelId={props.currentModelId}
+              onSelect={props.onSelectModelId}
+            />
+          </div>
+          <Separator />
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
             loraModels={props.configLoRAModels}
@@ -51,6 +94,7 @@ export const GenerationEditorConfig = (props: Props) => {
             onChangeLoraModel={props.onChangeLoraModelConfigs}
             onUpdateLoraModel={props.onUpdateLoraModelConfig}
           />
+          <Separator />
           <GenerationEditorConfigSize
             modelType={props.configModelType}
             value={props.configSize}
