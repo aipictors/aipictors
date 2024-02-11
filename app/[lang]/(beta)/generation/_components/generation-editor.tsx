@@ -18,6 +18,7 @@ import {
   type ImageModelsQuery,
   type PromptCategoriesQuery,
 } from "@/graphql/__generated__/graphql"
+import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
@@ -56,6 +57,8 @@ export function GenerationEditor(props: Props) {
     createImageGenerationTaskMutation,
   )
 
+  const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
+
   useEffect(() => {
     const time = setInterval(() => {
       startTransition(() => {
@@ -90,6 +93,19 @@ export function GenerationEditor(props: Props) {
   }
 
   const hasSignedTerms = viewer.viewer?.user.hasSignedImageGenerationTerms
+
+  /**
+   * タスクをキャンセルする
+   */
+  const onCancelTask = async () => {
+    const userNanoid = viewer.viewer?.user.nanoid ?? null
+    if (userNanoid === null) return
+    await cancelTask()
+    startTransition(() => {
+      refetch()
+    })
+    toast("タスクをキャンセルしました")
+  }
 
   /**
    * タスクを作成する
@@ -187,7 +203,7 @@ export function GenerationEditor(props: Props) {
           <div>
             {hasSignedTerms && (
               <GenerationSubmitButton
-                onClick={onCreateTask}
+                onClick={inProgress || loading ? onCancelTask : onCreateTask}
                 inProgress={inProgress}
                 isLoading={loading}
                 isDisabled={machine.state.context.isDisabled}

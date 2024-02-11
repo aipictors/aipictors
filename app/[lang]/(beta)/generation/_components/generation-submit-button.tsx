@@ -13,9 +13,9 @@ export function GenerationSubmitButton(props: Props) {
       onClick={props.onClick}
       className="w-full"
       size={"lg"}
-      disabled={props.isLoading || props.inProgress || props.isDisabled}
+      disabled={props.isLoading || props.isDisabled}
     >
-      {props.isLoading || props.inProgress ? "生成中.." : "生成する"}
+      {props.isLoading || props.inProgress ? "キャンセルする" : "生成する"}
     </Button>
   )
 }
