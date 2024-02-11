@@ -2,7 +2,6 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
 import { LoraModelsDialogButton } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog-button"
-import { Button } from "@/components/ui/button"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 
