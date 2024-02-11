@@ -147,7 +147,7 @@ export function GenerationEditor(props: Props) {
           />
           <GenerationEditorConfig
             loraModels={props.imageLoraModels}
-            configLoraModels={machine.state.context.loraConfigs}
+            configLoRAModels={machine.state.context.loraModels}
             configModelType={currentModel?.type ?? "SD1"}
             configSampler={machine.state.context.sampler}
             configScale={machine.state.context.scale}

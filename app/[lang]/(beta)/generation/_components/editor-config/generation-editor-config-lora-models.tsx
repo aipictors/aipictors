@@ -1,7 +1,7 @@
 "use client"
 
 import { ConfigLoraModel } from "@/app/[lang]/(beta)/generation/_components/config-lora-model"
-import { LoraModelsDialog } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog"
+import { LoraModelsDialogButton } from "@/app/[lang]/(beta)/generation/_components/lora-models-dialog-button"
 import { Button } from "@/components/ui/button"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
@@ -14,7 +14,7 @@ type Props = {
   /**
    * モデルの設定
    */
-  loraModels: { name: string; value: number }[]
+  loraModels: string[]
   availableLoraModelsCount: number
   onChangeLoraModel(modelName: string): void
   onUpdateLoraModel(modelName: string, value: number): void
@@ -23,17 +23,21 @@ type Props = {
 export const GenerationEditorConfigLoraModels = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
-  const selectedModelNames = props.loraModels.map((model) => model.name)
+  const currentModels = props.loraModels.map((model) => {
+    const [name, value] = model.split(":")
+    return { name, value: parseInt(value) }
+  })
+
+  const currentLoraModelNames = props.loraModels.map((model) => {
+    const [name] = model.split(":")
+    return name
+  })
 
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = selectedModelNames.map((name) => {
-    const model = props.models.find((model) => model.name === name)
-    if (model === undefined) {
-      throw new Error()
-    }
-    return model
+  const selectedModels = props.models.filter((model) => {
+    return currentLoraModelNames.includes(model.name)
   })
 
   return (
@@ -44,9 +48,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
           imageURL={model.thumbnailImageURL ?? ""}
           name={model.name}
           description={model.description ?? ""}
-          value={
-            props.loraModels.find((m) => m.name === model.name)?.value ?? 0
-          }
+          value={currentModels.find((m) => m.name === model.name)?.value ?? 0}
           setValue={(value) => {
             props.onUpdateLoraModel(model.name, value)
           }}
@@ -55,17 +57,13 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
           }}
         />
       ))}
-      <LoraModelsDialog
+      <LoraModelsDialogButton
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
-        selectedModelNames={selectedModelNames}
+        selectedModelNames={currentLoraModelNames}
         onSelect={props.onChangeLoraModel}
-      >
-        <Button size={"sm"} className="w-full" variant={"secondary"}>
-          LoRAを追加
-        </Button>
-      </LoraModelsDialog>
+      />
     </div>
   )
 }

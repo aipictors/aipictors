@@ -112,7 +112,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param modelValue
    */
   const updateLoraModel = (modelName: string, modelValue: number) => {
-    const value = action.updateLoraModel(modelName, modelValue)
+    const value = action.updateLoraModelValue(modelName, modelValue)
     send({ type: "UPDATE_CONFIG", value })
   }
 

@@ -15,13 +15,9 @@ export class ImageGenerationCache {
    * @returns
    */
   restore() {
-    const loraModelNames = config.generationFeature.defaultImageLoraModelNames
     const modelType = this.restoreModelType()
     return new ImageGenerationConfig({
       passType: this.props.passType,
-      loraConfigs: loraModelNames.map((name) => {
-        return { name, value: 0 }
-      }),
       modelId: this.restoreModelId(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(modelType),
@@ -33,15 +29,6 @@ export class ImageGenerationCache {
       vae: this.restoreVae(),
       modelType: this.restoreModelType(),
     })
-  }
-
-  /**
-   * LoRAモデルの名前を復元する
-   * @returns
-   */
-  restoreLoraModelNames() {
-    const defaultValue = config.generationFeature.defaultImageLoraModelNames
-    return defaultValue
   }
 
   /**

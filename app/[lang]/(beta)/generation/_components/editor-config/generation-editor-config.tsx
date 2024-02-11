@@ -13,7 +13,11 @@ import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  configLoraModels: { name: string; value: number }[]
+  configLoRAModels: string[]
+  /**
+   * モデルの種類
+   * SD1など
+   */
   configModelType: string
   configSampler: string
   configScale: number
@@ -42,7 +46,7 @@ export const GenerationEditorConfig = (props: Props) => {
         <div className="flex flex-col px-2 gap-y-4 pb-2">
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
-            loraModels={props.configLoraModels}
+            loraModels={props.configLoRAModels}
             availableLoraModelsCount={props.availableLoraModelsCount}
             onChangeLoraModel={props.onChangeLoraModelConfigs}
             onUpdateLoraModel={props.onUpdateLoraModelConfig}

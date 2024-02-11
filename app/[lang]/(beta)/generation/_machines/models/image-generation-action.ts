@@ -1,5 +1,4 @@
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
-import { produce } from "immer"
 
 /**
  * 画像生成の状態を作成する
@@ -236,37 +235,25 @@ export class ImageGenerationAction {
 
   /**
    * モデルの設定を変更する
-   * @param name
-   * @param modelValue
+   * @param name LoRAの名前
+   * @param value LoRAの値
    */
-  updateLoraModel(name: string, modelValue: number) {
-    const draftConfigs = this.state.loraConfigs.map((config) => {
-      if (config.name === name) {
-        return { name: name, value: modelValue }
+  updateLoraModelValue(name: string, value: number) {
+    /**
+     * <lora:名前:値>の形式の文字列
+     */
+    const loraModelTexts = this.state.loraModels.map((model) => {
+      if (model.includes(name)) {
+        return `<lora:${name}:${value}>`
       }
-      return config
+      return `<lora:${model}>`
     })
 
-    const selectedModels = this.state.loraModelNames.map((name) => {
-      const model = this.state.loraConfigs.find((model) => model.name === name)
-      if (model === undefined) {
-        throw new Error()
-      }
-      return model
-    })
+    const promptText = [this.promptTextWithoutLora, ...loraModelTexts]
+      .join(" ")
+      .trim()
 
-    for (const model of selectedModels) {
-      if (model.name === name) {
-        model.value = modelValue
-      }
-    }
-    const promptText = this.getGenerateLoraPrompts(selectedModels)
-
-    return new ImageGenerationConfig({
-      ...this.state,
-      loraConfigs: draftConfigs,
-      promptText: promptText,
-    })
+    return new ImageGenerationConfig({ ...this.state, promptText })
   }
 
   /**
@@ -275,7 +262,18 @@ export class ImageGenerationAction {
    * @returns
    */
   changeLoraModel(name: string) {
-    const isAdded = !this.state.loraModelNames.includes(name)
+    /**
+     * LoRAのモデルの名前
+     */
+    const loraModelNames = this.state.loraModels.map((text) => {
+      const [name] = text.split(":")
+      return name
+    })
+
+    /**
+     * モデルを含んでいない場合は追加、含んでいる場合は削除
+     */
+    const isAdded = !loraModelNames.includes(name)
 
     if (isAdded) {
       return this.addLoraModel(name)
@@ -291,91 +289,60 @@ export class ImageGenerationAction {
     })
   }
 
+  /**
+   * LoRAモデルを追加する
+   * @param name
+   * @returns
+   */
   addLoraModel(name: string) {
-    const selectedModels = this.state.loraModelNames.map((name) => {
-      const model = this.state.loraConfigs.find((model) => model.name === name)
-      if (model === undefined) {
-        throw new Error()
-      }
-      return model
-    })
-
     // 選択可能な数を超えている場合
-    if (this.state.availableLoraModelsCount < selectedModels.length) {
+    if (this.state.availableLoraModelsCount < this.state.loraModels.length) {
       return this.state
     }
 
-    const loraModelNames = produce(
-      this.state.loraModelNames,
-      (loraModelNames) => {
-        const index = loraModelNames.indexOf(name)
-        if (index === -1) {
-          loraModelNames.push(name)
-        } else {
-          loraModelNames.splice(index, 1)
-        }
-      },
-    )
+    const loraModels = [
+      ...this.state.loraModels.map((text) => `<lora:${text}>`),
+      `<lora:${name}:0>`,
+    ]
 
-    const loraConfigs = loraModelNames.map((name) => {
-      const model = selectedModels.find((model) => model.name === name)
-      if (model !== undefined) {
-        return { name: model.name, value: 0 }
-      }
-      return { name: name, value: 0 }
-    })
+    const promptText = [this.promptTextWithoutLora, ...loraModels]
+      .join(" ")
+      .trim()
 
-    selectedModels.push({ name: name, value: 0 })
-    const promptText = this.getGenerateLoraPrompts(selectedModels)
-    return new ImageGenerationConfig({
-      ...this.state,
-      loraConfigs: loraConfigs,
-      promptText: promptText,
-    })
+    return new ImageGenerationConfig({ ...this.state, promptText })
   }
 
+  /**
+   * LoRAの設定を削除する
+   * @param name
+   * @returns
+   */
   removeLoraModel(name: string) {
-    const selectedModels = this.state.loraModelNames.map((name) => {
-      const model = this.state.loraConfigs.find((model) => model.name === name)
-      if (model === undefined) {
-        throw new Error()
-      }
-      return model
+    const loraModels = this.state.loraModels.filter((model) => {
+      return !model.includes(name)
     })
 
-    const loraModelNames = produce(
-      this.state.loraModelNames,
-      (loraModelNames) => {
-        const index = loraModelNames.indexOf(name)
-        if (index === -1) {
-          loraModelNames.push(name)
-        } else {
-          loraModelNames.splice(index, 1)
-        }
-      },
-    )
+    const promptText = [
+      this.promptTextWithoutLora,
+      ...loraModels.map((text) => `<lora:${text}>`),
+    ]
+      .join(" ")
+      .trim()
 
-    const loraConfigs = loraModelNames.map((name) => {
-      const model = selectedModels.find((model) => model.name === name)
-      if (model !== undefined) {
-        return { name: model.name, value: 0 }
-      }
-      return { name: name, value: 0 }
-    })
+    return new ImageGenerationConfig({ ...this.state, promptText })
+  }
 
-    const models = selectedModels.filter((lora) => lora.name !== name)
-    const promptText = this.getGenerateLoraPrompts(models)
-    return new ImageGenerationConfig({
-      ...this.state,
-      loraConfigs: loraConfigs,
-      promptText: promptText,
-    })
+  /**
+   * LoRAの設定を除外したプロンプト
+   */
+  get promptTextWithoutLora() {
+    const regex = /<lora:[^>]*>/g
+    return this.state.promptText.replace(regex, "").trim()
   }
 
   getGenerateLoraPrompts(models: Array<{ name: string; value: number }>) {
     const regex = /<lora:[^>]*>/g
     const cleanText = this.state.promptText.replace(regex, "").trim()
-
     const loraString = models
       .map((config) => `<lora:${config.name}:${config.value}>`)
       .join(" ")

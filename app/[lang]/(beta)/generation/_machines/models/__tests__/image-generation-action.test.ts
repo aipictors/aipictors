@@ -4,7 +4,6 @@ import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
 describe("ImageGenerationAction", () => {
   const config = new ImageGenerationConfig({
     passType: null,
-    loraConfigs: [],
     modelId: "",
     promptText: "",
     negativePromptText: "",
