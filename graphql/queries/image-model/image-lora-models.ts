@@ -10,6 +10,7 @@ export const imageLoraModelsQuery = gql(`
       prompts
       slug
       thumbnailImageURL
+      genre
     }
   }
 `)

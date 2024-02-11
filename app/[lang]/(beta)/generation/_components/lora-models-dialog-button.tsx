@@ -32,7 +32,10 @@ export const LoraModelsDialogButton = (props: Props) => {
           <DialogTitle>{"LoRA選択"}</DialogTitle>
         </DialogHeader>
         <LoraImageModelsList
-          models={props.models}
+          models={props.models.map((model) => ({
+            ...model,
+            genre: model.genre || "その他",
+          }))}
           selectedModelNames={props.selectedModelNames}
           onSelect={props.onSelect}
         />
