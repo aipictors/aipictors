@@ -3,7 +3,6 @@
 import { ConfigModel } from "@/app/[lang]/(beta)/generation/_components/config-model"
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { GenerationModelsButton } from "@/app/[lang]/(beta)/generation/_components/generation-models-button"
-import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
