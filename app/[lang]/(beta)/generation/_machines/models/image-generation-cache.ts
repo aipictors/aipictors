@@ -16,8 +16,7 @@ export class ImageGenerationCache {
    */
   restore() {
     const loraModelNames = config.generationFeature.defaultImageLoraModelNames
-    const negativePromptText = this.restoreNegativePrompt()
-
+    const modelType = this.restoreModelType()
     return new ImageGenerationConfig({
       passType: this.props.passType,
       loraConfigs: loraModelNames.map((name) => {
@@ -25,10 +24,7 @@ export class ImageGenerationCache {
       }),
       modelId: this.restoreModelId(),
       promptText: this.restorePrompt(),
-      negativePromptText:
-        negativePromptText === ""
-          ? this.getDefaultNegativePrompt(this.restoreModelType())
-          : negativePromptText,
+      negativePromptText: this.restoreNegativePrompt(modelType),
       sampler: this.restoreSampler(),
       scale: this.restoreScale(),
       seed: this.restoreSeed(),
@@ -135,16 +131,16 @@ export class ImageGenerationCache {
    * ネガティブプロンプトを復元する
    * @returns
    */
-  restoreNegativePrompt() {
-    const defaultValue = ""
+  restoreNegativePrompt(modelType: string) {
+    const defaultValue = this.getDefaultNegativePrompt(modelType)
     try {
       const value = localStorage.getItem("config.generation.negativePrompt")
-      return value ?? defaultValue
+      return value || defaultValue
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)
       }
-      return defaultValue
+      return this.getDefaultNegativePrompt(modelType)
     }
   }
 
