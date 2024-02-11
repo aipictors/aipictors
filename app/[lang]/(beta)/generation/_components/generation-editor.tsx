@@ -10,7 +10,6 @@ import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_components/generation-submit-button"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
-import { toLoraPromptTexts } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt-texts"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import {
@@ -24,7 +23,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Suspense, startTransition, useMemo } from "react"
+import { Suspense, startTransition, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -56,6 +55,17 @@ export function GenerationEditor(props: Props) {
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
   )
+
+  useEffect(() => {
+    const time = setInterval(() => {
+      startTransition(() => {
+        refetch()
+      })
+    }, 4000)
+    return () => {
+      clearInterval(time)
+    }
+  }, [])
 
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
@@ -94,19 +104,13 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.state.context.modelId
       })
       if (typeof model === "undefined") return
-      const loraPromptTexts = toLoraPromptTexts(
-        props.imageLoraModels,
-        machine.state.context.loraConfigs,
-      )
-      const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
-      const promptText = promptTexts.join(" ")
       await createTask({
         variables: {
           input: {
             count: 1,
             model: model.name,
             vae: machine.state.context.vae ?? "",
-            prompt: promptText,
+            prompt: machine.state.context.promptText,
             negativePrompt: machine.state.context.negativePromptText,
             seed: machine.state.context.seed,
             steps: machine.state.context.steps,
@@ -150,6 +154,7 @@ export function GenerationEditor(props: Props) {
             configSeed={machine.state.context.seed}
             configSize={machine.state.context.sizeType}
             configVae={machine.state.context.vae}
+            configSteps={machine.state.context.steps}
             availableLoraModelsCount={
               machine.state.context.availableLoraModelsCount
             }
@@ -159,6 +164,7 @@ export function GenerationEditor(props: Props) {
             onChangeSeed={machine.updateSeed}
             onChangeSize={machine.updateSizeType}
             onChangeVae={machine.updateVae}
+            onChangeSteps={machine.updateSteps}
             onUpdateLoraModelConfig={machine.updateLoraModel}
           />
         </div>

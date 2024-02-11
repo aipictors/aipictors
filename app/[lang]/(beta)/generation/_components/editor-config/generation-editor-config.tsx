@@ -17,6 +17,7 @@ type Props = {
   configModelType: string
   configSampler: string
   configScale: number
+  configSteps: number
   configSeed: number
   configSize: string
   configVae: string | null
@@ -24,6 +25,7 @@ type Props = {
   onChangeLoraModelConfigs(modelName: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
+  onChangeSteps(steps: number): void
   onChangeSeed(seed: number): void
   onChangeSize(size: string): void
   onChangeVae(vae: string | null): void
@@ -59,8 +61,8 @@ export const GenerationEditorConfig = (props: Props) => {
             onChange={props.onChangeSeed}
           />
           <GenerationEditorConfigStep
-            value={props.configScale}
-            onChange={props.onChangeScale}
+            value={props.configSteps}
+            onChange={props.onChangeSteps}
           />
           <GenerationEditorConfigVae
             value={props.configVae}
