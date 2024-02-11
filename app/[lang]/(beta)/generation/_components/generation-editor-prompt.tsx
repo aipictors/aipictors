@@ -2,7 +2,7 @@
 
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
 import { PromptCategoriesDialogContents } from "@/app/[lang]/(beta)/generation/_components/prompt-categories-dialog-contents"
-import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prpmpt-text"
+import { formatPromptText } from "@/app/[lang]/(beta)/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"

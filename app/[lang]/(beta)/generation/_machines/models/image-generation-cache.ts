@@ -5,7 +5,7 @@ import { captureException } from "@sentry/nextjs"
 type Props = { passType: string | null }
 
 /**
- * 画像生成の設定をキャッシュする
+ * 画像生成の設定のキャッシュを管理する
  */
 export class ImageGenerationCache {
   constructor(private props: Props) {}

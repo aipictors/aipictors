@@ -8,8 +8,8 @@ import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
 import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_components/generation-submit-button"
+import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
-import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
 import { Button } from "@/components/ui/button"
 import { DialogTrigger } from "@/components/ui/dialog"
 import {

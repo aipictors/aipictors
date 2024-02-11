@@ -1,4 +1,4 @@
-import { ImageGenerationAction } from "@/app/_machines/models/image-generation-action"
+import { ImageGenerationAction } from "@/app/[lang]/(beta)/generation/_machines/models/image-generation-action"
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
 
 describe("ImageGenerationAction", () => {
