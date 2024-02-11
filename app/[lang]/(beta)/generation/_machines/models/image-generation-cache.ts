@@ -10,19 +10,6 @@ type Props = { passType: string | null }
 export class ImageGenerationCache {
   constructor(private props: Props) {}
 
-  getDefaultNegativePrompt(modelType: string) {
-    if (modelType === "SD1") {
-      return "EasyNegative"
-    }
-    if (modelType === "SD2") {
-      return "Mayng"
-    }
-    if (modelType === "SDXL") {
-      return "negativeXL_D"
-    }
-    return "EasyNegative"
-  }
-
   /**
    * 復元する
    * @returns
@@ -303,5 +290,23 @@ export class ImageGenerationCache {
    */
   restoreSizeType() {
     return "SD1_512_768"
+  }
+
+  /**
+   * デフォルトのネガティブプロンプトを取得する
+   * @param modelType
+   * @returns
+   */
+  getDefaultNegativePrompt(modelType: string) {
+    if (modelType === "SD1") {
+      return "EasyNegative"
+    }
+    if (modelType === "SD2") {
+      return "Mayng"
+    }
+    if (modelType === "SDXL") {
+      return "negativeXL_D"
+    }
+    return "EasyNegative"
   }
 }
