@@ -45,6 +45,8 @@ export function GenerationEditor(props: Props) {
 
   const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: { limit: 64, offset: 0 },
+    errorPolicy: "all",
+    context: { simulateError: true },
   })
 
   const machine = useImageGenerationMachine({
@@ -61,6 +63,7 @@ export function GenerationEditor(props: Props) {
 
   useEffect(() => {
     const time = setInterval(() => {
+      if (!document.hasFocus()) return
       startTransition(() => {
         refetch()
       })
@@ -166,6 +169,7 @@ export function GenerationEditor(props: Props) {
           <GenerationEditorModels
             models={props.imageModels}
             currentModelId={machine.state.context.modelId}
+            currentModelIds={machine.state.context.modelIds}
             onSelectModelId={machine.updateModelId}
           />
           <GenerationEditorConfig
