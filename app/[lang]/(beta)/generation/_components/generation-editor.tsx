@@ -1,16 +1,17 @@
 "use client"
 
-import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/drawer/generation-terms-dialog"
+import { GenerationTermsDialog } from "@/app/[lang]/(beta)/generation/_components/dialogs/generation-terms-dialog"
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
+import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_components/generation-submit-button"
+import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
-import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_utils/active-image-generation"
-import { toLoraPromptTexts } from "@/app/[lang]/(beta)/generation/_utils/to-lora-prompt-texts"
 import { Button } from "@/components/ui/button"
+import { DialogTrigger } from "@/components/ui/dialog"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -22,7 +23,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Suspense, startTransition, useMemo } from "react"
+import { Suspense, startTransition, useEffect, useMemo } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -55,6 +56,17 @@ export function GenerationEditor(props: Props) {
     createImageGenerationTaskMutation,
   )
 
+  useEffect(() => {
+    const time = setInterval(() => {
+      startTransition(() => {
+        refetch()
+      })
+    }, 4000)
+    return () => {
+      clearInterval(time)
+    }
+  }, [])
+
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
       return task.status === "IN_PROGRESS"
@@ -63,6 +75,7 @@ export function GenerationEditor(props: Props) {
   }, [data?.viewer?.imageGenerationTasks])
 
   const onSignImageGenerationTerms = async () => {
+    console.log("onSignImageGenerationTerms")
     try {
       await signTerms({ variables: { input: { version: 1 } } })
       startTransition(() => {
@@ -91,19 +104,13 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.state.context.modelId
       })
       if (typeof model === "undefined") return
-      const loraPromptTexts = toLoraPromptTexts(
-        props.imageLoraModels,
-        machine.state.context.loraConfigs,
-      )
-      const promptTexts = [machine.state.context.promptText, ...loraPromptTexts]
-      const promptText = promptTexts.join(" ")
       await createTask({
         variables: {
           input: {
             count: 1,
             model: model.name,
             vae: machine.state.context.vae ?? "",
-            prompt: promptText,
+            prompt: machine.state.context.promptText,
             negativePrompt: machine.state.context.negativePromptText,
             seed: machine.state.context.seed,
             steps: machine.state.context.steps,
@@ -147,15 +154,17 @@ export function GenerationEditor(props: Props) {
             configSeed={machine.state.context.seed}
             configSize={machine.state.context.sizeType}
             configVae={machine.state.context.vae}
+            configSteps={machine.state.context.steps}
             availableLoraModelsCount={
               machine.state.context.availableLoraModelsCount
             }
-            onAddLoraModelConfigs={machine.addLoraConfig}
+            onChangeLoraModelConfigs={machine.changeLoraModel}
             onChangeSampler={machine.updateSampler}
             onChangeScale={machine.updateScale}
             onChangeSeed={machine.updateSeed}
             onChangeSize={machine.updateSizeType}
             onChangeVae={machine.updateVae}
+            onChangeSteps={machine.updateSteps}
             onUpdateLoraModelConfig={machine.updateLoraModel}
           />
         </div>
@@ -176,22 +185,24 @@ export function GenerationEditor(props: Props) {
       history={
         <div className="flex flex-col h-full gap-y-2">
           <div>
-            <GenerationTermsDialog
-              termsMarkdownText={props.termsMarkdownText}
-              isDisabled={hasSignedTerms}
-              onSubmit={onSignImageGenerationTerms}
-            >
-              <Button
-                className="w-full"
-                size={"lg"}
-                disabled={
-                  loading || inProgress || machine.state.context.isDisabled
-                }
-                onClick={hasSignedTerms ? onCreateTask : undefined}
+            {hasSignedTerms && (
+              <GenerationSubmitButton
+                onClick={onCreateTask}
+                inProgress={inProgress}
+                isLoading={loading}
+                isDisabled={machine.state.context.isDisabled}
+              />
+            )}
+            {!hasSignedTerms && (
+              <GenerationTermsDialog
+                termsMarkdownText={props.termsMarkdownText}
+                onSubmit={onSignImageGenerationTerms}
               >
-                {loading || inProgress ? "生成中.." : "生成する"}
-              </Button>
-            </GenerationTermsDialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full">{"生成する"}</Button>
+                </DialogTrigger>
+              </GenerationTermsDialog>
+            )}
           </div>
           <Suspense fallback={null}>
             <GenerationEditorResult

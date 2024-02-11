@@ -13,6 +13,7 @@ const zProps = z.object({
   sizeType: z.string(),
   vae: z.string().nullable(),
   seed: z.number(),
+  modelType: z.string(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -40,9 +41,11 @@ export class ImageGenerationConfig implements Props {
 
   readonly seed!: Props["seed"]
 
+  readonly modelType!: Props["modelType"]
+
   readonly isDisabled: boolean
 
-  readonly loraModelIds: string[]
+  readonly loraModelNames: string[]
 
   /**
    * 利用できるLoraModelの数
@@ -52,7 +55,7 @@ export class ImageGenerationConfig implements Props {
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.loraModelIds = this.loraConfigs.map((x) => x.modelId)
+    this.loraModelNames = this.loraConfigs.map((x) => x.name)
     this.availableLoraModelsCount = 2
     if (this.passType === "LITE") {
       this.availableLoraModelsCount = 2

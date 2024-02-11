@@ -100,7 +100,7 @@ export const GenerationEditorResult = (props: Props) => {
         )}
         <Separator />
         <ScrollArea>
-          <div className="p-2 grid gap-2 grid-cols-1 md:grid-cols-2">
+          <div className="p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
             {activeTasks.map((task) => (
               <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
                 <Suspense fallback={<FallbackResultCard />}>

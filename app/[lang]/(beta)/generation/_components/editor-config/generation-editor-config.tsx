@@ -13,17 +13,19 @@ import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  configLoraModels: { modelId: string; value: number }[]
+  configLoraModels: { name: string; value: number }[]
   configModelType: string
   configSampler: string
   configScale: number
+  configSteps: number
   configSeed: number
   configSize: string
   configVae: string | null
   availableLoraModelsCount: number
-  onAddLoraModelConfigs(modelId: string): void
+  onChangeLoraModelConfigs(modelName: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
+  onChangeSteps(steps: number): void
   onChangeSeed(seed: number): void
   onChangeSize(size: string): void
   onChangeVae(vae: string | null): void
@@ -42,7 +44,7 @@ export const GenerationEditorConfig = (props: Props) => {
             models={props.loraModels}
             loraModels={props.configLoraModels}
             availableLoraModelsCount={props.availableLoraModelsCount}
-            onAddLoraModel={props.onAddLoraModelConfigs}
+            onChangeLoraModel={props.onChangeLoraModelConfigs}
             onUpdateLoraModel={props.onUpdateLoraModelConfig}
           />
           <GenerationEditorConfigSize
@@ -59,8 +61,8 @@ export const GenerationEditorConfig = (props: Props) => {
             onChange={props.onChangeSeed}
           />
           <GenerationEditorConfigStep
-            value={props.configScale}
-            onChange={props.onChangeScale}
+            value={props.configSteps}
+            onChange={props.onChangeSteps}
           />
           <GenerationEditorConfigVae
             value={props.configVae}

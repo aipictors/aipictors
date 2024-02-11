@@ -89,11 +89,15 @@ export const config = {
      */
     defaultImageModelId: "1",
     /**
-     * デフォルトのLoRAモデルID
+     * デフォルトのモデルの種別
      */
-    defaultImageLoraModelIds: ["25", "26"],
+    defaultImageModelType: "SD1",
+    /**
+     * デフォルトのLoRAモデル名
+     */
+    defaultImageLoraModelNames: ["flat1", "flatBG"],
     defaultPromptValue: "",
-    defaultNegativePromptValue: "",
+    defaultNegativePromptValue: "EasyNegative",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
     defaultSamplerValue: "DPM++ 2M",
@@ -122,6 +126,13 @@ export const config = {
       "SD2_768_768",
       "SD2_768_1200",
       "SD2_1200_768",
+      "SD2_384_960",
+      "SD2_960_384",
+      "SD3_1024_1024",
+      "SD3_832_1216",
+      "SD3_1216_832",
+      "SD3_640_1536",
+      "SD3_1536_640",
     ],
   },
   /**

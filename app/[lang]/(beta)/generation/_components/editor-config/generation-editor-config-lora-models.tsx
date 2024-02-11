@@ -14,22 +14,22 @@ type Props = {
   /**
    * モデルの設定
    */
-  loraModels: { modelId: string; value: number }[]
+  loraModels: { name: string; value: number }[]
   availableLoraModelsCount: number
-  onAddLoraModel(modelId: string): void
-  onUpdateLoraModel(modelId: string, value: number): void
+  onChangeLoraModel(modelName: string): void
+  onUpdateLoraModel(modelName: string, value: number): void
 }
 
 export const GenerationEditorConfigLoraModels = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
-  const selectedModelIds = props.loraModels.map((model) => model.modelId)
+  const selectedModelNames = props.loraModels.map((model) => model.name)
 
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = selectedModelIds.map((id) => {
-    const model = props.models.find((model) => model.id === id)
+  const selectedModels = selectedModelNames.map((name) => {
+    const model = props.models.find((model) => model.name === name)
     if (model === undefined) {
       throw new Error()
     }
@@ -45,13 +45,13 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
           name={model.name}
           description={model.description ?? ""}
           value={
-            props.loraModels.find((m) => m.modelId === model.id)?.value ?? 0
+            props.loraModels.find((m) => m.name === model.name)?.value ?? 0
           }
           setValue={(value) => {
-            props.onUpdateLoraModel(model.id, value)
+            props.onUpdateLoraModel(model.name, value)
           }}
           onDelete={() => {
-            props.onAddLoraModel(model.id)
+            props.onChangeLoraModel(model.name)
           }}
         />
       ))}
@@ -59,8 +59,8 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
         isOpen={isOpen}
         onClose={onClose}
         models={props.models}
-        selectedModelIds={selectedModelIds}
-        onSelect={props.onAddLoraModel}
+        selectedModelNames={selectedModelNames}
+        onSelect={props.onChangeLoraModel}
       >
         <Button size={"sm"} className="w-full" variant={"secondary"}>
           LoRAを追加

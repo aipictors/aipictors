@@ -1,29 +1,39 @@
 "use client"
 
-import { LoginWithGoogle } from "@/app/[lang]/(main)/_components/login-with-google"
-import { LoginWithX } from "@/app/[lang]/(main)/_components/login-with-x"
+import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import { LoginForm } from "@/app/_components/login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
 import { useMutation } from "@apollo/client"
-import { getAuth, signInWithCustomToken } from "firebase/auth"
+import {
+  GoogleAuthProvider,
+  TwitterAuthProvider,
+  getAuth,
+  signInWithCustomToken,
+} from "firebase/auth"
 import Link from "next/link"
+import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
 
 type Props = {
-  isOpen: boolean
-  onClose(): void
+  children: React.ReactNode
 }
 
-export const LoginModal = (props: Props) => {
+/**
+ * ログイン
+ * @param props
+ * @returns
+ */
+export const LoginDialog = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
@@ -45,7 +55,6 @@ export const LoginModal = (props: Props) => {
       }
       await signInWithCustomToken(getAuth(), token)
       toast("ログインしました。")
-      props.onClose()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -54,32 +63,52 @@ export const LoginModal = (props: Props) => {
   }
 
   return (
-    <Dialog open={props.isOpen} onOpenChange={() => props.onClose()}>
+    <Dialog>
+      {props.children}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
+          <DialogDescription>
+            {"ここから先はログインが必要みたい。"}
+          </DialogDescription>
         </DialogHeader>
 
-        <LoginWithGoogle onClose={props.onClose} disabled={isLoading} />
-        <LoginWithX onClose={props.onClose} disabled={isLoading} />
+        <div className="my-2 space-y-2">
+          <p className="text-sm">{"SNSアカウントでログイン"}</p>
+          <div className="flex flex-col md:flex-row gap-2">
+            <SocialLoginButton
+              disabled={isLoading}
+              provider={new GoogleAuthProvider()}
+              buttonText="Googleでログイン"
+              icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
+            />
+            <SocialLoginButton
+              disabled={isLoading}
+              provider={new TwitterAuthProvider()}
+              buttonText="𝕏(Twitter)でログイン"
+              icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
+            />
+          </div>
+        </div>
 
         <Separator />
 
-        <div className="w-full space-y-2">
-          <p className="text-sm">{"またはパスワードでログイン"}</p>
+        <div className="w-full my-2 space-y-2">
+          <p className="text-sm">{"またはアカウント情報でログイン"}</p>
           <LoginForm onSubmit={onLogin} isLoading={isLoading} />
         </div>
 
         <Separator />
 
         <div className={"flex flex-col w-full gap-y-2"}>
-          <p className="text-sm">{"アカウントをお持ちで無い方はこちら"}</p>
+          <span className="text-sm">
+            {"アカウントをお持ちで無い方はこちら"}
+          </span>
           <Link
             className="w-full"
             target="_blank"
             href={"https://www.aipictors.com/login/"}
           >
-            {/* ここでも isLoading がtrueのときdisabled */}
             <Button
               className="w-full"
               variant={"secondary"}

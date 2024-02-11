@@ -9,13 +9,19 @@ type LoraModel = {
   name: string
 }
 
+/**
+ * LoRAのプロンプトテキストを生成する
+ * @param loraModels
+ * @param configs
+ * @returns
+ */
 export const toLoraPromptTexts = (
   loraModels: LoraModel[],
   configs: LoraModelConfig[],
 ) => {
   return configs.map((config) => {
     const model = loraModels.find((model) => {
-      return model.id === config.modelId
+      return model.name === config.name
     })
     if (model === undefined) return null
     return toLoraPromptText(model.name, config.value)

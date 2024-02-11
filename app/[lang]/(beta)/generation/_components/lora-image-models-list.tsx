@@ -10,8 +10,8 @@ type Model = {
 
 type Props = {
   models: Model[]
-  selectedModelIds: string[]
-  onSelect(id: string): void
+  selectedModelNames: string[]
+  onSelect(name: string, isAdded: boolean): void
 }
 
 export const LoraImageModelsList = (props: Props) => {
@@ -22,11 +22,14 @@ export const LoraImageModelsList = (props: Props) => {
           <ImageModelCard
             key={model.id}
             displayName={model.name}
-            isActive={props.selectedModelIds.includes(model.id)}
+            isActive={props.selectedModelNames.includes(model.name)}
             thumbnailImageURL={model.thumbnailImageURL}
             description={model.description}
             onSelect={() => {
-              props.onSelect(model.id)
+              props.onSelect(
+                model.name,
+                !props.selectedModelNames.includes(model.name),
+              )
             }}
           />
         ))}
