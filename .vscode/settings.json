@@ -1,4 +1,7 @@
 {
+  "terminal.integrated.env.windows": {
+    "PSExecutionPolicyPreference": "RemoteSigned"
+  },
   "cSpell.words": [
     "adsbygoogle",
     "adsense",
