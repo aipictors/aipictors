@@ -167,6 +167,37 @@ export class ImageGenerationAction {
     return "SD3_1024_1024"
   }
 
+  getNegativePromptTextFromSd(sdType: string, negativePromptText: string) {
+    if (
+      (negativePromptText === "" ||
+        negativePromptText === "EasyNegative" ||
+        negativePromptText === "Mayng" ||
+        negativePromptText === "negativeXL_D") &&
+      sdType === "SD1"
+    ) {
+      return "EasyNegative"
+    }
+    if (
+      (negativePromptText === "" ||
+        negativePromptText === "EasyNegative" ||
+        negativePromptText === "Mayng" ||
+        negativePromptText === "negativeXL_D") &&
+      sdType === "SD2"
+    ) {
+      return "Mayng"
+    }
+    if (
+      (negativePromptText === "" ||
+        negativePromptText === "EasyNegative" ||
+        negativePromptText === "Mayng" ||
+        negativePromptText === "negativeXL_D") &&
+      sdType === "SDXL"
+    ) {
+      return "negativeXL_D"
+    }
+    return "EasyNegative"
+  }
+
   /**
    * モデルIDを変更する
    * @param id
@@ -182,12 +213,20 @@ export class ImageGenerationAction {
         ),
         modelId: id,
         modelType: modelType,
+        negativePromptText: this.getNegativePromptTextFromSd(
+          modelType,
+          this.state.negativePromptText,
+        ),
       })
     }
     return new ImageGenerationConfig({
       ...this.state,
       modelId: id,
       modelType: modelType,
+      negativePromptText: this.getNegativePromptTextFromSd(
+        modelType,
+        this.state.negativePromptText,
+      ),
     })
   }
 
