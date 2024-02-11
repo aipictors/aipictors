@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useMemo, useState } from "react"
+import { Key, useMemo, useState } from "react"
 
 type ImageModel = {
   id: string
@@ -44,6 +44,18 @@ export const ImageModelsList = (props: Props) => {
         model.category === selectedCategoryFilter),
   )
 
+  const groupedModels = useMemo(() => {
+    const groups = new Map()
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    filteredModels.forEach((model) => {
+      if (!groups.has(model.category)) {
+        groups.set(model.category, [])
+      }
+      groups.get(model.category).push(model)
+    })
+    return groups
+  }, [filteredModels])
+
   return (
     <>
       <div className="flex">
@@ -73,20 +85,36 @@ export const ImageModelsList = (props: Props) => {
         </Select>
       </div>
       <ScrollArea className="max-h-96 rounded-md overflow-visible">
-        <div className="grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
-          {filteredModels.map((imageModel) => (
-            <ImageModelCard
-              key={imageModel.id}
-              displayName={imageModel.displayName}
-              thumbnailImageURL={imageModel.thumbnailImageURL}
-              type={imageModel.type}
-              isActive={props.selectedModelId === imageModel.id}
-              onSelect={() => {
-                props.onSelect(imageModel.id, imageModel.type ?? "")
-              }}
-            />
-          ))}
-        </div>
+        {/* 種別ごとにモデルを表示 */}
+        {Array.from(groupedModels.entries()).map(([type, models]) => (
+          <div key={type}>
+            <p className="font-bold pl-4">{type}</p>
+            <div className="grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+              {models.map(
+                (imageModel: {
+                  id: Key | null | undefined
+                  displayName: string | null
+                  thumbnailImageURL: string | null
+                  type: string | null | undefined
+                }) => (
+                  <ImageModelCard
+                    key={imageModel.id}
+                    displayName={imageModel.displayName}
+                    thumbnailImageURL={imageModel.thumbnailImageURL}
+                    type={imageModel.type}
+                    isActive={props.selectedModelId === imageModel.id}
+                    onSelect={() => {
+                      props.onSelect(
+                        String(imageModel.id),
+                        imageModel.type ?? "",
+                      )
+                    }}
+                  />
+                ),
+              )}
+            </div>
+          </div>
+        ))}
       </ScrollArea>
     </>
   )
