@@ -12,6 +12,7 @@ describe("ImageGenerationAction", () => {
     scale: 0,
     seed: -1,
     sizeType: "SD1_256_256",
+    modelType: "SD1",
     steps: 0,
     vae: "",
   })
@@ -109,14 +110,14 @@ describe("ImageGenerationAction", () => {
 
     test("should update the model id and return a new ImageGenerationConfig instance", () => {
       const id = "1"
-      const updatedConfig = imageGenerationAction.updateModelId(id)
+      const updatedConfig = imageGenerationAction.updateModelId(id, "SD1")
       expect(updatedConfig.modelId).toBe(id)
       expect(updatedConfig).toBeInstanceOf(ImageGenerationConfig)
     })
 
     test("should update the size type to SD2_768_768 when the model id is 22, 23, or 24 and the current size type includes SD1", () => {
       const id = "22"
-      const updatedConfig = imageGenerationAction.updateModelId(id)
+      const updatedConfig = imageGenerationAction.updateModelId(id, "SD2")
       expect(updatedConfig.sizeType).toBe("SD1_512_512")
       expect(updatedConfig).toBeInstanceOf(ImageGenerationConfig)
     })

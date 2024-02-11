@@ -16,7 +16,7 @@ type Props = {
   onClose(): void
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
-  onSelect(id: string): void
+  onSelect(id: string, type: string): void
   children: React.ReactNode
 }
 

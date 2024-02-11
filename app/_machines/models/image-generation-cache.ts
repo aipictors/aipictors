@@ -30,6 +30,7 @@ export class ImageGenerationCache {
       sizeType: this.restoreSizeType(),
       steps: this.restoreSteps(),
       vae: this.restoreVae(),
+      modelType: this.restoreModelType(),
     })
   }
 
@@ -51,6 +52,14 @@ export class ImageGenerationCache {
   }
 
   /**
+   * モデル種別を保存する
+   * @param modelId
+   */
+  saveModelType(modelType: string) {
+    localStorage.setItem("config.generation.model.type", modelType)
+  }
+
+  /**
    * モデルIDを復元する
    * @returns
    */
@@ -58,6 +67,23 @@ export class ImageGenerationCache {
     const defaultValue = config.generationFeature.defaultImageModelId
     try {
       const value = localStorage.getItem("config.generation.model")
+      return value ?? defaultValue
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * モデル種別を復元する
+   * @returns
+   */
+  restoreModelType() {
+    const defaultValue = config.generationFeature.defaultImageModelType
+    try {
+      const value = localStorage.getItem("config.generation.model.type")
       return value ?? defaultValue
     } catch (error) {
       if (error instanceof Error) {

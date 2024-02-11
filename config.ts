@@ -89,6 +89,10 @@ export const config = {
      */
     defaultImageModelId: "1",
     /**
+     * デフォルトのモデルの種別
+     */
+    defaultImageModelType: "SD1",
+    /**
      * デフォルトのLoRAモデル名
      */
     defaultImageLoraModelNames: ["flat1", "flatBG"],

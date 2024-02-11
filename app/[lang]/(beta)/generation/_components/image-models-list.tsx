@@ -19,7 +19,7 @@ type ImageModel = {
 
 type Props = {
   models: ImageModel[]
-  onSelect(id: string): void
+  onSelect(id: string, type: string): void
   selectedModelId: string | null
 }
 
@@ -82,7 +82,7 @@ export const ImageModelsList = (props: Props) => {
               type={imageModel.type}
               isActive={props.selectedModelId === imageModel.id}
               onSelect={() => {
-                props.onSelect(imageModel.id)
+                props.onSelect(imageModel.id, imageModel.type ?? "")
               }}
             />
           ))}

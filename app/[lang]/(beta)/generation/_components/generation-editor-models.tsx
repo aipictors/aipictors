@@ -14,7 +14,7 @@ import { useBoolean } from "usehooks-ts"
 type Props = {
   models: ImageModelsQuery["imageModels"]
   currentModelId: string
-  onSelectModelId(id: string): void
+  onSelectModelId(id: string, type: string): void
 }
 
 export const GenerationEditorModels = (props: Props) => {
@@ -49,9 +49,8 @@ export const GenerationEditorModels = (props: Props) => {
    * 3個以上の場合は選択中のモデルを置換する
    * @param modelId
    */
-  const onSelectModelId = (modelId: string) => {
-    props.onSelectModelId(modelId)
-
+  const onSelectModelId = (modelId: string, modelType: string) => {
+    props.onSelectModelId(modelId, modelType)
     const draftIds = produce(currentModelIds, (draft) => {
       if (!draft.includes(modelId)) {
         if (draft.length < 3) {
@@ -83,7 +82,7 @@ export const GenerationEditorModels = (props: Props) => {
                 name={model?.displayName ?? ""}
                 isSelected={model?.id === props.currentModelId}
                 onClick={() => {
-                  onSelectModelId(model!.id)
+                  onSelectModelId(model!.id, model!.type)
                 }}
               />
             ))}

@@ -13,6 +13,7 @@ const zProps = z.object({
   sizeType: z.string(),
   vae: z.string().nullable(),
   seed: z.number(),
+  modelType: z.string(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -39,6 +40,8 @@ export class ImageGenerationConfig implements Props {
   readonly vae!: Props["vae"]
 
   readonly seed!: Props["seed"]
+
+  readonly modelType!: Props["modelType"]
 
   readonly isDisabled: boolean
 

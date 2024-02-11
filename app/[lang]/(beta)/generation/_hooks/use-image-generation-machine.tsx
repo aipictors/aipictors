@@ -99,9 +99,10 @@ export const useImageGenerationMachine = (props: Props) => {
    * モデルを変更する
    * @param modelId
    */
-  const updateModelId = (modelId: string) => {
+  const updateModelId = (modelId: string, modelType: string) => {
     cacheStorage.saveModelId(modelId)
-    const value = action.updateModelId(modelId)
+    cacheStorage.saveModelType(modelType)
+    const value = action.updateModelId(modelId, modelType)
     send({ type: "UPDATE_CONFIG", value })
   }
 
