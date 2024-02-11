@@ -100,107 +100,6 @@ export class ImageGenerationAction {
     })
   }
 
-  getSizeTypeToNextSizeType(nowSizeType: string, nextType: string) {
-    if (nextType === "SD1") {
-      if (nowSizeType === "SD2_768_768" || nowSizeType === "SD3_1024_1024") {
-        return "SD1_512_512"
-      }
-      if (
-        nowSizeType === "SD2_768_1200" ||
-        nowSizeType === "SD2_384_960" ||
-        nowSizeType === "SD3_832_1216" ||
-        nowSizeType === "SD3_640_1536"
-      ) {
-        return "SD1_512_768"
-      }
-      if (
-        nowSizeType === "SD2_1200_768" ||
-        nowSizeType === "SD2_960_384" ||
-        nowSizeType === "SD3_1216_832" ||
-        nowSizeType === "SD3_1536_640"
-      ) {
-        return "SD1_768_512"
-      }
-    }
-    if (nextType === "SD2") {
-      if (nowSizeType === "SD1_512_512" || nowSizeType === "SD3_1024_1024") {
-        return "SD2_768_768"
-      }
-      if (
-        nowSizeType === "SD1_512_768" ||
-        nowSizeType === "SD3_832_1216" ||
-        nowSizeType === "SD3_640_1536"
-      ) {
-        return "SD2_768_1200"
-      }
-      if (
-        nowSizeType === "SD1_768_512" ||
-        nowSizeType === "SD3_1216_832" ||
-        nowSizeType === "SD3_1536_640"
-      ) {
-        return "SD2_1200_768"
-      }
-    }
-    if (nextType === "SDXL") {
-      if (nowSizeType === "SD1_512_512" || nowSizeType === "SD2_768_768") {
-        return "SD3_1024_1024"
-      }
-      if (
-        nowSizeType === "SD1_512_768" ||
-        nowSizeType === "SD2_768_1200" ||
-        nowSizeType === "SD2_384_960"
-      ) {
-        return "SD3_832_1216"
-      }
-      if (
-        nowSizeType === "SD1_768_512" ||
-        nowSizeType === "SD2_1200_768" ||
-        nowSizeType === "SD2_960_384"
-      ) {
-        return "SD3_1216_832"
-      }
-    }
-
-    if (nextType === "SD1") {
-      return "SD1_512_512"
-    }
-    if (nextType === "SD2") {
-      return "SD2_768_768"
-    }
-    return "SD3_1024_1024"
-  }
-
-  getNegativePromptTextFromSd(sdType: string, negativePromptText: string) {
-    if (
-      (negativePromptText === "" ||
-        negativePromptText === "EasyNegative" ||
-        negativePromptText === "Mayng" ||
-        negativePromptText === "negativeXL_D") &&
-      sdType === "SD1"
-    ) {
-      return "EasyNegative"
-    }
-    if (
-      (negativePromptText === "" ||
-        negativePromptText === "EasyNegative" ||
-        negativePromptText === "Mayng" ||
-        negativePromptText === "negativeXL_D") &&
-      sdType === "SD2"
-    ) {
-      return "Mayng"
-    }
-    if (
-      (negativePromptText === "" ||
-        negativePromptText === "EasyNegative" ||
-        negativePromptText === "Mayng" ||
-        negativePromptText === "negativeXL_D") &&
-      sdType === "SDXL"
-    ) {
-      return "negativeXL_D"
-    }
-    return "EasyNegative"
-  }
-
   /**
    * モデルIDを変更する
    * @param id
@@ -210,13 +109,10 @@ export class ImageGenerationAction {
     if (this.state.modelType !== modelType) {
       return new ImageGenerationConfig({
         ...this.state,
-        sizeType: this.getSizeTypeToNextSizeType(
-          this.state.sizeType,
-          modelType,
-        ),
+        sizeType: this.getModelSizeType(this.state.sizeType, modelType),
         modelId: id,
         modelType: modelType,
-        negativePromptText: this.getNegativePromptTextFromSd(
+        negativePromptText: this.getNegativePromptText(
           modelType,
           this.state.negativePromptText,
         ),
@@ -226,7 +122,7 @@ export class ImageGenerationAction {
       ...this.state,
       modelId: id,
       modelType: modelType,
-      negativePromptText: this.getNegativePromptTextFromSd(
+      negativePromptText: this.getNegativePromptText(
         modelType,
         this.state.negativePromptText,
       ),
@@ -340,12 +236,111 @@ export class ImageGenerationAction {
     return this.state.promptText.replace(regex, "").trim()
   }
 
-  getGenerateLoraPrompts(models: Array<{ name: string; value: number }>) {
-    const regex = /<lora:[^>]*>/g
-    const cleanText = this.state.promptText.replace(regex, "").trim()
-    const loraString = models
-      .map((config) => `<lora:${config.name}:${config.value}>`)
-      .join(" ")
-    return `${cleanText} ${loraString}`.trim()
+  /**
+   * ネガティブプロンプトを取得する
+   * @param modelType モデルの種類
+   * @param negativePromptText ネガティブプロンプト
+   * @returns
+   */
+  getNegativePromptText(modelType: string, negativePromptText: string) {
+    const isDefaultPrompt =
+      negativePromptText === "" ||
+      negativePromptText === "EasyNegative" ||
+      negativePromptText === "Mayng" ||
+      negativePromptText === "negativeXL_D"
+
+    if (isDefaultPrompt && modelType === "SD1") {
+      return "EasyNegative"
+    }
+
+    if (isDefaultPrompt && modelType === "SD2") {
+      return "Mayng"
+    }
+
+    if (isDefaultPrompt && modelType === "SDXL") {
+      return "negativeXL_D"
+    }
+
+    return "EasyNegative"
+  }
+
+  /**
+   * モデルに応じたサイズを取得する
+   * @param sizeType サイズ
+   * @param modelType モデルの種類
+   * @returns
+   */
+  getModelSizeType(sizeType: string, modelType: string) {
+    if (modelType === "SD1") {
+      if (sizeType === "SD2_768_768" || sizeType === "SD3_1024_1024") {
+        return "SD1_512_512"
+      }
+      if (
+        sizeType === "SD2_768_1200" ||
+        sizeType === "SD2_384_960" ||
+        sizeType === "SD3_832_1216" ||
+        sizeType === "SD3_640_1536"
+      ) {
+        return "SD1_512_768"
+      }
+      if (
+        sizeType === "SD2_1200_768" ||
+        sizeType === "SD2_960_384" ||
+        sizeType === "SD3_1216_832" ||
+        sizeType === "SD3_1536_640"
+      ) {
+        return "SD1_768_512"
+      }
+    }
+
+    if (modelType === "SD2") {
+      if (sizeType === "SD1_512_512" || sizeType === "SD3_1024_1024") {
+        return "SD2_768_768"
+      }
+      if (
+        sizeType === "SD1_512_768" ||
+        sizeType === "SD3_832_1216" ||
+        sizeType === "SD3_640_1536"
+      ) {
+        return "SD2_768_1200"
+      }
+      if (
+        sizeType === "SD1_768_512" ||
+        sizeType === "SD3_1216_832" ||
+        sizeType === "SD3_1536_640"
+      ) {
+        return "SD2_1200_768"
+      }
+    }
+
+    if (modelType === "SDXL") {
+      if (sizeType === "SD1_512_512" || sizeType === "SD2_768_768") {
+        return "SD3_1024_1024"
+      }
+      if (
+        sizeType === "SD1_512_768" ||
+        sizeType === "SD2_768_1200" ||
+        sizeType === "SD2_384_960"
+      ) {
+        return "SD3_832_1216"
+      }
+      if (
+        sizeType === "SD1_768_512" ||
+        sizeType === "SD2_1200_768" ||
+        sizeType === "SD2_960_384"
+      ) {
+        return "SD3_1216_832"
+      }
+    }
+
+    if (modelType === "SD1") {
+      return "SD1_512_512"
+    }
+
+    if (modelType === "SD2") {
+      return "SD2_768_768"
+    }
+
+    return "SD3_1024_1024"
   }
 }

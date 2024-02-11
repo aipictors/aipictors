@@ -3,6 +3,7 @@ import { z } from "zod"
 const zProps = z.object({
   passType: z.string().nullable(),
   modelId: z.string(),
+  modelIds: z.array(z.string()),
   promptText: z.string(),
   negativePromptText: z.string(),
   sampler: z.string(),
@@ -20,6 +21,8 @@ export class ImageGenerationConfig implements Props {
   readonly passType!: Props["passType"]
 
   readonly modelId!: Props["modelId"]
+
+  readonly modelIds!: Props["modelIds"]
 
   readonly promptText!: Props["promptText"]
 
