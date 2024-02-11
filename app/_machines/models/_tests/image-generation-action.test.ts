@@ -118,7 +118,7 @@ describe("ImageGenerationAction", () => {
     test("should update the size type to SD2_768_768 when the model id is 22, 23, or 24 and the current size type includes SD1", () => {
       const id = "22"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD2")
-      expect(updatedConfig.sizeType).toBe("SD1_512_512")
+      expect(updatedConfig.sizeType).toBe("SD2_768_768")
       expect(updatedConfig).toBeInstanceOf(ImageGenerationConfig)
     })
   })
