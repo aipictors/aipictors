@@ -1,6 +1,9 @@
 import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
 import { produce } from "immer"
 
+/**
+ * 画像生成の状態を作成する
+ */
 export class ImageGenerationAction {
   constructor(private state: ImageGenerationConfig) {}
 

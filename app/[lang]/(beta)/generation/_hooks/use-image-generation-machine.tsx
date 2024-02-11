@@ -1,6 +1,6 @@
-import { imageGenerationMachine } from "@/app/_machines/image-generation-machine"
-import { ImageGenerationAction } from "@/app/_machines/models/image-generation-action"
-import { ImageGenerationCache } from "@/app/_machines/models/image-generation-cache"
+import { imageGenerationMachine } from "@/app/[lang]/(beta)/generation/_machines/image-generation-machine"
+import { ImageGenerationAction } from "@/app/[lang]/(beta)/generation/_machines/models/image-generation-action"
+import { ImageGenerationCache } from "@/app/[lang]/(beta)/generation/_machines/models/image-generation-cache"
 import { useMachine } from "@xstate/react"
 
 type Props = {
