@@ -26,5 +26,6 @@ export const imageGenerationTaskFieldsFragment = gql(`
     }
     vae
     token
+    nanoid
   }
 `)

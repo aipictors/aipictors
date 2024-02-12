@@ -2,7 +2,6 @@
 
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
-import { GenerationEditorModels } from "@/app/[lang]/(beta)/generation/_components/generation-editor-models"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
 import { GenerationEditorResult } from "@/app/[lang]/(beta)/generation/_components/generation-editor-result"
@@ -10,8 +9,8 @@ import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationTermsButton } from "@/app/[lang]/(beta)/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
-import { Button } from "@/components/ui/button"
-import { DialogTrigger } from "@/components/ui/dialog"
+import { Card } from "@/components/ui/card"
+import { config } from "@/config"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -97,6 +96,19 @@ export function GenerationEditor(props: Props) {
 
   const hasSignedTerms = viewer.viewer?.user.hasSignedImageGenerationTerms
 
+  const maxCount = () => {
+    if (viewer.viewer?.currentPass?.type === "LITE") {
+      return config.passFeature.imageGenerationsCount.lite
+    }
+    if (viewer.viewer?.currentPass?.type === "PREMIUM") {
+      return config.passFeature.imageGenerationsCount.premium
+    }
+    if (viewer.viewer?.currentPass?.type === "STANDARD") {
+      return config.passFeature.imageGenerationsCount.standard
+    }
+    return config.passFeature.imageGenerationsCount.free
+  }
+
   /**
    * タスクをキャンセルする
    */
@@ -162,6 +174,10 @@ export function GenerationEditor(props: Props) {
     return model.id === machine.state.context.modelId
   })
 
+  const waitTasksCount = () => {
+    return 10
+  }
+
   return (
     <GenerationEditorLayout
       config={
@@ -207,22 +223,34 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <div>
-            {hasSignedTerms && (
-              <GenerationSubmitButton
-                onClick={inProgress || loading ? onCancelTask : onCreateTask}
-                inProgress={inProgress}
-                isLoading={loading}
-                isDisabled={machine.state.context.isDisabled}
-              />
-            )}
-            {!hasSignedTerms && (
-              <GenerationTermsButton
-                termsMarkdownText={props.termsMarkdownText}
-                onSubmit={onSignImageGenerationTerms}
-              />
-            )}
-          </div>
+          <Card className="px-2 py-2">
+            <div>
+              {hasSignedTerms && (
+                <GenerationSubmitButton
+                  onClick={inProgress || loading ? onCancelTask : onCreateTask}
+                  inProgress={inProgress}
+                  isLoading={loading}
+                  isDisabled={machine.state.context.isDisabled}
+                />
+              )}
+              {!hasSignedTerms && (
+                <GenerationTermsButton
+                  termsMarkdownText={props.termsMarkdownText}
+                  onSubmit={onSignImageGenerationTerms}
+                />
+              )}
+            </div>
+            <p className="">
+              生成待ち人数：
+              {inProgress
+                ? data?.imageGenerationEngineStatus.normalTasksCount
+                : "-"}
+            </p>
+            <p>
+              残り生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
+              {maxCount()}
+            </p>
+          </Card>
           <Suspense fallback={null}>
             <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}

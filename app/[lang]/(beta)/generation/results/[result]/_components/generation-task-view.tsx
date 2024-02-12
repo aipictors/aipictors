@@ -12,6 +12,7 @@ import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { AppLoading } from "@/components/app/app-loading"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
@@ -257,7 +258,7 @@ export function GenerationTaskView(props: Props) {
   }
 
   return (
-    <div className="px-4 py-4 w-full max-w-fit mx-auto">
+    <ScrollArea className="px-4 py-4 w-full max-w-fit mx-auto">
       <PrivateImage
         className={`max-h-screen m-auto generation-image-${props.taskId}`}
         taskId={data.imageGenerationTask.id}
@@ -359,6 +360,6 @@ export function GenerationTaskView(props: Props) {
           <p>{data.imageGenerationTask.scale}</p>
         </div>
       </div>
-    </div>
+    </ScrollArea>
   )
 }
