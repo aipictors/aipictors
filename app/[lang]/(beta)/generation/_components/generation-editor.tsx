@@ -240,14 +240,14 @@ export function GenerationEditor(props: Props) {
                 />
               )}
             </div>
-            <p className="">
-              生成待ち人数：
+            <p>
+              生成待ち：
               {inProgress
                 ? data?.imageGenerationEngineStatus.normalTasksCount
                 : "-"}
             </p>
             <p>
-              残り生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
+              生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
               {maxCount()}
             </p>
           </Card>
