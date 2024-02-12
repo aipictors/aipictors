@@ -71,7 +71,11 @@ export const GenerationEditorResult = (props: Props) => {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  const onSelectTask = (taskId: string | null) => {
+  const onSelectTask = (taskId: string | null, status: string) => {
+    if (status !== "DONE") {
+      toast("選択できない履歴です")
+      return
+    }
     if (!taskId) {
       toast("存在しない履歴です")
       return
@@ -168,7 +172,7 @@ export const GenerationEditorResult = (props: Props) => {
                 <Suspense fallback={<FallbackResultCard />}>
                   {editMode === "edit" ? (
                     <Button
-                      onClick={() => onSelectTask(task.nanoid)}
+                      onClick={() => onSelectTask(task.nanoid, task.status)}
                       className="p-0 h-auto overflow-hidden border-1 rounded outline-none relative"
                     >
                       <GenerationResultCard
