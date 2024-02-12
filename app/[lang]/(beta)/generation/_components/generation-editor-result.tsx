@@ -207,7 +207,7 @@ export const GenerationEditorResult = (props: Props) => {
                           </Button>
                         </SheetTrigger>
                         <SheetContent
-                          side={"left"}
+                          side={"right"}
                           className="p-0 flex flex-col gap-0"
                         >
                           <Suspense fallback={<FallbackResultCard />}>
