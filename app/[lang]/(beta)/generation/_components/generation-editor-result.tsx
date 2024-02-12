@@ -44,7 +44,7 @@ export const GenerationEditorResult = (props: Props) => {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
   const onRestore = (taskId: string) => {
-    const task = props.tasks.find((task) => task.id === taskId)
+    const task = props.tasks.find((task) => task.nanoid === taskId)
     if (typeof task === "undefined") return
     props.onChangeSampler(task.sampler)
     props.onChangeScale(task.scale)
@@ -213,7 +213,10 @@ export const GenerationEditorResult = (props: Props) => {
                           className="p-0 flex flex-col gap-0"
                         >
                           <Suspense fallback={<FallbackResultCard />}>
-                            <GenerationTaskView taskId={task.nanoid ?? ""} />
+                            <GenerationTaskView
+                              onRestore={onRestore}
+                              taskId={task.nanoid ?? ""}
+                            />
                           </Suspense>
                         </SheetContent>
                       </Sheet>

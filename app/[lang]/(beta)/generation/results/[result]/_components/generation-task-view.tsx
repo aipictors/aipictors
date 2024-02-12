@@ -33,6 +33,7 @@ import { CopyButton } from "./copy-button"
 
 type Props = {
   taskId: string
+  onRestore?: (taskId: string) => void
 }
 
 /**
@@ -185,7 +186,11 @@ export function GenerationTaskView(props: Props) {
   const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
 
   const onReference = () => {
-    window.location.href = `/generation/?ref=${props.taskId}`
+    if (props.onRestore !== undefined) {
+      props.onRestore(props.taskId)
+    } else {
+      window.location.href = `/generation/?ref=${props.taskId}`
+    }
   }
 
   const onPost = () => {
