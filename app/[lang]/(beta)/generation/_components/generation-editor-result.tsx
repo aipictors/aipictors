@@ -123,47 +123,45 @@ export const GenerationEditorResult = (props: Props) => {
           </Button>
         }
       >
-        {config.isDevelopmentMode && (
-          <div className="flex px-2 pb-2 space-x-2">
-            <Toggle onClick={onChangeEditMode} variant="outline">
-              選択
-            </Toggle>
-            <Button
-              onClick={onCancelSelected}
-              disabled={selectedTaskIds.length === 0}
-              variant={"secondary"}
-            >
-              {"解除"}
-            </Button>
+        <div className="flex px-2 pb-2 space-x-2">
+          <Toggle onClick={onChangeEditMode} variant="outline">
+            選択
+          </Toggle>
+          <Button
+            onClick={onCancelSelected}
+            disabled={selectedTaskIds.length === 0}
+            variant={"secondary"}
+          >
+            {"解除"}
+          </Button>
 
-            <AppConfirmDialog
-              title={"確認"}
-              description={"本当に削除しますか？"}
-              onNext={() => {
-                onTrashTasks()
-              }}
-              onCancel={() => {}}
-            >
-              <Button
-                disabled={selectedTaskIds.length === 0}
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <Trash2Icon className="w-4" />
-              </Button>
-            </AppConfirmDialog>
+          <AppConfirmDialog
+            title={"確認"}
+            description={"本当に削除しますか？"}
+            onNext={() => {
+              onTrashTasks()
+            }}
+            onCancel={() => {}}
+          >
             <Button
               disabled={selectedTaskIds.length === 0}
               variant={"ghost"}
               size={"icon"}
             >
-              <ArrowDownToLineIcon className="w-4" />
+              <Trash2Icon className="w-4" />
             </Button>
-            <Button disabled variant={"ghost"} size={"icon"}>
-              <StarIcon className="w-4" />
-            </Button>
-          </div>
-        )}
+          </AppConfirmDialog>
+          <Button
+            disabled={selectedTaskIds.length === 0}
+            variant={"ghost"}
+            size={"icon"}
+          >
+            <ArrowDownToLineIcon className="w-4" />
+          </Button>
+          <Button disabled variant={"ghost"} size={"icon"}>
+            <StarIcon className="w-4" />
+          </Button>
+        </div>
         <Separator />
         <ScrollArea>
           <div className="p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
