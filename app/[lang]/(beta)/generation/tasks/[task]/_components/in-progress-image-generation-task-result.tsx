@@ -1,7 +1,7 @@
 "use client"
 
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
-import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/results/[result]/_components/generation-menu-button"
+import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/tasks/[task]/_components/generation-menu-button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import {

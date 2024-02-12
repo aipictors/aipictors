@@ -1,10 +1,10 @@
 "use client"
 
 import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components/generation-editor-card"
-import { GenerationTaskView } from "@/app/[lang]/(beta)/generation/results/[result]/_components/generation-task-view"
-import { ErrorResultCard } from "@/app/[lang]/(beta)/generation/results/_components/error-result-card"
-import { FallbackResultCard } from "@/app/[lang]/(beta)/generation/results/_components/fallback-result-card"
-import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/results/_components/generation-result-card"
+import { GenerationTaskView } from "@/app/[lang]/(beta)/generation/tasks/[task]/_components/generation-task-view"
+import { ErrorResultCard } from "@/app/[lang]/(beta)/generation/tasks/_components/error-result-card"
+import { FallbackResultCard } from "@/app/[lang]/(beta)/generation/tasks/_components/fallback-result-card"
+import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/tasks/_components/generation-result-card"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -190,7 +190,7 @@ export const GenerationEditorResult = (props: Props) => {
                   ) : null}
                   {editMode !== "edit" &&
                     (!isDesktop ? (
-                      <Link href={`/generation/results/${task.nanoid}`}>
+                      <Link href={`/generation/tasks/${task.nanoid}`}>
                         <Button className="p-0 h-auto overflow-hidden border-1 rounded outline-none">
                           <GenerationResultCard
                             taskId={task.id}

@@ -1,4 +1,4 @@
-import { GenerationTasksList } from "@/app/[lang]/(beta)/generation/results/_components/generation-tasks-list"
+import { GenerationTasksList } from "@/app/[lang]/(beta)/generation/tasks/_components/generation-tasks-list"
 import type { Metadata } from "next"
 
 /**

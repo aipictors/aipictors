@@ -1,13 +1,13 @@
 "use client"
 
 import { StarRating } from "@/app/[lang]/(beta)/generation/_components/star-rating"
-import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/results/[result]/_components/generation-menu-button"
-import { InProgressImageGenerationTaskResult } from "@/app/[lang]/(beta)/generation/results/[result]/_components/in-progress-image-generation-task-result"
-import { GenerationParameters } from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-parameters"
+import { GenerationMenuButton } from "@/app/[lang]/(beta)/generation/tasks/[task]/_components/generation-menu-button"
+import { InProgressImageGenerationTaskResult } from "@/app/[lang]/(beta)/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
+import { GenerationParameters } from "@/app/[lang]/(beta)/generation/tasks/[task]/_types/generation-parameters"
 import {
   GenerationSize,
   parseGenerationSize,
-} from "@/app/[lang]/(beta)/generation/results/[result]/_types/generation-size"
+} from "@/app/[lang]/(beta)/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"

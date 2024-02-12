@@ -1,4 +1,4 @@
-import { InProgressGenerationCard } from "@/app/[lang]/(beta)/generation/results/_components/in-progress-generation-card"
+import { InProgressGenerationCard } from "@/app/[lang]/(beta)/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 
 type Props = {
