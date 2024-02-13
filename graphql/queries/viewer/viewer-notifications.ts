@@ -1,5 +1,8 @@
 import { gql } from "@/graphql/__generated__"
 
+/**
+ * ログイン中のユーザの通知
+ */
 export const viewerNotificationsQuery = gql(`
   query ViewerNotifications($offset: Int!, $limit: Int!) {
     viewer {

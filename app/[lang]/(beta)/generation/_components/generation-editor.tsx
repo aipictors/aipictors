@@ -22,8 +22,8 @@ import {
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { Suspense, startTransition, useEffect, useMemo } from "react"
 import { toast } from "sonner"
@@ -70,13 +70,13 @@ export function GenerationEditor(props: Props) {
   }, [data?.viewer?.imageGenerationTasks])
 
   const isTimeout = useFocusTimeout()
+
   useEffect(() => {
     const time = setInterval(() => {
-      if (!isTimeout && inProgress) {
-        startTransition(() => {
-          refetch()
-        })
-      }
+      if (isTimeout || !inProgress) return
+      startTransition(() => {
+        refetch()
+      })
     }, 1000)
     // クリーンアップ関数
     return () => {

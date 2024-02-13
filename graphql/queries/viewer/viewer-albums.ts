@@ -1,5 +1,8 @@
 import { gql } from "@/graphql/__generated__"
 
+/**
+ * ログイン中のユーザのシリーズ
+ */
 export const viewerAlbumsQuery = gql(`
   query ViewerAlbums($offset: Int!, $limit: Int!) {
     viewer {

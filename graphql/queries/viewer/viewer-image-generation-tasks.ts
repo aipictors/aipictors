@@ -1,5 +1,8 @@
 import { gql } from "@/graphql/__generated__"
 
+/**
+ * ログイン中のユーザの画像生成タスク
+ */
 export const viewerImageGenerationTasksQuery = gql(`
   query ViewerImageGenerationTasks($offset: Int!, $limit: Int!) {
     imageGenerationEngineStatus {
@@ -10,6 +13,14 @@ export const viewerImageGenerationTasksQuery = gql(`
       remainingImageGenerationTasksCount
       imageGenerationTasks(offset: $offset, limit: $limit) {
         ...ImageGenerationTaskFields
+      }
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
       }
     }
   }
