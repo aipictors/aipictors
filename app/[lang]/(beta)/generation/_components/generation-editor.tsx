@@ -240,16 +240,18 @@ export function GenerationEditor(props: Props) {
                 />
               )}
             </div>
-            <p>
-              生成待ち：
-              {inProgress
-                ? data?.imageGenerationEngineStatus.normalTasksCount
-                : "-"}
-            </p>
-            <p>
-              生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
-              {maxCount()}
-            </p>
+            <div className="flex">
+              <p className="mr-2">
+                生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
+                {maxCount()}
+              </p>
+              <p className="">
+                生成待ち：
+                {inProgress
+                  ? data?.imageGenerationEngineStatus.normalTasksCount
+                  : "-"}
+              </p>
+            </div>
           </Card>
           <Suspense fallback={null}>
             <GenerationEditorResult

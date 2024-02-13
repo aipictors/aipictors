@@ -7,6 +7,18 @@ import { FallbackResultCard } from "@/app/[lang]/(beta)/generation/tasks/_compon
 import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/tasks/_components/generation-result-card"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -17,11 +29,18 @@ import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-im
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { ArrowDownToLineIcon, Check, StarIcon, Trash2Icon } from "lucide-react"
+import {
+  ArrowDownToLineIcon,
+  Check,
+  MoreHorizontalIcon,
+  StarIcon,
+  Trash2Icon,
+} from "lucide-react"
 import Link from "next/link"
 import { Suspense, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
+
 type Tasks = NonNullable<
   ViewerImageGenerationTasksQuery["viewer"]
 >["imageGenerationTasks"]
@@ -41,6 +60,8 @@ type Props = {
 export const GenerationEditorResult = (props: Props) => {
   const [editMode, setEditMode] = useState("")
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+  const [isOpenTool, setIsOpenTool] = useState<boolean>(false)
+  const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
   const onRestore = (taskId: string) => {
@@ -113,6 +134,27 @@ export const GenerationEditorResult = (props: Props) => {
     }
   }
 
+  const onToggleTool = () => {
+    setIsOpenTool((prev) => !prev)
+  }
+
+  const changeThumbnailSize = (size: string) => () => {
+    setThumbnailSize(size)
+  }
+
+  const getGridClasses = (size: string): string => {
+    switch (size) {
+      case "small":
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+      case "middle":
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-3 lg:grid-cols-2 xl:grid-cols-1"
+      case "big":
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
+      default:
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+    }
+  }
+
   return (
     <>
       <GenerationEditorCard
@@ -123,7 +165,7 @@ export const GenerationEditorResult = (props: Props) => {
           </Button>
         }
       >
-        <div className="flex px-2 pb-2 space-x-2">
+        <div className="flex px-2 pb-2 space-x-2 items-center">
           <Toggle onClick={onChangeEditMode} variant="outline">
             選択
           </Toggle>
@@ -161,10 +203,44 @@ export const GenerationEditorResult = (props: Props) => {
           <Button disabled variant={"ghost"} size={"icon"}>
             <StarIcon className="w-4" />
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <MoreHorizontalIcon className="w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>{"サイズ"}</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuLabel>{"サイズ変更"}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={thumbnailSize === "small"}
+                      onCheckedChange={changeThumbnailSize("small")}
+                    >
+                      小
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={thumbnailSize === "middle"}
+                      onCheckedChange={changeThumbnailSize("middle")}
+                    >
+                      中
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={thumbnailSize === "big"}
+                      onCheckedChange={changeThumbnailSize("big")}
+                    >
+                      大
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <Separator />
         <ScrollArea>
-          <div className="p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
+          <div className={getGridClasses(thumbnailSize)}>
             {activeTasks.map((task) => (
               <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
                 <Suspense fallback={<FallbackResultCard />}>
