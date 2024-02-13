@@ -31,7 +31,6 @@ import { useMutation } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import {
   ArrowDownToLineIcon,
-  Check,
   MoreHorizontalIcon,
   StarIcon,
   Trash2Icon,
@@ -60,7 +59,6 @@ type Props = {
 export const GenerationEditorResult = (props: Props) => {
   const [editMode, setEditMode] = useState("")
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
-  const [isOpenTool, setIsOpenTool] = useState<boolean>(false)
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
@@ -130,10 +128,6 @@ export const GenerationEditorResult = (props: Props) => {
     }
   }
 
-  const onToggleTool = () => {
-    setIsOpenTool((prev) => !prev)
-  }
-
   const changeThumbnailSize = (size: string) => () => {
     setThumbnailSize(size)
   }
@@ -141,19 +135,14 @@ export const GenerationEditorResult = (props: Props) => {
   const getGridClasses = (size: string): string => {
     switch (size) {
       case "small":
-        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+        return "p-2 grid grid-cols-3 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
       case "middle":
-        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-3 lg:grid-cols-2 xl:grid-cols-1"
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
       case "big":
-        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
+        return "p-2 grid grid-cols-1 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-1 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
       default:
         return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
     }
-  }
-
-  const selectedTaskClass = (taskId: string): string => {
-    console.log(selectedTaskIds.includes(taskId))
-    return selectedTaskIds.includes(taskId) ? "opacity-40" : ""
   }
 
   return (
@@ -264,19 +253,14 @@ export const GenerationEditorResult = (props: Props) => {
                     <Button
                       onClick={() => onSelectTask(task.nanoid, task.status)}
                       className={
-                        "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                        "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
                       }
                     >
                       <GenerationResultCard
                         taskId={task.id}
                         token={task.token}
-                        className={selectedTaskClass(task.nanoid ?? "")}
+                        isSelected={selectedTaskIds.includes(task.nanoid ?? "")}
                       />
-                      {selectedTaskIds.includes(task.nanoid ?? "") ? (
-                        <div className="absolute bg-white rounded-full right-2 bottom-2">
-                          <Check color="black" />
-                        </div>
-                      ) : null}
                     </Button>
                   ) : null}
                   {editMode !== "edit" &&
@@ -284,7 +268,7 @@ export const GenerationEditorResult = (props: Props) => {
                       <Link href={`/generation/tasks/${task.nanoid}`}>
                         <Button
                           className={
-                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
                           }
                         >
                           <GenerationResultCard
@@ -298,7 +282,7 @@ export const GenerationEditorResult = (props: Props) => {
                         <SheetTrigger asChild>
                           <Button
                             className={
-                              "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                              "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
                             }
                           >
                             <GenerationResultCard

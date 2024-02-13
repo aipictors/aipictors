@@ -1,10 +1,11 @@
 import { InProgressGenerationCard } from "@/app/[lang]/(beta)/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
+import { Check } from "lucide-react"
 
 type Props = {
   taskId: string
   token: string | null
-  className?: string
+  isSelected?: boolean
 }
 
 /**
@@ -13,15 +14,25 @@ type Props = {
  */
 export const GenerationResultCard = (props: Props) => {
   if (props.token == null) {
-    return <InProgressGenerationCard className={props.className} />
+    return (
+      <div className={!props.isSelected ? "" : "opacity-40"}>
+        <InProgressGenerationCard />
+      </div>
+    )
   }
 
   return (
-    <PrivateImage
-      className={props.className}
-      taskId={props.taskId}
-      token={props.token}
-      alt={"-"}
-    />
+    <>
+      <div className={!props.isSelected ? "" : "opacity-40"}>
+        <PrivateImage taskId={props.taskId} token={props.token} alt={"-"} />
+      </div>
+      {!props.isSelected ? null : (
+        <>
+          <div className="absolute bg-white rounded-full right-2 bottom-2">
+            <Check color="black" />
+          </div>
+        </>
+      )}
+    </>
   )
 }

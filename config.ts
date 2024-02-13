@@ -118,7 +118,7 @@ export const config = {
       "DDIM",
     ],
     defaultVaeValue: "kl-f8-anime2",
-    vaeValues: ["kl-f8-anime2", "ClearVAE_V2.3"],
+    vaeValues: ["kl-f8-anime2", "ClearVAE_V2.3", "sdxl_vae"],
     sizeValues: [
       "SD1_512_512",
       "SD1_512_768",

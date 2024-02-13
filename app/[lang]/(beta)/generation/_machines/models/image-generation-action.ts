@@ -118,9 +118,11 @@ export class ImageGenerationAction {
     })
 
     if (this.state.modelType !== modelType) {
+      // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる
       return new ImageGenerationConfig({
         ...this.state,
         sizeType: this.getModelSizeType(this.state.sizeType, modelType),
+        vae: this.getModelVae(modelType),
         modelId: id,
         modelIds: modelIds,
         modelType: modelType,
@@ -360,5 +362,18 @@ export class ImageGenerationAction {
     }
 
     return "SD3_1024_1024"
+  }
+
+  getModelVae(modelType: string) {
+    if (modelType === "SD1") {
+      return "ClearVAE_V2.3"
+    }
+    if (modelType === "SD2") {
+      return "kl-f8-anime2"
+    }
+    if (modelType === "SDXL") {
+      return "sdxl_vae"
+    }
+    return "ClearVAE_V2.3"
   }
 }
