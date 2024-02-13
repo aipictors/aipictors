@@ -6,7 +6,7 @@ type Props = {
   onClick(): void
 }
 
-export function GenerationSubmitButton(props: Props) {
+export function GenerationCancelButton(props: Props) {
   return (
     <Button
       onClick={props.onClick}
@@ -14,7 +14,7 @@ export function GenerationSubmitButton(props: Props) {
       size={"lg"}
       disabled={props.isLoading || props.isDisabled}
     >
-      {"生成する"}
+      {"キャンセルする"}
     </Button>
   )
 }

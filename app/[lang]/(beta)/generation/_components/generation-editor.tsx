@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationEditorConfig } from "@/app/[lang]/(beta)/generation/_components/editor-config/generation-editor-config"
+import { GenerationCancelButton } from "@/app/[lang]/(beta)/generation/_components/generation-cancel-button"
 import { GenerationEditorLayout } from "@/app/[lang]/(beta)/generation/_components/generation-editor-layout"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/(beta)/generation/_components/generation-editor-prompt"
@@ -9,6 +10,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationTermsButton } from "@/app/[lang]/(beta)/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
+import { useLastFocusTime } from "@/app/_hooks/use-last-focus-time"
 import { Card } from "@/components/ui/card"
 import { config } from "@/config"
 import {
@@ -60,24 +62,28 @@ export function GenerationEditor(props: Props) {
 
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
-  useEffect(() => {
-    const time = setInterval(() => {
-      if (!document.hasFocus()) return
-      startTransition(() => {
-        refetch()
-      })
-    }, 4000)
-    return () => {
-      clearInterval(time)
-    }
-  }, [])
-
   const inProgress = useMemo(() => {
     const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
       return task.status === "IN_PROGRESS"
     })
     return index !== -1
   }, [data?.viewer?.imageGenerationTasks])
+
+  const isTimeout = useLastFocusTime()
+  useEffect(() => {
+    const time = setInterval(() => {
+      console.log(isTimeout)
+      if (!isTimeout && inProgress) {
+        startTransition(() => {
+          refetch()
+        })
+      }
+    })
+    // クリーンアップ関数
+    return () => {
+      clearInterval(time)
+    }
+  }, [])
 
   const onSignImageGenerationTerms = async () => {
     console.log("onSignImageGenerationTerms")
@@ -225,12 +231,27 @@ export function GenerationEditor(props: Props) {
         <div className="flex flex-col h-full gap-y-2">
           <Card className="px-2 py-2 space-y-2">
             <div>
-              {hasSignedTerms && (
+              {/* 生成開始ボタン */}
+              {hasSignedTerms && !inProgress && (
                 <GenerationSubmitButton
-                  onClick={inProgress || loading ? onCancelTask : onCreateTask}
-                  inProgress={inProgress}
+                  onClick={onCreateTask}
                   isLoading={loading}
                   isDisabled={machine.state.context.isDisabled}
+                />
+              )}
+              {/* キャンセルボタン */}
+              {hasSignedTerms && inProgress && (
+                <GenerationCancelButton
+                  onClick={onCancelTask}
+                  isLoading={loading}
+                  isDisabled={machine.state.context.isDisabled}
+                />
+              )}
+              {/* 利用規約同意ボタン */}
+              {!hasSignedTerms && (
+                <GenerationTermsButton
+                  termsMarkdownText={props.termsMarkdownText}
+                  onSubmit={onSignImageGenerationTerms}
                 />
               )}
               {!hasSignedTerms && (
