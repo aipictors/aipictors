@@ -116,7 +116,7 @@ export const ImageModelsList = (props: Props) => {
           </SelectContent>
         </Select>
       </div>
-      <ScrollArea className="max-h-96 rounded-md overflow-visible">
+      <ScrollArea className="max-h-[80vh] rounded-md overflow-visible">
         {/* 種別ごとにモデルを表示 */}
         {Array.from(groupedModels.entries()).map(([type, models]) => (
           <div key={type}>
