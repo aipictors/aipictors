@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export const AppFooter = () => {
   return (
-    <div className="p-4 flex flex-col space-y-2">
+    <footer className="container py-4 border-t space-y-2">
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <Link href={"/app/terms"} className="text-sm">
@@ -27,6 +27,6 @@ export const AppFooter = () => {
       <div className="flex">
         <p className="font-bold text-sm">{"© 2023 Aipictors"}</p>
       </div>
-    </div>
+    </footer>
   )
 }

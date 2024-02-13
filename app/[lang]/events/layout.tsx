@@ -25,7 +25,7 @@ const EventsLayout = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return <>{props.children}</>
+  return <main className="container min-h-screen">{props.children}</main>
 }
 
 export default EventsLayout

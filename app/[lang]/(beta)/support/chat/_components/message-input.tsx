@@ -67,7 +67,7 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="w-full pb-sm md:pb-md flex gap-x-4 items-end">
+    <div className="w-full pb-sm md:pb-md flex gap-x-4 items-end pb-4">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">

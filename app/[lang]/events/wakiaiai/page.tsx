@@ -21,7 +21,7 @@ const EventWakiaiaiPage = async () => {
   })
 
   return (
-    <div className="min-h-screen space-y-2 py-2 px-2 max-w-container-xl mx-auto">
+    <div className="space-y-2 py-4">
       <div className="flex flex-col md:flex-row items-center">
         <div className="flex flex-grow-3">
           <EventImage
@@ -33,7 +33,7 @@ const EventWakiaiaiPage = async () => {
             linkTitle={"Aipictors"}
           />
         </div>
-        <div className="flex-2 px-4 md:px-8 py-8 space-y-8">
+        <div className="w-full flex-2 md:px-4 py-8 space-y-8">
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-blue-300">
               {"2023年9月30日"}

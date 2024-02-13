@@ -21,7 +21,7 @@ export const GenerationDocument = (props: Props) => {
     "https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-banner.webp"
 
   return (
-    <div className="overflow-hidden px-4 space-y-4 w-full">
+    <div className="overflow-hidden space-y-4 w-full">
       <img className="rounded w-full" src={imageUrl} alt="Aipictors Plus" />
       <AppMarkdown>{props.markdownText}</AppMarkdown>
       <div className="w-full overflow-auto">

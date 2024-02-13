@@ -1,12 +1,10 @@
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
-import MainPageLoading from "@/app/[lang]/(main)/loading"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
-import { Suspense } from "react"
 
 const HomePage = async () => {
   const client = createClient()
@@ -41,18 +39,16 @@ const HomePage = async () => {
 
   return (
     <AppPage className="space-y-4">
-      <Suspense fallback={<MainPageLoading />}>
-        <HomeTagList hotTags={hotTagsResp.data.hotTags} />
-        <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
-        {sections.map((section) => (
-          <HomeWorkSection
-            key={section.title}
-            title={section.title}
-            tooltip={section.tooltip}
-            works={worksResp.data.works!}
-          />
-        ))}
-      </Suspense>
+      <HomeTagList hotTags={hotTagsResp.data.hotTags} />
+      <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
+      {sections.map((section) => (
+        <HomeWorkSection
+          key={section.title}
+          title={section.title}
+          tooltip={section.tooltip}
+          works={worksResp.data.works!}
+        />
+      ))}
     </AppPage>
   )
 }

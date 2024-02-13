@@ -99,27 +99,18 @@ export default {
          */
         header: "72px",
       },
-      spacing: {
-        /**
-         * 追加: ページの左右の余白に使用
-         */
-        sm: "1rem",
-        /**
-         * 追加: ページの左右の余白に使用
-         */
-        md: "2rem",
-      },
       width: {
         /**
          * 追加: 左のメニュー部分
          */
         aide: "12rem",
       },
-      maxWidth: {
+      inset: {
         /**
-         * 左の部分のメニューを除外するページの最大の幅
+         * 追加: ヘッダーの高さ
+         * headerをHeaderに付ける為にtop-headerとして使用している
          */
-        page: "calc(100% - 12rem)",
+        header: "72px",
       },
     },
   },
