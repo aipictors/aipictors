@@ -41,18 +41,16 @@ const HomePage = async () => {
 
   return (
     <AppPage className="space-y-4">
-      <Suspense fallback={<MainPageLoading />}>
-        <HomeTagList hotTags={hotTagsResp.data.hotTags} />
-        <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
-        {sections.map((section) => (
-          <HomeWorkSection
-            key={section.title}
-            title={section.title}
-            tooltip={section.tooltip}
-            works={worksResp.data.works!}
-          />
-        ))}
-      </Suspense>
+      <HomeTagList hotTags={hotTagsResp.data.hotTags} />
+      <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
+      {sections.map((section) => (
+        <HomeWorkSection
+          key={section.title}
+          title={section.title}
+          tooltip={section.tooltip}
+          works={worksResp.data.works!}
+        />
+      ))}
     </AppPage>
   )
 }

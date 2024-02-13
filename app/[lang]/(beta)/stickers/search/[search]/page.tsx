@@ -33,7 +33,7 @@ const StickersPage = async (props: Props) => {
   const isEmpty = stickersResp.data.stickers.length === 0
 
   return (
-    <main className="flex flex-col space-y-8 pb-16 px-4 md:pr-8">
+    <main className="flex flex-col space-y-8 pb-16">
       <StickerListHeader />
       <StickerSearchForm text={decodeURIComponent(props.params.search)} />
       {isEmpty ? (

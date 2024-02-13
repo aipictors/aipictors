@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 
 const AccountPasswordPage = async () => {
   return (
-    <AppPageCenter className="w-full space-y-8 px-4 md:pr-8">
+    <AppPageCenter className="w-full space-y-8">
       <p className="leading-none font-bold text-2xl">{"パスワード"}</p>
       <AccountPasswordForm />
     </AppPageCenter>

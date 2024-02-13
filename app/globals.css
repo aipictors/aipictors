@@ -67,6 +67,19 @@ html {
   overflow-y: auto;
 }
 
+/**
+ * なにこれ
+ */
 .no-margin {
   margin: 0 !important;
+}
+
+/**
+ * 画面が小さい場合に余白を減らす
+ * @see https://github.com/shadcn-ui/ui/blob/0fae3fd93ae749aca708bdfbbbeddc5d576bfb2e/apps/www/styles/globals.css#L76
+ */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
 }

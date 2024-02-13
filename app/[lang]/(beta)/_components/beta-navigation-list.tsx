@@ -6,6 +6,7 @@ import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
   GemIcon,
+  HistoryIcon,
   HomeIcon,
   LogInIcon,
   MessageCircleIcon,
@@ -34,7 +35,7 @@ export const BetaNavigationList = () => {
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && (
-        <HomeNavigationButton href={"/generation/tasks"} icon={SparklesIcon}>
+        <HomeNavigationButton href={"/generation/tasks"} icon={HistoryIcon}>
           {"生成履歴"}
         </HomeNavigationButton>
       )}

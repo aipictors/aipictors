@@ -10,10 +10,8 @@ const FlutterPrivacyPage = async () => {
   )
 
   return (
-    <div className="flex justify-center py-8 min-h-screen">
-      <div className="max-w-[container.sm] mx-auto w-full px-4 md:px-12">
-        <AppMarkdown>{text}</AppMarkdown>
-      </div>
+    <div className="py-8">
+      <AppMarkdown>{text}</AppMarkdown>
     </div>
   )
 }

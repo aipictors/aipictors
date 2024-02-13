@@ -22,7 +22,7 @@ const StickersPage = async () => {
   })
 
   return (
-    <main className="flex flex-col space-y-8 pb-16 px-4 md:pr-8">
+    <main className="flex flex-col space-y-8 pb-16">
       <StickerListHeader />
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
