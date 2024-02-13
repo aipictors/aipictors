@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 /**
  * 10分間フォーカスがなかったらタイムアウトとする
  */
-export const useForcusTimeout = () => {
+export const useFocusTimeout = () => {
   const [lastFocusTime, setLastFocusTime] = useState(Date.now())
   const [isTimeout, setIsTimeout] = useState(false)
 

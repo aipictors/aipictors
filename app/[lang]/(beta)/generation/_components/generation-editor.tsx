@@ -10,7 +10,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/(beta)/generation/_componen
 import { GenerationTermsButton } from "@/app/[lang]/(beta)/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/(beta)/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/(beta)/generation/_hooks/use-image-generation-machine"
-import { useLastFocusTime } from "@/app/_hooks/use-last-focus-time"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Card } from "@/components/ui/card"
 import { config } from "@/config"
 import {
@@ -69,7 +69,7 @@ export function GenerationEditor(props: Props) {
     return index !== -1
   }, [data?.viewer?.imageGenerationTasks])
 
-  const isTimeout = useLastFocusTime()
+  const isTimeout = useFocusTimeout()
   useEffect(() => {
     const time = setInterval(() => {
       console.log(isTimeout)
