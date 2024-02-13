@@ -159,7 +159,11 @@ export const GenerationEditorResult = (props: Props) => {
         <div className="flex items-center">
           <div className="flex px-2 pb-2 space-x-2 items-center">
             {/* 履歴選択・キャンセルボタン */}
-            <Toggle onClick={onChangeEditMode} variant="outline">
+            <Toggle
+              className="w-24"
+              onClick={onChangeEditMode}
+              variant="outline"
+            >
               {editMode === "edit" ? "キャンセル" : "選択"}
             </Toggle>
             {/* 履歴削除ボタン、画像ダウンロードボタン */}
@@ -198,7 +202,9 @@ export const GenerationEditorResult = (props: Props) => {
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <MoreHorizontalIcon className="w-4" />
+                    <Button variant={"ghost"} size={"icon"}>
+                      <MoreHorizontalIcon className="w-4" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuSub>

@@ -297,7 +297,7 @@ export class ImageGenerationAction {
       }
       if (
         sizeType === "SD2_768_1200" ||
-        sizeType === "SD2_384_960" ||
+        sizeType === "SD1_384_960" ||
         sizeType === "SD3_832_1216" ||
         sizeType === "SD3_640_1536"
       ) {
@@ -305,7 +305,7 @@ export class ImageGenerationAction {
       }
       if (
         sizeType === "SD2_1200_768" ||
-        sizeType === "SD2_960_384" ||
+        sizeType === "SD1_960_384" ||
         sizeType === "SD3_1216_832" ||
         sizeType === "SD3_1536_640"
       ) {
@@ -340,14 +340,14 @@ export class ImageGenerationAction {
       if (
         sizeType === "SD1_512_768" ||
         sizeType === "SD2_768_1200" ||
-        sizeType === "SD2_384_960"
+        sizeType === "SD1_384_960"
       ) {
         return "SD3_832_1216"
       }
       if (
         sizeType === "SD1_768_512" ||
         sizeType === "SD2_1200_768" ||
-        sizeType === "SD2_960_384"
+        sizeType === "SD1_960_384"
       ) {
         return "SD3_1216_832"
       }

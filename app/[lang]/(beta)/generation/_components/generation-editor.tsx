@@ -72,13 +72,12 @@ export function GenerationEditor(props: Props) {
   const isTimeout = useFocusTimeout()
   useEffect(() => {
     const time = setInterval(() => {
-      console.log(isTimeout)
       if (!isTimeout && inProgress) {
         startTransition(() => {
           refetch()
         })
       }
-    })
+    }, 1000)
     // クリーンアップ関数
     return () => {
       clearInterval(time)

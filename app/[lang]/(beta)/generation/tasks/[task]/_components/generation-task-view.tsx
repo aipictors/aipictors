@@ -12,6 +12,8 @@ import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { AppLoading } from "@/components/app/app-loading"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
@@ -30,7 +32,6 @@ import { startTransition, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
-
 type Props = {
   taskId: string
   onRestore?: (taskId: string) => void
@@ -62,7 +63,6 @@ export const saveGenerationImage = (taskId: string) => {
   const imageElement = document.querySelector(
     `.generation-image-${taskId}`,
   ) as HTMLImageElement
-  console.log(imageElement)
   if (!imageElement) {
     return
   }
@@ -264,12 +264,27 @@ export function GenerationTaskView(props: Props) {
 
   return (
     <ScrollArea className="px-4 py-4 w-full max-w-fit mx-auto">
-      <PrivateImage
-        className={`max-h-screen m-auto generation-image-${props.taskId}`}
-        taskId={data.imageGenerationTask.id}
-        token={data.imageGenerationTask.token}
-        alt={"-"}
-      />
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant={"ghost"}>
+            <PrivateImage
+              className={`max-h-screen m-auto generation-image-${props.taskId}`}
+              taskId={data.imageGenerationTask.id}
+              token={data.imageGenerationTask.token}
+              alt={"-"}
+            />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <PrivateImage
+            className={""}
+            taskId={data.imageGenerationTask.id}
+            token={data.imageGenerationTask.token}
+            alt={"-"}
+          />
+        </DialogContent>
+      </Dialog>
+
       <div className="my-4 flex justify-end">
         <GenerationMenuButton
           title={"同じ情報で生成する"}

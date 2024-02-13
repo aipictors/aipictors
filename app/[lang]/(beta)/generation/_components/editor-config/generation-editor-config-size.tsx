@@ -53,14 +53,14 @@ export const GenerationEditorConfigSize = (props: Props) => {
                 {"【横長】1200×768(upscale:1.5)"}
               </SelectItem>
             )}
-            {props.modelType === "SD2" && (
-              <SelectItem value={"SD2_384_960"}>
-                {"【超縦長】384x960"}
+            {props.modelType === "SD1" && (
+              <SelectItem value={"SD1_384_960"}>
+                {"【超縦長】576x1440(upscale:1.5)"}
               </SelectItem>
             )}
-            {props.modelType === "SD2" && (
-              <SelectItem value={"SD2_960_384"}>
-                {"【超横長】960x384"}
+            {props.modelType === "SD1" && (
+              <SelectItem value={"SD1_960_384"}>
+                {"【超横長】1440x576(upscale:1.5)"}
               </SelectItem>
             )}
             {props.modelType === "SDXL" && (
