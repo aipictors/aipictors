@@ -167,6 +167,10 @@ export class ImageGenerationAction {
     return new ImageGenerationConfig({ ...this.state, promptText })
   }
 
+  /**
+   * プロンプトの入力内容を最適化する
+   * @returns
+   */
   initPromptWithLoraModelValue() {
     const limitedLoraModels = this.state.loraModels.slice(
       0,
@@ -174,7 +178,15 @@ export class ImageGenerationAction {
     )
     const loraModelTexts = limitedLoraModels.map((model) => {
       const [name, value] = model.split(":")
-      return `<lora:${name}:${value}>`
+      const numericValue = parseFloat(value)
+
+      // valueが数値でない、または-1から1の範囲外の場合は0に設定
+      const adjustedValue =
+        Number.isNaN(numericValue) || numericValue < -1 || numericValue > 1
+          ? 0
+          : numericValue
+
+      return `<lora:${name}:${adjustedValue}>`
     })
     const promptText = [this.promptTextWithoutLora, ...loraModelTexts]
       .join(" ")
