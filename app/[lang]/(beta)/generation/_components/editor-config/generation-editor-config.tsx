@@ -51,13 +51,13 @@ type Props = {
 }
 
 export const GenerationEditorConfig = (props: Props) => {
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-
   const currentModels = props.currentModelIds.map((modelId) => {
     return props.models.find((model) => {
       return model.id === modelId
     })
   })
+
+  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (
     <GenerationEditorCard
@@ -80,6 +80,7 @@ export const GenerationEditorConfig = (props: Props) => {
             ))}
             <GenerationModelsButton
               isOpen={isOpen}
+              onOpen={onOpen}
               onClose={onClose}
               models={props.models}
               selectedModelId={props.currentModelId}

@@ -5,7 +5,6 @@ import { GenerationEditorCard } from "@/app/[lang]/(beta)/generation/_components
 import { GenerationModelsButton } from "@/app/[lang]/(beta)/generation/_components/generation-models-button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
-import { useBoolean } from "usehooks-ts"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -18,8 +17,6 @@ type Props = {
 }
 
 export const GenerationEditorModels = (props: Props) => {
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-
   const currentModels = props.currentModelIds.map((modelId) => {
     return props.models.find((model) => {
       return model.id === modelId
@@ -45,8 +42,6 @@ export const GenerationEditorModels = (props: Props) => {
         <ScrollArea>
           <div className="px-2 grid gap-y-2 pb-2">
             <GenerationModelsButton
-              isOpen={isOpen}
-              onClose={onClose}
               models={props.models}
               selectedModelId={props.currentModelId}
               onSelect={onSelectModelId}
