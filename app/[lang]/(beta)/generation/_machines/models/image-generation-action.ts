@@ -167,6 +167,22 @@ export class ImageGenerationAction {
     return new ImageGenerationConfig({ ...this.state, promptText })
   }
 
+  initPromptWithLoraModelValue() {
+    const limitedLoraModels = this.state.loraModels.slice(
+      0,
+      this.state.availableLoraModelsCount,
+    )
+    const loraModelTexts = limitedLoraModels.map((model) => {
+      const [name, value] = model.split(":")
+      return `<lora:${name}:${value}>`
+    })
+    const promptText = [this.promptTextWithoutLora, ...loraModelTexts]
+      .join(" ")
+      .trim()
+
+    return new ImageGenerationConfig({ ...this.state, promptText })
+  }
+
   /**
    * LoRAモデルを変更する
    * @param name

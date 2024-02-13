@@ -218,6 +218,7 @@ export function GenerationEditor(props: Props) {
           promptText={machine.state.context.promptText}
           promptCategories={props.promptCategories}
           onChangePromptText={machine.updatePrompt}
+          onBlurPromptText={machine.initPromptWithLoraModel}
         />
       }
       negativePromptEditor={

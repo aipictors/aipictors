@@ -14,6 +14,7 @@ type Props = {
   promptText: string
   promptCategories: PromptCategoriesQuery["promptCategories"]
   onChangePromptText(text: string): void
+  onBlurPromptText(): void
 }
 
 export const GenerationEditorPrompt = (props: Props) => {
@@ -71,6 +72,9 @@ export const GenerationEditorPrompt = (props: Props) => {
             value={props.promptText}
             onChange={(event) => {
               props.onChangePromptText(event.target.value)
+            }}
+            onBlur={() => {
+              props.onBlurPromptText()
             }}
           />
           <Dialog>

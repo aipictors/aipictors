@@ -120,6 +120,12 @@ export const useImageGenerationMachine = (props: Props) => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  const initPromptWithLoraModel = () => {
+    const value = action.initPromptWithLoraModelValue()
+    cacheStorage.savePrompt(value.promptText)
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
   /**
    * LoRAモデルを追加する
    * @param modelName
@@ -135,6 +141,7 @@ export const useImageGenerationMachine = (props: Props) => {
     updateModelId,
     changeLoraModel: changeLoraConfig,
     updateLoraModel: updateLoraModel,
+    initPromptWithLoraModel: initPromptWithLoraModel,
     updatePrompt,
     updateNegativePrompt,
     updateSampler,
