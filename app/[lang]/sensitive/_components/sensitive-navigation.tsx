@@ -14,7 +14,7 @@ import {
 export const SensitiveNavigationList = () => {
   return (
     <div className="flex flex-col space-y-1">
-      <HomeNavigationButton href={"/"} icon={Undo2Icon}>
+      <HomeNavigationButton href={"https://www.aipictors.com"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive"} icon={HomeIcon}>

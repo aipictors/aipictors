@@ -53,7 +53,7 @@ export const HomeHeader = () => {
             </ScrollArea>
           </SheetContent>
         </Sheet>
-        <Link className="flex items-center" href="/">
+        <Link className="flex items-center" href="https://www.aipictors.com">
           <Image
             src="/icon.svg"
             className="w-10 h-10 rounded-full"

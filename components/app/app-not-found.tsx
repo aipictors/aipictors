@@ -13,7 +13,7 @@ export function AppNotFound() {
         おっと! お探しのページは存在しないようです。
       </p>
       <Button className="mt-8 px-8 py-2 rounded-md">
-        <Link href="/">ホームに戻る</Link>
+        <Link href="https://www.aipictors.com">ホームに戻る</Link>
       </Button>
     </div>
   )

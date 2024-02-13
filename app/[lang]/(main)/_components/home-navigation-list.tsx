@@ -39,7 +39,7 @@ export const HomeNavigationList = () => {
 
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"/"} icon={HomeIcon}>
+      <HomeNavigationButton href={"https://www.aipictors.com"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
