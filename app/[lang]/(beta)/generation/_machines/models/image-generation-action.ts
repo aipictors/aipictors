@@ -137,6 +137,7 @@ export class ImageGenerationAction {
       modelId: id,
       modelIds: modelIds,
       modelType: modelType,
+      vae: this.getModelVae(modelType),
       negativePromptText: this.getNegativePromptText(
         modelType,
         this.state.negativePromptText,
