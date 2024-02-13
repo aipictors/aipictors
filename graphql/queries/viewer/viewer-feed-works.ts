@@ -1,5 +1,8 @@
 import { gql } from "@/graphql/__generated__"
 
+/**
+ * ログイン中のユーザのフィード
+ */
 export const viewerFeedWorksQuery = gql(`
   query ViewerFeedWorks($offset: Int!, $limit: Int!) {
     viewer {

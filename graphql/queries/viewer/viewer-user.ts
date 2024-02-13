@@ -1,5 +1,8 @@
 import { gql } from "@/graphql/__generated__"
 
+/**
+ * ログイン中のユーザ
+ */
 export const viewerUserQuery = gql(`
   query ViewerUser {
     viewer {

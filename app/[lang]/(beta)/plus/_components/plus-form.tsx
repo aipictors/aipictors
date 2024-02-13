@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { createCustomerPortalSessionMutation } from "@/graphql/mutations/create-customer-portal-session"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { cn } from "@/lib/utils"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
 import { toast } from "sonner"
@@ -19,7 +19,7 @@ export const PlusForm = () => {
     createCustomerPortalSessionMutation,
   )
 
-  const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {})
 
   console.log("data", data)
 

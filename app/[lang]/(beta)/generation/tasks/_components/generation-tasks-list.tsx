@@ -1,7 +1,7 @@
 "use client"
 
 import { GenerationResultCard } from "@/app/[lang]/(beta)/generation/tasks/_components/generation-result-card"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/image-generation/image-generation-tasks"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 
 /**
