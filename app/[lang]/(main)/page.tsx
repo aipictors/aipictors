@@ -1,12 +1,10 @@
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
-import MainPageLoading from "@/app/[lang]/(main)/loading"
 import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/graphql/queries/work/works"
 import type { Metadata } from "next"
-import { Suspense } from "react"
 
 const HomePage = async () => {
   const client = createClient()
