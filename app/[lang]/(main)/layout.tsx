@@ -13,7 +13,7 @@ type Props = {
 }
 
 const MainLayout = (props: Props) => {
-  if (config.isDevelopmentMode) {
+  if (!config.isDevelopmentMode) {
     return <AppUnderDevelopment />
   }
 
