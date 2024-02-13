@@ -104,6 +104,8 @@ export const useImageGenerationMachine = (props: Props) => {
     cacheStorage.saveModelId(modelId)
     cacheStorage.saveModelType(modelType)
     cacheStorage.saveModelIds(value.modelIds)
+    cacheStorage.saveSizeType(value.sizeType)
+    cacheStorage.saveVae(value.vae)
     send({ type: "UPDATE_CONFIG", value })
   }
 
