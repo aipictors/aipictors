@@ -5,12 +5,15 @@ import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigat
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
+import { config } from "@/config"
 
 type Props = {
   children: React.ReactNode
 }
 
 const MainLayout = (props: Props) => {
+  if (!config.isDevelopmentMode) return null
+
   return (
     <>
       <HomeHeader />
