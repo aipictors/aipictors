@@ -18,10 +18,6 @@ const Component = (props: Props) => {
     },
   })
 
-  // const objectURL = use(
-  //   fetchImage(Config.wordpressPrivateImageEndpoint, props.token),
-  // )
-
   return (
     <img
       className={props.className}

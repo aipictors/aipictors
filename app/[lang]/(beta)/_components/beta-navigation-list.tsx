@@ -28,6 +28,16 @@ export const BetaNavigationList = () => {
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
+      {authContext.isLoggedIn && (
+        <HomeNavigationButton href={"/generation"} icon={SparklesIcon}>
+          {"画像生成"}
+        </HomeNavigationButton>
+      )}
+      {authContext.isLoggedIn && (
+        <HomeNavigationButton href={"/generation/tasks"} icon={SparklesIcon}>
+          {"生成履歴"}
+        </HomeNavigationButton>
+      )}
       <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
         {"スタンプ広場"}
       </HomeNavigationButton>
@@ -39,16 +49,6 @@ export const BetaNavigationList = () => {
       {authContext.isLoggedIn && (
         <HomeNavigationButton href={"/support/chat"} icon={MessageCircleIcon}>
           {"お問い合わせ"}
-        </HomeNavigationButton>
-      )}
-      {authContext.isLoggedIn && (
-        <HomeNavigationButton href={"/generation"} icon={SparklesIcon}>
-          {"画像生成"}
-        </HomeNavigationButton>
-      )}
-      {authContext.isLoggedIn && (
-        <HomeNavigationButton href={"/generation/tasks"} icon={SparklesIcon}>
-          {"生成履歴"}
         </HomeNavigationButton>
       )}
       {/* {appContext.isLoggedIn && (

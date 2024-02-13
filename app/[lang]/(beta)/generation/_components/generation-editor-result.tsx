@@ -152,7 +152,8 @@ export const GenerationEditorResult = (props: Props) => {
   }
 
   const selectedTaskClass = (taskId: string): string => {
-    return selectedTaskIds.includes(taskId) ? "opacity-50" : ""
+    console.log(selectedTaskIds.includes(taskId))
+    return selectedTaskIds.includes(taskId) ? "opacity-40" : ""
   }
 
   return (
@@ -262,13 +263,14 @@ export const GenerationEditorResult = (props: Props) => {
                   {editMode === "edit" ? (
                     <Button
                       onClick={() => onSelectTask(task.nanoid, task.status)}
-                      className={`p-0 h-auto overflow-hidden border-1 rounded outline-none relative ${selectedTaskClass(
-                        task.nanoid ?? "",
-                      )}`}
+                      className={
+                        "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                      }
                     >
                       <GenerationResultCard
                         taskId={task.id}
                         token={task.token}
+                        className={selectedTaskClass(task.nanoid ?? "")}
                       />
                       {selectedTaskIds.includes(task.nanoid ?? "") ? (
                         <div className="absolute bg-white rounded-full right-2 bottom-2">
@@ -280,22 +282,28 @@ export const GenerationEditorResult = (props: Props) => {
                   {editMode !== "edit" &&
                     (!isDesktop ? (
                       <Link href={`/generation/tasks/${task.nanoid}`}>
-                        <Button className="p-0 h-auto overflow-hidden border-1 rounded outline-none">
+                        <Button
+                          className={
+                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                          }
+                        >
                           <GenerationResultCard
                             taskId={task.id}
                             token={task.token}
-                            className={selectedTaskClass(task.nanoid ?? "")}
                           />
                         </Button>
                       </Link>
                     ) : (
                       <Sheet>
                         <SheetTrigger asChild>
-                          <Button className="p-0 h-auto overflow-hidden border-1 rounded outline-none">
+                          <Button
+                            className={
+                              "bg-gray-300 hover:bg-gray-300 dark:bg-gray-500 dark:hover:bg-gray-500 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                            }
+                          >
                             <GenerationResultCard
                               taskId={task.id}
                               token={task.token}
-                              className={selectedTaskClass(task.nanoid ?? "")}
                             />
                           </Button>
                         </SheetTrigger>
@@ -305,8 +313,8 @@ export const GenerationEditorResult = (props: Props) => {
                         >
                           <Suspense fallback={<FallbackResultCard />}>
                             <GenerationTaskView
-                              onRestore={onRestore}
                               taskId={task.nanoid ?? ""}
+                              onRestore={onRestore}
                             />
                           </Suspense>
                         </SheetContent>

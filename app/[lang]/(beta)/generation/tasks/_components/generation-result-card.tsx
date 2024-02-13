@@ -13,7 +13,7 @@ type Props = {
  */
 export const GenerationResultCard = (props: Props) => {
   if (props.token == null) {
-    return <InProgressGenerationCard />
+    return <InProgressGenerationCard className={props.className} />
   }
 
   return (
