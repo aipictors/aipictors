@@ -223,7 +223,7 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <Card className="px-2 py-2">
+          <Card className="px-2 py-2 space-y-2">
             <div>
               {hasSignedTerms && (
                 <GenerationSubmitButton
@@ -245,7 +245,7 @@ export function GenerationEditor(props: Props) {
                 生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
                 {maxCount()}
               </p>
-              <p className="">
+              <p>
                 生成待ち：
                 {inProgress
                   ? data?.imageGenerationEngineStatus.normalTasksCount

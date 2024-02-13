@@ -4,6 +4,7 @@ import { PrivateImage } from "@/app/_components/private-image"
 type Props = {
   taskId: string
   token: string | null
+  className?: string
 }
 
 /**
@@ -15,5 +16,12 @@ export const GenerationResultCard = (props: Props) => {
     return <InProgressGenerationCard />
   }
 
-  return <PrivateImage taskId={props.taskId} token={props.token} alt={"-"} />
+  return (
+    <PrivateImage
+      className={props.className}
+      taskId={props.taskId}
+      token={props.token}
+      alt={"-"}
+    />
+  )
 }

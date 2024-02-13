@@ -110,10 +110,6 @@ export const GenerationEditorResult = (props: Props) => {
     }
   }
 
-  const onCancelSelected = () => {
-    setSelectedTaskIds([])
-  }
-
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
 
   const onTrashTasks = async () => {
@@ -155,6 +151,10 @@ export const GenerationEditorResult = (props: Props) => {
     }
   }
 
+  const selectedTaskClass = (taskId: string): string => {
+    return selectedTaskIds.includes(taskId) ? "opacity-50" : ""
+  }
+
   return (
     <>
       <GenerationEditorCard
@@ -165,80 +165,95 @@ export const GenerationEditorResult = (props: Props) => {
           </Button>
         }
       >
-        <div className="flex px-2 pb-2 space-x-2 items-center">
-          <Toggle onClick={onChangeEditMode} variant="outline">
-            選択
-          </Toggle>
-          <Button
-            onClick={onCancelSelected}
-            disabled={selectedTaskIds.length === 0}
-            variant={"secondary"}
-          >
-            {"解除"}
-          </Button>
-
-          <AppConfirmDialog
-            title={"確認"}
-            description={"本当に削除しますか？"}
-            onNext={() => {
-              onTrashTasks()
-            }}
-            onCancel={() => {}}
-          >
-            <Button
-              disabled={selectedTaskIds.length === 0}
-              variant={"ghost"}
-              size={"icon"}
-            >
-              <Trash2Icon className="w-4" />
+        {/* 操作一覧 */}
+        <div className="flex items-center">
+          <div className="flex px-2 pb-2 space-x-2 items-center">
+            {/* 履歴選択・キャンセルボタン */}
+            <Toggle onClick={onChangeEditMode} variant="outline">
+              {editMode === "edit" ? "キャンセル" : "選択"}
+            </Toggle>
+            {/* 履歴削除ボタン、画像ダウンロードボタン */}
+            {editMode === "edit" ? (
+              <>
+                <AppConfirmDialog
+                  title={"確認"}
+                  description={"本当に削除しますか？"}
+                  onNext={() => {
+                    onTrashTasks()
+                  }}
+                  onCancel={() => {}}
+                >
+                  <Button
+                    disabled={selectedTaskIds.length === 0}
+                    variant={"ghost"}
+                    size={"icon"}
+                  >
+                    <Trash2Icon className="w-4" />
+                  </Button>
+                </AppConfirmDialog>
+                <Button
+                  disabled={selectedTaskIds.length === 0}
+                  variant={"ghost"}
+                  size={"icon"}
+                >
+                  <ArrowDownToLineIcon className="w-4" />
+                </Button>
+              </>
+            ) : null}
+            {/* お気に入り、その他ボタン */}
+            {editMode !== "edit" ? (
+              <>
+                <Button disabled variant={"ghost"} size={"icon"}>
+                  <StarIcon className="w-4" />
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <MoreHorizontalIcon className="w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        {"サイズ"}
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuLabel>{"サイズ変更"}</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuCheckboxItem
+                            checked={thumbnailSize === "small"}
+                            onCheckedChange={changeThumbnailSize("small")}
+                          >
+                            小
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                            checked={thumbnailSize === "middle"}
+                            onCheckedChange={changeThumbnailSize("middle")}
+                          >
+                            中
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem
+                            checked={thumbnailSize === "big"}
+                            onCheckedChange={changeThumbnailSize("big")}
+                          >
+                            大
+                          </DropdownMenuCheckboxItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : null}
+          </div>
+          {/* 履歴一覧リンク */}
+          <Link href="/generation/tasks" className="ml-auto">
+            <Button className="w-24" variant={"secondary"} size={"sm"}>
+              {"全て"}
             </Button>
-          </AppConfirmDialog>
-          <Button
-            disabled={selectedTaskIds.length === 0}
-            variant={"ghost"}
-            size={"icon"}
-          >
-            <ArrowDownToLineIcon className="w-4" />
-          </Button>
-          <Button disabled variant={"ghost"} size={"icon"}>
-            <StarIcon className="w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <MoreHorizontalIcon className="w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>{"サイズ"}</DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuLabel>{"サイズ変更"}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem
-                      checked={thumbnailSize === "small"}
-                      onCheckedChange={changeThumbnailSize("small")}
-                    >
-                      小
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={thumbnailSize === "middle"}
-                      onCheckedChange={changeThumbnailSize("middle")}
-                    >
-                      中
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={thumbnailSize === "big"}
-                      onCheckedChange={changeThumbnailSize("big")}
-                    >
-                      大
-                    </DropdownMenuCheckboxItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+          </Link>
+        </div>{" "}
         <Separator />
+        {/* 履歴一覧 */}
         <ScrollArea>
           <div className={getGridClasses(thumbnailSize)}>
             {activeTasks.map((task) => (
@@ -247,7 +262,9 @@ export const GenerationEditorResult = (props: Props) => {
                   {editMode === "edit" ? (
                     <Button
                       onClick={() => onSelectTask(task.nanoid, task.status)}
-                      className="p-0 h-auto overflow-hidden border-1 rounded outline-none relative"
+                      className={`p-0 h-auto overflow-hidden border-1 rounded outline-none relative ${selectedTaskClass(
+                        task.nanoid ?? "",
+                      )}`}
                     >
                       <GenerationResultCard
                         taskId={task.id}
@@ -257,9 +274,7 @@ export const GenerationEditorResult = (props: Props) => {
                         <div className="absolute bg-white rounded-full right-2 bottom-2">
                           <Check color="black" />
                         </div>
-                      ) : (
-                        <></>
-                      )}
+                      ) : null}
                     </Button>
                   ) : null}
                   {editMode !== "edit" &&
@@ -269,6 +284,7 @@ export const GenerationEditorResult = (props: Props) => {
                           <GenerationResultCard
                             taskId={task.id}
                             token={task.token}
+                            className={selectedTaskClass(task.nanoid ?? "")}
                           />
                         </Button>
                       </Link>
@@ -279,6 +295,7 @@ export const GenerationEditorResult = (props: Props) => {
                             <GenerationResultCard
                               taskId={task.id}
                               token={task.token}
+                              className={selectedTaskClass(task.nanoid ?? "")}
                             />
                           </Button>
                         </SheetTrigger>

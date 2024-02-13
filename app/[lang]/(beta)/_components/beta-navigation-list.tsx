@@ -42,11 +42,13 @@ export const BetaNavigationList = () => {
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && (
-        <HomeNavigationButton
-          href={"https://www.aipictors.com/generate"}
-          icon={SparklesIcon}
-        >
+        <HomeNavigationButton href={"/generation"} icon={SparklesIcon}>
           {"画像生成"}
+        </HomeNavigationButton>
+      )}
+      {authContext.isLoggedIn && (
+        <HomeNavigationButton href={"/generation/tasks"} icon={SparklesIcon}>
+          {"生成履歴"}
         </HomeNavigationButton>
       )}
       {/* {appContext.isLoggedIn && (
