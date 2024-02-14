@@ -27,7 +27,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Suspense, startTransition, useEffect, useMemo, useState } from "react"
+import { Suspense, startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -42,7 +42,6 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
-  const [isStartGeneration, setIsStartGeneration] = useState(false)
   const [beforeTaskId, setBeforeTaskId] = useState("")
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
@@ -72,19 +71,43 @@ export function GenerationEditor(props: Props) {
 
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
-  const inProgress = useMemo(() => {
+  /**
+   * 生成中かどうか
+   */
+  const inProgress = () => {
+    // 生成中タスクが存在するなら生成中とみなす
     const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
       return task.status === "IN_PROGRESS" || task.status === "PENDING"
     })
+    if (waitIndex !== -1) {
+      return true
+    }
 
+    // 初期値のままならまだ生成ボタンを押してないので何もしない
+    if (beforeTaskId === "") {
+      return false
+    }
+
+    // 生成開始前と同じ状態なら生成開始中なので、生成中とみなす
+    if (
+      data?.viewer?.imageGenerationTasks.length &&
+      beforeTaskId === data?.viewer?.imageGenerationTasks[0]?.id
+    ) {
+      // 生成ボタン押した直後の通信が遅い場合もここに入る
+      return true
+    }
+
+    // もし開始ボタン押下前と違うタスクが取得できていたら生成開始成功
     if (
       data?.viewer?.imageGenerationTasks.length &&
       beforeTaskId !== data?.viewer?.imageGenerationTasks[0]?.id
     ) {
-      setIsStartGeneration(false)
+      setBeforeTaskId(data?.viewer?.imageGenerationTasks[0]?.id)
+      return true
     }
-    return waitIndex !== -1 || isStartGeneration
-  }, [data?.viewer?.imageGenerationTasks, isStartGeneration])
+
+    return false
+  }
 
   const isTimeout = useFocusTimeout()
 
@@ -151,6 +174,14 @@ export function GenerationEditor(props: Props) {
     toast("タスクをキャンセルしました")
   }
 
+  const initBeforeTaskId = () => {
+    if (data?.viewer?.imageGenerationTasks.length) {
+      setBeforeTaskId(data?.viewer?.imageGenerationTasks[0].id)
+    } else {
+      setBeforeTaskId("0")
+    }
+  }
+
   /**
    * タスクを作成する
    */
@@ -185,12 +216,7 @@ export function GenerationEditor(props: Props) {
         refetch()
       })
       toast("タスクを作成しました")
-
-      // 生成直後に生成ボタンをキャンセルボタンにする
-      setIsStartGeneration(true)
-      if (data?.viewer?.imageGenerationTasks.length) {
-        setBeforeTaskId(data?.viewer?.imageGenerationTasks[0].id)
-      }
+      initBeforeTaskId()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -207,8 +233,7 @@ export function GenerationEditor(props: Props) {
   }
 
   const operationButton = () => {
-    console.log("hasSignedTerms", hasSignedTerms, "inProgress", inProgress)
-    if (hasSignedTerms && !inProgress) {
+    if (hasSignedTerms && !inProgress()) {
       return (
         <GenerationSubmitButton
           onClick={onCreateTask}
@@ -217,7 +242,7 @@ export function GenerationEditor(props: Props) {
         />
       )
     }
-    if (hasSignedTerms && inProgress) {
+    if (hasSignedTerms && inProgress()) {
       return (
         <GenerationCancelButton
           onClick={onCancelTask}
@@ -292,7 +317,7 @@ export function GenerationEditor(props: Props) {
               </p>
               <p>
                 生成待ち：
-                {inProgress
+                {inProgress()
                   ? data?.imageGenerationEngineStatus.normalTasksCount
                   : "-"}
               </p>
