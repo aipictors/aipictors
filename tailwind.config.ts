@@ -108,7 +108,6 @@ export default {
       inset: {
         /**
          * 追加: ヘッダーの高さ
-         * headerをHeaderに付ける為にtop-headerとして使用している
          */
         header: "72px",
       },

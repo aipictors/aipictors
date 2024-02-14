@@ -14,14 +14,6 @@ export const viewerImageGenerationTasksQuery = gql(`
       imageGenerationTasks(offset: $offset, limit: $limit, rating: $rating) {
         ...ImageGenerationTaskFields
       }
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
     }
   }
 `)
