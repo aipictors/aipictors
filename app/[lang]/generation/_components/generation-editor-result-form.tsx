@@ -88,7 +88,7 @@ export const GenerationEditorResultForm = (props: Props) => {
         <div className="flex space-x-2 items-center w-full">
           {/* 履歴選択・キャンセルボタン */}
           <Toggle
-            className="w-32"
+            className="w-48"
             onClick={onChangeEditMode}
             variant="outline"
             size={"sm"}
