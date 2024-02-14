@@ -2,16 +2,17 @@
 
 import { GenerationEditorConfig } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
 import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
+import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
 import { GenerationEditorPrompt } from "@/app/[lang]/generation/_components/generation-editor-prompt"
-import { GenerationEditorResult } from "@/app/[lang]/generation/_components/generation-editor-result"
+import { GenerationEditorResultForm } from "@/app/[lang]/generation/_components/generation-editor-result-form"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
-import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { config } from "@/config"
 import {
@@ -48,14 +49,13 @@ export function GenerationEditor(props: Props) {
   )
 
   const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 64, offset: 0, rating: rating },
+    variables: { limit: 1, offset: 0 },
     errorPolicy: "all",
     context: { simulateError: true },
   })
 
   const onChangeRating = (rating: number) => {
     setRating(rating)
-    refetch()
   }
 
   const machine = useImageGenerationMachine({
@@ -282,21 +282,29 @@ export function GenerationEditor(props: Props) {
               </p>
             </div>
           </Card>
-          <Suspense fallback={<FallbackResultCard />}>
-            <GenerationEditorResult
-              tasks={data?.viewer?.imageGenerationTasks ?? []}
-              userNanoid={viewer?.viewer?.user?.nanoid ?? null}
-              rating={rating}
-              onChangeRating={onChangeRating}
-              onChangeSampler={machine.updateSampler}
-              onChangeScale={machine.updateScale}
-              onChangeSeed={machine.updateSeed}
-              onChangeSize={machine.updateSizeType}
-              onChangeVae={machine.updateVae}
-              onChangePromptText={machine.updatePrompt}
-              onChangeNegativePromptText={machine.updateNegativePrompt}
-            />
-          </Suspense>
+          <GenerationEditorCard
+            title={"生成履歴"}
+            action={
+              <Button variant={"secondary"} size={"sm"}>
+                {"全て見る"}
+              </Button>
+            }
+          >
+            <Suspense fallback={null}>
+              <GenerationEditorResultForm
+                userNanoid={viewer?.viewer?.user?.nanoid ?? null}
+                rating={rating}
+                onChangeRating={onChangeRating}
+                onChangeSampler={machine.updateSampler}
+                onChangeScale={machine.updateScale}
+                onChangeSeed={machine.updateSeed}
+                onChangeSize={machine.updateSizeType}
+                onChangeVae={machine.updateVae}
+                onChangePromptText={machine.updatePrompt}
+                onChangeNegativePromptText={machine.updateNegativePrompt}
+              />
+            </Suspense>
+          </GenerationEditorCard>
         </div>
       }
     />

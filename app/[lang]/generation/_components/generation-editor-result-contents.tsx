@@ -1,0 +1,165 @@
+"use client"
+
+import { GenerationTaskView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-view"
+import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
+import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
+import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { config } from "@/config"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { useSuspenseQuery } from "@apollo/client"
+import { ErrorBoundary } from "@sentry/nextjs"
+import Link from "next/link"
+import { Suspense } from "react"
+import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
+
+type Props = {
+  rating: number
+  editMode: string
+  selectedTaskIds: string[]
+  thumbnailSize: string
+  setSelectedTaskIds: (selectedTaskIds: string[]) => void
+  onChangeSampler(sampler: string): void
+  onChangeScale(scale: number): void
+  onChangeSeed(seed: number): void
+  onChangeVae(vae: string | null): void
+  onChangePromptText(prompt: string): void
+  onChangeNegativePromptText(prompt: string): void
+}
+
+export const GenerationEditorResultContents = (props: Props) => {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
+    variables: { limit: 64, offset: 0, rating: props.rating },
+    errorPolicy: "all",
+    context: { simulateError: true },
+  })
+
+  const onRestore = (taskId: string) => {
+    const task = data?.viewer?.imageGenerationTasks.find(
+      (task) => task.nanoid === taskId,
+    )
+    if (typeof task === "undefined") return
+    props.onChangeSampler(task.sampler)
+    props.onChangeScale(task.scale)
+    props.onChangeSeed(task.seed)
+    props.onChangeVae(task.vae)
+    props.onChangePromptText(task.prompt)
+    props.onChangeNegativePromptText(task.negativePrompt)
+    toast("設定を復元しました")
+  }
+
+  const activeTasks = data?.viewer?.imageGenerationTasks.filter((task) => {
+    if (task.isDeleted) return false
+    return task.status === "IN_PROGRESS" || task.status === "DONE"
+  })
+
+  const onSelectTask = (taskId: string | null, status: string) => {
+    if (status !== "DONE") {
+      toast("選択できない履歴です")
+      return
+    }
+    if (!taskId) {
+      toast("存在しない履歴です")
+      return
+    }
+    const isAlreadySelected = props.selectedTaskIds.includes(taskId)
+
+    if (isAlreadySelected) {
+      props.setSelectedTaskIds(
+        props.selectedTaskIds.filter((id) => id !== taskId),
+      )
+    } else {
+      props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
+    }
+  }
+
+  const getGridClasses = (size: string): string => {
+    switch (size) {
+      case "small":
+        return "p-2 grid grid-cols-3 gap-2 py-2 pl-2 pr-2 sm:pl-2 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
+      case "middle":
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-2 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+      case "big":
+        return "p-2 grid grid-cols-1 gap-2 py-2 pl-2 pr-2 sm:pl-2 md:grid-cols-1 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
+      default:
+        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-2 sm:pl-2 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+    }
+  }
+
+  return (
+    <>
+      <ScrollArea>
+        <div className={getGridClasses(props.thumbnailSize)}>
+          {activeTasks?.map((task) => (
+            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
+              <Suspense fallback={<FallbackResultCard />}>
+                {props.editMode === "edit" ? (
+                  <Button
+                    onClick={() => onSelectTask(task.nanoid, task.status)}
+                    className={
+                      "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                    }
+                  >
+                    <GenerationResultCard
+                      taskId={task.id}
+                      token={task.token}
+                      isSelected={props.selectedTaskIds.includes(
+                        task.nanoid ?? "",
+                      )}
+                    />
+                  </Button>
+                ) : null}
+                {props.editMode !== "edit" &&
+                  (!isDesktop ? (
+                    <Link href={`/generation/tasks/${task.nanoid}`}>
+                      <Button
+                        className={
+                          "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                        }
+                      >
+                        <GenerationResultCard
+                          taskId={task.id}
+                          token={task.token}
+                        />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button
+                          className={
+                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                          }
+                        >
+                          <GenerationResultCard
+                            taskId={task.id}
+                            token={task.token}
+                          />
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent
+                        side={"right"}
+                        className="p-0 flex flex-col gap-0"
+                      >
+                        <Suspense fallback={<FallbackResultCard />}>
+                          <GenerationTaskView
+                            taskId={task.nanoid ?? ""}
+                            onRestore={onRestore}
+                          />
+                        </Suspense>
+                      </SheetContent>
+                    </Sheet>
+                  ))}
+              </Suspense>
+            </ErrorBoundary>
+          ))}
+        </div>
+      </ScrollArea>
+    </>
+  )
+}

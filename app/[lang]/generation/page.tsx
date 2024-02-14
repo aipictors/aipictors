@@ -43,7 +43,7 @@ const GenerationPage = async () => {
   )
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden w-full">
       <GenerationEditor
         termsMarkdownText={termsMarkdownText}
         promptCategories={promptCategoriesResp.data.promptCategories}
