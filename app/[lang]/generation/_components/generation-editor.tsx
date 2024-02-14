@@ -172,6 +172,7 @@ export function GenerationEditor(props: Props) {
       refetch()
     })
     toast("タスクをキャンセルしました")
+    setBeforeTaskId("")
   }
 
   const initBeforeTaskId = () => {
