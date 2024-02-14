@@ -226,7 +226,7 @@ export const GenerationEditorResultForm = (props: Props) => {
           ) : null}
         </div>
         {/* 履歴一覧リンク */}
-        <Link href="/generation/tasks" className="ml-auto px-2">
+        <Link href="/generation/tasks" className="ml-auto px-4">
           <Button className="w-24" variant={"secondary"} size={"sm"}>
             {"全て"}
           </Button>
