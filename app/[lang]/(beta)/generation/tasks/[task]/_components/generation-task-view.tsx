@@ -275,9 +275,9 @@ export function GenerationTaskView(props: Props) {
             />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
           <PrivateImage
-            className={""}
+            className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
             taskId={data.imageGenerationTask.id}
             token={data.imageGenerationTask.token}
             alt={"-"}
