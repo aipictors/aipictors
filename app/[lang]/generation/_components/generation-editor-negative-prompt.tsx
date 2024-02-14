@@ -35,7 +35,7 @@ export const GenerationEditorNegativePrompt = (props: Props) => {
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
       }
     >
-      <div className="flex flex-col p-4 gap-y-2 h-full">
+      <div className="flex flex-col px-4 pb-4 h-full gap-y-2">
         <Textarea
           className="resize-none h-full font-mono min-h-40"
           placeholder={"EasyNegativeなど"}
