@@ -14,6 +14,7 @@ export function GenerationTasksList() {
     variables: {
       limit: 64,
       offset: 0,
+      rating: -1,
     },
   })
 

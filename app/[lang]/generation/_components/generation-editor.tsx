@@ -10,6 +10,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/gene
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
+import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Card } from "@/components/ui/card"
 import { config } from "@/config"
@@ -39,7 +40,7 @@ type Props = {
  * @param props
  */
 export function GenerationEditor(props: Props) {
-  const [showFavoriteRate, setShowFavoriteRate] = useState(-1)
+  const [rating, setRating] = useState(-1)
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
@@ -47,13 +48,13 @@ export function GenerationEditor(props: Props) {
   )
 
   const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 64, offset: 0, rating: showFavoriteRate },
+    variables: { limit: 64, offset: 0, rating: rating },
     errorPolicy: "all",
     context: { simulateError: true },
   })
 
   const onChangeRating = (rating: number) => {
-    setShowFavoriteRate(rating)
+    setRating(rating)
     refetch()
   }
 
@@ -281,11 +282,11 @@ export function GenerationEditor(props: Props) {
               </p>
             </div>
           </Card>
-          <Suspense fallback={null}>
+          <Suspense fallback={<FallbackResultCard />}>
             <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}
               userNanoid={viewer?.viewer?.user?.nanoid ?? null}
-              rating={showFavoriteRate}
+              rating={rating}
               onChangeRating={onChangeRating}
               onChangeSampler={machine.updateSampler}
               onChangeScale={machine.updateScale}
