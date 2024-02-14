@@ -6,11 +6,9 @@ import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
   GemIcon,
-  HistoryIcon,
   HomeIcon,
   LogInIcon,
   MessageCircleIcon,
-  SparklesIcon,
   StampIcon,
 } from "lucide-react"
 import { useContext } from "react"
@@ -29,16 +27,16 @@ export const BetaNavigationList = () => {
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
-      {authContext.isLoggedIn && (
+      {/* {authContext.isLoggedIn && (
         <HomeNavigationButton href={"/generation"} icon={SparklesIcon}>
           {"画像生成"}
         </HomeNavigationButton>
-      )}
-      {authContext.isLoggedIn && (
+      )} */}
+      {/* {authContext.isLoggedIn && (
         <HomeNavigationButton href={"/generation/tasks"} icon={HistoryIcon}>
           {"生成履歴"}
         </HomeNavigationButton>
-      )}
+      )} */}
       <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
         {"スタンプ広場"}
       </HomeNavigationButton>
