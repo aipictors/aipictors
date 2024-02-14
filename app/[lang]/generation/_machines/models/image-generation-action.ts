@@ -320,79 +320,49 @@ export class ImageGenerationAction {
    * @returns
    */
   getModelSizeType(sizeType: string, modelType: string) {
-    if (modelType === "SD1") {
-      if (sizeType === "SD2_768_768" || sizeType === "SD3_1024_1024") {
-        return "SD1_512_512"
-      }
-      if (
-        sizeType === "SD2_768_1200" ||
-        sizeType === "SD1_384_960" ||
-        sizeType === "SD3_832_1216" ||
-        sizeType === "SD3_640_1536"
-      ) {
-        return "SD1_512_768"
-      }
-      if (
-        sizeType === "SD2_1200_768" ||
-        sizeType === "SD1_960_384" ||
-        sizeType === "SD3_1216_832" ||
-        sizeType === "SD3_1536_640"
-      ) {
-        return "SD1_768_512"
+    const rules = [
+      ["SD1", "SD2_768_768", "SD1_512_512"],
+      ["SD1", "SD3_1024_1024", "SD1_512_512"],
+      ["SD1", "SD2_768_1200", "SD1_512_768"],
+      ["SD1", "SD1_384_960", "SD1_512_768"],
+      ["SD1", "SD3_832_1216", "SD1_512_768"],
+      ["SD1", "SD3_640_1536", "SD1_512_768"],
+      ["SD1", "SD2_1200_768", "SD1_768_512"],
+      ["SD1", "SD1_960_384", "SD1_768_512"],
+      ["SD1", "SD3_1216_832", "SD1_768_512"],
+      ["SD1", "SD3_1536_640", "SD1_768_512"],
+      ["SD2", "SD1_512_512", "SD2_768_768"],
+      ["SD2", "SD3_1024_1024", "SD2_768_768"],
+      ["SD2", "SD1_512_768", "SD2_768_1200"],
+      ["SD2", "SD3_832_1216", "SD2_768_1200"],
+      ["SD2", "SD3_640_1536", "SD2_768_1200"],
+      ["SD2", "SD1_768_512", "SD2_1200_768"],
+      ["SD2", "SD3_1216_832", "SD2_1200_768"],
+      ["SD2", "SD3_1536_640", "SD2_1200_768"],
+      ["SDXL", "SD1_512_512", "SD3_1024_1024"],
+      ["SDXL", "SD2_768_768", "SD3_1024_1024"],
+      ["SDXL", "SD1_512_768", "SD3_832_1216"],
+      ["SDXL", "SD2_768_1200", "SD3_832_1216"],
+      ["SDXL", "SD1_384_960", "SD3_832_1216"],
+      ["SDXL", "SD1_768_512", "SD3_1216_832"],
+      ["SDXL", "SD2_1200_768", "SD3_1216_832"],
+      ["SDXL", "SD1_960_384", "SD3_1216_832"],
+    ]
+
+    for (const rule of rules) {
+      if (rule[0] === modelType && rule[1] === sizeType) {
+        return rule[2]
       }
     }
 
-    if (modelType === "SD2") {
-      if (sizeType === "SD1_512_512" || sizeType === "SD3_1024_1024") {
-        return "SD2_768_768"
-      }
-      if (
-        sizeType === "SD1_512_768" ||
-        sizeType === "SD3_832_1216" ||
-        sizeType === "SD3_640_1536"
-      ) {
-        return "SD2_768_1200"
-      }
-      if (
-        sizeType === "SD1_768_512" ||
-        sizeType === "SD3_1216_832" ||
-        sizeType === "SD3_1536_640"
-      ) {
-        return "SD2_1200_768"
-      }
-    }
-
-    if (modelType === "SDXL") {
-      if (sizeType === "SD1_512_512" || sizeType === "SD2_768_768") {
-        return "SD3_1024_1024"
-      }
-      if (
-        sizeType === "SD1_512_768" ||
-        sizeType === "SD2_768_1200" ||
-        sizeType === "SD1_384_960"
-      ) {
-        return "SD3_832_1216"
-      }
-      if (
-        sizeType === "SD1_768_512" ||
-        sizeType === "SD2_1200_768" ||
-        sizeType === "SD1_960_384"
-      ) {
-        return "SD3_1216_832"
-      }
-    }
-
-    if (modelType === "SD1") {
-      return "SD1_512_512"
-    }
-
-    if (modelType === "SD2") {
-      return "SD2_768_768"
-    }
-
-    return "SD3_1024_1024"
+    return `${modelType}_512_512` // デフォルトの戻り値
   }
 
+  /**
+   * VAEを取得する
+   * @param modelType SD1など
+   * @returns
+   */
   getModelVae(modelType: string) {
     if (modelType === "SD1") {
       return "ClearVAE_V2.3"
