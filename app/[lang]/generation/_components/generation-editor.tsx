@@ -26,7 +26,7 @@ import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-im
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
 import { Suspense, startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -49,10 +49,8 @@ export function GenerationEditor(props: Props) {
     {},
   )
 
-  const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
+  const { data, refetch } = useQuery(viewerImageGenerationTasksQuery, {
     variables: { limit: 1, offset: 0 },
-    errorPolicy: "all",
-    context: { simulateError: true },
   })
 
   const onChangeRating = (rating: number) => {
@@ -113,7 +111,7 @@ export function GenerationEditor(props: Props) {
 
   useEffect(() => {
     const time = setInterval(() => {
-      if (isTimeout || !inProgress) return
+      if (isTimeout || !inProgress()) return
       startTransition(() => {
         refetch()
       })
@@ -125,7 +123,6 @@ export function GenerationEditor(props: Props) {
   }, [])
 
   const onSignImageGenerationTerms = async () => {
-    console.log("onSignImageGenerationTerms")
     try {
       await signTerms({ variables: { input: { version: 1 } } })
       startTransition(() => {

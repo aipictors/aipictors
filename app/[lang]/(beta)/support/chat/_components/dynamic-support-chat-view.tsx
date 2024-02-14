@@ -4,7 +4,7 @@ import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/messa
 import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
 import { createMessageMutation } from "@/graphql/mutations/create-message"
 import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
@@ -14,7 +14,7 @@ import { useInterval } from "usehooks-ts"
  * @returns
  */
 export function SupportChatView() {
-  const { data: supportMessages, refetch } = useSuspenseQuery(
+  const { data: supportMessages, refetch } = useQuery(
     viewerSupportMessagesQuery,
     {
       variables: {
