@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export const AppAboutHeader = () => {
   return (
-    <div className="px-4 w-full max-w-container-xl mx-auto pb-32 relative">
+    <div className="px-4 w-full mx-auto pb-32 relative">
       <div className="absolute inset-0 z-[-1] w-full h-full opacity-20 top-[-8%]">
         <AppCanvas />
       </div>

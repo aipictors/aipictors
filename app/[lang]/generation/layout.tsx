@@ -26,7 +26,7 @@ const GenerationLayout = (props: Props) => {
   return (
     <>
       <BetaHeader />
-      <AppColumnLayout isMaxWidthNone={true}>{props.children}</AppColumnLayout>
+      <AppColumnLayout isFullWidth={true}>{props.children}</AppColumnLayout>
       <HomeFooter />
     </>
   )

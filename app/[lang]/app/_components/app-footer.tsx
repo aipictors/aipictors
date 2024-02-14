@@ -1,10 +1,11 @@
 "use client"
 
+import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 export const AppFooter = () => {
   return (
-    <footer className="container py-4 border-t space-y-2">
+    <footer className={cn("container max-w-none", "py-4 border-t space-y-2")}>
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <Link href={"/app/terms"} className="text-sm">

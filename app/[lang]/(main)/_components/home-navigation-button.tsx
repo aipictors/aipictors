@@ -46,7 +46,12 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
 
     if (props.href.startsWith("http")) {
       return (
-        <a href={props.href} target="_blank" rel="noopener noreferrer">
+        <a
+          className="block"
+          href={props.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button
             variant={"ghost"}
             size={"sm"}

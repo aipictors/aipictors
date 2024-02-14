@@ -1,15 +1,20 @@
+import { cn } from "@/lib/utils"
+
 type Props = {
   className?: string
-  isMaxWidthNone?: boolean
+  isFullWidth?: boolean
   children: React.ReactNode
 }
 
 export const AppColumnLayout = (props: Props) => {
   return (
     <div
-      className={`flex items-start ${
-        props.isMaxWidthNone ? "max-w-none" : "w-full"
-      } space-x-0 container mx-auto gap-x-4 relative`}
+      className={cn(
+        "container",
+        "flex items-start",
+        "space-x-0 gap-x-4 relative",
+        { "max-w-none": props.isFullWidth },
+      )}
     >
       {props.children}
     </div>
