@@ -12,8 +12,8 @@ import { GenerationTermsButton } from "@/app/[lang]/generation/_components/gener
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { config } from "@/config"
 import {
   ImageGenerationSizeType,
@@ -309,21 +309,19 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <Card className="p-4 space-y-2">
-            <div>{operationButton()}</div>
-            <div className="flex">
-              <p className="mr-2">
-                生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
-                {maxCount()}
-              </p>
-              <p>
-                生成待ち：
-                {inProgress()
-                  ? data?.imageGenerationEngineStatus.normalTasksCount
-                  : "-"}
-              </p>
-            </div>
-          </Card>
+          <div>{operationButton()}</div>
+          <div className="flex">
+            <Badge className="mr-2">
+              生成枚数 {data?.viewer?.remainingImageGenerationTasksCount}/
+              {maxCount()}
+            </Badge>
+            <Badge>
+              生成待ち{" "}
+              {inProgress()
+                ? data?.imageGenerationEngineStatus.normalTasksCount
+                : "-"}
+            </Badge>
+          </div>
           <GenerationEditorCard
             title={"生成履歴"}
             action={
