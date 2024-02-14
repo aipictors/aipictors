@@ -47,6 +47,8 @@ type Tasks = NonNullable<
 type Props = {
   tasks: Tasks
   userNanoid: string | null
+  rating: number
+  onChangeRating(rating: number): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void
@@ -197,9 +199,74 @@ export const GenerationEditorResult = (props: Props) => {
             {/* お気に入り、その他ボタン */}
             {editMode !== "edit" ? (
               <>
-                <Button disabled variant={"ghost"} size={"icon"}>
-                  <StarIcon className="w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"} size={"icon"}>
+                      <StarIcon className="w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>{"お気に入り"}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === -1}
+                      onCheckedChange={() => {
+                        props.onChangeRating(-1)
+                      }}
+                    >
+                      {"all"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 0}
+                      onCheckedChange={() => {
+                        props.onChangeRating(0)
+                      }}
+                    >
+                      {"0"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 1}
+                      onCheckedChange={() => {
+                        props.onChangeRating(1)
+                      }}
+                    >
+                      {"1"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 2}
+                      onCheckedChange={() => {
+                        props.onChangeRating(2)
+                      }}
+                    >
+                      {"2"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 3}
+                      onCheckedChange={() => {
+                        props.onChangeRating(3)
+                      }}
+                    >
+                      {"3"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 4}
+                      onCheckedChange={() => {
+                        props.onChangeRating(4)
+                      }}
+                    >
+                      {"4"}
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={props.rating === 5}
+                      onCheckedChange={() => {
+                        props.onChangeRating(5)
+                      }}
+                    >
+                      {"5"}
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant={"ghost"} size={"icon"}>

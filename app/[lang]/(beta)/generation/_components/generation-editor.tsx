@@ -25,7 +25,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useSuspenseQuery } from "@apollo/client"
-import { Suspense, startTransition, useEffect, useMemo } from "react"
+import { Suspense, startTransition, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -39,16 +39,23 @@ type Props = {
  * @param props
  */
 export function GenerationEditor(props: Props) {
+  const [showFavoriteRate, setShowFavoriteRate] = useState(-1)
+
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
     {},
   )
 
   const { data, refetch } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 64, offset: 0 },
+    variables: { limit: 64, offset: 0, rating: showFavoriteRate },
     errorPolicy: "all",
     context: { simulateError: true },
   })
+
+  const onChangeRating = (rating: number) => {
+    setShowFavoriteRate(rating)
+    refetch()
+  }
 
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
@@ -278,6 +285,8 @@ export function GenerationEditor(props: Props) {
             <GenerationEditorResult
               tasks={data?.viewer?.imageGenerationTasks ?? []}
               userNanoid={viewer?.viewer?.user?.nanoid ?? null}
+              rating={showFavoriteRate}
+              onChangeRating={onChangeRating}
               onChangeSampler={machine.updateSampler}
               onChangeScale={machine.updateScale}
               onChangeSeed={machine.updateSeed}
