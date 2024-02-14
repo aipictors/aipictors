@@ -26,7 +26,6 @@ import {
   StarIcon,
   Trash2Icon,
 } from "lucide-react"
-import Link from "next/link"
 import { Suspense, useState } from "react"
 
 type Props = {
@@ -78,13 +77,22 @@ export const GenerationEditorResultForm = (props: Props) => {
     setThumbnailSize(size)
   }
 
+  const moveHistoryPage = () => {
+    location.href = "/generation/tasks"
+  }
+
   return (
     <>
       {/* 操作一覧 */}
-      <div className="flex items-center">
-        <div className="flex px-2 pb-2 space-x-2 items-center">
+      <div className="flex px-4 pb-4 pt-2 items-center">
+        <div className="flex space-x-2 items-center w-full">
           {/* 履歴選択・キャンセルボタン */}
-          <Toggle className="w-32" onClick={onChangeEditMode} variant="outline">
+          <Toggle
+            className="w-32"
+            onClick={onChangeEditMode}
+            variant="outline"
+            size={"sm"}
+          >
             {editMode === "edit" ? "キャンセル" : "選択"}
           </Toggle>
           {/* 履歴削除ボタン、画像ダウンロードボタン */}
@@ -224,14 +232,18 @@ export const GenerationEditorResultForm = (props: Props) => {
               </DropdownMenu>
             </>
           ) : null}
-        </div>
-        {/* 履歴一覧リンク */}
-        <Link href="/generation/tasks" className="ml-auto px-4">
-          <Button className="w-24" variant={"secondary"} size={"sm"}>
+          <div className="invisible w-full" />
+          {/* 履歴一覧リンク */}
+          <Button
+            onClick={moveHistoryPage}
+            className="w-16 sm:w-24 ml-auto"
+            variant={"secondary"}
+            size={"sm"}
+          >
             {"全て"}
           </Button>
-        </Link>
-      </div>{" "}
+        </div>
+      </div>
       <Separator />
       {/* 履歴一覧 */}
       <Suspense fallback={<AppLoading />}>

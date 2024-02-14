@@ -19,7 +19,7 @@ type Props = {
 export const GenerationEditorCard = (props: Props) => {
   return (
     <Card className="h-full flex flex-col w-full max-w-none overflow-hidden">
-      <div className="flex px-2 py-2 justify-between">
+      <div className="flex px-4 pt-4 justify-between">
         <div className="flex items-center">
           <span className="font-bold">{props.title}</span>
         </div>

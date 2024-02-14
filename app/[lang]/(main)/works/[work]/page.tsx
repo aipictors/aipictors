@@ -37,7 +37,7 @@ const WorkPage = async (props: Props) => {
    */
 
   return (
-    <div className="px-4 py-4 w-full">
+    <div className="p-4 w-full">
       <div className="flex justify-center items-center flex-col">
         <div className="w-full max-w-screen-lg mx-auto">
           <Suspense fallback={<WorkPageLoading />}>

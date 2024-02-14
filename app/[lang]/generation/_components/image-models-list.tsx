@@ -90,7 +90,7 @@ export const ImageModelsList = (props: Props) => {
 
   return (
     <>
-      <div className="flex">
+      <div className="flex pl-4">
         <Select onValueChange={setSelectedCategoryFilter}>
           <SelectTrigger className="w-[160px] mr-2">
             <SelectValue placeholder={"カテゴリ"} />
@@ -121,7 +121,7 @@ export const ImageModelsList = (props: Props) => {
         {Array.from(groupedModels.entries()).map(([type, models]) => (
           <div key={type}>
             <p className="font-bold pl-4">{getTypeName(type)}</p>
-            <div className="grid grid-cols-3 gap-2 py-2 pl-2 pr-2 sm:pl-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+            <div className="grid grid-cols-3 gap-2 p-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
               {models.map(
                 (imageModel: {
                   id: Key | null | undefined

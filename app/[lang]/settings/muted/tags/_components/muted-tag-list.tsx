@@ -68,7 +68,7 @@ export const MutedTagList = () => {
             </div>
           </div>
           <Button
-            className="bg-primary text-white rounded-full px-4 py-2"
+            className="bg-primary text-white rounded-full p-4"
             onClick={handleMute}
           >
             {"変更を保存"}

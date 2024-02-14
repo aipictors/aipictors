@@ -263,10 +263,10 @@ export function GenerationTaskView(props: Props) {
   }
 
   return (
-    <ScrollArea className="px-4 py-4 w-full max-w-fit mx-auto">
+    <ScrollArea className="p-4 w-full max-w-fit mx-auto">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={"ghost"}>
+          <Button className={"px-2"} variant={"ghost"}>
             <PrivateImage
               className={`max-h-screen m-auto generation-image-${props.taskId}`}
               taskId={data.imageGenerationTask.id}

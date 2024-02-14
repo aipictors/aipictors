@@ -27,7 +27,7 @@ export const ImageModelCard = (props: Props) => {
           {props.displayName ?? ""}
         </span>
         {props.type && (
-          <span className="absolute text-white top-2 left-1 bg-black bg-opacity-50 rounded-lg px-2">
+          <span className="absolute text-white top-2 left-1 bg-black bg-opacity-50 rounded-lg p-4">
             {props.type}
           </span>
         )}

@@ -237,7 +237,7 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <Card className="px-2 py-2 space-y-2">
+          <Card className="p-4 space-y-2">
             <div>
               {/* 生成開始ボタン */}
               {hasSignedTerms && !inProgress && (

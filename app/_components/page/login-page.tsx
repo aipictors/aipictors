@@ -77,7 +77,7 @@ export const LoginPage = () => {
   }
 
   return (
-    <AppPageCenter className="sm:max-w-sm lg:max-w-none w-full px-4 pb-4">
+    <AppPageCenter className="sm:max-w-sm lg:max-w-none w-full p-4 pb-4">
       <div className="w-full flex flex-col pt-4 md:pt-0 lg:h-full justify-center items-center lg:flex-row lg:items-start">
         <div className="flex-1 w-full flex flex-col items-center h-full ">
           <div className="w-full lg:w-80 space-y-4">

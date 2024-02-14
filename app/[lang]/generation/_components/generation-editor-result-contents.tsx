@@ -81,13 +81,13 @@ export const GenerationEditorResultContents = (props: Props) => {
   const getGridClasses = (size: string): string => {
     switch (size) {
       case "small":
-        return "p-2 grid grid-cols-3 gap-2 py-2 pl-2 pr-4 sm:pl-2 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
+        return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
       case "middle":
-        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-4 sm:pl-2 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
       case "big":
-        return "p-2 grid grid-cols-1 gap-2 py-2 pl-2 pr-4 sm:pl-2 md:grid-cols-1 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
+        return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-1 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
       default:
-        return "p-2 grid grid-cols-2 gap-2 py-2 pl-2 pr-4 sm:pl-2 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
     }
   }
 

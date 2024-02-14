@@ -49,9 +49,11 @@ export const GenerationModelsButton = (props: Props) => {
       >
         <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
           <DialogHeader>
-            <DialogTitle>{"モデルを選択"}</DialogTitle>
+            <DialogTitle>
+              <div className="pl-4">{"モデルを選択"}</div>
+            </DialogTitle>
             <DialogDescription>
-              使用するモデルを選択してください
+              <div className="pl-4">{"使用するモデルを選択してください"}</div>
             </DialogDescription>
           </DialogHeader>
           <ImageModelsList

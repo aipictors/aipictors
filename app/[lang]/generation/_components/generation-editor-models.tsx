@@ -40,7 +40,7 @@ export const GenerationEditorModels = (props: Props) => {
         tooltip={"イラスト生成に使用するモデルです。絵柄などが変わります。"}
       >
         <ScrollArea>
-          <div className="px-2 grid gap-y-2 pb-2">
+          <div className="p-4 grid gap-y-2">
             <GenerationModelsButton
               models={props.models}
               selectedModelId={props.currentModelId}

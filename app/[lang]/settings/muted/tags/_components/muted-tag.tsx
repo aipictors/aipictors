@@ -13,7 +13,7 @@ export const MutedTag = (props: Props) => {
       <div>
         <p>{props.name}</p>
       </div>
-      <Button className="rounded-full px-4 py-2" onClick={props.onClick}>
+      <Button className="rounded-full p-4" onClick={props.onClick}>
         {"解除"}
       </Button>
     </div>

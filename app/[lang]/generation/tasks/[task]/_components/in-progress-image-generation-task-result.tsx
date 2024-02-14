@@ -20,7 +20,7 @@ import { CopyButton } from "./copy-button"
 export const InProgressImageGenerationTaskResult = () => {
   return (
     <>
-      <div className="px-4 py-4 w-full max-w-fit mx-auto">
+      <div className="p-4 w-full max-w-fit mx-auto">
         <p className="mb-1 font-semibold text-center">{"生成中"}</p>
         <Skeleton className="h-[400px] w-[400px] rounded-xl" />
         <div className="my-4 flex justify-end">
