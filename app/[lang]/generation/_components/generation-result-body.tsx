@@ -1,6 +1,6 @@
 "use client"
 
-import { InPaintingImageForm } from "@/app/[lang]/generation/_components/in-painting-image-form"
+import { InPaintingImageForm } from "@/app/[lang]/generation/_components/_in-painting-image-form"
 import { StarRating } from "@/app/[lang]/generation/_components/star-rating"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Badge } from "@/components/ui/badge"
