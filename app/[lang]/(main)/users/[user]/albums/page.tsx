@@ -1,6 +1,6 @@
 import { UserAlbumList } from "@/app/[lang]/(main)/users/[user]/albums/_components/user-album-list"
-import { createClient } from "@/app/_contexts/client"
 import { userAlbumsQuery } from "@/graphql/queries/user/user-albums"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 type Props = {

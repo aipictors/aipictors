@@ -1,5 +1,5 @@
-import { typePolicies } from "@/app/_contexts/type-policies"
 import { config } from "@/config"
+import { typePolicies } from "@/lib/type-policies"
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { getApps } from "firebase/app"
@@ -32,7 +32,7 @@ const contextSetter: ContextSetter = async (_, context) => {
     }
   }
 
-  const token = await getIdToken(currentUser, true)
+  const token = await getIdToken(currentUser)
 
   return {
     headers: {

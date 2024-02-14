@@ -1,7 +1,7 @@
 import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
-import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { dailyThemesQuery } from "@/graphql/queries/daily-theme/daily-themes"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 type Props = {

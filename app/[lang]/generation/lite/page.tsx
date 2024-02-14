@@ -1,6 +1,6 @@
 import { GenerationEditorLite } from "@/app/[lang]/generation/lite/_components/generation-editor-lite"
-import { createClient } from "@/app/_contexts/client"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 /**

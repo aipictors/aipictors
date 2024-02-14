@@ -1,10 +1,10 @@
 import { AlbumArticleHeader } from "@/app/[lang]/(main)/albums/[album]/_components/album-article-header"
 import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-description"
 import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
-import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { albumQuery } from "@/graphql/queries/album/album"
 import { albumWorksQuery } from "@/graphql/queries/album/album-works"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 type Props = {

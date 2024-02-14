@@ -1,10 +1,10 @@
 import { join } from "path"
 import { GenerationDocument } from "@/app/[lang]/generation/_components/generation-document"
 import { GenerationEditor } from "@/app/[lang]/generation/_components/generation-editor"
-import { createClient } from "@/app/_contexts/client"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
+import { createClient } from "@/lib/client"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 

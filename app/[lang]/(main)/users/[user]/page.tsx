@@ -1,7 +1,7 @@
 import { UserWorkList } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list"
 import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
-import { createClient } from "@/app/_contexts/client"
 import { userWorksQuery } from "@/graphql/queries/user/user-works"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 type Props = {

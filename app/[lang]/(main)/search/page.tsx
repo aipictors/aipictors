@@ -2,9 +2,9 @@ import { RelatedModelList } from "@/app/[lang]/(main)/search/_components/related
 import { RelatedTagList } from "@/app/[lang]/(main)/search/_components/related-tag-list"
 import { SearchHeader } from "@/app/[lang]/(main)/search/_components/search-header"
 import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
-import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { worksQuery } from "@/graphql/queries/work/works"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 const SearchPage = async () => {

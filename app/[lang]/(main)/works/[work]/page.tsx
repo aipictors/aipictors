@@ -2,9 +2,9 @@ import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-a
 import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
 import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
 import WorkPageLoading from "@/app/[lang]/(main)/works/[work]/loading"
-import { createClient } from "@/app/_contexts/client"
 import { workQuery } from "@/graphql/queries/work/work"
 import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
+import { createClient } from "@/lib/client"
 import type { Metadata, ResolvingMetadata } from "next"
 import { Suspense } from "react"
 

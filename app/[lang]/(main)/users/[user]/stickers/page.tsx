@@ -1,7 +1,7 @@
 import { UserWorkListActions } from "@/app/[lang]/(main)/users/[user]/_components/user-work-list-actions"
 import { UserStickerList } from "@/app/[lang]/(main)/users/[user]/stickers/_components/user-sticker-list"
-import { createClient } from "@/app/_contexts/client"
 import { userStickersQuery } from "@/graphql/queries/user/user-stickers"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 type Props = {

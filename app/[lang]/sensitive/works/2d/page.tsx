@@ -1,9 +1,9 @@
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkList } from "@/app/[lang]/(main)/_components/home-work-list"
-import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/graphql/queries/work/works"
+import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 const SensitiveWorks2dPage = async () => {

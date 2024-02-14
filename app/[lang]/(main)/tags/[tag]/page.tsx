@@ -1,7 +1,7 @@
 import { TagWorkSection } from "@/app/[lang]/(main)/tags/_components/tag-work-section"
-import { createClient } from "@/app/_contexts/client"
 import { AppPage } from "@/components/app/app-page"
 import { worksQuery } from "@/graphql/queries/work/works"
+import { createClient } from "@/lib/client"
 import { Metadata } from "next"
 
 type Props = {
