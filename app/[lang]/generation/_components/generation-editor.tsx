@@ -76,6 +76,7 @@ export function GenerationEditor(props: Props) {
     const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
       return task.status === "IN_PROGRESS" || task.status === "PENDING"
     })
+
     if (
       data?.viewer?.imageGenerationTasks.length &&
       beforeTaskId !== data?.viewer?.imageGenerationTasks[0]?.id
@@ -83,7 +84,7 @@ export function GenerationEditor(props: Props) {
       setIsStartGeneration(false)
     }
     return waitIndex !== -1 || isStartGeneration
-  }, [data?.viewer?.imageGenerationTasks])
+  }, [data?.viewer?.imageGenerationTasks, isStartGeneration])
 
   const isTimeout = useFocusTimeout()
 
