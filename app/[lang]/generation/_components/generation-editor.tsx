@@ -42,6 +42,8 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
+  const [isStartGeneration, setIsStartGeneration] = useState(false)
+  const [beforeTaskId, setBeforeTaskId] = useState("")
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
@@ -71,10 +73,16 @@ export function GenerationEditor(props: Props) {
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
   const inProgress = useMemo(() => {
-    const index = data?.viewer?.imageGenerationTasks.findIndex((task) => {
-      return task.status === "IN_PROGRESS"
+    const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
+      return task.status === "IN_PROGRESS" || task.status === "PENDING"
     })
-    return index !== -1
+    if (
+      data?.viewer?.imageGenerationTasks.length &&
+      beforeTaskId !== data?.viewer?.imageGenerationTasks[0]?.id
+    ) {
+      setIsStartGeneration(false)
+    }
+    return waitIndex !== -1 || isStartGeneration
   }, [data?.viewer?.imageGenerationTasks])
 
   const isTimeout = useFocusTimeout()
@@ -176,6 +184,12 @@ export function GenerationEditor(props: Props) {
         refetch()
       })
       toast("タスクを作成しました")
+
+      // 生成直後に生成ボタンをキャンセルボタンにする
+      setIsStartGeneration(true)
+      if (data?.viewer?.imageGenerationTasks.length) {
+        setBeforeTaskId(data?.viewer?.imageGenerationTasks[0].id)
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -189,6 +203,37 @@ export function GenerationEditor(props: Props) {
 
   const waitTasksCount = () => {
     return 10
+  }
+
+  const operationButton = () => {
+    console.log("hasSignedTerms", hasSignedTerms, "inProgress", inProgress)
+    if (hasSignedTerms && !inProgress) {
+      return (
+        <GenerationSubmitButton
+          onClick={onCreateTask}
+          isLoading={loading}
+          isDisabled={machine.state.context.isDisabled}
+        />
+      )
+    }
+    if (hasSignedTerms && inProgress) {
+      return (
+        <GenerationCancelButton
+          onClick={onCancelTask}
+          isLoading={loading}
+          isDisabled={machine.state.context.isDisabled}
+        />
+      )
+    }
+    if (!hasSignedTerms) {
+      return (
+        <GenerationTermsButton
+          termsMarkdownText={props.termsMarkdownText}
+          onSubmit={onSignImageGenerationTerms}
+        />
+      )
+    }
+    return <></>
   }
 
   return (
@@ -238,37 +283,7 @@ export function GenerationEditor(props: Props) {
       history={
         <div className="flex flex-col h-full gap-y-2">
           <Card className="p-4 space-y-2">
-            <div>
-              {/* 生成開始ボタン */}
-              {hasSignedTerms && !inProgress && (
-                <GenerationSubmitButton
-                  onClick={onCreateTask}
-                  isLoading={loading}
-                  isDisabled={machine.state.context.isDisabled}
-                />
-              )}
-              {/* キャンセルボタン */}
-              {hasSignedTerms && inProgress && (
-                <GenerationCancelButton
-                  onClick={onCancelTask}
-                  isLoading={loading}
-                  isDisabled={machine.state.context.isDisabled}
-                />
-              )}
-              {/* 利用規約同意ボタン */}
-              {!hasSignedTerms && (
-                <GenerationTermsButton
-                  termsMarkdownText={props.termsMarkdownText}
-                  onSubmit={onSignImageGenerationTerms}
-                />
-              )}
-              {!hasSignedTerms && (
-                <GenerationTermsButton
-                  termsMarkdownText={props.termsMarkdownText}
-                  onSubmit={onSignImageGenerationTerms}
-                />
-              )}
-            </div>
+            <div>{operationButton()}</div>
             <div className="flex">
               <p className="mr-2">
                 生成枚数：{data?.viewer?.remainingImageGenerationTasksCount}/
