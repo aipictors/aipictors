@@ -34,7 +34,7 @@ export function GenerationCountSelector(props: Props) {
             <></>
           )}
           {props.pass === "PREMIUM" ? (
-            <SelectItem value="2">{"2"}</SelectItem>
+            <SelectItem value="3">{"3"}</SelectItem>
           ) : (
             <></>
           )}
