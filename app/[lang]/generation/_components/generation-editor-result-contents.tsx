@@ -23,6 +23,7 @@ type Props = {
   editMode: string
   selectedTaskIds: string[]
   thumbnailSize: string
+  hidedTaskIds: string[]
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -36,15 +37,27 @@ export const GenerationEditorResultContents = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 64, offset: 0, rating: props.rating },
+    variables: {
+      limit: 64,
+      offset: 0,
+      where: props.rating !== -1 ? { rating: props.rating } : {},
+    },
     errorPolicy: "all",
     context: { simulateError: true },
   })
 
+  // 非表示指定のタスクを除外
+  const filteredImageGenerationTasks = (
+    data?.viewer?.imageGenerationTasks || []
+  ).filter((task) => task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
+
+  // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
   const newImageGenerationTasks = [
-    ...(data?.viewer?.imageGenerationTasks || []),
+    ...filteredImageGenerationTasks,
     props.additionalTask,
-  ] as ImageGenerationTaskNode[]
+  ].filter(
+    (task) => task !== null && task !== undefined,
+  ) as ImageGenerationTaskNode[]
 
   const onRestore = (taskId: string) => {
     const task = data?.viewer?.imageGenerationTasks.find(

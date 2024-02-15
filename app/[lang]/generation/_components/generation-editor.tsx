@@ -57,7 +57,7 @@ export function GenerationEditor(props: Props) {
   )
 
   const { data, refetch } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 0, offset: 0 },
+    variables: { limit: 0, offset: 0, where: {} },
   })
 
   const onChangeRating = (rating: number) => {

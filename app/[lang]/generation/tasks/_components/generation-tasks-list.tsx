@@ -3,6 +3,7 @@
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
+import { useState } from "react"
 
 /**
  * use Dynamic Import
@@ -10,10 +11,13 @@ import { useSuspenseQuery } from "@apollo/client"
  * @returns
  */
 export function GenerationTasksList() {
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
       offset: 0,
+      where: {},
     },
   })
 
@@ -26,6 +30,7 @@ export function GenerationTasksList() {
             key={task.id}
             taskId={task.id}
             token={task.token}
+            isSelected={selectedTaskIds.includes(task.nanoid ?? "")}
           />
         ))}
       </div>
