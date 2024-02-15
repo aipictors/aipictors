@@ -2,6 +2,7 @@
 
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -14,9 +15,17 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Toggle } from "@/components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
+import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
+import { CalendarIcon } from "@radix-ui/react-icons"
+import { format } from "date-fns"
 import {
   ArrowDownToLineIcon,
   MoreHorizontalIcon,
@@ -30,7 +39,10 @@ type Props = {
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   editMode: string
+  showDateInput?: boolean
+  dateText?: string
   onChangeRating(rating: number): void
+  onChangeDateText(dateText: string): void
   setThumbnailSize(size: string): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
@@ -220,6 +232,45 @@ export const GenerationTasksOperationParts = (props: Props) => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
+          ) : null}
+
+          {/* 日付指定 */}
+          {props.showDateInput ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[240px] pl-3 text-left font-normal",
+                    !props && "text-muted-foreground",
+                  )}
+                >
+                  {props.dateText ? (
+                    format(props.dateText, "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={
+                    props.dateText ? new Date(props.dateText) : undefined
+                  }
+                  onSelect={(date: Date | undefined) =>
+                    props.onChangeDateText(
+                      date ? format(date, "yyyy-MM-dd") : "",
+                    )
+                  }
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           ) : null}
         </div>
       </div>

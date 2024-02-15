@@ -18,6 +18,7 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
+  sizeType?: string
   additionalTask: ImageGenerationTaskNode | null
   rating: number
   editMode: string
@@ -99,6 +100,18 @@ export const GenerationEditorResultContents = (props: Props) => {
   }
 
   const getGridClasses = (size: string): string => {
+    if (props.sizeType === "full") {
+      switch (size) {
+        case "small":
+          return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
+        case "middle":
+          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
+        case "big":
+          return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+        default:
+          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+      }
+    }
     switch (size) {
       case "small":
         return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
