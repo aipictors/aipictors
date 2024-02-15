@@ -2,6 +2,7 @@
 
 import { GenerationEditorConfig } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
 import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
+import { GenerationCountSelector } from "@/app/[lang]/generation/_components/generation-count-selector"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
@@ -48,6 +49,7 @@ export function GenerationEditor(props: Props) {
   const [createdTask, setCreatedTask] =
     useState<ImageGenerationTaskNode | null>(null)
   const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
+  const [generationCount, setGenerationCount] = useState(1)
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
@@ -182,7 +184,7 @@ export function GenerationEditor(props: Props) {
       const newTask = await createTask({
         variables: {
           input: {
-            count: 1,
+            count: generationCount,
             model: model.name,
             vae: machine.state.context.vae ?? "",
             prompt: machine.state.context.promptText,
@@ -336,19 +338,47 @@ export function GenerationEditor(props: Props) {
           <div>
             {/* 生成開始ボタン */}
             {hasSignedTerms && !inProgress && (
-              <GenerationSubmitButton
-                onClick={onCreateTask}
-                isLoading={loading || isFakeLoading}
-                isDisabled={machine.state.context.isDisabled}
-              />
+              <>
+                <div className="flex items-center">
+                  <GenerationCountSelector
+                    pass={
+                      viewer.viewer?.currentPass?.type
+                        ? viewer.viewer?.currentPass?.type
+                        : "free"
+                    }
+                    selectedCount={generationCount}
+                    onChange={(count: string) =>
+                      setGenerationCount(count === "" ? 1 : parseInt(count))
+                    }
+                  />
+                  <GenerationSubmitButton
+                    onClick={onCreateTask}
+                    isLoading={loading || isFakeLoading}
+                    isDisabled={machine.state.context.isDisabled}
+                  />
+                </div>
+              </>
             )}
             {/* キャンセル開始ボタン */}
             {hasSignedTerms && inProgress && (
-              <GenerationCancelButton
-                onClick={onCancelTask}
-                isLoading={loading}
-                isDisabled={machine.state.context.isDisabled}
-              />
+              <div className="flex items-center">
+                <GenerationCountSelector
+                  pass={
+                    viewer.viewer?.currentPass?.type
+                      ? viewer.viewer?.currentPass?.type
+                      : "free"
+                  }
+                  selectedCount={generationCount}
+                  onChange={(count: string) =>
+                    setGenerationCount(count === "" ? 1 : parseInt(count))
+                  }
+                />
+                <GenerationCancelButton
+                  onClick={onCancelTask}
+                  isLoading={loading}
+                  isDisabled={machine.state.context.isDisabled}
+                />
+              </div>
             )}
             {/* 規約確認開始ボタン */}
             {!hasSignedTerms && (
