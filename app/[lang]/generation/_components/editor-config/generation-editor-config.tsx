@@ -2,6 +2,7 @@
 
 import { ConfigModel } from "@/app/[lang]/generation/_components/config-model"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-lora-models"
+import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-scale"
 import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-seed"
@@ -50,6 +51,11 @@ type Props = {
   onUpdateLoraModelConfig(modelId: string, value: number): void
 }
 
+/**
+ * エディタの設定
+ * @param props
+ * @returns
+ */
 export const GenerationEditorConfig = (props: Props) => {
   const currentModels = props.currentModelIds.map((modelId) => {
     return props.models.find((model) => {
@@ -66,27 +72,12 @@ export const GenerationEditorConfig = (props: Props) => {
     >
       <ScrollArea type="always">
         <div className="flex flex-col px-4 gap-y-4 pb-4">
-          <div className="grid gap-y-2">
-            {currentModels.map((model) => (
-              <ConfigModel
-                key={model?.id}
-                imageURL={model?.thumbnailImageURL ?? ""}
-                name={model?.displayName ?? ""}
-                isSelected={model?.id === props.currentModelId}
-                onClick={() => {
-                  props.onSelectModelId(model!.id, model!.type)
-                }}
-              />
-            ))}
-            <GenerationModelsButton
-              isOpen={isOpen}
-              onOpen={onOpen}
-              onClose={onClose}
-              models={props.models}
-              selectedModelId={props.currentModelId}
-              onSelect={props.onSelectModelId}
-            />
-          </div>
+          <GenerationEditorConfigModels
+            models={props.models}
+            currentModelId={props.currentModelId}
+            currentModelIds={props.currentModelIds}
+            onSelectModelId={props.onSelectModelId}
+          />
           <Separator />
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
