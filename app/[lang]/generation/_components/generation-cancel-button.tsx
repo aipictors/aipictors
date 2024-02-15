@@ -9,6 +9,7 @@ type Props = {
 export function GenerationCancelButton(props: Props) {
   return (
     <Button
+      variant={"destructive"}
       onClick={props.onClick}
       className="w-full"
       size={"lg"}
