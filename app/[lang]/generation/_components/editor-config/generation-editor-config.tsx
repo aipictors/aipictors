@@ -65,7 +65,7 @@ export const GenerationEditorConfig = (props: Props) => {
       tooltip={"イラストの絵柄を調整することができます。"}
     >
       <ScrollArea type="always">
-        <div className="flex flex-col px-4 pt-2 gap-y-4">
+        <div className="flex flex-col px-4 gap-y-4 pb-4">
           <div className="grid gap-y-2">
             {currentModels.map((model) => (
               <ConfigModel

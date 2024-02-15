@@ -84,7 +84,7 @@ export const GenerationEditorResultForm = (props: Props) => {
   return (
     <>
       {/* 操作一覧 */}
-      <div className="flex px-4 pb-4 pt-2 items-center">
+      <div className="flex px-4 pb-2 items-center">
         <div className="flex space-x-2 items-center w-full">
           {/* 履歴選択・キャンセルボタン */}
           <Toggle

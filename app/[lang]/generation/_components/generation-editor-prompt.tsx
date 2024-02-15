@@ -4,10 +4,9 @@ import { GenerationEditorCard } from "@/app/[lang]/generation/_components/genera
 import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/prompt-categories-dialog-contents"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
-import { DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
-import { Dialog } from "@radix-ui/react-dialog"
 import { BookTextIcon } from "lucide-react"
 
 type Props = {
@@ -65,7 +64,7 @@ export const GenerationEditorPrompt = (props: Props) => {
           </>
         }
       >
-        <div className="flex flex-col px-4 pt-2 pb-4 h-full gap-y-2">
+        <div className="flex flex-col px-4 pb-4 h-full gap-y-2">
           <Textarea
             className="resize-none h-full font-mono min-h-40"
             placeholder={"プロンプト"}
