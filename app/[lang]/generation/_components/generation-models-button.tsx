@@ -6,63 +6,64 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  isOpen?: boolean
-  onOpen?: () => void
-  onClose?: () => void
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
   onSelect(id: string, type: string): void
 }
 
 export const GenerationModelsButton = (props: Props) => {
+  const { value, setTrue, setFalse } = useBoolean()
+
   const onSelectModel = (id: string, type: string) => {
     props.onSelect(id, type)
-    if (props.onClose) {
-      props.onClose()
-    }
+    setFalse()
   }
 
   return (
-    <>
-      <Button
-        onClick={props.onOpen}
-        size={"sm"}
-        className="w-full"
-        variant={"secondary"}
-      >
-        {"すべてのモデル"}
-      </Button>
-
-      <Dialog
-        onOpenChange={(isOpen) => {
-          if (!isOpen && props.onClose) {
-            props.onClose()
-          }
-        }}
-        open={props.isOpen}
-      >
-        <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
-          <DialogHeader>
-            <DialogTitle>
-              <div className="pl-4">{"モデルを選択"}</div>
-            </DialogTitle>
-            <DialogDescription>
-              <div className="pl-4">{"使用するモデルを選択してください"}</div>
-            </DialogDescription>
-          </DialogHeader>
-          <ImageModelsList
-            models={props.models}
-            onSelect={onSelectModel}
-            selectedModelId={props.selectedModelId}
-          />
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog
+      open={value}
+      onOpenChange={(isOpen) => {
+        if (isOpen) return
+        setFalse()
+      }}
+    >
+      <DialogTrigger>
+        <Button
+          size={"sm"}
+          className="w-full"
+          variant={"secondary"}
+          onClick={setTrue}
+        >
+          {"すべてのモデル"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
+        <DialogHeader>
+          <DialogTitle>{"モデルを選択"}</DialogTitle>
+          <DialogDescription>
+            {"使用するモデルを選択してください"}
+          </DialogDescription>
+        </DialogHeader>
+        <ImageModelsList
+          models={props.models}
+          onSelect={onSelectModel}
+          selectedModelId={props.selectedModelId}
+        />
+        <DialogFooter>
+          <Button className="w-full" onClick={setFalse}>
+            {"完了"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
