@@ -1,6 +1,5 @@
 "use client"
 
-import { ConfigModel } from "@/app/[lang]/generation/_components/config-model"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-lora-models"
 import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-sampler"
@@ -10,7 +9,6 @@ import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-step"
 import { GenerationEditorConfigVae } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { GenerationModelsButton } from "@/app/[lang]/generation/_components/generation-models-button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import type {
