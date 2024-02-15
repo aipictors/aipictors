@@ -1,59 +1,91 @@
+import { fetchImage } from "@/app/_utils/fetch-image-object-url"
 import { Button } from "@/components/ui/button"
 import * as fflate from "fflate"
-import { ArrowDownToLineIcon } from "lucide-react"
+import { ArrowDownToLine } from "lucide-react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 interface GenerationHistoryDownloadWithZipProps {
-  disabled?: boolean // Make disabled optional
+  disabled?: boolean
   selectedTaskIds: string[]
+  token: string // Token is now required to fetch images
 }
 
 const GenerationHistoryDownloadWithZip = ({
   disabled = false,
+  selectedTaskIds,
+  token,
 }: GenerationHistoryDownloadWithZipProps) => {
-  // ZIPファイルを作成しダウンロードする関数
-  const handleDownloadZip = async () => {
-    // 例として、ダミーテキストファイルを作成します
-    const files = {
-      "example.txt": new TextEncoder().encode(
-        "これはZIP圧縮されるテキストファイルの内容です。",
-      ),
-    }
+  const [isPreparingDownload, setIsPreparingDownload] = useState(false)
 
-    // fflateを使用してZIP圧縮
-    fflate.zip(files, (err, zip) => {
-      if (err) {
-        toast("Zip圧縮中にエラーが発生しました")
-        console.error(err)
+  const handleDownloadZip = async () => {
+    setIsPreparingDownload(true)
+    const files: { [key: string]: Uint8Array } = {}
+
+    try {
+      // Promise.allを使用して全ての画像のfetchが完了するのを待つ
+      await Promise.all(
+        selectedTaskIds.map(async (taskId) => {
+          const imageUrl = await fetchImage(taskId, token)
+          console.log({ imageUrl })
+          const response = await fetch(imageUrl)
+          if (!response.ok)
+            throw new Error(`Image fetch failed: ${response.statusText}`)
+          const arrayBuffer = await response.arrayBuffer()
+          files[`${taskId}.png`] = new Uint8Array(arrayBuffer)
+        }),
+      )
+
+      if (Object.keys(files).length === 0) {
+        toast("ダウンロードする画像がありません。")
+        setIsPreparingDownload(false)
         return
       }
 
-      toast("Zip圧縮に成功しました。ダウンロードを開始します。")
-      // BlobとしてZIPデータを保存
-      const blob = new Blob([zip], { type: "application/zip" })
+      // 全ての画像がfetchされた後にZIP圧縮を行う
+      fflate.zip(files, (err, zip) => {
+        setIsPreparingDownload(false)
+        if (err) {
+          toast("Zip圧縮中にエラーが発生しました")
+          console.error(err)
+          return
+        }
 
-      // ダウンロードリンクを作成
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = "generation_image.zip" // ダウンロードファイル名
-      document.body.appendChild(a)
-      a.click()
+        toast("Zip圧縮に成功しました。ダウンロードを開始します。")
+        const blob = new Blob([zip], { type: "application/zip" })
 
-      // 後処理
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = "images.zip"
+        document.body.appendChild(a)
+        a.click()
+
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      })
+    } catch (error) {
+      console.error("Error processing images for download:", error)
+      toast("画像データの取得中にエラーが発生しました")
+      setIsPreparingDownload(false)
+    }
   }
+
+  useEffect(() => {
+    // Cleanup function in case component unmounts during download preparation
+    return () => {
+      setIsPreparingDownload(false)
+    }
+  }, [])
 
   return (
     <Button
-      disabled={disabled}
+      disabled={disabled || isPreparingDownload}
       variant="ghost"
       size="icon"
       onClick={handleDownloadZip}
     >
-      <ArrowDownToLineIcon className="w-4" />
+      <ArrowDownToLine className="w-4" />
     </Button>
   )
 }
