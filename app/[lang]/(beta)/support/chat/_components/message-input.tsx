@@ -16,7 +16,6 @@ export const MessageInput = (props: Props) => {
   const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const handleSubmit = () => {
-    console.log("submit")
     props.onSubmit(message)
     setSelectedImages([])
     setMessage("")

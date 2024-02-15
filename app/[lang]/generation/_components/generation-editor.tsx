@@ -14,6 +14,7 @@ import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-im
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { config } from "@/config"
 import {
   ImageGenerationSizeType,
@@ -42,7 +43,7 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
-  const [beforeTaskId, setBeforeTaskId] = useState("")
+  const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
@@ -69,58 +70,33 @@ export function GenerationEditor(props: Props) {
 
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
-  /**
-   * 生成中かどうか
-   */
-  const inProgress = () => {
-    // 生成中タスクが存在するなら生成中とみなす
-    const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
-      return task.status === "IN_PROGRESS" || task.status === "PENDING"
-    })
-    if (waitIndex !== -1) {
-      return true
-    }
-
-    // 初期値のままならまだ生成ボタンを押してないので何もしない
-    if (beforeTaskId === "") {
-      return false
-    }
-
-    // 生成開始前と同じ状態なら生成開始中なので、生成中とみなす
-    if (
-      data?.viewer?.imageGenerationTasks.length &&
-      beforeTaskId === data?.viewer?.imageGenerationTasks[0]?.id
-    ) {
-      // 生成ボタン押した直後の通信が遅い場合もここに入る
-      return true
-    }
-
-    // もし開始ボタン押下前と違うタスクが取得できていたら生成開始成功
-    if (
-      data?.viewer?.imageGenerationTasks.length &&
-      beforeTaskId !== data?.viewer?.imageGenerationTasks[0]?.id
-    ) {
-      setBeforeTaskId(data?.viewer?.imageGenerationTasks[0]?.id)
-      return true
-    }
-
-    return false
-  }
+  // 生成中タスクが存在するなら生成中とみなす
+  const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
+    return task.status === "IN_PROGRESS" || task.status === "PENDING"
+  })
+  const inProgress = waitIndex !== -1
 
   const isTimeout = useFocusTimeout()
 
   useEffect(() => {
     const time = setInterval(() => {
-      if (isTimeout || !inProgress()) return
+      if (isTimeout || !inProgress) {
+        setElapsedGenerationTime(0)
+        return
+      }
+      if (inProgress) {
+        setElapsedGenerationTime((prev) => prev + 1)
+      } else {
+        setElapsedGenerationTime(0)
+      }
       startTransition(() => {
         refetch()
       })
     }, 1000)
-    // クリーンアップ関数
     return () => {
       clearInterval(time)
     }
-  }, [])
+  }, [inProgress])
 
   const onSignImageGenerationTerms = async () => {
     try {
@@ -151,6 +127,16 @@ export function GenerationEditor(props: Props) {
     return config.passFeature.imageGenerationsCount.free
   }
 
+  const isPriorityAccount = () => {
+    if (
+      viewer.viewer?.currentPass?.type === "STANDARD" ||
+      viewer.viewer?.currentPass?.type === "PREMIUM"
+    ) {
+      return true
+    }
+    return false
+  }
+
   /**
    * タスクをキャンセルする
    */
@@ -169,15 +155,6 @@ export function GenerationEditor(props: Props) {
       refetch()
     })
     toast("タスクをキャンセルしました")
-    setBeforeTaskId("")
-  }
-
-  const initBeforeTaskId = () => {
-    if (data?.viewer?.imageGenerationTasks.length) {
-      setBeforeTaskId(data?.viewer?.imageGenerationTasks[0].id)
-    } else {
-      setBeforeTaskId("0")
-    }
   }
 
   /**
@@ -193,6 +170,7 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.state.context.modelId
       })
       if (typeof model === "undefined") return
+
       await createTask({
         variables: {
           input: {
@@ -210,11 +188,11 @@ export function GenerationEditor(props: Props) {
           },
         },
       })
+
       startTransition(() => {
         refetch()
       })
       toast("タスクを作成しました")
-      initBeforeTaskId()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -226,12 +204,8 @@ export function GenerationEditor(props: Props) {
     return model.id === machine.state.context.modelId
   })
 
-  const waitTasksCount = () => {
-    return 10
-  }
-
   const operationButton = () => {
-    if (hasSignedTerms && !inProgress()) {
+    if (hasSignedTerms && !inProgress) {
       return (
         <GenerationSubmitButton
           onClick={onCreateTask}
@@ -240,7 +214,7 @@ export function GenerationEditor(props: Props) {
         />
       )
     }
-    if (hasSignedTerms && inProgress()) {
+    if (hasSignedTerms && inProgress) {
       return (
         <GenerationCancelButton
           onClick={onCancelTask}
@@ -258,6 +232,76 @@ export function GenerationEditor(props: Props) {
       )
     }
     return <></>
+  }
+
+  const generateSpeed = (waitTasks: number | undefined) => {
+    if (waitTasks === undefined) return -1
+    if (waitTasks < 5) {
+      return 0
+    }
+    if (waitTasks < 10) {
+      return 1
+    }
+    return 2
+  }
+  const speed = !inProgress
+    ? -1
+    : generateSpeed(data?.imageGenerationEngineStatus?.normalTasksCount)
+  const prioritySpeed = !inProgress
+    ? -1
+    : generateSpeed(data?.imageGenerationEngineStatus?.standardTasksCount)
+
+  const generateStatus = (speed: number) => {
+    if (speed === -1) {
+      return "-"
+    }
+    if (speed === 0) {
+      return "快適"
+    }
+    if (speed === 1) {
+      return "通常"
+    }
+    return "混雑"
+  }
+
+  /**
+   * 生成完了までの進捗（パーセンテージ）
+   */
+  const generationProgress = () => {
+    if (!data?.imageGenerationEngineStatus || elapsedGenerationTime === 0)
+      return 0
+    const waitSeconds = isPriorityAccount()
+      ? data?.imageGenerationEngineStatus?.standardPredictionGenerationSeconds
+      : data?.imageGenerationEngineStatus?.normalPredictionGenerationSeconds
+    if (!waitSeconds) return 0 // 0徐算防止
+    const progressPercentage = (elapsedGenerationTime / waitSeconds) * 100
+    return progressPercentage
+  }
+
+  /**
+   * 残り秒数（s/m/h単位)
+   */
+  const secondsRemaining = () => {
+    if (!data?.imageGenerationEngineStatus || elapsedGenerationTime === 0)
+      return 0
+    const waitSeconds = isPriorityAccount()
+      ? data?.imageGenerationEngineStatus?.standardPredictionGenerationSeconds
+      : data?.imageGenerationEngineStatus?.normalPredictionGenerationSeconds
+    if (!waitSeconds) return 0
+    const remainingSeconds = waitSeconds - elapsedGenerationTime
+    if (remainingSeconds < 0) {
+      return "まもなく"
+    }
+    return formatTime(remainingSeconds)
+  }
+
+  /**
+   * 時間フォーマットに変換
+   */
+  const formatTime = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s` // 秒
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m` // 分
+    return `${Math.floor(seconds / 3600)}h` // 時間
   }
 
   return (
@@ -307,16 +351,29 @@ export function GenerationEditor(props: Props) {
       history={
         <div className="flex flex-col h-full gap-y-2">
           <div>{operationButton()}</div>
+          <Progress className="w-full" value={generationProgress()} />
           <div className="flex">
-            <Badge className="mr-2">
-              生成枚数 {data?.viewer?.remainingImageGenerationTasksCount}/
+            <Badge className="mr-2" variant={"secondary"}>
+              {"生成枚数 "} {data?.viewer?.remainingImageGenerationTasksCount}/
               {maxCount()}
             </Badge>
-            <Badge>
-              生成待ち{" "}
-              {inProgress()
-                ? data?.imageGenerationEngineStatus.normalTasksCount
-                : "-"}
+            {isPriorityAccount() ? (
+              <Badge className="mr-2" variant={"secondary"}>
+                {"優先状態 "}
+                {generateStatus(prioritySpeed)}
+              </Badge>
+            ) : (
+              <></>
+            )}
+            <Badge
+              variant={"secondary"}
+              className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
+            >
+              {isPriorityAccount() ? "一般状態" : "状態"}{" "}
+              {generateStatus(speed)}
+            </Badge>
+            <Badge variant={"secondary"} className={"mr-2"}>
+              {"予測"} {inProgress ? secondsRemaining() : "-"}
             </Badge>
           </div>
           <GenerationEditorCard

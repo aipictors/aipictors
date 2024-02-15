@@ -39,8 +39,6 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
     return currentLoraModelNames.includes(model.name)
   })
 
-  console.log(currentModels)
-
   return (
     <div className="space-y-2">
       {selectedModels.map((model) => (

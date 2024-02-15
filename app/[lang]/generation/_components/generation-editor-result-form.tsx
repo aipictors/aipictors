@@ -52,7 +52,6 @@ export const GenerationEditorResultForm = (props: Props) => {
       setSelectedTaskIds([])
     }
     setEditMode((prev) => (prev === "" ? "edit" : ""))
-    console.log(editMode)
   }
 
   const onTrashTasks = async () => {

@@ -22,7 +22,6 @@ export class ImageGenerationAction {
    * @returns
    */
   updateNegativePrompt(text: string) {
-    console.log("updateNegativePrompt", text)
     return new ImageGenerationConfig({
       ...this.state,
       negativePromptText: text.trim() === "" ? "EasyNegative" : text,

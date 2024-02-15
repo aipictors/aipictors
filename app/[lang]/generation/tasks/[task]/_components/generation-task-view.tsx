@@ -109,7 +109,6 @@ export const postGenerationImage = async (
   const imageElement = document.querySelector(
     `.generation-image-${taskId}`,
   ) as HTMLImageElement
-  console.log(imageElement)
   if (!imageElement) {
     return
   }
