@@ -2,7 +2,6 @@
 
 import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
 import GenerationHistoryDownloadWithZip from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
-import DownloadButton from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { AppLoading } from "@/components/app/app-loading"
 import { Button } from "@/components/ui/button"

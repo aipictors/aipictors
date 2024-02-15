@@ -8,13 +8,11 @@ import { toast } from "sonner"
 interface GenerationHistoryDownloadWithZipProps {
   disabled?: boolean
   selectedTaskIds: string[]
-  token: string // Token is now required to fetch images
 }
 
 const GenerationHistoryDownloadWithZip = ({
   disabled = false,
   selectedTaskIds,
-  token,
 }: GenerationHistoryDownloadWithZipProps) => {
   const [isPreparingDownload, setIsPreparingDownload] = useState(false)
 
