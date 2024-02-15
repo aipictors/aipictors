@@ -55,7 +55,7 @@ export function GenerationEditor(props: Props) {
   )
 
   const { data, refetch } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 1, offset: 0 },
+    variables: { limit: 0, offset: 0 },
   })
 
   const onChangeRating = (rating: number) => {
@@ -78,10 +78,7 @@ export function GenerationEditor(props: Props) {
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
   // 生成中タスクが存在するなら生成中とみなす
-  const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
-    return task.status === "IN_PROGRESS" || task.status === "PENDING"
-  })
-  const inProgress = waitIndex !== -1
+  const inProgress = data?.viewer?.inProgressImageGenerationTasksCount !== 0
 
   const isTimeout = useFocusTimeout()
 

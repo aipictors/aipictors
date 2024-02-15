@@ -13,6 +13,7 @@ export const viewerImageGenerationTasksQuery = gql(`
     }
     viewer {
       remainingImageGenerationTasksCount
+      inProgressImageGenerationTasksCount
       imageGenerationTasks(offset: $offset, limit: $limit, rating: $rating) {
         ...ImageGenerationTaskFields
       }
