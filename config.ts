@@ -147,11 +147,11 @@ export const config = {
     get titleEN() {
       return `${this.nameEN} - ${this.catchphraseEN}`
     },
-    titleTemplateJA: "%s | AIイラスト・小説投稿サイト",
-    catchphraseJA: "AIイラスト・小説投稿サイト",
-    catchphraseEN: "AI Illustration & Novel",
+    titleTemplateJA: "%s | Aipictors | AI画像投稿サイト・生成サイト",
+    catchphraseJA: "AI画像投稿サイト・生成サイト",
+    catchphraseEN: "AI Illustration & Generation",
     descriptionJA:
-      "AIイラスト・小説投稿サイト「AIピクターズ」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。",
+      "AI画像投稿サイト・生成サイト「AIピクターズ」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説・ショート動画投稿サイトです。",
   },
   /**
    * Firebaseの設定
