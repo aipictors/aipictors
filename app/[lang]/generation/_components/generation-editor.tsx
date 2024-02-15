@@ -72,7 +72,7 @@ export function GenerationEditor(props: Props) {
     createImageGenerationTaskMutation,
   )
   const [isFakeLoading, { startFakeLoading, stopFakeLoading }] = useFakeLoading(
-    16 * 1000,
+    60 * 1000,
   )
 
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
