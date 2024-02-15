@@ -11,6 +11,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/gene
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
+import { useFakeLoading } from "@/app/_hooks/use-fake-loading"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ import { Progress } from "@/components/ui/progress"
 import { config } from "@/config"
 import {
   ImageGenerationSizeType,
+  ImageGenerationTaskNode,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
@@ -43,6 +45,8 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
+  const [createdTask, setCreatedTask] =
+    useState<ImageGenerationTaskNode | null>(null)
   const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
@@ -67,6 +71,9 @@ export function GenerationEditor(props: Props) {
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
   )
+  const [isFakeLoading, { startFakeLoading, stopFakeLoading }] = useFakeLoading(
+    16 * 1000,
+  )
 
   const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
 
@@ -79,6 +86,7 @@ export function GenerationEditor(props: Props) {
   const isTimeout = useFocusTimeout()
 
   useEffect(() => {
+    stopFakeLoading()
     const time = setInterval(() => {
       if (isTimeout || !inProgress) {
         setElapsedGenerationTime(0)
@@ -171,7 +179,10 @@ export function GenerationEditor(props: Props) {
       })
       if (typeof model === "undefined") return
 
-      await createTask({
+      // 通信前にローディング開始しておく
+      startFakeLoading()
+
+      const newTask = await createTask({
         variables: {
           input: {
             count: 1,
@@ -188,6 +199,9 @@ export function GenerationEditor(props: Props) {
           },
         },
       })
+      if (newTask?.data) {
+        setCreatedTask(newTask.data.createImageGenerationTask)
+      }
 
       startTransition(() => {
         refetch()
@@ -204,36 +218,6 @@ export function GenerationEditor(props: Props) {
     return model.id === machine.state.context.modelId
   })
 
-  const operationButton = () => {
-    if (hasSignedTerms && !inProgress) {
-      return (
-        <GenerationSubmitButton
-          onClick={onCreateTask}
-          isLoading={loading}
-          isDisabled={machine.state.context.isDisabled}
-        />
-      )
-    }
-    if (hasSignedTerms && inProgress) {
-      return (
-        <GenerationCancelButton
-          onClick={onCancelTask}
-          isLoading={loading}
-          isDisabled={machine.state.context.isDisabled}
-        />
-      )
-    }
-    if (!hasSignedTerms) {
-      return (
-        <GenerationTermsButton
-          termsMarkdownText={props.termsMarkdownText}
-          onSubmit={onSignImageGenerationTerms}
-        />
-      )
-    }
-    return <></>
-  }
-
   const generateSpeed = (waitTasks: number | undefined) => {
     if (waitTasks === undefined) return -1
     if (waitTasks < 5) {
@@ -244,9 +228,11 @@ export function GenerationEditor(props: Props) {
     }
     return 2
   }
+
   const speed = !inProgress
     ? -1
     : generateSpeed(data?.imageGenerationEngineStatus?.normalTasksCount)
+
   const prioritySpeed = !inProgress
     ? -1
     : generateSpeed(data?.imageGenerationEngineStatus?.standardTasksCount)
@@ -350,8 +336,34 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <div>{operationButton()}</div>
+          <div>
+            {/* 生成開始ボタン */}
+            {hasSignedTerms && !inProgress && (
+              <GenerationSubmitButton
+                onClick={onCreateTask}
+                isLoading={loading || isFakeLoading}
+                isDisabled={machine.state.context.isDisabled}
+              />
+            )}
+            {/* キャンセル開始ボタン */}
+            {hasSignedTerms && inProgress && (
+              <GenerationCancelButton
+                onClick={onCancelTask}
+                isLoading={loading}
+                isDisabled={machine.state.context.isDisabled}
+              />
+            )}
+            {/* 規約確認開始ボタン */}
+            {!hasSignedTerms && (
+              <GenerationTermsButton
+                termsMarkdownText={props.termsMarkdownText}
+                onSubmit={onSignImageGenerationTerms}
+              />
+            )}
+          </div>
+          {/* 生成予想進捗 */}
           <Progress className="w-full" value={generationProgress()} />
+          {/* 生成状況 */}
           <div className="flex">
             <Badge className="mr-2" variant={"secondary"}>
               {"生成枚数 "} {data?.viewer?.remainingImageGenerationTasksCount}/
@@ -386,6 +398,7 @@ export function GenerationEditor(props: Props) {
           >
             <Suspense fallback={null}>
               <GenerationEditorResultForm
+                additionalTask={createdTask}
                 userNanoid={viewer?.viewer?.user?.nanoid ?? null}
                 rating={rating}
                 onChangeRating={onChangeRating}

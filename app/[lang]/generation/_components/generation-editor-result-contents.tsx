@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
+import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
@@ -17,6 +18,7 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
+  additionalTask: ImageGenerationTaskNode | null
   rating: number
   editMode: string
   selectedTaskIds: string[]
@@ -39,6 +41,11 @@ export const GenerationEditorResultContents = (props: Props) => {
     context: { simulateError: true },
   })
 
+  const newImageGenerationTasks = [
+    ...(data?.viewer?.imageGenerationTasks || []),
+    props.additionalTask,
+  ] as ImageGenerationTaskNode[]
+
   const onRestore = (taskId: string) => {
     const task = data?.viewer?.imageGenerationTasks.find(
       (task) => task.nanoid === taskId,
@@ -53,10 +60,10 @@ export const GenerationEditorResultContents = (props: Props) => {
     toast("設定を復元しました")
   }
 
-  const activeTasks = data?.viewer?.imageGenerationTasks.filter((task) => {
-    if (task.isDeleted) return false
+  const activeTasks = newImageGenerationTasks.filter((task) => {
+    if (!task || task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
-  })
+  }) as ImageGenerationTaskNode[]
 
   const onSelectTask = (taskId: string | null, status: string) => {
     if (status !== "DONE") {

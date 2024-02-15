@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
+import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
 import {
@@ -29,6 +30,7 @@ import {
 import { Suspense, useState } from "react"
 
 type Props = {
+  additionalTask: ImageGenerationTaskNode | null
   userNanoid: string | null
   rating: number
   onChangeRating(rating: number): void
@@ -247,6 +249,7 @@ export const GenerationEditorResultForm = (props: Props) => {
       {/* 履歴一覧 */}
       <Suspense fallback={<AppLoading />}>
         <GenerationEditorResultContents
+          additionalTask={props.additionalTask}
           rating={props.rating}
           editMode={editMode}
           selectedTaskIds={selectedTaskIds}
