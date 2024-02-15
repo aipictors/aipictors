@@ -1,6 +1,8 @@
 "use client"
 
 import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
+import GenerationHistoryDownloadWithZip from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
+import DownloadButton from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { AppLoading } from "@/components/app/app-loading"
 import { Button } from "@/components/ui/button"
@@ -20,12 +22,8 @@ import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
-import {
-  ArrowDownToLineIcon,
-  MoreHorizontalIcon,
-  StarIcon,
-  Trash2Icon,
-} from "lucide-react"
+import { MoreHorizontalIcon, StarIcon, Trash2Icon } from "lucide-react"
+import Link from "next/link"
 import { Suspense, useState } from "react"
 
 type Props = {
@@ -76,10 +74,6 @@ export const GenerationEditorResultForm = (props: Props) => {
     setThumbnailSize(size)
   }
 
-  const moveHistoryPage = () => {
-    location.href = "/generation/tasks"
-  }
-
   return (
     <>
       {/* 操作一覧 */}
@@ -113,13 +107,11 @@ export const GenerationEditorResultForm = (props: Props) => {
                   <Trash2Icon className="w-4" />
                 </Button>
               </AppConfirmDialog>
-              <Button
+              {/* 一括ダウンロードボタン */}
+              <GenerationHistoryDownloadWithZip
                 disabled={selectedTaskIds.length === 0}
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <ArrowDownToLineIcon className="w-4" />
-              </Button>
+                selectedTaskIds={selectedTaskIds}
+              />
             </>
           ) : null}
           {/* お気に入り、その他ボタン */}
@@ -233,14 +225,15 @@ export const GenerationEditorResultForm = (props: Props) => {
           ) : null}
           <div className="invisible w-full" />
           {/* 履歴一覧リンク */}
-          <Button
-            onClick={moveHistoryPage}
-            className="w-16 sm:w-24 ml-auto"
-            variant={"secondary"}
-            size={"sm"}
-          >
-            {"全て"}
-          </Button>
+          <Link href={"/generation/tasks"}>
+            <Button
+              className="w-16 sm:w-24 ml-auto"
+              variant={"secondary"}
+              size={"sm"}
+            >
+              {"全て"}
+            </Button>
+          </Link>
         </div>
       </div>
       <Separator />
