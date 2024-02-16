@@ -21,6 +21,7 @@ import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-im
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
+
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -35,6 +36,7 @@ import { CopyButton } from "./copy-button"
 type Props = {
   taskId: string
   onRestore?: (taskId: string) => void
+  isScroll?: boolean
 }
 
 /**
@@ -262,121 +264,127 @@ export function GenerationTaskView(props: Props) {
   }
 
   return (
-    <ScrollArea className="p-4 w-full max-w-fit mx-auto">
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className={"px-2"} variant={"ghost"}>
+    <ScrollArea className={"p-4 w-full max-w-fit mx-auto"}>
+      <div
+        className={`p-4 w-full max-w-fit mx-auto ${
+          props.isScroll ? "max-h-[88vh]" : ""
+        }`}
+      >
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className={"px-2"} variant={"ghost"}>
+              <PrivateImage
+                className={`max-h-screen m-auto generation-image-${props.taskId}`}
+                taskId={data.imageGenerationTask.id}
+                token={data.imageGenerationTask.token}
+                alt={"-"}
+              />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
             <PrivateImage
-              className={`max-h-screen m-auto generation-image-${props.taskId}`}
+              className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
               taskId={data.imageGenerationTask.id}
               token={data.imageGenerationTask.token}
               alt={"-"}
             />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
-          <PrivateImage
-            className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
-            taskId={data.imageGenerationTask.id}
-            token={data.imageGenerationTask.token}
-            alt={"-"}
-          />
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
 
-      <div className="my-4 flex justify-end">
-        <GenerationMenuButton
-          title={"同じ情報で生成する"}
-          onClick={onReference}
-          text={"参照生成"}
-          icon={ArrowUpRightSquare}
-        />
-        <GenerationMenuButton
-          title={"投稿する"}
-          onClick={onPost}
-          text={"投稿"}
-          icon={Pencil}
-        />
-        <GenerationMenuButton
-          title={"生成情報をコピーする"}
-          onClick={() => copyGeneration(GenerationParameters)}
-          icon={ClipboardCopy}
-        />
-        <GenerationMenuButton
-          title={"画像を保存する"}
-          onClick={() => saveGenerationImage(props.taskId)}
-          icon={ArrowDownToLine}
-        />
-        <AppConfirmDialog
-          title={"確認"}
-          description={"本当に削除しますか？"}
-          onNext={() => {
-            onDelete()
-          }}
-          onCancel={() => {}}
-        >
+        <div className="my-4 flex justify-end">
           <GenerationMenuButton
-            title={"生成履歴を削除する"}
-            onClick={() => () => {}}
-            icon={Trash2}
+            title={"同じ情報で生成する"}
+            onClick={onReference}
+            text={"参照生成"}
+            icon={ArrowUpRightSquare}
           />
-        </AppConfirmDialog>
-      </div>
-      <StarRating
-        value={rating ?? 0}
-        onChange={(value) => {
-          setRating(value)
-          onChangeRating(props.taskId, value)
-        }}
-      />
-      <div className="py-2">
-        <Separator />
-      </div>
-      <div className="mb-1">
-        <p className="mb-1 font-semibold">{"Size"}</p>
-        <p>
-          {generationSize.width}x{generationSize.height}
-        </p>
-      </div>
-      <div className="py-2">
-        <Separator />
-      </div>
-      <div className="mb-1">
-        <p className="mb-1 font-semibold">{"Model"}</p>
-        <p>{data.imageGenerationTask.model?.name}</p>
-      </div>
-      <div className="py-2">
-        <Separator />
-      </div>
-      <p className="mb-1 font-semibold">{"prompt"}</p>
-      <Textarea disabled={true}>{data.imageGenerationTask.prompt}</Textarea>
-      <CopyButton className="mb-4" text={data.imageGenerationTask.prompt} />
-      <div className="py-2">
-        <Separator />
-      </div>
-      <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-      <Textarea disabled={true}>
-        {data.imageGenerationTask.negativePrompt}
-      </Textarea>
-      <CopyButton
-        className="mb-4"
-        text={data.imageGenerationTask.negativePrompt}
-      />
-      <div className="py-2">
-        <Separator />
-      </div>
-      <div className="flex space-x-4">
-        <div className="w-full">
-          <p className="mb-1 font-semibold">{"Seed"}</p>
-          <p>{data.imageGenerationTask.seed}</p>
+          <GenerationMenuButton
+            title={"投稿する"}
+            onClick={onPost}
+            text={"投稿"}
+            icon={Pencil}
+          />
+          <GenerationMenuButton
+            title={"生成情報をコピーする"}
+            onClick={() => copyGeneration(GenerationParameters)}
+            icon={ClipboardCopy}
+          />
+          <GenerationMenuButton
+            title={"画像を保存する"}
+            onClick={() => saveGenerationImage(props.taskId)}
+            icon={ArrowDownToLine}
+          />
+          <AppConfirmDialog
+            title={"確認"}
+            description={"本当に削除しますか？"}
+            onNext={() => {
+              onDelete()
+            }}
+            onCancel={() => {}}
+          >
+            <GenerationMenuButton
+              title={"生成履歴を削除する"}
+              onClick={() => () => {}}
+              icon={Trash2}
+            />
+          </AppConfirmDialog>
         </div>
-        <div className="w-full">
-          <p className="mb-1 font-semibold">{"Sampler"}</p>
-          <p>{data.imageGenerationTask.sampler}</p>
+        <StarRating
+          value={rating ?? 0}
+          onChange={(value) => {
+            setRating(value)
+            onChangeRating(props.taskId, value)
+          }}
+        />
+        <div className="py-2">
+          <Separator />
         </div>
-        <div className="w-full">
-          <p className="mb-1 font-semibold">{"Scale"}</p>
-          <p>{data.imageGenerationTask.scale}</p>
+        <div className="mb-1">
+          <p className="mb-1 font-semibold">{"Size"}</p>
+          <p>
+            {generationSize.width}x{generationSize.height}
+          </p>
+        </div>
+        <div className="py-2">
+          <Separator />
+        </div>
+        <div className="mb-1">
+          <p className="mb-1 font-semibold">{"Model"}</p>
+          <p>{data.imageGenerationTask.model?.name}</p>
+        </div>
+        <div className="py-2">
+          <Separator />
+        </div>
+        <p className="mb-1 font-semibold">{"prompt"}</p>
+        <Textarea disabled={true}>{data.imageGenerationTask.prompt}</Textarea>
+        <CopyButton className="mb-4" text={data.imageGenerationTask.prompt} />
+        <div className="py-2">
+          <Separator />
+        </div>
+        <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
+        <Textarea disabled={true}>
+          {data.imageGenerationTask.negativePrompt}
+        </Textarea>
+        <CopyButton
+          className="mb-4"
+          text={data.imageGenerationTask.negativePrompt}
+        />
+        <div className="py-2">
+          <Separator />
+        </div>
+        <div className="flex space-x-4">
+          <div className="w-full">
+            <p className="mb-1 font-semibold">{"Seed"}</p>
+            <p>{data.imageGenerationTask.seed}</p>
+          </div>
+          <div className="w-full">
+            <p className="mb-1 font-semibold">{"Sampler"}</p>
+            <p>{data.imageGenerationTask.sampler}</p>
+          </div>
+          <div className="w-full">
+            <p className="mb-1 font-semibold">{"Scale"}</p>
+            <p>{data.imageGenerationTask.scale}</p>
+          </div>
         </div>
       </div>
     </ScrollArea>

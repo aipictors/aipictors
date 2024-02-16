@@ -1,4 +1,6 @@
 import { ImageModelCard } from "@/app/[lang]/generation/_components/image-model-card"
+import { toCategoryName } from "@/app/[lang]/generation/_utils/to-category-name"
+import { removeDuplicates } from "@/app/_utils/remove-duplicates"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
@@ -7,146 +9,105 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Key, useMemo, useState } from "react"
-
-type ImageModel = {
-  id: string
-  displayName: string | null
-  type: string | null
-  category: string | null
-  thumbnailImageURL: string | null
-}
+import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { useState } from "react"
 
 type Props = {
-  models: ImageModel[]
+  models: ImageModelsQuery["imageModels"]
   onSelect(id: string, type: string): void
   selectedModelId: string | null
 }
 
-export const getTypeName = (type: string) => {
-  if (type === "ILLUSTRATION_GIRL") {
-    return "美少女イラスト"
-  }
-  if (type === "ANIMAL") {
-    return "獣系"
-  }
-  if (type === "BIKINI_MODEL") {
-    return "グラビア"
-  }
-  if (type === "ILLUSTRATION_BOY") {
-    return "美男子イラスト"
-  }
-  if (type === "FIGURE") {
-    return "美少女フィギュア"
-  }
-  if (type === "BACKGROUND") {
-    return "背景"
-  }
-  return type
-}
-
 export const ImageModelsList = (props: Props) => {
-  const [selectedTypeFilter, setSelectedTypeFilter] = useState("all")
-  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all")
+  const [selectedType, selectType] = useState("ALL")
 
-  const uniqueTypes = useMemo(() => {
-    const types = new Set(props.models.map((model) => model.type))
-    return [
-      "all",
-      ...Array.from(types).flatMap((item) => {
-        return item === null ? [] : [item]
-      }),
-    ]
-  }, [props.models])
+  const [selectedCategory, selectCategory] = useState("ALL")
 
-  const uniqueCategories = useMemo(() => {
-    const categories = new Set(props.models.map((model) => model.category))
-    return [
-      "all",
-      ...Array.from(categories).flatMap((item) => {
-        return item === null ? [] : [item]
-      }),
-    ]
-  }, [props.models])
+  /**
+   * モデルの種類
+   * SD1など
+   */
+  const modelTypes = removeDuplicates(props.models.map((m) => m.type))
 
-  const filteredModels = props.models.filter(
-    (model) =>
-      (selectedTypeFilter === "all" || model.type === selectedTypeFilter) &&
-      (selectedCategoryFilter === "all" ||
-        model.category === selectedCategoryFilter),
-  )
+  /**
+   * カテゴリ
+   * 美少女など
+   */
+  const modelCategories = removeDuplicates(props.models.map((m) => m.category))
 
-  const groupedModels = useMemo(() => {
-    const groups = new Map()
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    filteredModels.forEach((model) => {
-      if (!groups.has(model.category)) {
-        groups.set(model.category, [])
-      }
-      groups.get(model.category).push(model)
-    })
-    return groups
-  }, [filteredModels])
+  /**
+   * 選択されているカテゴリ
+   */
+  const activeCategories =
+    selectedCategory === "ALL" ? modelCategories : [selectedCategory]
+
+  /**
+   * カテゴリーのセクション
+   * 種別ごとにモデルを表示
+   */
+  const categorySections = activeCategories.map((category) => {
+    const models = props.models
+      .filter((m) => {
+        return m.category === category
+      })
+      .filter((m) => {
+        return selectedType === "ALL" || m.type === selectedType
+      })
+    if (models.length === 0) return null
+    return { category, models }
+  })
 
   return (
     <>
-      <div className="flex pl-4">
-        <Select onValueChange={setSelectedCategoryFilter}>
-          <SelectTrigger className="w-[160px] mr-2">
+      <div className="flex gap-x-2">
+        <Select onValueChange={selectCategory}>
+          <SelectTrigger className="w-40">
             <SelectValue placeholder={"カテゴリ"} />
           </SelectTrigger>
           <SelectContent>
-            {uniqueCategories.map((category) => (
+            {["ALL", ...modelCategories].map((category) => (
               <SelectItem key={category} value={category}>
-                {getTypeName(category ?? "")}
+                {toCategoryName(category)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={setSelectedTypeFilter}>
-          <SelectTrigger className="w-[160px]">
+        <Select onValueChange={selectType}>
+          <SelectTrigger className="w-40">
             <SelectValue placeholder={"種別"} />
           </SelectTrigger>
           <SelectContent>
-            {uniqueTypes.map((type) => (
+            {["ALL", ...modelTypes].map((type) => (
               <SelectItem key={type} value={type}>
-                {type}
+                {type === "ALL" ? "全て" : type}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-      <ScrollArea className="max-h-[80vh] rounded-md overflow-visible">
-        {/* 種別ごとにモデルを表示 */}
-        {Array.from(groupedModels.entries()).map(([type, models]) => (
-          <div key={type}>
-            <p className="font-bold pl-4">{getTypeName(type)}</p>
-            <div className="grid grid-cols-3 gap-2 p-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
-              {models.map(
-                (imageModel: {
-                  id: Key | null | undefined
-                  displayName: string | null
-                  thumbnailImageURL: string | null
-                  type: string | null | undefined
-                }) => (
+      <ScrollArea className="overflow-auto -mx-4 max-h-[50vh] min-h-[50vh]">
+        <div className="space-y-4">
+          {removeDuplicates(categorySections).map((item) => (
+            <div key={item.category} className="px-4 space-y-2">
+              <p className="font-bold">{toCategoryName(item.category)}</p>
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+                {item.models.map((model) => (
                   <ImageModelCard
-                    key={imageModel.id}
-                    displayName={imageModel.displayName}
-                    thumbnailImageURL={imageModel.thumbnailImageURL}
-                    type={imageModel.type}
-                    isActive={props.selectedModelId === imageModel.id}
+                    key={model.id}
+                    displayName={model.displayName}
+                    thumbnailImageURL={model.thumbnailImageURL}
+                    type={model.type}
+                    isActive={props.selectedModelId === model.id}
                     onSelect={() => {
-                      props.onSelect(
-                        String(imageModel.id),
-                        imageModel.type ?? "",
-                      )
+                      if (model.type === null) return
+                      props.onSelect(model.id, model.type)
                     }}
                   />
-                ),
-              )}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </ScrollArea>
     </>
   )

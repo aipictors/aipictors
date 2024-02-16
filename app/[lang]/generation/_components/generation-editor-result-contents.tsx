@@ -5,9 +5,11 @@ import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error
 import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
+import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
@@ -17,10 +19,14 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
+  sizeType?: string
+  additionalTask: ImageGenerationTaskNode | null
   rating: number
   editMode: string
   selectedTaskIds: string[]
   thumbnailSize: string
+  hidedTaskIds: string[]
+  pcViewType?: string
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -34,10 +40,27 @@ export const GenerationEditorResultContents = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 64, offset: 0, rating: props.rating },
+    variables: {
+      limit: 64,
+      offset: 0,
+      where: props.rating !== -1 ? { rating: props.rating } : {},
+    },
     errorPolicy: "all",
     context: { simulateError: true },
   })
+
+  // 非表示指定のタスクを除外
+  const filteredImageGenerationTasks = (
+    data?.viewer?.imageGenerationTasks || []
+  ).filter((task) => task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
+
+  // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
+  const newImageGenerationTasks = [
+    ...filteredImageGenerationTasks,
+    props.additionalTask,
+  ].filter(
+    (task) => task !== null && task !== undefined,
+  ) as ImageGenerationTaskNode[]
 
   const onRestore = (taskId: string) => {
     const task = data?.viewer?.imageGenerationTasks.find(
@@ -53,10 +76,10 @@ export const GenerationEditorResultContents = (props: Props) => {
     toast("設定を復元しました")
   }
 
-  const activeTasks = data?.viewer?.imageGenerationTasks.filter((task) => {
-    if (task.isDeleted) return false
+  const activeTasks = newImageGenerationTasks.filter((task) => {
+    if (!task || task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
-  })
+  }) as ImageGenerationTaskNode[]
 
   const onSelectTask = (taskId: string | null, status: string) => {
     if (status !== "DONE") {
@@ -79,6 +102,18 @@ export const GenerationEditorResultContents = (props: Props) => {
   }
 
   const getGridClasses = (size: string): string => {
+    if (props.sizeType === "full") {
+      switch (size) {
+        case "small":
+          return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
+        case "middle":
+          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
+        case "big":
+          return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+        default:
+          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+      }
+    }
     switch (size) {
       case "small":
         return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
@@ -128,6 +163,30 @@ export const GenerationEditorResultContents = (props: Props) => {
                         />
                       </Button>
                     </Link>
+                  ) : props.pcViewType === "dialog" ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          className={
+                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                          }
+                        >
+                          <GenerationResultCard
+                            taskId={task.id}
+                            token={task.token}
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="p-0 flex flex-col gap-0">
+                        <Suspense fallback={<FallbackResultCard />}>
+                          <GenerationTaskView
+                            isScroll={true}
+                            taskId={task.nanoid ?? ""}
+                            onRestore={onRestore}
+                          />
+                        </Suspense>
+                      </DialogContent>
+                    </Dialog>
                   ) : (
                     <Sheet>
                       <SheetTrigger asChild>

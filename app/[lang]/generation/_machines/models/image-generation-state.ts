@@ -17,7 +17,7 @@ const zProps = z.object({
 
 type Props = z.infer<typeof zProps>
 
-export class ImageGenerationConfig implements Props {
+export class ImageGenerationState implements Props {
   readonly passType!: Props["passType"]
 
   readonly modelId!: Props["modelId"]

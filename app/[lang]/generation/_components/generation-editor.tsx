@@ -2,6 +2,7 @@
 
 import { GenerationEditorConfig } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
 import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
+import { GenerationCountSelector } from "@/app/[lang]/generation/_components/generation-count-selector"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { GenerationEditorNegativePrompt } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
@@ -11,13 +12,14 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/gene
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
+import { useFakeLoading } from "@/app/_hooks/use-fake-loading"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { config } from "@/config"
 import {
   ImageGenerationSizeType,
+  ImageGenerationTaskNode,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
@@ -43,7 +45,10 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
+  const [createdTask, setCreatedTask] =
+    useState<ImageGenerationTaskNode | null>(null)
   const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
+  const [generationCount, setGenerationCount] = useState(1)
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
     viewerCurrentPassQuery,
@@ -51,7 +56,7 @@ export function GenerationEditor(props: Props) {
   )
 
   const { data, refetch } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: { limit: 1, offset: 0 },
+    variables: { limit: 0, offset: 0, where: {} },
   })
 
   const onChangeRating = (rating: number) => {
@@ -66,19 +71,27 @@ export function GenerationEditor(props: Props) {
 
   const [createTask, { loading }] = useMutation(
     createImageGenerationTaskMutation,
+    {
+      refetchQueries: [viewerImageGenerationTasksQuery],
+      awaitRefetchQueries: true,
+    },
   )
 
-  const [cancelTask] = useMutation(cancelImageGenerationTaskMutation)
+  const [isFakeLoading, { startFakeLoading, stopFakeLoading }] = useFakeLoading(
+    60 * 1000,
+  )
+
+  const [cancelTask, { loading: isCanceling }] = useMutation(
+    cancelImageGenerationTaskMutation,
+  )
 
   // 生成中タスクが存在するなら生成中とみなす
-  const waitIndex = data?.viewer?.imageGenerationTasks.findIndex((task) => {
-    return task.status === "IN_PROGRESS" || task.status === "PENDING"
-  })
-  const inProgress = waitIndex !== -1
+  const inProgress = data?.viewer?.inProgressImageGenerationTasksCount !== 0
 
   const isTimeout = useFocusTimeout()
 
   useEffect(() => {
+    stopFakeLoading()
     const time = setInterval(() => {
       if (isTimeout || !inProgress) {
         setElapsedGenerationTime(0)
@@ -113,19 +126,6 @@ export function GenerationEditor(props: Props) {
   }
 
   const hasSignedTerms = viewer.viewer?.user.hasSignedImageGenerationTerms
-
-  const maxCount = () => {
-    if (viewer.viewer?.currentPass?.type === "LITE") {
-      return config.passFeature.imageGenerationsCount.lite
-    }
-    if (viewer.viewer?.currentPass?.type === "PREMIUM") {
-      return config.passFeature.imageGenerationsCount.premium
-    }
-    if (viewer.viewer?.currentPass?.type === "STANDARD") {
-      return config.passFeature.imageGenerationsCount.standard
-    }
-    return config.passFeature.imageGenerationsCount.free
-  }
 
   const isPriorityAccount = () => {
     if (
@@ -167,31 +167,32 @@ export function GenerationEditor(props: Props) {
     try {
       await activeImageGeneration({ nanoid: userNanoid })
       const model = props.imageModels.find((model) => {
-        return model.id === machine.state.context.modelId
+        return model.id === machine.context.modelId
       })
       if (typeof model === "undefined") return
 
-      await createTask({
+      // 通信前にローディング開始しておく
+      startFakeLoading()
+      const newTask = await createTask({
         variables: {
           input: {
-            count: 1,
+            count: generationCount,
             model: model.name,
-            vae: machine.state.context.vae ?? "",
-            prompt: machine.state.context.promptText,
-            negativePrompt: machine.state.context.negativePromptText,
-            seed: machine.state.context.seed,
-            steps: machine.state.context.steps,
-            scale: machine.state.context.scale,
-            sampler: machine.state.context.sampler,
-            sizeType: machine.state.context.sizeType as ImageGenerationSizeType,
+            vae: machine.context.vae ?? "",
+            prompt: machine.context.promptText,
+            negativePrompt: machine.context.negativePromptText,
+            seed: machine.context.seed,
+            steps: machine.context.steps,
+            scale: machine.context.scale,
+            sampler: machine.context.sampler,
+            sizeType: machine.context.sizeType as ImageGenerationSizeType,
             type: "TEXT_TO_IMAGE",
           },
         },
       })
-
-      startTransition(() => {
-        refetch()
-      })
+      if (newTask?.data) {
+        setCreatedTask(newTask.data.createImageGenerationTask)
+      }
       toast("タスクを作成しました")
     } catch (error) {
       if (error instanceof Error) {
@@ -201,38 +202,8 @@ export function GenerationEditor(props: Props) {
   }
 
   const currentModel = props.imageModels.find((model) => {
-    return model.id === machine.state.context.modelId
+    return model.id === machine.context.modelId
   })
-
-  const operationButton = () => {
-    if (hasSignedTerms && !inProgress) {
-      return (
-        <GenerationSubmitButton
-          onClick={onCreateTask}
-          isLoading={loading}
-          isDisabled={machine.state.context.isDisabled}
-        />
-      )
-    }
-    if (hasSignedTerms && inProgress) {
-      return (
-        <GenerationCancelButton
-          onClick={onCancelTask}
-          isLoading={loading}
-          isDisabled={machine.state.context.isDisabled}
-        />
-      )
-    }
-    if (!hasSignedTerms) {
-      return (
-        <GenerationTermsButton
-          termsMarkdownText={props.termsMarkdownText}
-          onSubmit={onSignImageGenerationTerms}
-        />
-      )
-    }
-    return <></>
-  }
 
   const generateSpeed = (waitTasks: number | undefined) => {
     if (waitTasks === undefined) return -1
@@ -244,9 +215,11 @@ export function GenerationEditor(props: Props) {
     }
     return 2
   }
+
   const speed = !inProgress
     ? -1
     : generateSpeed(data?.imageGenerationEngineStatus?.normalTasksCount)
+
   const prioritySpeed = !inProgress
     ? -1
     : generateSpeed(data?.imageGenerationEngineStatus?.standardTasksCount)
@@ -304,26 +277,30 @@ export function GenerationEditor(props: Props) {
     return `${Math.floor(seconds / 3600)}h` // 時間
   }
 
+  /**
+   * 生成のキャンセルが可能
+   */
+  const hasRunningTasks =
+    data?.viewer?.inProgressImageGenerationTasksCount !== 0
+
   return (
     <GenerationEditorLayout
       config={
         <GenerationEditorConfig
           models={props.imageModels}
-          currentModelId={machine.state.context.modelId}
-          currentModelIds={machine.state.context.modelIds}
+          currentModelId={machine.context.modelId}
+          currentModelIds={machine.context.modelIds}
           onSelectModelId={machine.updateModelId}
           loraModels={props.imageLoraModels}
-          configLoRAModels={machine.state.context.loraModels}
+          configLoRAModels={machine.context.loraModels}
           configModelType={currentModel?.type ?? "SD1"}
-          configSampler={machine.state.context.sampler}
-          configScale={machine.state.context.scale}
-          configSeed={machine.state.context.seed}
-          configSize={machine.state.context.sizeType}
-          configVae={machine.state.context.vae}
-          configSteps={machine.state.context.steps}
-          availableLoraModelsCount={
-            machine.state.context.availableLoraModelsCount
-          }
+          configSampler={machine.context.sampler}
+          configScale={machine.context.scale}
+          configSeed={machine.context.seed}
+          configSize={machine.context.sizeType}
+          configVae={machine.context.vae}
+          configSteps={machine.context.steps}
+          availableLoraModelsCount={machine.context.availableLoraModelsCount}
           onChangeLoraModelConfigs={machine.changeLoraModel}
           onChangeSampler={machine.updateSampler}
           onChangeScale={machine.updateScale}
@@ -336,7 +313,7 @@ export function GenerationEditor(props: Props) {
       }
       promptEditor={
         <GenerationEditorPrompt
-          promptText={machine.state.context.promptText}
+          promptText={machine.context.promptText}
           promptCategories={props.promptCategories}
           onChangePromptText={machine.updatePrompt}
           onBlurPromptText={machine.initPromptWithLoraModel}
@@ -344,18 +321,67 @@ export function GenerationEditor(props: Props) {
       }
       negativePromptEditor={
         <GenerationEditorNegativePrompt
-          promptText={machine.state.context.negativePromptText}
+          promptText={machine.context.negativePromptText}
           onChangePromptText={machine.updateNegativePrompt}
         />
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <div>{operationButton()}</div>
+          <div>
+            {/* 生成開始ボタン */}
+            {hasSignedTerms && !hasRunningTasks && (
+              <>
+                <div className="flex items-center">
+                  <GenerationCountSelector
+                    pass={viewer.viewer?.currentPass?.type ?? "free"}
+                    selectedCount={generationCount}
+                    onChange={(count: string) =>
+                      setGenerationCount(count === "" ? 1 : parseInt(count))
+                    }
+                  />
+                  <GenerationSubmitButton
+                    onClick={onCreateTask}
+                    isLoading={loading}
+                    isDisabled={machine.context.isDisabled}
+                  />
+                </div>
+              </>
+            )}
+            {/* キャンセル開始ボタン */}
+            {hasSignedTerms && hasRunningTasks && (
+              <div className="flex items-center">
+                <GenerationCountSelector
+                  pass={
+                    viewer.viewer?.currentPass?.type
+                      ? viewer.viewer?.currentPass?.type
+                      : "free"
+                  }
+                  selectedCount={generationCount}
+                  onChange={(count: string) =>
+                    setGenerationCount(count === "" ? 1 : parseInt(count))
+                  }
+                />
+                <GenerationCancelButton
+                  onClick={onCancelTask}
+                  isLoading={isCanceling}
+                />
+              </div>
+            )}
+            {/* 規約確認開始ボタン */}
+            {!hasSignedTerms && (
+              <GenerationTermsButton
+                termsMarkdownText={props.termsMarkdownText}
+                onSubmit={onSignImageGenerationTerms}
+              />
+            )}
+          </div>
+          {/* 生成予想進捗 */}
           <Progress className="w-full" value={generationProgress()} />
+          {/* 生成状況 */}
           <div className="flex">
             <Badge className="mr-2" variant={"secondary"}>
               {"生成枚数 "} {data?.viewer?.remainingImageGenerationTasksCount}/
-              {maxCount()}
+              {machine.context.maxTasksCount}
             </Badge>
             {isPriorityAccount() ? (
               <Badge className="mr-2" variant={"secondary"}>
@@ -386,6 +412,7 @@ export function GenerationEditor(props: Props) {
           >
             <Suspense fallback={null}>
               <GenerationEditorResultForm
+                additionalTask={createdTask}
                 userNanoid={viewer?.viewer?.user?.nanoid ?? null}
                 rating={rating}
                 onChangeRating={onChangeRating}
