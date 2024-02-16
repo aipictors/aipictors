@@ -1,6 +1,7 @@
 import { imageGenerationMachine } from "@/app/[lang]/generation/_machines/image-generation-machine"
 import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/image-generation-action"
 import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
+import { ImageGenerationContextView } from "@/app/[lang]/generation/_machines/models/image-generation-context-view"
 import { useMachine } from "@xstate/react"
 
 type Props = {
@@ -137,7 +138,7 @@ export const useImageGenerationMachine = (props: Props) => {
   }
 
   return {
-    state,
+    context: new ImageGenerationContextView(state.context),
     updateModelId,
     changeLoraModel: changeLoraConfig,
     updateLoraModel: updateLoraModel,

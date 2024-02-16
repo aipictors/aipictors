@@ -1,4 +1,4 @@
-import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
+import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
 import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 
@@ -16,7 +16,7 @@ export class ImageGenerationCache {
    */
   restore() {
     const modelType = this.restoreModelType()
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       passType: this.props.passType,
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
