@@ -17,7 +17,6 @@ import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { config } from "@/config"
 import {
   ImageGenerationSizeType,
   ImageGenerationTaskNode,
