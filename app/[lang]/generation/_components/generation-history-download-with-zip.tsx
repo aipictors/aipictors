@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { format } from "date-fns"
-import { zip } from "fflate"
+import { Button } from "@/components/ui/button" // 適切なパスを設定してください
 import { ArrowDownToLine } from "lucide-react"
-import { useState } from "react"
+import React, { useState } from "react"
+import { imageToZip } from "../_utils/image-to-zip" // 適切なパスでインポート
 
 interface FileObject {
   name: string
@@ -37,34 +36,8 @@ const GenerationHistoryDownloadWithZip: React.FC<{
       files.push({ name: `${taskId}.png`, data: new Uint8Array(arrayBuffer) })
     }
 
-    if (files.length > 0) {
-      const zipBlob = await new Promise<Blob>((resolve, reject) => {
-        zip(
-          Object.fromEntries(files.map((file) => [file.name, file.data])),
-          {},
-          (err, data) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(new Blob([data], { type: "application/zip" }))
-            }
-          },
-        )
-      })
-
-      const link = document.createElement("a")
-      link.href = URL.createObjectURL(zipBlob)
-      const now = new Date()
-      const formattedDate = format(now, "yyyyMMddHHmmss")
-      link.download = `images_${formattedDate}.zip`
-
-      document.body.appendChild(link) // Ensure visibility for certain browsers
-      link.click()
-      document.body.removeChild(link) // Clean up
-      URL.revokeObjectURL(link.href) // Free up resources
-    } else {
-      console.error("No valid images found to download.")
-    }
+    // ここでImageToZip関数を呼び出して、ファイルをzipにしてダウンロードします。
+    await imageToZip(files)
 
     setIsPreparingDownload(false)
   }
