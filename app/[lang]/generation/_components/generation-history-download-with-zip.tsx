@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button" // 適切なパスを設定してください
+import { Button } from "@/components/ui/button"
 import { ArrowDownToLine } from "lucide-react"
 import React, { useState } from "react"
-import { imageToZip } from "../_utils/image-to-zip" // 適切なパスでインポート
+import { imageToZip } from "../_utils/image-to-zip"
 
 interface FileObject {
   name: string
@@ -36,7 +36,7 @@ const GenerationHistoryDownloadWithZip: React.FC<{
       files.push({ name: `${taskId}.png`, data: new Uint8Array(arrayBuffer) })
     }
 
-    // ここでImageToZip関数を呼び出して、ファイルをzipにしてダウンロードします。
+    // ここでImageToZip関数を呼び出して、ファイルをzipにしてダウンロード
     await imageToZip(files)
 
     setIsPreparingDownload(false)
