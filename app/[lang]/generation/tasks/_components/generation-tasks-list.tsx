@@ -50,7 +50,6 @@ export function GenerationTasksList() {
         hidedTaskIds={hidedTaskIds}
         editMode={editMode}
         showDateInput={true}
-        showHistoryAllButton={false}
         dateText={dateText}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}

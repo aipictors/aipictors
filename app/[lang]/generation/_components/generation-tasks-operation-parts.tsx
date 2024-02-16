@@ -279,7 +279,6 @@ export const GenerationTasksOperationParts = (props: Props) => {
               </PopoverContent>
             </Popover>
           ) : null}
-          <div className="invisible w-full" />
           {/* 履歴一覧リンク */}
           {props.showHistoryAllButton ? (
             <Button
@@ -288,7 +287,7 @@ export const GenerationTasksOperationParts = (props: Props) => {
               variant={"secondary"}
               size={"sm"}
             >
-              {"全て"}
+              {"すべて"}
             </Button>
           ) : null}
         </div>

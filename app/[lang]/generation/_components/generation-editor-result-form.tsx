@@ -32,6 +32,7 @@ export const GenerationEditorResultForm = (props: Props) => {
     <>
       {/* 操作一覧 */}
       <GenerationTasksOperationParts
+        showHistoryAllButton={true}
         rating={props.rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
