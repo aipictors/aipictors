@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { format } from "date-fns"
 import { zip } from "fflate"
 import { ArrowDownToLine } from "lucide-react"
 import { useState } from "react"
@@ -53,7 +54,10 @@ const GenerationHistoryDownloadWithZip: React.FC<{
 
       const link = document.createElement("a")
       link.href = URL.createObjectURL(zipBlob)
-      link.download = "images.zip"
+      const now = new Date()
+      const formattedDate = format(now, "yyyyMMddHHmmss")
+      link.download = `images_${formattedDate}.zip`
+
       document.body.appendChild(link) // Ensure visibility for certain browsers
       link.click()
       document.body.removeChild(link) // Clean up
