@@ -1,5 +1,6 @@
 "use client"
 
+import GenerationHistoryDownloadWithZip from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -26,12 +27,7 @@ import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
-import {
-  ArrowDownToLineIcon,
-  MoreHorizontalIcon,
-  StarIcon,
-  Trash2Icon,
-} from "lucide-react"
+import { MoreHorizontalIcon, StarIcon, Trash2Icon } from "lucide-react"
 
 type Props = {
   rating: number
@@ -115,13 +111,10 @@ export const GenerationTasksOperationParts = (props: Props) => {
                   <Trash2Icon className="w-4" />
                 </Button>
               </AppConfirmDialog>
-              <Button
+              <GenerationHistoryDownloadWithZip
                 disabled={props.selectedTaskIds.length === 0}
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <ArrowDownToLineIcon className="w-4" />
-              </Button>
+                selectedTaskIds={props.selectedTaskIds}
+              />
             </>
           ) : null}
           {/* お気に入り、その他ボタン */}
