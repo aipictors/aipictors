@@ -5,6 +5,7 @@ import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error
 import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
@@ -25,6 +26,7 @@ type Props = {
   selectedTaskIds: string[]
   thumbnailSize: string
   hidedTaskIds: string[]
+  pcViewType?: string
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -161,6 +163,30 @@ export const GenerationEditorResultContents = (props: Props) => {
                         />
                       </Button>
                     </Link>
+                  ) : props.pcViewType === "dialog" ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          className={
+                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
+                          }
+                        >
+                          <GenerationResultCard
+                            taskId={task.id}
+                            token={task.token}
+                          />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="p-0 flex flex-col gap-0">
+                        <Suspense fallback={<FallbackResultCard />}>
+                          <GenerationTaskView
+                            isScroll={true}
+                            taskId={task.nanoid ?? ""}
+                            onRestore={onRestore}
+                          />
+                        </Suspense>
+                      </DialogContent>
+                    </Dialog>
                   ) : (
                     <Sheet>
                       <SheetTrigger asChild>

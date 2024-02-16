@@ -43,7 +43,6 @@ export function GenerationTasksList() {
   return (
     <div className="space-y-4 pb-4 w-full">
       <p>{"画像生成の履歴"}</p>
-
       <GenerationTasksOperationParts
         rating={rating}
         thumbnailSize={thumbnailSize}
@@ -62,6 +61,7 @@ export function GenerationTasksList() {
       <Separator />
       <Suspense fallback={<AppLoading />}>
         <GenerationEditorResultContents
+          pcViewType="dialog"
           sizeType="full"
           hidedTaskIds={hidedTaskIds}
           rating={rating}
