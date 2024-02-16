@@ -1,11 +1,11 @@
-import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
+import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
 import { produce } from "immer"
 
 /**
  * 画像生成の状態を作成する
  */
 export class ImageGenerationAction {
-  constructor(private state: ImageGenerationConfig) {}
+  constructor(private state: ImageGenerationState) {}
 
   /**
    * プロンプトを変更する
@@ -13,7 +13,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updatePrompt(text: string) {
-    return new ImageGenerationConfig({ ...this.state, promptText: text })
+    return new ImageGenerationState({ ...this.state, promptText: text })
   }
 
   /**
@@ -22,7 +22,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateNegativePrompt(text: string) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       negativePromptText: text.trim() === "" ? "EasyNegative" : text,
     })
@@ -34,7 +34,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSampler(text: string) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       sampler: text,
     })
@@ -46,7 +46,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSteps(value: number) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       steps: value,
     })
@@ -58,7 +58,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateScale(value: number) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       scale: value,
     })
@@ -70,7 +70,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSizeType(text: string) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       sizeType: text,
     })
@@ -82,7 +82,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateVae(text: string | null) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       vae: text,
     })
@@ -94,7 +94,7 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSeed(value: number) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       seed: value,
     })
@@ -118,7 +118,7 @@ export class ImageGenerationAction {
 
     if (this.state.modelType !== modelType) {
       // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる
-      return new ImageGenerationConfig({
+      return new ImageGenerationState({
         ...this.state,
         sizeType: this.getModelSizeType(this.state.sizeType, modelType),
         vae: this.getModelVae(modelType),
@@ -131,7 +131,7 @@ export class ImageGenerationAction {
         ),
       })
     }
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       modelId: id,
       modelIds: modelIds,
@@ -164,7 +164,7 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationConfig({ ...this.state, promptText })
+    return new ImageGenerationState({ ...this.state, promptText })
   }
 
   /**
@@ -192,7 +192,7 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationConfig({ ...this.state, promptText })
+    return new ImageGenerationState({ ...this.state, promptText })
   }
 
   /**
@@ -227,7 +227,7 @@ export class ImageGenerationAction {
    * @returns
    */
   changeModelType(modelType: string) {
-    return new ImageGenerationConfig({
+    return new ImageGenerationState({
       ...this.state,
       modelType: modelType,
     })
@@ -253,7 +253,7 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationConfig({ ...this.state, promptText })
+    return new ImageGenerationState({ ...this.state, promptText })
   }
 
   /**
@@ -273,7 +273,7 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationConfig({ ...this.state, promptText })
+    return new ImageGenerationState({ ...this.state, promptText })
   }
 
   /**

@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageGenerationConfig } from "@/app/_models/image-generation-config"
+import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
 import { assign, createMachine } from "xstate"
 
 /**
@@ -11,8 +11,8 @@ export const imageGenerationMachine = createMachine({
   id: "ROOT",
   initial: "PROMPT_VIEW",
   types: {} as {
-    context: ImageGenerationConfig
-    input: ImageGenerationConfig
+    context: ImageGenerationState
+    input: ImageGenerationState
   },
   context(props) {
     return props.input

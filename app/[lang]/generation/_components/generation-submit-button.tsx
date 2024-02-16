@@ -14,7 +14,7 @@ export function GenerationSubmitButton(props: Props) {
       size={"lg"}
       disabled={props.isLoading || props.isDisabled}
     >
-      {"生成する"}
+      {props.isLoading ? "処理中.." : "生成する"}
     </Button>
   )
 }
