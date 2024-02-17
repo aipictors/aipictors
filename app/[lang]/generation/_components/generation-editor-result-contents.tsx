@@ -4,6 +4,7 @@ import { GenerationTaskView } from "@/app/[lang]/generation/tasks/[task]/_compon
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
+import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -14,7 +15,7 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer
 import { useSuspenseQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import Link from "next/link"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -27,6 +28,7 @@ type Props = {
   thumbnailSize: string
   hidedTaskIds: string[]
   pcViewType?: string
+  viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -38,11 +40,12 @@ type Props = {
 
 export const GenerationEditorResultContents = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+  const [currentPage, setCurrentPage] = useState(0)
 
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: 64,
-      offset: 0,
+      limit: props.viewCount ?? 64,
+      offset: currentPage * (props.viewCount ?? 0),
       where: props.rating !== -1 ? { rating: props.rating } : {},
     },
     errorPolicy: "all",
@@ -219,6 +222,17 @@ export const GenerationEditorResultContents = (props: Props) => {
           ))}
         </div>
       </ScrollArea>
+
+      {props.viewCount &&
+        data?.viewer &&
+        data?.viewer.remainingImageGenerationTasksCount && (
+          <ResponsivePagination
+            perPage={props.viewCount}
+            maxCount={data.viewer.remainingImageGenerationTasksCount}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
     </>
   )
 }

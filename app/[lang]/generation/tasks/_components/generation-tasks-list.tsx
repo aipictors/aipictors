@@ -25,7 +25,7 @@ export function GenerationTasksList() {
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
   const [rating, setRating] = useState(-1)
-  const [dateText, setDateText] = useState(todayText())
+  const [viewCount, setViewCount] = useState(50)
 
   const onChangeRating = (rating: number) => {
     setRating(rating)
@@ -49,20 +49,21 @@ export function GenerationTasksList() {
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         editMode={editMode}
-        showDateInput={true}
-        dateText={dateText}
+        showCountInput={true}
+        viewCount={viewCount}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         setEditMode={setEditMode}
-        onChangeDateText={setDateText}
+        onChangeViewCount={setViewCount}
       />
       <Separator />
       <Suspense fallback={<AppLoading />}>
         <GenerationEditorResultContents
           pcViewType="dialog"
           sizeType="full"
+          viewCount={viewCount}
           hidedTaskIds={hidedTaskIds}
           rating={rating}
           editMode={editMode}

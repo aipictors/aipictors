@@ -43,7 +43,7 @@ export const GenerationEditorResultForm = (props: Props) => {
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         setEditMode={setEditMode}
-        onChangeDateText={() => {}}
+        onChangeViewCount={() => {}}
       />
       <Separator />
       {/* 履歴一覧 */}

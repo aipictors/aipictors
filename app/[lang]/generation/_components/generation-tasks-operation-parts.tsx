@@ -2,7 +2,6 @@
 
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -16,16 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Toggle } from "@/components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
-import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
-import { CalendarIcon } from "@radix-ui/react-icons"
-import { format } from "date-fns"
 import {
   ArrowDownToLineIcon,
   MoreHorizontalIcon,
@@ -40,11 +40,11 @@ type Props = {
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   editMode: string
-  showDateInput?: boolean
+  showCountInput?: boolean
   showHistoryAllButton?: boolean
-  dateText?: string
+  viewCount?: number
   onChangeRating(rating: number): void
-  onChangeDateText(dateText: string): void
+  onChangeViewCount(count: number): void
   setThumbnailSize(size: string): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
@@ -241,43 +241,26 @@ export const GenerationTasksOperationParts = (props: Props) => {
             </>
           ) : null}
 
-          {/* 日付指定 */}
-          {props.showDateInput ? (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[240px] pl-3 text-left font-normal",
-                    !props && "text-muted-foreground",
-                  )}
-                >
-                  {props.dateText ? (
-                    format(props.dateText, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={
-                    props.dateText ? new Date(props.dateText) : undefined
-                  }
-                  onSelect={(date: Date | undefined) =>
-                    props.onChangeDateText(
-                      date ? format(date, "yyyy-MM-dd") : "",
-                    )
-                  }
-                  disabled={(date) =>
-                    date > new Date() || date < new Date("1900-01-01")
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+          {/* 枚数指定 */}
+          {props.showCountInput && props.viewCount ? (
+            <Select
+              value={props.viewCount.toString()}
+              onValueChange={(value: string) => {
+                props.onChangeViewCount(value === "" ? 50 : parseInt(value, 10))
+              }}
+            >
+              <SelectTrigger className="w-16">
+                <SelectValue placeholder="枚数" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{"枚数選択"}</SelectLabel>
+                  <SelectItem value="50">{"50"}</SelectItem>
+                  <SelectItem value="100">{"100"}</SelectItem>
+                  <SelectItem value="200">{"200"}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           ) : null}
           {/* 履歴一覧リンク */}
           {props.showHistoryAllButton ? (
