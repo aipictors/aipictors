@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationImageDownloadButton } from "@/app/[lang]/generation/_components/generation-image-download-button"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,12 +27,7 @@ import {
 import { Toggle } from "@/components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
-import {
-  ArrowDownToLineIcon,
-  MoreHorizontalIcon,
-  StarIcon,
-  Trash2Icon,
-} from "lucide-react"
+import { MoreHorizontalIcon, StarIcon, Trash2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 type Props = {
@@ -122,13 +118,10 @@ export const GenerationTasksOperationParts = (props: Props) => {
                   <Trash2Icon className="w-4" />
                 </Button>
               </AppConfirmDialog>
-              <Button
+              <GenerationImageDownloadButton
                 disabled={props.selectedTaskIds.length === 0}
-                variant={"ghost"}
-                size={"icon"}
-              >
-                <ArrowDownToLineIcon className="w-4" />
-              </Button>
+                selectedTaskIds={props.selectedTaskIds}
+              />
             </>
           ) : null}
           {/* お気に入り、その他ボタン */}
