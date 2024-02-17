@@ -22,6 +22,7 @@ type Props = {
   pcViewType?: string
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
+  onChangeModeId(modelId: string, modelType: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSeed(seed: number): void
@@ -118,12 +119,13 @@ export const GenerationEditorResultContents = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
+    props.onChangeModeId(task.model.id, task.model.type)
     props.onChangeSampler(task.sampler)
     props.onChangeScale(task.scale)
     props.onChangeSeed(task.seed)
     props.onChangeVae(task.vae)
-    props.onChangePromptText(task.prompt)
     props.onChangeNegativePromptText(task.negativePrompt)
+    props.onChangePromptText(task.prompt)
     toast("設定を復元しました")
   }
 

@@ -73,6 +73,7 @@ export function GenerationTasksList() {
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
+          onChangeModeId={machine.updateModelId}
           onChangeSampler={machine.updateSampler}
           onChangeScale={machine.updateScale}
           onChangeSeed={machine.updateSeed}

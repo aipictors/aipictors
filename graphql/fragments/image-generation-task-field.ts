@@ -23,6 +23,7 @@ export const imageGenerationTaskFieldsFragment = gql(`
     model {
       id
       name
+      type
     }
     vae
     token

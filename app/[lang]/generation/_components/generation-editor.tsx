@@ -416,6 +416,7 @@ export function GenerationEditor(props: Props) {
                 userNanoid={viewer?.viewer?.user?.nanoid ?? null}
                 rating={rating}
                 onChangeRating={onChangeRating}
+                onChangeModeId={machine.updateModelId}
                 onChangeSampler={machine.updateSampler}
                 onChangeScale={machine.updateScale}
                 onChangeSeed={machine.updateSeed}

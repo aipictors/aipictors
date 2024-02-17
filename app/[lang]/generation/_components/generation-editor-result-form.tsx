@@ -11,6 +11,7 @@ type Props = {
   additionalTask: ImageGenerationTaskNode | null
   userNanoid: string | null
   rating: number
+  onChangeModeId(modelId: string, modelType: string): void
   onChangeRating(rating: number): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
@@ -55,6 +56,7 @@ export const GenerationEditorResultForm = (props: Props) => {
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
+          onChangeModeId={props.onChangeModeId}
           onChangeSampler={props.onChangeSampler}
           onChangeScale={props.onChangeScale}
           onChangeSeed={props.onChangeSeed}

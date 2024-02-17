@@ -393,11 +393,13 @@ export function GenerationTaskView(props: Props) {
           </div>
         </div>
       </ScrollArea>
-      <Link href="/generation/tasks">
-        <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
-          画像一覧
-        </Button>
-      </Link>
+      {!isDesktop && (
+        <Link href="/generation/tasks">
+          <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
+            画像一覧
+          </Button>
+        </Link>
+      )}
     </>
   )
 }
