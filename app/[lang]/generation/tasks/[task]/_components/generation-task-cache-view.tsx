@@ -147,6 +147,10 @@ export function GenerationTaskCacheView(props: Props) {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
 
   const onChangeRating = async (taskId: string, rating: number) => {
+    if (taskId === "") {
+      toast("選択できない履歴です")
+      return
+    }
     try {
       await mutation({
         variables: {
@@ -285,7 +289,7 @@ export function GenerationTaskCacheView(props: Props) {
           value={rating ?? 0}
           onChange={(value) => {
             setRating(value)
-            onChangeRating(props.task.id, value)
+            onChangeRating(props.task.nanoid ?? "", value)
           }}
         />
         <div className="py-2">

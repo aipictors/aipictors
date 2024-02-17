@@ -1,23 +1,15 @@
 "use client"
 
-import { GenerationTaskCacheView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-cache-view"
-import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
-import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
-import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
+import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
 import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useSuspenseQuery } from "@apollo/client"
-import { ErrorBoundary } from "@sentry/nextjs"
-import Link from "next/link"
-import { Suspense, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   sizeType?: string
@@ -44,23 +36,68 @@ type Props = {
  * @returns
  */
 export const GenerationEditorResultContents = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
   const [currentPage, setCurrentPage] = useState(1)
 
-  const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit: props.viewCount ?? 64,
-      offset: (currentPage - 1) * (props.viewCount ?? 0),
-      where: props.rating !== -1 ? { rating: props.rating } : {},
+  const { data: tasks, refetch: refetchTasks } = useSuspenseQuery(
+    viewerImageGenerationTasksQuery,
+    {
+      variables: {
+        limit: props.viewCount ?? 64,
+        offset: (currentPage - 1) * (props.viewCount ?? 0),
+        where: { minRating: 0 },
+      },
+      errorPolicy: "all",
+      context: { simulateError: true },
     },
-    errorPolicy: "all",
-    context: { simulateError: true },
+  )
+
+  const { data: ratingTasks, refetch: refetchRatingTasks } = useSuspenseQuery(
+    viewerImageGenerationTasksQuery,
+    {
+      variables: {
+        limit: config.query.maxLimit,
+        offset: (currentPage - 1) * (props.viewCount ?? 0),
+        where: { minRating: 0 },
+      },
+      errorPolicy: "all",
+      context: { simulateError: true },
+    },
+  )
+
+  const pcViewType = props.pcViewType ? props.pcViewType : ""
+
+  if (tasks === undefined || ratingTasks === undefined) {
+    return null
+  }
+
+  const isTimeout = useFocusTimeout()
+  useEffect(() => {
+    const time = setInterval(() => {
+      if (isTimeout) {
+        return
+      }
+      startTransition(() => {
+        refetchTasks()
+        refetchRatingTasks()
+      })
+    }, 1000)
+    return () => {
+      clearInterval(time)
+    }
   })
 
   // 非表示指定のタスクを除外
   const filteredImageGenerationTasks = (
-    data?.viewer?.imageGenerationTasks || []
+    tasks.viewer?.imageGenerationTasks || []
   ).filter((task) => task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
+  const filteredImageGenerationRatingTasks = (
+    ratingTasks.viewer?.imageGenerationTasks || []
+  ).filter(
+    (task: ImageGenerationTaskNode) =>
+      task.rating === props.rating &&
+      task.nanoid &&
+      !props.hidedTaskIds.includes(task.nanoid),
+  )
 
   // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
   const newImageGenerationTasks = [
@@ -69,9 +106,15 @@ export const GenerationEditorResultContents = (props: Props) => {
   ].filter(
     (task) => task !== null && task !== undefined,
   ) as ImageGenerationTaskNode[]
+  const newImageGenerationRatingTasks = [
+    ...filteredImageGenerationRatingTasks,
+    props.additionalTask,
+  ].filter(
+    (task) => task !== null && task !== undefined,
+  ) as ImageGenerationTaskNode[]
 
   const onRestore = (taskId: string) => {
-    const task = data?.viewer?.imageGenerationTasks.find(
+    const task = tasks.viewer?.imageGenerationTasks.find(
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
@@ -88,6 +131,11 @@ export const GenerationEditorResultContents = (props: Props) => {
     if (!task || task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
   }) as ImageGenerationTaskNode[]
+
+  const activeRatingTasks = newImageGenerationRatingTasks.filter((task) => {
+    if (!task || task.isDeleted) return false
+    return task.status === "IN_PROGRESS" || task.status === "DONE"
+  })
 
   const onSelectTask = (taskId: string | null, status: string) => {
     if (status !== "DONE") {
@@ -138,106 +186,36 @@ export const GenerationEditorResultContents = (props: Props) => {
     <>
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
-          {activeTasks?.map((task) => (
-            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
-              <Suspense fallback={<FallbackResultCard />}>
-                {props.editMode === "edit" ? (
-                  <Button
-                    onClick={() => onSelectTask(task.nanoid, task.status)}
-                    className={
-                      "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
-                    }
-                  >
-                    <GenerationResultCard
-                      taskNanoid={task.nanoid}
-                      taskId={task.id}
-                      token={task.token}
-                      isSelected={props.selectedTaskIds.includes(
-                        task.nanoid ?? "",
-                      )}
-                    />
-                  </Button>
-                ) : null}
-                {props.editMode !== "edit" &&
-                  (!isDesktop ? (
-                    <Link href={`/generation/tasks/${task.nanoid}`}>
-                      <Button
-                        className={
-                          "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
-                        }
-                      >
-                        <GenerationResultCard
-                          taskNanoid={task.nanoid}
-                          taskId={task.id}
-                          token={task.token}
-                        />
-                      </Button>
-                    </Link>
-                  ) : props.pcViewType === "dialog" ? (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          className={
-                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
-                          }
-                        >
-                          <GenerationResultCard
-                            taskNanoid={task.nanoid}
-                            taskId={task.id}
-                            token={task.token}
-                          />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="p-0 flex flex-col gap-0">
-                        <Suspense fallback={<FallbackResultCard />}>
-                          <GenerationTaskCacheView
-                            isScroll={true}
-                            task={task}
-                            onRestore={onRestore}
-                          />
-                        </Suspense>
-                      </DialogContent>
-                    </Dialog>
-                  ) : (
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button
-                          className={
-                            "bg-gray-300 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80 border-solid border-2 border-gray p-0 h-auto overflow-hidden rounded relative"
-                          }
-                        >
-                          <GenerationResultCard
-                            taskNanoid={task.nanoid}
-                            taskId={task.id}
-                            token={task.token}
-                          />
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent
-                        side={"right"}
-                        className="p-0 flex flex-col gap-0"
-                      >
-                        <Suspense fallback={<FallbackResultCard />}>
-                          <GenerationTaskCacheView
-                            task={task}
-                            onRestore={onRestore}
-                          />
-                        </Suspense>
-                      </SheetContent>
-                    </Sheet>
-                  ))}
-              </Suspense>
-            </ErrorBoundary>
-          ))}
+          {props.rating === -1
+            ? activeTasks && (
+                <GenerationEditorResultList
+                  tasks={activeTasks}
+                  editMode={props.editMode}
+                  selectedTaskIds={props.selectedTaskIds}
+                  pcViewType={pcViewType}
+                  onRestore={onRestore}
+                  onSelectTask={onSelectTask}
+                />
+              )
+            : activeRatingTasks && (
+                <GenerationEditorResultList
+                  tasks={activeRatingTasks}
+                  editMode={props.editMode}
+                  selectedTaskIds={props.selectedTaskIds}
+                  pcViewType={pcViewType}
+                  onRestore={onRestore}
+                  onSelectTask={onSelectTask}
+                />
+              )}
         </div>
       </ScrollArea>
 
       {props.viewCount &&
-        data?.viewer &&
-        data?.viewer.remainingImageGenerationTasksTotalCount && (
+        tasks.viewer &&
+        tasks.viewer.remainingImageGenerationTasksTotalCount && (
           <ResponsivePagination
             perPage={props.viewCount}
-            maxCount={data.viewer.remainingImageGenerationTasksTotalCount}
+            maxCount={tasks.viewer.remainingImageGenerationTasksTotalCount}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />

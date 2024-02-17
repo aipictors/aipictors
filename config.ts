@@ -181,6 +181,12 @@ export const config = {
     endpoint: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT!,
   },
   /**
+   * クエリ
+   */
+  query: {
+    maxLimit: 800,
+  },
+  /**
    * ワードプレス
    */
   wordpressEndpoint: {

@@ -92,12 +92,12 @@ export const GenerationTasksOperationParts = (props: Props) => {
         <div className="flex space-x-2 items-center w-full">
           {/* 履歴選択・キャンセルボタン */}
           <Toggle
-            className="w-48"
+            className="w-16"
             onClick={onChangeEditMode}
             variant="outline"
             size={"sm"}
           >
-            {props.editMode === "edit" ? "キャンセル" : "選択"}
+            {props.editMode === "edit" ? "解除" : "選択"}
           </Toggle>
           {/* 履歴削除ボタン、画像ダウンロードボタン */}
           {props.editMode === "edit" ? (
@@ -127,76 +127,27 @@ export const GenerationTasksOperationParts = (props: Props) => {
           {/* お気に入り、その他ボタン */}
           {props.editMode !== "edit" ? (
             <>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant={"ghost"} size={"icon"}>
-                    <StarIcon className="w-4" />
-                    <p className="w-1 ml-1 mr-1">
-                      {props.rating === -1 ? "-" : props.rating}
-                    </p>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>{"お気に入り"}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === -1}
-                    onCheckedChange={() => {
-                      props.onChangeRating(-1)
-                    }}
-                  >
-                    {"all"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 0}
-                    onCheckedChange={() => {
-                      props.onChangeRating(0)
-                    }}
-                  >
-                    {"0"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 1}
-                    onCheckedChange={() => {
-                      props.onChangeRating(1)
-                    }}
-                  >
-                    {"1"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 2}
-                    onCheckedChange={() => {
-                      props.onChangeRating(2)
-                    }}
-                  >
-                    {"2"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 3}
-                    onCheckedChange={() => {
-                      props.onChangeRating(3)
-                    }}
-                  >
-                    {"3"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 4}
-                    onCheckedChange={() => {
-                      props.onChangeRating(4)
-                    }}
-                  >
-                    {"4"}
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={props.rating === 5}
-                    onCheckedChange={() => {
-                      props.onChangeRating(5)
-                    }}
-                  >
-                    {"5"}
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Select
+                onValueChange={(value: string) =>
+                  props.onChangeRating(Number(value))
+                }
+              >
+                <SelectTrigger className="h-9 w-32">
+                  <StarIcon className="w-4" />
+                  <SelectValue placeholder="すべて" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="-1">すべて</SelectItem>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -259,9 +210,8 @@ export const GenerationTasksOperationParts = (props: Props) => {
             </Select>
           ) : null}
         </div>
-
         {/* 履歴一覧リンク */}
-        {props.showHistoryAllButton ? (
+        {props.showHistoryAllButton && props.editMode !== "edit" ? (
           <Button
             onClick={moveHistoryPage}
             className="w-16 sm:w-24 ml-auto"

@@ -36,8 +36,6 @@ export const ResponsivePagination = ({
     }
   }
 
-  console.log("currentPage", currentPage)
-
   return (
     <Pagination>
       <PaginationContent>
