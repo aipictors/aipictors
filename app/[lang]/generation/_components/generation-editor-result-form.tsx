@@ -2,7 +2,7 @@
 
 import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
 import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { Suspense, useState } from "react"
@@ -46,7 +46,7 @@ export const GenerationEditorResultForm = (props: Props) => {
       />
       <Separator />
       {/* 履歴一覧 */}
-      <Suspense fallback={<AppLoading />}>
+      <Suspense fallback={<AppLoadingPage />}>
         <GenerationEditorResultContents
           additionalTask={props.additionalTask}
           hidedTaskIds={hidedTaskIds}

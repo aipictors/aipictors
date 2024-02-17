@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfigModel } from "@/app/[lang]/generation/_components/config-model"
+import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-model-button"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/generation-models-button"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
@@ -29,7 +29,7 @@ export const GenerationEditorConfigModels = (props: Props) => {
   return (
     <div className="grid gap-y-2">
       {currentModels.map((model) => (
-        <ConfigModel
+        <ConfigModelButton
           key={model?.id}
           imageURL={model?.thumbnailImageURL ?? ""}
           name={model?.displayName ?? ""}

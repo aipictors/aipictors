@@ -11,7 +11,7 @@ import {
 import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -217,7 +217,7 @@ export function GenerationTaskView(props: Props) {
     return (
       <div>
         <>
-          <AppLoading />
+          <AppLoadingPage />
         </>
       </div>
     )

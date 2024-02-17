@@ -1,11 +1,11 @@
-import { AppLoading } from "@/components/app/app-loading"
+import { AppNotFoundPage } from "@/components/app/app-not-found-page"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {
-  title: "共有/app-loading",
-  component: AppLoading,
+  title: "共有/app-not-found-page",
+  component: AppNotFoundPage,
   parameters: {},
-} satisfies Meta<typeof AppLoading>
+} satisfies Meta<typeof AppNotFoundPage>
 
 export default meta
 

@@ -1,7 +1,7 @@
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 
 const PlusLoading = () => {
-  return <AppLoading />
+  return <AppLoadingPage />
 }
 
 export default PlusLoading

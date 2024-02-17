@@ -11,7 +11,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const LoginForm = (props: Props) => {
+export const PasswordLoginForm = (props: Props) => {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

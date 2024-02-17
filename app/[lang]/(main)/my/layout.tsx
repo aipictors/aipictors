@@ -2,7 +2,7 @@
 
 import { LoginPage } from "@/app/_components/page/login-page"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { useContext } from "react"
 
 type Props = {
@@ -13,7 +13,7 @@ const MyLayout = (props: Props) => {
   const context = useContext(AuthContext)
 
   if (context.isLoading) {
-    return <AppLoading />
+    return <AppLoadingPage />
   }
 
   if (context.isNotLoggedIn) {

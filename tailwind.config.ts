@@ -4,7 +4,7 @@ import { fontFamily } from "tailwindcss/defaultTheme"
 export default {
   plugins: [require("tailwindcss-animate")],
   darkMode: ["class"],
-  content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
+  content: ["./components/**/*.tsx", "./app/**/*.tsx"],
   theme: {
     /**
      * shadcn/ui

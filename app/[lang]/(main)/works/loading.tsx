@@ -1,6 +1,6 @@
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 
 export default function WorksPageLoading() {
   // You can add any UI inside Loading, including a Skeleton.
-  return <AppLoading />
+  return <AppLoadingPage />
 }

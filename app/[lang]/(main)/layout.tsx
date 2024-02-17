@@ -5,7 +5,7 @@ import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigat
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
-import { AppUnderDevelopment } from "@/components/app/app-under-development"
+import { AppDevelopmentPage } from "@/components/app/app-development-page"
 import { config } from "@/config"
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 
 const MainLayout = (props: Props) => {
   if (!config.isDevelopmentMode) {
-    return <AppUnderDevelopment />
+    return <AppDevelopmentPage />
   }
 
   return (

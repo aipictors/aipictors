@@ -1,7 +1,7 @@
 "use client"
 
 import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
-import { LoginForm } from "@/app/_components/login-form"
+import { PasswordLoginForm } from "@/app/_components/password-login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
 import {
@@ -95,7 +95,7 @@ export const LoginDialog = (props: Props) => {
 
         <div className="w-full my-2 space-y-2">
           <p className="text-sm">{"またはアカウント情報でログイン"}</p>
-          <LoginForm onSubmit={onLogin} isLoading={isLoading} />
+          <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
         </div>
 
         <Separator />
