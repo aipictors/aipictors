@@ -5,7 +5,6 @@ import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_componen
 import { AppLoading } from "@/components/app/app-loading"
 import { Separator } from "@/components/ui/separator"
 import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
-
 import { Suspense, useState } from "react"
 
 type Props = {

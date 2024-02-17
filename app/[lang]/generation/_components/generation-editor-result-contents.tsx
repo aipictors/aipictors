@@ -144,6 +144,7 @@ export const GenerationEditorResultContents = (props: Props) => {
                     }
                   >
                     <GenerationResultCard
+                      taskNanoid={task.nanoid}
                       taskId={task.id}
                       token={task.token}
                       isSelected={props.selectedTaskIds.includes(
@@ -161,6 +162,7 @@ export const GenerationEditorResultContents = (props: Props) => {
                         }
                       >
                         <GenerationResultCard
+                          taskNanoid={task.nanoid}
                           taskId={task.id}
                           token={task.token}
                         />
@@ -175,6 +177,7 @@ export const GenerationEditorResultContents = (props: Props) => {
                           }
                         >
                           <GenerationResultCard
+                            taskNanoid={task.nanoid}
                             taskId={task.id}
                             token={task.token}
                           />
@@ -199,6 +202,7 @@ export const GenerationEditorResultContents = (props: Props) => {
                           }
                         >
                           <GenerationResultCard
+                            taskNanoid={task.nanoid}
                             taskId={task.id}
                             token={task.token}
                           />
