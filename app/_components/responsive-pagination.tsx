@@ -32,9 +32,11 @@ export const ResponsivePagination = ({
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pageCount) {
-      onPageChange(newPage - 1)
+      onPageChange(newPage)
     }
   }
+
+  console.log("currentPage", currentPage)
 
   return (
     <Pagination>
@@ -49,26 +51,39 @@ export const ResponsivePagination = ({
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
           <PaginationItem key={page}>
             {/* 現在のページの前後にページを表示するロジック */}
-            {Math.abs(page - currentPage) <= 2 && (
-              <PaginationLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  handlePageChange(page)
-                }}
-                className={page === currentPage ? "active" : ""}
-              >
-                {page}
-              </PaginationLink>
-            )}
+            {Math.abs(page - currentPage) <= 2 &&
+              (page === currentPage ? (
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handlePageChange(page)
+                  }}
+                  isActive
+                >
+                  {page}
+                </PaginationLink>
+              ) : (
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    handlePageChange(page)
+                  }}
+                >
+                  {page}
+                </PaginationLink>
+              ))}
           </PaginationItem>
         ))}
         {pageCount > (isDesktop ? 5 : 3) && <PaginationEllipsis />}{" "}
-        {/* 省略記号の表示条件 */}
         <PaginationItem>
           <PaginationNext
             href="#"
-            onClick={() => handlePageChange(currentPage + 1)}
+            onClick={(e) => {
+              e.preventDefault()
+              handlePageChange(currentPage + 1)
+            }}
           />
         </PaginationItem>
       </PaginationContent>

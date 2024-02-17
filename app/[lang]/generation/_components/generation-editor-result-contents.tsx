@@ -38,14 +38,19 @@ type Props = {
   onChangeNegativePromptText(prompt: string): void
 }
 
+/**
+ * 画像生成履歴の一覧
+ * @param props
+ * @returns
+ */
 export const GenerationEditorResultContents = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-  const [currentPage, setCurrentPage] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const { data } = useSuspenseQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: props.viewCount ?? 64,
-      offset: currentPage * (props.viewCount ?? 0),
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
       where: props.rating !== -1 ? { rating: props.rating } : {},
     },
     errorPolicy: "all",
@@ -128,6 +133,8 @@ export const GenerationEditorResultContents = (props: Props) => {
         return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
     }
   }
+
+  console.log(data?.viewer?.remainingImageGenerationTasksTotalCount)
 
   return (
     <>
@@ -229,10 +236,10 @@ export const GenerationEditorResultContents = (props: Props) => {
 
       {props.viewCount &&
         data?.viewer &&
-        data?.viewer.remainingImageGenerationTasksCount && (
+        data?.viewer.remainingImageGenerationTasksTotalCount && (
           <ResponsivePagination
             perPage={props.viewCount}
-            maxCount={data.viewer.remainingImageGenerationTasksCount}
+            maxCount={data.viewer.remainingImageGenerationTasksTotalCount}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />

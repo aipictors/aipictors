@@ -14,6 +14,9 @@ export const viewerImageGenerationTasksQuery = gql(`
     viewer {
       remainingImageGenerationTasksCount
       inProgressImageGenerationTasksCount
+      remainingImageGenerationTasksTotalCount
+      availableImageGenerationMaxTasksCount
+      availableImageGenerationLoraModelsCount
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationTaskFields
       }
