@@ -1,12 +1,9 @@
 import { AppPage } from "@/components/app/app-page"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
