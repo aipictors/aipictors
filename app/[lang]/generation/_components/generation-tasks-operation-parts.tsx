@@ -131,7 +131,7 @@ export const GenerationTasksOperationParts = (props: Props) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant={"ghost"} size={"icon"}>
                     <StarIcon className="w-4" />
-                    <p className="ml-1">
+                    <p className="w-1 ml-1 mr-1">
                       {props.rating === -1 ? "-" : props.rating}
                     </p>
                   </Button>
@@ -258,18 +258,19 @@ export const GenerationTasksOperationParts = (props: Props) => {
               </SelectContent>
             </Select>
           ) : null}
-          {/* 履歴一覧リンク */}
-          {props.showHistoryAllButton ? (
-            <Button
-              onClick={moveHistoryPage}
-              className="w-16 sm:w-24 ml-auto"
-              variant={"secondary"}
-              size={"sm"}
-            >
-              {"すべて"}
-            </Button>
-          ) : null}
         </div>
+
+        {/* 履歴一覧リンク */}
+        {props.showHistoryAllButton ? (
+          <Button
+            onClick={moveHistoryPage}
+            className="w-16 sm:w-24 ml-auto"
+            variant={"secondary"}
+            size={"sm"}
+          >
+            {"すべて"}
+          </Button>
+        ) : null}
       </div>
     </>
   )
