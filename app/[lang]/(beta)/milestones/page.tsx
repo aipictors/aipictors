@@ -41,7 +41,7 @@ const MilestonesPage = async () => {
             <TableRow>
               <TableHead className="min-w-28">{"バージョン"}</TableHead>
               <TableHead className="min-w-64">{"タイトル"}</TableHead>
-              <TableHead className="min-w-64">{"開発内容"}</TableHead>
+              <TableHead className="min-w-80">{"開発内容"}</TableHead>
               <TableHead className="min-w-16">{"状態"}</TableHead>
               <TableHead className="min-w-32">{"GitHub"}</TableHead>
             </TableRow>
