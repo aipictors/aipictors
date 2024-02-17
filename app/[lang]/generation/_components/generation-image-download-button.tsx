@@ -17,8 +17,11 @@ type Props = {
 export function GenerationImageDownloadButton(props: Props) {
   const { status, mutateAsync } = useMutation({
     mutationFn: downloadGeneratedImageFiles,
-    onError() {
-      toast.error("画像のダウンロードに失敗しました。")
+    onError(error) {
+      toast.error(error.message)
+    },
+    onSuccess() {
+      toast.success("画像をダウンロードしました")
     },
   })
 
