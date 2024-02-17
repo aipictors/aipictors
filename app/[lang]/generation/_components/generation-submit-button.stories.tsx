@@ -1,4 +1,3 @@
-import { GenerationCountSelector } from "@/app/[lang]/generation/_components/generation-count-selector"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
 import type { Meta, StoryObj } from "@storybook/react"
 

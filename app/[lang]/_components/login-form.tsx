@@ -4,13 +4,6 @@ import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import { PasswordLoginForm } from "@/app/_components/password-login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
 import { useMutation } from "@apollo/client"
