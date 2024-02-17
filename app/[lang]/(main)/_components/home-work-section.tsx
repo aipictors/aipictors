@@ -54,7 +54,7 @@ export const HomeWorkSection = (props: Props) => {
         columns={3}
         photos={photos}
         renderPhoto={(photoProps) => (
-          // @ts-ignore 後で考える
+          // @ts-ignore
           <HomeWorkAlbum {...photoProps} workId={photoProps.photo.workId} />
         )}
         defaultContainerWidth={1200}
