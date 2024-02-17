@@ -131,6 +131,9 @@ export const GenerationTasksOperationParts = (props: Props) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant={"ghost"} size={"icon"}>
                     <StarIcon className="w-4" />
+                    <p className="ml-1">
+                      {props.rating === -1 ? "-" : props.rating}
+                    </p>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
