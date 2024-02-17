@@ -2,16 +2,16 @@ import { ImageModelCard } from "@/app/[lang]/generation/_components/image-model-
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {
-  title: "サイト/generation/image-model-card",
+  title: "画像生成/image-model-card",
   component: ImageModelCard,
-  parameters: {},
+  parameters: { layout: "centered" },
 } satisfies Meta<typeof ImageModelCard>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Active: Story = {
+export const 選択された状態: Story = {
   args: {
     displayName: "モデル名",
     thumbnailImageURL: "https://picsum.photos/seed/1/300/300",
@@ -19,7 +19,7 @@ export const Active: Story = {
   },
 }
 
-export const Inactive: Story = {
+export const 選択されていない状態: Story = {
   args: {
     displayName: "モデル名",
     thumbnailImageURL: "https://picsum.photos/seed/1/300/300",

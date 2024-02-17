@@ -1,6 +1,6 @@
 "use client"
 
-import { ConfigModel } from "@/app/[lang]/generation/_components/config-model"
+import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-model-button"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/generation-models-button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -47,7 +47,7 @@ export const GenerationEditorModels = (props: Props) => {
               onSelect={onSelectModelId}
             />
             {currentModels.map((model) => (
-              <ConfigModel
+              <ConfigModelButton
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
                 name={model?.displayName ?? ""}

@@ -1,5 +1,5 @@
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 
 export default function WorkPageLoading() {
-  return <AppLoading />
+  return <AppLoadingPage />
 }

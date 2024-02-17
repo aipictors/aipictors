@@ -7,7 +7,7 @@ type Props = {
   onClick(): void
 }
 
-export const ConfigModel = (props: Props) => {
+export const ConfigModelButton = (props: Props) => {
   return (
     <Button
       variant={props.isSelected ? "default" : "secondary"}

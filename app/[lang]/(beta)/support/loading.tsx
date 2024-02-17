@@ -1,9 +1,9 @@
 "use client"
 
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 
 const MessagesLoading = () => {
-  return <AppLoading />
+  return <AppLoadingPage />
 }
 
 export default MessagesLoading

@@ -1,7 +1,7 @@
 "use client"
 
 import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
-import { LoginForm } from "@/app/_components/login-form"
+import { PasswordLoginForm } from "@/app/_components/password-login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { AppPageCenter } from "@/components/app/app-page-center"
 import { Button } from "@/components/ui/button"
@@ -93,7 +93,7 @@ export const LoginPage = () => {
             <Separator />
             <div className="w-full space-y-2">
               <p className="text-sm">{"またはパスワードでログイン"}</p>
-              <LoginForm onSubmit={onLogin} isLoading={isLoading} />
+              <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
             </div>
             <Separator />
             <div className={"flex flex-col w-full gap-y-2"}>

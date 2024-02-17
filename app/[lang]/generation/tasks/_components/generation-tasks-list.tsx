@@ -3,7 +3,7 @@
 import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
 import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
-import { AppLoading } from "@/components/app/app-loading"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useSuspenseQuery } from "@apollo/client"
@@ -59,7 +59,7 @@ export function GenerationTasksList() {
         onChangeViewCount={setViewCount}
       />
       <Separator />
-      <Suspense fallback={<AppLoading />}>
+      <Suspense fallback={<AppLoadingPage />}>
         <GenerationEditorResultContents
           pcViewType="dialog"
           sizeType="full"
