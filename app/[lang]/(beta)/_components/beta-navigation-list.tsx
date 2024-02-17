@@ -9,6 +9,7 @@ import {
   HomeIcon,
   LogInIcon,
   MessageCircleIcon,
+  Rocket,
   StampIcon,
 } from "lucide-react"
 import { useContext } from "react"
@@ -50,6 +51,9 @@ export const BetaNavigationList = () => {
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
+      <HomeNavigationButton href={"/milestones"} icon={Rocket}>
+        {"開発予定"}
+      </HomeNavigationButton>
       {/* {appContext.isLoggedIn && (
         <HomeNavigationButton
           isDisabled={Config.isReleaseMode}
