@@ -28,6 +28,7 @@ import { useMutation } from "@apollo/client"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { format } from "date-fns"
 import { MoreHorizontalIcon, StarIcon, Trash2Icon } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 type Props = {
   rating: number
@@ -36,6 +37,7 @@ type Props = {
   hidedTaskIds: string[]
   editMode: string
   showDateInput?: boolean
+  showHistoryAllButton?: boolean
   dateText?: string
   onChangeRating(rating: number): void
   onChangeDateText(dateText: string): void
@@ -47,6 +49,7 @@ type Props = {
 
 export const GenerationTasksOperationParts = (props: Props) => {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+  const router = useRouter()
 
   const onChangeEditMode = () => {
     if (props.editMode === "edit") {
@@ -67,7 +70,7 @@ export const GenerationTasksOperationParts = (props: Props) => {
         }),
       )
       await Promise.all(promises)
-      props.setHidedTaskIds(props.selectedTaskIds)
+      props.setHidedTaskIds([...props.hidedTaskIds, ...props.selectedTaskIds])
       props.setSelectedTaskIds([])
     } catch (error) {
       console.error("Error in task deletion:", error)
@@ -76,6 +79,10 @@ export const GenerationTasksOperationParts = (props: Props) => {
 
   const changeThumbnailSize = (size: string) => () => {
     props.setThumbnailSize(size)
+  }
+
+  const moveHistoryPage = () => {
+    router.push("/generation/tasks")
   }
 
   return (
@@ -264,6 +271,17 @@ export const GenerationTasksOperationParts = (props: Props) => {
                 />
               </PopoverContent>
             </Popover>
+          ) : null}
+          {/* 履歴一覧リンク */}
+          {props.showHistoryAllButton ? (
+            <Button
+              onClick={moveHistoryPage}
+              className="w-16 sm:w-24 ml-auto"
+              variant={"secondary"}
+              size={"sm"}
+            >
+              {"すべて"}
+            </Button>
           ) : null}
         </div>
       </div>
