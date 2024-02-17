@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationTaskView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-view"
+import { GenerationTaskCacheView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-cache-view"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
@@ -134,8 +134,6 @@ export const GenerationEditorResultContents = (props: Props) => {
     }
   }
 
-  console.log(data?.viewer?.remainingImageGenerationTasksTotalCount)
-
   return (
     <>
       <ScrollArea>
@@ -192,9 +190,9 @@ export const GenerationEditorResultContents = (props: Props) => {
                       </DialogTrigger>
                       <DialogContent className="p-0 flex flex-col gap-0">
                         <Suspense fallback={<FallbackResultCard />}>
-                          <GenerationTaskView
+                          <GenerationTaskCacheView
                             isScroll={true}
-                            taskId={task.nanoid ?? ""}
+                            task={task}
                             onRestore={onRestore}
                           />
                         </Suspense>
@@ -220,8 +218,8 @@ export const GenerationEditorResultContents = (props: Props) => {
                         className="p-0 flex flex-col gap-0"
                       >
                         <Suspense fallback={<FallbackResultCard />}>
-                          <GenerationTaskView
-                            taskId={task.nanoid ?? ""}
+                          <GenerationTaskCacheView
+                            task={task}
                             onRestore={onRestore}
                           />
                         </Suspense>
