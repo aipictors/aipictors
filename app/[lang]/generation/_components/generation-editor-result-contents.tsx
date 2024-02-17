@@ -22,13 +22,17 @@ type Props = {
   pcViewType?: string
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
-  onChangeModeId(modelId: string, modelType: string): void
-  onChangeSampler(sampler: string): void
-  onChangeScale(scale: number): void
-  onChangeSeed(seed: number): void
-  onChangeVae(vae: string | null): void
-  onChangePromptText(prompt: string): void
-  onChangeNegativePromptText(prompt: string): void
+  onUpdateSettings(
+    modelId: string,
+    modelType: string,
+    sampler: string,
+    scale: number,
+    vae: string,
+    promptText: string,
+    negativePromptText: string,
+    seed: number,
+    sizeType: string,
+  ): void
 }
 
 /**
@@ -119,13 +123,17 @@ export const GenerationEditorResultContents = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    props.onChangeModeId(task.model.id, task.model.type)
-    props.onChangeSampler(task.sampler)
-    props.onChangeScale(task.scale)
-    props.onChangeSeed(task.seed)
-    props.onChangeVae(task.vae)
-    props.onChangeNegativePromptText(task.negativePrompt)
-    props.onChangePromptText(task.prompt)
+    props.onUpdateSettings(
+      task.model.id,
+      task.model.type,
+      task.sampler,
+      task.scale,
+      task.vae ?? "",
+      task.prompt,
+      task.negativePrompt,
+      task.seed,
+      task.sizeType,
+    )
     toast("設定を復元しました")
   }
 

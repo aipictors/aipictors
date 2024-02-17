@@ -11,15 +11,18 @@ type Props = {
   additionalTask: ImageGenerationTaskNode | null
   userNanoid: string | null
   rating: number
-  onChangeModeId(modelId: string, modelType: string): void
   onChangeRating(rating: number): void
-  onChangeSampler(sampler: string): void
-  onChangeScale(scale: number): void
-  onChangeSeed(seed: number): void
-  onChangeSize(size: string): void
-  onChangeVae(vae: string | null): void
-  onChangePromptText(prompt: string): void
-  onChangeNegativePromptText(prompt: string): void
+  onUpdateSettings(
+    modelId: string,
+    modelType: string,
+    sampler: string,
+    scale: number,
+    vae: string,
+    promptText: string,
+    negativePromptText: string,
+    seed: number,
+    sizeType: string,
+  ): void
 }
 
 export const GenerationEditorResultForm = (props: Props) => {
@@ -56,13 +59,7 @@ export const GenerationEditorResultForm = (props: Props) => {
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
-          onChangeModeId={props.onChangeModeId}
-          onChangeSampler={props.onChangeSampler}
-          onChangeScale={props.onChangeScale}
-          onChangeSeed={props.onChangeSeed}
-          onChangeVae={props.onChangeVae}
-          onChangePromptText={props.onChangePromptText}
-          onChangeNegativePromptText={props.onChangeNegativePromptText}
+          onUpdateSettings={props.onUpdateSettings}
         />
       </Suspense>
     </>

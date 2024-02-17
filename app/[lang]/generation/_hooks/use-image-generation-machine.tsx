@@ -17,13 +17,48 @@ export const useImageGenerationMachine = (props: Props) => {
 
   const action = new ImageGenerationAction(state.context)
 
+  const updateSettings = (
+    modelId: string,
+    modelType: string,
+    sampler: string,
+    scale: number,
+    vae: string,
+    promptText: string,
+    negativePromptText: string,
+    seed: number,
+    sizeType: string,
+  ) => {
+    cacheStorage.savePrompt(promptText)
+    cacheStorage.saveNegativePrompt(negativePromptText)
+    cacheStorage.saveModelId(modelId)
+    cacheStorage.saveModelType(modelType)
+    cacheStorage.saveVae(vae)
+    cacheStorage.saveSampler(negativePromptText)
+    cacheStorage.saveScale(scale)
+    cacheStorage.saveSeed(seed)
+    cacheStorage.saveSizeType(sizeType)
+
+    const value = action
+      .updateNegativePrompt(negativePromptText)
+      .updatePrompt(promptText)
+      .updateModelId(modelId, modelType)
+      .updateSampler(sampler)
+      .updateScale(scale)
+      .updateVae(vae)
+      .updateSeed(seed)
+      .updateSizeType(sizeType)
+      .getState()
+
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
   /**
    * プロンプトを変更する
    * @param text
    */
   const updatePrompt = (text: string) => {
     cacheStorage.savePrompt(text)
-    const value = action.updatePrompt(text)
+    const value = action.updatePrompt(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -33,7 +68,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateNegativePrompt = (text: string) => {
     cacheStorage.saveNegativePrompt(text)
-    const value = action.updateNegativePrompt(text)
+    const value = action.updateNegativePrompt(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -43,7 +78,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateSampler = (text: string) => {
     cacheStorage.saveSampler(text)
-    const value = action.updateSampler(text)
+    const value = action.updateSampler(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -53,7 +88,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateSteps = (step: number) => {
     cacheStorage.saveSteps(step)
-    const value = action.updateSteps(step)
+    const value = action.updateSteps(step).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -63,7 +98,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateScale = (scale: number) => {
     cacheStorage.saveScale(scale)
-    const value = action.updateScale(scale)
+    const value = action.updateScale(scale).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -72,7 +107,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param sizeType
    */
   const updateSizeType = (sizeType: string) => {
-    const value = action.updateSizeType(sizeType)
+    const value = action.updateSizeType(sizeType).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -92,7 +127,7 @@ export const useImageGenerationMachine = (props: Props) => {
    */
   const updateSeed = (seed: number) => {
     cacheStorage.saveSeed(seed)
-    const value = action.updateSeed(seed)
+    const value = action.updateSeed(seed).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -101,7 +136,7 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param modelId
    */
   const updateModelId = (modelId: string, modelType: string) => {
-    const value = action.updateModelId(modelId, modelType)
+    const value = action.updateModelId(modelId, modelType).getState()
     cacheStorage.saveModelId(modelId)
     cacheStorage.saveModelType(modelType)
     cacheStorage.saveModelIds(value.modelIds)
@@ -116,13 +151,13 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param modelValue
    */
   const updateLoraModel = (modelName: string, modelValue: number) => {
-    const value = action.updateLoraModelValue(modelName, modelValue)
+    const value = action.updateLoraModelValue(modelName, modelValue).getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
 
   const initPromptWithLoraModel = () => {
-    const value = action.initPromptWithLoraModelValue()
+    const value = action.initPromptWithLoraModelValue().getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -132,13 +167,14 @@ export const useImageGenerationMachine = (props: Props) => {
    * @param modelName
    */
   const changeLoraConfig = (modelName: string) => {
-    const value = action.changeLoraModel(modelName)
+    const value = action.changeLoraModel(modelName).getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
 
   return {
     context: new ImageGenerationContextView(state.context),
+    updateSettings,
     updateModelId,
     changeLoraModel: changeLoraConfig,
     updateLoraModel: updateLoraModel,
