@@ -1,11 +1,8 @@
-import { createImageFiles } from "@/app/[lang]/generation/_utils/create-image-files"
 import { downloadGeneratedImageFiles } from "@/app/[lang]/generation/_utils/download-generated-image-files"
 import { Button } from "@/components/ui/button"
-import { config } from "@/config"
 import { useMutation } from "@tanstack/react-query"
 import { ArrowDownToLine, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { downloadZipFile } from "../_utils/download-zip-file"
 
 type Props = {
   disabled: boolean
