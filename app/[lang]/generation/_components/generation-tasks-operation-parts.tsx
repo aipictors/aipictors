@@ -1,6 +1,6 @@
 "use client"
 
-import GenerationHistoryDownloadWithZip from "@/app/[lang]/generation/_components/generation-history-download-with-zip"
+import { GenerationImageDownloadButton } from "@/app/[lang]/generation/_components/generation-image-download-button"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -111,7 +111,7 @@ export const GenerationTasksOperationParts = (props: Props) => {
                   <Trash2Icon className="w-4" />
                 </Button>
               </AppConfirmDialog>
-              <GenerationHistoryDownloadWithZip
+              <GenerationImageDownloadButton
                 disabled={props.selectedTaskIds.length === 0}
                 selectedTaskIds={props.selectedTaskIds}
               />

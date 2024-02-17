@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { ArrowDownToLine } from "lucide-react"
-import React, { useState } from "react"
+import { useState } from "react"
 import { imageToZip } from "../_utils/image-to-zip"
 
 interface FileObject {
@@ -8,17 +8,24 @@ interface FileObject {
   data: Uint8Array
 }
 
-const GenerationHistoryDownloadWithZip: React.FC<{
+type Props = {
   disabled: boolean
   selectedTaskIds: string[]
-}> = ({ disabled, selectedTaskIds }) => {
+}
+
+/**
+ * 生成画像のZip形式のダウンロードボタン
+ * @param props
+ * @returns
+ */
+export function GenerationImageDownloadButton(props: Props) {
   const [isPreparingDownload, setIsPreparingDownload] = useState(false)
 
   const handleDownloadZip = async () => {
     setIsPreparingDownload(true)
     const files: FileObject[] = []
 
-    for (const taskId of selectedTaskIds) {
+    for (const taskId of props.selectedTaskIds) {
       const imageElement = document.querySelector(
         `.generation-image-${taskId}`,
       ) as HTMLImageElement
@@ -44,18 +51,12 @@ const GenerationHistoryDownloadWithZip: React.FC<{
 
   return (
     <Button
-      disabled={disabled || isPreparingDownload}
+      disabled={props.disabled || isPreparingDownload}
       variant="ghost"
       size="icon"
       onClick={handleDownloadZip}
     >
-      {isPreparingDownload ? (
-        "Preparing..."
-      ) : (
-        <ArrowDownToLine className="w-4" />
-      )}
+      {isPreparingDownload ? "処理中..." : <ArrowDownToLine className="w-4" />}
     </Button>
   )
 }
-
-export default GenerationHistoryDownloadWithZip
