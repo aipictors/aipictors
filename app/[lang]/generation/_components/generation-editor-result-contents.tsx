@@ -22,12 +22,17 @@ type Props = {
   pcViewType?: string
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
-  onChangeSampler(sampler: string): void
-  onChangeScale(scale: number): void
-  onChangeSeed(seed: number): void
-  onChangeVae(vae: string | null): void
-  onChangePromptText(prompt: string): void
-  onChangeNegativePromptText(prompt: string): void
+  onUpdateSettings(
+    modelId: string,
+    modelType: string,
+    sampler: string,
+    scale: number,
+    vae: string,
+    promptText: string,
+    negativePromptText: string,
+    seed: number,
+    sizeType: string,
+  ): void
 }
 
 /**
@@ -118,12 +123,17 @@ export const GenerationEditorResultContents = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    props.onChangeSampler(task.sampler)
-    props.onChangeScale(task.scale)
-    props.onChangeSeed(task.seed)
-    props.onChangeVae(task.vae)
-    props.onChangePromptText(task.prompt)
-    props.onChangeNegativePromptText(task.negativePrompt)
+    props.onUpdateSettings(
+      task.model.id,
+      task.model.type,
+      task.sampler,
+      task.scale,
+      task.vae ?? "",
+      task.prompt,
+      task.negativePrompt,
+      task.seed,
+      task.sizeType,
+    )
     toast("設定を復元しました")
   }
 
@@ -165,7 +175,7 @@ export const GenerationEditorResultContents = (props: Props) => {
         case "middle":
           return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
         case "big":
-          return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
+          return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5"
         default:
           return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
       }

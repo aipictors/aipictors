@@ -73,12 +73,7 @@ export function GenerationTasksList() {
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
-          onChangeSampler={machine.updateSampler}
-          onChangeScale={machine.updateScale}
-          onChangeSeed={machine.updateSeed}
-          onChangeVae={machine.updateVae}
-          onChangePromptText={machine.updatePrompt}
-          onChangeNegativePromptText={machine.updateNegativePrompt}
+          onUpdateSettings={machine.updateSettings}
           additionalTask={null}
         />
       </Suspense>

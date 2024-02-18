@@ -174,15 +174,19 @@ export function GenerationTaskCacheView(props: Props) {
   const [rating, setRating] = useState(props.task.rating ?? 0)
 
   const onReference = () => {
-    if (props.onRestore !== undefined) {
-      props.onRestore(props.task.id)
+    if (props.onRestore !== undefined && props.task.nanoid !== null) {
+      props.onRestore(props.task.nanoid)
+    } else if (props.onRestore === undefined && props.task.nanoid !== null) {
+      window.location.href = `/generation/?ref=${props.task.nanoid ?? ""}`
     } else {
-      window.location.href = `/generation/?ref=${props.task.id}`
+      toast("不明なエラーです。")
     }
   }
 
   const onPost = () => {
-    window.location.href = `https://www.aipictors.com/post?generation=${props.task.nanoid}`
+    window.location.href = `https://www.aipictors.com/post?generation=${
+      props.task.nanoid ?? ""
+    }`
   }
 
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
@@ -345,14 +349,13 @@ export function GenerationTaskCacheView(props: Props) {
           </div>
         </div>
       </ScrollArea>
-      <Link href="/generation/tasks">
-        <Button
-          className="h-auto p-4 flex flex-col overflow-hidden gap-y-2"
-          variant={"secondary"}
-        >
-          画像一覧
-        </Button>
-      </Link>
+      {!isDesktop && (
+        <Link href="/generation/tasks">
+          <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
+            画像一覧
+          </Button>
+        </Link>
+      )}
     </>
   )
 }
