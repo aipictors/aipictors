@@ -198,6 +198,7 @@ export function GenerationTaskCacheView(props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
 
   const onDelete = async () => {
+    console.log("props.task.id", props.task.id)
     await deleteTask({
       variables: {
         input: {
@@ -262,7 +263,6 @@ export function GenerationTaskCacheView(props: Props) {
               />
             </DialogContent>
           </Dialog>
-
           <div className="my-4 flex justify-end">
             <GenerationMenuButton
               title={"同じ情報で生成する"}

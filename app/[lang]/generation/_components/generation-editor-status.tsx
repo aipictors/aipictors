@@ -1,15 +1,13 @@
 import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
-import { GenerationCountSelector } from "@/app/[lang]/generation/_components/generation-count-selector"
+import { GenerationCountSelect } from "@/app/[lang]/generation/_components/generation-count-select"
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
-import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -58,10 +56,6 @@ type Props = {
 }
 
 export function GenerationEditorStatus(props: Props) {
-  const isTimeout = useFocusTimeout()
-
-  const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
-
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
     refetchQueries: [viewerCurrentPassQuery],
     awaitRefetchQueries: true,
@@ -105,56 +99,28 @@ export function GenerationEditorStatus(props: Props) {
     toast("タスクをキャンセルしました")
   }
 
-  useEffect(() => {
-    const time = setInterval(() => {
-      if (isTimeout || !props.inProgress) {
-        setElapsedGenerationTime(0)
-        return
-      }
-      if (props.inProgress) {
-        setElapsedGenerationTime((prev) => prev + 1)
-      } else {
-        setElapsedGenerationTime(0)
-      }
-    }, 1000)
-    return () => {
-      clearInterval(time)
-    }
-  }, [props.inProgress])
-
   return (
     <div className="space-y-2">
-      <div>
+      <div className="flex items-center">
+        <GenerationCountSelect
+          pass={props.passType ?? "FREE"}
+          selectedCount={props.tasksCount}
+          onChange={props.onChangeTasksCount}
+        />
         {/* 生成開始ボタン */}
         {props.hasSignedTerms && !props.inProgress && (
-          <>
-            <div className="flex items-center">
-              <GenerationCountSelector
-                pass={props.passType ?? "FREE"}
-                selectedCount={props.tasksCount}
-                onChange={props.onChangeTasksCount}
-              />
-              <GenerationSubmitButton
-                onClick={props.onCreateTask}
-                isLoading={props.isCreatingTasks}
-                isDisabled={props.isDisabled}
-              />
-            </div>
-          </>
+          <GenerationSubmitButton
+            onClick={props.onCreateTask}
+            isLoading={props.isCreatingTasks}
+            isDisabled={props.isDisabled}
+          />
         )}
         {/* キャンセル開始ボタン */}
         {props.hasSignedTerms && props.inProgress && (
-          <div className="flex items-center">
-            <GenerationCountSelector
-              pass={props.passType ?? "FREE"}
-              selectedCount={props.tasksCount}
-              onChange={props.onChangeTasksCount}
-            />
-            <GenerationCancelButton
-              onClick={onCancelTask}
-              isLoading={isCanceling}
-            />
-          </div>
+          <GenerationCancelButton
+            onClick={onCancelTask}
+            isLoading={isCanceling}
+          />
         )}
         {/* 規約確認開始ボタン */}
         {!props.hasSignedTerms && (
@@ -165,7 +131,6 @@ export function GenerationEditorStatus(props: Props) {
         )}
       </div>
       <GenerationEditorProgress
-        elapsedGenerationTime={elapsedGenerationTime}
         inProgress={props.inProgress}
         maxTasksCount={props.tasksCount}
         normalPredictionGenerationSeconds={

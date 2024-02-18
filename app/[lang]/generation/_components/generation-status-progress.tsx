@@ -1,12 +1,13 @@
 import { toGenerationTime } from "@/app/[lang]/generation/_utils/to-generation-time"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { useEffect, useState } from "react"
 
 type Props = {
   maxTasksCount: number
   remainingImageGenerationTasksCount: number
   inProgress: boolean
-  elapsedGenerationTime: number
   normalPredictionGenerationSeconds: number
   normalTasksCount: number
   standardPredictionGenerationSeconds: number
@@ -15,6 +16,28 @@ type Props = {
 }
 
 export function GenerationEditorProgress(props: Props) {
+  const isTimeout = useFocusTimeout()
+
+  // 生成経過時間
+  const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0)
+
+  useEffect(() => {
+    const time = setInterval(() => {
+      if (isTimeout || !props.inProgress) {
+        setElapsedGenerationTime(0)
+        return
+      }
+      if (props.inProgress) {
+        setElapsedGenerationTime((prev) => prev + 1)
+      } else {
+        setElapsedGenerationTime(0)
+      }
+    }, 1000)
+    return () => {
+      clearInterval(time)
+    }
+  }, [props.inProgress])
+
   const isPriorityAccount = () => {
     if (props.passType === "STANDARD" || props.passType === "PREMIUM") {
       return true
@@ -26,7 +49,7 @@ export function GenerationEditorProgress(props: Props) {
    * 生成完了までの進捗（パーセンテージ）
    */
   const generationProgress = () => {
-    if (props.elapsedGenerationTime === 0) {
+    if (elapsedGenerationTime === 0) {
       return 0
     }
     const waitSeconds = isPriorityAccount()
@@ -34,7 +57,7 @@ export function GenerationEditorProgress(props: Props) {
       : props.normalPredictionGenerationSeconds
     // 0徐算防止
     if (!waitSeconds) return 0
-    return (props.elapsedGenerationTime / waitSeconds) * 100
+    return (elapsedGenerationTime / waitSeconds) * 100
   }
 
   const generateSpeed = (waitTasks: number | undefined) => {
@@ -54,6 +77,11 @@ export function GenerationEditorProgress(props: Props) {
     ? generateSpeed(props.standardTasksCount)
     : -1
 
+  /**
+   * TODO: 移動
+   * @param speed
+   * @returns
+   */
   const generateStatus = (speed: number) => {
     if (speed === -1) {
       return "-"
@@ -68,17 +96,18 @@ export function GenerationEditorProgress(props: Props) {
   }
 
   /**
+   * TODO: 移動
    * 残り秒数（s/m/h単位)
    */
   const secondsRemaining = () => {
-    if (props.elapsedGenerationTime === 0) {
+    if (elapsedGenerationTime === 0) {
       return 0
     }
     const waitSeconds = isPriorityAccount()
       ? props.standardPredictionGenerationSeconds
       : props.normalPredictionGenerationSeconds
     if (!waitSeconds) return 0
-    const remainingSeconds = waitSeconds - props.elapsedGenerationTime
+    const remainingSeconds = waitSeconds - elapsedGenerationTime
     if (remainingSeconds < 0) {
       return "まもなく"
     }
@@ -93,13 +122,11 @@ export function GenerationEditorProgress(props: Props) {
           {"生成枚数 "} {props.remainingImageGenerationTasksCount}/
           {props.maxTasksCount}
         </Badge>
-        {isPriorityAccount() ? (
+        {isPriorityAccount() && (
           <Badge className="mr-2" variant={"secondary"}>
             {"優先状態 "}
             {generateStatus(prioritySpeed)}
           </Badge>
-        ) : (
-          <></>
         )}
         <Badge
           variant={"secondary"}

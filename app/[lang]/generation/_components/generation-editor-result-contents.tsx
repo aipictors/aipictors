@@ -45,17 +45,14 @@ export const GenerationEditorResultContents = (props: Props) => {
 
   const isTimeout = useFocusTimeout()
 
-  const { data: tasks, refetch: refetchTasks } = useQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: props.viewCount ?? 64,
-        offset: (currentPage - 1) * (props.viewCount ?? 0),
-        where: { minRating: 0 },
-      },
-      pollInterval: isTimeout ? undefined : 1000,
+  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: props.viewCount ?? 64,
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      where: { minRating: 0 },
     },
-  )
+    pollInterval: isTimeout ? undefined : 2000,
+  })
 
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {

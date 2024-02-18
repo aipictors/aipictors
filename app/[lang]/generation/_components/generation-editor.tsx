@@ -9,7 +9,6 @@ import { GenerationEditorResultForm } from "@/app/[lang]/generation/_components/
 import { GenerationEditorStatus } from "@/app/[lang]/generation/_components/generation-editor-status"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
-import { Button } from "@/components/ui/button"
 import {
   ImageGenerationSizeType,
   ImageLoraModelsQuery,
@@ -21,7 +20,7 @@ import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
