@@ -229,11 +229,7 @@ export function GenerationTaskCacheView(props: Props) {
   }
 
   if (props.task.status === "IN_PROGRESS") {
-    return (
-      <>
-        <InProgressImageGenerationTaskResult />
-      </>
-    )
+    return <InProgressImageGenerationTaskResult />
   }
 
   return (
