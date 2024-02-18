@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
+import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -13,7 +14,7 @@ import { toast } from "sonner"
 
 type Props = {
   sizeType?: string
-  additionalTask: ImageGenerationTaskNode | null
+  isCreatingTasks: boolean
   rating: number
   editMode: string
   selectedTaskIds: string[]
@@ -51,8 +52,6 @@ export const GenerationEditorResultContents = (props: Props) => {
         offset: (currentPage - 1) * (props.viewCount ?? 0),
         where: { minRating: 0 },
       },
-      errorPolicy: "all",
-      context: { simulateError: true },
     },
   )
 
@@ -64,8 +63,6 @@ export const GenerationEditorResultContents = (props: Props) => {
         offset: (currentPage - 1) * (props.viewCount ?? 0),
         where: { minRating: 0 },
       },
-      errorPolicy: "all",
-      context: { simulateError: true },
     },
   )
 
@@ -98,22 +95,18 @@ export const GenerationEditorResultContents = (props: Props) => {
   const filteredImageGenerationRatingTasks = (
     ratingTasks.viewer?.imageGenerationTasks || []
   ).filter(
-    (task: ImageGenerationTaskNode) =>
+    (task) =>
       task.rating === props.rating &&
       task.nanoid &&
       !props.hidedTaskIds.includes(task.nanoid),
   )
 
   // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
-  const newImageGenerationTasks = [
-    ...filteredImageGenerationTasks,
-    props.additionalTask,
-  ].filter(
+  const newImageGenerationTasks = [...filteredImageGenerationTasks].filter(
     (task) => task !== null && task !== undefined,
   ) as ImageGenerationTaskNode[]
   const newImageGenerationRatingTasks = [
     ...filteredImageGenerationRatingTasks,
-    props.additionalTask,
   ].filter(
     (task) => task !== null && task !== undefined,
   ) as ImageGenerationTaskNode[]
@@ -196,27 +189,28 @@ export const GenerationEditorResultContents = (props: Props) => {
     <>
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
-          {props.rating === -1
-            ? activeTasks && (
-                <GenerationEditorResultList
-                  tasks={activeTasks}
-                  editMode={props.editMode}
-                  selectedTaskIds={props.selectedTaskIds}
-                  pcViewType={pcViewType}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              )
-            : activeRatingTasks && (
-                <GenerationEditorResultList
-                  tasks={activeRatingTasks}
-                  editMode={props.editMode}
-                  selectedTaskIds={props.selectedTaskIds}
-                  pcViewType={pcViewType}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              )}
+          {props.isCreatingTasks && <InProgressGenerationCard />}
+          {props.rating === -1 ? (
+            <GenerationEditorResultList
+              tasks={tasks.viewer?.imageGenerationTasks || []}
+              editMode={props.editMode}
+              selectedTaskIds={props.selectedTaskIds}
+              pcViewType={pcViewType}
+              onRestore={onRestore}
+              onSelectTask={onSelectTask}
+            />
+          ) : (
+            activeRatingTasks && (
+              <GenerationEditorResultList
+                tasks={activeRatingTasks}
+                editMode={props.editMode}
+                selectedTaskIds={props.selectedTaskIds}
+                pcViewType={pcViewType}
+                onRestore={onRestore}
+                onSelectTask={onSelectTask}
+              />
+            )
+          )}
         </div>
       </ScrollArea>
 

@@ -12,14 +12,13 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/gene
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
-import { useFakeLoading } from "@/app/_hooks/use-fake-loading"
+import { toGenerationTime } from "@/app/[lang]/generation/_utils/to-generation-time"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import {
   ImageGenerationSizeType,
-  ImageGenerationTaskNode,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
@@ -45,9 +44,9 @@ type Props = {
  */
 export function GenerationEditor(props: Props) {
   const [rating, setRating] = useState(-1)
-  const [createdTask, setCreatedTask] =
-    useState<ImageGenerationTaskNode | null>(null)
+
   const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0) // 生成経過時間
+
   const [generationCount, setGenerationCount] = useState(1)
 
   const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
@@ -69,7 +68,7 @@ export function GenerationEditor(props: Props) {
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation)
 
-  const [createTask, { loading }] = useMutation(
+  const [createTask, { loading: isCreatingTasks }] = useMutation(
     createImageGenerationTaskMutation,
     {
       refetchQueries: [viewerImageGenerationTasksQuery],
@@ -77,21 +76,20 @@ export function GenerationEditor(props: Props) {
     },
   )
 
-  const [isFakeLoading, { startFakeLoading, stopFakeLoading }] = useFakeLoading(
-    60 * 1000,
-  )
-
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
   )
 
-  // 生成中タスクが存在するなら生成中とみなす
-  const inProgress = data?.viewer?.inProgressImageGenerationTasksCount !== 0
+  /**
+   * 生成のキャンセルが可能
+   */
+  const inProgress =
+    data?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
+    data?.viewer?.inProgressImageGenerationTasksCount !== 0
 
   const isTimeout = useFocusTimeout()
 
   useEffect(() => {
-    stopFakeLoading()
     const time = setInterval(() => {
       if (isTimeout || !inProgress) {
         setElapsedGenerationTime(0)
@@ -170,10 +168,7 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.context.modelId
       })
       if (typeof model === "undefined") return
-
-      // 通信前にローディング開始しておく
-      startFakeLoading()
-      const newTask = await createTask({
+      await createTask({
         variables: {
           input: {
             count: generationCount,
@@ -190,9 +185,6 @@ export function GenerationEditor(props: Props) {
           },
         },
       })
-      if (newTask?.data) {
-        setCreatedTask(newTask.data.createImageGenerationTask)
-      }
       toast("タスクを作成しました")
     } catch (error) {
       if (error instanceof Error) {
@@ -265,23 +257,8 @@ export function GenerationEditor(props: Props) {
     if (remainingSeconds < 0) {
       return "まもなく"
     }
-    return formatTime(remainingSeconds)
+    return toGenerationTime(remainingSeconds)
   }
-
-  /**
-   * 時間フォーマットに変換
-   */
-  const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds}s` // 秒
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m` // 分
-    return `${Math.floor(seconds / 3600)}h` // 時間
-  }
-
-  /**
-   * 生成のキャンセルが可能
-   */
-  const hasRunningTasks =
-    data?.viewer?.inProgressImageGenerationTasksCount !== 0
 
   return (
     <GenerationEditorLayout
@@ -329,7 +306,7 @@ export function GenerationEditor(props: Props) {
         <div className="flex flex-col h-full gap-y-2">
           <div>
             {/* 生成開始ボタン */}
-            {hasSignedTerms && !hasRunningTasks && (
+            {hasSignedTerms && !inProgress && (
               <>
                 <div className="flex items-center">
                   <GenerationCountSelector
@@ -341,14 +318,14 @@ export function GenerationEditor(props: Props) {
                   />
                   <GenerationSubmitButton
                     onClick={onCreateTask}
-                    isLoading={loading}
+                    isLoading={isCreatingTasks}
                     isDisabled={machine.context.isDisabled}
                   />
                 </div>
               </>
             )}
             {/* キャンセル開始ボタン */}
-            {hasSignedTerms && hasRunningTasks && (
+            {hasSignedTerms && inProgress && (
               <div className="flex items-center">
                 <GenerationCountSelector
                   pass={
@@ -412,7 +389,7 @@ export function GenerationEditor(props: Props) {
           >
             <Suspense fallback={null}>
               <GenerationEditorResultForm
-                additionalTask={createdTask}
+                isCreatingTasks={isCreatingTasks}
                 userNanoid={viewer?.viewer?.user?.nanoid ?? null}
                 rating={rating}
                 onChangeRating={onChangeRating}

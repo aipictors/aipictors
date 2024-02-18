@@ -4,11 +4,10 @@ import { GenerationEditorResultContents } from "@/app/[lang]/generation/_compone
 import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { Suspense, useState } from "react"
 
 type Props = {
-  additionalTask: ImageGenerationTaskNode | null
+  isCreatingTasks: boolean
   userNanoid: string | null
   rating: number
   onChangeRating(rating: number): void
@@ -27,8 +26,11 @@ type Props = {
 
 export const GenerationEditorResultForm = (props: Props) => {
   const [editMode, setEditMode] = useState("")
+
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
+
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
 
   return (
@@ -52,7 +54,7 @@ export const GenerationEditorResultForm = (props: Props) => {
       {/* 履歴一覧 */}
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationEditorResultContents
-          additionalTask={props.additionalTask}
+          isCreatingTasks={props.isCreatingTasks}
           hidedTaskIds={hidedTaskIds}
           rating={props.rating}
           editMode={editMode}

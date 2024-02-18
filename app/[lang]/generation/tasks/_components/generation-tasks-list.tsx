@@ -74,7 +74,7 @@ export function GenerationTasksList() {
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
           onUpdateSettings={machine.updateSettings}
-          additionalTask={null}
+          isCreatingTasks={false}
         />
       </Suspense>
     </div>
