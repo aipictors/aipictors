@@ -4,7 +4,6 @@ import { GenerationTaskCacheView } from "@/app/[lang]/generation/tasks/[task]/_c
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackResultCard } from "@/app/[lang]/generation/tasks/_components/fallback-result-card"
 import { GenerationResultCard } from "@/app/[lang]/generation/tasks/_components/generation-result-card"
-import { SelectableCardButton } from "@/app/[lang]/generation/tasks/_components/selectable-card-button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
