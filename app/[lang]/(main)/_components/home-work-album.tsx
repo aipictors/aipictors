@@ -1,5 +1,3 @@
-"use client"
-
 import getBase64 from "@/lib/app/utils/get-base64"
 import Image from "next/image"
 import Link from "next/link"
@@ -23,8 +21,8 @@ export default function HomeWorkAlbum({
           fill
           src={photo.src}
           alt=""
-          placeholder={"blurDataURL" in photo ? "blur" : undefined}
-          blurDataURL=""
+          placeholder="blur"
+          blurDataURL={blurDataURL}
           className="rounded"
         />
       </Link>

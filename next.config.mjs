@@ -1,6 +1,7 @@
 // @ts-check
+import withPlaiceholder from "@plaiceholder/next"
 import { withSentryConfig } from "@sentry/nextjs"
-import packageJSON from "./package.json" assert { type: "json" }
+// import packageJSON from "./package.json" assert { type: "json" }
 
 /**
  * @type {import('next').NextConfig}
@@ -19,9 +20,9 @@ const nextConfig = {
     return config
   },
   output: "standalone",
-  env: {
-    NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,
-  },
+  // env: {
+  //   NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,
+  // },
   // @next/imageの設定 画像最適化なし
   images: {
     remotePatterns: [
@@ -55,4 +56,7 @@ const sentryWebpackPluginOptions = {
 }
 
 // Wrap Sentry configuration as ESM is asynchronous
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+export default withSentryConfig(
+  withPlaiceholder(nextConfig),
+  sentryWebpackPluginOptions,
+)
