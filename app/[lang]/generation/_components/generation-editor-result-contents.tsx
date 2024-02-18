@@ -132,9 +132,9 @@ export const GenerationEditorResultContents = (props: Props) => {
   }
 
   const activeTasks = newImageGenerationTasks.filter((task) => {
-    if (!task || task.isDeleted) return false
+    if (task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
-  }) as ImageGenerationTaskNode[]
+  })
 
   const activeRatingTasks = newImageGenerationRatingTasks.filter((task) => {
     if (!task || task.isDeleted) return false
@@ -193,7 +193,7 @@ export const GenerationEditorResultContents = (props: Props) => {
           {props.isCreatingTasks && <InProgressGenerationCard />}
           {props.rating === -1 ? (
             <GenerationEditorResultList
-              tasks={tasks.viewer?.imageGenerationTasks || []}
+              tasks={activeTasks || []}
               editMode={props.editMode}
               selectedTaskIds={props.selectedTaskIds}
               pcViewType={pcViewType}
