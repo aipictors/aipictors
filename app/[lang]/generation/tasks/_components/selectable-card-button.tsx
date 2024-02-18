@@ -17,12 +17,12 @@ export function SelectableCardButton(props: Props) {
       onClick={props.onClick}
       className={cn(
         "relative",
-        "p-0 h-auto overflow-hidden rounded",
-        "bg-gray-300 hover:bg-gray-300 border-solid",
-        "dark:bg-gray-800 dark:hover:bg-gray-800 hover:opacity-80",
-        "border-2 border-gray",
+        "p-0 h-auto overflow-hidden rounded bg-card",
+        "border-2 border-input",
         {
+          "hover:opacity-80": !props.isSelected,
           "opacity-40": props.isSelected,
+          "border-primary": props.isSelected,
         },
       )}
     >
