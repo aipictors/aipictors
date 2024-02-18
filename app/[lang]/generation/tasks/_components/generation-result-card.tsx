@@ -1,5 +1,5 @@
+import { SelectableCardButton } from "@/app/[lang]/generation/_components/selectable-card-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
-import { SelectableCardButton } from "@/app/[lang]/generation/tasks/_components/selectable-card-button"
 import { PrivateImage } from "@/app/_components/private-image"
 
 type Props = {
