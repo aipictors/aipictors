@@ -78,23 +78,29 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.context.modelId
       })
       if (typeof model === "undefined") return
-      await createTask({
-        variables: {
-          input: {
-            count: generationCount,
-            model: model.name,
-            vae: machine.context.vae ?? "",
-            prompt: machine.context.promptText,
-            negativePrompt: machine.context.negativePromptText,
-            seed: machine.context.seed,
-            steps: machine.context.steps,
-            scale: machine.context.scale,
-            sampler: machine.context.sampler,
-            sizeType: machine.context.sizeType as ImageGenerationSizeType,
-            type: "TEXT_TO_IMAGE",
+
+      const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
+      const promises = taskCounts.map(() =>
+        createTask({
+          variables: {
+            input: {
+              count: 1,
+              model: model.name,
+              vae: machine.context.vae ?? "",
+              prompt: machine.context.promptText,
+              negativePrompt: machine.context.negativePromptText,
+              seed: machine.context.seed,
+              steps: machine.context.steps,
+              scale: machine.context.scale,
+              sampler: machine.context.sampler,
+              sizeType: machine.context.sizeType as ImageGenerationSizeType,
+              type: "TEXT_TO_IMAGE",
+            },
           },
-        },
-      })
+        }),
+      )
+      await Promise.all(promises)
+
       toast("タスクを作成しました")
     } catch (error) {
       if (error instanceof Error) {
