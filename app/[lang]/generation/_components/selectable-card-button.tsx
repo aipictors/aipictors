@@ -2,6 +2,9 @@ import { cn } from "@/lib/utils"
 import { CheckIcon } from "lucide-react"
 
 type Props = {
+  /**
+   * 画像など
+   */
   children: React.ReactNode
   /**
    * 選択されている
@@ -10,6 +13,11 @@ type Props = {
   onClick?(): void
 }
 
+/**
+ * 選択可能なカード型ボタン
+ * @param props
+ * @returns
+ */
 export function SelectableCardButton(props: Props) {
   return (
     <button
