@@ -192,10 +192,15 @@ export function GenerationTaskCacheView(props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
 
   const onDelete = async () => {
+    if (props.task.nanoid === null) {
+      toast("存在しない履歴です")
+      return
+    }
+
     await deleteTask({
       variables: {
         input: {
-          id: props.task.id,
+          id: props.task.nanoid,
         },
       },
     })
