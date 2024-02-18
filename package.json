@@ -91,7 +91,7 @@
     "react-photo-album": "^2.3.1",
     "react-resizable-panels": "^2.0.9",
     "schema-dts": "^1.1.2",
-    "sharp": "^0.33.2",
+    "sharp": "0.32.6",
     "sonner": "^1.4.0",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.2.1",
