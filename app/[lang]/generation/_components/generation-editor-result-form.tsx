@@ -9,8 +9,6 @@ import { Suspense, useState } from "react"
 type Props = {
   isCreatingTasks: boolean
   userNanoid: string | null
-  rating: number
-  onChangeRating(rating: number): void
   onUpdateSettings(
     modelId: string,
     modelType: string,
@@ -25,6 +23,8 @@ type Props = {
 }
 
 export const GenerationEditorResultForm = (props: Props) => {
+  const [rating, setRating] = useState(-1)
+
   const [editMode, setEditMode] = useState("")
 
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
@@ -33,17 +33,21 @@ export const GenerationEditorResultForm = (props: Props) => {
 
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
 
+  const onChangeRating = (rating: number) => {
+    setRating(rating)
+  }
+
   return (
     <>
       {/* 操作一覧 */}
       <GenerationTasksOperationParts
         showHistoryAllButton={true}
-        rating={props.rating}
+        rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         editMode={editMode}
-        onChangeRating={props.onChangeRating}
+        onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
@@ -56,7 +60,7 @@ export const GenerationEditorResultForm = (props: Props) => {
         <GenerationEditorResultContents
           isCreatingTasks={props.isCreatingTasks}
           hidedTaskIds={hidedTaskIds}
-          rating={props.rating}
+          rating={rating}
           editMode={editMode}
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}

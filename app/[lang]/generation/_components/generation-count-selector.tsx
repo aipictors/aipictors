@@ -11,13 +11,17 @@ import { Images } from "lucide-react"
 
 type Props = {
   selectedCount: number
-  onChange(count: string): void
+  onChange(count: number): void
   pass: string
 }
 
 export function GenerationCountSelector(props: Props) {
   return (
-    <Select onValueChange={props.onChange}>
+    <Select
+      onValueChange={(value) => {
+        props.onChange(parseInt(value))
+      }}
+    >
       <SelectTrigger className="w-16 mr-2">
         <Button className="w-16" variant={"ghost"} size={"icon"}>
           <Images className="w-4 mr-2" />

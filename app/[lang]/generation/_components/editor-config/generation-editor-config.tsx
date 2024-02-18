@@ -15,7 +15,6 @@ import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
 } from "@/graphql/__generated__/graphql"
-import { useBoolean } from "usehooks-ts"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -27,11 +26,6 @@ type Props = {
   onSelectModelId(id: string, type: string): void
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
   configLoRAModels: string[]
-  /**
-   * モデルの種類
-   * SD1など
-   */
-  configModelType: string
   configSampler: string
   configScale: number
   configSteps: number
@@ -55,13 +49,18 @@ type Props = {
  * @returns
  */
 export const GenerationEditorConfig = (props: Props) => {
-  const currentModels = props.currentModelIds.map((modelId) => {
-    return props.models.find((model) => {
-      return model.id === modelId
-    })
+  /**
+   * 選択中のモデル
+   */
+  const currentModel = props.models.find((model) => {
+    return model.id === props.currentModelId
   })
 
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+  /**
+   * モデルの種類
+   * SD1など
+   */
+  const configModelType = currentModel?.type ?? "SD1"
 
   return (
     <GenerationEditorCard
@@ -86,7 +85,7 @@ export const GenerationEditorConfig = (props: Props) => {
           />
           <Separator />
           <GenerationEditorConfigSize
-            modelType={props.configModelType}
+            modelType={configModelType}
             value={props.configSize}
             onChange={props.onChangeSize}
           />

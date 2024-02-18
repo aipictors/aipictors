@@ -94,12 +94,13 @@ export const GenerationEditorResultContents = (props: Props) => {
   ).filter((task) => task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
   const filteredImageGenerationRatingTasks = (
     ratingTasks.viewer?.imageGenerationTasks || []
-  ).filter(
-    (task) =>
+  ).filter((task) => {
+    return (
       task.rating === props.rating &&
       task.nanoid &&
-      !props.hidedTaskIds.includes(task.nanoid),
-  )
+      !props.hidedTaskIds.includes(task.nanoid)
+    )
+  })
 
   // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
   const newImageGenerationTasks = [...filteredImageGenerationTasks].filter(
