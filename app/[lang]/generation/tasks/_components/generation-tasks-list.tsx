@@ -22,10 +22,15 @@ export const todayText = () => {
  */
 export function GenerationTasksList() {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+
   const [editMode, setEditMode] = useState("")
+
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
+
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
+
   const [rating, setRating] = useState(-1)
+
   const [viewCount, setViewCount] = useState(50)
 
   const onChangeRating = (rating: number) => {
@@ -74,7 +79,7 @@ export function GenerationTasksList() {
           thumbnailSize={thumbnailSize}
           setSelectedTaskIds={setSelectedTaskIds}
           onUpdateSettings={machine.updateSettings}
-          additionalTask={null}
+          isCreatingTasks={false}
         />
       </Suspense>
     </div>

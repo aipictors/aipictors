@@ -20,6 +20,7 @@ import { config } from "@/config"
 import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
 import {
   ArrowDownToLine,
@@ -147,8 +148,13 @@ export const postGenerationImage = async (
  * @returns
  */
 export function GenerationTaskCacheView(props: Props) {
-  const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
+  const [mutation] = useMutation(updateRatingImageGenerationTaskMutation, {
+    refetchQueries: [viewerImageGenerationTasksQuery],
+    awaitRefetchQueries: true,
+  })
+
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   const onChangeRating = async (taskId: string, rating: number) => {
     if (taskId === "") {
       toast("選択できない履歴です")
@@ -196,7 +202,6 @@ export function GenerationTaskCacheView(props: Props) {
       toast("存在しない履歴です")
       return
     }
-
     await deleteTask({
       variables: {
         input: {
@@ -224,11 +229,7 @@ export function GenerationTaskCacheView(props: Props) {
   }
 
   if (props.task.status === "IN_PROGRESS") {
-    return (
-      <>
-        <InProgressImageGenerationTaskResult />
-      </>
-    )
+    return <InProgressImageGenerationTaskResult />
   }
 
   return (
@@ -261,7 +262,6 @@ export function GenerationTaskCacheView(props: Props) {
               />
             </DialogContent>
           </Dialog>
-
           <div className="my-4 flex justify-end">
             <GenerationMenuButton
               title={"同じ情報で生成する"}

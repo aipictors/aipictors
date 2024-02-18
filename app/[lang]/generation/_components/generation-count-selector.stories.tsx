@@ -1,11 +1,11 @@
-import { GenerationCountSelector } from "@/app/[lang]/generation/_components/generation-count-selector"
+import { GenerationCountSelect } from "@/app/[lang]/generation/_components/generation-count-select"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {
   title: "画像生成/generation-count-selector",
-  component: GenerationCountSelector,
+  component: GenerationCountSelect,
   parameters: { layout: "centered" },
-} satisfies Meta<typeof GenerationCountSelector>
+} satisfies Meta<typeof GenerationCountSelect>
 
 export default meta
 
