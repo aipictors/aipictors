@@ -64,7 +64,7 @@ export const GenerationTasksOperationParts = (props: Props) => {
         deleteTask({
           variables: {
             input: {
-              id: taskId, // props.taskId ではなく、ループ内の taskId を使用
+              nanoid: taskId, // props.taskId ではなく、ループ内の taskId を使用
             },
           },
         }),

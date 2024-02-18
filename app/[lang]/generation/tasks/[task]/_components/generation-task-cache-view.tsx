@@ -164,7 +164,7 @@ export function GenerationTaskCacheView(props: Props) {
       await mutation({
         variables: {
           input: {
-            id: taskId,
+            nanoid: taskId,
             rating: rating,
           },
         },
@@ -205,7 +205,7 @@ export function GenerationTaskCacheView(props: Props) {
     await deleteTask({
       variables: {
         input: {
-          id: props.task.nanoid,
+          nanoid: props.task.nanoid,
         },
       },
     })
