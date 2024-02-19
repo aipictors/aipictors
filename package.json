@@ -117,13 +117,13 @@
     "@storybook/react": "^7.6.16",
     "@storybook/test": "^7.6.16",
     "@types/lodash": "^4.14.202",
-    "@types/node": "20.11.17",
-    "@types/react": "18.2.55",
+    "@types/node": "20.11.19",
+    "@types/react": "18.2.56",
     "@types/react-dom": "18.2.19",
     "lefthook": "^1.5.7",
     "storybook": "^7.6.16",
     "typescript": "5.3.3",
-    "vitepress": "^1.0.0-rc.42"
+    "vitepress": "^1.0.0-rc.43"
   },
   "engine": {
     "node": "21.5.0"
