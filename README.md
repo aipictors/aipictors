@@ -56,9 +56,6 @@ pnpm run predev
 
 ```bash
 pnpm run dev
-
-## Turbopack(非推奨)
-pnpm run dev:turbo
 ```
 
 ### 3. アクセスする

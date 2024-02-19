@@ -1,6 +1,6 @@
-import localFont from "next/font/local"
+import { Noto_Sans_JP } from "next/font/google"
 
-export const notoSansFont = localFont({
-  src: "./NotoSansJP-VariableFont_wght.woff2",
+export const notoSansFont = Noto_Sans_JP({
+  subsets: ["latin"],
   variable: "--font-sans",
 })
