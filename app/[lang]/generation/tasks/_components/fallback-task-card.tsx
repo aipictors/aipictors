@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react"
  * 読み込み中の履歴
  * @returns
  */
-export const FallbackResultCard = () => {
+export const FallbackTaskCard = () => {
   return (
     <Card>
       <div className="p-4 flex flex-col">

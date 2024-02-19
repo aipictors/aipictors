@@ -48,7 +48,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorConfig = (props: Props) => {
+export const GenerationEditorConfigView = (props: Props) => {
   /**
    * 選択中のモデル
    */

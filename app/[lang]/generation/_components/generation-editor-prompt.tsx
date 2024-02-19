@@ -16,7 +16,7 @@ type Props = {
   onBlurPromptText(): void
 }
 
-export const GenerationEditorPrompt = (props: Props) => {
+export const GenerationEditorPromptView = (props: Props) => {
   const formattedPromptText = formatPromptText(props.promptText)
 
   const categoryPrompts = props.promptCategories.flatMap((category) => {

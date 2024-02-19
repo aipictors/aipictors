@@ -1,12 +1,12 @@
 "use client"
 
-import { GenerationEditorConfig } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
+import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
-import { GenerationEditorNegativePrompt } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
-import { GenerationEditorPrompt } from "@/app/[lang]/generation/_components/generation-editor-prompt"
-import { GenerationEditorResultForm } from "@/app/[lang]/generation/_components/generation-editor-result-form"
+import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
+import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/generation-editor-prompt"
 import { GenerationEditorStatus } from "@/app/[lang]/generation/_components/generation-editor-status"
+import { GenerationEditorTaskListView } from "@/app/[lang]/generation/_components/generation-editor-task-list-view"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import {
@@ -157,7 +157,7 @@ export function GenerationEditor(props: Props) {
   return (
     <GenerationEditorLayout
       config={
-        <GenerationEditorConfig
+        <GenerationEditorConfigView
           models={props.imageModels}
           currentModelId={machine.context.modelId}
           currentModelIds={machine.context.modelIds}
@@ -182,7 +182,7 @@ export function GenerationEditor(props: Props) {
         />
       }
       promptEditor={
-        <GenerationEditorPrompt
+        <GenerationEditorPromptView
           promptText={machine.context.promptText}
           promptCategories={props.promptCategories}
           onChangePromptText={machine.updatePrompt}
@@ -190,7 +190,7 @@ export function GenerationEditor(props: Props) {
         />
       }
       negativePromptEditor={
-        <GenerationEditorNegativePrompt
+        <GenerationEditorNegativePromptView
           promptText={machine.context.negativePromptText}
           onChangePromptText={machine.updateNegativePrompt}
         />
@@ -229,13 +229,12 @@ export function GenerationEditor(props: Props) {
             onChangeTasksCount={setGenerationCount}
             onCreateTask={onCreateTask}
           />
-          <GenerationEditorCard title={"生成履歴"}>
-            <GenerationEditorResultForm
-              isCreatingTasks={isCreatingTasks}
-              userNanoid={viewer?.viewer?.user?.nanoid ?? null}
-              onUpdateSettings={machine.updateSettings}
-            />
-          </GenerationEditorCard>
+          <GenerationEditorTaskListView
+            isCreatingTasks={isCreatingTasks}
+            passType={viewer.viewer?.currentPass?.type ?? null}
+            userNanoid={viewer?.viewer?.user?.nanoid ?? null}
+            onUpdateSettings={machine.updateSettings}
+          />
         </div>
       }
     />

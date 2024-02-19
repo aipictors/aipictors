@@ -20,33 +20,33 @@ type Props = {
  * 画像生成の履歴
  * @returns
  */
-export const GenerationResultCard = (props: Props) => {
-  if (props.token == null || props.taskNanoid == null) {
-    const [cancelTask, { loading: isCanceling }] = useMutation(
-      cancelImageGenerationTaskMutation,
-      {
-        refetchQueries: [viewerImageGenerationTasksQuery],
-        awaitRefetchQueries: true,
-      },
-    )
+export const GenerationTaskCard = (props: Props) => {
+  const [cancelTask, { loading: isCanceling }] = useMutation(
+    cancelImageGenerationTaskMutation,
+    {
+      refetchQueries: [viewerImageGenerationTasksQuery],
+      awaitRefetchQueries: true,
+    },
+  )
 
-    /**
-     * 生成タスクをキャンセルする
-     * @param taskNanoid
-     * @returns
-     */
-    const onCancelTask = async (taskNanoid: string | null) => {
-      if (taskNanoid === null) return
-      try {
-        await cancelTask({ variables: { input: { nanoid: taskNanoid } } })
-        toast("タスクをキャンセルしました")
-      } catch (error) {
-        if (error instanceof Error) {
-          toast(error.message)
-        }
+  /**
+   * 生成タスクをキャンセルする
+   * @param taskNanoid
+   * @returns
+   */
+  const onCancelTask = async (taskNanoid: string | null) => {
+    if (taskNanoid === null) return
+    try {
+      await cancelTask({ variables: { input: { nanoid: taskNanoid } } })
+      toast("タスクをキャンセルしました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
       }
     }
+  }
 
+  if (props.token == null || props.taskNanoid == null) {
     return (
       <InProgressGenerationCard
         remainingSeconds={props.remainingSeconds}

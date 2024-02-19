@@ -9,7 +9,7 @@ type Props = {
   onChangePromptText(prompt: string): void
 }
 
-export const GenerationEditorNegativePrompt = (props: Props) => {
+export const GenerationEditorNegativePromptView = (props: Props) => {
   const onAddPrompt = (text: string) => {
     if (props.promptText.includes(text)) {
       const replacedText = props.promptText.replace(text, "")
