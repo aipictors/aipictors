@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
+import { Loader2, XIcon } from "lucide-react"
 
 type Props = {
   onCancel?(): void
   isDisabled?: boolean
+  isCanceling?: boolean
 }
 
 /**
@@ -13,15 +14,19 @@ type Props = {
 export const GenerationTaskCancelButton = (props: Props) => {
   return (
     <>
-      <Button
-        className="ml-auto mr-2 mt-2"
-        size={"icon"}
-        variant="ghost"
-        disabled={props.isDisabled}
-        onClick={props.onCancel}
-      >
-        <XIcon className="h-6 w-6" />
-      </Button>
+      {props.isCanceling ? (
+        <Loader2 className="ml-auto mr-4 mt-4 h-6 w-6 animate-spin" />
+      ) : (
+        <Button
+          className="ml-auto mr-2 mt-2"
+          size={"icon"}
+          variant="ghost"
+          disabled={props.isDisabled}
+          onClick={props.onCancel}
+        >
+          <XIcon className="h-6 w-6" />
+        </Button>
+      )}
     </>
   )
 }

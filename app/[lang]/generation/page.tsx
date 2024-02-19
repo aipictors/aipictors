@@ -1,5 +1,5 @@
 import { join } from "path"
-import { GenerationDocument } from "@/app/[lang]/generation/_components/generation-document"
+// import { GenerationDocument } from "@/app/[lang]/generation/_components/generation-document"
 import { GenerationEditor } from "@/app/[lang]/generation/_components/generation-editor"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"

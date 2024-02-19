@@ -1,13 +1,15 @@
 "use client"
 
 import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
+import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
+import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useQuery } from "@apollo/client"
+import { useQuery, useSuspenseQuery } from "@apollo/client"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -22,18 +24,6 @@ type Props = {
   pcViewType?: string
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
-  onUpdateSettings(
-    modelId: string,
-    modelType: string,
-    sampler: string,
-    scale: number,
-    vae: string,
-    promptText: string,
-    negativePromptText: string,
-    seed: number,
-    sizeType: string,
-  ): void
-  onCancelTask(taskNanoid: string | null): void
 }
 
 /**
@@ -43,8 +33,15 @@ type Props = {
  */
 export const GenerationEditorResultContents = (props: Props) => {
   const [currentPage, setCurrentPage] = useState(1)
-
   const isTimeout = useFocusTimeout()
+  const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
+    viewerCurrentPassQuery,
+    {},
+  )
+
+  const machine = useImageGenerationMachine({
+    passType: viewer.viewer?.currentPass?.type ?? null,
+  })
 
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
@@ -94,7 +91,7 @@ export const GenerationEditorResultContents = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    props.onUpdateSettings(
+    machine.updateSettings(
       task.model.id,
       task.model.type,
       task.sampler,
@@ -173,7 +170,7 @@ export const GenerationEditorResultContents = (props: Props) => {
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
           {props.isCreatingTasks && (
-            <InProgressGenerationCard isCreatingTasks={props.isCreatingTasks} />
+            <InProgressGenerationCard isCreatingTasks={true} />
           )}
           <GenerationEditorResultList
             tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
@@ -182,7 +179,6 @@ export const GenerationEditorResultContents = (props: Props) => {
             pcViewType={pcViewType}
             onRestore={onRestore}
             onSelectTask={onSelectTask}
-            onCancelTask={props.onCancelTask}
           />
         </div>
       </ScrollArea>

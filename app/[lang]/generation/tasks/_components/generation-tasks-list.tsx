@@ -2,13 +2,11 @@
 
 import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
 import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
-import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import Link from "next/link"
 import { Suspense, useState } from "react"
 import { toast } from "sonner"
@@ -47,15 +45,6 @@ export function GenerationTasksList() {
   const onChangeRating = (rating: number) => {
     setRating(rating)
   }
-
-  const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
-    viewerCurrentPassQuery,
-    {},
-  )
-
-  const machine = useImageGenerationMachine({
-    passType: viewer.viewer?.currentPass?.type ?? null,
-  })
 
   /**
    * 生成タスクをキャンセルする
@@ -105,10 +94,8 @@ export function GenerationTasksList() {
           editMode={editMode}
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
-          setSelectedTaskIds={setSelectedTaskIds}
-          onUpdateSettings={machine.updateSettings}
           isCreatingTasks={false}
-          onCancelTask={onCancelTask}
+          setSelectedTaskIds={setSelectedTaskIds}
         />
       </Suspense>
     </div>

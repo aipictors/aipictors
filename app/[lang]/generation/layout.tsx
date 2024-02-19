@@ -1,7 +1,7 @@
 "use client"
 
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { HomeFooter } from "@/app/_components/home-footer"
+// import { HomeFooter } from "@/app/_components/home-footer"
 import { LoginPage } from "@/app/_components/page/login-page"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppColumnLayout } from "@/components/app/app-column-layout"

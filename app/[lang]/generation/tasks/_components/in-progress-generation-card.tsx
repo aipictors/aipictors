@@ -7,6 +7,7 @@ type Props = {
   onCancel?(): void
   remainingSeconds?: number
   isCreatingTasks?: boolean
+  isCanceling?: boolean
 }
 
 /**
@@ -25,6 +26,7 @@ export const InProgressGenerationCard = (props: Props) => {
           <GenerationTaskCancelButton
             onCancel={props.onCancel}
             isDisabled={props.isCreatingTasks}
+            isCanceling={props.isCanceling}
           />
         </div>
         <div className="mt-[100%]" />
