@@ -56,7 +56,7 @@ export const GenerationEditorResultContents = (props: Props) => {
     variables: {
       limit: config.query.maxLimit,
       offset: (currentPage - 1) * (props.viewCount ?? 0),
-      where: { minRating: 0 },
+      where: { minRating: 1 },
     },
   })
 
