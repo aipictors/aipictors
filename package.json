@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:turbo": "next dev --turbo",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "predev": "graphql-codegen -c codegen.ts",
     "build": "graphql-codegen -c codegen.ts && next build",
     "start": "next start",
