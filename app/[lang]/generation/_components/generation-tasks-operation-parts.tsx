@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationImageDownloadButton } from "@/app/[lang]/generation/_components/generation-image-download-button"
+import { GenerationImagePostButton } from "@/app/[lang]/generation/_components/generation-image-upload-button"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -119,6 +120,10 @@ export const GenerationTasksOperationParts = (props: Props) => {
                 </Button>
               </AppConfirmDialog>
               <GenerationImageDownloadButton
+                disabled={props.selectedTaskIds.length === 0}
+                selectedTaskIds={props.selectedTaskIds}
+              />
+              <GenerationImagePostButton
                 disabled={props.selectedTaskIds.length === 0}
                 selectedTaskIds={props.selectedTaskIds}
               />

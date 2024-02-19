@@ -50,10 +50,10 @@ const GenerationPage = async () => {
         imageModels={imageModelsResp.data.imageModels}
         imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
       />
-      <GenerationDocument
+      {/* <GenerationDocument
         markdownText={descriptionMarkdownText}
         models={imageModelsResp.data.imageModels}
-      />
+      /> */}
     </div>
   )
 }
