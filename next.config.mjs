@@ -55,8 +55,9 @@ const sentryWebpackPluginOptions = {
   project: "aipictors-next",
 }
 
+export default withPlaiceholder(nextConfig)
+
 // Wrap Sentry configuration as ESM is asynchronous
-export default withSentryConfig(
-  withPlaiceholder(nextConfig),
-  sentryWebpackPluginOptions,
-)
+// export default withSentryConfig(
+// sentryWebpackPluginOptions,
+// )
