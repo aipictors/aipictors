@@ -4,14 +4,11 @@ import { GenerationEditorResultContents } from "@/app/[lang]/generation/_compone
 import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { Suspense, useState } from "react"
 
 type Props = {
-  additionalTask: ImageGenerationTaskNode | null
+  isCreatingTasks: boolean
   userNanoid: string | null
-  rating: number
-  onChangeRating(rating: number): void
   onUpdateSettings(
     modelId: string,
     modelType: string,
@@ -26,22 +23,31 @@ type Props = {
 }
 
 export const GenerationEditorResultForm = (props: Props) => {
+  const [rating, setRating] = useState(-1)
+
   const [editMode, setEditMode] = useState("")
+
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
+
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
+
+  const onChangeRating = (rating: number) => {
+    setRating(rating)
+  }
 
   return (
     <>
       {/* 操作一覧 */}
       <GenerationTasksOperationParts
         showHistoryAllButton={true}
-        rating={props.rating}
+        rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         editMode={editMode}
-        onChangeRating={props.onChangeRating}
+        onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
@@ -52,9 +58,9 @@ export const GenerationEditorResultForm = (props: Props) => {
       {/* 履歴一覧 */}
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationEditorResultContents
-          additionalTask={props.additionalTask}
+          isCreatingTasks={props.isCreatingTasks}
           hidedTaskIds={hidedTaskIds}
-          rating={props.rating}
+          rating={rating}
           editMode={editMode}
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}

@@ -155,7 +155,7 @@ export function GenerationTaskView(props: Props) {
       await mutation({
         variables: {
           input: {
-            id: taskId,
+            nanoid: taskId,
             rating: rating,
           },
         },
@@ -206,7 +206,7 @@ export function GenerationTaskView(props: Props) {
     await deleteTask({
       variables: {
         input: {
-          id: props.taskId,
+          nanoid: props.taskId,
         },
       },
     })

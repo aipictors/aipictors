@@ -1,19 +1,19 @@
 "use client"
 
 import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
+import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useSuspenseQuery } from "@apollo/client"
-import { startTransition, useEffect, useState } from "react"
+import { useQuery } from "@apollo/client"
+import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
   sizeType?: string
-  additionalTask: ImageGenerationTaskNode | null
+  isCreatingTasks: boolean
   rating: number
   editMode: string
   selectedTaskIds: string[]
@@ -43,31 +43,24 @@ type Props = {
 export const GenerationEditorResultContents = (props: Props) => {
   const [currentPage, setCurrentPage] = useState(1)
 
-  const { data: tasks, refetch: refetchTasks } = useSuspenseQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: props.viewCount ?? 64,
-        offset: (currentPage - 1) * (props.viewCount ?? 0),
-        where: { minRating: 0 },
-      },
-      errorPolicy: "all",
-      context: { simulateError: true },
-    },
-  )
+  const isTimeout = useFocusTimeout()
 
-  const { data: ratingTasks, refetch: refetchRatingTasks } = useSuspenseQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: config.query.maxLimit,
-        offset: (currentPage - 1) * (props.viewCount ?? 0),
-        where: { minRating: 0 },
-      },
-      errorPolicy: "all",
-      context: { simulateError: true },
+  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: props.viewCount ?? 64,
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      where: { minRating: 0 },
     },
-  )
+    pollInterval: isTimeout ? undefined : 2000,
+  })
+
+  const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: config.query.maxLimit,
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      where: { minRating: 0 },
+    },
+  })
 
   const pcViewType = props.pcViewType ? props.pcViewType : ""
 
@@ -75,48 +68,25 @@ export const GenerationEditorResultContents = (props: Props) => {
     return null
   }
 
-  const isTimeout = useFocusTimeout()
-  useEffect(() => {
-    const time = setInterval(() => {
-      if (isTimeout) {
-        return
-      }
-      startTransition(() => {
-        refetchTasks()
-        refetchRatingTasks()
-      })
-    }, 1000)
-    return () => {
-      clearInterval(time)
-    }
+  const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
+
+  /**
+   * 非表示指定のタスクを除外
+   */
+  const currentTasks = imageGenerationTasks.filter((task) => {
+    return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
   })
 
-  // 非表示指定のタスクを除外
-  const filteredImageGenerationTasks = (
-    tasks.viewer?.imageGenerationTasks || []
-  ).filter((task) => task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
-  const filteredImageGenerationRatingTasks = (
-    ratingTasks.viewer?.imageGenerationTasks || []
-  ).filter(
-    (task: ImageGenerationTaskNode) =>
+  /**
+   * フィルターしたレーティング済みタスク
+   */
+  const currentRatingTasks = imageGenerationTasks.filter((task) => {
+    return (
       task.rating === props.rating &&
       task.nanoid &&
-      !props.hidedTaskIds.includes(task.nanoid),
-  )
-
-  // 追加表示したいタスクがあれば追加して最終的なタスクのリストを生成
-  const newImageGenerationTasks = [
-    ...filteredImageGenerationTasks,
-    props.additionalTask,
-  ].filter(
-    (task) => task !== null && task !== undefined,
-  ) as ImageGenerationTaskNode[]
-  const newImageGenerationRatingTasks = [
-    ...filteredImageGenerationRatingTasks,
-    props.additionalTask,
-  ].filter(
-    (task) => task !== null && task !== undefined,
-  ) as ImageGenerationTaskNode[]
+      !props.hidedTaskIds.includes(task.nanoid)
+    )
+  })
 
   const onRestore = (taskId: string) => {
     const task = tasks.viewer?.imageGenerationTasks.find(
@@ -137,12 +107,12 @@ export const GenerationEditorResultContents = (props: Props) => {
     toast("設定を復元しました")
   }
 
-  const activeTasks = newImageGenerationTasks.filter((task) => {
-    if (!task || task.isDeleted) return false
+  const activeTasks = currentTasks.filter((task) => {
+    if (task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
-  }) as ImageGenerationTaskNode[]
+  })
 
-  const activeRatingTasks = newImageGenerationRatingTasks.filter((task) => {
+  const activeRatingTasks = currentRatingTasks.filter((task) => {
     if (!task || task.isDeleted) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
@@ -152,19 +122,24 @@ export const GenerationEditorResultContents = (props: Props) => {
       toast("選択できない履歴です")
       return
     }
+
     if (!taskId) {
       toast("存在しない履歴です")
       return
     }
+
     const isAlreadySelected = props.selectedTaskIds.includes(taskId)
 
     if (isAlreadySelected) {
       props.setSelectedTaskIds(
-        props.selectedTaskIds.filter((id) => id !== taskId),
+        props.selectedTaskIds.filter((id) => {
+          return id !== taskId
+        }),
       )
-    } else {
-      props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
+      return
     }
+
+    props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
   const getGridClasses = (size: string): string => {
@@ -196,30 +171,17 @@ export const GenerationEditorResultContents = (props: Props) => {
     <>
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
-          {props.rating === -1
-            ? activeTasks && (
-                <GenerationEditorResultList
-                  tasks={activeTasks}
-                  editMode={props.editMode}
-                  selectedTaskIds={props.selectedTaskIds}
-                  pcViewType={pcViewType}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              )
-            : activeRatingTasks && (
-                <GenerationEditorResultList
-                  tasks={activeRatingTasks}
-                  editMode={props.editMode}
-                  selectedTaskIds={props.selectedTaskIds}
-                  pcViewType={pcViewType}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              )}
+          {props.isCreatingTasks && <InProgressGenerationCard />}
+          <GenerationEditorResultList
+            tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
+            editMode={props.editMode}
+            selectedTaskIds={props.selectedTaskIds}
+            pcViewType={pcViewType}
+            onRestore={onRestore}
+            onSelectTask={onSelectTask}
+          />
         </div>
       </ScrollArea>
-
       {props.viewCount &&
         tasks.viewer &&
         tasks.viewer.remainingImageGenerationTasksTotalCount && (

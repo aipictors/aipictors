@@ -15,6 +15,8 @@ export const 通常: Story = {
   args: {
     isLoading: false,
     isDisabled: false,
+    generatingCount: 0,
+    maxGeneratingCount: 30,
   },
 }
 
@@ -22,6 +24,8 @@ export const ローディング: Story = {
   args: {
     isLoading: true,
     isDisabled: false,
+    generatingCount: 0,
+    maxGeneratingCount: 30,
   },
 }
 
@@ -29,5 +33,7 @@ export const 無効: Story = {
   args: {
     isLoading: false,
     isDisabled: true,
+    generatingCount: 0,
+    maxGeneratingCount: 30,
   },
 }
