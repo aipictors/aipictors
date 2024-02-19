@@ -17,6 +17,7 @@ export const viewerImageGenerationStatusQuery = gql(`
       remainingImageGenerationTasksTotalCount
       availableImageGenerationMaxTasksCount
       availableImageGenerationLoraModelsCount
+      availableConsecutiveImageGenerationsCount
     }
   }
 `)

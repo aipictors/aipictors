@@ -72,6 +72,27 @@ export function GenerationEditor(props: Props) {
     if (!hasSignedTerms) return
     const userNanoid = viewer.viewer?.user.nanoid ?? null
     if (userNanoid === null) return
+
+    // 生成中かつフリープランならサブスクに誘導
+    if (
+      status?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
+      status?.viewer?.inProgressImageGenerationTasksCount !== 0 &&
+      !viewer.viewer?.currentPass?.type
+    ) {
+      toast("STANDARD以上のプランで複数枚同時生成可能です。")
+      return
+    }
+
+    // 同時生成枚数を超過していたらエラー
+    if (
+      status?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
+      status?.viewer?.inProgressImageGenerationTasksCount >
+        status?.viewer?.inProgressImageGenerationTasksCount + generationCount
+    ) {
+      toast("同時生成枚数の上限です。")
+      return
+    }
+
     try {
       await activeImageGeneration({ nanoid: userNanoid })
       const model = props.imageModels.find((model) => {
@@ -108,6 +129,30 @@ export function GenerationEditor(props: Props) {
       }
     }
   }
+
+  /**
+   * 最大生成枚数
+   */
+  const availableImageGenerationMaxTasksCount =
+    status?.viewer?.availableImageGenerationMaxTasksCount ?? 30
+
+  /**
+   * 生成済み枚数
+   */
+  const generatedTasksCount =
+    status?.viewer?.remainingImageGenerationTasksCount ?? 0
+
+  /**
+   * 同時生成最大枚数
+   */
+  const generatingMaxTasksCount =
+    status?.viewer?.availableConsecutiveImageGenerationsCount ?? 0
+
+  /**
+   * 生成中の枚数
+   */
+  const inProgressImageGenerationTasksCount =
+    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
 
   return (
     <GenerationEditorLayout
@@ -174,7 +219,13 @@ export function GenerationEditor(props: Props) {
             userNanoid={viewer?.viewer?.user?.nanoid ?? null}
             inProgress={inProgress}
             passType={viewer.viewer?.currentPass?.type ?? null}
-            tasksCount={generationCount}
+            tasksCount={generatedTasksCount}
+            maxTasksCount={availableImageGenerationMaxTasksCount}
+            generateTaskCount={generationCount}
+            generatingMaxTaskCount={generatingMaxTasksCount}
+            inProgressImageGenerationTasksCount={
+              inProgressImageGenerationTasksCount
+            }
             onChangeTasksCount={setGenerationCount}
             onCreateTask={onCreateTask}
           />

@@ -1,4 +1,3 @@
-import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
 import { GenerationCountSelect } from "@/app/[lang]/generation/_components/generation-count-select"
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
@@ -44,6 +43,22 @@ type Props = {
    * 生成枚数
    */
   tasksCount: number
+  /**
+   * 最大生成枚数
+   */
+  maxTasksCount: number
+  /**
+   * 生成枚数
+   */
+  generateTaskCount: number
+  /**
+   * 同時に生成可能な最大枚数
+   */
+  generatingMaxTaskCount: number
+  /**
+   * 生成中の枚数
+   */
+  inProgressImageGenerationTasksCount: number
   /**
    * 生成枚数を変更する
    * @param count 生成枚数
@@ -104,24 +119,26 @@ export function GenerationEditorStatus(props: Props) {
       <div className="flex items-center">
         <GenerationCountSelect
           pass={props.passType ?? "FREE"}
-          selectedCount={props.tasksCount}
+          selectedCount={props.generateTaskCount}
           onChange={props.onChangeTasksCount}
         />
         {/* 生成開始ボタン */}
-        {props.hasSignedTerms && !props.inProgress && (
+        {props.hasSignedTerms && (
           <GenerationSubmitButton
             onClick={props.onCreateTask}
             isLoading={props.isCreatingTasks}
             isDisabled={props.isDisabled}
+            generatingCount={props.inProgressImageGenerationTasksCount}
+            maxGeneratingCount={props.generatingMaxTaskCount}
           />
         )}
         {/* キャンセル開始ボタン */}
-        {props.hasSignedTerms && props.inProgress && (
+        {/* {props.hasSignedTerms && props.inProgress && (
           <GenerationCancelButton
             onClick={onCancelTask}
             isLoading={isCanceling}
           />
-        )}
+        )} */}
         {/* 規約確認開始ボタン */}
         {!props.hasSignedTerms && (
           <GenerationTermsButton
@@ -132,7 +149,7 @@ export function GenerationEditorStatus(props: Props) {
       </div>
       <GenerationEditorProgress
         inProgress={props.inProgress}
-        maxTasksCount={props.tasksCount}
+        maxTasksCount={props.maxTasksCount}
         normalPredictionGenerationSeconds={
           props.normalPredictionGenerationSeconds ?? 0
         }
