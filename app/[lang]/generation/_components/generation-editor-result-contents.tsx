@@ -33,6 +33,7 @@ type Props = {
     seed: number,
     sizeType: string,
   ): void
+  onCancelTask(taskNanoid: string | null): void
 }
 
 /**
@@ -171,7 +172,9 @@ export const GenerationEditorResultContents = (props: Props) => {
     <>
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
-          {props.isCreatingTasks && <InProgressGenerationCard />}
+          {props.isCreatingTasks && (
+            <InProgressGenerationCard isCreatingTasks={props.isCreatingTasks} />
+          )}
           <GenerationEditorResultList
             tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
             editMode={props.editMode}
@@ -179,6 +182,7 @@ export const GenerationEditorResultContents = (props: Props) => {
             pcViewType={pcViewType}
             onRestore={onRestore}
             onSelectTask={onSelectTask}
+            onCancelTask={props.onCancelTask}
           />
         </div>
       </ScrollArea>

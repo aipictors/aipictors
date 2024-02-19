@@ -5,10 +5,13 @@ import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_componen
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
+import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { useSuspenseQuery } from "@apollo/client"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { useMutation, useSuspenseQuery } from "@apollo/client"
 import Link from "next/link"
 import { Suspense, useState } from "react"
+import { toast } from "sonner"
 
 export const todayText = () => {
   const today = new Date()
@@ -33,6 +36,14 @@ export function GenerationTasksList() {
 
   const [viewCount, setViewCount] = useState(50)
 
+  const [cancelTask, { loading: isCanceling }] = useMutation(
+    cancelImageGenerationTaskMutation,
+    {
+      refetchQueries: [viewerImageGenerationTasksQuery],
+      awaitRefetchQueries: true,
+    },
+  )
+
   const onChangeRating = (rating: number) => {
     setRating(rating)
   }
@@ -45,6 +56,23 @@ export function GenerationTasksList() {
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
   })
+
+  /**
+   * 生成タスクをキャンセルする
+   * @param taskNanoid
+   * @returns
+   */
+  const onCancelTask = async (taskNanoid: string | null) => {
+    if (taskNanoid === null) return
+    try {
+      await cancelTask({ variables: { input: { nanoid: taskNanoid } } })
+      toast("タスクをキャンセルしました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
 
   return (
     <div className="space-y-4 pb-4 w-full">
@@ -80,6 +108,7 @@ export function GenerationTasksList() {
           setSelectedTaskIds={setSelectedTaskIds}
           onUpdateSettings={machine.updateSettings}
           isCreatingTasks={false}
+          onCancelTask={onCancelTask}
         />
       </Suspense>
     </div>

@@ -19,6 +19,7 @@ type Props = {
   selectedTaskIds: string[]
   pcViewType: string
   onRestore?: (taskId: string) => void
+  onCancelTask(taskNanoid: string | null): void
   onSelectTask(taskNanoid: string | null, status: string): void
 }
 
@@ -40,6 +41,7 @@ export const GenerationEditorResultList = (props: Props) => {
                 onClick={() => props.onSelectTask(task.nanoid, task.status)}
                 isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
                 taskNanoid={task.nanoid}
+                remainingSeconds={task.estimatedSeconds ?? 0}
                 taskId={task.id}
                 token={task.token}
               />
@@ -48,7 +50,9 @@ export const GenerationEditorResultList = (props: Props) => {
               (!isDesktop ? (
                 <Link href={`/generation/tasks/${task.nanoid}`}>
                   <GenerationResultCard
+                    onCancel={() => props.onCancelTask(task.nanoid)}
                     taskNanoid={task.nanoid}
+                    remainingSeconds={task.estimatedSeconds ?? 0}
                     taskId={task.id}
                     token={task.token}
                   />
@@ -57,7 +61,9 @@ export const GenerationEditorResultList = (props: Props) => {
                 <Dialog>
                   <DialogTrigger asChild>
                     <GenerationResultCard
+                      onCancel={() => props.onCancelTask(task.nanoid)}
                       taskNanoid={task.nanoid}
+                      remainingSeconds={task.estimatedSeconds ?? 0}
                       taskId={task.id}
                       token={task.token}
                     />
@@ -76,8 +82,10 @@ export const GenerationEditorResultList = (props: Props) => {
                 <Sheet>
                   <SheetTrigger asChild>
                     <GenerationResultCard
+                      onCancel={() => props.onCancelTask(task.nanoid)}
                       taskNanoid={task.nanoid}
                       taskId={task.id}
+                      remainingSeconds={task.estimatedSeconds ?? 0}
                       token={task.token}
                     />
                   </SheetTrigger>
