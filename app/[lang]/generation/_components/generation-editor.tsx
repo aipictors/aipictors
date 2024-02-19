@@ -1,12 +1,11 @@
 "use client"
 
-import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config/generation-editor-config"
-import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
+import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
+import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
+import { GenerationEditorSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
+import { GenerationEditorTaskListView } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
-import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/generation-editor-negative-prompt"
-import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/generation-editor-prompt"
-import { GenerationEditorStatus } from "@/app/[lang]/generation/_components/generation-editor-status"
-import { GenerationEditorTaskListView } from "@/app/[lang]/generation/_components/generation-editor-task-list-view"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import {
@@ -197,7 +196,7 @@ export function GenerationEditor(props: Props) {
       }
       history={
         <div className="flex flex-col h-full gap-y-2">
-          <GenerationEditorStatus
+          <GenerationEditorSubmissionView
             normalPredictionGenerationSeconds={
               status?.imageGenerationEngineStatus
                 .normalPredictionGenerationSeconds ?? null

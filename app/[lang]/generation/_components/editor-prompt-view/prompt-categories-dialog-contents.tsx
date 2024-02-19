@@ -1,6 +1,6 @@
 "use client"
 
-import { PromptCategoryIcon } from "@/app/[lang]/generation/_components/prompt-category-icon"
+import { PromptCategoryIcon } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-category-icon"
 import {
   Accordion,
   AccordionContent,

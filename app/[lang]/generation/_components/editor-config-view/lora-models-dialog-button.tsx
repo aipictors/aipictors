@@ -1,6 +1,6 @@
 "use client"
 
-import { LoraImageModelsList } from "@/app/[lang]/generation/_components/lora-image-models-list"
+import { LoraImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/lora-image-models-list"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

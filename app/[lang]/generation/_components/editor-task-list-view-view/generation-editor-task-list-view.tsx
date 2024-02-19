@@ -1,8 +1,8 @@
 "use client"
 
+import { GenerationEditorTaskListArea } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list-area"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/generation-editor-task-list"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/generation-task-list-actions"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 
@@ -74,7 +74,7 @@ export const GenerationEditorTaskListView = (props: Props) => {
         onChangeViewCount={() => {}}
       />
       <Separator />
-      <GenerationEditorTaskList
+      <GenerationEditorTaskListArea
         isCreatingTasks={props.isCreatingTasks}
         hidedTaskIds={hidedTaskIds}
         rating={rating}

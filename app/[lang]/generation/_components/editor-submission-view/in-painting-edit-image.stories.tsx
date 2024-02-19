@@ -1,4 +1,4 @@
-import InPaintingEditImage from "@/app/[lang]/generation/_components/in-painting-edit-image"
+import InPaintingEditImage from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-edit-image"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

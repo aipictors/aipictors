@@ -1,7 +1,7 @@
 "use client"
 
-import { ConfigLoraModel } from "@/app/[lang]/generation/_components/config-lora-model"
-import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/lora-models-dialog-button"
+import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
+import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-models-dialog-button"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 

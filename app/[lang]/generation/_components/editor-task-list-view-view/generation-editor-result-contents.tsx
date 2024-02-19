@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
@@ -172,7 +172,7 @@ export const GenerationEditorResultContents = (props: Props) => {
           {props.isCreatingTasks && (
             <InProgressGenerationCard isCreatingTasks={true} />
           )}
-          <GenerationEditorResultList
+          <GenerationEditorTaskList
             tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
             isEditMode={props.isEditMode}
             selectedTaskIds={props.selectedTaskIds}

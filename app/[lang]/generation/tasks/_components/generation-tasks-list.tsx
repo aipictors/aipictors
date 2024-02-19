@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/generation-task-list-actions"
+import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-contents"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"

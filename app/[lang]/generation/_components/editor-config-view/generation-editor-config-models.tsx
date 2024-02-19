@@ -1,7 +1,7 @@
 "use client"
 
-import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-model-button"
-import { GenerationModelsButton } from "@/app/[lang]/generation/_components/generation-models-button"
+import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
+import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {

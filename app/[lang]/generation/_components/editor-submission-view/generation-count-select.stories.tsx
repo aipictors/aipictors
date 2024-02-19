@@ -1,4 +1,4 @@
-import { GenerationCountSelect } from "@/app/[lang]/generation/_components/generation-count-select"
+import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

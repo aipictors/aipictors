@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageModelsList } from "@/app/[lang]/generation/_components/image-models-list"
+import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

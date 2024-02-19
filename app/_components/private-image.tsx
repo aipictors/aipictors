@@ -28,6 +28,9 @@ const Component = (props: Props) => {
   )
 }
 
+/**
+ * プライベートな画像
+ */
 export const PrivateImage = memo(Component, (prev, next) => {
   return prev.taskId === next.taskId
 })

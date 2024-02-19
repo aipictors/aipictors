@@ -1,4 +1,4 @@
-import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-model-button"
+import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

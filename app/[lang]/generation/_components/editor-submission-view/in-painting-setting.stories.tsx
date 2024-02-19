@@ -1,4 +1,4 @@
-import { InPaintingSetting } from "@/app/[lang]/generation/_components/in-painting-setting"
+import { InPaintingSetting } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-setting"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

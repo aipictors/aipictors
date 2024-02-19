@@ -1,4 +1,4 @@
-import { GenerationCancelButton } from "@/app/[lang]/generation/_components/generation-cancel-button"
+import { GenerationCancelButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-cancel-button"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

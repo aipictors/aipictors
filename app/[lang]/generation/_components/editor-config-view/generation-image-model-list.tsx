@@ -1,4 +1,4 @@
-import { ImageModelCard } from "@/app/[lang]/generation/_components/image-model-card"
+import { ImageModelCard } from "@/app/[lang]/generation/_components/editor-config-view/image-model-card"
 import { toCategoryName } from "@/app/[lang]/generation/_utils/to-category-name"
 import { removeDuplicates } from "@/app/_utils/remove-duplicates"
 import { ScrollArea } from "@/components/ui/scroll-area"

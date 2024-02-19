@@ -1,6 +1,6 @@
 "use client"
 
-import { InPaintingSetting } from "@/app/[lang]/generation/_components/in-painting-setting"
+import { InPaintingSetting } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-setting"
 import { createBase64FromImageURL } from "@/app/[lang]/generation/_utils/create-base64-from-image-url"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
@@ -181,7 +181,9 @@ export const InPaintingImageForm = (props: Props) => {
 
 const InPaintingEditImage = dynamic(
   () => {
-    return import("@/app/[lang]/generation/_components/in-painting-edit-image")
+    return import(
+      "@/app/[lang]/generation/_components/editor-submission-view/in-painting-edit-image"
+    )
   },
   { ssr: false },
 )

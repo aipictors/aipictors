@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationEditorResultList } from "@/app/[lang]/generation/_components/generation-editor-result-list"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -39,7 +39,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorTaskList = (props: Props) => {
+export const GenerationEditorTaskListArea = (props: Props) => {
   const isTimeout = useFocusTimeout()
 
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
@@ -175,7 +175,7 @@ export const GenerationEditorTaskList = (props: Props) => {
         {props.isCreatingTasks && (
           <InProgressGenerationCard isCreatingTasks={true} />
         )}
-        <GenerationEditorResultList
+        <GenerationEditorTaskList
           tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
           isEditMode={props.isEditMode}
           selectedTaskIds={props.selectedTaskIds}

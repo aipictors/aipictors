@@ -1,7 +1,7 @@
 "use client"
 
+import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-contents"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/prompt-categories-dialog-contents"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"

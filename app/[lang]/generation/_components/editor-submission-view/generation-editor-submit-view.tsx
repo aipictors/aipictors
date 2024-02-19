@@ -1,6 +1,6 @@
-import { GenerationCountSelect } from "@/app/[lang]/generation/_components/generation-count-select"
-import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/generation-status-progress"
-import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
+import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
+import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
+import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
@@ -70,7 +70,7 @@ type Props = {
   onCreateTask(): void
 }
 
-export function GenerationEditorStatus(props: Props) {
+export function GenerationEditorSubmissionView(props: Props) {
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
     refetchQueries: [viewerCurrentPassQuery],
     awaitRefetchQueries: true,

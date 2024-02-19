@@ -1,4 +1,4 @@
-import { ConfigLoraModel } from "@/app/[lang]/generation/_components/config-lora-model"
+import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

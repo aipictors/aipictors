@@ -1,4 +1,4 @@
-import { ImageModelCard } from "@/app/[lang]/generation/_components/image-model-card"
+import { ImageModelCard } from "@/app/[lang]/generation/_components/editor-config-view/image-model-card"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

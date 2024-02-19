@@ -1,4 +1,4 @@
-import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/generation-submit-button"
+import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {
