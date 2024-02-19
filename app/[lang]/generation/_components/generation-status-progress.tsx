@@ -1,7 +1,5 @@
-import { toGenerationTime } from "@/app/[lang]/generation/_utils/to-generation-time"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { useEffect, useState } from "react"
 
 type Props = {
@@ -45,21 +43,6 @@ export function GenerationEditorProgress(props: Props) {
     return false
   }
 
-  /**
-   * 生成完了までの進捗（パーセンテージ）
-   */
-  const generationProgress = () => {
-    if (elapsedGenerationTime === 0) {
-      return 0
-    }
-    const waitSeconds = isPriorityAccount()
-      ? props.standardPredictionGenerationSeconds
-      : props.normalPredictionGenerationSeconds
-    // 0徐算防止
-    if (!waitSeconds) return 0
-    return (elapsedGenerationTime / waitSeconds) * 100
-  }
-
   const generateSpeed = (waitTasks: number | undefined) => {
     if (waitTasks === undefined) return -1
     if (waitTasks < 5) {
@@ -99,24 +82,23 @@ export function GenerationEditorProgress(props: Props) {
    * TODO: 移動
    * 残り秒数（s/m/h単位)
    */
-  const secondsRemaining = () => {
-    if (elapsedGenerationTime === 0) {
-      return 0
-    }
-    const waitSeconds = isPriorityAccount()
-      ? props.standardPredictionGenerationSeconds
-      : props.normalPredictionGenerationSeconds
-    if (!waitSeconds) return 0
-    const remainingSeconds = waitSeconds - elapsedGenerationTime
-    if (remainingSeconds < 0) {
-      return "まもなく"
-    }
-    return toGenerationTime(remainingSeconds)
-  }
+  // const secondsRemaining = () => {
+  //   if (elapsedGenerationTime === 0) {
+  //     return 0
+  //   }
+  //   const waitSeconds = isPriorityAccount()
+  //     ? props.standardPredictionGenerationSeconds
+  //     : props.normalPredictionGenerationSeconds
+  //   if (!waitSeconds) return 0
+  //   const remainingSeconds = waitSeconds - elapsedGenerationTime
+  //   if (remainingSeconds < 0) {
+  //     return "まもなく"
+  //   }
+  //   return toGenerationTime(remainingSeconds)
+  // }
 
   return (
     <div className="space-y-2">
-      <Progress className="w-full" value={generationProgress()} />
       <div className="flex">
         <Badge className="mr-2" variant={"secondary"}>
           {"生成枚数 "} {props.remainingImageGenerationTasksCount}/
@@ -134,9 +116,9 @@ export function GenerationEditorProgress(props: Props) {
         >
           {isPriorityAccount() ? "一般状態" : "状態"} {generateStatus(speed)}
         </Badge>
-        <Badge variant={"secondary"} className={"mr-2"}>
+        {/* <Badge variant={"secondary"} className={"mr-2"}>
           {"予測"} {props.inProgress ? secondsRemaining() : "-"}
-        </Badge>
+        </Badge> */}
       </div>
     </div>
   )

@@ -7,7 +7,10 @@ type Props = {
   taskNanoid: string | null
   token: string | null
   isSelected?: boolean
+  progress?: number
+  remainingSeconds?: number
   onClick?(): void
+  onCancel?(): void
 }
 
 /**
@@ -16,7 +19,12 @@ type Props = {
  */
 export const GenerationResultCard = (props: Props) => {
   if (props.token == null || props.taskNanoid == null) {
-    return <InProgressGenerationCard />
+    return (
+      <InProgressGenerationCard
+        remainingSeconds={props.remainingSeconds}
+        onCancel={props.onCancel}
+      />
+    )
   }
 
   return (
