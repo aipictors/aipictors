@@ -227,7 +227,7 @@ export class ImageGenerationCache {
     const defaultValue = config.generationFeature.defaultSamplerValue
     try {
       const value = localStorage.getItem("config.generation.sampler")
-      return value ?? defaultValue
+      return !value ? defaultValue : value
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)
