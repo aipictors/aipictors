@@ -123,7 +123,7 @@ export function GenerationEditor(props: Props) {
       })
       if (typeof model === "undefined") return
 
-      setClickGenerationSubmitCount((count) => count + 1)
+      setClickGenerationSubmitCount((count) => count + generationCount)
 
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
       const promises = taskCounts.map(() =>
@@ -148,11 +148,11 @@ export function GenerationEditor(props: Props) {
       await Promise.all(promises)
       await activeImageGeneration({ nanoid: userNanoid })
 
-      setClickGenerationSubmitCount((count) => count - 1)
+      setClickGenerationSubmitCount((count) => count - generationCount)
 
       toast("タスクを作成しました")
     } catch (error) {
-      setClickGenerationSubmitCount((count) => count - 1)
+      setClickGenerationSubmitCount((count) => count - generationCount)
       if (error instanceof Error) {
         toast(error.message)
       }
