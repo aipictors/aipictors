@@ -1,7 +1,6 @@
 "use client"
 
 import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
-import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
@@ -40,8 +39,6 @@ type Props = {
  * @returns
  */
 export const GenerationEditorTaskListArea = (props: Props) => {
-  const isTimeout = useFocusTimeout()
-
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,

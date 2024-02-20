@@ -5,14 +5,16 @@ import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fall
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { GenerationTaskViewButton } from "@/app/[lang]/generation/tasks/_components/generation-task-view-button"
 import { config } from "@/config"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
+import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { ErrorBoundary } from "@sentry/nextjs"
 import Link from "next/link"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  tasks: ImageGenerationTaskNode[]
+  tasks: NonNullable<
+    ViewerImageGenerationTasksQuery["viewer"]
+  >["imageGenerationTasks"]
   isEditMode: boolean
   selectedTaskIds: string[]
   pcViewType: string

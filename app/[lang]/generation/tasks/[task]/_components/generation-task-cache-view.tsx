@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { config } from "@/config"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
+import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
@@ -36,7 +36,7 @@ import { useMediaQuery } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
 
 type Props = {
-  task: ImageGenerationTaskNode
+  task: ImageGenerationTaskFieldsFragment
   onRestore?: (taskId: string) => void
   isScroll?: boolean
 }

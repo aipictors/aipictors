@@ -9,18 +9,13 @@ import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/gene
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
 import {
-  ImageGenerationSizeType,
   ImageLoraModelsQuery,
   type ImageModelsQuery,
   type PromptCategoriesQuery,
 } from "@/graphql/__generated__/graphql"
-import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useSuspenseQuery } from "@apollo/client"
+import { useEffect } from "react"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
