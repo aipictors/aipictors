@@ -7,11 +7,11 @@ on:
     paths:
       - "app/**/*"
       - "graphql/**/*"
-  # pull_request:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - "app/**/*"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app/**/*"
 
 jobs:
   run:
@@ -22,11 +22,11 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - run: time bun install
 
-      - name: Install
-        run: time bun install
-
       - name: Prebuild
         run: time bun run predev
+
+      - name: Lint
+      - run: bunx oxlint@latest --nextjs-plugin --deny-warnings
 
       - name: Run Type Cheking
         run: time bun run check
