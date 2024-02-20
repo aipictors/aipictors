@@ -26,10 +26,6 @@ type Props = {
    */
   inProgress: boolean
   /**
-   * タスクを作成中
-   */
-  isCreatingTasks: boolean
-  /**
    * 画像生成が無効である
    */
   isDisabled: boolean

@@ -51,13 +51,30 @@ export function GenerationEditor(props: Props) {
     activeImageGeneration({ nanoid: userNanoid })
   }, [])
 
-  const [createTask, { loading: isCreatingTasks }] = useMutation(
-    createImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerImageGenerationTasksQuery],
-      awaitRefetchQueries: true,
+  const [createTask] = useMutation(createImageGenerationTaskMutation, {
+    update(cache, result) {
+      const data = cache.readQuery({
+        query: viewerImageGenerationTasksQuery,
+        variables: { limit: 64, offset: 0, where: {} },
+      })
+      if (!result.data) return
+      if (data === null || data.viewer === null) return
+      cache.writeQuery({
+        query: viewerImageGenerationTasksQuery,
+        variables: { limit: 64, offset: 0, where: {} },
+        data: {
+          ...data,
+          viewer: {
+            ...data.viewer,
+            imageGenerationTasks: [
+              ...data.viewer.imageGenerationTasks,
+              result.data.createImageGenerationTask,
+            ],
+          },
+        },
+      })
     },
-  )
+  })
 
   /**
    * 画像生成中
@@ -226,7 +243,6 @@ export function GenerationEditor(props: Props) {
             }
             hasSignedTerms={hasSignedTerms}
             termsMarkdownText={props.termsMarkdownText}
-            isCreatingTasks={isCreatingTasks}
             isDisabled={machine.context.isDisabled}
             userNanoid={viewer?.viewer?.user?.nanoid ?? null}
             inProgress={inProgress}
@@ -242,7 +258,6 @@ export function GenerationEditor(props: Props) {
             onCreateTask={onCreateTask}
           />
           <GenerationEditorTaskListView
-            isCreatingTasks={isCreatingTasks}
             passType={viewer.viewer?.currentPass?.type ?? null}
             userNanoid={viewer?.viewer?.user?.nanoid ?? null}
             onUpdateSettings={machine.updateSettings}

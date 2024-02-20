@@ -10,7 +10,6 @@ import { toast } from "sonner"
 
 type Props = {
   sizeType?: string
-  isCreatingTasks: boolean
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
@@ -49,8 +48,10 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       offset: 0,
       where: {},
     },
-    pollInterval: isTimeout ? 16000 : 2000,
+    // pollInterval: isTimeout ? 16000 : 2000,
   })
+
+  console.log("tasks", tasks)
 
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
