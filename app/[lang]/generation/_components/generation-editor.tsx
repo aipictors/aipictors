@@ -110,7 +110,7 @@ export function GenerationEditor(props: Props) {
 
     // 同時生成枚数を超過していたらエラー
     if (
-      inProgressImageGenerationTasksCount + generationCount >=
+      inProgressImageGenerationTasksCount + generationCount >
       generatingMaxTasksCount
     ) {
       toast("同時生成枚数の上限です。")
