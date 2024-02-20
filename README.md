@@ -11,23 +11,20 @@
 
 ## ⚙️環境構築
 
-### 1. Node.jsの環境を構築
+### 1. bunの環境を構築
 
-[**Volta**](https://volta.sh/)が必要です。  
-[package.json](./package.json)で指定されている、Node.jsとpnpmが自動的にダウンロード / インストールされます。  
-Voltaの[Getting Started](https://docs.volta.sh/guide/getting-started)に従い、環境に応じてインストールしてください。  
+[**bun**](https://bun.sh/)が必要です。  
+環境に応じてインストールしてください。  
 
-
-<details>
-    <summary>
-        Voltaを使用しない場合(非推奨)
-    </summary>
-    <ul>
-        <li><a href="https://nodejs.org">Node.js@20</a>
-        <li><a href="https://pnpm.io">pnpm@8</a>
-    </ul>
-    をインストールしてください
-</details>
+```bash
+# Linux / macOS / WSL2
+curl -fsSL https://bun.sh/install | bash
+```
+```powershell
+# Windows
+# 動作の確認はしていますが、基本的にはWSL2を推奨します。
+powershell -c "irm bun.sh/install.ps1|iex"
+```
 
 ### 2. エディタを整備する
 
@@ -43,19 +40,19 @@ Visual Studio Codeの設定については、[settings.json](.vscode/settings.js
 1. 依存関係をインストールする
 
 ```bash
-pnpm i
+bun i
 ```
 
 2. GraphQLのコードをビルドする。
 
 ```bash
-pnpm run predev
+bun run predev
 ```
 
 3. 開発サーバーを起動する。
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 ### 3. アクセスする
@@ -67,7 +64,7 @@ pnpm run dev
 リポジトリ内のREADMEを閲覧する。
 
 ```
-pnpm run docs
+bun run docs
 ```
 
 ## 不具合 / アイディア等

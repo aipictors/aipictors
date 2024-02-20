@@ -13,9 +13,6 @@
     "refactor": "biome check --apply ./app ./graphql && biome format ./app ./graphql --write",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
-    "docs": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview",
     "postinstall": "lefthook install"
   },
   "dependencies": {
@@ -115,6 +112,7 @@
     "@storybook/nextjs": "^7.6.16",
     "@storybook/react": "^7.6.16",
     "@storybook/test": "^7.6.16",
+    "@types/bun": "^1.0.6",
     "@types/lodash": "^4.14.202",
     "@types/node": "20.11.17",
     "@types/react": "18.2.55",
@@ -125,9 +123,5 @@
   },
   "engine": {
     "node": "21.5.0"
-  },
-  "volta": {
-    "node": "21.5.0",
-    "pnpm": "8.15.1"
   }
 }
