@@ -55,9 +55,6 @@ export function GenerationEditor(props: Props) {
     },
   )
 
-  const [clickGenerationSubmitCount, setClickGenerationSubmitCount] =
-    useState(0)
-
   /**
    * 画像生成中
    * 生成のキャンセルが可能
@@ -94,11 +91,6 @@ export function GenerationEditor(props: Props) {
         ? 1
         : status?.viewer?.inProgressImageGenerationTasksCount
 
-    if (clickGenerationSubmitCount >= generatingMaxTasksCount) {
-      toast("同時に生成できる枚数の上限です。")
-      return
-    }
-
     // 生成中かつフリープランならサブスクに誘導
     if (
       inProgressImageGenerationTasksCount !== 0 &&
@@ -123,8 +115,6 @@ export function GenerationEditor(props: Props) {
       })
       if (typeof model === "undefined") return
 
-      setClickGenerationSubmitCount((count) => count + generationCount)
-
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
       const promises = taskCounts.map(() =>
         createTask({
@@ -147,12 +137,8 @@ export function GenerationEditor(props: Props) {
       )
       await Promise.all(promises)
       await activeImageGeneration({ nanoid: userNanoid })
-
-      setClickGenerationSubmitCount((count) => count - generationCount)
-
       toast("タスクを作成しました")
     } catch (error) {
-      setClickGenerationSubmitCount((count) => count - generationCount)
       if (error instanceof Error) {
         toast(error.message)
       }
@@ -180,10 +166,8 @@ export function GenerationEditor(props: Props) {
   /**
    * 生成中の枚数
    */
-  const inProgressImageGenerationTasksCount = Math.max(
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0,
-    clickGenerationSubmitCount,
-  )
+  const inProgressImageGenerationTasksCount =
+    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
 
   return (
     <GenerationEditorLayout
@@ -265,9 +249,6 @@ export function GenerationEditor(props: Props) {
             passType={viewer.viewer?.currentPass?.type ?? null}
             userNanoid={viewer?.viewer?.user?.nanoid ?? null}
             onUpdateSettings={machine.updateSettings}
-            onCancel={() => {
-              setClickGenerationSubmitCount((count) => count - 1)
-            }}
           />
         </div>
       }
