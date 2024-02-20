@@ -1,7 +1,6 @@
 "use client"
 
 import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
-import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
@@ -173,9 +172,6 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   return (
     <ScrollArea>
       <div className={getGridClasses(props.thumbnailSize)}>
-        {props.isCreatingTasks && (
-          <InProgressGenerationCard isCreatingTasks={true} />
-        )}
         <GenerationEditorTaskList
           tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
           isEditMode={props.isEditMode}
