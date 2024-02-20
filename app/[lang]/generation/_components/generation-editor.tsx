@@ -19,7 +19,7 @@ import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -39,13 +39,17 @@ export function GenerationEditor(props: Props) {
     pollInterval: 1000,
   })
 
-  const [isFirstInitRequested, setIsFirstInitRequested] = useState(false)
-
   const [generationCount, setGenerationCount] = useState(1)
 
   const machine = useImageGenerationMachine({
     passType: viewer.viewer?.currentPass?.type ?? null,
   })
+
+  useEffect(() => {
+    const userNanoid = viewer.viewer?.user.nanoid ?? null
+    if (userNanoid === null) return
+    activeImageGeneration({ nanoid: userNanoid })
+  }, [])
 
   const [createTask, { loading: isCreatingTasks }] = useMutation(
     createImageGenerationTaskMutation,
@@ -65,15 +69,6 @@ export function GenerationEditor(props: Props) {
 
   const hasSignedTerms =
     viewer.viewer?.user.hasSignedImageGenerationTerms ?? false
-
-  /**
-   * www4へリクエストしておく
-   */
-  const userNanoid = viewer.viewer?.user.nanoid ?? null
-  if (userNanoid !== null && !isFirstInitRequested) {
-    activeImageGeneration({ nanoid: userNanoid })
-    setIsFirstInitRequested(true)
-  }
 
   /**
    * タスクを作成する
@@ -114,7 +109,6 @@ export function GenerationEditor(props: Props) {
         return model.id === machine.context.modelId
       })
       if (typeof model === "undefined") return
-
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
       const promises = taskCounts.map(() =>
         createTask({
@@ -137,6 +131,7 @@ export function GenerationEditor(props: Props) {
         }),
       )
       await Promise.all(promises)
+      // タスクの作成後も呼び出す必要がある
       await activeImageGeneration({ nanoid: userNanoid })
       toast("タスクを作成しました")
     } catch (error) {
