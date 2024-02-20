@@ -67,6 +67,8 @@ export const GenerationEditorResultContents = (props: Props) => {
   }
 
   const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
+  const imageGenerationRatingTasks =
+    ratingTasks.viewer?.imageGenerationTasks ?? []
 
   /**
    * 非表示指定のタスクを除外
@@ -78,7 +80,7 @@ export const GenerationEditorResultContents = (props: Props) => {
   /**
    * フィルターしたレーティング済みタスク
    */
-  const currentRatingTasks = imageGenerationTasks.filter((task) => {
+  const currentRatingTasks = imageGenerationRatingTasks.filter((task) => {
     return (
       task.rating === props.rating &&
       task.nanoid &&
