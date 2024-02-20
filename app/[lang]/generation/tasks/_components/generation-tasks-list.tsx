@@ -4,12 +4,8 @@ import { GenerationEditorResultContents } from "@/app/[lang]/generation/_compone
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
-import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useMutation } from "@apollo/client"
 import Link from "next/link"
 import { Suspense, useState } from "react"
-import { toast } from "sonner"
 
 export const todayText = () => {
   const today = new Date()
@@ -34,14 +30,6 @@ export function GenerationTasksList() {
 
   const [viewCount, setViewCount] = useState(50)
 
-  const [cancelTask, { loading: isCanceling }] = useMutation(
-    cancelImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerImageGenerationTasksQuery],
-      awaitRefetchQueries: true,
-    },
-  )
-
   const onChangeRating = (rating: number) => {
     setRating(rating)
   }
@@ -51,23 +39,6 @@ export function GenerationTasksList() {
       setSelectedTaskIds([])
     }
     toggleEditMode((value) => !value)
-  }
-
-  /**
-   * 生成タスクをキャンセルする
-   * @param taskNanoid
-   * @returns
-   */
-  const onCancelTask = async (taskNanoid: string | null) => {
-    if (taskNanoid === null) return
-    try {
-      await cancelTask({ variables: { input: { nanoid: taskNanoid } } })
-      toast("タスクをキャンセルしました")
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message)
-      }
-    }
   }
 
   return (

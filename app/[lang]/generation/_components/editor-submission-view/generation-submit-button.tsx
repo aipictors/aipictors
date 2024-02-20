@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { Loader2Icon } from "lucide-react"
 
 type Props = {
   isLoading: boolean
@@ -14,11 +15,10 @@ export function GenerationSubmitButton(props: Props) {
       onClick={props.onClick}
       className="w-full"
       size={"lg"}
-      disabled={props.isLoading || props.isDisabled}
+      disabled={props.isDisabled}
     >
-      {props.isLoading
-        ? "処理中.."
-        : `生成する(${props.generatingCount}/${props.maxGeneratingCount})`}
+      {`生成する(${props.generatingCount}/${props.maxGeneratingCount})`}
+      {props.isLoading && <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />}
     </Button>
   )
 }

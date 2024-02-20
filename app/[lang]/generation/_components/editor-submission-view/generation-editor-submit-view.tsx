@@ -2,10 +2,8 @@ import { GenerationCountSelect } from "@/app/[lang]/generation/_components/edito
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
-import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
 import { toast } from "sonner"
 
@@ -76,14 +74,6 @@ export function GenerationEditorSubmissionView(props: Props) {
     awaitRefetchQueries: true,
   })
 
-  const [cancelTask, { loading: isCanceling }] = useMutation(
-    cancelImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerImageGenerationTasksQuery],
-      awaitRefetchQueries: true,
-    },
-  )
-
   /**
    * 規約に同意する
    */
@@ -96,22 +86,6 @@ export function GenerationEditorSubmissionView(props: Props) {
         toast(error.message)
       }
     }
-  }
-
-  /**
-   * タスクをキャンセルする
-   */
-  const onCancelTask = async () => {
-    if (props.userNanoid === null) return
-    try {
-      await cancelTask()
-    } catch (error) {
-      toast(
-        "現在リクエストを受け付けて生成実行中です、1分以上時間をおいて生成を待つか、キャンセル下さい",
-      )
-      return
-    }
-    toast("タスクをキャンセルしました")
   }
 
   return (
@@ -132,13 +106,6 @@ export function GenerationEditorSubmissionView(props: Props) {
             maxGeneratingCount={props.generatingMaxTaskCount}
           />
         )}
-        {/* キャンセル開始ボタン */}
-        {/* {props.hasSignedTerms && props.inProgress && (
-          <GenerationCancelButton
-            onClick={onCancelTask}
-            isLoading={isCanceling}
-          />
-        )} */}
         {/* 規約確認開始ボタン */}
         {!props.hasSignedTerms && (
           <GenerationTermsButton

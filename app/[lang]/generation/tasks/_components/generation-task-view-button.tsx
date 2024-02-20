@@ -8,6 +8,7 @@ type Props = {
   task: ImageGenerationTaskNode
   pcViewType: string
   onRestore?(taskId: string): void
+  onCancel?(): void
 }
 
 /**
@@ -25,6 +26,7 @@ export function GenerationTaskViewButton(props: Props) {
             taskId={props.task.id}
             token={props.task.token}
             rating={props.task.rating ?? 0}
+            onCancel={props.onCancel}
           />
         </DialogTrigger>
         <DialogContent className="p-0 flex flex-col gap-0">
@@ -46,6 +48,7 @@ export function GenerationTaskViewButton(props: Props) {
           remainingSeconds={props.task.estimatedSeconds ?? 0}
           token={props.task.token}
           rating={props.task.rating ?? 0}
+          onCancel={props.onCancel}
         />
       </SheetTrigger>
       <SheetContent side={"right"} className="p-0 flex flex-col gap-0">

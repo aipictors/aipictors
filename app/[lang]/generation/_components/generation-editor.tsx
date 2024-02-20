@@ -19,7 +19,7 @@ import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -53,6 +53,9 @@ export function GenerationEditor(props: Props) {
     },
   )
 
+  const [clickGenerationSubmitCount, setClickGenerationSubmitCount] =
+    useState(0)
+
   /**
    * 画像生成中
    * 生成のキャンセルが可能
@@ -72,10 +75,22 @@ export function GenerationEditor(props: Props) {
     const userNanoid = viewer.viewer?.user.nanoid ?? null
     if (userNanoid === null) return
 
+    /**
+     * 同時生成可能枚数
+     */
+    const inProgressImageGenerationTasksCount =
+      status?.viewer?.inProgressImageGenerationTasksCount === undefined
+        ? 1
+        : status?.viewer?.inProgressImageGenerationTasksCount
+
+    if (clickGenerationSubmitCount >= generatingMaxTasksCount) {
+      toast("同時に生成できる枚数の上限です。")
+      return
+    }
+
     // 生成中かつフリープランならサブスクに誘導
     if (
-      status?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
-      status?.viewer?.inProgressImageGenerationTasksCount !== 0 &&
+      inProgressImageGenerationTasksCount !== 0 &&
       !viewer.viewer?.currentPass?.type
     ) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
@@ -84,13 +99,14 @@ export function GenerationEditor(props: Props) {
 
     // 同時生成枚数を超過していたらエラー
     if (
-      status?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
-      status?.viewer?.inProgressImageGenerationTasksCount >
-        status?.viewer?.inProgressImageGenerationTasksCount + generationCount
+      inProgressImageGenerationTasksCount + generationCount >=
+      generatingMaxTasksCount
     ) {
       toast("同時生成枚数の上限です。")
       return
     }
+
+    setClickGenerationSubmitCount((count) => count + 1)
 
     try {
       await activeImageGeneration({ nanoid: userNanoid })
@@ -120,9 +136,11 @@ export function GenerationEditor(props: Props) {
         }),
       )
       await Promise.all(promises)
+      setClickGenerationSubmitCount((count) => count - 1)
 
       toast("タスクを作成しました")
     } catch (error) {
+      setClickGenerationSubmitCount((count) => count - 1)
       if (error instanceof Error) {
         toast(error.message)
       }
@@ -150,8 +168,10 @@ export function GenerationEditor(props: Props) {
   /**
    * 生成中の枚数
    */
-  const inProgressImageGenerationTasksCount =
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+  const inProgressImageGenerationTasksCount = Math.max(
+    status?.viewer?.inProgressImageGenerationTasksCount ?? 0,
+    clickGenerationSubmitCount,
+  )
 
   return (
     <GenerationEditorLayout
@@ -233,6 +253,9 @@ export function GenerationEditor(props: Props) {
             passType={viewer.viewer?.currentPass?.type ?? null}
             userNanoid={viewer?.viewer?.user?.nanoid ?? null}
             onUpdateSettings={machine.updateSettings}
+            onCancel={() => {
+              setClickGenerationSubmitCount((count) => count - 1)
+            }}
           />
         </div>
       }

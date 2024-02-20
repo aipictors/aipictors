@@ -32,6 +32,7 @@ type Props = {
     sizeType: string,
   ): void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
+  onCancel?(): void
 }
 
 /**
@@ -112,7 +113,6 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       task.status === "DONE"
     )
   })
-  console.log(activeTasks)
 
   const activeRatingTasks = currentRatingTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
@@ -183,6 +183,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
           pcViewType={pcViewType}
           onRestore={onRestore}
           onSelectTask={onSelectTask}
+          onCancel={props.onCancel}
         />
       </div>
     </ScrollArea>

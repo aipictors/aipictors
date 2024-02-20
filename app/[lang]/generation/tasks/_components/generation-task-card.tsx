@@ -21,6 +21,7 @@ type Props = {
   remainingSeconds?: number
   rating: number
   onClick?(): void
+  onCancel?(): void
 }
 
 /**
@@ -47,6 +48,9 @@ export const GenerationTaskCard = (props: Props) => {
     if (taskNanoid === null) return
     try {
       await cancelTask({ variables: { input: { nanoid: taskNanoid } } })
+      if (props.onCancel) {
+        props.onCancel()
+      }
       toast("タスクをキャンセルしました")
     } catch (error) {
       if (error instanceof Error) {

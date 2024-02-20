@@ -21,6 +21,7 @@ type Props = {
     seed: number,
     sizeType: string,
   ): void
+  onCancel?(): void
 }
 
 /**
@@ -84,6 +85,7 @@ export const GenerationEditorTaskListView = (props: Props) => {
         passType={props.passType}
         setSelectedTaskIds={setSelectedTaskIds}
         onUpdateSettings={props.onUpdateSettings}
+        onCancel={props.onCancel}
       />
     </GenerationEditorCard>
   )
