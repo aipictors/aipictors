@@ -296,11 +296,11 @@ export function GenerationTaskView(props: Props) {
             </DialogContent>
           </Dialog>
 
-          <div className="my-4 flex justify-end">
+          <div className="my-4 flex gap-x-2 justify-end">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
-              text={"参照生成"}
+              text={"復元"}
               icon={ArrowUpRightSquare}
             />
             <GenerationMenuButton

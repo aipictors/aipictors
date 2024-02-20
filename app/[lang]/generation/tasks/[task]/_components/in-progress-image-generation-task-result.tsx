@@ -23,12 +23,12 @@ export const InProgressImageGenerationTaskResult = () => {
       <div className="p-4 w-full max-w-fit mx-auto">
         <p className="mb-1 font-semibold text-center">{"生成中"}</p>
         <Skeleton className="h-[400px] w-[400px] rounded-xl" />
-        <div className="my-4 flex justify-end">
+        <div className="my-4 flex gap-x-2 justify-end">
           <GenerationMenuButton
             title={"同じ情報で生成する"}
             onClick={() => {}}
             disabled={true}
-            text={"参照生成"}
+            text={"復元"}
             icon={ArrowUpRightSquare}
           />
           <GenerationMenuButton
