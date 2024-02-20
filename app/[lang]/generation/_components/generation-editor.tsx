@@ -19,7 +19,7 @@ import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -38,6 +38,8 @@ export function GenerationEditor(props: Props) {
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
     pollInterval: 1000,
   })
+
+  const [isFirstInitRequested, setIsFirstInitRequested] = useState(false)
 
   const [generationCount, setGenerationCount] = useState(1)
 
@@ -66,6 +68,15 @@ export function GenerationEditor(props: Props) {
 
   const hasSignedTerms =
     viewer.viewer?.user.hasSignedImageGenerationTerms ?? false
+
+  /**
+   * www4へリクエストしておく
+   */
+  const userNanoid = viewer.viewer?.user.nanoid ?? null
+  if (userNanoid !== null && !isFirstInitRequested) {
+    activeImageGeneration({ nanoid: userNanoid })
+    setIsFirstInitRequested(true)
+  }
 
   /**
    * タスクを作成する
@@ -106,14 +117,13 @@ export function GenerationEditor(props: Props) {
       return
     }
 
-    setClickGenerationSubmitCount((count) => count + 1)
-
     try {
-      await activeImageGeneration({ nanoid: userNanoid })
       const model = props.imageModels.find((model) => {
         return model.id === machine.context.modelId
       })
       if (typeof model === "undefined") return
+
+      setClickGenerationSubmitCount((count) => count + 1)
 
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
       const promises = taskCounts.map(() =>
@@ -136,6 +146,8 @@ export function GenerationEditor(props: Props) {
         }),
       )
       await Promise.all(promises)
+      await activeImageGeneration({ nanoid: userNanoid })
+
       setClickGenerationSubmitCount((count) => count - 1)
 
       toast("タスクを作成しました")
