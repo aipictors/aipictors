@@ -29,6 +29,7 @@ type Props = {
     negativePromptText: string,
     seed: number,
     sizeType: string,
+    clipSkip: number,
   ): void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
@@ -100,6 +101,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       task.negativePrompt,
       task.seed,
       task.sizeType,
+      2, // TODO: スキーマが補完されたら修正
     )
     toast("設定を復元しました")
   }
@@ -177,6 +179,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
           isEditMode={props.isEditMode}
           selectedTaskIds={props.selectedTaskIds}
           pcViewType={pcViewType}
+          sizeType={props.thumbnailSize ?? "small"}
           onRestore={onRestore}
           onSelectTask={onSelectTask}
           onCancel={props.onCancel}

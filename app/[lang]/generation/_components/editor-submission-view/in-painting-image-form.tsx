@@ -28,6 +28,7 @@ type Props = {
   configSizeType: string
   configModel: string | null
   configVae: string | null
+  configClipSkip: number
   onClose(): void
 }
 
@@ -117,6 +118,7 @@ export const InPaintingImageForm = (props: Props) => {
             sizeType: props.configSizeType as ImageGenerationSizeType,
             model: props.configModel,
             vae: props.configVae,
+            // clipSkip: 2, TODO: 補完されたら差し替え
             type: "INPAINTING",
             t2tImageUrl: srcImageURL,
             t2tMaskImageUrl: maskImageURL,

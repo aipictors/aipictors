@@ -7,6 +7,7 @@ import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 type Props = {
   task: ImageGenerationTaskNode
   pcViewType: string
+  sizeType: string
   onRestore?(taskId: string): void
   onCancel?(): void
 }
@@ -25,6 +26,7 @@ export function GenerationTaskViewButton(props: Props) {
             remainingSeconds={props.task.estimatedSeconds ?? 0}
             taskId={props.task.id}
             token={props.task.token}
+            optionButtonSize={props.sizeType}
             rating={props.task.rating ?? 0}
             onCancel={props.onCancel}
           />
@@ -47,6 +49,7 @@ export function GenerationTaskViewButton(props: Props) {
           taskId={props.task.id}
           remainingSeconds={props.task.estimatedSeconds ?? 0}
           token={props.task.token}
+          optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}
           onCancel={props.onCancel}
         />

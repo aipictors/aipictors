@@ -129,6 +129,7 @@ export function GenerationEditor(props: Props) {
               steps: machine.context.steps,
               scale: machine.context.scale,
               sampler: machine.context.sampler,
+              // clipSkip: 2, TODO: 補完されたら差し替え
               sizeType: machine.context.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
@@ -185,13 +186,14 @@ export function GenerationEditor(props: Props) {
           configSize={machine.context.sizeType}
           configVae={machine.context.vae}
           configSteps={machine.context.steps}
+          configClipSkip={machine.context.clipSkip}
           availableLoraModelsCount={machine.context.availableLoraModelsCount}
           onChangeLoraModelConfigs={machine.changeLoraModel}
           onChangeSampler={machine.updateSampler}
           onChangeScale={machine.updateScale}
           onChangeSeed={machine.updateSeed}
           onChangeSize={machine.updateSizeType}
-          onChangeVae={machine.updateVae}
+          onChangeClipSkip={machine.updateClipSkip}
           onChangeSteps={machine.updateSteps}
           onUpdateLoraModelConfig={machine.updateLoraModel}
         />

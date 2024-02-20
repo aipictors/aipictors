@@ -16,6 +16,7 @@ type Props = {
   isEditMode: boolean
   selectedTaskIds: string[]
   pcViewType: string
+  sizeType: string
   onRestore?: (taskId: string) => void
   onSelectTask(taskNanoid: string | null, status: string): void
   onCancel?(): void
@@ -40,6 +41,7 @@ export const GenerationEditorTaskList = (props: Props) => {
             remainingSeconds={task.estimatedSeconds ?? 0}
             taskId={task.id}
             token={task.token}
+            optionButtonSize={props.sizeType}
             rating={task.rating ?? 0}
             onCancel={props.onCancel}
           />
@@ -51,6 +53,7 @@ export const GenerationEditorTaskList = (props: Props) => {
               remainingSeconds={task.estimatedSeconds ?? 0}
               taskId={task.id}
               token={task.token}
+              optionButtonSize={props.sizeType}
               rating={task.rating ?? 0}
               onCancel={props.onCancel}
             />
@@ -60,6 +63,7 @@ export const GenerationEditorTaskList = (props: Props) => {
           <GenerationTaskViewButton
             task={task}
             pcViewType={props.pcViewType}
+            sizeType={props.sizeType}
             onRestore={props.onRestore}
             onCancel={props.onCancel}
           />

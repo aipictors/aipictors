@@ -11,6 +11,12 @@ export class ImageGenerationAction {
     return this.state
   }
 
+  init() {
+    return new ImageGenerationAction(
+      new ImageGenerationState({ ...this.state }),
+    )
+  }
+
   /**
    * プロンプトを変更する
    * @param text
@@ -102,6 +108,20 @@ export class ImageGenerationAction {
       new ImageGenerationState({
         ...this.state,
         vae: text,
+      }),
+    )
+  }
+
+  /**
+   * ClipSkipを変更する
+   * @param text
+   * @returns
+   */
+  updateClipSkip(clipSkip: number) {
+    return new ImageGenerationAction(
+      new ImageGenerationState({
+        ...this.state,
+        clipSkip: clipSkip,
       }),
     )
   }

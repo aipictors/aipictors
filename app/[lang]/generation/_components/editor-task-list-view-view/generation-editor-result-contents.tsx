@@ -103,6 +103,7 @@ export const GenerationEditorResultContents = (props: Props) => {
       task.negativePrompt,
       task.seed,
       task.sizeType,
+      2, // TODO: 補完されたら差し替え
     )
     toast("設定を復元しました")
   }
@@ -180,6 +181,7 @@ export const GenerationEditorResultContents = (props: Props) => {
             isEditMode={props.isEditMode}
             selectedTaskIds={props.selectedTaskIds}
             pcViewType={pcViewType}
+            sizeType={props.thumbnailSize ?? "small"}
             onRestore={onRestore}
             onSelectTask={onSelectTask}
           />

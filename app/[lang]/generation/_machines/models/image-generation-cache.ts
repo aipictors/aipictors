@@ -29,6 +29,29 @@ export class ImageGenerationCache {
       steps: this.restoreSteps(),
       vae: this.restoreVae(),
       modelType: this.restoreModelType(),
+      clipSkip: this.restoreClipSkip(),
+    })
+  }
+
+  /**
+   * 初期化する
+   */
+  init() {
+    const modelType = config.generationFeature.defaultImageModelType
+    return new ImageGenerationState({
+      passType: this.props.passType,
+      modelId: config.generationFeature.defaultImageModelId,
+      modelIds: config.generationFeature.defaultImageModelIds,
+      promptText: "",
+      negativePromptText: this.getDefaultNegativePrompt(modelType),
+      sampler: config.generationFeature.defaultSamplerValue,
+      scale: config.generationFeature.defaultScaleValue,
+      seed: -1,
+      sizeType: "SD1_512_768",
+      steps: config.generationFeature.defaultStepsValue,
+      vae: config.generationFeature.defaultVaeValue,
+      modelType: modelType,
+      clipSkip: config.generationFeature.defaultClipSkipValue,
     })
   }
 
@@ -65,6 +88,34 @@ export class ImageGenerationCache {
     try {
       const value = localStorage.getItem("config.generation.model")
       return value ?? defaultValue
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * ClipSkipを保存する
+   * @param modelId
+   */
+  saveClipSkip(clipSkip: number) {
+    localStorage.setItem("config.generation.clipSkip", clipSkip.toString())
+  }
+
+  /**
+   * ClipSkipを復元する
+   * @returns
+   */
+  restoreClipSkip() {
+    const defaultValue = config.generationFeature.defaultClipSkipValue
+    try {
+      const value = localStorage.getItem("config.generation.clipSkip")
+      if (value === null) {
+        return defaultValue
+      }
+      return parseInt(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

@@ -1,5 +1,5 @@
-import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
+import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
@@ -7,7 +7,6 @@ import { config } from "@/config"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { Scan } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -20,6 +19,7 @@ type Props = {
   progress?: number
   remainingSeconds?: number
   rating: number
+  optionButtonSize: string
   onClick?(): void
   onCancel?(): void
 }
@@ -59,6 +59,17 @@ export const GenerationTaskCard = (props: Props) => {
     }
   }
 
+  const optionButtonSize = (type: string) => {
+    console.log(type)
+    if (type === "small") {
+      return 1
+    }
+    if (type === "middle") {
+      return 2
+    }
+    return 3
+  }
+
   if (props.token == null || props.taskNanoid == null) {
     return (
       <InProgressGenerationCard
@@ -93,19 +104,11 @@ export const GenerationTaskCard = (props: Props) => {
       {/* 拡大ボタン */}
       {(!isDesktop && !props.isSelected) ||
         (isHovered && !props.isSelected && (
-          <GenerationImageDialogButton
-            isAbsolute={true}
+          <GenerationTaskZoomUpButton
             taskId={props.taskId}
-            taskToken={props.token}
-            children={
-              <div
-                onMouseEnter={() => {
-                  setIsHovered(true)
-                }}
-              >
-                <Scan color="black" />
-              </div>
-            }
+            token={props.token}
+            size={optionButtonSize(props.optionButtonSize)}
+            setIsHovered={setIsHovered}
           />
         ))}
       {/* お気に入りボタン */}
@@ -114,6 +117,7 @@ export const GenerationTaskCard = (props: Props) => {
           <GenerationTaskRatingButton
             nowRating={props.rating}
             taskNanoid={props.taskNanoid}
+            size={optionButtonSize(props.optionButtonSize)}
           />
         ))}
     </div>

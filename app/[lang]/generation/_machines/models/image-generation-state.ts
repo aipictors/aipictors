@@ -13,6 +13,7 @@ const zProps = z.object({
   vae: z.string().nullable(),
   seed: z.number(),
   modelType: z.string(),
+  clipSkip: z.number(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -41,6 +42,8 @@ export class ImageGenerationState implements Props {
   readonly seed!: Props["seed"]
 
   readonly modelType!: Props["modelType"]
+
+  readonly clipSkip!: Props["clipSkip"]
 
   readonly isDisabled: boolean
 

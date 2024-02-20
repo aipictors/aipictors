@@ -14,6 +14,7 @@ const config = new ImageGenerationState({
   modelType: "SD1",
   steps: 0,
   vae: "",
+  clipSkip: 0,
 })
 
 describe("ImageGenerationAction", () => {

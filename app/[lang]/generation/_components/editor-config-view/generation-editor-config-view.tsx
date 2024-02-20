@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
 import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
@@ -7,7 +8,6 @@ import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components
 import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-seed"
 import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
-import { GenerationEditorConfigVae } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-vae"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -32,14 +32,15 @@ type Props = {
   configSeed: number
   configSize: string
   configVae: string | null
+  configClipSkip: number
   availableLoraModelsCount: number
   onChangeLoraModelConfigs(modelName: string): void
   onChangeSampler(sampler: string): void
   onChangeScale(scale: number): void
   onChangeSteps(steps: number): void
+  onChangeClipSkip(clipSkip: number): void
   onChangeSeed(seed: number): void
   onChangeSize(size: string): void
-  onChangeVae(vae: string | null): void
   onUpdateLoraModelConfig(modelId: string, value: number): void
 }
 
@@ -101,13 +102,13 @@ export const GenerationEditorConfigView = (props: Props) => {
             value={props.configSteps}
             onChange={props.onChangeSteps}
           />
-          <GenerationEditorConfigVae
-            value={props.configVae}
-            onChange={props.onChangeVae}
-          />
           <GenerationEditorConfigSampler
             value={props.configSampler}
             onChange={props.onChangeSampler}
+          />
+          <GenerationEditorConfigClipSkip
+            value={props.configClipSkip}
+            onChange={props.onChangeClipSkip}
           />
         </div>
       </ScrollArea>

@@ -101,6 +101,7 @@ export const config = {
     defaultScaleValue: 7,
     defaultStepsValue: 20,
     defaultSamplerValue: "DPM++ 2M",
+    defaultClipSkipValue: 2,
     samplerValues: [
       "Euler a",
       "Euler",
@@ -118,7 +119,7 @@ export const config = {
       "DDIM",
     ],
     defaultVaeValue: "kl-f8-anime2",
-    vaeValues: ["kl-f8-anime2", "ClearVAE_V2.3", "sdxl_vae"],
+    clipSkipValues: 2,
     sizeValues: [
       "SD1_512_512",
       "SD1_512_768",

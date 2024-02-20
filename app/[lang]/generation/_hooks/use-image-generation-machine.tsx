@@ -27,6 +27,7 @@ export const useImageGenerationMachine = (props: Props) => {
     negativePromptText: string,
     seed: number,
     sizeType: string,
+    clipSkip: number,
   ) => {
     cacheStorage.savePrompt(promptText)
     cacheStorage.saveNegativePrompt(negativePromptText)
@@ -37,6 +38,7 @@ export const useImageGenerationMachine = (props: Props) => {
     cacheStorage.saveScale(scale)
     cacheStorage.saveSeed(seed)
     cacheStorage.saveSizeType(sizeType)
+    cacheStorage.saveClipSkip(clipSkip)
 
     const value = action
       .updateNegativePrompt(negativePromptText)
@@ -47,8 +49,14 @@ export const useImageGenerationMachine = (props: Props) => {
       .updateVae(vae)
       .updateSeed(seed)
       .updateSizeType(sizeType)
+      .updateClipSkip(clipSkip)
       .getState()
 
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  const init = () => {
+    const value = action.init().getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -146,6 +154,16 @@ export const useImageGenerationMachine = (props: Props) => {
   }
 
   /**
+   * ClipSkipを変更する
+   * @param clipSkip
+   */
+  const updateClipSkip = (clipSkip: number) => {
+    const value = action.updateClipSkip(clipSkip).getState()
+    cacheStorage.saveClipSkip(value.clipSkip)
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * モデルの設定を変更する
    * @param modelName
    * @param modelValue
@@ -174,6 +192,7 @@ export const useImageGenerationMachine = (props: Props) => {
 
   return {
     context: new ImageGenerationContextView(state.context),
+    init,
     updateSettings,
     updateModelId,
     changeLoraModel: changeLoraConfig,
@@ -187,5 +206,6 @@ export const useImageGenerationMachine = (props: Props) => {
     updateSizeType,
     updateVae,
     updateSeed,
+    updateClipSkip,
   }
 }

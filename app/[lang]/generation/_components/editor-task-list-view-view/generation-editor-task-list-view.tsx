@@ -20,6 +20,7 @@ type Props = {
     negativePromptText: string,
     seed: number,
     sizeType: string,
+    clipSkip: number,
   ): void
   onCancel?(): void
 }
