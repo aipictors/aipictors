@@ -106,12 +106,15 @@ export const GenerationEditorResultContents = (props: Props) => {
   }
 
   const activeTasks = currentTasks.filter((task) => {
-    if (task.isDeleted) return false
+    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
 
+  console.log(activeTasks)
+
   const activeRatingTasks = currentRatingTasks.filter((task) => {
-    if (!task || task.isDeleted) return false
+    if (!task || task.isDeleted || (!task.token && task.status === "DONE"))
+      return false
     return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
 

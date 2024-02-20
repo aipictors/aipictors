@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 type Props = {
   taskId: string
   taskToken: string | null
+  children: React.ReactNode
+  isAbsolute?: boolean
 }
 
 /**
@@ -14,13 +16,14 @@ type Props = {
 export function GenerationImageDialogButton(props: Props) {
   return (
     <Dialog>
-      <DialogTrigger>
-        <PrivateImage
-          className={`max-h-screen m-auto generation-image-${props.taskId}`}
-          taskId={props.taskId}
-          token={props.taskToken as string}
-          alt={"-"}
-        />
+      <DialogTrigger
+        className={
+          props.isAbsolute === true
+            ? "absolute hover:opacity-80 rounded-full right-2 bottom-2"
+            : ""
+        }
+      >
+        <span>{props.children}</span>
       </DialogTrigger>
       <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
         <PrivateImage

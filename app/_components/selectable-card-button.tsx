@@ -11,6 +11,11 @@ type Props = {
    */
   isSelected?: boolean
   onClick?(): void
+  /**
+   * ホバーされている
+   */
+  onMouseEnter?(): void
+  onMouseLeave?(): void
 }
 
 /**
@@ -23,6 +28,12 @@ export function SelectableCardButton(props: Props) {
     <button
       type={"button"}
       onClick={props.onClick}
+      onMouseEnter={() => {
+        if (props.onMouseEnter) props.onMouseEnter()
+      }}
+      onMouseLeave={() => {
+        if (props.onMouseLeave) props.onMouseLeave()
+      }}
       className={cn(
         "relative",
         "p-0 h-auto overflow-hidden rounded bg-card",

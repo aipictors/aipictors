@@ -9,6 +9,7 @@ import {
   GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
+import { PrivateImage } from "@/app/_components/private-image"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -241,6 +242,14 @@ export function GenerationTaskCacheView(props: Props) {
           <GenerationImageDialogButton
             taskId={props.task.id}
             taskToken={props.task.token}
+            children={
+              <PrivateImage
+                className={`max-h-screen m-auto generation-image-${props.task.id}`}
+                taskId={props.task.id}
+                token={props.task.token as string}
+                alt={"-"}
+              />
+            }
           />
           <div className="flex gap-x-2">
             <GenerationMenuButton

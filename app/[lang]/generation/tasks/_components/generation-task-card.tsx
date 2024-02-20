@@ -1,10 +1,16 @@
+import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
+import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
+import { config } from "@/config"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
+import { Scan } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   taskId: string
@@ -13,6 +19,7 @@ type Props = {
   isSelected?: boolean
   progress?: number
   remainingSeconds?: number
+  rating: number
   onClick?(): void
 }
 
@@ -21,6 +28,8 @@ type Props = {
  * @returns
  */
 export const GenerationTaskCard = (props: Props) => {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+  const [isHovered, setIsHovered] = useState(false)
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
     {
@@ -57,13 +66,52 @@ export const GenerationTaskCard = (props: Props) => {
   }
 
   return (
-    <SelectableCardButton onClick={props.onClick} isSelected={props.isSelected}>
-      <PrivateImage
-        className={`generation-image-${props.taskNanoid}`}
-        taskId={props.taskId}
-        token={props.token}
-        alt={"-"}
-      />
-    </SelectableCardButton>
+    <div
+      className="relative grid p-0 h-auto overflow-hidden rounded bg-card"
+      onMouseEnter={() => {
+        setIsHovered(true)
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false)
+      }}
+    >
+      <SelectableCardButton
+        onClick={props.onClick}
+        isSelected={props.isSelected}
+      >
+        <PrivateImage
+          className={`generation-image-${props.taskNanoid}`}
+          taskId={props.taskId}
+          token={props.token}
+          alt={"-"}
+        />
+      </SelectableCardButton>
+      {/* 拡大ボタン */}
+      {(!isDesktop && !props.isSelected) ||
+        (isHovered && !props.isSelected && (
+          <GenerationImageDialogButton
+            isAbsolute={true}
+            taskId={props.taskId}
+            taskToken={props.token}
+            children={
+              <div
+                onMouseEnter={() => {
+                  setIsHovered(true)
+                }}
+              >
+                <Scan color="black" />
+              </div>
+            }
+          />
+        ))}
+      {/* お気に入りボタン */}
+      {(!isDesktop && !props.isSelected) ||
+        (isHovered && !props.isSelected && (
+          <GenerationTaskRatingButton
+            nowRating={props.rating}
+            taskNanoid={props.taskNanoid}
+          />
+        ))}
+    </div>
   )
 }

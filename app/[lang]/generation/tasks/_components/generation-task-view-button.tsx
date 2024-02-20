@@ -24,6 +24,7 @@ export function GenerationTaskViewButton(props: Props) {
             remainingSeconds={props.task.estimatedSeconds ?? 0}
             taskId={props.task.id}
             token={props.task.token}
+            rating={props.task.rating ?? 0}
           />
         </DialogTrigger>
         <DialogContent className="p-0 flex flex-col gap-0">
@@ -44,6 +45,7 @@ export function GenerationTaskViewButton(props: Props) {
           taskId={props.task.id}
           remainingSeconds={props.task.estimatedSeconds ?? 0}
           token={props.task.token}
+          rating={props.task.rating ?? 0}
         />
       </SheetTrigger>
       <SheetContent side={"right"} className="p-0 flex flex-col gap-0">

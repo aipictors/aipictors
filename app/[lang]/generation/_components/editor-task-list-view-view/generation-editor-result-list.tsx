@@ -39,6 +39,7 @@ export const GenerationEditorTaskList = (props: Props) => {
             remainingSeconds={task.estimatedSeconds ?? 0}
             taskId={task.id}
             token={task.token}
+            rating={task.rating ?? 0}
           />
         )}
         {!props.isEditMode && !isDesktop && (
@@ -48,6 +49,7 @@ export const GenerationEditorTaskList = (props: Props) => {
               remainingSeconds={task.estimatedSeconds ?? 0}
               taskId={task.id}
               token={task.token}
+              rating={task.rating ?? 0}
             />
           </Link>
         )}
