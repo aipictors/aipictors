@@ -1,6 +1,7 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/star-rating"
+import { StarRating } from "@/app/[lang]/generation/_components/editor-task-list-view-view/star-rating"
+import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -8,11 +9,8 @@ import {
   GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { PrivateImage } from "@/app/_components/private-image"
-import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
@@ -21,6 +19,7 @@ import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
 import {
   ArrowDownToLine,
@@ -30,7 +29,7 @@ import {
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
@@ -143,7 +142,6 @@ export const postGenerationImage = async (
 }
 
 /**
- * use Dynamic Import
  * @param props
  * @returns
  */
@@ -176,7 +174,6 @@ export function GenerationTaskCacheView(props: Props) {
     }
   }
 
-  const authContext = useContext(AuthContext)
   const [rating, setRating] = useState(props.task.rating ?? 0)
 
   const onReference = () => {
@@ -234,39 +231,22 @@ export function GenerationTaskCacheView(props: Props) {
 
   return (
     <>
-      <ScrollArea
-        className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""}`}
-      >
+      <ScrollArea className={cn({ "w-full max-w-fit mx-auto": isDesktop })}>
         <div
-          className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""} ${
-            props.isScroll ? "max-h-[88vh]" : ""
-          }`}
+          className={cn("space-y-2", {
+            "p-4 w-full max-w-fit mx-auto": isDesktop,
+            "max-h-[88vh]": props.isScroll,
+          })}
         >
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className={"px-2"} variant={"ghost"}>
-                <PrivateImage
-                  className={`max-h-screen m-auto generation-image-${props.task.id}`}
-                  taskId={props.task.id}
-                  token={props.task.token as string}
-                  alt={"-"}
-                />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
-              <PrivateImage
-                className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
-                taskId={props.task.id}
-                token={props.task.token as string}
-                alt={"-"}
-              />
-            </DialogContent>
-          </Dialog>
-          <div className="my-4 flex justify-end">
+          <GenerationImageDialogButton
+            taskId={props.task.id}
+            taskToken={props.task.token}
+          />
+          <div className="flex gap-x-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
-              text={"参照生成"}
+              text={"復元"}
               icon={ArrowUpRightSquare}
             />
             <GenerationMenuButton

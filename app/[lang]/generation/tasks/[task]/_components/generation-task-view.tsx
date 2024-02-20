@@ -1,6 +1,6 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/star-rating"
+import { StarRating } from "@/app/[lang]/generation/_components/editor-task-list-view-view/star-rating"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"

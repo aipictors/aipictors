@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/generation-editor-result-contents"
-import { GenerationTasksOperationParts } from "@/app/[lang]/generation/_components/generation-tasks-operation-parts"
+import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-contents"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
@@ -24,7 +24,7 @@ export const todayText = () => {
 export function GenerationTasksList() {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
-  const [editMode, setEditMode] = useState("")
+  const [isEditMode, toggleEditMode] = useState(false)
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
@@ -44,6 +44,13 @@ export function GenerationTasksList() {
 
   const onChangeRating = (rating: number) => {
     setRating(rating)
+  }
+
+  const onToggleEditMode = () => {
+    if (isEditMode) {
+      setSelectedTaskIds([])
+    }
+    toggleEditMode((value) => !value)
   }
 
   /**
@@ -68,19 +75,19 @@ export function GenerationTasksList() {
       <div className="flex items-center">
         <Link href="/generation">画像生成に戻る</Link>
       </div>
-      <GenerationTasksOperationParts
+      <GenerationTaskListActions
         rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
-        editMode={editMode}
+        isEditMode={isEditMode}
         showCountInput={true}
         viewCount={viewCount}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
-        setEditMode={setEditMode}
+        onToggleEditMode={onToggleEditMode}
         onChangeViewCount={setViewCount}
       />
       <Separator />
@@ -91,7 +98,7 @@ export function GenerationTasksList() {
           viewCount={viewCount}
           hidedTaskIds={hidedTaskIds}
           rating={rating}
-          editMode={editMode}
+          isEditMode={isEditMode}
           selectedTaskIds={selectedTaskIds}
           thumbnailSize={thumbnailSize}
           isCreatingTasks={false}
