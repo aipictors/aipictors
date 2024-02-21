@@ -99,7 +99,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       task.negativePrompt,
       task.seed,
       task.sizeType,
-      2, // TODO: スキーマが補完されたら修正
+      task.clipSkip,
     )
     toast("設定を復元しました")
   }

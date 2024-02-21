@@ -9,6 +9,7 @@ export const imageGenerationTaskFieldsFragment = gql(`
     steps
     scale
     sampler
+    clipSkip
     sizeType
     t2tImageUrl
     t2tMaskImageUrl

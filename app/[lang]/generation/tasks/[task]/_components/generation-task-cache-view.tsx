@@ -327,18 +327,25 @@ export function GenerationTaskCacheView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
+          <div className="mb-1">
+            <p className="mb-1 font-semibold">{"Sampler"}</p>
+            <p>{props.task.sampler}</p>
+          </div>
+          <div className="py-2">
+            <Separator />
+          </div>
           <div className="flex space-x-4">
             <div className="w-full">
               <p className="mb-1 font-semibold">{"Seed"}</p>
               <p>{props.task.seed}</p>
             </div>
             <div className="w-full">
-              <p className="mb-1 font-semibold">{"Sampler"}</p>
-              <p>{props.task.sampler}</p>
-            </div>
-            <div className="w-full">
               <p className="mb-1 font-semibold">{"Scale"}</p>
               <p>{props.task.scale}</p>
+            </div>
+            <div className="w-full">
+              <p className="mb-1 font-semibold">{"ClipSkip"}</p>
+              <p>{props.task.clipSkip}</p>
             </div>
           </div>
         </div>
