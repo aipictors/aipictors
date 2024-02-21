@@ -4,7 +4,6 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/edit
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { ImageGenerationContextView } from "@/app/[lang]/generation/_machines/models/image-generation-context-view"
-import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { config } from "@/config"
 import {
   ImageGenerationSizeType,
