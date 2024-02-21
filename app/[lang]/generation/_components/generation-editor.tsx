@@ -123,7 +123,7 @@ export function GenerationEditor(props: Props) {
               steps: machine.context.steps,
               scale: machine.context.scale,
               sampler: machine.context.sampler,
-              // clipSkip: 2, TODO: 補完されたら差し替え
+              clipSkip: machine.context.clipSkip,
               sizeType: machine.context.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
