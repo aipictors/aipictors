@@ -37,9 +37,9 @@ export const GenerationEditorNegativePromptView = () => {
         <Textarea
           className="resize-none h-full font-mono min-h-40"
           placeholder={"EasyNegativeなど"}
-          value={editor.context.promptText}
+          value={editor.context.negativePromptText}
           onChange={(event) => {
-            editor.updatePrompt(event.target.value)
+            editor.updateNegativePrompt(event.target.value)
           }}
         />
         <div className="hidden xl:flex flex-wrap gap-2">
