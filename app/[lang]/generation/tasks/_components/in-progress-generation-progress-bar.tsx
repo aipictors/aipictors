@@ -26,7 +26,7 @@ export const InProgressGenerationProgressBar = (props: Props) => {
    */
   const generationProgress = () => {
     if (elapsedGenerationTime === 0) {
-      return 0
+      return 100
     }
     if (!props.remainingSeconds) return 0
     return (elapsedGenerationTime / props.remainingSeconds) * 100

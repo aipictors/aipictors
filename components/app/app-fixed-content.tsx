@@ -28,7 +28,7 @@ export const AppFixedContent = (props: Props) => {
 
   return (
     <div
-      className={`fixed p-2 w-full h-auto bg-white shadow-md z-50 ${positionClassName()}`}
+      className={`fixed p-2 w-full h-auto bg-card shadow-md z-50 ${positionClassName()}`}
     >
       {props.children}
     </div>
