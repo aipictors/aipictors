@@ -14,24 +14,24 @@ type Props = {
 export function GenerationEditorSubmissionView(props: Props) {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
+  if (isDesktop) {
+    return (
+      <GenerationEditorSubmissionViewContent
+        imageModels={props.imageModels}
+        termsMarkdownText={props.termsMarkdownText}
+      />
+    )
+  }
+
   return (
-    <>
-      {isDesktop ? (
+    <AppFixedContent
+      position="bottom"
+      children={
         <GenerationEditorSubmissionViewContent
           imageModels={props.imageModels}
           termsMarkdownText={props.termsMarkdownText}
         />
-      ) : (
-        <AppFixedContent
-          position="bottom"
-          children={
-            <GenerationEditorSubmissionViewContent
-              imageModels={props.imageModels}
-              termsMarkdownText={props.termsMarkdownText}
-            />
-          }
-        />
-      )}
-    </>
+      }
+    />
   )
 }

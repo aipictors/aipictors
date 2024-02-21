@@ -54,11 +54,6 @@ export const useGenerationEditor = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
-  const init = () => {
-    const value = action.init().getState()
-    send({ type: "UPDATE_CONFIG", value })
-  }
-
   /**
    * プロンプトを変更する
    * @param text
@@ -198,7 +193,6 @@ export const useGenerationEditor = () => {
   return {
     context: new ImageGenerationContextView(context),
     reset,
-    init,
     updateSettings,
     updateModelId,
     changeLoraModel: changeLoraConfig,
