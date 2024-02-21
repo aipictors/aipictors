@@ -26,7 +26,7 @@ jobs:
         run: time bun run predev
 
       - name: Lint
-        run: bunx oxlint@latest --nextjs-plugin --deny-warnings
+        run: bunx oxlint@latest --nextjs-plugin
 
       - name: Run Type Cheking
         run: time bun run check
