@@ -54,4 +54,4 @@ const sentryWebpackPluginOptions = {
   project: "aipictors-next",
 }
 
-export default withSentryConfig(nextConfig,sentryWebpackPluginOptions)
+export default withSentryConfig(nextConfig, sentryWebpackPluginOptions)
