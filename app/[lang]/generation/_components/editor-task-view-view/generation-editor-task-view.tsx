@@ -1,35 +1,17 @@
 "use client"
 
-import { GenerationEditorTaskListArea } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list-area"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
+import { GenerationEditorTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-area"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
-
-type Props = {
-  userNanoid: string | null
-  passType: string | null
-  onUpdateSettings(
-    modelId: string,
-    modelType: string,
-    sampler: string,
-    scale: number,
-    vae: string,
-    promptText: string,
-    negativePromptText: string,
-    seed: number,
-    sizeType: string,
-    clipSkip: number,
-  ): void
-  onCancel?(): void
-}
 
 /**
  * タスク関連
  * @param props
  * @returns
  */
-export const GenerationEditorTaskListView = (props: Props) => {
+export const GenerationEditorTaskView = () => {
   const [rating, setRating] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
@@ -81,10 +63,8 @@ export const GenerationEditorTaskListView = (props: Props) => {
         isEditMode={isEditMode}
         selectedTaskIds={selectedTaskIds}
         thumbnailSize={thumbnailSize}
-        passType={props.passType}
         setSelectedTaskIds={setSelectedTaskIds}
-        onUpdateSettings={props.onUpdateSettings}
-        onCancel={props.onCancel}
+        onCancel={undefined}
       />
     </GenerationEditorCard>
   )

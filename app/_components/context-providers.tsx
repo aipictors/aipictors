@@ -1,7 +1,7 @@
 "use client"
 
+import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
 import { AuthContextProvider } from "@/app/_components/auth-context-provider"
-import { ImageGenerationContext } from "@/app/_contexts/image-generation-context"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { config } from "@/config"
 import { createClient } from "@/lib/client"
@@ -24,9 +24,9 @@ export const ContextProviders = (props: Props) => {
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
           <ApolloProvider client={client}>
-            <ImageGenerationContext.Provider>
+            <GenerationEditorContext.Provider>
               {props.children}
-            </ImageGenerationContext.Provider>
+            </GenerationEditorContext.Provider>
           </ApolloProvider>
         </QueryClientProvider>
       </AuthContextProvider>

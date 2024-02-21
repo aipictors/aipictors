@@ -2,6 +2,7 @@
 
 import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-contents"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
@@ -10,14 +11,13 @@ import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { BookTextIcon } from "lucide-react"
 
 type Props = {
-  promptText: string
   promptCategories: PromptCategoriesQuery["promptCategories"]
-  onChangePromptText(text: string): void
-  onBlurPromptText(): void
 }
 
 export const GenerationEditorPromptView = (props: Props) => {
-  const formattedPromptText = formatPromptText(props.promptText)
+  const editor = useGenerationEditor()
+
+  const formattedPromptText = formatPromptText(editor.context.promptText)
 
   const categoryPrompts = props.promptCategories.flatMap((category) => {
     return category.prompts
@@ -32,7 +32,7 @@ export const GenerationEditorPromptView = (props: Props) => {
       ? formattedPromptText.replaceAll(promptText, "")
       : [formattedPromptText, promptText].join(",")
     const draftFormattedPromptText = formatPromptText(draftPromptText)
-    props.onChangePromptText(draftFormattedPromptText)
+    editor.updatePrompt(draftFormattedPromptText)
   }
 
   const currentPrompts = categoryPrompts.filter((prompt) => {
@@ -68,12 +68,12 @@ export const GenerationEditorPromptView = (props: Props) => {
           <Textarea
             className="resize-none h-full font-mono min-h-40"
             placeholder={"プロンプト"}
-            value={props.promptText}
+            value={editor.context.promptText}
             onChange={(event) => {
-              props.onChangePromptText(event.target.value)
+              editor.updatePrompt(event.target.value)
             }}
             onBlur={() => {
-              props.onBlurPromptText()
+              editor.initPromptWithLoraModel()
             }}
           />
           <Dialog>

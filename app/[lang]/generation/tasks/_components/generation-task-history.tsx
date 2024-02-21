@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationEditorResultContents } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-contents"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
+import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-history"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -13,11 +13,10 @@ export const todayText = () => {
 }
 
 /**
- * use Dynamic Import
  * 画像生成の履歴
  * @returns
  */
-export function GenerationTasksList() {
+export function GenerationTaskHistory() {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
   const [isEditMode, toggleEditMode] = useState(false)
@@ -63,7 +62,7 @@ export function GenerationTasksList() {
       />
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>
-        <GenerationEditorResultContents
+        <GenerationTaskListHistory
           pcViewType="dialog"
           sizeType="full"
           viewCount={viewCount}

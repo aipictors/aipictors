@@ -3,6 +3,8 @@ import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/i
 
 const config = new ImageGenerationState({
   passType: null,
+  userNanoId: null,
+  hasSignedTerms: false,
   modelId: "",
   modelIds: [],
   promptText: "",

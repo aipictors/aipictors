@@ -10,6 +10,7 @@ import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import type {
@@ -18,32 +19,14 @@ import type {
 } from "@/graphql/__generated__/graphql"
 
 type Props = {
-  models: ImageModelsQuery["imageModels"]
-  currentModelId: string
   /**
-   * 表示されるモデルのID（最大3個）
+   * モデル
    */
-  currentModelIds: string[]
-  onSelectModelId(id: string, type: string): void
+  models: ImageModelsQuery["imageModels"]
+  /**
+   * Loraモデル
+   */
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  configLoRAModels: string[]
-  configSampler: string
-  configScale: number
-  configSteps: number
-  configSeed: number
-  configSize: string
-  configVae: string | null
-  configClipSkip: number
-  availableLoraModelsCount: number
-  onChangeLoraModelConfigs(modelName: string): void
-  onChangeSampler(sampler: string): void
-  onChangeScale(scale: number): void
-  onChangeSteps(steps: number): void
-  onChangeClipSkip(clipSkip: number): void
-  onChangeSeed(seed: number): void
-  onChangeSize(size: string): void
-  onUpdateLoraModelConfig(modelId: string, value: number): void
-  onReset(): void
 }
 
 /**
@@ -52,11 +35,13 @@ type Props = {
  * @returns
  */
 export const GenerationEditorConfigView = (props: Props) => {
+  const editor = useGenerationEditor()
+
   /**
    * 選択中のモデル
    */
   const currentModel = props.models.find((model) => {
-    return model.id === props.currentModelId
+    return model.id === editor.context.modelId
   })
 
   /**
@@ -74,45 +59,45 @@ export const GenerationEditorConfigView = (props: Props) => {
         <div className="flex flex-col px-4 gap-y-4 pb-4">
           <GenerationEditorConfigModels
             models={props.models}
-            currentModelId={props.currentModelId}
-            currentModelIds={props.currentModelIds}
-            onSelectModelId={props.onSelectModelId}
+            currentModelId={editor.context.modelId}
+            currentModelIds={editor.context.modelIds}
+            onSelectModelId={editor.updateModelId}
           />
           <Separator />
           <GenerationEditorConfigLoraModels
             models={props.loraModels}
-            loraModels={props.configLoRAModels}
-            availableLoraModelsCount={props.availableLoraModelsCount}
-            onChangeLoraModel={props.onChangeLoraModelConfigs}
-            onUpdateLoraModel={props.onUpdateLoraModelConfig}
+            loraModels={editor.context.loraModels}
+            availableLoraModelsCount={editor.context.availableLoraModelsCount}
+            onChangeLoraModel={editor.changeLoraModel}
+            onUpdateLoraModel={editor.updateLoraModel}
           />
           <Separator />
           <GenerationEditorConfigSize
             modelType={configModelType}
-            value={props.configSize}
-            onChange={props.onChangeSize}
+            value={editor.context.sizeType}
+            onChange={editor.updateSizeType}
           />
           <GenerationEditorConfigScale
-            value={props.configScale}
-            onChange={props.onChangeScale}
+            value={editor.context.scale}
+            onChange={editor.updateScale}
           />
           <GenerationEditorConfigSeed
-            value={props.configSeed}
-            onChange={props.onChangeSeed}
+            value={editor.context.seed}
+            onChange={editor.updateSeed}
           />
           <GenerationEditorConfigStep
-            value={props.configSteps}
-            onChange={props.onChangeSteps}
+            value={editor.context.steps}
+            onChange={editor.updateSteps}
           />
           <GenerationEditorConfigSampler
-            value={props.configSampler}
-            onChange={props.onChangeSampler}
+            value={editor.context.sampler}
+            onChange={editor.updateSampler}
           />
           <GenerationEditorConfigClipSkip
-            value={props.configClipSkip}
-            onChange={props.onChangeClipSkip}
+            value={editor.context.clipSkip}
+            onChange={editor.updateClipSkip}
           />
-          <GenerationEditorConfigResetButton onReset={props.onReset} />
+          <GenerationEditorConfigResetButton onReset={editor.reset} />
         </div>
       </ScrollArea>
     </GenerationEditorCard>

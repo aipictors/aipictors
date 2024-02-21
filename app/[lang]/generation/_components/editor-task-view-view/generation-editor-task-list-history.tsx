@@ -1,14 +1,20 @@
 "use client"
 
-import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
+import { ResponsivePagination } from "@/app/_components/responsive-pagination"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useQuery } from "@apollo/client"
+import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
   sizeType?: string
+  isCreatingTasks: boolean
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
@@ -16,21 +22,7 @@ type Props = {
   hidedTaskIds: string[]
   pcViewType?: string
   viewCount?: number
-  passType: string | null
-  onUpdateSettings(
-    modelId: string,
-    modelType: string,
-    sampler: string,
-    scale: number,
-    vae: string,
-    promptText: string,
-    negativePromptText: string,
-    seed: number,
-    sizeType: string,
-    clipSkip: number,
-  ): void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
-  onCancel?(): void
 }
 
 /**
@@ -38,22 +30,26 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorTaskListArea = (props: Props) => {
+export const GenerationTaskListHistory = (props: Props) => {
+  const editor = useGenerationEditor()
+
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const isTimeout = useFocusTimeout()
+
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: 64,
-      offset: 0,
-      where: {},
+      limit: props.viewCount ?? 64,
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      where: { minRating: 0 },
     },
-    // pollInterval: isTimeout ? 16000 : 2000,
+    pollInterval: isTimeout ? undefined : 2000,
   })
-
-  console.log("tasks", tasks)
 
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: config.query.maxLimit,
-      offset: 0,
+      offset: (currentPage - 1) * (props.viewCount ?? 0),
       where: { minRating: 1 },
     },
   })
@@ -65,6 +61,8 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   }
 
   const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
+  const imageGenerationRatingTasks =
+    ratingTasks.viewer?.imageGenerationTasks ?? []
 
   /**
    * 非表示指定のタスクを除外
@@ -76,7 +74,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   /**
    * フィルターしたレーティング済みタスク
    */
-  const currentRatingTasks = imageGenerationTasks.filter((task) => {
+  const currentRatingTasks = imageGenerationRatingTasks.filter((task) => {
     return (
       task.rating === props.rating &&
       task.nanoid &&
@@ -89,7 +87,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    props.onUpdateSettings(
+    editor.updateSettings(
       task.model.id,
       task.model.type,
       task.sampler,
@@ -106,17 +104,13 @@ export const GenerationEditorTaskListArea = (props: Props) => {
 
   const activeTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    return (
-      task.status === "PENDING" ||
-      task.status === "IN_PROGRESS" ||
-      task.status === "DONE"
-    )
+    return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
 
   const activeRatingTasks = currentRatingTasks.filter((task) => {
-    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    // return task.status === "IN_PROGRESS" || task.status === "DONE"
-    return task.status === "DONE"
+    if (!task || task.isDeleted || (!task.token && task.status === "DONE"))
+      return false
+    return task.status === "IN_PROGRESS" || task.status === "DONE"
   })
 
   const onSelectTask = (taskId: string | null, status: string) => {
@@ -170,19 +164,33 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   }
 
   return (
-    <ScrollArea>
-      <div className={getGridClasses(props.thumbnailSize)}>
-        <GenerationEditorTaskList
-          tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
-          isEditMode={props.isEditMode}
-          selectedTaskIds={props.selectedTaskIds}
-          pcViewType={pcViewType}
-          sizeType={props.thumbnailSize ?? "small"}
-          onRestore={onRestore}
-          onSelectTask={onSelectTask}
-          onCancel={props.onCancel}
-        />
-      </div>
-    </ScrollArea>
+    <>
+      <ScrollArea>
+        <div className={getGridClasses(props.thumbnailSize)}>
+          {props.isCreatingTasks && (
+            <InProgressGenerationCard isCreatingTasks={true} />
+          )}
+          <GenerationEditorTaskList
+            tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
+            isEditMode={props.isEditMode}
+            selectedTaskIds={props.selectedTaskIds}
+            pcViewType={pcViewType}
+            sizeType={props.thumbnailSize ?? "small"}
+            onRestore={onRestore}
+            onSelectTask={onSelectTask}
+          />
+        </div>
+      </ScrollArea>
+      {props.viewCount &&
+        tasks.viewer &&
+        tasks.viewer.remainingImageGenerationTasksTotalCount && (
+          <ResponsivePagination
+            perPage={props.viewCount}
+            maxCount={tasks.viewer.remainingImageGenerationTasksTotalCount}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        )}
+    </>
   )
 }

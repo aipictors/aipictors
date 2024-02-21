@@ -1,6 +1,10 @@
 import { join } from "path"
-// import { GenerationDocument } from "@/app/[lang]/generation/_components/generation-document"
-import { GenerationEditor } from "@/app/[lang]/generation/_components/generation-editor"
+import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
+import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
+import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
+import { GenerationEditorSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
+import { GenerationEditorTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
+import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
@@ -37,24 +41,37 @@ const GenerationPage = async () => {
   /**
    * 説明
    */
-  const descriptionMarkdownText = await readFile(
-    join(process.cwd(), "assets/image-generation-description.md"),
-    "utf-8",
-  )
+  // const descriptionMarkdownText = await readFile(
+  //   join(process.cwd(), "assets/image-generation-description.md"),
+  //   "utf-8",
+  // )
+
+  // <div className="overflow-x-hidden w-full">
 
   return (
-    <div className="overflow-x-hidden w-full">
-      <GenerationEditor
-        termsMarkdownText={termsMarkdownText}
-        promptCategories={promptCategoriesResp.data.promptCategories}
-        imageModels={imageModelsResp.data.imageModels}
-        imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
-      />
-      {/* <GenerationDocument
-        markdownText={descriptionMarkdownText}
-        models={imageModelsResp.data.imageModels}
-      /> */}
-    </div>
+    <GenerationEditorLayout
+      config={
+        <GenerationEditorConfigView
+          models={imageModelsResp.data.imageModels}
+          loraModels={imageLoraModelsResp.data.imageLoraModels}
+        />
+      }
+      promptEditor={
+        <GenerationEditorPromptView
+          promptCategories={promptCategoriesResp.data.promptCategories}
+        />
+      }
+      negativePromptEditor={<GenerationEditorNegativePromptView />}
+      history={
+        <div className="flex flex-col h-full gap-y-2">
+          <GenerationEditorSubmissionView
+            imageModels={imageModelsResp.data.imageModels}
+            termsMarkdownText={termsMarkdownText}
+          />
+          <GenerationEditorTaskView />
+        </div>
+      }
+    />
   )
 }
 
