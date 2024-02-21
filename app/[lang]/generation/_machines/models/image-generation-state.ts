@@ -14,6 +14,8 @@ const zProps = z.object({
   seed: z.number(),
   modelType: z.string(),
   clipSkip: z.number(),
+  userNanoId: z.string().nullable(),
+  hasSignedTerms: z.boolean(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -53,6 +55,10 @@ export class ImageGenerationState implements Props {
   readonly availableLoraModelsCount: number
 
   readonly loraModels: string[]
+
+  readonly userNanoId!: string | null
+
+  readonly hasSignedTerms!: boolean
 
   constructor(props: Props) {
     Object.assign(this, props)

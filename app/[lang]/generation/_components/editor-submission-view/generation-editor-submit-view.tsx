@@ -1,9 +1,11 @@
+"use client"
+
 import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { ImageGenerationContextView } from "@/app/[lang]/generation/_machines/models/image-generation-context-view"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import {
   ImageGenerationSizeType,
   ImageModelsQuery,
@@ -18,33 +20,12 @@ import { toast } from "sonner"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
-  /**
-   * ユーザID
-   */
-  userNanoid: string | null
   termsMarkdownText: string
-  /**
-   * 規約に同意済みである
-   */
-  hasSignedTerms: boolean
-  /**
-   * 画像生成が無効である
-   */
-  isDisabled: boolean
-  /**
-   * サブスクの種類
-   */
-  passType: string | null
-
-  modelId: string
-
-  /**
-   * TODO: Providerに変更
-   */
-  context: ImageGenerationContextView
 }
 
 export function GenerationEditorSubmissionView(props: Props) {
+  const editor = useGenerationEditor()
+
   const [generationCount, setGenerationCount] = useState(1)
 
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
@@ -105,10 +86,8 @@ export function GenerationEditorSubmissionView(props: Props) {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    if (!props.hasSignedTerms) return
-    const userNanoid = props.userNanoid ?? null
+    const userNanoid = editor.context.userNanoId ?? null
     if (userNanoid === null) return
-
     /**
      * 同時生成可能枚数
      */
@@ -118,7 +97,7 @@ export function GenerationEditorSubmissionView(props: Props) {
         : status?.viewer?.inProgressImageGenerationTasksCount
 
     // 生成中かつフリープランならサブスクに誘導
-    if (inProgressImageGenerationTasksCount !== 0 && !props.passType) {
+    if (inProgressImageGenerationTasksCount !== 0 && !editor.context.passType) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
@@ -131,7 +110,7 @@ export function GenerationEditorSubmissionView(props: Props) {
 
     try {
       const model = props.imageModels.find((model) => {
-        return model.id === props.modelId
+        return model.id === editor.context.modelId
       })
       if (typeof model === "undefined") return
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
@@ -141,15 +120,15 @@ export function GenerationEditorSubmissionView(props: Props) {
             input: {
               count: 1,
               model: model.name,
-              vae: props.context.vae ?? "",
-              prompt: props.context.promptText,
-              negativePrompt: props.context.negativePromptText,
-              seed: props.context.seed,
-              steps: props.context.steps,
-              scale: props.context.scale,
-              sampler: props.context.sampler,
-              clipSkip: props.context.clipSkip,
-              sizeType: props.context.sizeType as ImageGenerationSizeType,
+              vae: editor.context.vae ?? "",
+              prompt: editor.context.promptText,
+              negativePrompt: editor.context.negativePromptText,
+              seed: editor.context.seed,
+              steps: editor.context.steps,
+              scale: editor.context.scale,
+              sampler: editor.context.sampler,
+              clipSkip: editor.context.clipSkip,
+              sizeType: editor.context.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
           },
@@ -203,22 +182,22 @@ export function GenerationEditorSubmissionView(props: Props) {
     <div className="space-y-2">
       <div className="flex items-center">
         <GenerationCountSelect
-          pass={props.passType ?? "FREE"}
+          pass={editor.context.passType ?? "FREE"}
           selectedCount={generationCount}
           onChange={setGenerationCount}
         />
         {/* 生成開始ボタン */}
-        {props.hasSignedTerms && (
+        {editor.context.hasSignedTerms && (
           <GenerationSubmitButton
             onClick={onCreateTask}
             isLoading={isCreatingTask}
-            isDisabled={props.isDisabled}
+            isDisabled={editor.context.isDisabled}
             generatingCount={inProgressImageGenerationTasksCount}
             maxGeneratingCount={maxTasksCount}
           />
         )}
         {/* 規約確認開始ボタン */}
-        {!props.hasSignedTerms && (
+        {!editor.context.hasSignedTerms && (
           <GenerationTermsButton
             termsMarkdownText={props.termsMarkdownText}
             onSubmit={onSignTerms}
@@ -232,7 +211,7 @@ export function GenerationEditorSubmissionView(props: Props) {
           engineStatus?.normalPredictionGenerationSeconds ?? 0
         }
         normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-        passType={props.passType}
+        passType={editor.context.passType}
         remainingImageGenerationTasksCount={tasksCount}
         standardPredictionGenerationSeconds={
           engineStatus?.standardPredictionGenerationSeconds ?? 0

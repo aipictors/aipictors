@@ -1,15 +1,14 @@
 "use client"
 
-import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
-import { useImageGenerationMachine } from "@/app/[lang]/generation/_hooks/use-image-generation-machine"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { useQuery, useSuspenseQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -31,17 +30,12 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorResultContents = (props: Props) => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const isTimeout = useFocusTimeout()
-  const { data: viewer, refetch: refetchViewer } = useSuspenseQuery(
-    viewerCurrentPassQuery,
-    {},
-  )
+export const GenerationTaskList2 = (props: Props) => {
+  const editor = useGenerationEditor()
 
-  const machine = useImageGenerationMachine({
-    passType: viewer.viewer?.currentPass?.type ?? null,
-  })
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const isTimeout = useFocusTimeout()
 
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
@@ -93,7 +87,7 @@ export const GenerationEditorResultContents = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    machine.updateSettings(
+    editor.updateSettings(
       task.model.id,
       task.model.type,
       task.sampler,

@@ -1,31 +1,29 @@
 "use client"
 
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 
-type Props = {
-  promptText: string
-  onChangePromptText(prompt: string): void
-}
+export const GenerationEditorNegativePromptView = () => {
+  const editor = useGenerationEditor()
 
-export const GenerationEditorNegativePromptView = (props: Props) => {
   const onAddPrompt = (text: string) => {
-    if (props.promptText.includes(text)) {
-      const replacedText = props.promptText.replace(text, "")
+    if (editor.context.promptText.includes(text)) {
+      const replacedText = editor.context.promptText.replace(text, "")
       const draftText = replacedText
         .split(",")
         .filter((p) => p !== "")
         .join(",")
-      props.onChangePromptText(draftText)
+      editor.updatePrompt(draftText)
       return
     }
-    const draftText = props.promptText
+    const draftText = editor.context.promptText
       .split(",")
       .filter((p) => p !== "")
       .concat([text])
       .join(",")
-    props.onChangePromptText(draftText)
+    editor.updatePrompt(draftText)
   }
 
   return (
@@ -39,9 +37,9 @@ export const GenerationEditorNegativePromptView = (props: Props) => {
         <Textarea
           className="resize-none h-full font-mono min-h-40"
           placeholder={"EasyNegativeなど"}
-          value={props.promptText}
+          value={editor.context.promptText}
           onChange={(event) => {
-            props.onChangePromptText(event.target.value)
+            editor.updatePrompt(event.target.value)
           }}
         />
         <div className="hidden xl:flex flex-wrap gap-2">

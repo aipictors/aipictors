@@ -1,25 +1,20 @@
-import { imageGenerationMachine } from "@/app/[lang]/generation/_machines/image-generation-machine"
+import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
 import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/image-generation-action"
 import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
 import { ImageGenerationContextView } from "@/app/[lang]/generation/_machines/models/image-generation-context-view"
-import { useMachine } from "@xstate/react"
 
-type Props = {
-  passType: string | null
-}
+export const useGenerationEditor = () => {
+  const context = GenerationEditorContext.useSelector((state) => state.context)
 
-export const useImageGenerationMachine = (props: Props) => {
+  const { send } = GenerationEditorContext.useActorRef()
+
   const cacheStorage = new ImageGenerationCache({
-    passType: props.passType,
-    hasSignedTerms: false,
-    userNanoId: null,
+    passType: context.passType,
+    hasSignedTerms: context.hasSignedTerms,
+    userNanoId: context.userNanoId,
   })
 
-  const [state, send] = useMachine(imageGenerationMachine, {
-    input: cacheStorage.restore(),
-  })
-
-  const action = new ImageGenerationAction(state.context)
+  const action = new ImageGenerationAction(context)
 
   const updateSettings = (
     modelId: string,
@@ -195,7 +190,7 @@ export const useImageGenerationMachine = (props: Props) => {
   }
 
   return {
-    context: new ImageGenerationContextView(state.context),
+    context: new ImageGenerationContextView(context),
     init,
     updateSettings,
     updateModelId,

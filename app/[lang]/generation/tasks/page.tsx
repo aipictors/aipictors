@@ -1,4 +1,4 @@
-import { GenerationTasksList } from "@/app/[lang]/generation/tasks/_components/generation-tasks-list"
+import { GenerationTaskHistory } from "@/app/[lang]/generation/tasks/_components/generation-task-history"
 import type { Metadata } from "next"
 
 /**
@@ -6,7 +6,7 @@ import type { Metadata } from "next"
  * @returns
  */
 const GenerationResultsPage = async () => {
-  return <GenerationTasksList />
+  return <GenerationTaskHistory />
 }
 
 export const metadata: Metadata = {

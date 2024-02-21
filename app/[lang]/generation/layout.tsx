@@ -1,7 +1,7 @@
 "use client"
 
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-// import { HomeFooter } from "@/app/_components/home-footer"
+import { GenerationEditorContextProvider } from "@/app/[lang]/generation/_components/generation-editor-provider"
 import { LoginPage } from "@/app/_components/page/login-page"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
@@ -25,8 +25,10 @@ const GenerationLayout = (props: Props) => {
 
   return (
     <>
-      <BetaHeader />
-      <AppColumnLayout isFullWidth={true}>{props.children}</AppColumnLayout>
+      <BetaHeader title="画像生成 β" />
+      <GenerationEditorContextProvider>
+        <AppColumnLayout isFullWidth={true}>{props.children}</AppColumnLayout>
+      </GenerationEditorContextProvider>
       {/* <HomeFooter /> */}
     </>
   )

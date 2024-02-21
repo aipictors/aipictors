@@ -135,7 +135,7 @@ export const GenerationEditorLayout = (props: Props) => {
 
   return (
     <main
-      className="lg:h-main grid grid-cols-1 gap-2 w-full pb-4 lg:grid-rows-5 lg:grid-cols-7"
+      className="lg:h-main grid grid-cols-1 gap-2 w-full pb-4 lg:grid-rows-5 lg:grid-cols-7 overflow-x-hidden"
       style={{ gridTemplateAreas: templateAreas }}
     >
       <div

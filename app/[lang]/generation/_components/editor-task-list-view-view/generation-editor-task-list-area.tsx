@@ -1,6 +1,8 @@
 "use client"
 
-import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
@@ -16,19 +18,6 @@ type Props = {
   hidedTaskIds: string[]
   pcViewType?: string
   viewCount?: number
-  passType: string | null
-  onUpdateSettings(
-    modelId: string,
-    modelType: string,
-    sampler: string,
-    scale: number,
-    vae: string,
-    promptText: string,
-    negativePromptText: string,
-    seed: number,
-    sizeType: string,
-    clipSkip: number,
-  ): void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
 }
@@ -39,13 +28,17 @@ type Props = {
  * @returns
  */
 export const GenerationEditorTaskListArea = (props: Props) => {
+  const editor = useGenerationEditor()
+
+  const isTimeout = useFocusTimeout()
+
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
       offset: 0,
       where: {},
     },
-    // pollInterval: isTimeout ? 16000 : 2000,
+    pollInterval: isTimeout ? 8000 : 2000,
   })
 
   console.log("tasks", tasks)
@@ -89,7 +82,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    props.onUpdateSettings(
+    editor.updateSettings(
       task.model.id,
       task.model.type,
       task.sampler,
