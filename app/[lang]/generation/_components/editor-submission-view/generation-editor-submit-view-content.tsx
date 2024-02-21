@@ -127,7 +127,7 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
               steps: editor.context.steps,
               scale: editor.context.scale,
               sampler: editor.context.sampler,
-              // clipSkip: 2, TODO: 補完されたら差し替え
+              clipSkip: editor.context.clipSkip,
               sizeType: editor.context.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },

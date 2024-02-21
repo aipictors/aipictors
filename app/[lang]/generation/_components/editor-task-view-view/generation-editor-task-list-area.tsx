@@ -41,8 +41,6 @@ export const GenerationEditorTaskListArea = (props: Props) => {
     pollInterval: isTimeout ? 8000 : 2000,
   })
 
-  console.log("tasks", tasks)
-
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: config.query.maxLimit,

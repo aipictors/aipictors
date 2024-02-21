@@ -45,7 +45,6 @@ export const GenerationTaskRatingButton = (props: Props) => {
    * @returns アイコンサイズのクラス
    */
   const sizeClassName = () => {
-    console.log(props.size)
     if (props.size === 1) {
       return "h-6 w-6"
     }

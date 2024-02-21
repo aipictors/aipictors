@@ -59,8 +59,12 @@ export const GenerationTaskCard = (props: Props) => {
     }
   }
 
+  /**
+   * 履歴画像上に表示されるボタンのサイズ
+   * @param type サイズ
+   * @returns
+   */
   const optionButtonSize = (type: string) => {
-    console.log(type)
     if (type === "small") {
       return 1
     }
