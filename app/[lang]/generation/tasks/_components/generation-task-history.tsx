@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationTaskList2 } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-task-list-2"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-task-list-actions"
+import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-history"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -62,7 +62,7 @@ export function GenerationTaskHistory() {
       />
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>
-        <GenerationTaskList2
+        <GenerationTaskListHistory
           pcViewType="dialog"
           sizeType="full"
           viewCount={viewCount}
