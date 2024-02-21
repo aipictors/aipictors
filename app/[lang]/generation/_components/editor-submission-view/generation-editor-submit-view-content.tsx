@@ -26,15 +26,6 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
 
   const [generationCount, setGenerationCount] = useState(1)
 
-  const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: 1000,
-  })
-
-  const [signTerms] = useMutation(signImageGenerationTermsMutation, {
-    refetchQueries: [viewerCurrentPassQuery],
-    awaitRefetchQueries: true,
-  })
-
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
     {
@@ -65,6 +56,15 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
       // },
     },
   )
+
+  const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
+    pollInterval: isCreatingTask ? 10000 : 1000,
+  })
+
+  const [signTerms] = useMutation(signImageGenerationTermsMutation, {
+    refetchQueries: [viewerCurrentPassQuery],
+    awaitRefetchQueries: true,
+  })
 
   /**
    * 規約に同意する
