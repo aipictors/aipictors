@@ -36,7 +36,7 @@ export class ImageGenerationCache {
   /**
    * 初期化する
    */
-  init() {
+  reset() {
     const modelType = config.generationFeature.defaultImageModelType
     return new ImageGenerationState({
       passType: this.props.passType,

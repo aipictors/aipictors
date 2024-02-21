@@ -3,6 +3,7 @@
 import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
 import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
+import { GenerationEditorConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-reset-button"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-scale"
 import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-seed"
@@ -42,6 +43,7 @@ type Props = {
   onChangeSeed(seed: number): void
   onChangeSize(size: string): void
   onUpdateLoraModelConfig(modelId: string, value: number): void
+  onReset(): void
 }
 
 /**
@@ -110,6 +112,7 @@ export const GenerationEditorConfigView = (props: Props) => {
             value={props.configClipSkip}
             onChange={props.onChangeClipSkip}
           />
+          <GenerationEditorConfigResetButton onReset={props.onReset} />
         </div>
       </ScrollArea>
     </GenerationEditorCard>
