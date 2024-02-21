@@ -1,6 +1,9 @@
 "use client"
 
 import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
+import CloudflareTurnstile, {
+  Status,
+} from "@/app/[lang]/generation/_components/cloudflare-turnstile"
 import { PasswordLoginForm } from "@/app/_components/password-login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"
@@ -21,6 +24,7 @@ import {
   signInWithCustomToken,
 } from "firebase/auth"
 import Link from "next/link"
+import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
 
@@ -37,8 +41,14 @@ export const LoginDialog = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
+  const [turnstileStatus, setTurnstileStatus] = useState<Status | null>(null) // Add this line to manage Turnstile status
 
   const onLogin = async (form: FormLogin) => {
+    if (turnstileStatus !== "solved") {
+      toast("CAPTCHAを解決してください。")
+      return
+    }
+
     try {
       const result = await mutation({
         variables: {
@@ -77,13 +87,13 @@ export const LoginDialog = (props: Props) => {
           <p className="text-sm">{"SNSアカウントでログイン"}</p>
           <div className="flex flex-col md:flex-row gap-2">
             <SocialLoginButton
-              disabled={isLoading}
+              disabled={isLoading || turnstileStatus !== "solved"} // CAPTCHAが解決されていない場合に無効化
               provider={new GoogleAuthProvider()}
               buttonText="Googleでログイン"
               icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
             />
             <SocialLoginButton
-              disabled={isLoading}
+              disabled={isLoading || turnstileStatus !== "solved"} // CAPTCHAが解決されていない場合に無効化
               provider={new TwitterAuthProvider()}
               buttonText="𝕏(Twitter)でログイン"
               icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
@@ -95,8 +105,14 @@ export const LoginDialog = (props: Props) => {
 
         <div className="w-full my-2 space-y-2">
           <p className="text-sm">{"またはアカウント情報でログイン"}</p>
-          <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
+          <PasswordLoginForm
+            onSubmit={onLogin}
+            isLoading={isLoading || turnstileStatus !== "solved"}
+          />{" "}
+          // CAPTCHAが解決されていない場合に無効化
         </div>
+
+        <CloudflareTurnstile onStatusChange={setTurnstileStatus} />
 
         <Separator />
 
