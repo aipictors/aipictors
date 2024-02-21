@@ -1,4 +1,5 @@
 import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { config } from "@/config"
 import { produce } from "immer"
 
 /**
@@ -11,9 +12,26 @@ export class ImageGenerationAction {
     return this.state
   }
 
-  init() {
+  /**
+   * 設定をリセットする
+   * @returns
+   */
+  reset() {
     return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state }),
+      new ImageGenerationState({
+        ...this.state,
+        promptText: config.generationFeature.defaultPromptValue,
+        negativePromptText: config.generationFeature.defaultNegativePromptValue,
+        modelId: config.generationFeature.defaultImageModelId,
+        modelIds: config.generationFeature.defaultImageModelIds,
+        modelType: config.generationFeature.defaultImageModelType,
+        sampler: config.generationFeature.defaultSamplerValue,
+        scale: config.generationFeature.defaultScaleValue,
+        seed: -1,
+        steps: config.generationFeature.defaultStepsValue,
+        vae: config.generationFeature.defaultVaeValue,
+        clipSkip: config.generationFeature.defaultClipSkipValue,
+      }),
     )
   }
 

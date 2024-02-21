@@ -59,8 +59,9 @@ export const useImageGenerationMachine = (props: Props) => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
-  const init = () => {
-    const value = action.init().getState()
+  const reset = () => {
+    cacheStorage.reset()
+    const value = action.reset().getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -196,7 +197,7 @@ export const useImageGenerationMachine = (props: Props) => {
 
   return {
     context: new ImageGenerationContextView(state.context),
-    init,
+    reset,
     updateSettings,
     updateModelId,
     changeLoraModel: changeLoraConfig,

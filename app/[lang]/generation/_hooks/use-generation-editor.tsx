@@ -189,8 +189,15 @@ export const useGenerationEditor = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  const reset = () => {
+    cacheStorage.reset()
+    const value = action.reset().getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
   return {
     context: new ImageGenerationContextView(context),
+    reset,
     init,
     updateSettings,
     updateModelId,
