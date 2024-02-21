@@ -103,7 +103,7 @@ export const GenerationEditorResultContents = (props: Props) => {
       task.negativePrompt,
       task.seed,
       task.sizeType,
-      2, // TODO: 補完されたら差し替え
+      task.clipSkip,
     )
     toast("設定を復元しました")
   }
