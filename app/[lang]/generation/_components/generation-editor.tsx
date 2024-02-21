@@ -16,6 +16,7 @@ import {
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useSuspenseQuery } from "@apollo/client"
 import { useEffect } from "react"
+import { toast } from "sonner"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
@@ -69,6 +70,10 @@ export function GenerationEditor(props: Props) {
           onChangeClipSkip={machine.updateClipSkip}
           onChangeSteps={machine.updateSteps}
           onUpdateLoraModelConfig={machine.updateLoraModel}
+          onReset={() => {
+            toast("設定をリセットしました。")
+            machine.reset()
+          }}
         />
       }
       promptEditor={

@@ -24,7 +24,11 @@ export const GenerationEditorConfigSeed = (props: Props) => {
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"キャラや構図などを固定したいときに使用します。"}</p>
+              <p>
+                {
+                  "キャラや構図などを固定したいときに使用します。-1にするとランダムになります。"
+                }
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
