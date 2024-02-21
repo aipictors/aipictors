@@ -87,13 +87,20 @@ export const InProgressImageGenerationTaskResult = () => {
         <div className="py-2">
           <Separator />
         </div>
+        <div className="mb-1">
+          <p className="mb-1 font-semibold">{"Sampler"}</p>
+          <Skeleton className="h-8 mb-2 w-[196px]" />
+        </div>
+        <div className="py-2">
+          <Separator />
+        </div>
         <div className="flex space-x-4">
           <div className="w-full">
             <p className="mb-1 font-semibold">{"Seed"}</p>
             <Skeleton className="h-8 mb-2 w-[40px]" />
           </div>
           <div className="w-full">
-            <p className="mb-1 font-semibold">{"Sampler"}</p>
+            <p className="mb-1 font-semibold">{"Scale"}</p>
             <Skeleton className="h-8 mb-2 w-[40px]" />
           </div>
           <div className="w-full">
