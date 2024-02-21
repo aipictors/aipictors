@@ -2,10 +2,10 @@ import { GenerationTaskCacheView } from "@/app/[lang]/generation/tasks/[task]/_c
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ImageGenerationTaskNode } from "@/graphql/__generated__/graphql"
+import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 
 type Props = {
-  task: ImageGenerationTaskNode
+  task: ImageGenerationTaskFieldsFragment
   pcViewType: string
   sizeType: string
   onRestore?(taskId: string): void

@@ -1,7 +1,6 @@
 "use client"
 
 import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-list-view-view/generation-editor-result-list"
-import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
@@ -10,7 +9,6 @@ import { toast } from "sonner"
 
 type Props = {
   sizeType?: string
-  isCreatingTasks: boolean
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
@@ -41,16 +39,16 @@ type Props = {
  * @returns
  */
 export const GenerationEditorTaskListArea = (props: Props) => {
-  const isTimeout = useFocusTimeout()
-
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: 64,
       offset: 0,
       where: {},
     },
-    pollInterval: isTimeout ? 16000 : 2000,
+    // pollInterval: isTimeout ? 16000 : 2000,
   })
+
+  console.log("tasks", tasks)
 
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {

@@ -25,7 +25,7 @@ describe("ImageGenerationAction", () => {
       const text = "New prompt text"
       const updatedConfig = imageGenerationAction.updatePrompt(text)
       expect(updatedConfig.getState().promptText).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -36,7 +36,7 @@ describe("ImageGenerationAction", () => {
       const text = "New negative prompt text"
       const updatedConfig = imageGenerationAction.updateNegativePrompt(text)
       expect(updatedConfig.getState().negativePromptText).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -47,7 +47,7 @@ describe("ImageGenerationAction", () => {
       const text = "New sampler text"
       const updatedConfig = imageGenerationAction.updateSampler(text)
       expect(updatedConfig.getState().sampler).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -58,7 +58,7 @@ describe("ImageGenerationAction", () => {
       const value = 10
       const updatedConfig = imageGenerationAction.updateSteps(value)
       expect(updatedConfig.getState().steps).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -69,7 +69,7 @@ describe("ImageGenerationAction", () => {
       const value = 1
       const updatedConfig = imageGenerationAction.updateScale(value)
       expect(updatedConfig.getState().scale).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -80,7 +80,7 @@ describe("ImageGenerationAction", () => {
       const text = "New size type"
       const updatedConfig = imageGenerationAction.updateSizeType(text)
       expect(updatedConfig.getState().sizeType).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -91,7 +91,7 @@ describe("ImageGenerationAction", () => {
       const text = "New vae text"
       const updatedConfig = imageGenerationAction.updateVae(text)
       expect(updatedConfig.getState().vae).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -102,7 +102,7 @@ describe("ImageGenerationAction", () => {
       const value = 10
       const updatedConfig = imageGenerationAction.updateSeed(value)
       expect(updatedConfig.getState().seed).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 
@@ -113,14 +113,14 @@ describe("ImageGenerationAction", () => {
       const id = "1"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD1")
       expect(updatedConfig.getState().modelId).toBe(id)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
 
     test("should update the size type to SD2_768_768 when the model id is 22, 23, or 24 and the current size type includes SD1", () => {
       const id = "22"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD2")
       expect(updatedConfig.getState().sizeType).toBe("SD2_768_768")
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationState)
+      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
     })
   })
 

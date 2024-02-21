@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 
 type Props = {
-  isCreatingTasks: boolean
   userNanoid: string | null
   passType: string | null
   onUpdateSettings(
@@ -77,7 +76,6 @@ export const GenerationEditorTaskListView = (props: Props) => {
       />
       <Separator />
       <GenerationEditorTaskListArea
-        isCreatingTasks={props.isCreatingTasks}
         hidedTaskIds={hidedTaskIds}
         rating={rating}
         isEditMode={isEditMode}
