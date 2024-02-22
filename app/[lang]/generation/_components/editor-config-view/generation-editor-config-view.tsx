@@ -110,7 +110,9 @@ export const GenerationEditorConfigView = (props: Props) => {
       <ScrollArea type="always">
         <div
           className={cn(
-            `flex flex-col px-4 gap-y-4 pb-4 ${!isDesktop ? "max-h-96" : ""}`,
+            `flex flex-col px-4 gap-y-4 pb-4 ${
+              !isDesktop ? "max-h-[80vh]" : ""
+            }`,
           )}
         >
           <GenerationEditorConfigModels
