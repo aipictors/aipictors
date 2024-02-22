@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test"
 import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
 
 describe("ImageGenerationCache", () => {

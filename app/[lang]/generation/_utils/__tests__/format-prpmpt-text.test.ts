@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 
 describe("formatPromptText", () => {

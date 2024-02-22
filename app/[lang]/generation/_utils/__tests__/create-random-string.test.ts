@@ -1,3 +1,4 @@
+import { describe, expect, test } from "bun:test"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
 
 describe("createRandomString", () => {
