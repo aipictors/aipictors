@@ -8,7 +8,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
-import { DialogContent, DialogHeader } from "@/components/ui/dialog"
+import {
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 
@@ -32,7 +36,7 @@ export const PromptCategoriesDialogContents = (props: Props) => {
     <>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader />
-        <ScrollArea className="h-full max-h-96">
+        <ScrollArea className="h-full overflow-auto max-h-[80vh]">
           <Accordion
             type="multiple"
             className="w-full"
@@ -70,6 +74,11 @@ export const PromptCategoriesDialogContents = (props: Props) => {
             ))}
           </Accordion>
         </ScrollArea>
+        <DialogFooter>
+          <Button className="w-full" onClick={props.onClose}>
+            {"完了"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </>
   )

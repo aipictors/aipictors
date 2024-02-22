@@ -9,6 +9,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { BookTextIcon } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   promptCategories: PromptCategoriesQuery["promptCategories"]
@@ -41,8 +42,7 @@ export const GenerationEditorPromptView = (props: Props) => {
 
   const selectedPromptIds = currentPrompts.map((prompt) => prompt.id)
 
-  const onOpen = () => {}
-  const onClose = () => {}
+  const { value, setTrue, setFalse } = useBoolean()
 
   return (
     <>
@@ -52,12 +52,12 @@ export const GenerationEditorPromptView = (props: Props) => {
         action={
           <>
             <div className="hidden xl:block">
-              <Button variant={"secondary"} size={"sm"} onClick={onOpen}>
+              <Button variant={"secondary"} size={"sm"}>
                 {"キーワード"}
               </Button>
             </div>
             <div className="block xl:hidden">
-              <Button size={"icon"} variant={"ghost"} onClick={onOpen}>
+              <Button size={"icon"} variant={"ghost"}>
                 <BookTextIcon />
               </Button>
             </div>
@@ -76,15 +76,20 @@ export const GenerationEditorPromptView = (props: Props) => {
               editor.initPromptWithLoraModel()
             }}
           />
-          <Dialog>
+          <Dialog open={value}>
             <DialogTrigger asChild>
-              <Button variant={"secondary"} size={"sm"} className="w-full">
+              <Button
+                onClick={setTrue}
+                variant={"secondary"}
+                size={"sm"}
+                className="w-full"
+              >
                 {"キーワードから選ぶ"}
               </Button>
             </DialogTrigger>
             <PromptCategoriesDialogContents
               selectedPromptIds={selectedPromptIds}
-              onClose={onClose}
+              onClose={setFalse}
               promptCategories={props.promptCategories}
               onSelect={onSelectPromptId}
             />
