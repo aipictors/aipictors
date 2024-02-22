@@ -14,16 +14,19 @@ import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generati
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { config } from "@/config"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
 } from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { cn } from "@/lib/utils"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   /**
@@ -42,6 +45,7 @@ type Props = {
  * @returns
  */
 export const GenerationEditorConfigView = (props: Props) => {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
   const editor = useGenerationEditor()
   const searchParams = useSearchParams()
   const authContext = useContext(AuthContext)
@@ -104,7 +108,11 @@ export const GenerationEditorConfigView = (props: Props) => {
       tooltip={"イラストの絵柄を調整することができます。"}
     >
       <ScrollArea type="always">
-        <div className="flex flex-col px-4 gap-y-4 pb-4">
+        <div
+          className={cn(
+            `flex flex-col px-4 gap-y-4 pb-4 ${!isDesktop ? "max-h-96" : ""}`,
+          )}
+        >
           <GenerationEditorConfigModels
             models={props.models}
             currentModelId={editor.context.modelId}
