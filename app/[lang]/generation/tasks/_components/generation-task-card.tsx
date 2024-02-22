@@ -127,24 +127,22 @@ export const GenerationTaskCard = (props: Props) => {
         </SelectableCardButton>
       )}
       {/* 拡大ボタン */}
-      {(!isDesktop && !props.isSelected) ||
-        (isHovered && !props.isSelected && (
-          <GenerationTaskZoomUpButton
-            taskId={props.taskId}
-            token={props.token}
-            size={optionButtonSize(props.optionButtonSize)}
-            setIsHovered={setIsHovered}
-          />
-        ))}
+      {isHovered && (
+        <GenerationTaskZoomUpButton
+          taskId={props.taskId}
+          token={props.token}
+          size={optionButtonSize(props.optionButtonSize)}
+          setIsHovered={setIsHovered}
+        />
+      )}
       {/* お気に入りボタン */}
-      {(!isDesktop && !props.isSelected) ||
-        (isHovered && !props.isSelected && (
-          <GenerationTaskRatingButton
-            nowRating={props.rating}
-            taskNanoid={props.taskNanoid}
-            size={optionButtonSize(props.optionButtonSize)}
-          />
-        ))}
+      {isDesktop && isHovered && (
+        <GenerationTaskRatingButton
+          nowRating={props.rating}
+          taskNanoid={props.taskNanoid}
+          size={optionButtonSize(props.optionButtonSize)}
+        />
+      )}
     </div>
   )
 }

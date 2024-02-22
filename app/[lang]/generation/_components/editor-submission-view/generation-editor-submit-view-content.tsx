@@ -122,7 +122,6 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
 
       const generationParams = {
-        count: 1,
         model: model.name,
         vae: editor.context.vae ?? "",
         prompt: editor.context.promptText,

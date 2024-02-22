@@ -59,7 +59,7 @@ export function SelectableCardButton(props: Props) {
       {!props.isSelected ? (
         !props.isDisabled &&
         props.isDisabled !== undefined && (
-          <div className="absolute bg-white opacity-50 rounded-full right-2 top-2">
+          <div className="absolute bg-white opacity-50 rounded-full right-2 top-2 border-solid border-2 border-black">
             <CheckIcon color="white" />
           </div>
         )
