@@ -96,7 +96,7 @@ export const GenerationTaskCard = (props: Props) => {
         setIsHovered(false)
       }}
     >
-      {props.isLink && (
+      {props.isLink ? (
         <Link href={`/generation/tasks/${props.taskNanoid}`}>
           <SelectableCardButton
             onClick={props.onClick}
@@ -110,6 +110,18 @@ export const GenerationTaskCard = (props: Props) => {
             />
           </SelectableCardButton>
         </Link>
+      ) : (
+        <SelectableCardButton
+          onClick={props.onClick}
+          isSelected={props.isSelected}
+        >
+          <PrivateImage
+            className={`generation-image-${props.taskNanoid}`}
+            taskId={props.taskId}
+            token={props.token}
+            alt={"-"}
+          />
+        </SelectableCardButton>
       )}
       {/* 拡大ボタン */}
       {(!isDesktop && !props.isSelected) ||
