@@ -42,13 +42,13 @@
     ".firebase": true,
     ".idea": true,
     ".next": true,
-    ".vitepress/cache": true,
     ".yarn": true,
     "dist": true,
     "graphql/__generated__": true,
     "next-env.d.ts": true,
     "package-lock.json": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lockb": true
   },
   "search.exclude": {
     "*.lock": true,

@@ -20,14 +20,15 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["vitest/globals"]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "next.config.mjs"
-, "tailwind.config.mjs"],
+    "next.config.mjs",
+    "tailwind.config.mjs",
+    "postcss.config.js"
+  ],
   "exclude": ["node_modules"]
 }

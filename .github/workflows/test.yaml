@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v1
-      - run: time bun install
+      - run: time bun install --frozen-lockfile
 
       - name: Prebuild
         run: time bun run predev
