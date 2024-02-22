@@ -22,6 +22,7 @@ import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/upd
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 
+import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { config } from "@/config"
 import {
   ArrowDownToLine,
@@ -418,12 +419,27 @@ export function GenerationTaskView(props: Props) {
           </div>
         </div>
       </ScrollArea>
+
       {!isDesktop && (
-        <Link href="/generation/tasks">
-          <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
-            画像一覧
-          </Button>
-        </Link>
+        <AppFixedContent
+          position="bottom"
+          children={
+            <div className="flex justify-center">
+              <Link href="/generation" className="mr-4">
+                <Button className="w-40 p-4 mt-16 mb-4" variant={"secondary"}>
+                  画像生成
+                </Button>
+              </Link>
+              {config.isDevelopmentMode && (
+                <Link href="/generation/tasks">
+                  <Button className="w-40 p-4 mt-16 mb-4" variant={"secondary"}>
+                    画像一覧
+                  </Button>
+                </Link>
+              )}
+            </div>
+          }
+        />
       )}
     </>
   )
