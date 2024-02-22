@@ -7,6 +7,7 @@ import { config } from "@/config"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
+import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -20,6 +21,7 @@ type Props = {
   remainingSeconds?: number
   rating: number
   optionButtonSize: string
+  isLink?: boolean
   onClick?(): void
   onCancel?(): void
 }
@@ -94,17 +96,21 @@ export const GenerationTaskCard = (props: Props) => {
         setIsHovered(false)
       }}
     >
-      <SelectableCardButton
-        onClick={props.onClick}
-        isSelected={props.isSelected}
-      >
-        <PrivateImage
-          className={`generation-image-${props.taskNanoid}`}
-          taskId={props.taskId}
-          token={props.token}
-          alt={"-"}
-        />
-      </SelectableCardButton>
+      {props.isLink && (
+        <Link href={`/generation/tasks/${props.taskNanoid}`}>
+          <SelectableCardButton
+            onClick={props.onClick}
+            isSelected={props.isSelected}
+          >
+            <PrivateImage
+              className={`generation-image-${props.taskNanoid}`}
+              taskId={props.taskId}
+              token={props.token}
+              alt={"-"}
+            />
+          </SelectableCardButton>
+        </Link>
+      )}
       {/* 拡大ボタン */}
       {(!isDesktop && !props.isSelected) ||
         (isHovered && !props.isSelected && (

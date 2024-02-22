@@ -35,11 +35,11 @@ export const AppConfirmDialog = (props: Props) => {
           <AlertDialogDescription>{props.description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={props.onNext}>
-            {props.nextLabel ?? "はい"}
-          </AlertDialogCancel>
-          <AlertDialogAction onClick={props.onCancel}>
+          <AlertDialogCancel onClick={props.onCancel}>
             {props.cancelLabel ?? "いいえ"}
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={props.onNext}>
+            {props.nextLabel ?? "はい"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

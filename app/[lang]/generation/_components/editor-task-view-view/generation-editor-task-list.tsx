@@ -7,7 +7,6 @@ import { GenerationTaskViewButton } from "@/app/[lang]/generation/tasks/_compone
 import { config } from "@/config"
 import { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { ErrorBoundary } from "@sentry/nextjs"
-import Link from "next/link"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -49,17 +48,16 @@ export const GenerationEditorTaskList = (props: Props) => {
           />
         )}
         {!props.isEditMode && !isDesktop && (
-          <Link href={`/generation/tasks/${task.nanoid}`}>
-            <GenerationTaskCard
-              taskNanoid={task.nanoid}
-              remainingSeconds={task.estimatedSeconds ?? 0}
-              taskId={task.id}
-              token={task.token}
-              optionButtonSize={props.sizeType}
-              rating={task.rating ?? 0}
-              onCancel={props.onCancel}
-            />
-          </Link>
+          <GenerationTaskCard
+            taskNanoid={task.nanoid}
+            remainingSeconds={task.estimatedSeconds ?? 0}
+            taskId={task.id}
+            token={task.token}
+            optionButtonSize={props.sizeType}
+            rating={task.rating ?? 0}
+            onCancel={props.onCancel}
+            isLink={true}
+          />
         )}
         {!props.isEditMode && isDesktop && (
           <GenerationTaskViewButton
