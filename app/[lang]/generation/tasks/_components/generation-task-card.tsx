@@ -98,20 +98,20 @@ export const GenerationTaskCard = (props: Props) => {
       }}
     >
       {props.isLink ? (
-        <Link href={`/generation/tasks/${props.taskNanoid}`}>
-          <SelectableCardButton
-            onClick={props.onClick}
-            isSelected={props.isSelected}
-            isDisabled={props.isSelectDisabled}
-          >
+        <SelectableCardButton
+          onClick={props.onClick}
+          isSelected={props.isSelected}
+          isDisabled={props.isSelectDisabled}
+        >
+          <Link href={`/generation/tasks/${props.taskNanoid}`}>
             <PrivateImage
               className={`generation-image-${props.taskNanoid}`}
               taskId={props.taskId}
               token={props.token}
               alt={"-"}
             />
-          </SelectableCardButton>
-        </Link>
+          </Link>
+        </SelectableCardButton>
       ) : (
         <SelectableCardButton
           onClick={props.onClick}
