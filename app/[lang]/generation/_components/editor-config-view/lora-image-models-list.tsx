@@ -58,7 +58,7 @@ export const LoraImageModelsList = (props: Props) => {
             <div key={model.id}>
               <ImageModelCard
                 key={model.id}
-                displayName={model.name}
+                displayName={""}
                 isActive={props.selectedModelNames.includes(model.name)}
                 thumbnailImageURL={model.thumbnailImageURL}
                 description={model.description}
