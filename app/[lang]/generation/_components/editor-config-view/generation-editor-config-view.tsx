@@ -11,12 +11,19 @@ import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
 } from "@/graphql/__generated__/graphql"
+import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useContext } from "react"
+import { toast } from "sonner"
 
 type Props = {
   /**
@@ -36,6 +43,47 @@ type Props = {
  */
 export const GenerationEditorConfigView = (props: Props) => {
   const editor = useGenerationEditor()
+  const searchParams = useSearchParams()
+  const authContext = useContext(AuthContext)
+  const ref = searchParams.get("ref")
+  const { data } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn && ref
+      ? {
+          variables: {
+            id: ref,
+          },
+        }
+      : skipToken,
+  )
+
+  /**
+   * URLのnanoidからタスクを復元
+   */
+  useEffect(() => {
+    setTimeout(() => {
+      try {
+        console.log(data)
+
+        if (data?.imageGenerationTask) {
+          const task = data.imageGenerationTask
+          editor.updateModelId(task.model.id, task.model.type)
+          editor.updatePrompt(task.prompt)
+          editor.updateNegativePrompt(task.negativePrompt)
+          editor.updateSizeType(task.sizeType)
+          editor.updateScale(task.scale)
+          editor.updateSeed(task.seed)
+          editor.updateSteps(task.steps)
+          editor.updateSampler(task.sampler)
+          editor.updateClipSkip(task.clipSkip)
+
+          toast("タスクを復元しました。")
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }, 1000)
+  }, [])
 
   /**
    * 選択中のモデル

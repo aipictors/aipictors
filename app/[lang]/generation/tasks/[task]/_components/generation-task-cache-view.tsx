@@ -26,6 +26,7 @@ import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  LinkIcon,
   Pencil,
   Trash2,
 } from "lucide-react"
@@ -47,6 +48,24 @@ type Props = {
  */
 export const copyGeneration = (generationParameters: GenerationParameters) => {
   const text = `${generationParameters.prompt}\nNegative prompt:${generationParameters.negativePrompt},\nSteps:${generationParameters.steps}, Size:${generationParameters.width}x${generationParameters.height}, Seed:${generationParameters.seed}, Model:${generationParameters.modelName}, Sampler:${generationParameters.sampler}, CFG scale:${generationParameters.scale}`
+
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      toast("クリップボードにコピーされました")
+    })
+    .catch((err) => {
+      console.error("クリップボードへのコピーに失敗しました:", err)
+    })
+}
+
+/**
+ * URLをクリップボードにコピーする
+ * @param generationParameters
+ */
+export const copyUrl = (taskId: string) => {
+  const sitUrl = config.siteURL
+  const text = `${sitUrl}/generation/tasks/${taskId}`
 
   navigator.clipboard
     .writeText(text)
@@ -269,6 +288,17 @@ export function GenerationTaskCacheView(props: Props) {
               onClick={() => copyGeneration(GenerationParameters)}
               icon={ClipboardCopy}
             />
+            {props.task.nanoid !== null && props.task.nanoid !== "" && (
+              <GenerationMenuButton
+                title={"URLをコピーする"}
+                onClick={() => {
+                  if (props.task.nanoid !== null) {
+                    copyUrl(props.task.nanoid)
+                  }
+                }}
+                icon={LinkIcon}
+              />
+            )}
             <GenerationMenuButton
               title={"画像を保存する"}
               onClick={() => saveGenerationImage(props.task.id)}

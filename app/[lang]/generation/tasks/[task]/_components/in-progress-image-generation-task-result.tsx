@@ -8,6 +8,7 @@ import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  LinkIcon,
   Pencil,
   Trash2,
 } from "lucide-react"
@@ -43,6 +44,11 @@ export const InProgressImageGenerationTaskResult = () => {
             onClick={() => {}}
             disabled={true}
             icon={ClipboardCopy}
+          />
+          <GenerationMenuButton
+            title={"URLをコピーする"}
+            onClick={() => {}}
+            icon={LinkIcon}
           />
           <GenerationMenuButton
             title={"画像を保存する"}
