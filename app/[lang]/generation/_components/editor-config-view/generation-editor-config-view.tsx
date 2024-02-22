@@ -145,7 +145,9 @@ export const GenerationEditorConfigView = (props: Props) => {
             value={editor.context.clipSkip}
             onChange={editor.updateClipSkip}
           />
-          <GenerationEditorConfigResetButton onReset={editor.reset} />
+          <div className="sticky bottom-0 pb-4 pt-4 bg-card">
+            <GenerationEditorConfigResetButton onReset={editor.reset} />
+          </div>
         </div>
       </ScrollArea>
     </GenerationEditorCard>
