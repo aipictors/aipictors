@@ -4,6 +4,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/edit
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { config } from "@/config"
 import {
   ImageGenerationSizeType,
   ImageModelsQuery,
@@ -15,6 +16,7 @@ import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewe
 import { useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
@@ -23,6 +25,8 @@ type Props = {
 
 export function GenerationEditorSubmissionViewContent(props: Props) {
   const editor = useGenerationEditor()
+
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [generationCount, setGenerationCount] = useState(1)
 
@@ -137,7 +141,10 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
       await Promise.all(promises)
       // タスクの作成後も呼び出す必要がある
       await activeImageGeneration({ nanoid: userNanoid })
-      toast("タスクを作成しました")
+      if (isDesktop) {
+        // スマホだと生成ボタンに被るのでPCのみ出す
+        toast("タスクを作成しました")
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
