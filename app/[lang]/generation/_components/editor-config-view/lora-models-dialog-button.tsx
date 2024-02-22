@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
+import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
@@ -20,10 +22,17 @@ type Props = {
 }
 
 export const LoraModelsDialogButton = (props: Props) => {
+  const { value, setTrue, setFalse } = useBoolean()
+
   return (
-    <Dialog>
+    <Dialog open={value}>
       <DialogTrigger asChild>
-        <Button size={"sm"} className="w-full" variant={"secondary"}>
+        <Button
+          size={"sm"}
+          className="w-full"
+          variant={"secondary"}
+          onClick={setTrue}
+        >
           LoRAを追加
         </Button>
       </DialogTrigger>
@@ -39,6 +48,11 @@ export const LoraModelsDialogButton = (props: Props) => {
           selectedModelNames={props.selectedModelNames}
           onSelect={props.onSelect}
         />
+        <DialogFooter>
+          <Button className="w-full" onClick={setFalse}>
+            {"完了"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
