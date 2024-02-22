@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Loader2Icon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 type Props = {
   isLoading: boolean
@@ -10,6 +11,7 @@ type Props = {
 }
 
 export function GenerationSubmitButton(props: Props) {
+  const { theme } = useTheme()
   return (
     <Button
       onClick={props.onClick}
@@ -22,7 +24,10 @@ export function GenerationSubmitButton(props: Props) {
           ? "処理中.."
           : `生成する(${props.generatingCount}/${props.maxGeneratingCount})`}
         {props.generatingCount > 0 && (
-          <Loader2Icon color="white" className={"ml-2 animate-spin"} />
+          <Loader2Icon
+            color={theme === "light" ? "white" : "black"}
+            className={"ml-2 animate-spin dark:black"}
+          />
         )}
       </div>
     </Button>
