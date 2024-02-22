@@ -426,13 +426,13 @@ export function GenerationTaskView(props: Props) {
           children={
             <div className="flex justify-center">
               <Link href="/generation" className="mr-4">
-                <Button className="w-40 p-4 mt-4 mb-4" variant={"secondary"}>
+                <Button className="w-40 p-4 mt-2 mb-2" variant={"secondary"}>
                   画像生成
                 </Button>
               </Link>
               {config.isDevelopmentMode && (
                 <Link href="/generation/tasks">
-                  <Button className="w-40 p-4 mt-4 mb-4" variant={"secondary"}>
+                  <Button className="w-40 p-4 mt-2 mb-2" variant={"secondary"}>
                     画像一覧
                   </Button>
                 </Link>
