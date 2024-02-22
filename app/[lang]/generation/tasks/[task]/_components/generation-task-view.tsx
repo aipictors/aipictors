@@ -24,12 +24,13 @@ import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { config } from "@/config"
+import { cn } from "@/lib/utils"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  FileUp,
   LinkIcon,
-  Pencil,
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
@@ -321,7 +322,7 @@ export function GenerationTaskView(props: Props) {
               title={"投稿する"}
               onClick={onPost}
               text={"投稿"}
-              icon={Pencil}
+              icon={FileUp}
             />
             <GenerationMenuButton
               title={"生成情報をコピーする"}
@@ -381,7 +382,7 @@ export function GenerationTaskView(props: Props) {
           </div>
           <p className="mb-1 font-semibold">{"prompt"}</p>
           <Textarea disabled={true}>{data.imageGenerationTask.prompt}</Textarea>
-          <CopyButton className="mb-4" text={data.imageGenerationTask.prompt} />
+          <CopyButton className="mt-2" text={data.imageGenerationTask.prompt} />
           <div className="py-2">
             <Separator />
           </div>
@@ -390,7 +391,7 @@ export function GenerationTaskView(props: Props) {
             {data.imageGenerationTask.negativePrompt}
           </Textarea>
           <CopyButton
-            className="mb-4"
+            className="mt-2"
             text={data.imageGenerationTask.negativePrompt}
           />
           <div className="py-2">
@@ -424,15 +425,20 @@ export function GenerationTaskView(props: Props) {
         <AppFixedContent
           position="bottom"
           children={
-            <div className="flex justify-center">
-              <Link href="/generation" className="mr-4">
-                <Button className="w-40 p-4 mt-2 mb-2" variant={"secondary"}>
+            <div className="flex">
+              <Link
+                href="/generation"
+                className={cn(
+                  `flex-1 w-full ${config.isDevelopmentMode && "mr-2"}`,
+                )}
+              >
+                <Button className="p-4 w-full" variant={"secondary"}>
                   画像生成
                 </Button>
               </Link>
               {config.isDevelopmentMode && (
-                <Link href="/generation/tasks">
-                  <Button className="w-40 p-4 mt-2 mb-2" variant={"secondary"}>
+                <Link href="/generation/tasks" className="flex-1 w-full">
+                  <Button className="p-4 w-full" variant={"secondary"}>
                     画像一覧
                   </Button>
                 </Link>

@@ -30,6 +30,8 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
 
   const [generationCount, setGenerationCount] = useState(1)
 
+  const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
+
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
     {
@@ -118,6 +120,31 @@ export function GenerationEditorSubmissionViewContent(props: Props) {
       })
       if (typeof model === "undefined") return
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
+
+      const generationParams = {
+        count: 1,
+        model: model.name,
+        vae: editor.context.vae ?? "",
+        prompt: editor.context.promptText,
+        negativePrompt: editor.context.negativePromptText,
+        seed: editor.context.seed,
+        steps: editor.context.steps,
+        scale: editor.context.scale,
+        sampler: editor.context.sampler,
+        clipSkip: editor.context.clipSkip,
+        sizeType: editor.context.sizeType as ImageGenerationSizeType,
+        type: "TEXT_TO_IMAGE",
+      }
+      const generationParamsJson = JSON.stringify(generationParams)
+      if (beforeGenerationParams === generationParamsJson) {
+        toast(
+          "前回と同じ生成条件での連続生成はできません。Seedを変更してください。",
+        )
+        return
+      }
+      if (editor.context.seed !== -1) {
+        setBeforeGenerationParams(generationParamsJson)
+      }
       const promises = taskCounts.map(() =>
         createTask({
           variables: {

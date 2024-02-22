@@ -22,6 +22,7 @@ type Props = {
   rating: number
   optionButtonSize: string
   isLink?: boolean
+  isSelectDisabled?: boolean
   onClick?(): void
   onCancel?(): void
 }
@@ -101,6 +102,7 @@ export const GenerationTaskCard = (props: Props) => {
           <SelectableCardButton
             onClick={props.onClick}
             isSelected={props.isSelected}
+            isDisabled={props.isSelectDisabled}
           >
             <PrivateImage
               className={`generation-image-${props.taskNanoid}`}
@@ -114,6 +116,7 @@ export const GenerationTaskCard = (props: Props) => {
         <SelectableCardButton
           onClick={props.onClick}
           isSelected={props.isSelected}
+          isDisabled={props.isSelectDisabled}
         >
           <PrivateImage
             className={`generation-image-${props.taskNanoid}`}

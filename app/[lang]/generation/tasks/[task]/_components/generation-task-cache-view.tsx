@@ -26,8 +26,8 @@ import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  FileUp,
   LinkIcon,
-  Pencil,
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
@@ -281,7 +281,7 @@ export function GenerationTaskCacheView(props: Props) {
               title={"投稿する"}
               onClick={onPost}
               text={"投稿"}
-              icon={Pencil}
+              icon={FileUp}
             />
             <GenerationMenuButton
               title={"生成情報をコピーする"}

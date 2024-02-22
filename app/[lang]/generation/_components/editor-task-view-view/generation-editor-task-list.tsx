@@ -38,6 +38,7 @@ export const GenerationEditorTaskList = (props: Props) => {
           <GenerationTaskCard
             onClick={() => props.onSelectTask(task.nanoid, task.status)}
             isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
+            isSelectDisabled={false}
             taskNanoid={task.nanoid}
             remainingSeconds={task.estimatedSeconds ?? 0}
             taskId={task.id}
@@ -51,6 +52,7 @@ export const GenerationEditorTaskList = (props: Props) => {
           <GenerationTaskCard
             taskNanoid={task.nanoid}
             remainingSeconds={task.estimatedSeconds ?? 0}
+            isSelectDisabled={true}
             taskId={task.id}
             token={task.token}
             optionButtonSize={props.sizeType}

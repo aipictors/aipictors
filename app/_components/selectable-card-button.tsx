@@ -10,6 +10,10 @@ type Props = {
    * 選択されている
    */
   isSelected?: boolean
+  /**
+   * 選択無効化
+   */
+  isDisabled?: boolean
   onClick?(): void
   /**
    * ホバーされている
@@ -27,6 +31,7 @@ export function SelectableCardButton(props: Props) {
   return (
     <button
       type={"button"}
+      disabled={props.isDisabled}
       onClick={props.onClick}
       onMouseEnter={() => {
         if (props.onMouseEnter) props.onMouseEnter()
@@ -51,8 +56,15 @@ export function SelectableCardButton(props: Props) {
       >
         {props.children}
       </div>
-      {!props.isSelected ? null : (
-        <div className="absolute bg-white rounded-full right-2 bottom-2">
+      {!props.isSelected ? (
+        !props.isDisabled &&
+        props.isDisabled !== undefined && (
+          <div className="absolute bg-white opacity-50 rounded-full right-2 top-2">
+            <CheckIcon color="white" />
+          </div>
+        )
+      ) : (
+        <div className="absolute bg-white rounded-full right-2 top-2">
           <CheckIcon color="black" />
         </div>
       )}

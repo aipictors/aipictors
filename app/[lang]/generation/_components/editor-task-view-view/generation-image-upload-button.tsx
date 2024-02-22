@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Upload } from "lucide-react"
+import { FileUp } from "lucide-react"
 
 type Props = {
   disabled: boolean
@@ -27,7 +27,7 @@ export function GenerationImagePostButton(props: Props) {
       size="icon"
       onClick={onClick}
     >
-      <Upload className="w-4" />
+      <FileUp className="w-4" />
     </Button>
   )
 }

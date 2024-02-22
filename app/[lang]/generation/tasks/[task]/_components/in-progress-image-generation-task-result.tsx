@@ -8,8 +8,8 @@ import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
+  FileUp,
   LinkIcon,
-  Pencil,
   Trash2,
 } from "lucide-react"
 import { CopyButton } from "./copy-button"
@@ -37,7 +37,7 @@ export const InProgressImageGenerationTaskResult = () => {
             onClick={() => {}}
             disabled={true}
             text={"投稿"}
-            icon={Pencil}
+            icon={FileUp}
           />
           <GenerationMenuButton
             title={"生成情報をコピーする"}
