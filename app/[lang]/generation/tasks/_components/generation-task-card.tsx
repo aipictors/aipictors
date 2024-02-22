@@ -127,7 +127,7 @@ export const GenerationTaskCard = (props: Props) => {
         </SelectableCardButton>
       )}
       {/* 拡大ボタン */}
-      {isHovered && (
+      {isDesktop && isHovered && (
         <GenerationTaskZoomUpButton
           taskId={props.taskId}
           token={props.token}
