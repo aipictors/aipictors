@@ -1,7 +1,7 @@
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
-import { StarIcon } from "@radix-ui/react-icons"
+import { StarIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -54,6 +54,20 @@ export const GenerationTaskRatingButton = (props: Props) => {
     return "h-12 w-12"
   }
 
+  /**
+   * フォントサイズのクラスを返す
+   * @returns フォントサイズのクラス
+   */
+  const fontSizeClassName = () => {
+    if (props.size === 1) {
+      return "text-sm"
+    }
+    if (props.size === 2) {
+      return "text-xl"
+    }
+    return "text-4xl"
+  }
+
   return (
     <button
       disabled={isLoading}
@@ -61,14 +75,30 @@ export const GenerationTaskRatingButton = (props: Props) => {
       onClick={onRating}
       className={cn(
         "absolute opacity-80 hover:opacity-40 rounded-full left-2 bottom-2 transition-all",
-        props.nowRating !== 0 && !isLoading ? "bg-yellow-400" : "bg-white",
       )}
     >
-      {isLoading ? (
-        <Loader2Icon className={`animate-spin ${sizeClassName()}`} />
-      ) : (
-        <StarIcon className={sizeClassName()} />
-      )}
+      <div className="flex bg-white rounded-lg px-1">
+        {isLoading ? (
+          <Loader2Icon
+            color="black"
+            className={`animate-spin ${sizeClassName()}`}
+          />
+        ) : (
+          <StarIcon
+            color="black"
+            className={cn(
+              props.nowRating !== 0 && !isLoading
+                ? `fill-yellow-500 ${sizeClassName()}`
+                : `fill-white ${sizeClassName()}`,
+            )}
+          />
+        )}
+        {props.nowRating !== 0 && (
+          <p className={`text-black ${fontSizeClassName()}`}>
+            {props.nowRating}
+          </p>
+        )}
+      </div>
     </button>
   )
 }

@@ -1,5 +1,6 @@
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
-import { Scan } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { ZoomIn } from "lucide-react"
 
 type Props = {
   taskId: string
@@ -38,7 +39,10 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
             props.setIsHovered(true)
           }}
         >
-          <Scan className={sizeClassName()} color="black" />
+          <ZoomIn
+            className={cn(`fill-white ${sizeClassName()}`)}
+            color="black"
+          />
         </div>
       }
     />
