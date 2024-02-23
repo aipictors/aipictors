@@ -15,7 +15,7 @@ export const GenerationEditorLayout = (props: Props) => {
   return (
     <main className="flex flex-col lg:flex-row gap-4 lg:h-main pb-4 overflow-hidden">
       <div className="flex flex-col gap-y-4">
-        <div className="">{props.submission}</div>
+        <div>{props.submission}</div>
         <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
           <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
           <div className="lg:min-w-64 xl:min-w-96 flex flex-col md:flex-row lg:flex-col gap-4">
