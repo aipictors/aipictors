@@ -314,7 +314,7 @@ export class ImageGenerationAction {
 
     const loraModels = [
       ...this.state.loraModels.map((text) => `<lora:${text}>`),
-      `<lora:${name}:0>`,
+      `<lora:${name}:1>`,
     ]
 
     const promptText = [this.promptTextWithoutLora, ...loraModels]
