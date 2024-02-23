@@ -110,9 +110,8 @@ export const GenerationEditorConfigView = (props: Props) => {
       <ScrollArea type="always">
         <div
           className={cn(
-            `flex flex-col px-4 gap-y-4 pb-4 ${
-              !isDesktop ? "max-h-[80vh]" : ""
-            }`,
+            "flex flex-col px-4 gap-y-4",
+            "max-h-[60vh] md:max-h-full",
           )}
         >
           <GenerationEditorConfigModels
@@ -155,11 +154,11 @@ export const GenerationEditorConfigView = (props: Props) => {
             value={editor.context.clipSkip}
             onChange={editor.updateClipSkip}
           />
-          <div className="sticky bottom-0 pb-4 pt-4 bg-card">
-            <GenerationEditorConfigResetButton onReset={editor.reset} />
-          </div>
         </div>
       </ScrollArea>
+      <div className="lg:sticky bottom-0 bg-card p-4">
+        <GenerationEditorConfigResetButton onReset={editor.reset} />
+      </div>
     </GenerationEditorCard>
   )
 }

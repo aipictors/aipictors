@@ -12,6 +12,10 @@ import { createClient } from "@/lib/client"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
+/**
+ * 画像生成
+ * @returns
+ */
 const GenerationPage = async () => {
   const client = createClient()
 
@@ -62,15 +66,13 @@ const GenerationPage = async () => {
         />
       }
       negativePromptEditor={<GenerationEditorNegativePromptView />}
-      history={
-        <div className="flex flex-col h-full gap-y-2">
-          <GenerationEditorSubmissionView
-            imageModels={imageModelsResp.data.imageModels}
-            termsMarkdownText={termsMarkdownText}
-          />
-          <GenerationEditorTaskView />
-        </div>
+      submission={
+        <GenerationEditorSubmissionView
+          imageModels={imageModelsResp.data.imageModels}
+          termsMarkdownText={termsMarkdownText}
+        />
       }
+      taskList={<GenerationEditorTaskView />}
     />
   )
 }

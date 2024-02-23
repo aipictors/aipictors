@@ -12,6 +12,7 @@ type Props = {
 
 export function GenerationSubmitButton(props: Props) {
   const { theme } = useTheme()
+
   return (
     <Button
       onClick={props.onClick}
@@ -26,7 +27,7 @@ export function GenerationSubmitButton(props: Props) {
         {props.generatingCount > 0 && (
           <Loader2Icon
             color={theme === "light" ? "white" : "black"}
-            className={"ml-2 animate-spin dark:black"}
+            className={"ml-2 w-4 animate-spin dark:black"}
           />
         )}
       </div>

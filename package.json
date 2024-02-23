@@ -13,7 +13,8 @@
     "refactor": "biome check --apply ./app ./graphql && biome format ./app ./graphql --write",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
-    "postinstall": "lefthook install"
+    "postinstall": "lefthook install",
+    "chromatic": "npx chromatic --project-token=chpt_493a53501ada93b"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
