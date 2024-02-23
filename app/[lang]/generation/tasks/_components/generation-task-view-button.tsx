@@ -23,7 +23,7 @@ export function GenerationTaskViewButton(props: Props) {
         <DialogTrigger asChild>
           <GenerationTaskCard
             taskNanoid={props.task.nanoid}
-            remainingSeconds={props.task.estimatedSeconds ?? 0}
+            estimatedSeconds={props.task.estimatedSeconds ?? 0}
             taskId={props.task.id}
             token={props.task.token}
             optionButtonSize={props.sizeType}
@@ -47,7 +47,7 @@ export function GenerationTaskViewButton(props: Props) {
         <GenerationTaskCard
           taskNanoid={props.task.nanoid}
           taskId={props.task.id}
-          remainingSeconds={props.task.estimatedSeconds ?? 0}
+          estimatedSeconds={props.task.estimatedSeconds ?? 0}
           token={props.task.token}
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}

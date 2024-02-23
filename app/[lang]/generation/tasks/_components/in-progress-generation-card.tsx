@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react"
 
 type Props = {
   onCancel?(): void
-  remainingSeconds?: number
+  estimatedSeconds?: number
   isCreatingTasks?: boolean
   isCanceling?: boolean
 }
@@ -15,6 +15,10 @@ type Props = {
  * @returns
  */
 export const InProgressGenerationCard = (props: Props) => {
+  if (props.estimatedSeconds !== 0) {
+    console.log("props.estimatedSeconds", props.estimatedSeconds)
+  }
+
   return (
     <Card>
       <div>
@@ -31,7 +35,7 @@ export const InProgressGenerationCard = (props: Props) => {
         </div>
         <div className="mt-[100%]" />
         <InProgressGenerationProgressBar
-          remainingSeconds={props.remainingSeconds}
+          remainingSeconds={props.estimatedSeconds}
         />
       </div>
     </Card>

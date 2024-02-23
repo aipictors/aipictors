@@ -1,12 +1,14 @@
 "use client"
 
 import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
+import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/editor-submission-view/generation-reserve-count-input"
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
+import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
 import {
   ImageGenerationSizeType,
@@ -34,6 +36,8 @@ export function GenerationEditorSubmissionView(props: Props) {
   const [generationCount, setGenerationCount] = useState(1)
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
+
+  const [generationMode, setGenerationMode] = useState("normal")
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
@@ -87,6 +91,14 @@ export function GenerationEditorSubmissionView(props: Props) {
         toast(error.message)
       }
     }
+  }
+
+  /**
+   * 生成モード変更
+   * @param mode 生成モード変更フラグ
+   */
+  const onChangeGenerationMode = (mode: boolean) => {
+    setGenerationMode(mode ? "reserve" : "normal")
   }
 
   /**
@@ -218,11 +230,35 @@ export function GenerationEditorSubmissionView(props: Props) {
     <AppFixedContent position="bottom">
       <div className="space-y-2">
         <div className="flex items-center">
-          <GenerationCountSelect
-            pass={editor.context.passType ?? "FREE"}
-            selectedCount={generationCount}
-            onChange={setGenerationCount}
-          />
+          <div className="flex items-center w-20 space-x-2">
+            {config.isDevelopmentMode && (
+              <>
+                <Checkbox
+                  id="generation-mode-checkbox"
+                  onCheckedChange={onChangeGenerationMode}
+                />
+                <label
+                  htmlFor="generation-mode-checkbox"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  予約
+                </label>
+              </>
+            )}
+          </div>
+          {generationMode === "normal" && (
+            <GenerationCountSelect
+              pass={editor.context.passType ?? "FREE"}
+              selectedCount={generationCount}
+              onChange={setGenerationCount}
+            />
+          )}
+          {generationMode === "reserve" && (
+            <GenerationReserveCountInput
+              maxCount={200}
+              onChange={setGenerationCount}
+            />
+          )}
           {/* 生成開始ボタン */}
           {editor.context.hasSignedTerms && (
             <GenerationSubmitButton
@@ -230,7 +266,12 @@ export function GenerationEditorSubmissionView(props: Props) {
               isLoading={isCreatingTask}
               isDisabled={editor.context.isDisabled}
               generatingCount={inProgressImageGenerationTasksCount}
-              maxGeneratingCount={maxTasksCount}
+              maxGeneratingCount={
+                generationMode === "reserve" ? 200 : maxTasksCount
+              }
+              buttonActionCaption={
+                generationMode === "reserve" ? "予約生成" : "生成"
+              }
             />
           )}
           {/* 規約確認開始ボタン */}

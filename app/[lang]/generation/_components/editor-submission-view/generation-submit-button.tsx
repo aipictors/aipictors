@@ -7,6 +7,7 @@ type Props = {
   isDisabled: boolean
   generatingCount: number
   maxGeneratingCount: number
+  buttonActionCaption: string
   onClick(): void
 }
 
@@ -23,7 +24,7 @@ export function GenerationSubmitButton(props: Props) {
       <div className="flex items-center">
         {props.isLoading
           ? "処理中.."
-          : `生成する(${props.generatingCount}/${props.maxGeneratingCount})`}
+          : `${props.buttonActionCaption}する(${props.generatingCount}/${props.maxGeneratingCount})`}
         {props.generatingCount > 0 && (
           <Loader2Icon
             color={theme === "light" ? "white" : "black"}

@@ -22,7 +22,7 @@ export function GenerationCountSelect(props: Props) {
         props.onChange(parseInt(value))
       }}
     >
-      <SelectTrigger className="w-16 mr-2">
+      <SelectTrigger className="w-20 mr-2">
         <Button className="w-16" variant={"ghost"} size={"icon"}>
           <ImagesIcon className="w-4 mr-2" />
           {props.selectedCount}
