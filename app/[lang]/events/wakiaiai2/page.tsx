@@ -31,8 +31,6 @@ const EventWakiaiaiPage = async () => {
             imageURL={
               "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_top.webp?alt=media&token=678241ea-c5de-4cf4-992c-e0bb081f4cc7"
             }
-            linkURL={"https://www.aipictors.com/works/66168/"}
-            linkTitle={"Aipictors"}
           />
         </div>
         <div className="w-full flex-2 md:px-4 py-8 space-y-8">
