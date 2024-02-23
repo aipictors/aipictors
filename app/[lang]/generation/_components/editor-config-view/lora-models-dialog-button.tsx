@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,20 +26,29 @@ export const LoraModelsDialogButton = (props: Props) => {
   const { value, setTrue, setFalse } = useBoolean()
 
   return (
-    <Dialog open={value}>
-      <DialogTrigger asChild>
+    <Dialog
+      open={value}
+      onOpenChange={(isOpen) => {
+        if (isOpen) return
+        setFalse()
+      }}
+    >
+      <DialogTrigger className="w-full">
         <Button
           size={"sm"}
           className="w-full"
           variant={"secondary"}
           onClick={setTrue}
         >
-          LoRAを追加
+          {"LoRA（エフェクト）を追加"}
         </Button>
       </DialogTrigger>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
-          <DialogTitle>{"LoRA選択"}</DialogTitle>
+          <DialogTitle>{"LoRAを選択"}</DialogTitle>
+          <DialogDescription>
+            {"使用するLoRA(エフェクト)を選択してください"}
+          </DialogDescription>
         </DialogHeader>
         <LoraImageModelsList
           models={props.models.map((model) => ({

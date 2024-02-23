@@ -101,12 +101,12 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
-          {!props.isEditMode && (
+          {
             <GenerationTaskActionDropdownMenu
               thumbnailSize={props.thumbnailSize}
               onChange={props.setThumbnailSize}
             />
-          )}
+          }
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}

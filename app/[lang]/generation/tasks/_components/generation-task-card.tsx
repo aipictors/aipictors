@@ -98,20 +98,20 @@ export const GenerationTaskCard = (props: Props) => {
       }}
     >
       {props.isLink ? (
-        <Link href={`/generation/tasks/${props.taskNanoid}`}>
-          <SelectableCardButton
-            onClick={props.onClick}
-            isSelected={props.isSelected}
-            isDisabled={props.isSelectDisabled}
-          >
+        <SelectableCardButton
+          onClick={props.onClick}
+          isSelected={props.isSelected}
+          isDisabled={props.isSelectDisabled}
+        >
+          <Link href={`/generation/tasks/${props.taskNanoid}`}>
             <PrivateImage
               className={`generation-image-${props.taskNanoid}`}
               taskId={props.taskId}
               token={props.token}
               alt={"-"}
             />
-          </SelectableCardButton>
-        </Link>
+          </Link>
+        </SelectableCardButton>
       ) : (
         <SelectableCardButton
           onClick={props.onClick}
@@ -127,24 +127,22 @@ export const GenerationTaskCard = (props: Props) => {
         </SelectableCardButton>
       )}
       {/* 拡大ボタン */}
-      {(!isDesktop && !props.isSelected) ||
-        (isHovered && !props.isSelected && (
-          <GenerationTaskZoomUpButton
-            taskId={props.taskId}
-            token={props.token}
-            size={optionButtonSize(props.optionButtonSize)}
-            setIsHovered={setIsHovered}
-          />
-        ))}
+      {isDesktop && isHovered && (
+        <GenerationTaskZoomUpButton
+          taskId={props.taskId}
+          token={props.token}
+          size={optionButtonSize(props.optionButtonSize)}
+          setIsHovered={setIsHovered}
+        />
+      )}
       {/* お気に入りボタン */}
-      {(!isDesktop && !props.isSelected) ||
-        (isHovered && !props.isSelected && (
-          <GenerationTaskRatingButton
-            nowRating={props.rating}
-            taskNanoid={props.taskNanoid}
-            size={optionButtonSize(props.optionButtonSize)}
-          />
-        ))}
+      {isDesktop && isHovered && (
+        <GenerationTaskRatingButton
+          nowRating={props.rating}
+          taskNanoid={props.taskNanoid}
+          size={optionButtonSize(props.optionButtonSize)}
+        />
+      )}
     </div>
   )
 }

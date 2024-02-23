@@ -23,6 +23,9 @@ export const ImageModelCard = (props: Props) => {
         style={{ transformOrigin: "center" }}
       />
       <div className="">
+        <span className="text-sm font-bold break-words whitespace-pre-wrap">
+          {props.displayName ?? ""}
+        </span>
         {props.type && (
           <span className="absolute text-white top-2 left-1 bg-black bg-opacity-50 rounded-lg p-4">
             {props.type}
