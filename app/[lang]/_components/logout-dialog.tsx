@@ -14,7 +14,8 @@ import { getAuth, signOut } from "firebase/auth"
 import { toast } from "sonner"
 
 type Props = {
-  children: React.ReactNode
+  // biome-ignore lint/suspicious/noExplicitAny: TODO: Triggerを修正する
+  children: any // React.ReactNode
 }
 
 /**

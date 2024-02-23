@@ -82,7 +82,7 @@ export const GenerationEditorPromptView = (props: Props) => {
                 onClick={setTrue}
                 variant={"secondary"}
                 size={"sm"}
-                className="w-full mt-2"
+                className="w-full"
               >
                 {"キーワードから選ぶ"}
               </Button>
