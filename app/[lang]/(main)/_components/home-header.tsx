@@ -2,8 +2,7 @@
 
 import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
-import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
-import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
+import { LoginButton } from "@/app/[lang]/_components/login-dialog-button"
 import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppHeader } from "@/components/app/app-header"
@@ -119,11 +118,7 @@ export const HomeHeader = () => {
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         )}
-        {authContext.isNotLoggedIn && (
-          <LoginDialog>
-            <LoginDialogButton />
-          </LoginDialog>
-        )}
+        {authContext.isNotLoggedIn && <LoginButton />}
       </div>
       <LogoutDialogLegacy
         isOpen={isOpenLogoutDialog}

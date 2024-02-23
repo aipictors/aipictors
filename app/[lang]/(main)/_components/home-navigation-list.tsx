@@ -1,8 +1,8 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
 import { LogoutDialog } from "@/app/[lang]/_components/logout-dialog"
+import { LoginNavigationButton } from "@/app/[lang]/_components/navitation-login-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Separator } from "@/components/ui/separator"
@@ -18,7 +18,6 @@ import {
   ImageIcon,
   LibraryBigIcon,
   LightbulbIcon,
-  LogInIcon,
   LogOutIcon,
   SettingsIcon,
   SparklesIcon,
@@ -124,13 +123,7 @@ export const HomeNavigationList = () => {
           </AlertDialogTrigger>
         </LogoutDialog>
       )}
-      {appContext.isNotLoggedIn && (
-        <LoginDialog>
-          <HomeNavigationButton icon={LogInIcon}>
-            {"ログイン"}
-          </HomeNavigationButton>
-        </LoginDialog>
-      )}
+      {appContext.isNotLoggedIn && <LoginNavigationButton />}
       <div className="py-2">
         <Separator />
       </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import CloudflareTurnstile, {
   Status,
@@ -13,6 +14,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
@@ -23,22 +25,18 @@ import {
   getAuth,
   signInWithCustomToken,
 } from "firebase/auth"
+import { LogInIcon } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
-
-type Props = {
-  // biome-ignore lint/suspicious/noExplicitAny: TODO: Triggerを修正する
-  children: any // React.ReactNode
-}
 
 /**
  * ログイン
  * @param props
  * @returns
  */
-export const LoginDialog = (props: Props) => {
+export function LoginNavigationButton() {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
@@ -75,7 +73,11 @@ export const LoginDialog = (props: Props) => {
 
   return (
     <Dialog>
-      {props.children}
+      <DialogTrigger asChild>
+        <HomeNavigationButton icon={LogInIcon}>
+          {"ログイン"}
+        </HomeNavigationButton>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
@@ -88,13 +90,18 @@ export const LoginDialog = (props: Props) => {
           <p className="text-sm">{"SNSアカウントでログイン"}</p>
           <div className="flex flex-col md:flex-row gap-2">
             <SocialLoginButton
-              disabled={isLoading || turnstileStatus !== "solved"} // CAPTCHAが解決されていない場合に無効化
+              disabled={
+                isLoading
+                // || turnstileStatus !== "solved"
+              }
               provider={new GoogleAuthProvider()}
               buttonText="Googleでログイン"
               icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
             />
             <SocialLoginButton
-              disabled={isLoading || turnstileStatus !== "solved"} // CAPTCHAが解決されていない場合に無効化
+              disabled={
+                isLoading // || turnstileStatus !== "solved"
+              }
               provider={new TwitterAuthProvider()}
               buttonText="𝕏(Twitter)でログイン"
               icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
@@ -108,9 +115,11 @@ export const LoginDialog = (props: Props) => {
           <p className="text-sm">{"またはアカウント情報でログイン"}</p>
           <PasswordLoginForm
             onSubmit={onLogin}
-            isLoading={isLoading || turnstileStatus !== "solved"}
-          />{" "}
-          // CAPTCHAが解決されていない場合に無効化
+            isLoading={
+              isLoading
+              // || turnstileStatus !== "solved"
+            }
+          />
         </div>
 
         <CloudflareTurnstile onStatusChange={setTurnstileStatus} />
