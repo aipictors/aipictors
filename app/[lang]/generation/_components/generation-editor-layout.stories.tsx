@@ -18,5 +18,6 @@ export const LITE: Story = {
       <div className="bg-green-500 h-full">{"negativePromptEditor"}</div>
     ),
     taskList: <div className="bg-yellow-500 h-full">{"history"}</div>,
+    submission: <div className="bg-pink-500 h-full">{"submission"}</div>,
   },
 }
