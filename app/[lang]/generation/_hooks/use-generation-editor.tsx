@@ -18,6 +18,7 @@ export const useGenerationEditor = () => {
 
   const updateSettings = (
     modelId: string,
+    steps: number,
     modelType: string,
     sampler: string,
     scale: number,
@@ -29,6 +30,7 @@ export const useGenerationEditor = () => {
     clipSkip: number,
   ) => {
     cacheStorage.savePrompt(promptText)
+    cacheStorage.saveSteps(steps)
     cacheStorage.saveNegativePrompt(negativePromptText)
     cacheStorage.saveModelId(modelId)
     cacheStorage.saveModelType(modelType)
@@ -42,6 +44,7 @@ export const useGenerationEditor = () => {
     const value = action
       .updateNegativePrompt(negativePromptText)
       .updatePrompt(promptText)
+      .updateSteps(steps)
       .updateModelId(modelId, modelType)
       .updateSampler(sampler)
       .updateScale(scale)
