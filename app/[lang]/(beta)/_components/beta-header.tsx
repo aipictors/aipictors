@@ -1,6 +1,6 @@
 import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
-import { LoginButton } from "@/app/[lang]/_components/login-dialog-button"
+import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
 import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppHeader } from "@/components/app/app-header"
@@ -76,7 +76,7 @@ export const BetaHeader = (props: Props) => {
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         </div>
       )}
-      {authContext.isNotLoggedIn && <LoginButton />}
+      {authContext.isNotLoggedIn && <LoginDialogButton />}
       <LogoutDialogLegacy
         isOpen={isOpenLogoutDialog}
         onClose={onCloseLogoutDialog}
