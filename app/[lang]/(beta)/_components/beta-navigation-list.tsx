@@ -1,7 +1,7 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginNavigationButton } from "@/app/[lang]/_components/navitation-login-button"
+import { LoginNavigationButton } from "@/app/[lang]/_components/login-navitation-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
