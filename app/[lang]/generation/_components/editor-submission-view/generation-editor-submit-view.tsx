@@ -230,8 +230,8 @@ export function GenerationEditorSubmissionView(props: Props) {
     <AppFixedContent position="bottom">
       <div className="space-y-2">
         <div className="flex items-center">
-          <div className="flex items-center w-20 space-x-2">
-            {config.isDevelopmentMode && (
+          {config.isDevelopmentMode && (
+            <div className="flex items-center w-20 space-x-2">
               <>
                 <Checkbox
                   id="generation-mode-checkbox"
@@ -244,8 +244,8 @@ export function GenerationEditorSubmissionView(props: Props) {
                   予約
                 </label>
               </>
-            )}
-          </div>
+            </div>
+          )}
           {generationMode === "normal" && (
             <GenerationCountSelect
               pass={editor.context.passType ?? "FREE"}
