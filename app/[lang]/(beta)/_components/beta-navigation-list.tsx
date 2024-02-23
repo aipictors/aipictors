@@ -1,13 +1,12 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
+import { LoginNavigationButton } from "@/app/[lang]/_components/login-navitation-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Separator } from "@/components/ui/separator"
 import {
   GemIcon,
   HomeIcon,
-  LogInIcon,
   MessageCircleIcon,
   Rocket,
   StampIcon,
@@ -63,13 +62,7 @@ export const BetaNavigationList = () => {
           {"設定"}
         </HomeNavigationButton>
       )} */}
-      {authContext.isNotLoggedIn && (
-        <LoginDialog>
-          <HomeNavigationButton icon={LogInIcon}>
-            {"ログイン"}
-          </HomeNavigationButton>
-        </LoginDialog>
-      )}
+      {authContext.isNotLoggedIn && <LoginNavigationButton />}
       <div className="py-2">
         <Separator />
       </div>
