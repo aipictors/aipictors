@@ -2,7 +2,6 @@
 
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
-import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 
 export const GenerationEditorNegativePromptView = () => {
@@ -42,38 +41,6 @@ export const GenerationEditorNegativePromptView = () => {
             editor.updateNegativePrompt(event.target.value)
           }}
         />
-        <div className="hidden xl:flex flex-wrap gap-2">
-          <Button
-            className="font-mono"
-            size={"sm"}
-            variant={"secondary"}
-            onClick={() => {
-              onAddPrompt("+bad-hands-5")
-            }}
-          >
-            {"+bad-hands-5"}
-          </Button>
-          <Button
-            className="font-mono"
-            size={"sm"}
-            variant={"secondary"}
-            onClick={() => {
-              onAddPrompt("+badhandv4")
-            }}
-          >
-            {"+badhandv4"}
-          </Button>
-          <Button
-            className="font-mono"
-            size={"sm"}
-            variant={"secondary"}
-            onClick={() => {
-              onAddPrompt("+bad_prompt_version2")
-            }}
-          >
-            {"+bad_prompt"}
-          </Button>
-        </div>
       </div>
     </GenerationEditorCard>
   )

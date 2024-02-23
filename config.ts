@@ -97,7 +97,7 @@ export const config = {
      */
     defaultImageLoraModelNames: ["flat1", "flatBG"],
     defaultPromptValue: "",
-    defaultNegativePromptValue: "EasyNegative",
+    defaultNegativePromptValue: "EasyNegative, bad_prompt_version2, badhandv4",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
     defaultSamplerValue: "DPM++ 2M",
