@@ -96,7 +96,8 @@ export const config = {
      * デフォルトのLoRAモデル名
      */
     defaultImageLoraModelNames: ["flat1", "flatBG"],
-    defaultPromptValue: "",
+    defaultPromptValue:
+      "masterpiece, best quality, extremely detailed, anime, girl, skirt",
     defaultNegativePromptValue: "EasyNegative, bad_prompt_version2, badhandv4",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
