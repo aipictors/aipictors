@@ -29,7 +29,7 @@ const EventWakiaiaiPage = async () => {
           <EventImage
             alt={"和気あいAI"}
             imageURL={
-              "https://www.aipictors.com/wp-content/uploads/2023/07/XVzvtp28cfh6CQaMT9Rk0yJFA4rsgN.webp"
+              "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_top.webp?alt=media&token=678241ea-c5de-4cf4-992c-e0bb081f4cc7"
             }
             linkURL={"https://www.aipictors.com/works/66168/"}
             linkTitle={"Aipictors"}
