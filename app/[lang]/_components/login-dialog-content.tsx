@@ -35,10 +35,10 @@ export function LoginDialogContent() {
   const [turnstileStatus, setTurnstileStatus] = useState<Status | null>(null)
 
   const onLogin = async (form: FormLogin) => {
-    if (turnstileStatus !== "solved") {
-      toast("CAPTCHAを解決してください。")
-      return
-    }
+    // if (turnstileStatus !== "solved") {
+    //   toast("CAPTCHAを解決してください。")
+    //   return
+    // }
 
     try {
       const result = await mutation({
