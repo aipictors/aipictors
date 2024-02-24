@@ -44,14 +44,14 @@
     ".idea": true,
     ".next": true,
     ".sentryclirc": true,
-    ".vitepress/cache": true,
     ".yarn": true,
     "build-storybook.log": true,
     "dist": true,
     "graphql/__generated__": true,
     "next-env.d.ts": true,
     "package-lock.json": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lockb": true
   },
   "search.exclude": {
     "*.lock": true,
@@ -67,8 +67,7 @@
     "process",
     "react-day-picker",
     "tailwind-merge",
-    "tailwindcss",
-    "vitest/dist"
+    "tailwindcss"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative"
 }

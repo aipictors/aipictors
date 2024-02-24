@@ -1,5 +1,7 @@
 {
-  "name": "Bun",
-  "image": "ghcr.io/nhaef/devcontainer-bun:latest",
-  "postCreateCommand": "bun i"
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/node-asdf:0": {},
+    "ghcr.io/devcontainers-contrib/features/pnpm:2": {}
+  },
+  "postCreateCommand": "pnpm i"
 }

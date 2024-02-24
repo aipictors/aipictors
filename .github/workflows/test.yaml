@@ -20,16 +20,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v1
-      - run: time bun install
+      - run: time bun i --frozen-lockfile
 
       - name: Prebuild
-        run: time bun run predev
+        run: time bun predev
 
       - name: Lint
         run: bunx oxlint@latest --nextjs-plugin
 
       - name: Run Type Cheking
-        run: time bun run check
+        run: time bun check
 
       - name: Run Test
-        run: time bun run test
+        run: time bun test

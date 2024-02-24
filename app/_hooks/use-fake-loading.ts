@@ -15,25 +15,27 @@ export const useFakeLoading = (
   duration: number,
 ): [boolean, FakeLoadingActions] => {
   const [isFakeLoading, setIsFakeLoading] = useState(false)
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null)
+  // NodeJS.Timeoutからnumberに変更
+  const [timer, setTimer] = useState<number | null>(null)
 
   const startFakeLoading = () => {
-    if (timer) clearTimeout(timer)
+    if (timer !== null) clearTimeout(timer)
     setIsFakeLoading(true)
-    const newTimer = setTimeout(() => {
+    // setTimeoutの戻り値を直接numberとして扱う
+    const newTimer = window.setTimeout(() => {
       setIsFakeLoading(false)
     }, duration)
     setTimer(newTimer)
   }
 
   const stopFakeLoading = () => {
-    if (timer) clearTimeout(timer)
+    if (timer !== null) clearTimeout(timer)
     setIsFakeLoading(false)
   }
 
   useEffect(() => {
     return () => {
-      if (timer) clearTimeout(timer)
+      if (timer !== null) clearTimeout(timer)
     }
   }, [timer])
 
