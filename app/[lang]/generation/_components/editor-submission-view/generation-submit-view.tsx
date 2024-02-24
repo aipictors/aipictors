@@ -320,81 +320,79 @@ export function GenerationSubmissionView(props: Props) {
     status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
 
   return (
-    <AppFixedContent position="bottom">
-      <div className="space-y-2">
-        <div className="flex items-center gap-x-2">
-          <GenerationScheduleCheckbox
-            value={isScheduleMode}
-            onChange={onChangeGenerationMode}
-          />
-          {!isScheduleMode && (
-            <GenerationCountSelect
-              pass={context.currentPass?.type ?? "FREE"}
-              selectedCount={tasksCount}
-              onChange={setTasksCount}
-            />
-          )}
-          {isScheduleMode && (
-            <GenerationReserveCountInput
-              maxCount={
-                availableImageGenerationMaxTasksCount - remainingTasksCount
-              }
-              onChange={setScheduledTasksCount}
-              count={scheduledTasksCount}
-            />
-          )}
-          {/* 生成開始ボタン */}
-          {context.user?.hasSignedImageGenerationTerms === true && (
-            <GenerationSubmitButton
-              onClick={isScheduleMode ? onScheduleTask : onCreateTask}
-              isLoading={isCreatingTask}
-              isDisabled={context.config.isDisabled}
-              isScheduleMode={isScheduleMode}
-              generatingCount={
-                isScheduleMode
-                  ? inProgressImageGenerationReservedTasksCount
-                  : inProgressImageGenerationTasksCount
-              }
-              maxGeneratingCount={
-                isScheduleMode
-                  ? availableImageGenerationMaxTasksCount - remainingTasksCount
-                  : maxTasksCount
-              }
-            />
-          )}
-          {/* 規約確認開始ボタン */}
-          {context.user?.hasSignedImageGenerationTerms !== true && (
-            <GenerationTermsButton
-              termsMarkdownText={props.termsText}
-              onSubmit={onSignTerms}
-            />
-          )}
-          {/* 生成キャンセル */}
-          {isScheduleMode && (
-            <GenerationTasksCancelButton
-              isDisabled={
-                inProgressImageGenerationReservedTasksCount === 0 ||
-                isDeletingReservedTasks
-              }
-              onCancel={onDeleteScheduledTasks}
-            />
-          )}
-        </div>
-        <GenerationEditorProgress
-          inProgress={inProgress}
-          maxTasksCount={availableImageGenerationMaxTasksCount}
-          normalPredictionGenerationSeconds={
-            engineStatus?.normalPredictionGenerationSeconds ?? 0
-          }
-          normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-          passType={context.currentPass?.type ?? null}
-          remainingImageGenerationTasksCount={remainingTasksCount}
-          standardPredictionGenerationSeconds={
-            engineStatus?.standardPredictionGenerationSeconds ?? 0
-          }
-          standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+    <AppFixedContent position="bottom" className="space-y-2">
+      <div className="flex items-center gap-x-2">
+        <GenerationScheduleCheckbox
+          value={isScheduleMode}
+          onChange={onChangeGenerationMode}
         />
+        {!isScheduleMode && (
+          <GenerationCountSelect
+            pass={context.currentPass?.type ?? "FREE"}
+            selectedCount={tasksCount}
+            onChange={setTasksCount}
+          />
+        )}
+        {isScheduleMode && (
+          <GenerationReserveCountInput
+            maxCount={
+              availableImageGenerationMaxTasksCount - remainingTasksCount
+            }
+            onChange={setScheduledTasksCount}
+            count={scheduledTasksCount}
+          />
+        )}
+        {/* 生成開始ボタン */}
+        {context.user?.hasSignedImageGenerationTerms === true && (
+          <GenerationSubmitButton
+            onClick={isScheduleMode ? onScheduleTask : onCreateTask}
+            isLoading={isCreatingTask}
+            isDisabled={context.config.isDisabled}
+            isScheduleMode={isScheduleMode}
+            generatingCount={
+              isScheduleMode
+                ? inProgressImageGenerationReservedTasksCount
+                : inProgressImageGenerationTasksCount
+            }
+            maxGeneratingCount={
+              isScheduleMode
+                ? availableImageGenerationMaxTasksCount - remainingTasksCount
+                : maxTasksCount
+            }
+          />
+        )}
+        {/* 規約確認開始ボタン */}
+        {context.user?.hasSignedImageGenerationTerms !== true && (
+          <GenerationTermsButton
+            termsMarkdownText={props.termsText}
+            onSubmit={onSignTerms}
+          />
+        )}
+        {/* 生成キャンセル */}
+        {isScheduleMode && (
+          <GenerationTasksCancelButton
+            isDisabled={
+              inProgressImageGenerationReservedTasksCount === 0 ||
+              isDeletingReservedTasks
+            }
+            onCancel={onDeleteScheduledTasks}
+          />
+        )}
       </div>
+      <GenerationEditorProgress
+        inProgress={inProgress}
+        maxTasksCount={availableImageGenerationMaxTasksCount}
+        normalPredictionGenerationSeconds={
+          engineStatus?.normalPredictionGenerationSeconds ?? 0
+        }
+        normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+        passType={context.currentPass?.type ?? null}
+        remainingImageGenerationTasksCount={remainingTasksCount}
+        standardPredictionGenerationSeconds={
+          engineStatus?.standardPredictionGenerationSeconds ?? 0
+        }
+        standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+      />
     </AppFixedContent>
   )
 }

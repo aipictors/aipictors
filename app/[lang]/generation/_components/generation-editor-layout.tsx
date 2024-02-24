@@ -26,7 +26,9 @@ export const GenerationEditorLayout = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-hidden">{props.taskList}</div>
+      <div className="flex-1 overflow-hidden pb-24 md:pb-0">
+        {props.taskList}
+      </div>
     </main>
   )
 }
