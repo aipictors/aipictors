@@ -14,6 +14,7 @@ import {
   ImageGenerationSizeType,
   ImageModelsQuery,
 } from "@/graphql/__generated__/graphql"
+import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
@@ -72,8 +73,16 @@ export function GenerationEditorSubmissionView(props: Props) {
     },
   )
 
+  const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
+    createImageGenerationTaskReservedMutation,
+    {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    },
+  )
+
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: isCreatingTask ? 10000 : 1000,
+    pollInterval: isCreatingTask ? 1000 : 10000,
   })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
@@ -196,6 +205,78 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
   }
 
+  /**
+   * 予約タスクを作成する
+   */
+  const onCreateReservedTask = async () => {
+    if (
+      editor.context.passType !== "STANDARD" &&
+      editor.context.passType !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+
+    if (!editor.context.hasSignedTerms) return
+    const userNanoid = editor.context.userNanoId ?? null
+    if (userNanoid === null) return
+
+    try {
+      const model = props.imageModels.find((model) => {
+        return model.id === editor.context.modelId
+      })
+      if (typeof model === "undefined") return
+      const taskCounts = Array.from(
+        { length: reservedGenerationCount },
+        (_, i) => i,
+      )
+
+      const seeds: number[] = []
+      taskCounts.map((i) => {
+        if (editor.context.seed === -1) {
+          seeds.push(-1)
+        } else {
+          seeds.push(editor.context.seed + i)
+        }
+      })
+
+      const promises = taskCounts.map((i) =>
+        createReservedTask({
+          variables: {
+            input: {
+              count: 1,
+              model: model.name,
+              vae: editor.context.vae ?? "",
+              prompt: editor.context.promptText,
+              negativePrompt: editor.context.negativePromptText,
+              seed: seeds[i],
+              steps: editor.context.steps,
+              scale: editor.context.scale,
+              sampler: "DPM++ 2M Karras",
+              clipSkip: editor.context.clipSkip,
+              sizeType: editor.context.sizeType as ImageGenerationSizeType,
+              type: "TEXT_TO_IMAGE",
+            },
+          },
+        }),
+      )
+      await Promise.all(promises)
+      // タスクの作成後も呼び出す必要がある
+      await activeImageGeneration({ nanoid: userNanoid })
+      if (isDesktop) {
+        toast("タスクを予約しました、自動的に生成されます")
+      } else {
+        toast("タスクを予約しました、自動的に生成されます", {
+          position: "top-center",
+        })
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
   const engineStatus = status?.imageGenerationEngineStatus
 
   /**
@@ -227,6 +308,12 @@ export function GenerationEditorSubmissionView(props: Props) {
    * 生成中の枚数
    */
   const inProgressImageGenerationTasksCount =
+    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+
+  /**
+   * 予約生成中の枚数
+   */
+  const inProgressImageGenerationReservedTasksCount =
     status?.viewer?.inProgressImageGenerationTasksCount ?? 0
 
   return (
@@ -266,10 +353,20 @@ export function GenerationEditorSubmissionView(props: Props) {
           {/* 生成開始ボタン */}
           {editor.context.hasSignedTerms && (
             <GenerationSubmitButton
-              onClick={onCreateTask}
+              onClick={async () => {
+                if (generationMode === "reserve") {
+                  await onCreateReservedTask()
+                } else {
+                  await onCreateTask()
+                }
+              }}
               isLoading={isCreatingTask}
               isDisabled={editor.context.isDisabled}
-              generatingCount={inProgressImageGenerationTasksCount}
+              generatingCount={
+                generationMode === "normal"
+                  ? inProgressImageGenerationTasksCount
+                  : inProgressImageGenerationReservedTasksCount
+              }
               maxGeneratingCount={
                 generationMode === "reserve"
                   ? availableImageGenerationMaxTasksCount - tasksCount

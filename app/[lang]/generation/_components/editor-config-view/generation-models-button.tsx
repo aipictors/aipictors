@@ -1,6 +1,7 @@
 "use client"
 
 import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -24,6 +25,8 @@ type Props = {
 }
 
 export const GenerationModelsButton = (props: Props) => {
+  const editor = useGenerationEditor()
+
   const { value, setTrue, setFalse } = useBoolean()
 
   const onSelectModel = (id: string, type: string) => {
@@ -36,7 +39,7 @@ export const GenerationModelsButton = (props: Props) => {
   )
 
   const onChangeRatingModel = async (id: number, rating: number) => {
-    await changeRatingModel({
+    const result = await changeRatingModel({
       variables: {
         input: {
           modelId: id.toString(),
@@ -44,6 +47,15 @@ export const GenerationModelsButton = (props: Props) => {
         },
       },
     })
+    if (
+      result.data?.updateRatingImageGenerationModel
+        .favoritedImageGenerationModelIds
+    ) {
+      editor.updateFavoriteModelIds(
+        result.data?.updateRatingImageGenerationModel
+          .favoritedImageGenerationModelIds,
+      )
+    }
   }
 
   return (
