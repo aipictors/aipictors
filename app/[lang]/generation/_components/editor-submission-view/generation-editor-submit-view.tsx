@@ -7,6 +7,7 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/edit
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
@@ -16,6 +17,7 @@ import {
 } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
+import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
@@ -81,6 +83,12 @@ export function GenerationEditorSubmissionView(props: Props) {
     },
   )
 
+  const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
+    useMutation(deleteReservedImageGenerationTasksMutation, {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    })
+
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
     pollInterval: isCreatingTask ? 1000 : 10000,
   })
@@ -109,6 +117,14 @@ export function GenerationEditorSubmissionView(props: Props) {
    * @param mode 生成モード変更フラグ
    */
   const onChangeGenerationMode = (mode: boolean) => {
+    if (
+      editor.context.passType !== "STANDARD" &&
+      editor.context.passType !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+
     setGenerationMode(mode ? "reserve" : "normal")
   }
 
@@ -277,6 +293,20 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
   }
 
+  /**
+   * 予約タスクを一括削除する
+   */
+  const onDeleteReservedTasks = async () => {
+    try {
+      await deleteReservedTasks()
+      toast("予約タスクを削除しました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
   const engineStatus = status?.imageGenerationEngineStatus
 
   /**
@@ -314,28 +344,26 @@ export function GenerationEditorSubmissionView(props: Props) {
    * 予約生成中の枚数
    */
   const inProgressImageGenerationReservedTasksCount =
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+    status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
 
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
         <div className="flex items-center">
-          {config.isDevelopmentMode && (
-            <div className="flex items-center w-20 space-x-2">
-              <>
-                <Checkbox
-                  id="generation-mode-checkbox"
-                  onCheckedChange={onChangeGenerationMode}
-                />
-                <label
-                  htmlFor="generation-mode-checkbox"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  予約
-                </label>
-              </>
-            </div>
-          )}
+          <div className="flex items-center w-20 space-x-2">
+            <>
+              <Checkbox
+                id="generation-mode-checkbox"
+                onCheckedChange={onChangeGenerationMode}
+              />
+              <label
+                htmlFor="generation-mode-checkbox"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 w-16"
+              >
+                予約
+              </label>
+            </>
+          </div>
           {generationMode === "normal" && (
             <GenerationCountSelect
               pass={editor.context.passType ?? "FREE"}
@@ -382,6 +410,16 @@ export function GenerationEditorSubmissionView(props: Props) {
             <GenerationTermsButton
               termsMarkdownText={props.termsMarkdownText}
               onSubmit={onSignTerms}
+            />
+          )}
+          {/* 生成キャンセル */}
+          {generationMode === "reserve" && (
+            <GenerationTasksCancelButton
+              isDisabled={
+                inProgressImageGenerationReservedTasksCount === 0 ||
+                isDeletingReservedTasks
+              }
+              onCancel={onDeleteReservedTasks}
             />
           )}
         </div>
