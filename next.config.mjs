@@ -5,8 +5,6 @@ import packageJSON from "./package.json" assert { type: "json" }
 /**
  * @type {import('next').NextConfig}
  */
-
-// Configuration as an asynchronous function for dynamic handling
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -38,20 +36,24 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  sentry: {
+}
+
+export default withSentryConfig(
+  nextConfig,
+  {
+    silent: true,
+    org: "nocker",
+    project: "aipictors-next",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+  },
+  {
     widenClientFileUpload: true,
     transpileClientSDK: true,
     tunnelRoute: "/monitoring",
     hideSourceMaps: true,
     disableLogger: true,
     automaticVercelMonitors: true,
+    disableClientWebpackPlugin: true,
+    disableServerWebpackPlugin: true,
   },
-}
-
-const sentryWebpackPluginOptions = {
-  silent: true,
-  org: "nocker",
-  project: "aipictors-next",
-}
-
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+)

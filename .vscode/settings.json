@@ -67,8 +67,7 @@
     "process",
     "react-day-picker",
     "tailwind-merge",
-    "tailwindcss",
-    "vitest/dist"
+    "tailwindcss"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative"
 }
