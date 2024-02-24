@@ -10,7 +10,7 @@ import { useState } from "react"
  * @param props
  * @returns
  */
-export const GenerationEditorTaskView = () => {
+export const GenerationTaskView = () => {
   const [rating, setRating] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)

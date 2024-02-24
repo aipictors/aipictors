@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -6,8 +5,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
-import { ImagesIcon } from "lucide-react"
 
 type Props = {
   selectedCount: number
@@ -18,25 +17,25 @@ type Props = {
 export function GenerationCountSelect(props: Props) {
   return (
     <Select
+      value={props.selectedCount.toString()}
       onValueChange={(value) => {
         props.onChange(parseInt(value))
       }}
     >
-      <SelectTrigger className="w-20 mr-2">
-        <Button className="w-16" variant={"ghost"} size={"icon"}>
-          <ImagesIcon className="w-4 mr-2" />
-          {props.selectedCount}
-        </Button>
+      <SelectTrigger className="w-24">
+        <SelectValue placeholder={"枚数"} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>{"枚数変更"}</SelectLabel>
-          <SelectItem value="1">{"1"}</SelectItem>
+          <SelectItem value="1">{"1枚"}</SelectItem>
           {props.pass === "STANDARD" ||
             (props.pass === "PREMIUM" && (
-              <SelectItem value="2">{"2"}</SelectItem>
+              <SelectItem value="2">{"2枚"}</SelectItem>
             ))}
-          {props.pass === "PREMIUM" && <SelectItem value="3">{"3"}</SelectItem>}
+          {props.pass === "PREMIUM" && (
+            <SelectItem value="3">{"3枚"}</SelectItem>
+          )}
         </SelectGroup>
       </SelectContent>
     </Select>

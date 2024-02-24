@@ -2,25 +2,20 @@
 
 import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-contents"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
-type Props = {
-  promptCategories: PromptCategoriesQuery["promptCategories"]
-}
+export const GenerationPromptView = () => {
+  const context = useGenerationContext()
 
-export const GenerationEditorPromptView = (props: Props) => {
-  const editor = useGenerationEditor()
+  const formattedPromptText = formatPromptText(context.config.promptText)
 
-  const formattedPromptText = formatPromptText(editor.context.promptText)
-
-  const categoryPrompts = props.promptCategories.flatMap((category) => {
+  const categoryPrompts = context.promptCategories.flatMap((category) => {
     return category.prompts
   })
 
@@ -33,7 +28,7 @@ export const GenerationEditorPromptView = (props: Props) => {
       ? formattedPromptText.replaceAll(promptText, "")
       : [formattedPromptText, promptText].join(",")
     const draftFormattedPromptText = formatPromptText(draftPromptText)
-    editor.updatePrompt(draftFormattedPromptText)
+    context.updatePrompt(draftFormattedPromptText)
   }
 
   const currentPrompts = categoryPrompts.filter((prompt) => {
@@ -68,12 +63,12 @@ export const GenerationEditorPromptView = (props: Props) => {
           <Textarea
             className="resize-none h-full font-mono min-h-40"
             placeholder={"プロンプト"}
-            value={editor.context.promptText}
+            value={context.config.promptText}
             onChange={(event) => {
-              editor.updatePrompt(event.target.value)
+              context.updatePrompt(event.target.value)
             }}
             onBlur={() => {
-              editor.initPromptWithLoraModel()
+              context.initPromptWithLoraModel()
             }}
           />
           <Dialog open={value}>
@@ -90,7 +85,7 @@ export const GenerationEditorPromptView = (props: Props) => {
             <PromptCategoriesDialogContents
               selectedPromptIds={selectedPromptIds}
               onClose={setFalse}
-              promptCategories={props.promptCategories}
+              promptCategories={context.promptCategories}
               onSelect={onSelectPromptId}
             />
           </Dialog>

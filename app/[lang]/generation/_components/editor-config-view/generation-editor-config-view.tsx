@@ -11,14 +11,10 @@ import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import type {
-  ImageLoraModelsQuery,
-  ImageModelsQuery,
-} from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
@@ -28,24 +24,13 @@ import { useEffect, useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 
-type Props = {
-  /**
-   * モデル
-   */
-  models: ImageModelsQuery["imageModels"]
-  /**
-   * Loraモデル
-   */
-  loraModels: ImageLoraModelsQuery["imageLoraModels"]
-}
-
 /**
  * エディタの設定
  * @param props
  * @returns
  */
-export const GenerationEditorConfigView = (props: Props) => {
-  const editor = useGenerationEditor()
+export const GenerationConfigView = () => {
+  const context = useGenerationContext()
 
   const searchParams = useSearchParams()
 
@@ -76,15 +61,15 @@ export const GenerationEditorConfigView = (props: Props) => {
 
         if (data?.imageGenerationTask) {
           const task = data.imageGenerationTask
-          editor.updateModelId(task.model.id, task.model.type)
-          editor.updatePrompt(task.prompt)
-          editor.updateNegativePrompt(task.negativePrompt)
-          editor.updateSizeType(task.sizeType)
-          editor.updateScale(task.scale)
-          editor.updateSeed(task.seed)
-          editor.updateSteps(task.steps)
-          editor.updateSampler(task.sampler)
-          editor.updateClipSkip(task.clipSkip)
+          context.updateModelId(task.model.id, task.model.type)
+          context.updatePrompt(task.prompt)
+          context.updateNegativePrompt(task.negativePrompt)
+          context.updateSizeType(task.sizeType)
+          context.updateScale(task.scale)
+          context.updateSeed(task.seed)
+          context.updateSteps(task.steps)
+          context.updateSampler(task.sampler)
+          context.updateClipSkip(task.clipSkip)
 
           toast("タスクを復元しました。")
         }
@@ -97,15 +82,15 @@ export const GenerationEditorConfigView = (props: Props) => {
   /**
    * 選択中のモデル
    */
-  const currentModel = props.models.find((model) => {
-    return model.id === editor.context.modelId
+  const currentModel = context.models.find((model) => {
+    return model.id === context.config.modelId
   })
 
   /**
    * お気に入りのモデル
    */
-  const favoritedModel = props.models.filter((model) => {
-    return editor.context.favoriteModelIds.includes(Number(model.id))
+  const favoritedModel = context.models.filter((model) => {
+    return context.config.favoriteModelIds.includes(Number(model.id))
   })
 
   /**
@@ -116,7 +101,7 @@ export const GenerationEditorConfigView = (props: Props) => {
   useEffect(() => {
     const favoritedModelIds =
       userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
-    editor.updateFavoriteModelIds(favoritedModelIds)
+    context.updateFavoriteModelIds(favoritedModelIds)
   }, [])
 
   /**
@@ -153,51 +138,45 @@ export const GenerationEditorConfigView = (props: Props) => {
             onToggleShowFavorite={onToggleShowFavorite}
           />
           <GenerationEditorConfigModels
-            models={props.models}
-            favoritedModelIds={editor.context.favoriteModelIds}
+            models={context.models}
+            favoritedModelIds={context.config.favoriteModelIds}
             showFavoritedModels={showFavoritedModels}
-            currentModelId={editor.context.modelId}
-            currentModelIds={editor.context.modelIds}
-            onSelectModelId={editor.updateModelId}
+            currentModelId={context.config.modelId}
+            currentModelIds={context.config.modelIds}
+            onSelectModelId={context.updateModelId}
           />
           <Separator />
-          <GenerationEditorConfigLoraModels
-            models={props.loraModels}
-            loraModels={editor.context.loraModels}
-            availableLoraModelsCount={editor.context.availableLoraModelsCount}
-            onChangeLoraModel={editor.changeLoraModel}
-            onUpdateLoraModel={editor.updateLoraModel}
-          />
+          <GenerationEditorConfigLoraModels />
           <Separator />
           <GenerationEditorConfigSize
             modelType={configModelType}
-            value={editor.context.sizeType}
-            onChange={editor.updateSizeType}
+            value={context.config.sizeType}
+            onChange={context.updateSizeType}
           />
           <GenerationEditorConfigScale
-            value={editor.context.scale}
-            onChange={editor.updateScale}
+            value={context.config.scale}
+            onChange={context.updateScale}
           />
           <GenerationEditorConfigSeed
-            value={editor.context.seed}
-            onChange={editor.updateSeed}
+            value={context.config.seed}
+            onChange={context.updateSeed}
           />
           <GenerationEditorConfigStep
-            value={editor.context.steps}
-            onChange={editor.updateSteps}
+            value={context.config.steps}
+            onChange={context.updateSteps}
           />
           <GenerationEditorConfigSampler
-            value={editor.context.sampler}
-            onChange={editor.updateSampler}
+            value={context.config.sampler}
+            onChange={context.updateSampler}
           />
           <GenerationEditorConfigClipSkip
-            value={editor.context.clipSkip}
-            onChange={editor.updateClipSkip}
+            value={context.config.clipSkip}
+            onChange={context.updateClipSkip}
           />
         </div>
       </ScrollArea>
       <div className="lg:sticky bottom-0 bg-card p-4">
-        <GenerationEditorConfigResetButton onReset={editor.reset} />
+        <GenerationEditorConfigResetButton onReset={context.reset} />
       </div>
     </GenerationEditorCard>
   )

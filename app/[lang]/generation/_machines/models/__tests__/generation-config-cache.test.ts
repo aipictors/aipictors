@@ -1,11 +1,7 @@
-import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
+import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 
 describe("ImageGenerationCache", () => {
-  const cache = new ImageGenerationCache({
-    passType: null,
-    userNanoId: null,
-    hasSignedTerms: false,
-  })
+  const cache = new GenerationConfigCache()
 
   test("should return 'Mayng' for modelType 'SD2'", () => {
     const modelType = "SD2"

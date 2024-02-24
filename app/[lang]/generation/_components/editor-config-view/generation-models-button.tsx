@@ -1,7 +1,7 @@
 "use client"
 
 import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,7 +25,7 @@ type Props = {
 }
 
 export const GenerationModelsButton = (props: Props) => {
-  const editor = useGenerationEditor()
+  const context = useGenerationContext()
 
   const { value, setTrue, setFalse } = useBoolean()
 
@@ -51,7 +51,7 @@ export const GenerationModelsButton = (props: Props) => {
       result.data?.updateRatingImageGenerationModel
         .favoritedImageGenerationModelIds
     ) {
-      editor.updateFavoriteModelIds(
+      context.updateFavoriteModelIds(
         result.data?.updateRatingImageGenerationModel
           .favoritedImageGenerationModelIds,
       )
@@ -66,7 +66,7 @@ export const GenerationModelsButton = (props: Props) => {
         setFalse()
       }}
     >
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button
           size={"sm"}
           className="w-full"

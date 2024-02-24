@@ -1,12 +1,20 @@
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
 import { produce } from "immer"
+
+type Props = {
+  maxTasksCount: number
+  availableLoraModelsCount: number
+}
 
 /**
  * 画像生成の状態を作成する
  */
-export class ImageGenerationAction {
-  constructor(private state: ImageGenerationState) {}
+export class GenerationConfigAction {
+  constructor(
+    private state: GenerationConfigState,
+    private props: Props,
+  ) {}
 
   getState() {
     return this.state
@@ -17,8 +25,8 @@ export class ImageGenerationAction {
    * @returns
    */
   reset() {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
+    return new GenerationConfigAction(
+      new GenerationConfigState({
         ...this.state,
         promptText: config.generationFeature.defaultPromptValue,
         negativePromptText: config.generationFeature.defaultNegativePromptValue,
@@ -32,6 +40,7 @@ export class ImageGenerationAction {
         vae: config.generationFeature.defaultVaeValue,
         clipSkip: config.generationFeature.defaultClipSkipValue,
       }),
+      this.props,
     )
   }
 
@@ -41,8 +50,9 @@ export class ImageGenerationAction {
    * @returns
    */
   updatePrompt(text: string) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state, promptText: text }),
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, promptText: text }),
+      this.props,
     )
   }
 
@@ -52,11 +62,12 @@ export class ImageGenerationAction {
    * @returns
    */
   updateNegativePrompt(text: string) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
+    return new GenerationConfigAction(
+      new GenerationConfigState({
         ...this.state,
         negativePromptText: text.trim() === "" ? "EasyNegative" : text,
       }),
+      this.props,
     )
   }
 
@@ -66,12 +77,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSampler(text: string) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        sampler: text,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      sampler: text,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -80,12 +90,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSteps(value: number) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        steps: value,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      steps: value,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -94,12 +103,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateScale(value: number) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        scale: value,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      scale: value,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -108,12 +116,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSizeType(text: string) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        sizeType: text,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      sizeType: text,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -122,12 +129,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateVae(text: string | null) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        vae: text,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      vae: text,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -136,12 +142,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateClipSkip(clipSkip: number) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        clipSkip: clipSkip,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      clipSkip: clipSkip,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -150,12 +155,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateSeed(value: number) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        seed: value,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      seed: value,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -176,34 +180,32 @@ export class ImageGenerationAction {
 
     if (this.state.modelType !== modelType) {
       // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる
-      return new ImageGenerationAction(
-        new ImageGenerationState({
-          ...this.state,
-          sizeType: this.getModelSizeType(this.state.sizeType, modelType),
-          vae: this.getModelVae(modelType),
-          modelId: id,
-          modelIds: modelIds,
-          modelType: modelType,
-          negativePromptText: this.getNegativePromptText(
-            modelType,
-            this.state.negativePromptText,
-          ),
-        }),
-      )
-    }
-    return new ImageGenerationAction(
-      new ImageGenerationState({
+      const state = new GenerationConfigState({
         ...this.state,
+        sizeType: this.getModelSizeType(this.state.sizeType, modelType),
+        vae: this.getModelVae(modelType),
         modelId: id,
         modelIds: modelIds,
         modelType: modelType,
-        vae: this.getModelVae(modelType),
         negativePromptText: this.getNegativePromptText(
           modelType,
           this.state.negativePromptText,
         ),
-      }),
-    )
+      })
+      return new GenerationConfigAction(state, this.props)
+    }
+    const state = new GenerationConfigState({
+      ...this.state,
+      modelId: id,
+      modelIds: modelIds,
+      modelType: modelType,
+      vae: this.getModelVae(modelType),
+      negativePromptText: this.getNegativePromptText(
+        modelType,
+        this.state.negativePromptText,
+      ),
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -215,7 +217,7 @@ export class ImageGenerationAction {
     /**
      * <lora:名前:値>の形式の文字列
      */
-    const loraModelTexts = this.state.loraModels.map((model) => {
+    const loraModelTexts = this.getPromptLoraModelNames().map((model) => {
       if (model.includes(name)) {
         return `<lora:${name}:${value}>`
       }
@@ -226,9 +228,9 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state, promptText }),
-    )
+    const state = new GenerationConfigState({ ...this.state, promptText })
+
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -237,12 +239,11 @@ export class ImageGenerationAction {
    * @returns
    */
   updateFavoriteModelIds(value: number[]) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        favoriteModelIds: value,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      favoriteModelIds: value,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -250,9 +251,9 @@ export class ImageGenerationAction {
    * @returns
    */
   initPromptWithLoraModelValue() {
-    const limitedLoraModels = this.state.loraModels.slice(
+    const limitedLoraModels = this.getPromptLoraModelNames().slice(
       0,
-      this.state.availableLoraModelsCount,
+      this.props.availableLoraModelsCount,
     )
     const loraModelTexts = limitedLoraModels.map((model) => {
       const [name, value] = model.split(":")
@@ -270,8 +271,9 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state, promptText }),
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, promptText }),
+      this.props,
     )
   }
 
@@ -284,7 +286,7 @@ export class ImageGenerationAction {
     /**
      * LoRAのモデルの名前
      */
-    const loraModelNames = this.state.loraModels.map((text) => {
+    const loraModelNames = this.getPromptLoraModelNames().map((text) => {
       const [name] = text.split(":")
       return name
     })
@@ -307,12 +309,11 @@ export class ImageGenerationAction {
    * @returns
    */
   changeModelType(modelType: string) {
-    return new ImageGenerationAction(
-      new ImageGenerationState({
-        ...this.state,
-        modelType: modelType,
-      }),
-    )
+    const state = new GenerationConfigState({
+      ...this.state,
+      modelType: modelType,
+    })
+    return new GenerationConfigAction(state, this.props)
   }
 
   /**
@@ -322,12 +323,15 @@ export class ImageGenerationAction {
    */
   addLoraModel(name: string) {
     // 選択可能な数を超えている場合
-    if (this.state.availableLoraModelsCount < this.state.loraModels.length) {
-      return new ImageGenerationAction(this.state)
+    if (
+      this.props.availableLoraModelsCount <
+      this.getPromptLoraModelNames().length
+    ) {
+      return this
     }
 
     const loraModels = [
-      ...this.state.loraModels.map((text) => `<lora:${text}>`),
+      ...this.getPromptLoraModelNames().map((text) => `<lora:${text}>`),
       `<lora:${name}:1>`,
     ]
 
@@ -335,8 +339,9 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state, promptText }),
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, promptText }),
+      this.props,
     )
   }
 
@@ -346,7 +351,7 @@ export class ImageGenerationAction {
    * @returns
    */
   removeLoraModel(name: string) {
-    const loraModels = this.state.loraModels.filter((model) => {
+    const loraModels = this.getPromptLoraModelNames().filter((model) => {
       return !model.includes(name)
     })
 
@@ -357,8 +362,9 @@ export class ImageGenerationAction {
       .join(" ")
       .trim()
 
-    return new ImageGenerationAction(
-      new ImageGenerationState({ ...this.state, promptText }),
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, promptText }),
+      this.props,
     )
   }
 
@@ -489,5 +495,16 @@ export class ImageGenerationAction {
       return "sdxl_vae"
     }
     return "ClearVAE_V2.3"
+  }
+
+  getPromptLoraModelNames() {
+    const regex = /<lora:[^>]+>/g
+    const regExpMatchArray = this.state.promptText.match(regex)
+    if (regExpMatchArray === null) {
+      return []
+    }
+    return Array.from(regExpMatchArray).map((text) => {
+      return text.replace(/<lora:|>/g, "")
+    })
   }
 }

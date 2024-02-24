@@ -6,15 +6,12 @@ import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/ed
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
-import {
-  ImageGenerationSizeType,
-  ImageModelsQuery,
-} from "@/graphql/__generated__/graphql"
+import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-task"
@@ -27,12 +24,11 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  imageModels: ImageModelsQuery["imageModels"]
-  termsMarkdownText: string
+  termsText: string
 }
 
-export function GenerationEditorSubmissionView(props: Props) {
-  const editor = useGenerationEditor()
+export function GenerationSubmissionView(props: Props) {
+  const context = useGenerationContext()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
@@ -118,8 +114,8 @@ export function GenerationEditorSubmissionView(props: Props) {
    */
   const onChangeGenerationMode = (mode: boolean) => {
     if (
-      editor.context.passType !== "STANDARD" &&
-      editor.context.passType !== "PREMIUM"
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
     ) {
       toast("STANDARD、PREMIUMのプランで予約生成可能です。")
       return
@@ -132,10 +128,6 @@ export function GenerationEditorSubmissionView(props: Props) {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    if (!editor.context.hasSignedTerms) return
-    const userNanoid = editor.context.userNanoId ?? null
-    if (userNanoid === null) return
-
     /**
      * 同時生成可能枚数
      */
@@ -145,7 +137,10 @@ export function GenerationEditorSubmissionView(props: Props) {
         : status?.viewer?.inProgressImageGenerationTasksCount
 
     // 生成中かつフリープランならサブスクに誘導
-    if (inProgressImageGenerationTasksCount !== 0 && !editor.context.passType) {
+    if (
+      inProgressImageGenerationTasksCount !== 0 &&
+      context.currentPass === null
+    ) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
@@ -157,23 +152,23 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
 
     try {
-      const model = props.imageModels.find((model) => {
-        return model.id === editor.context.modelId
+      const model = context.models.find((model) => {
+        return model.id === context.config.modelId
       })
       if (typeof model === "undefined") return
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
 
       const generationParams = {
         model: model.name,
-        vae: editor.context.vae ?? "",
-        prompt: editor.context.promptText,
-        negativePrompt: editor.context.negativePromptText,
-        seed: editor.context.seed,
-        steps: editor.context.steps,
-        scale: editor.context.scale,
-        sampler: editor.context.sampler,
-        clipSkip: editor.context.clipSkip,
-        sizeType: editor.context.sizeType as ImageGenerationSizeType,
+        vae: context.config.vae ?? "",
+        prompt: context.config.promptText,
+        negativePrompt: context.config.negativePromptText,
+        seed: context.config.seed,
+        steps: context.config.steps,
+        scale: context.config.scale,
+        sampler: context.config.sampler,
+        clipSkip: context.config.clipSkip,
+        sizeType: context.config.sizeType as ImageGenerationSizeType,
         type: "TEXT_TO_IMAGE",
       }
       const generationParamsJson = JSON.stringify(generationParams)
@@ -183,7 +178,7 @@ export function GenerationEditorSubmissionView(props: Props) {
         )
         return
       }
-      if (editor.context.seed !== -1) {
+      if (context.config.seed !== -1) {
         setBeforeGenerationParams(generationParamsJson)
       }
       const promises = taskCounts.map(() =>
@@ -192,15 +187,15 @@ export function GenerationEditorSubmissionView(props: Props) {
             input: {
               count: 1,
               model: model.name,
-              vae: editor.context.vae ?? "",
-              prompt: editor.context.promptText,
-              negativePrompt: editor.context.negativePromptText,
-              seed: editor.context.seed,
-              steps: editor.context.steps,
-              scale: editor.context.scale,
-              sampler: editor.context.sampler,
-              clipSkip: editor.context.clipSkip,
-              sizeType: editor.context.sizeType as ImageGenerationSizeType,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              negativePrompt: context.config.negativePromptText,
+              seed: context.config.seed,
+              steps: context.config.steps,
+              scale: context.config.scale,
+              sampler: context.config.sampler,
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
           },
@@ -208,12 +203,13 @@ export function GenerationEditorSubmissionView(props: Props) {
       )
       await Promise.all(promises)
       // タスクの作成後も呼び出す必要がある
-      await activeImageGeneration({ nanoid: userNanoid })
       if (isDesktop) {
         toast("タスクを作成しました")
       } else {
         toast("タスクを作成しました", { position: "top-center" })
       }
+      if (typeof context.user?.nanoid !== "string") return
+      await activeImageGeneration({ nanoid: context.user.nanoid })
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -226,20 +222,18 @@ export function GenerationEditorSubmissionView(props: Props) {
    */
   const onCreateReservedTask = async () => {
     if (
-      editor.context.passType !== "STANDARD" &&
-      editor.context.passType !== "PREMIUM"
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
     ) {
       toast("STANDARD、PREMIUMのプランで予約生成可能です。")
       return
     }
-
-    if (!editor.context.hasSignedTerms) return
-    const userNanoid = editor.context.userNanoId ?? null
+    const userNanoid = context.user?.nanoid ?? null
     if (userNanoid === null) return
 
     try {
-      const model = props.imageModels.find((model) => {
-        return model.id === editor.context.modelId
+      const model = context.models.find((model) => {
+        return model.id === context.config.modelId
       })
       if (typeof model === "undefined") return
       const taskCounts = Array.from(
@@ -249,10 +243,10 @@ export function GenerationEditorSubmissionView(props: Props) {
 
       const seeds: number[] = []
       taskCounts.map((i) => {
-        if (editor.context.seed === -1) {
+        if (context.config.seed === -1) {
           seeds.push(-1)
         } else {
-          seeds.push(editor.context.seed + i)
+          seeds.push(context.config.seed + i)
         }
       })
 
@@ -262,15 +256,15 @@ export function GenerationEditorSubmissionView(props: Props) {
             input: {
               count: 1,
               model: model.name,
-              vae: editor.context.vae ?? "",
-              prompt: editor.context.promptText,
-              negativePrompt: editor.context.negativePromptText,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              negativePrompt: context.config.negativePromptText,
               seed: seeds[i],
-              steps: editor.context.steps,
-              scale: editor.context.scale,
+              steps: context.config.steps,
+              scale: context.config.scale,
               sampler: "DPM++ 2M Karras",
-              clipSkip: editor.context.clipSkip,
-              sizeType: editor.context.sizeType as ImageGenerationSizeType,
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
           },
@@ -366,7 +360,7 @@ export function GenerationEditorSubmissionView(props: Props) {
           </div>
           {generationMode === "normal" && (
             <GenerationCountSelect
-              pass={editor.context.passType ?? "FREE"}
+              pass={context.currentPass?.type ?? "FREE"}
               selectedCount={generationCount}
               onChange={setGenerationCount}
             />
@@ -379,7 +373,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 生成開始ボタン */}
-          {editor.context.hasSignedTerms && (
+          {context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
                 if (generationMode === "reserve") {
@@ -389,7 +383,7 @@ export function GenerationEditorSubmissionView(props: Props) {
                 }
               }}
               isLoading={isCreatingTask}
-              isDisabled={editor.context.isDisabled}
+              isDisabled={context.config.isDisabled}
               generatingCount={
                 generationMode === "normal"
                   ? inProgressImageGenerationTasksCount
@@ -406,9 +400,9 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 規約確認開始ボタン */}
-          {!editor.context.hasSignedTerms && (
+          {context.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
-              termsMarkdownText={props.termsMarkdownText}
+              termsMarkdownText={props.termsText}
               onSubmit={onSignTerms}
             />
           )}
@@ -430,7 +424,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             engineStatus?.normalPredictionGenerationSeconds ?? 0
           }
           normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-          passType={editor.context.passType}
+          passType={context.currentPass?.type ?? null}
           remainingImageGenerationTasksCount={tasksCount}
           standardPredictionGenerationSeconds={
             engineStatus?.standardPredictionGenerationSeconds ?? 0
