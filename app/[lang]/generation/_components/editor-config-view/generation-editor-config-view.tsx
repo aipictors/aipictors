@@ -98,9 +98,11 @@ export const GenerationEditorConfigView = (props: Props) => {
    * お気に入りのモデル
    */
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
-  const favoritedModelIds =
-    userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
-  editor.updateFavoriteModelIds(favoritedModelIds)
+  useEffect(() => {
+    const favoritedModelIds =
+      userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
+    editor.updateFavoriteModelIds(favoritedModelIds)
+  }, [])
 
   /**
    * モデルの種類
