@@ -28,11 +28,13 @@ export const GenerationEditorConfigModels = (props: Props) => {
     })
   })
 
-  const favoritedModels = props.favoritedModelIds.map((modelId) => {
-    return props.models.find((model) => {
-      return Number(model.id) === modelId
+  const favoritedModels = props.favoritedModelIds
+    .map((modelId) => {
+      return props.models.find((model) => {
+        return Number(model.id) === modelId
+      })
     })
-  })
+    .slice(0, 3)
 
   return (
     <div className="grid gap-y-2">
