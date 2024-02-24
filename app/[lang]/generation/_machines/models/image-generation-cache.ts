@@ -212,7 +212,7 @@ export class ImageGenerationCache {
    * @returns
    */
   restorePrompt() {
-    const defaultValue = ""
+    const defaultValue = config.generationFeature.defaultPromptValue
     try {
       const value = localStorage.getItem("config.generation.prompt")
       return value ?? defaultValue
