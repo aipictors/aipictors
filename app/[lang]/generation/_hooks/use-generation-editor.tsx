@@ -171,6 +171,15 @@ export const useGenerationEditor = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  /**
+   * お気に入りのモデル一覧を変更する
+   * @param modelIds お気に入りモデルIDの一覧
+   */
+  const updateFavoriteModelIds = (modelIds: number[]) => {
+    const value = action.updateFavoriteModelIds(modelIds).getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
   const initPromptWithLoraModel = () => {
     const value = action.initPromptWithLoraModelValue().getState()
     cacheStorage.savePrompt(value.promptText)
@@ -198,6 +207,7 @@ export const useGenerationEditor = () => {
     reset,
     updateSettings,
     updateModelId,
+    updateFavoriteModelIds,
     changeLoraModel: changeLoraConfig,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,

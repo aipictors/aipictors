@@ -232,6 +232,20 @@ export class ImageGenerationAction {
   }
 
   /**
+   * お気に入りモデルID一覧を変更する
+   * @param value
+   * @returns
+   */
+  updateFavoriteModelIds(value: number[]) {
+    return new ImageGenerationAction(
+      new ImageGenerationState({
+        ...this.state,
+        favoriteModelIds: value,
+      }),
+    )
+  }
+
+  /**
    * プロンプトの入力内容を最適化する
    * @returns
    */

@@ -16,6 +16,7 @@ const zProps = z.object({
   clipSkip: z.number(),
   userNanoId: z.string().nullable(),
   hasSignedTerms: z.boolean(),
+  favoriteModelIds: z.array(z.number()),
 })
 
 type Props = z.infer<typeof zProps>
@@ -26,6 +27,8 @@ export class ImageGenerationState implements Props {
   readonly modelId!: Props["modelId"]
 
   readonly modelIds!: Props["modelIds"]
+
+  readonly favoriteModelIds!: Props["favoriteModelIds"]
 
   readonly promptText!: Props["promptText"]
 

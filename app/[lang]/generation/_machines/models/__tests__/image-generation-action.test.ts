@@ -7,6 +7,7 @@ const config = new ImageGenerationState({
   hasSignedTerms: false,
   modelId: "",
   modelIds: [],
+  favoriteModelIds: [],
   promptText: "",
   negativePromptText: "",
   sampler: "",
