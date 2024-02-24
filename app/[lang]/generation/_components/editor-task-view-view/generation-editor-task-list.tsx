@@ -40,7 +40,7 @@ export const GenerationEditorTaskList = (props: Props) => {
             isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
             isSelectDisabled={false}
             taskNanoid={task.nanoid}
-            remainingSeconds={task.estimatedSeconds ?? 0}
+            estimatedSeconds={task.estimatedSeconds ?? 0}
             taskId={task.id}
             token={task.token}
             optionButtonSize={props.sizeType}
@@ -51,7 +51,7 @@ export const GenerationEditorTaskList = (props: Props) => {
         {!props.isEditMode && !isDesktop && (
           <GenerationTaskCard
             taskNanoid={task.nanoid}
-            remainingSeconds={task.estimatedSeconds ?? 0}
+            estimatedSeconds={task.estimatedSeconds ?? 0}
             isSelectDisabled={true}
             taskId={task.id}
             token={task.token}

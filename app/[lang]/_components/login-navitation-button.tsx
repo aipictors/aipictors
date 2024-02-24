@@ -1,7 +1,7 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import { LoginDialogContent } from "@/app/[lang]/_components/login-dialog-content"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,17 +10,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { LogInIcon } from "lucide-react"
 
 /**
  * ログイン
  * @param props
  * @returns
  */
-export function LoginDialogButton() {
+export function LoginNavigationButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>{"ログイン"}</Button>
+        <HomeNavigationButton icon={LogInIcon}>
+          {"ログイン"}
+        </HomeNavigationButton>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

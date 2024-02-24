@@ -1,10 +1,9 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
-import { LogoutDialog } from "@/app/[lang]/_components/logout-dialog"
+import { LoginNavigationButton } from "@/app/[lang]/_components/login-navitation-button"
+import { NavigationLogoutDialogButton } from "@/app/[lang]/_components/logout-navigation-dialog-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import { AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
 import {
@@ -18,8 +17,6 @@ import {
   ImageIcon,
   LibraryBigIcon,
   LightbulbIcon,
-  LogInIcon,
-  LogOutIcon,
   SettingsIcon,
   SparklesIcon,
   StampIcon,
@@ -115,22 +112,8 @@ export const HomeNavigationList = () => {
           {"設定"}
         </HomeNavigationButton>
       )}
-      {appContext.isLoggedIn && (
-        <LogoutDialog>
-          <AlertDialogTrigger asChild>
-            <HomeNavigationButton icon={LogOutIcon}>
-              {"ログアウト"}
-            </HomeNavigationButton>
-          </AlertDialogTrigger>
-        </LogoutDialog>
-      )}
-      {appContext.isNotLoggedIn && (
-        <LoginDialog>
-          <HomeNavigationButton icon={LogInIcon}>
-            {"ログイン"}
-          </HomeNavigationButton>
-        </LoginDialog>
-      )}
+      {appContext.isLoggedIn && <NavigationLogoutDialogButton />}
+      {appContext.isNotLoggedIn && <LoginNavigationButton />}
       <div className="py-2">
         <Separator />
       </div>

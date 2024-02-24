@@ -18,7 +18,7 @@ type Props = {
   token: string | null
   isSelected?: boolean
   progress?: number
-  remainingSeconds?: number
+  estimatedSeconds?: number
   rating: number
   optionButtonSize: string
   isLink?: boolean
@@ -80,7 +80,7 @@ export const GenerationTaskCard = (props: Props) => {
   if (props.token == null || props.taskNanoid == null) {
     return (
       <InProgressGenerationCard
-        remainingSeconds={props.remainingSeconds}
+        estimatedSeconds={props.estimatedSeconds}
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
       />

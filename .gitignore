@@ -1,3 +1,6 @@
+# Storybook
+/build-storybook.log
+
 # VitePress
 /.vitepress/cache
 

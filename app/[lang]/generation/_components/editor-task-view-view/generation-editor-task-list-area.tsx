@@ -82,6 +82,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
     if (typeof task === "undefined") return
     editor.updateSettings(
       task.model.id,
+      task.steps,
       task.model.type,
       task.sampler,
       task.scale,

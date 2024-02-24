@@ -43,10 +43,10 @@ export const LogoutDialogLegacy = (props: Props) => {
           }
         </AlertDialogDescription>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={handleLogout}>{"はい"}</AlertDialogAction>
           <AlertDialogCancel onClick={props.onClose}>
             {"やめとく"}
           </AlertDialogCancel>
+          <AlertDialogAction onClick={handleLogout}>{"はい"}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

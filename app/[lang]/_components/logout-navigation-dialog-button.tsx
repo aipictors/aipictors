@@ -1,5 +1,6 @@
 "use client"
 
+import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,21 +10,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { getAuth, signOut } from "firebase/auth"
+import { LogOutIcon } from "lucide-react"
 import { toast } from "sonner"
 
-type Props = {
-  children: React.ReactNode
-}
-
 /**
- * ダイアログをトリガーする
  * ログアウトする
  * @param props
  * @returns
  */
-export function LogoutDialog(props: Props) {
+export function NavigationLogoutDialogButton() {
   const handleLogout = async () => {
     await signOut(getAuth())
     toast("ログアウトしました。")
@@ -31,7 +29,11 @@ export function LogoutDialog(props: Props) {
 
   return (
     <AlertDialog>
-      {props.children}
+      <AlertDialogTrigger asChild>
+        <HomeNavigationButton icon={LogOutIcon}>
+          {"ログアウト"}
+        </HomeNavigationButton>
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{"本当にログアウトしますか？"}</AlertDialogTitle>
