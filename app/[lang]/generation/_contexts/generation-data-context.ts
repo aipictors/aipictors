@@ -16,7 +16,7 @@ type Context = {
   currentPass: NonNullable<ViewerCurrentPassQuery["viewer"]>["currentPass"]
 }
 
-export const generationDataContext = createContext<Context>({
+export const GenerationDataContext = createContext<Context>({
   promptCategories: [],
   models: [],
   loraModels: [],

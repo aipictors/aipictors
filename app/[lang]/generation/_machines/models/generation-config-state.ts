@@ -18,7 +18,10 @@ const zProps = z.object({
 
 type Props = z.infer<typeof zProps>
 
-export class ImageGenerationState implements Props {
+/**
+ * 画像生成のエディタの状態
+ */
+export class GenerationConfigState implements Props {
   readonly modelId!: Props["modelId"]
 
   readonly modelIds!: Props["modelIds"]
@@ -47,19 +50,8 @@ export class ImageGenerationState implements Props {
 
   readonly isDisabled: boolean
 
-  /**
-   * 利用できるLoraModelの数
-   */
-  readonly availableLoraModelsCount: number
-
-  readonly loraModels: string[]
-
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.availableLoraModelsCount = 0
-    this.loraModels = []
-    // this.availableLoraModelsCount = this.getAvailableLoraModelsCount()
-    // this.loraModels = this.getLoraModels()
   }
 }

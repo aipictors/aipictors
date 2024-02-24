@@ -1,6 +1,5 @@
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
 import { GenerationContextProvider } from "@/app/[lang]/generation/_components/providers/generation-context-provider"
-import { AppColumnLayout } from "@/components/app/app-column-layout"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
@@ -36,9 +35,8 @@ export async function GenerationLayout(props: Props) {
         imageModels={imageModelsResp.data.imageModels}
         imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
       >
-        <AppColumnLayout isFullWidth={true}>{props.children}</AppColumnLayout>
+        <div className="container max-w-none">{props.children}</div>
       </GenerationContextProvider>
-      {/* <HomeFooter /> */}
     </>
   )
 }

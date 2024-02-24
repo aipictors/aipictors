@@ -1,21 +1,54 @@
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
-import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
-import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/image-generation-action"
-import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
-import { ImageGenerationEditorView } from "@/app/[lang]/generation/_machines/models/image-generation-editor-view"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
+import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
+import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { config } from "@/config"
 import { useContext } from "react"
 
-export const useGenerationEditor = () => {
-  const dataContext = useContext(generationDataContext)
+export const useGenerationContext = () => {
+  const dataContext = useContext(GenerationDataContext)
 
-  const context = GenerationEditorContext.useSelector((state) => state.context)
+  const configContext = GenerationConfigContext.useSelector((state) => {
+    return state.context
+  })
 
-  const { send } = GenerationEditorContext.useActorRef()
+  const { send } = GenerationConfigContext.useActorRef()
 
-  const cacheStorage = new ImageGenerationCache()
+  const cacheStorage = new GenerationConfigCache()
 
-  const action = new ImageGenerationAction(context)
+  /**
+   * 生成可能な枚数
+   */
+  const maxTasksCount = () => {
+    if (dataContext.currentPass?.type === "LITE") {
+      return config.passFeature.imageGenerationsCount.lite
+    }
+    if (dataContext.currentPass?.type === "PREMIUM") {
+      return config.passFeature.imageGenerationsCount.premium
+    }
+    if (dataContext.currentPass?.type === "STANDARD") {
+      return config.passFeature.imageGenerationsCount.standard
+    }
+    return config.passFeature.imageGenerationsCount.free
+  }
+
+  const availableLoraModelsCount = () => {
+    if (dataContext.currentPass?.type === "LITE") {
+      return 2
+    }
+    if (dataContext.currentPass?.type === "STANDARD") {
+      return 5
+    }
+    if (dataContext.currentPass?.type === "PREMIUM") {
+      return 5
+    }
+    return 2
+  }
+
+  const configAction = new GenerationConfigAction(configContext, {
+    maxTasksCount: maxTasksCount(),
+    availableLoraModelsCount: availableLoraModelsCount(),
+  })
 
   const updateSettings = (
     modelId: string,
@@ -42,7 +75,7 @@ export const useGenerationEditor = () => {
     cacheStorage.saveSizeType(sizeType)
     cacheStorage.saveClipSkip(clipSkip)
 
-    const value = action
+    const value = configAction
       .updateNegativePrompt(negativePromptText)
       .updatePrompt(promptText)
       .updateSteps(steps)
@@ -64,7 +97,7 @@ export const useGenerationEditor = () => {
    */
   const updatePrompt = (text: string) => {
     cacheStorage.savePrompt(text)
-    const value = action.updatePrompt(text).getState()
+    const value = configAction.updatePrompt(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -74,7 +107,7 @@ export const useGenerationEditor = () => {
    */
   const updateNegativePrompt = (text: string) => {
     cacheStorage.saveNegativePrompt(text)
-    const value = action.updateNegativePrompt(text).getState()
+    const value = configAction.updateNegativePrompt(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -84,7 +117,7 @@ export const useGenerationEditor = () => {
    */
   const updateSampler = (text: string) => {
     cacheStorage.saveSampler(text)
-    const value = action.updateSampler(text).getState()
+    const value = configAction.updateSampler(text).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -94,7 +127,7 @@ export const useGenerationEditor = () => {
    */
   const updateSteps = (step: number) => {
     cacheStorage.saveSteps(step)
-    const value = action.updateSteps(step).getState()
+    const value = configAction.updateSteps(step).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -104,7 +137,7 @@ export const useGenerationEditor = () => {
    */
   const updateScale = (scale: number) => {
     cacheStorage.saveScale(scale)
-    const value = action.updateScale(scale).getState()
+    const value = configAction.updateScale(scale).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -113,7 +146,7 @@ export const useGenerationEditor = () => {
    * @param sizeType
    */
   const updateSizeType = (sizeType: string) => {
-    const value = action.updateSizeType(sizeType).getState()
+    const value = configAction.updateSizeType(sizeType).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -123,7 +156,7 @@ export const useGenerationEditor = () => {
    */
   const updateVae = (vae: string | null) => {
     cacheStorage.saveVae(vae)
-    const value = action.updateVae(vae)
+    const value = configAction.updateVae(vae)
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -133,7 +166,7 @@ export const useGenerationEditor = () => {
    */
   const updateSeed = (seed: number) => {
     cacheStorage.saveSeed(seed)
-    const value = action.updateSeed(seed).getState()
+    const value = configAction.updateSeed(seed).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -142,7 +175,7 @@ export const useGenerationEditor = () => {
    * @param modelId
    */
   const updateModelId = (modelId: string, modelType: string) => {
-    const value = action.updateModelId(modelId, modelType).getState()
+    const value = configAction.updateModelId(modelId, modelType).getState()
     cacheStorage.saveModelId(modelId)
     cacheStorage.saveModelType(modelType)
     cacheStorage.saveModelIds(value.modelIds)
@@ -156,7 +189,7 @@ export const useGenerationEditor = () => {
    * @param clipSkip
    */
   const updateClipSkip = (clipSkip: number) => {
-    const value = action.updateClipSkip(clipSkip).getState()
+    const value = configAction.updateClipSkip(clipSkip).getState()
     cacheStorage.saveClipSkip(value.clipSkip)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -167,7 +200,9 @@ export const useGenerationEditor = () => {
    * @param modelValue
    */
   const updateLoraModel = (modelName: string, modelValue: number) => {
-    const value = action.updateLoraModelValue(modelName, modelValue).getState()
+    const value = configAction
+      .updateLoraModelValue(modelName, modelValue)
+      .getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -177,12 +212,12 @@ export const useGenerationEditor = () => {
    * @param modelIds お気に入りモデルIDの一覧
    */
   const updateFavoriteModelIds = (modelIds: number[]) => {
-    const value = action.updateFavoriteModelIds(modelIds).getState()
+    const value = configAction.updateFavoriteModelIds(modelIds).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
   const initPromptWithLoraModel = () => {
-    const value = action.initPromptWithLoraModelValue().getState()
+    const value = configAction.initPromptWithLoraModelValue().getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -192,53 +227,34 @@ export const useGenerationEditor = () => {
    * @param modelName
    */
   const changeLoraConfig = (modelName: string) => {
-    const value = action.changeLoraModel(modelName).getState()
+    const value = configAction.changeLoraModel(modelName).getState()
     cacheStorage.savePrompt(value.promptText)
     send({ type: "UPDATE_CONFIG", value })
   }
 
   const reset = () => {
     cacheStorage.reset()
-    const value = action.reset().getState()
+    const value = configAction.reset().getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
-  /**
-   * 生成可能な枚数
-   */
-  const maxTasksCount = () => {
-    if (dataContext.currentPass?.type === "LITE") {
-      return config.passFeature.imageGenerationsCount.lite
-    }
-    if (dataContext.currentPass?.type === "PREMIUM") {
-      return config.passFeature.imageGenerationsCount.premium
-    }
-    if (dataContext.currentPass?.type === "STANDARD") {
-      return config.passFeature.imageGenerationsCount.standard
-    }
-    return config.passFeature.imageGenerationsCount.free
-  }
-
-  const getAvailableLoraModelsCount = () => {
-    if (dataContext.currentPass?.type === "LITE") {
-      return 2
-    }
-    if (dataContext.currentPass?.type === "STANDARD") {
-      return 5
-    }
-    if (dataContext.currentPass?.type === "PREMIUM") {
-      return 5
-    }
-    return 2
-  }
-
   return {
-    context: new ImageGenerationEditorView(context),
+    config: configContext,
     get maxTasksCount() {
       return maxTasksCount()
     },
     get availableLoraModelsCount() {
-      return getAvailableLoraModelsCount()
+      return availableLoraModelsCount()
+    },
+    get promptLoraModels() {
+      const regex = /<lora:[^>]+>/g
+      const regExpMatchArray = configContext.promptText.match(regex)
+      if (regExpMatchArray === null) {
+        return []
+      }
+      return Array.from(regExpMatchArray).map((text) => {
+        return text.replace(/<lora:|>/g, "")
+      })
     },
     promptCategories: dataContext.promptCategories,
     models: dataContext.models,

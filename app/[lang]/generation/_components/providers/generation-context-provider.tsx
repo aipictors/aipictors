@@ -1,12 +1,10 @@
 "use client"
 
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
-import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
-import { LoginPage } from "@/app/_components/page/login-page"
+import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
 import {
   ImageLoraModelsQuery,
   ImageModelsQuery,
@@ -26,35 +24,36 @@ type Props = {
 export const GenerationContextProvider = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data: viewer, refetch } = useQuery(viewerCurrentPassQuery)
+  const { data: viewer, refetch } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isNotLoggedIn,
+  })
+
+  const userNanoid = viewer?.viewer?.user.nanoid ?? null
 
   useEffect(() => {
-    const userNanoid = viewer?.viewer?.user.nanoid ?? null
     if (userNanoid === null) return
     activeImageGeneration({ nanoid: userNanoid })
-  }, [])
+  }, [userNanoid])
 
   useEffect(() => {
-    console.log("authContext.isLoggedIn", authContext.isLoggedIn)
+    if (authContext.isLoading) return
     if (authContext.isNotLoggedIn) return
     // ログイン状態が変わったら再取得
     refetch()
   }, [authContext.isLoggedIn])
 
-  const cacheStorage = new ImageGenerationCache()
+  const cacheStorage = new GenerationConfigCache()
 
-  // TODO: いつか消す
-  if (authContext.isLoading) {
-    return <AppLoadingPage />
-  }
+  // if (authContext.isLoading) {
+  //   return <AppLoadingPage />
+  // }
 
-  // TODO: いつか消す
-  if (authContext.isNotLoggedIn) {
-    return <LoginPage />
-  }
+  // if (authContext.isNotLoggedIn) {
+  //   return <LoginPage />
+  // }
 
   return (
-    <generationDataContext.Provider
+    <GenerationDataContext.Provider
       value={{
         promptCategories: props.promptCategories,
         models: props.imageModels,
@@ -63,11 +62,11 @@ export const GenerationContextProvider = (props: Props) => {
         currentPass: viewer?.viewer?.currentPass ?? null,
       }}
     >
-      <GenerationEditorContext.Provider
+      <GenerationConfigContext.Provider
         options={{ input: cacheStorage.restore() }}
       >
         {props.children}
-      </GenerationEditorContext.Provider>
-    </generationDataContext.Provider>
+      </GenerationConfigContext.Provider>
+    </GenerationDataContext.Provider>
   )
 }

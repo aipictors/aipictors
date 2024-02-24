@@ -1,10 +1,7 @@
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 
-export class ImageGenerationEditorView extends ImageGenerationState {
-  /**
-   * 生成可能な枚数
-   */
-  get getLoraModels() {
+export class GenerationConfig extends GenerationConfigState {
+  get loraModelPromptTexts() {
     const promptText = this.promptText
     const regex = /<lora:[^>]+>/g
     const regExpMatchArray = promptText.match(regex)

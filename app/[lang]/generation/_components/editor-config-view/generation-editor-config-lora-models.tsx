@@ -2,27 +2,20 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
 import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-models-dialog-button"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useBoolean } from "usehooks-ts"
 
-type Props = {
-  loraModels: string[]
-  availableLoraModelsCount: number
-  onChangeLoraModel(modelName: string): void
-  onUpdateLoraModel(modelName: string, value: number): void
-}
-
-export const GenerationEditorConfigLoraModels = (props: Props) => {
-  const editor = useGenerationEditor()
+export const GenerationEditorConfigLoraModels = () => {
+  const context = useGenerationContext()
 
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
-  const currentModels = props.loraModels.map((model) => {
+  const currentModels = context.promptLoraModels.map((model) => {
     const [name, value] = model.split(":")
     return { name, value: parseFloat(value) }
   })
 
-  const currentLoraModelNames = props.loraModels.map((model) => {
+  const currentLoraModelNames = context.promptLoraModels.map((model) => {
     const [name] = model.split(":")
     return name
   })
@@ -30,7 +23,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = editor.loraModels.filter((model) => {
+  const selectedModels = context.loraModels.filter((model) => {
     return currentLoraModelNames.includes(model.name)
   })
 
@@ -44,19 +37,19 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
           description={model.description ?? ""}
           value={currentModels.find((m) => m.name === model.name)?.value ?? 0}
           setValue={(value) => {
-            props.onUpdateLoraModel(model.name, value)
+            context.updateLoraModel(model.name, value)
           }}
           onDelete={() => {
-            props.onChangeLoraModel(model.name)
+            context.changeLoraModel(model.name)
           }}
         />
       ))}
       <LoraModelsDialogButton
         isOpen={isOpen}
         onClose={onClose}
-        models={editor.loraModels}
+        models={context.loraModels}
         selectedModelNames={currentLoraModelNames}
-        onSelect={props.onChangeLoraModel}
+        onSelect={context.changeLoraModel}
       />
     </div>
   )

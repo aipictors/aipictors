@@ -1,9 +1,9 @@
 import { join } from "path"
-import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
-import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
-import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
-import { GenerationEditorSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
-import { GenerationEditorTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
+import { GenerationConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
+import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
+import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
+import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
+import { GenerationTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
@@ -31,13 +31,11 @@ const GenerationPage = async () => {
 
   return (
     <GenerationEditorLayout
-      config={<GenerationEditorConfigView />}
-      promptEditor={<GenerationEditorPromptView />}
-      negativePromptEditor={<GenerationEditorNegativePromptView />}
-      submission={
-        <GenerationEditorSubmissionView termsMarkdownText={termsMarkdownText} />
-      }
-      taskList={<GenerationEditorTaskView />}
+      config={<GenerationConfigView />}
+      promptEditor={<GenerationPromptView />}
+      negativePromptEditor={<GenerationNegativePromptView />}
+      submission={<GenerationSubmissionView termsText={termsMarkdownText} />}
+      taskList={<GenerationTaskView />}
     />
   )
 }

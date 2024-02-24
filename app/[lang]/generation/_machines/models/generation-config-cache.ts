@@ -1,18 +1,18 @@
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 
 /**
  * 画像生成の設定のキャッシュを管理する
  */
-export class ImageGenerationCache {
+export class GenerationConfigCache {
   /**
    * 復元する
    * @returns
    */
   restore() {
     const modelType = this.restoreModelType()
-    return new ImageGenerationState({
+    return new GenerationConfigState({
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
       favoriteModelIds: [],
@@ -34,7 +34,7 @@ export class ImageGenerationCache {
    */
   reset() {
     const modelType = config.generationFeature.defaultImageModelType
-    return new ImageGenerationState({
+    return new GenerationConfigState({
       modelId: config.generationFeature.defaultImageModelId,
       modelIds: config.generationFeature.defaultImageModelIds,
       favoriteModelIds: [],
