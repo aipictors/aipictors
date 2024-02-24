@@ -213,6 +213,7 @@ export const useGenerationContext = () => {
    */
   const updateFavoriteModelIds = (modelIds: number[]) => {
     const value = configAction.updateFavoriteModelIds(modelIds).getState()
+    cacheStorage.savaFavoriteModelIds(value.favoriteModelIds)
     send({ type: "UPDATE_CONFIG", value })
   }
 

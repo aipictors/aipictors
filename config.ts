@@ -95,6 +95,7 @@ export const config = {
     /**
      * デフォルトのLoRAモデル名
      */
+    defaultFavoritedModelIds: [],
     defaultImageLoraModelNames: ["flat1", "flatBG"],
     defaultPromptValue:
       "masterpiece, best quality, extremely detailed, anime, girl, skirt",

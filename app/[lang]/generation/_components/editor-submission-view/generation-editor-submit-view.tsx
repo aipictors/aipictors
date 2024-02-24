@@ -7,11 +7,14 @@ import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/edit
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
 import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
+import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
+import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
@@ -68,8 +71,22 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
+  const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
+    createImageGenerationTaskReservedMutation,
+    {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    },
+  )
+
+  const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
+    useMutation(deleteReservedImageGenerationTasksMutation, {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    })
+
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: isCreatingTask ? 10000 : 1000,
+    pollInterval: isCreatingTask ? 1000 : 10000,
   })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
@@ -96,6 +113,14 @@ export function GenerationSubmissionView(props: Props) {
    * @param mode 生成モード変更フラグ
    */
   const onChangeGenerationMode = (mode: boolean) => {
+    if (
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+
     setGenerationMode(mode ? "reserve" : "normal")
   }
 
@@ -192,6 +217,90 @@ export function GenerationSubmissionView(props: Props) {
     }
   }
 
+  /**
+   * 予約タスクを作成する
+   */
+  const onCreateReservedTask = async () => {
+    if (
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+    const userNanoid = context.user?.nanoid ?? null
+    if (userNanoid === null) return
+
+    try {
+      const model = context.models.find((model) => {
+        return model.id === context.config.modelId
+      })
+      if (typeof model === "undefined") return
+      const taskCounts = Array.from(
+        { length: reservedGenerationCount },
+        (_, i) => i,
+      )
+
+      const seeds: number[] = []
+      taskCounts.map((i) => {
+        if (context.config.seed === -1) {
+          seeds.push(-1)
+        } else {
+          seeds.push(context.config.seed + i)
+        }
+      })
+
+      const promises = taskCounts.map((i) =>
+        createReservedTask({
+          variables: {
+            input: {
+              count: 1,
+              model: model.name,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps: context.config.steps,
+              scale: context.config.scale,
+              sampler: "DPM++ 2M Karras",
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
+              type: "TEXT_TO_IMAGE",
+            },
+          },
+        }),
+      )
+      await Promise.all(promises)
+      // タスクの作成後も呼び出す必要がある
+      await activeImageGeneration({ nanoid: userNanoid })
+      if (isDesktop) {
+        toast("タスクを予約しました、自動的に生成されます")
+      } else {
+        toast("タスクを予約しました、自動的に生成されます", {
+          position: "top-center",
+        })
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  /**
+   * 予約タスクを一括削除する
+   */
+  const onDeleteReservedTasks = async () => {
+    try {
+      await deleteReservedTasks()
+      toast("予約タスクを削除しました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
   const engineStatus = status?.imageGenerationEngineStatus
 
   /**
@@ -225,26 +334,30 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationTasksCount =
     status?.viewer?.inProgressImageGenerationTasksCount ?? 0
 
+  /**
+   * 予約生成中の枚数
+   */
+  const inProgressImageGenerationReservedTasksCount =
+    status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
+
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
-        <div className="flex items-center gap-x-2">
-          {config.isDevelopmentMode && (
-            <div className="flex items-center w-20 space-x-2">
-              <>
-                <Checkbox
-                  id="generation-mode-checkbox"
-                  onCheckedChange={onChangeGenerationMode}
-                />
-                <label
-                  htmlFor="generation-mode-checkbox"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  予約
-                </label>
-              </>
-            </div>
-          )}
+        <div className="flex items-center">
+          <div className="flex items-center w-20 space-x-2">
+            <>
+              <Checkbox
+                id="generation-mode-checkbox"
+                onCheckedChange={onChangeGenerationMode}
+              />
+              <label
+                htmlFor="generation-mode-checkbox"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 w-16"
+              >
+                予約
+              </label>
+            </>
+          </div>
           {generationMode === "normal" && (
             <GenerationCountSelect
               pass={context.currentPass?.type ?? "FREE"}
@@ -262,10 +375,20 @@ export function GenerationSubmissionView(props: Props) {
           {/* 生成開始ボタン */}
           {context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
-              onClick={onCreateTask}
+              onClick={async () => {
+                if (generationMode === "reserve") {
+                  await onCreateReservedTask()
+                } else {
+                  await onCreateTask()
+                }
+              }}
               isLoading={isCreatingTask}
               isDisabled={context.config.isDisabled}
-              generatingCount={inProgressImageGenerationTasksCount}
+              generatingCount={
+                generationMode === "normal"
+                  ? inProgressImageGenerationTasksCount
+                  : inProgressImageGenerationReservedTasksCount
+              }
               maxGeneratingCount={
                 generationMode === "reserve"
                   ? availableImageGenerationMaxTasksCount - tasksCount
@@ -281,6 +404,16 @@ export function GenerationSubmissionView(props: Props) {
             <GenerationTermsButton
               termsMarkdownText={props.termsText}
               onSubmit={onSignTerms}
+            />
+          )}
+          {/* 生成キャンセル */}
+          {generationMode === "reserve" && (
+            <GenerationTasksCancelButton
+              isDisabled={
+                inProgressImageGenerationReservedTasksCount === 0 ||
+                isDeletingReservedTasks
+              }
+              onCancel={onDeleteReservedTasks}
             />
           )}
         </div>

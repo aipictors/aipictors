@@ -3,6 +3,7 @@
 import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
 import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
+import { GenerationEditorConfigOpenFavoriteModelToggle } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-open-favorite-model-button"
 import { GenerationEditorConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-reset-button"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-scale"
@@ -19,7 +20,7 @@ import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 
@@ -28,12 +29,14 @@ import { toast } from "sonner"
  * @param props
  * @returns
  */
-export const GenerationConfigView = () => {
+export const GenerationEditorConfigView = () => {
   const context = useGenerationContext()
 
   const searchParams = useSearchParams()
 
   const authContext = useContext(AuthContext)
+
+  const [showFavoritedModels, setShowFavoritedModels] = useState(false)
 
   const ref = searchParams.get("ref")
 
@@ -86,6 +89,13 @@ export const GenerationConfigView = () => {
   /**
    * お気に入りのモデル
    */
+  const favoritedModel = context.models.filter((model) => {
+    return context.config.favoriteModelIds.includes(Number(model.id))
+  })
+
+  /**
+   * お気に入りのモデル
+   */
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
 
   useEffect(() => {
@@ -93,6 +103,17 @@ export const GenerationConfigView = () => {
       userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
     context.updateFavoriteModelIds(favoritedModelIds)
   }, [])
+
+  /**
+   * お気に入りモデル表示切替
+   */
+  const onToggleShowFavorite = () => {
+    if (showFavoritedModels) {
+      setShowFavoritedModels(false)
+      return
+    }
+    setShowFavoritedModels(true)
+  }
 
   /**
    * モデルの種類
@@ -112,7 +133,18 @@ export const GenerationConfigView = () => {
             "max-h-[60vh] md:max-h-full",
           )}
         >
-          <GenerationEditorConfigModels />
+          <GenerationEditorConfigOpenFavoriteModelToggle
+            isActive={showFavoritedModels}
+            onToggleShowFavorite={onToggleShowFavorite}
+          />
+          <GenerationEditorConfigModels
+            models={context.models}
+            favoritedModelIds={context.config.favoriteModelIds}
+            showFavoritedModels={showFavoritedModels}
+            currentModelId={context.config.modelId}
+            currentModelIds={context.config.modelIds}
+            onSelectModelId={context.updateModelId}
+          />
           <Separator />
           <GenerationEditorConfigLoraModels />
           <Separator />

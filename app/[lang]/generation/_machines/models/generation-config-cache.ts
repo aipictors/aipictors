@@ -15,7 +15,7 @@ export class GenerationConfigCache {
     return new GenerationConfigState({
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
-      favoriteModelIds: [],
+      favoriteModelIds: this.restoreFavoriteModelIds(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(modelType),
       sampler: this.restoreSampler(),
@@ -158,6 +158,34 @@ export class GenerationConfigCache {
   }
 
   /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  savaFavoriteModelIds(modelIds: number[]) {
+    localStorage.setItem(
+      "config.generation.favorite.models",
+      modelIds.join(","),
+    )
+  }
+
+  /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  restoreFavoriteModelIds() {
+    const defaultValue = config.generationFeature.defaultFavoritedModelIds
+    try {
+      const value = localStorage.getItem("config.generation.favorite.models")
+      return value ? value.split(",").map(Number) : defaultValue ?? []
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
    * プロンプトを保存する
    * @param prompt
    */
@@ -170,7 +198,7 @@ export class GenerationConfigCache {
    * @returns
    */
   restorePrompt() {
-    const defaultValue = ""
+    const defaultValue = config.generationFeature.defaultPromptValue
     try {
       const value = localStorage.getItem("config.generation.prompt")
       return value ?? defaultValue
