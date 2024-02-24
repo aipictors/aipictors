@@ -1,31 +1,21 @@
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
-
-type Props = {
-  passType: string | null
-  userNanoId: string | null
-  hasSignedTerms: boolean
-}
 
 /**
  * 画像生成の設定のキャッシュを管理する
  */
-export class ImageGenerationCache {
-  constructor(private props: Props) {}
-
+export class GenerationConfigCache {
   /**
    * 復元する
    * @returns
    */
   restore() {
     const modelType = this.restoreModelType()
-    return new ImageGenerationState({
-      passType: this.props.passType,
-      userNanoId: this.props.userNanoId,
-      hasSignedTerms: this.props.hasSignedTerms,
+    return new GenerationConfigState({
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
+      favoriteModelIds: this.restoreFavoriteModelIds(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(modelType),
       sampler: this.restoreSampler(),
@@ -44,12 +34,10 @@ export class ImageGenerationCache {
    */
   reset() {
     const modelType = config.generationFeature.defaultImageModelType
-    return new ImageGenerationState({
-      passType: this.props.passType,
-      userNanoId: this.props.userNanoId,
-      hasSignedTerms: this.props.hasSignedTerms,
+    return new GenerationConfigState({
       modelId: config.generationFeature.defaultImageModelId,
       modelIds: config.generationFeature.defaultImageModelIds,
+      favoriteModelIds: [],
       promptText: "",
       negativePromptText: this.getDefaultNegativePrompt(modelType),
       sampler: config.generationFeature.defaultSamplerValue,
@@ -170,6 +158,34 @@ export class ImageGenerationCache {
   }
 
   /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  savaFavoriteModelIds(modelIds: number[]) {
+    localStorage.setItem(
+      "config.generation.favorite.models",
+      modelIds.join(","),
+    )
+  }
+
+  /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  restoreFavoriteModelIds() {
+    const defaultValue = config.generationFeature.defaultFavoritedModelIds
+    try {
+      const value = localStorage.getItem("config.generation.favorite.models")
+      return value ? value.split(",").map(Number) : defaultValue ?? []
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
    * プロンプトを保存する
    * @param prompt
    */
@@ -182,7 +198,7 @@ export class ImageGenerationCache {
    * @returns
    */
   restorePrompt() {
-    const defaultValue = ""
+    const defaultValue = config.generationFeature.defaultPromptValue
     try {
       const value = localStorage.getItem("config.generation.prompt")
       return value ?? defaultValue

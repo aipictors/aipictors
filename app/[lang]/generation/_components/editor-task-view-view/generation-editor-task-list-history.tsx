@@ -1,7 +1,7 @@
 "use client"
 
 import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
@@ -31,7 +31,7 @@ type Props = {
  * @returns
  */
 export const GenerationTaskListHistory = (props: Props) => {
-  const editor = useGenerationEditor()
+  const context = useGenerationContext()
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -87,7 +87,7 @@ export const GenerationTaskListHistory = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    editor.updateSettings(
+    context.updateSettings(
       task.model.id,
       task.steps,
       task.model.type,

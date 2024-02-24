@@ -1,7 +1,7 @@
 "use client"
 
 import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
@@ -28,7 +28,7 @@ type Props = {
  * @returns
  */
 export const GenerationEditorTaskListArea = (props: Props) => {
-  const editor = useGenerationEditor()
+  const context = useGenerationContext()
 
   const isTimeout = useFocusTimeout()
 
@@ -80,7 +80,7 @@ export const GenerationEditorTaskListArea = (props: Props) => {
       (task) => task.nanoid === taskId,
     )
     if (typeof task === "undefined") return
-    editor.updateSettings(
+    context.updateSettings(
       task.model.id,
       task.steps,
       task.model.type,
@@ -162,8 +162,8 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   }
 
   return (
-    <ScrollArea>
-      <div className={getGridClasses(props.thumbnailSize)}>
+    <ScrollArea className="pb-64 md:pb-0">
+      <div className={`${getGridClasses(props.thumbnailSize)}`}>
         <GenerationEditorTaskList
           tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
           isEditMode={props.isEditMode}

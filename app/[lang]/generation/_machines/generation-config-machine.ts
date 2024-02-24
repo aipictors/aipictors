@@ -1,18 +1,18 @@
 "use client"
 
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { assign, createMachine } from "xstate"
 
 /**
  * 画像生成の状態
  */
-export const imageGenerationMachine = createMachine({
+export const generationConfigMachine = createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QCUDyqAqA6AkgORwxwEEAZAYn0IG0AGAXUVAAcB7WASwBcPWA7JiAAeiAIwAWABxYA7AGZxcmbTlyATGtGi1ANgA0IAJ6I5ktVjUBOGTvHjROgKyjJMgL5uDaTFgAKaAFlfDAB9ADUcAFEAdXIAYQAJYjwAcUiQgNQAEUjSOkYkEDZOHn5BEQQ1OUcsSzq6yUkXR2taRwNjBDlRS1kJXTVXKXE1Dy90bH9UINCImPIAVV8s4gx0uNQ8ADEcFPzBYu5eAUKKqp1ZFS1JRzNHOUtHfSNEDTlZHS0dM21HyXUxiBvJNAsFwlFYgBlXKROKhZCRSELUgYfaFQ6lE6gCriFpYXFyWh1GRmZS0WjPTojaQyRzk3SWUSmTSjTxAiZ+UGzCHkVC+SJ4EKkVDIYgZbK5SHgmJoljsI5lU6IXG9AlE6yk8kUjqvSzmcT1b5qOwyUS0VnjHxTGbS2J8gXinKkKVzaKyoryzHlZV4tXEzXkyliVRYRxVUxNSQ6GyMySA4FYBI4SEYEUATVt8WF0PdGOO3oQn3EoZJRPN5zaah1XRJFjpbRuDkZOh08Y5SZT6cz0NIsPhiORqIYB09+aVCBkGgsTTUbRbtBJ7ReXXutXqJNMYZkikcbZ8mSdLp5cWzkVzo8V2MQRZLkjLbx0ler-yw5tUpfEOlndPcbITB8lTNiCyLJHVyc8SjHK8JwUWRLG+bpmR6Rwl06Jp8XqOx7kUU1Bj3bBhVFMDnSAkChRFMUALyYd0QvLFhEQeR3lEJ5ZzMPUVSDSoHjXOpbjNexP1EfCsEIyiJRI10s1QHMaLlSDLwYwsJFve8KzDatjVEXi-gEiRPg8Nk+FYCA4EEYERwU+iKgAWi4myanqJznLqOQRKoIgyEshVrOVKtl2ZOCbCcFRlAcOM-w5a0wVdbyvXHY0LkcT8o26LQXAkaslBqTRFAkWlLApJ4RI7VNkAzWLaKsgtJ2kPUXEGWlK1oSRq3EIkMIaG41FuTcRKoo8YjiqClNq2pNDMVw6TDFrqyZC4nOS6MDWqcQRLE4jBuiYbFIqScZGnbQ50fRdNMeTr4LME0zVZDwgA */
   id: "ROOT",
   initial: "PROMPT_VIEW",
   types: {} as {
-    context: ImageGenerationState
-    input: ImageGenerationState
+    context: GenerationConfigState
+    input: GenerationConfigState
   },
   context(props) {
     return props.input

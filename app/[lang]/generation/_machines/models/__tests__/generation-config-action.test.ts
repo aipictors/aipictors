@@ -1,13 +1,11 @@
 import { describe, expect, test } from "bun:test"
-import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/image-generation-action"
-import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
+import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 
-const config = new ImageGenerationState({
-  passType: null,
-  userNanoId: null,
-  hasSignedTerms: false,
+const config = new GenerationConfigState({
   modelId: "",
   modelIds: [],
+  favoriteModelIds: [],
   promptText: "",
   negativePromptText: "",
   sampler: "",
@@ -22,113 +20,143 @@ const config = new ImageGenerationState({
 
 describe("ImageGenerationAction", () => {
   describe("updatePrompt", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the prompt text and return a new ImageGenerationConfig instance", () => {
       const text = "New prompt text"
       const updatedConfig = imageGenerationAction.updatePrompt(text)
       expect(updatedConfig.getState().promptText).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateNegativePrompt", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the negative prompt text and return a new ImageGenerationConfig instance", () => {
       const text = "New negative prompt text"
       const updatedConfig = imageGenerationAction.updateNegativePrompt(text)
       expect(updatedConfig.getState().negativePromptText).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateSampler", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the sampler text and return a new ImageGenerationConfig instance", () => {
       const text = "New sampler text"
       const updatedConfig = imageGenerationAction.updateSampler(text)
       expect(updatedConfig.getState().sampler).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateSteps", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the steps value and return a new ImageGenerationConfig instance", () => {
       const value = 10
       const updatedConfig = imageGenerationAction.updateSteps(value)
       expect(updatedConfig.getState().steps).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateScale", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the scale value and return a new ImageGenerationConfig instance", () => {
       const value = 1
       const updatedConfig = imageGenerationAction.updateScale(value)
       expect(updatedConfig.getState().scale).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateSizeType", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the size type and return a new ImageGenerationConfig instance", () => {
       const text = "New size type"
       const updatedConfig = imageGenerationAction.updateSizeType(text)
       expect(updatedConfig.getState().sizeType).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateVae", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the vae text and return a new ImageGenerationConfig instance", () => {
       const text = "New vae text"
       const updatedConfig = imageGenerationAction.updateVae(text)
       expect(updatedConfig.getState().vae).toBe(text)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateSeed", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the seed value and return a new ImageGenerationConfig instance", () => {
       const value = 10
       const updatedConfig = imageGenerationAction.updateSeed(value)
       expect(updatedConfig.getState().seed).toBe(value)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("updateModelId", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should update the model id and return a new ImageGenerationConfig instance", () => {
       const id = "1"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD1")
       expect(updatedConfig.getState().modelId).toBe(id)
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
 
     test("should update the size type to SD2_768_768 when the model id is 22, 23, or 24 and the current size type includes SD1", () => {
       const id = "22"
       const updatedConfig = imageGenerationAction.updateModelId(id, "SD2")
       expect(updatedConfig.getState().sizeType).toBe("SD2_768_768")
-      expect(updatedConfig).toBeInstanceOf(ImageGenerationAction)
+      expect(updatedConfig).toBeInstanceOf(GenerationConfigAction)
     })
   })
 
   describe("getModelSizeType", () => {
-    const imageGenerationAction = new ImageGenerationAction(config)
+    const imageGenerationAction = new GenerationConfigAction(config, {
+      maxTasksCount: 0,
+      availableLoraModelsCount: 0,
+    })
 
     test("should return the correct size type for SD1 model type", () => {
       const sizeType = "SD2_768_768"
@@ -161,7 +189,10 @@ describe("ImageGenerationAction", () => {
 })
 
 describe("getNegativePromptTextFromSd", () => {
-  const imageGenerationAction = new ImageGenerationAction(config)
+  const imageGenerationAction = new GenerationConfigAction(config, {
+    maxTasksCount: 0,
+    availableLoraModelsCount: 0,
+  })
 
   test("should return 'EasyNegative' when negativePromptText is empty and sdType is 'SD1'", () => {
     const sdType = "SD1"

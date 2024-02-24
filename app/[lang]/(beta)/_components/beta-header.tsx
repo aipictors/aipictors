@@ -1,3 +1,5 @@
+"use client"
+
 import { BetaNavigationList } from "@/app/[lang]/(beta)/_components/beta-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
 import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"

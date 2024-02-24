@@ -6,15 +6,15 @@ import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/ed
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
-import {
-  ImageGenerationSizeType,
-  ImageModelsQuery,
-} from "@/graphql/__generated__/graphql"
+import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
+import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
+import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
@@ -24,16 +24,17 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  imageModels: ImageModelsQuery["imageModels"]
-  termsMarkdownText: string
+  termsText: string
 }
 
-export function GenerationEditorSubmissionView(props: Props) {
-  const editor = useGenerationEditor()
+export function GenerationSubmissionView(props: Props) {
+  const context = useGenerationContext()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [generationCount, setGenerationCount] = useState(1)
+
+  const [reservedGenerationCount, setReservedGenerationCount] = useState(1)
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
@@ -70,8 +71,22 @@ export function GenerationEditorSubmissionView(props: Props) {
     },
   )
 
+  const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
+    createImageGenerationTaskReservedMutation,
+    {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    },
+  )
+
+  const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
+    useMutation(deleteReservedImageGenerationTasksMutation, {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    })
+
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: isCreatingTask ? 10000 : 1000,
+    pollInterval: isCreatingTask ? 1000 : 10000,
   })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
@@ -98,6 +113,14 @@ export function GenerationEditorSubmissionView(props: Props) {
    * @param mode 生成モード変更フラグ
    */
   const onChangeGenerationMode = (mode: boolean) => {
+    if (
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+
     setGenerationMode(mode ? "reserve" : "normal")
   }
 
@@ -105,10 +128,6 @@ export function GenerationEditorSubmissionView(props: Props) {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    if (!editor.context.hasSignedTerms) return
-    const userNanoid = editor.context.userNanoId ?? null
-    if (userNanoid === null) return
-
     /**
      * 同時生成可能枚数
      */
@@ -118,7 +137,10 @@ export function GenerationEditorSubmissionView(props: Props) {
         : status?.viewer?.inProgressImageGenerationTasksCount
 
     // 生成中かつフリープランならサブスクに誘導
-    if (inProgressImageGenerationTasksCount !== 0 && !editor.context.passType) {
+    if (
+      inProgressImageGenerationTasksCount !== 0 &&
+      context.currentPass === null
+    ) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
@@ -130,23 +152,23 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
 
     try {
-      const model = props.imageModels.find((model) => {
-        return model.id === editor.context.modelId
+      const model = context.models.find((model) => {
+        return model.id === context.config.modelId
       })
       if (typeof model === "undefined") return
       const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
 
       const generationParams = {
         model: model.name,
-        vae: editor.context.vae ?? "",
-        prompt: editor.context.promptText,
-        negativePrompt: editor.context.negativePromptText,
-        seed: editor.context.seed,
-        steps: editor.context.steps,
-        scale: editor.context.scale,
-        sampler: editor.context.sampler,
-        clipSkip: editor.context.clipSkip,
-        sizeType: editor.context.sizeType as ImageGenerationSizeType,
+        vae: context.config.vae ?? "",
+        prompt: context.config.promptText,
+        negativePrompt: context.config.negativePromptText,
+        seed: context.config.seed,
+        steps: context.config.steps,
+        scale: context.config.scale,
+        sampler: context.config.sampler,
+        clipSkip: context.config.clipSkip,
+        sizeType: context.config.sizeType as ImageGenerationSizeType,
         type: "TEXT_TO_IMAGE",
       }
       const generationParamsJson = JSON.stringify(generationParams)
@@ -156,7 +178,7 @@ export function GenerationEditorSubmissionView(props: Props) {
         )
         return
       }
-      if (editor.context.seed !== -1) {
+      if (context.config.seed !== -1) {
         setBeforeGenerationParams(generationParamsJson)
       }
       const promises = taskCounts.map(() =>
@@ -165,15 +187,84 @@ export function GenerationEditorSubmissionView(props: Props) {
             input: {
               count: 1,
               model: model.name,
-              vae: editor.context.vae ?? "",
-              prompt: editor.context.promptText,
-              negativePrompt: editor.context.negativePromptText,
-              seed: editor.context.seed,
-              steps: editor.context.steps,
-              scale: editor.context.scale,
-              sampler: editor.context.sampler,
-              clipSkip: editor.context.clipSkip,
-              sizeType: editor.context.sizeType as ImageGenerationSizeType,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              negativePrompt: context.config.negativePromptText,
+              seed: context.config.seed,
+              steps: context.config.steps,
+              scale: context.config.scale,
+              sampler: context.config.sampler,
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
+              type: "TEXT_TO_IMAGE",
+            },
+          },
+        }),
+      )
+      await Promise.all(promises)
+      // タスクの作成後も呼び出す必要がある
+      if (isDesktop) {
+        toast("タスクを作成しました")
+      } else {
+        toast("タスクを作成しました", { position: "top-center" })
+      }
+      if (typeof context.user?.nanoid !== "string") return
+      await activeImageGeneration({ nanoid: context.user.nanoid })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  /**
+   * 予約タスクを作成する
+   */
+  const onCreateReservedTask = async () => {
+    if (
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
+    ) {
+      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
+      return
+    }
+    const userNanoid = context.user?.nanoid ?? null
+    if (userNanoid === null) return
+
+    try {
+      const model = context.models.find((model) => {
+        return model.id === context.config.modelId
+      })
+      if (typeof model === "undefined") return
+      const taskCounts = Array.from(
+        { length: reservedGenerationCount },
+        (_, i) => i,
+      )
+
+      const seeds: number[] = []
+      taskCounts.map((i) => {
+        if (context.config.seed === -1) {
+          seeds.push(-1)
+        } else {
+          seeds.push(context.config.seed + i)
+        }
+      })
+
+      const promises = taskCounts.map((i) =>
+        createReservedTask({
+          variables: {
+            input: {
+              count: 1,
+              model: model.name,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps: context.config.steps,
+              scale: context.config.scale,
+              sampler: "DPM++ 2M Karras",
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
             },
           },
@@ -183,9 +274,26 @@ export function GenerationEditorSubmissionView(props: Props) {
       // タスクの作成後も呼び出す必要がある
       await activeImageGeneration({ nanoid: userNanoid })
       if (isDesktop) {
-        // スマホだと生成ボタンに被るのでPCのみ出す
-        toast("タスクを作成しました")
+        toast("タスクを予約しました、自動的に生成されます")
+      } else {
+        toast("タスクを予約しました、自動的に生成されます", {
+          position: "top-center",
+        })
       }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  /**
+   * 予約タスクを一括削除する
+   */
+  const onDeleteReservedTasks = async () => {
+    try {
+      await deleteReservedTasks()
+      toast("予約タスクを削除しました")
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -226,48 +334,65 @@ export function GenerationEditorSubmissionView(props: Props) {
   const inProgressImageGenerationTasksCount =
     status?.viewer?.inProgressImageGenerationTasksCount ?? 0
 
+  /**
+   * 予約生成中の枚数
+   */
+  const inProgressImageGenerationReservedTasksCount =
+    status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
+
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
         <div className="flex items-center">
-          {config.isDevelopmentMode && (
-            <div className="flex items-center w-20 space-x-2">
-              <>
-                <Checkbox
-                  id="generation-mode-checkbox"
-                  onCheckedChange={onChangeGenerationMode}
-                />
-                <label
-                  htmlFor="generation-mode-checkbox"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  予約
-                </label>
-              </>
-            </div>
-          )}
+          <div className="flex items-center w-20 space-x-2">
+            <>
+              <Checkbox
+                id="generation-mode-checkbox"
+                onCheckedChange={onChangeGenerationMode}
+              />
+              <label
+                htmlFor="generation-mode-checkbox"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 w-16"
+              >
+                予約
+              </label>
+            </>
+          </div>
           {generationMode === "normal" && (
             <GenerationCountSelect
-              pass={editor.context.passType ?? "FREE"}
+              pass={context.currentPass?.type ?? "FREE"}
               selectedCount={generationCount}
               onChange={setGenerationCount}
             />
           )}
           {generationMode === "reserve" && (
             <GenerationReserveCountInput
-              maxCount={200}
-              onChange={setGenerationCount}
+              maxCount={availableImageGenerationMaxTasksCount - tasksCount}
+              onChange={setReservedGenerationCount}
+              count={reservedGenerationCount}
             />
           )}
           {/* 生成開始ボタン */}
-          {editor.context.hasSignedTerms && (
+          {context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
-              onClick={onCreateTask}
+              onClick={async () => {
+                if (generationMode === "reserve") {
+                  await onCreateReservedTask()
+                } else {
+                  await onCreateTask()
+                }
+              }}
               isLoading={isCreatingTask}
-              isDisabled={editor.context.isDisabled}
-              generatingCount={inProgressImageGenerationTasksCount}
+              isDisabled={context.config.isDisabled}
+              generatingCount={
+                generationMode === "normal"
+                  ? inProgressImageGenerationTasksCount
+                  : inProgressImageGenerationReservedTasksCount
+              }
               maxGeneratingCount={
-                generationMode === "reserve" ? 200 : maxTasksCount
+                generationMode === "reserve"
+                  ? availableImageGenerationMaxTasksCount - tasksCount
+                  : maxTasksCount
               }
               buttonActionCaption={
                 generationMode === "reserve" ? "予約生成" : "生成"
@@ -275,10 +400,20 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 規約確認開始ボタン */}
-          {!editor.context.hasSignedTerms && (
+          {context.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
-              termsMarkdownText={props.termsMarkdownText}
+              termsMarkdownText={props.termsText}
               onSubmit={onSignTerms}
+            />
+          )}
+          {/* 生成キャンセル */}
+          {generationMode === "reserve" && (
+            <GenerationTasksCancelButton
+              isDisabled={
+                inProgressImageGenerationReservedTasksCount === 0 ||
+                isDeletingReservedTasks
+              }
+              onCancel={onDeleteReservedTasks}
             />
           )}
         </div>
@@ -289,7 +424,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             engineStatus?.normalPredictionGenerationSeconds ?? 0
           }
           normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-          passType={editor.context.passType}
+          passType={context.currentPass?.type ?? null}
           remainingImageGenerationTasksCount={tasksCount}
           standardPredictionGenerationSeconds={
             engineStatus?.standardPredictionGenerationSeconds ?? 0
