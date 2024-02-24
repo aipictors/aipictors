@@ -1,14 +1,14 @@
 "use client"
 
-import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
-import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
-import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
-import { GenerationEditorConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-reset-button"
-import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
-import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-scale"
-import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-seed"
-import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
-import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
+import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-clip-skip"
+import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-lora-models"
+import { GenerationConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-models"
+import { GenerationConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-reset-button"
+import { GenerationConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-sampler"
+import { GenerationConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-scale"
+import { GenerationConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-seed"
+import { GenerationConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-size"
+import { GenerationConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -96,39 +96,39 @@ export const GenerationConfigView = () => {
             "max-h-[60vh] md:max-h-full",
           )}
         >
-          <GenerationEditorConfigModels />
+          <GenerationConfigModels />
           <Separator />
           <GenerationEditorConfigLoraModels />
           <Separator />
-          <GenerationEditorConfigSize
+          <GenerationConfigSize
             modelType={configModelType}
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
-          <GenerationEditorConfigScale
+          <GenerationConfigScale
             value={context.config.scale}
             onChange={context.updateScale}
           />
-          <GenerationEditorConfigSeed
+          <GenerationConfigSeed
             value={context.config.seed}
             onChange={context.updateSeed}
           />
-          <GenerationEditorConfigStep
+          <GenerationConfigStep
             value={context.config.steps}
             onChange={context.updateSteps}
           />
-          <GenerationEditorConfigSampler
+          <GenerationConfigSampler
             value={context.config.sampler}
             onChange={context.updateSampler}
           />
-          <GenerationEditorConfigClipSkip
+          <GenerationConfigClipSkip
             value={context.config.clipSkip}
             onChange={context.updateClipSkip}
           />
         </div>
       </ScrollArea>
       <div className="lg:sticky bottom-0 bg-card p-4">
-        <GenerationEditorConfigResetButton onReset={context.reset} />
+        <GenerationConfigResetButton onReset={context.reset} />
       </div>
     </GenerationEditorCard>
   )

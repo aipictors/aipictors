@@ -141,7 +141,8 @@ export const GenerationModelList = (props: Props) => {
                       aria-label={"お気に入り"}
                       size={"icon"}
                       variant="ghost"
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation()
                         props.onChangeFavoritedModel(
                           Number(model.id),
                           isFavoriteModel(Number(model.id)) ? 0 : 1,

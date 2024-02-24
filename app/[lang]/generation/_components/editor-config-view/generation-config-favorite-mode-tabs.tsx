@@ -12,7 +12,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationFavoriteModeTabs = (props: Props) => {
+export const GenerationConfigFavoriteModeTabs = (props: Props) => {
   return (
     <Tabs
       value={props.isActive ? "on" : "off"}

@@ -13,7 +13,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export const GenerationEditorConfigSeed = (props: Props) => {
+export const GenerationConfigSeed = (props: Props) => {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">

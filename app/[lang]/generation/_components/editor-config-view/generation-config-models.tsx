@@ -1,7 +1,7 @@
 "use client"
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
-import { GenerationFavoriteModeTabs } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-open-favorite-model-button"
+import { GenerationConfigFavoriteModeTabs } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-favorite-mode-tabs"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useState } from "react"
@@ -11,7 +11,7 @@ import { useState } from "react"
  * @param props
  * @returns
  */
-export const GenerationEditorConfigModels = () => {
+export const GenerationConfigModels = () => {
   const context = useGenerationContext()
 
   const [isFavoriteMode, setFavoriteMode] = useState(false)
@@ -32,7 +32,7 @@ export const GenerationEditorConfigModels = () => {
 
   return (
     <div className="grid gap-y-2">
-      <GenerationFavoriteModeTabs
+      <GenerationConfigFavoriteModeTabs
         isActive={isFavoriteMode}
         setFavoriteMode={setFavoriteMode}
       />

@@ -1,5 +1,5 @@
 import { join } from "path"
-import { GenerationConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
+import { GenerationConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-view"
 import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
 import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
 import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"

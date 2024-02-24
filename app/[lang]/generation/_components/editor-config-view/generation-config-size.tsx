@@ -13,7 +13,7 @@ type Props = {
   onChange(value: string): void
 }
 
-export const GenerationEditorConfigSize = (props: Props) => {
+export const GenerationConfigSize = (props: Props) => {
   return (
     <div className="flex flex-col gap-y-2">
       <span className="font-bold text-sm">{"サイズ"}</span>
