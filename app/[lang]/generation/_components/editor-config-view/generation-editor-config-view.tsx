@@ -3,7 +3,6 @@
 import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
 import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
 import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
-import { GenerationEditorConfigOpenFavoriteModelToggle } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-open-favorite-model-button"
 import { GenerationEditorConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-reset-button"
 import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
 import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-scale"
@@ -18,10 +17,9 @@ import { Separator } from "@/components/ui/separator"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { toast } from "sonner"
 
 /**
@@ -36,29 +34,13 @@ export const GenerationConfigView = () => {
 
   const authContext = useContext(AuthContext)
 
-  const [showFavoritedModels, setShowFavoritedModels] = useState(false)
-
   const ref = searchParams.get("ref")
 
-  const { data } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn && ref
-      ? {
-          variables: {
-            id: ref,
-          },
-        }
-      : skipToken,
-  )
-
-  /**
-   * URLのnanoidからタスクを復元
-   */
-  useEffect(() => {
-    setTimeout(() => {
+  useQuery(imageGenerationTaskQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn || ref === null,
+    onCompleted(data) {
       try {
         console.log(data)
-
         if (data?.imageGenerationTask) {
           const task = data.imageGenerationTask
           context.updateModelId(task.model.id, task.model.type)
@@ -70,14 +52,13 @@ export const GenerationConfigView = () => {
           context.updateSteps(task.steps)
           context.updateSampler(task.sampler)
           context.updateClipSkip(task.clipSkip)
-
           toast("タスクを復元しました。")
         }
       } catch (error) {
         console.error(error)
       }
-    }, 1000)
-  }, [])
+    },
+  })
 
   /**
    * 選択中のモデル
@@ -89,31 +70,13 @@ export const GenerationConfigView = () => {
   /**
    * お気に入りのモデル
    */
-  const favoritedModel = context.models.filter((model) => {
-    return context.config.favoriteModelIds.includes(Number(model.id))
-  })
-
-  /**
-   * お気に入りのモデル
-   */
-  const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
+  const { data: userSetting } = useQuery(userSettingQuery, {})
 
   useEffect(() => {
     const favoritedModelIds =
       userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
     context.updateFavoriteModelIds(favoritedModelIds)
   }, [])
-
-  /**
-   * お気に入りモデル表示切替
-   */
-  const onToggleShowFavorite = () => {
-    if (showFavoritedModels) {
-      setShowFavoritedModels(false)
-      return
-    }
-    setShowFavoritedModels(true)
-  }
 
   /**
    * モデルの種類
@@ -133,18 +96,7 @@ export const GenerationConfigView = () => {
             "max-h-[60vh] md:max-h-full",
           )}
         >
-          <GenerationEditorConfigOpenFavoriteModelToggle
-            isActive={showFavoritedModels}
-            onToggleShowFavorite={onToggleShowFavorite}
-          />
-          <GenerationEditorConfigModels
-            models={context.models}
-            favoritedModelIds={context.config.favoriteModelIds}
-            showFavoritedModels={showFavoritedModels}
-            currentModelId={context.config.modelId}
-            currentModelIds={context.config.modelIds}
-            onSelectModelId={context.updateModelId}
-          />
+          <GenerationEditorConfigModels />
           <Separator />
           <GenerationEditorConfigLoraModels />
           <Separator />

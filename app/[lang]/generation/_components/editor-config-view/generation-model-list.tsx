@@ -23,7 +23,7 @@ type Props = {
   onSelect(id: string, type: string): void
 }
 
-export const ImageModelsList = (props: Props) => {
+export const GenerationModelList = (props: Props) => {
   const [selectedType, selectType] = useState("ALL")
 
   const [selectedCategory, selectCategory] = useState("ALL")
@@ -53,7 +53,7 @@ export const ImageModelsList = (props: Props) => {
    * @param modelId モデルID
    * @returns
    */
-  const isFavorited = (modelId: number) => {
+  const isFavoriteModel = (modelId: number) => {
     return props.favoritedModelIds.includes(modelId)
   }
 
@@ -65,7 +65,7 @@ export const ImageModelsList = (props: Props) => {
     const models = !showFavoriteModels
       ? props.models
       : props.models
-          .filter((m) => isFavorited(Number(m.id)))
+          .filter((m) => isFavoriteModel(Number(m.id)))
           .filter((m) => {
             return m.category === category
           })
@@ -144,13 +144,13 @@ export const ImageModelsList = (props: Props) => {
                       onClick={() => {
                         props.onChangeFavoritedModel(
                           Number(model.id),
-                          isFavorited(Number(model.id)) ? 0 : 1,
+                          isFavoriteModel(Number(model.id)) ? 0 : 1,
                         )
                       }}
                     >
                       <StarIcon
                         className={cn(
-                          isFavorited(Number(model.id))
+                          isFavoriteModel(Number(model.id))
                             ? "fill-yellow-500"
                             : "",
                         )}

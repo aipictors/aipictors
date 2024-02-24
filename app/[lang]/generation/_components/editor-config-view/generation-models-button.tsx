@@ -1,6 +1,6 @@
 "use client"
 
-import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
+import { GenerationModelList } from "@/app/[lang]/generation/_components/editor-config-view/generation-model-list"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
 import {
@@ -83,7 +83,7 @@ export const GenerationModelsButton = (props: Props) => {
             {"使用するモデルを選択してください"}
           </DialogDescription>
         </DialogHeader>
-        <ImageModelsList
+        <GenerationModelList
           models={props.models}
           favoritedModelIds={props.favoritedModelIds}
           selectedModelId={props.selectedModelId}

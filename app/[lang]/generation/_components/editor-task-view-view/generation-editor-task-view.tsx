@@ -55,7 +55,6 @@ export const GenerationTaskView = () => {
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={() => {}}
       />
-
       <GenerationEditorTaskListArea
         hidedTaskIds={hidedTaskIds}
         rating={rating}

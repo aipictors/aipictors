@@ -1,29 +1,20 @@
 "use client"
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
+import { GenerationFavoriteModeTabs } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-open-favorite-model-button"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
-
-type Props = {
-  models: ImageModelsQuery["imageModels"]
-  currentModelId: string
-  favoritedModelIds: number[]
-  showFavoritedModels: boolean
-  /**
-   * 表示されるモデルのID（最大3個）
-   */
-  currentModelIds: string[]
-  onSelectModelId(id: string, type: string): void
-}
+import { useState } from "react"
 
 /**
  * エディタの設定
  * @param props
  * @returns
  */
-export const GenerationEditorConfigModels = (props: Props) => {
+export const GenerationEditorConfigModels = () => {
   const context = useGenerationContext()
+
+  const [isFavoriteMode, setFavoriteMode] = useState(false)
 
   const currentModels = context.config.modelIds.map((modelId) => {
     return context.models.find((model) => {
@@ -31,9 +22,9 @@ export const GenerationEditorConfigModels = (props: Props) => {
     })
   })
 
-  const favoritedModels = props.favoritedModelIds
+  const favoritedModels = context.config.favoriteModelIds
     .map((modelId) => {
-      return props.models.find((model) => {
+      return context.models.find((model) => {
         return Number(model.id) === modelId
       })
     })
@@ -41,35 +32,39 @@ export const GenerationEditorConfigModels = (props: Props) => {
 
   return (
     <div className="grid gap-y-2">
-      {!props.showFavoritedModels &&
+      <GenerationFavoriteModeTabs
+        isActive={isFavoriteMode}
+        setFavoriteMode={setFavoriteMode}
+      />
+      {!isFavoriteMode &&
         currentModels.map((model) => (
           <ConfigModelButton
             key={model?.id}
             imageURL={model?.thumbnailImageURL ?? ""}
             name={model?.displayName ?? ""}
-            isSelected={model?.id === props.currentModelId}
+            isSelected={model?.id === context.config.modelId}
             onClick={() => {
-              props.onSelectModelId(model!.id, model!.type)
+              context.updateModelId(model!.id, model!.type)
             }}
           />
         ))}
-      {props.showFavoritedModels &&
+      {isFavoriteMode &&
         favoritedModels.map((model) => (
           <ConfigModelButton
             key={model?.id}
             imageURL={model?.thumbnailImageURL ?? ""}
             name={model?.displayName ?? ""}
-            isSelected={model?.id === props.currentModelId}
+            isSelected={model?.id === context.config.modelId}
             onClick={() => {
-              props.onSelectModelId(model!.id, model!.type)
+              context.updateModelId(model!.id, model!.type)
             }}
           />
         ))}
       <GenerationModelsButton
-        favoritedModelIds={props.favoritedModelIds}
-        models={props.models}
-        selectedModelId={props.currentModelId}
-        onSelect={props.onSelectModelId}
+        favoritedModelIds={context.config.favoriteModelIds}
+        models={context.models}
+        selectedModelId={context.config.modelId}
+        onSelect={context.updateModelId}
       />
     </div>
   )
