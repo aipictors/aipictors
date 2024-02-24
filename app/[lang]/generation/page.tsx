@@ -3,7 +3,7 @@ import { GenerationConfigView } from "@/app/[lang]/generation/_components/editor
 import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
 import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
 import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"
-import { GenerationTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
+import { GenerationTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"

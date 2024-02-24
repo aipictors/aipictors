@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationEditorTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-area"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
+import { GenerationTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-area"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useState } from "react"
 
@@ -17,7 +17,7 @@ export const GenerationTaskView = () => {
 
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
-  const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
+  const [deletedTaskIds, setDeletedTaskIds] = useState<string[]>([])
 
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
 
@@ -46,22 +46,23 @@ export const GenerationTaskView = () => {
         rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
-        hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
-        setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={() => {}}
+        onAddDeletedTaskIds={(taskIds) => {
+          setDeletedTaskIds([...deletedTaskIds, ...taskIds])
+        }}
       />
-      <GenerationEditorTaskListArea
-        hidedTaskIds={hidedTaskIds}
+      <GenerationTaskListArea
+        deletedTaskIds={deletedTaskIds}
         rating={rating}
         isEditMode={isEditMode}
         selectedTaskIds={selectedTaskIds}
         thumbnailSize={thumbnailSize}
-        setSelectedTaskIds={setSelectedTaskIds}
+        selectTaskIds={setSelectedTaskIds}
         onCancel={undefined}
       />
     </GenerationEditorCard>
