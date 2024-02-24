@@ -30,7 +30,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FMabyf6RS.jpg?alt=media&token=5fb4764d-6e4f-432f-89c5-a844dad6f596",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FKARA_Beee.png?alt=media&token=a287494f-9ef3-48bc-abf2-f2bf68d0e0c3",
     twitterId: "KARA_Beee",
     aipictorsId: null,
     siteURL: null,
