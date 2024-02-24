@@ -63,6 +63,7 @@ export const GenerationEditorConfigModels = (props: Props) => {
           />
         ))}
       <GenerationModelsButton
+        favoritedModelIds={props.favoritedModelIds}
         models={props.models}
         selectedModelId={props.currentModelId}
         onSelect={props.onSelectModelId}

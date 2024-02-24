@@ -1,7 +1,8 @@
 "use client"
 
 import { Toggle } from "@/components/ui/toggle"
-import { StarIcon } from "@radix-ui/react-icons"
+import { cn } from "@/lib/utils"
+import { StarIcon } from "lucide-react"
 
 type Props = {
   isActive: boolean
@@ -16,13 +17,14 @@ type Props = {
 export const GenerationEditorConfigOpenFavoriteModelToggle = (props: Props) => {
   return (
     <Toggle
-      className="w-40"
+      className="w-16"
       onClick={props.onToggleShowFavorite}
       variant="outline"
       size={"sm"}
     >
-      <StarIcon className="w-4" />
-      {props.isActive ? "すべて" : "お気に入り"}
+      <StarIcon
+        className={cn(props.isActive ? "w-4 fill-yellow-500" : "w-4")}
+      />
     </Toggle>
   )
 }

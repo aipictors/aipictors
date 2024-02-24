@@ -12,11 +12,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { updateRatingImageGenerationModelMutation } from "@/graphql/mutations/update-rating-image-generation-model"
+import { useMutation } from "@apollo/client"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
+  favoritedModelIds: number[]
   onSelect(id: string, type: string): void
 }
 
@@ -26,6 +29,21 @@ export const GenerationModelsButton = (props: Props) => {
   const onSelectModel = (id: string, type: string) => {
     props.onSelect(id, type)
     setFalse()
+  }
+
+  const [changeRatingModel, { loading: isLoading }] = useMutation(
+    updateRatingImageGenerationModelMutation,
+  )
+
+  const onChangeRatingModel = async (id: number, rating: number) => {
+    await changeRatingModel({
+      variables: {
+        input: {
+          modelId: id.toString(),
+          rating,
+        },
+      },
+    })
   }
 
   return (
@@ -55,8 +73,10 @@ export const GenerationModelsButton = (props: Props) => {
         </DialogHeader>
         <ImageModelsList
           models={props.models}
-          onSelect={onSelectModel}
+          favoritedModelIds={props.favoritedModelIds}
           selectedModelId={props.selectedModelId}
+          onSelect={onSelectModel}
+          onChangeFavoritedModel={onChangeRatingModel}
         />
         <DialogFooter>
           <Button className="w-full" onClick={setFalse}>
