@@ -33,7 +33,7 @@ export const LoraModelsDialogButton = (props: Props) => {
         setFalse()
       }}
     >
-      <DialogTrigger className="w-full">
+      <DialogTrigger asChild className="w-full">
         <Button
           size={"sm"}
           className="w-full"

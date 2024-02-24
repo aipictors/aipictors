@@ -10,7 +10,6 @@ export const useGenerationEditor = () => {
 
   const cacheStorage = new ImageGenerationCache({
     passType: context.passType,
-    hasSignedTerms: context.hasSignedTerms,
     userNanoId: context.userNanoId,
   })
 

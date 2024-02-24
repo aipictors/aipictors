@@ -2,10 +2,10 @@
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
+import { useContext } from "react"
 
 type Props = {
-  models: ImageModelsQuery["imageModels"]
   currentModelId: string
   /**
    * 表示されるモデルのID（最大3個）
@@ -20,8 +20,10 @@ type Props = {
  * @returns
  */
 export const GenerationEditorConfigModels = (props: Props) => {
+  const dataContext = useContext(generationDataContext)
+
   const currentModels = props.currentModelIds.map((modelId) => {
-    return props.models.find((model) => {
+    return dataContext.models.find((model) => {
       return model.id === modelId
     })
   })
@@ -40,7 +42,7 @@ export const GenerationEditorConfigModels = (props: Props) => {
         />
       ))}
       <GenerationModelsButton
-        models={props.models}
+        models={dataContext.models}
         selectedModelId={props.currentModelId}
         onSelect={props.onSelectModelId}
       />

@@ -2,25 +2,24 @@
 
 import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-contents"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { BookTextIcon } from "lucide-react"
+import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
-type Props = {
-  promptCategories: PromptCategoriesQuery["promptCategories"]
-}
+export const GenerationEditorPromptView = () => {
+  const dataContext = useContext(generationDataContext)
 
-export const GenerationEditorPromptView = (props: Props) => {
   const editor = useGenerationEditor()
 
   const formattedPromptText = formatPromptText(editor.context.promptText)
 
-  const categoryPrompts = props.promptCategories.flatMap((category) => {
+  const categoryPrompts = dataContext.promptCategories.flatMap((category) => {
     return category.prompts
   })
 
@@ -90,7 +89,7 @@ export const GenerationEditorPromptView = (props: Props) => {
             <PromptCategoriesDialogContents
               selectedPromptIds={selectedPromptIds}
               onClose={setFalse}
-              promptCategories={props.promptCategories}
+              promptCategories={dataContext.promptCategories}
               onSelect={onSelectPromptId}
             />
           </Dialog>

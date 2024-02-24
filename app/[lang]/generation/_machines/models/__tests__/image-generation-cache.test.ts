@@ -4,7 +4,6 @@ describe("ImageGenerationCache", () => {
   const cache = new ImageGenerationCache({
     passType: null,
     userNanoId: null,
-    hasSignedTerms: false,
   })
 
   test("should return 'Mayng' for modelType 'SD2'", () => {

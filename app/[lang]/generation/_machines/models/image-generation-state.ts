@@ -15,7 +15,6 @@ const zProps = z.object({
   modelType: z.string(),
   clipSkip: z.number(),
   userNanoId: z.string().nullable(),
-  hasSignedTerms: z.boolean(),
   favoriteModelIds: z.array(z.number()),
 })
 
@@ -60,8 +59,6 @@ export class ImageGenerationState implements Props {
   readonly loraModels: string[]
 
   readonly userNanoId!: string | null
-
-  readonly hasSignedTerms!: boolean
 
   constructor(props: Props) {
     Object.assign(this, props)

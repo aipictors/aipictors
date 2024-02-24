@@ -2,17 +2,11 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
 import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-models-dialog-button"
-import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
+import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  /**
-   * 全てのモデル
-   */
-  models: ImageLoraModelsQuery["imageLoraModels"]
-  /**
-   * モデルの設定
-   */
   loraModels: string[]
   availableLoraModelsCount: number
   onChangeLoraModel(modelName: string): void
@@ -20,6 +14,8 @@ type Props = {
 }
 
 export const GenerationEditorConfigLoraModels = (props: Props) => {
+  const dataContext = useContext(generationDataContext)
+
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const currentModels = props.loraModels.map((model) => {
@@ -35,7 +31,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = props.models.filter((model) => {
+  const selectedModels = dataContext.loraModels.filter((model) => {
     return currentLoraModelNames.includes(model.name)
   })
 
@@ -59,7 +55,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
       <LoraModelsDialogButton
         isOpen={isOpen}
         onClose={onClose}
-        models={props.models}
+        models={dataContext.loraModels}
         selectedModelNames={currentLoraModelNames}
         onSelect={props.onChangeLoraModel}
       />

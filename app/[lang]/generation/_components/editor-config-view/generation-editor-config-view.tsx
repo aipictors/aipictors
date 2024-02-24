@@ -10,14 +10,11 @@ import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import type {
-  ImageLoraModelsQuery,
-  ImageModelsQuery,
-} from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
@@ -27,27 +24,22 @@ import { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 
-type Props = {
-  /**
-   * モデル
-   */
-  models: ImageModelsQuery["imageModels"]
-  /**
-   * Loraモデル
-   */
-  loraModels: ImageLoraModelsQuery["imageLoraModels"]
-}
-
 /**
  * エディタの設定
  * @param props
  * @returns
  */
-export const GenerationEditorConfigView = (props: Props) => {
+export const GenerationEditorConfigView = () => {
+  const dataContext = useContext(generationDataContext)
+
   const editor = useGenerationEditor()
+
   const searchParams = useSearchParams()
+
   const authContext = useContext(AuthContext)
+
   const ref = searchParams.get("ref")
+
   const { data } = useSuspenseQuery(
     imageGenerationTaskQuery,
     authContext.isLoggedIn && ref
@@ -90,7 +82,7 @@ export const GenerationEditorConfigView = (props: Props) => {
   /**
    * 選択中のモデル
    */
-  const currentModel = props.models.find((model) => {
+  const currentModel = dataContext.models.find((model) => {
     return model.id === editor.context.modelId
   })
 
@@ -98,6 +90,7 @@ export const GenerationEditorConfigView = (props: Props) => {
    * お気に入りのモデル
    */
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
+
   useEffect(() => {
     const favoritedModelIds =
       userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
@@ -123,14 +116,12 @@ export const GenerationEditorConfigView = (props: Props) => {
           )}
         >
           <GenerationEditorConfigModels
-            models={props.models}
             currentModelId={editor.context.modelId}
             currentModelIds={editor.context.modelIds}
             onSelectModelId={editor.updateModelId}
           />
           <Separator />
           <GenerationEditorConfigLoraModels
-            models={props.loraModels}
             loraModels={editor.context.loraModels}
             availableLoraModelsCount={editor.context.availableLoraModelsCount}
             onChangeLoraModel={editor.changeLoraModel}

@@ -5,30 +5,29 @@ import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Checkbox } from "@/components/ui/checkbox"
 import { config } from "@/config"
-import {
-  ImageGenerationSizeType,
-  ImageModelsQuery,
-} from "@/graphql/__generated__/graphql"
+import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { useMutation, useQuery } from "@apollo/client"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  imageModels: ImageModelsQuery["imageModels"]
   termsMarkdownText: string
 }
 
 export function GenerationEditorSubmissionView(props: Props) {
+  const dataContext = useContext(generationDataContext)
+
   const editor = useGenerationEditor()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
@@ -107,7 +106,6 @@ export function GenerationEditorSubmissionView(props: Props) {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    if (!editor.context.hasSignedTerms) return
     const userNanoid = editor.context.userNanoId ?? null
     if (userNanoid === null) return
 
@@ -132,7 +130,7 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
 
     try {
-      const model = props.imageModels.find((model) => {
+      const model = dataContext.loraModels.find((model) => {
         return model.id === editor.context.modelId
       })
       if (typeof model === "undefined") return
@@ -232,7 +230,7 @@ export function GenerationEditorSubmissionView(props: Props) {
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
-        <div className="flex items-center">
+        <div className="flex items-center gap-x-2">
           {config.isDevelopmentMode && (
             <div className="flex items-center w-20 space-x-2">
               <>
@@ -264,7 +262,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 生成開始ボタン */}
-          {editor.context.hasSignedTerms && (
+          {dataContext.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={onCreateTask}
               isLoading={isCreatingTask}
@@ -281,7 +279,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 規約確認開始ボタン */}
-          {!editor.context.hasSignedTerms && (
+          {dataContext.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
               termsMarkdownText={props.termsMarkdownText}
               onSubmit={onSignTerms}

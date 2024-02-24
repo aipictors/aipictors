@@ -36,7 +36,7 @@ export const GenerationModelsButton = (props: Props) => {
         setFalse()
       }}
     >
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button
           size={"sm"}
           className="w-full"

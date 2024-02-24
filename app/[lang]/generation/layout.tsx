@@ -1,37 +1,48 @@
-"use client"
-
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { GenerationEditorContextProvider } from "@/app/[lang]/generation/_components/generation-editor-provider"
-import { LoginPage } from "@/app/_components/page/login-page"
-import { AuthContext } from "@/app/_contexts/auth-context"
+import { GenerationContextProvider } from "@/app/[lang]/generation/_components/providers/generation-context-provider"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { useContext } from "react"
+import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
+import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
+import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
+import { createClient } from "@/lib/client"
 
 type Props = {
   children: React.ReactNode
 }
 
-const GenerationLayout = (props: Props) => {
-  const context = useContext(AuthContext)
+export async function GenerationLayout(props: Props) {
+  const client = createClient()
 
-  if (context.isLoading) {
-    return <AppLoadingPage />
-  }
+  const promptCategoriesResp = await client.query({
+    query: promptCategoriesQuery,
+    variables: {},
+  })
 
-  if (context.isNotLoggedIn) {
-    return <LoginPage />
-  }
+  const imageModelsResp = await client.query({
+    query: imageModelsQuery,
+    variables: {},
+  })
+
+  const imageLoraModelsResp = await client.query({
+    query: imageLoraModelsQuery,
+    variables: {},
+  })
 
   return (
     <>
       <BetaHeader title="画像生成 β" />
-      <GenerationEditorContextProvider>
+      <GenerationContextProvider
+        promptCategories={promptCategoriesResp.data.promptCategories}
+        imageModels={imageModelsResp.data.imageModels}
+        imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
+      >
         <AppColumnLayout isFullWidth={true}>{props.children}</AppColumnLayout>
-      </GenerationEditorContextProvider>
+      </GenerationContextProvider>
       {/* <HomeFooter /> */}
     </>
   )
 }
+
+export const revalidate = 60
 
 export default GenerationLayout

@@ -11,7 +11,6 @@ type Props = {
 export const useImageGenerationMachine = (props: Props) => {
   const cacheStorage = new ImageGenerationCache({
     passType: props.passType,
-    hasSignedTerms: false,
     userNanoId: null,
   })
 

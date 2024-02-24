@@ -5,10 +5,6 @@ import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/
 import { GenerationEditorSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
 import { GenerationEditorTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
-import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
-import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
-import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
-import { createClient } from "@/lib/client"
 import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
@@ -17,23 +13,6 @@ import type { Metadata } from "next"
  * @returns
  */
 const GenerationPage = async () => {
-  const client = createClient()
-
-  const promptCategoriesResp = await client.query({
-    query: promptCategoriesQuery,
-    variables: {},
-  })
-
-  const imageModelsResp = await client.query({
-    query: imageModelsQuery,
-    variables: {},
-  })
-
-  const imageLoraModelsResp = await client.query({
-    query: imageLoraModelsQuery,
-    variables: {},
-  })
-
   /**
    * 利用規約
    */
@@ -50,27 +29,13 @@ const GenerationPage = async () => {
   //   "utf-8",
   // )
 
-  // <div className="overflow-x-hidden w-full">
-
   return (
     <GenerationEditorLayout
-      config={
-        <GenerationEditorConfigView
-          models={imageModelsResp.data.imageModels}
-          loraModels={imageLoraModelsResp.data.imageLoraModels}
-        />
-      }
-      promptEditor={
-        <GenerationEditorPromptView
-          promptCategories={promptCategoriesResp.data.promptCategories}
-        />
-      }
+      config={<GenerationEditorConfigView />}
+      promptEditor={<GenerationEditorPromptView />}
       negativePromptEditor={<GenerationEditorNegativePromptView />}
       submission={
-        <GenerationEditorSubmissionView
-          imageModels={imageModelsResp.data.imageModels}
-          termsMarkdownText={termsMarkdownText}
-        />
+        <GenerationEditorSubmissionView termsMarkdownText={termsMarkdownText} />
       }
       taskList={<GenerationEditorTaskView />}
     />

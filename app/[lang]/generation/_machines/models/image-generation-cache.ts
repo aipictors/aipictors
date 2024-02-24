@@ -5,7 +5,6 @@ import { captureException } from "@sentry/nextjs"
 type Props = {
   passType: string | null
   userNanoId: string | null
-  hasSignedTerms: boolean
 }
 
 /**
@@ -23,7 +22,6 @@ export class ImageGenerationCache {
     return new ImageGenerationState({
       passType: this.props.passType,
       userNanoId: this.props.userNanoId,
-      hasSignedTerms: this.props.hasSignedTerms,
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
       favoriteModelIds: [],
@@ -48,7 +46,6 @@ export class ImageGenerationCache {
     return new ImageGenerationState({
       passType: this.props.passType,
       userNanoId: this.props.userNanoId,
-      hasSignedTerms: this.props.hasSignedTerms,
       modelId: config.generationFeature.defaultImageModelId,
       modelIds: config.generationFeature.defaultImageModelIds,
       favoriteModelIds: [],
