@@ -1,5 +1,7 @@
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { StarIcon } from "lucide-react"
 
 type Props = {
   displayName: string | null
@@ -7,9 +9,16 @@ type Props = {
   type?: string | null
   thumbnailImageURL: string | null
   isActive: boolean
+  isFavoriteModel?: boolean
   onSelect(): void
+  onStar?(): void
 }
 
+/**
+ * モデルのカード
+ * @param props
+ * @returns
+ */
 export const ImageModelCard = (props: Props) => {
   return (
     <Card
@@ -42,6 +51,22 @@ export const ImageModelCard = (props: Props) => {
           </span>
         )}
       </div>
+      {props.onStar !== undefined && (
+        <Button
+          className="absolute right-2 top-2"
+          aria-label={"お気に入り"}
+          size={"icon"}
+          variant="ghost"
+          onClick={(event) => {
+            event.stopPropagation()
+            props.onStar?.()
+          }}
+        >
+          <StarIcon
+            className={cn({ "fill-yellow-500": props.isFavoriteModel })}
+          />
+        </Button>
+      )}
     </Card>
   )
 }
