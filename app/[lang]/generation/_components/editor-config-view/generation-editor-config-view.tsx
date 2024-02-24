@@ -29,7 +29,7 @@ import { toast } from "sonner"
  * @param props
  * @returns
  */
-export const GenerationEditorConfigView = () => {
+export const GenerationConfigView = () => {
   const context = useGenerationContext()
 
   const searchParams = useSearchParams()
