@@ -247,7 +247,7 @@ export class ImageGenerationAction {
       // valueが数値でない、または-1から1の範囲外の場合は0に設定
       const adjustedValue =
         Number.isNaN(numericValue) || numericValue < -1 || numericValue > 1
-          ? 0
+          ? 1
           : numericValue
 
       return `<lora:${name}:${adjustedValue}>`

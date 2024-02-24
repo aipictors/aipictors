@@ -35,6 +35,8 @@ export function GenerationEditorSubmissionView(props: Props) {
 
   const [generationCount, setGenerationCount] = useState(1)
 
+  const [reservedGenerationCount, setReservedGenerationCount] = useState(1)
+
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const [generationMode, setGenerationMode] = useState("normal")
@@ -183,8 +185,9 @@ export function GenerationEditorSubmissionView(props: Props) {
       // タスクの作成後も呼び出す必要がある
       await activeImageGeneration({ nanoid: userNanoid })
       if (isDesktop) {
-        // スマホだと生成ボタンに被るのでPCのみ出す
         toast("タスクを作成しました")
+      } else {
+        toast("タスクを作成しました", { position: "top-center" })
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -255,8 +258,9 @@ export function GenerationEditorSubmissionView(props: Props) {
           )}
           {generationMode === "reserve" && (
             <GenerationReserveCountInput
-              maxCount={200}
-              onChange={setGenerationCount}
+              maxCount={availableImageGenerationMaxTasksCount - tasksCount}
+              onChange={setReservedGenerationCount}
+              count={reservedGenerationCount}
             />
           )}
           {/* 生成開始ボタン */}
@@ -267,7 +271,9 @@ export function GenerationEditorSubmissionView(props: Props) {
               isDisabled={editor.context.isDisabled}
               generatingCount={inProgressImageGenerationTasksCount}
               maxGeneratingCount={
-                generationMode === "reserve" ? 200 : maxTasksCount
+                generationMode === "reserve"
+                  ? availableImageGenerationMaxTasksCount - tasksCount
+                  : maxTasksCount
               }
               buttonActionCaption={
                 generationMode === "reserve" ? "予約生成" : "生成"

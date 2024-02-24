@@ -162,8 +162,8 @@ export const GenerationEditorTaskListArea = (props: Props) => {
   }
 
   return (
-    <ScrollArea>
-      <div className={getGridClasses(props.thumbnailSize)}>
+    <ScrollArea className="pb-64 md:pb-0">
+      <div className={`${getGridClasses(props.thumbnailSize)}`}>
         <GenerationEditorTaskList
           tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
           isEditMode={props.isEditMode}

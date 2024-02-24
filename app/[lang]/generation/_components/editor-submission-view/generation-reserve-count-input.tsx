@@ -3,18 +3,23 @@ import { Input } from "@/components/ui/input"
 type Props = {
   onChange(count: number): void
   maxCount: number
+  count: number
 }
 
 export function GenerationReserveCountInput(props: Props) {
   return (
     <Input
       className={"w-20 mr-2"}
-      onChange={(value) => {
-        props.onChange(Number(value))
+      onChange={(e) => {
+        if (Number(e.target.value) > props.maxCount) {
+          props.onChange(props.maxCount)
+          return
+        }
+        props.onChange(Number(e.target.value))
       }}
       max={props.maxCount}
       min={1}
-      value={10}
+      value={props.count}
       type="number"
       placeholder="枚数"
     />
