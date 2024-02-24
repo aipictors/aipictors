@@ -53,7 +53,7 @@ const EventWakiaiaiPage = async () => {
             rel="noopener noreferrer"
           >
             <Button variant={"outline"} className="text-lg font-bold m-4">
-              出展・展示参加者募集中
+              出展・展示参加募集中！3/20〆切
               <MousePointerClickIcon className="ml-2" />
             </Button>
           </a>
@@ -62,7 +62,7 @@ const EventWakiaiaiPage = async () => {
       <div className={cn("grid md:grid-cols-2 md:grid-flow-col gap-2")}>
         <Card>
           <CardHeader>
-            <CardTitle>{"4月13日（土） 11時〜16時"}</CardTitle>
+            <CardTitle>{"4月13日（土） 10時〜16時"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
