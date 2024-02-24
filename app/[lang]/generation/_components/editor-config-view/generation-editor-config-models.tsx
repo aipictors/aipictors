@@ -7,6 +7,8 @@ import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 type Props = {
   models: ImageModelsQuery["imageModels"]
   currentModelId: string
+  favoritedModelIds: number[]
+  showFavoritedModels: boolean
   /**
    * 表示されるモデルのID（最大3個）
    */
@@ -26,19 +28,38 @@ export const GenerationEditorConfigModels = (props: Props) => {
     })
   })
 
+  const favoritedModels = props.favoritedModelIds.map((modelId) => {
+    return props.models.find((model) => {
+      return Number(model.id) === modelId
+    })
+  })
+
   return (
     <div className="grid gap-y-2">
-      {currentModels.map((model) => (
-        <ConfigModelButton
-          key={model?.id}
-          imageURL={model?.thumbnailImageURL ?? ""}
-          name={model?.displayName ?? ""}
-          isSelected={model?.id === props.currentModelId}
-          onClick={() => {
-            props.onSelectModelId(model!.id, model!.type)
-          }}
-        />
-      ))}
+      {!props.showFavoritedModels &&
+        currentModels.map((model) => (
+          <ConfigModelButton
+            key={model?.id}
+            imageURL={model?.thumbnailImageURL ?? ""}
+            name={model?.displayName ?? ""}
+            isSelected={model?.id === props.currentModelId}
+            onClick={() => {
+              props.onSelectModelId(model!.id, model!.type)
+            }}
+          />
+        ))}
+      {props.showFavoritedModels &&
+        favoritedModels.map((model) => (
+          <ConfigModelButton
+            key={model?.id}
+            imageURL={model?.thumbnailImageURL ?? ""}
+            name={model?.displayName ?? ""}
+            isSelected={model?.id === props.currentModelId}
+            onClick={() => {
+              props.onSelectModelId(model!.id, model!.type)
+            }}
+          />
+        ))}
       <GenerationModelsButton
         models={props.models}
         selectedModelId={props.currentModelId}

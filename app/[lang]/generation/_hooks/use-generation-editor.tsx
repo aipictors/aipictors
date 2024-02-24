@@ -177,6 +177,7 @@ export const useGenerationEditor = () => {
    */
   const updateFavoriteModelIds = (modelIds: number[]) => {
     const value = action.updateFavoriteModelIds(modelIds).getState()
+    cacheStorage.savaFavoriteModelIds(value.favoriteModelIds)
     send({ type: "UPDATE_CONFIG", value })
   }
 

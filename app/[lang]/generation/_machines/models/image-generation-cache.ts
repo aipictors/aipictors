@@ -26,7 +26,7 @@ export class ImageGenerationCache {
       hasSignedTerms: this.props.hasSignedTerms,
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
-      favoriteModelIds: [],
+      favoriteModelIds: this.restoreFavoriteModelIds(),
       promptText: this.restorePrompt(),
       negativePromptText: this.restoreNegativePrompt(modelType),
       sampler: this.restoreSampler(),
@@ -163,6 +163,34 @@ export class ImageGenerationCache {
     try {
       const value = localStorage.getItem("config.generation.model.type")
       return value ?? defaultValue
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  savaFavoriteModelIds(modelIds: number[]) {
+    localStorage.setItem(
+      "config.generation.favorite.models",
+      modelIds.join(","),
+    )
+  }
+
+  /**
+   * お気に入りモデル一覧を保存する
+   * @param modelIds お気に入りモデルID一覧
+   */
+  restoreFavoriteModelIds() {
+    const defaultValue = config.generationFeature.defaultFavoritedModelIds
+    try {
+      const value = localStorage.getItem("config.generation.favorite.models")
+      return value ? value.split(",").map(Number) : defaultValue ?? []
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)
