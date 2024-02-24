@@ -2,8 +2,7 @@
 
 import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
 import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-models-dialog-button"
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
-import { useContext } from "react"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
 }
 
 export const GenerationEditorConfigLoraModels = (props: Props) => {
-  const dataContext = useContext(generationDataContext)
+  const editor = useGenerationEditor()
 
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
@@ -31,7 +30,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = dataContext.loraModels.filter((model) => {
+  const selectedModels = editor.loraModels.filter((model) => {
     return currentLoraModelNames.includes(model.name)
   })
 
@@ -55,7 +54,7 @@ export const GenerationEditorConfigLoraModels = (props: Props) => {
       <LoraModelsDialogButton
         isOpen={isOpen}
         onClose={onClose}
-        models={dataContext.loraModels}
+        models={editor.loraModels}
         selectedModelNames={currentLoraModelNames}
         onSelect={props.onChangeLoraModel}
       />

@@ -1,17 +1,19 @@
+import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
 import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/image-generation-action"
 import { ImageGenerationCache } from "@/app/[lang]/generation/_machines/models/image-generation-cache"
-import { ImageGenerationContextView } from "@/app/[lang]/generation/_machines/models/image-generation-context-view"
+import { ImageGenerationEditorView } from "@/app/[lang]/generation/_machines/models/image-generation-editor-view"
+import { config } from "@/config"
+import { useContext } from "react"
 
 export const useGenerationEditor = () => {
+  const dataContext = useContext(generationDataContext)
+
   const context = GenerationEditorContext.useSelector((state) => state.context)
 
   const { send } = GenerationEditorContext.useActorRef()
 
-  const cacheStorage = new ImageGenerationCache({
-    passType: context.passType,
-    userNanoId: context.userNanoId,
-  })
+  const cacheStorage = new ImageGenerationCache()
 
   const action = new ImageGenerationAction(context)
 
@@ -201,8 +203,48 @@ export const useGenerationEditor = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  /**
+   * 生成可能な枚数
+   */
+  const maxTasksCount = () => {
+    if (dataContext.currentPass?.type === "LITE") {
+      return config.passFeature.imageGenerationsCount.lite
+    }
+    if (dataContext.currentPass?.type === "PREMIUM") {
+      return config.passFeature.imageGenerationsCount.premium
+    }
+    if (dataContext.currentPass?.type === "STANDARD") {
+      return config.passFeature.imageGenerationsCount.standard
+    }
+    return config.passFeature.imageGenerationsCount.free
+  }
+
+  const getAvailableLoraModelsCount = () => {
+    if (dataContext.currentPass?.type === "LITE") {
+      return 2
+    }
+    if (dataContext.currentPass?.type === "STANDARD") {
+      return 5
+    }
+    if (dataContext.currentPass?.type === "PREMIUM") {
+      return 5
+    }
+    return 2
+  }
+
   return {
-    context: new ImageGenerationContextView(context),
+    context: new ImageGenerationEditorView(context),
+    get maxTasksCount() {
+      return maxTasksCount()
+    },
+    get availableLoraModelsCount() {
+      return getAvailableLoraModelsCount()
+    },
+    promptCategories: dataContext.promptCategories,
+    models: dataContext.models,
+    loraModels: dataContext.loraModels,
+    user: dataContext.user,
+    currentPass: dataContext.currentPass,
     reset,
     updateSettings,
     updateModelId,

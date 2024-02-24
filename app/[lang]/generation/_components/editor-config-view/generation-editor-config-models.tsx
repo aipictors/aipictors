@@ -2,8 +2,7 @@
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
 import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
-import { useContext } from "react"
+import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 
 type Props = {
   currentModelId: string
@@ -20,10 +19,10 @@ type Props = {
  * @returns
  */
 export const GenerationEditorConfigModels = (props: Props) => {
-  const dataContext = useContext(generationDataContext)
+  const editor = useGenerationEditor()
 
   const currentModels = props.currentModelIds.map((modelId) => {
-    return dataContext.models.find((model) => {
+    return editor.models.find((model) => {
       return model.id === modelId
     })
   })
@@ -42,7 +41,7 @@ export const GenerationEditorConfigModels = (props: Props) => {
         />
       ))}
       <GenerationModelsButton
-        models={dataContext.models}
+        models={editor.models}
         selectedModelId={props.currentModelId}
         onSelect={props.onSelectModelId}
       />

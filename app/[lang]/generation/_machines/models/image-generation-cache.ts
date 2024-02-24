@@ -2,17 +2,10 @@ import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/i
 import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 
-type Props = {
-  passType: string | null
-  userNanoId: string | null
-}
-
 /**
  * 画像生成の設定のキャッシュを管理する
  */
 export class ImageGenerationCache {
-  constructor(private props: Props) {}
-
   /**
    * 復元する
    * @returns
@@ -20,8 +13,6 @@ export class ImageGenerationCache {
   restore() {
     const modelType = this.restoreModelType()
     return new ImageGenerationState({
-      passType: this.props.passType,
-      userNanoId: this.props.userNanoId,
       modelId: this.restoreModelId(),
       modelIds: this.restoreModelIds(),
       favoriteModelIds: [],
@@ -44,8 +35,6 @@ export class ImageGenerationCache {
   reset() {
     const modelType = config.generationFeature.defaultImageModelType
     return new ImageGenerationState({
-      passType: this.props.passType,
-      userNanoId: this.props.userNanoId,
       modelId: config.generationFeature.defaultImageModelId,
       modelIds: config.generationFeature.defaultImageModelIds,
       favoriteModelIds: [],

@@ -41,10 +41,7 @@ export const GenerationContextProvider = (props: Props) => {
     refetch()
   }, [authContext.isLoggedIn])
 
-  const cacheStorage = new ImageGenerationCache({
-    passType: viewer?.viewer?.currentPass?.type ?? null,
-    userNanoId: viewer?.viewer?.user?.nanoid ?? null,
-  })
+  const cacheStorage = new ImageGenerationCache()
 
   // TODO: いつか消す
   if (authContext.isLoading) {

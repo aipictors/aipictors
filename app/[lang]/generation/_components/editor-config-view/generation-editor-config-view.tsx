@@ -10,7 +10,6 @@ import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/
 import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
 import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -30,8 +29,6 @@ import { toast } from "sonner"
  * @returns
  */
 export const GenerationEditorConfigView = () => {
-  const dataContext = useContext(generationDataContext)
-
   const editor = useGenerationEditor()
 
   const searchParams = useSearchParams()
@@ -82,7 +79,7 @@ export const GenerationEditorConfigView = () => {
   /**
    * 選択中のモデル
    */
-  const currentModel = dataContext.models.find((model) => {
+  const currentModel = editor.models.find((model) => {
     return model.id === editor.context.modelId
   })
 

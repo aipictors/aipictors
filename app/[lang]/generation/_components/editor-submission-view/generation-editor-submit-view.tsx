@@ -5,7 +5,6 @@ import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
-import { generationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
@@ -17,7 +16,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { useMutation, useQuery } from "@apollo/client"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -26,8 +25,6 @@ type Props = {
 }
 
 export function GenerationEditorSubmissionView(props: Props) {
-  const dataContext = useContext(generationDataContext)
-
   const editor = useGenerationEditor()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
@@ -106,9 +103,6 @@ export function GenerationEditorSubmissionView(props: Props) {
    * タスクを作成する
    */
   const onCreateTask = async () => {
-    const userNanoid = editor.context.userNanoId ?? null
-    if (userNanoid === null) return
-
     /**
      * 同時生成可能枚数
      */
@@ -118,7 +112,10 @@ export function GenerationEditorSubmissionView(props: Props) {
         : status?.viewer?.inProgressImageGenerationTasksCount
 
     // 生成中かつフリープランならサブスクに誘導
-    if (inProgressImageGenerationTasksCount !== 0 && !editor.context.passType) {
+    if (
+      inProgressImageGenerationTasksCount !== 0 &&
+      editor.currentPass === null
+    ) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
@@ -130,7 +127,7 @@ export function GenerationEditorSubmissionView(props: Props) {
     }
 
     try {
-      const model = dataContext.loraModels.find((model) => {
+      const model = editor.loraModels.find((model) => {
         return model.id === editor.context.modelId
       })
       if (typeof model === "undefined") return
@@ -181,12 +178,13 @@ export function GenerationEditorSubmissionView(props: Props) {
       )
       await Promise.all(promises)
       // タスクの作成後も呼び出す必要がある
-      await activeImageGeneration({ nanoid: userNanoid })
       if (isDesktop) {
         toast("タスクを作成しました")
       } else {
         toast("タスクを作成しました", { position: "top-center" })
       }
+      if (typeof editor.user?.nanoid !== "string") return
+      await activeImageGeneration({ nanoid: editor.user.nanoid })
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -249,7 +247,7 @@ export function GenerationEditorSubmissionView(props: Props) {
           )}
           {generationMode === "normal" && (
             <GenerationCountSelect
-              pass={editor.context.passType ?? "FREE"}
+              pass={editor.currentPass?.type ?? "FREE"}
               selectedCount={generationCount}
               onChange={setGenerationCount}
             />
@@ -262,7 +260,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 生成開始ボタン */}
-          {dataContext.user?.hasSignedImageGenerationTerms === true && (
+          {editor.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={onCreateTask}
               isLoading={isCreatingTask}
@@ -279,7 +277,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             />
           )}
           {/* 規約確認開始ボタン */}
-          {dataContext.user?.hasSignedImageGenerationTerms !== true && (
+          {editor.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
               termsMarkdownText={props.termsMarkdownText}
               onSubmit={onSignTerms}
@@ -293,7 +291,7 @@ export function GenerationEditorSubmissionView(props: Props) {
             engineStatus?.normalPredictionGenerationSeconds ?? 0
           }
           normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-          passType={editor.context.passType}
+          passType={editor.currentPass?.type ?? null}
           remainingImageGenerationTasksCount={tasksCount}
           standardPredictionGenerationSeconds={
             engineStatus?.standardPredictionGenerationSeconds ?? 0

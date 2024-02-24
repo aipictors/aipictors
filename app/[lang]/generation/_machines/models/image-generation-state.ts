@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 const zProps = z.object({
-  passType: z.string().nullable(),
   modelId: z.string(),
   modelIds: z.array(z.string()),
   promptText: z.string(),
@@ -14,15 +13,12 @@ const zProps = z.object({
   seed: z.number(),
   modelType: z.string(),
   clipSkip: z.number(),
-  userNanoId: z.string().nullable(),
   favoriteModelIds: z.array(z.number()),
 })
 
 type Props = z.infer<typeof zProps>
 
 export class ImageGenerationState implements Props {
-  readonly passType!: Props["passType"]
-
   readonly modelId!: Props["modelId"]
 
   readonly modelIds!: Props["modelIds"]
@@ -58,41 +54,12 @@ export class ImageGenerationState implements Props {
 
   readonly loraModels: string[]
 
-  readonly userNanoId!: string | null
-
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = this.promptText.length === 0
-    this.availableLoraModelsCount = this.getAvailableLoraModelsCount()
-    this.loraModels = this.getLoraModels()
-  }
-
-  getAvailableLoraModelsCount() {
-    if (this.passType === "LITE") {
-      return 2
-    }
-    if (this.passType === "STANDARD") {
-      return 5
-    }
-    if (this.passType === "PREMIUM") {
-      return 5
-    }
-    return 2
-  }
-
-  /**
-   * LoRAの設定
-   * @return ['flat2:0', 'hairdetailer:0.15']
-   */
-  getLoraModels() {
-    const promptText = this.promptText
-    const regex = /<lora:[^>]+>/g
-    const regExpMatchArray = promptText.match(regex)
-    if (regExpMatchArray === null) {
-      return []
-    }
-    return Array.from(regExpMatchArray).map((text) => {
-      return text.replace(/<lora:|>/g, "")
-    })
+    this.availableLoraModelsCount = 0
+    this.loraModels = []
+    // this.availableLoraModelsCount = this.getAvailableLoraModelsCount()
+    // this.loraModels = this.getLoraModels()
   }
 }

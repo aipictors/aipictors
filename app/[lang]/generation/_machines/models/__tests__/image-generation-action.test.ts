@@ -2,8 +2,6 @@ import { ImageGenerationAction } from "@/app/[lang]/generation/_machines/models/
 import { ImageGenerationState } from "@/app/[lang]/generation/_machines/models/image-generation-state"
 
 const config = new ImageGenerationState({
-  passType: null,
-  userNanoId: null,
   modelId: "",
   modelIds: [],
   favoriteModelIds: [],
