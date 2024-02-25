@@ -1,3 +1,5 @@
+// 後々使うかも
+
 import AppRadiusProgress from "@/components/app/app-radius-progress"
 import { useEffect, useState } from "react"
 

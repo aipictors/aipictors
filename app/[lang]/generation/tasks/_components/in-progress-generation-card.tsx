@@ -1,8 +1,6 @@
 import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
-// import { InProgressGenerationProgressBar } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-progress-bar"
-import { InProgressGenerationRadiusProgressBar } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-radius-progress-bar"
 import { Card } from "@/components/ui/card"
-// import { Loader2Icon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 
 type Props = {
   onCancel?(): void
@@ -23,14 +21,9 @@ export const InProgressGenerationCard = (props: Props) => {
   return (
     <Card>
       <div className="flex">
-        {/* <div className="p-4 flex flex-col gap-y-2">
-            <Loader2Icon className="h-6 w-6 animate-spin" />
-            <span className="text-sm">{"生成中"}</span>
-          </div> */}
-        <div className="flex justify-center items-center">
-          <InProgressGenerationRadiusProgressBar
-            remainingSeconds={props.estimatedSeconds}
-          />
+        <div className="p-4 flex flex-col gap-y-2">
+          <Loader2Icon className="h-6 w-6 animate-spin" />
+          <span className="text-sm">{"生成中"}</span>
         </div>
         <GenerationTaskCancelButton
           onCancel={props.onCancel}
@@ -39,9 +32,6 @@ export const InProgressGenerationCard = (props: Props) => {
         />
       </div>
       <div className="mt-[100%]" />
-      {/* <InProgressGenerationProgressBar
-          remainingSeconds={props.estimatedSeconds}
-        /> */}
     </Card>
   )
 }
