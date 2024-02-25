@@ -6,6 +6,7 @@ import { GenerationTaskActionDropdownMenu } from "@/app/[lang]/generation/_compo
 import { GenerationTaskCountSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-count-select"
 import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-delete-button"
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
+import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
 import { config } from "@/config"
@@ -15,7 +16,7 @@ import { useRouter } from "next/navigation"
 
 type Props = {
   rating: number
-  thumbnailSize: string
+  thumbnailSize: ThumbnailImageSizeType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   isEditMode: boolean
@@ -24,7 +25,7 @@ type Props = {
   viewCount?: number
   onChangeRating(rating: number): void
   onChangeViewCount(count: number): void
-  setThumbnailSize(size: string): void
+  setThumbnailSize(size: ThumbnailImageSizeType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void

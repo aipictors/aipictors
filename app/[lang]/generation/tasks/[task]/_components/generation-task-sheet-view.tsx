@@ -165,7 +165,7 @@ export const postGenerationImage = async (
  * @param props
  * @returns
  */
-export function GenerationTaskCacheView(props: Props) {
+export function GenerationTaskSheetView(props: Props) {
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation, {
     refetchQueries: [viewerImageGenerationTasksQuery],
     awaitRefetchQueries: true,

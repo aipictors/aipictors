@@ -1,3 +1,4 @@
+import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
@@ -20,7 +21,7 @@ type Props = {
   progress?: number
   estimatedSeconds?: number
   rating: number
-  optionButtonSize: string
+  optionButtonSize: ThumbnailImageSizeType
   isLink?: boolean
   isSelectDisabled?: boolean
   onClick?(): void
