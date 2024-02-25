@@ -1,30 +1,35 @@
 import { Button } from "@/components/ui/button"
 import { Loader2Icon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 type Props = {
   isLoading: boolean
   isDisabled: boolean
-  isScheduleMode: boolean
   generatingCount: number
   maxGeneratingCount: number
+  buttonActionCaption: string
   onClick(): void
 }
 
 export function GenerationSubmitButton(props: Props) {
-  const text = props.isScheduleMode ? "予約生成" : "生成"
-
-  const countText = `${props.generatingCount}/${props.maxGeneratingCount}`
+  const { theme } = useTheme()
 
   return (
     <Button
       onClick={props.onClick}
       className="w-full"
+      size={"lg"}
       disabled={props.isLoading || props.isDisabled}
     >
       <div className="flex items-center">
-        {props.isLoading ? "処理中.." : `${text}する (${countText})`}
-        {props.generatingCount !== 0 && (
-          <Loader2Icon className={"ml-2 w-4 animate-spin dark:black"} />
+        {props.isLoading
+          ? "処理中.."
+          : `${props.buttonActionCaption}する(${props.generatingCount}/${props.maxGeneratingCount})`}
+        {props.generatingCount > 0 && (
+          <Loader2Icon
+            color={theme === "light" ? "white" : "black"}
+            className={"ml-2 w-4 animate-spin dark:black"}
+          />
         )}
       </div>
     </Button>

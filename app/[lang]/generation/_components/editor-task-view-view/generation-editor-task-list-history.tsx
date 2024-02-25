@@ -1,21 +1,16 @@
 "use client"
 
-import { GenerationTaskListGrid } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-grid"
+import { GenerationEditorTaskList } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
-import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
-import { GenerationTaskViewButton } from "@/app/[lang]/generation/tasks/_components/generation-task-view-button"
+import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useQuery } from "@apollo/client"
-import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   sizeType?: string
@@ -39,8 +34,6 @@ export const GenerationTaskListHistory = (props: Props) => {
   const context = useGenerationContext()
 
   const [currentPage, setCurrentPage] = useState(1)
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const isTimeout = useFocusTimeout()
 
@@ -171,52 +164,23 @@ export const GenerationTaskListHistory = (props: Props) => {
     }
   }
 
-  const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
-
   return (
     <>
       <ScrollArea>
-        <GenerationTaskListGrid thumbnailSize={props.thumbnailSize}>
-          {componentTasks.map((task) => (
-            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
-              <Suspense fallback={<FallbackTaskCard />}>
-                {props.isEditMode && (
-                  <GenerationTaskCard
-                    onClick={() => onSelectTask(task.nanoid, task.status)}
-                    isSelected={props.selectedTaskIds.includes(
-                      task.nanoid ?? "",
-                    )}
-                    isSelectDisabled={false}
-                    taskNanoid={task.nanoid}
-                    estimatedSeconds={task.estimatedSeconds ?? 0}
-                    taskId={task.id}
-                    token={task.token}
-                    optionButtonSize={props.thumbnailSize ?? "small"}
-                    rating={task.rating ?? 0}
-                  />
-                )}
-                {!props.isEditMode && !isDesktop && (
-                  <GenerationTaskCard
-                    taskNanoid={task.nanoid}
-                    estimatedSeconds={task.estimatedSeconds ?? 0}
-                    isSelectDisabled={true}
-                    taskId={task.id}
-                    token={task.token}
-                    optionButtonSize={props.thumbnailSize ?? "small"}
-                    rating={task.rating ?? 0}
-                  />
-                )}
-                {!props.isEditMode && isDesktop && (
-                  <GenerationTaskViewButton
-                    task={task}
-                    sizeType={props.thumbnailSize ?? "small"}
-                    onRestore={onRestore}
-                  />
-                )}
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-        </GenerationTaskListGrid>
+        <div className={getGridClasses(props.thumbnailSize)}>
+          {props.isCreatingTasks && (
+            <InProgressGenerationCard isCreatingTasks={true} />
+          )}
+          <GenerationEditorTaskList
+            tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
+            isEditMode={props.isEditMode}
+            selectedTaskIds={props.selectedTaskIds}
+            pcViewType={pcViewType}
+            sizeType={props.thumbnailSize ?? "small"}
+            onRestore={onRestore}
+            onSelectTask={onSelectTask}
+          />
+        </div>
       </ScrollArea>
       {props.viewCount &&
         tasks.viewer &&
