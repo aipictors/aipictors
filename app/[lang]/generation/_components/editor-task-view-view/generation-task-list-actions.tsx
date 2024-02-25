@@ -17,7 +17,6 @@ type Props = {
   rating: number
   thumbnailSize: string
   selectedTaskIds: string[]
-  hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
   showHistoryAllButton?: boolean
@@ -26,7 +25,7 @@ type Props = {
   onChangeViewCount(count: number): void
   setThumbnailSize(size: string): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
-  setHidedTaskIds(selectedTaskIds: string[]): void
+  onAddDeletedTaskIds(deletedTaskIds: string[]): void
   onToggleEditMode(): void
 }
 
@@ -53,7 +52,7 @@ export const GenerationTaskListActions = (props: Props) => {
         }),
       )
       await Promise.all(promises)
-      props.setHidedTaskIds([...props.hidedTaskIds, ...props.selectedTaskIds])
+      props.onAddDeletedTaskIds(props.selectedTaskIds)
       props.setSelectedTaskIds([])
     } catch (error) {
       console.error("Error in task deletion:", error)
@@ -101,12 +100,10 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
-          {
-            <GenerationTaskActionDropdownMenu
-              thumbnailSize={props.thumbnailSize}
-              onChange={props.setThumbnailSize}
-            />
-          }
+          <GenerationTaskActionDropdownMenu
+            thumbnailSize={props.thumbnailSize}
+            onChange={props.setThumbnailSize}
+          />
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}

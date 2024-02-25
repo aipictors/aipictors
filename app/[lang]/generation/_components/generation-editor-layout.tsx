@@ -17,16 +17,18 @@ export const GenerationEditorLayout = (props: Props) => {
       <div className="flex flex-col gap-y-4">
         <div>{props.submission}</div>
         <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
-          <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
-          <div className="lg:min-w-64 xl:min-w-96 flex flex-col md:flex-row lg:flex-col gap-4">
-            <div className="overflow-hidden flex-1">{props.promptEditor}</div>
-            <div className="overflow-hidden flex-1 min-w-80">
+          <div className="w-full lg:w-64 xl:w-80">{props.config}</div>
+          <div className="w-full lg:w-80 xl:w-96 flex flex-col md:flex-row lg:flex-col gap-4">
+            <div className="overflow-hidden flex-2">{props.promptEditor}</div>
+            <div className="overflow-hidden flex-1">
               {props.negativePromptEditor}
             </div>
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-hidden">{props.taskList}</div>
+      <div className="flex-1 overflow-hidden pb-24 md:pb-0">
+        {props.taskList}
+      </div>
     </main>
   )
 }

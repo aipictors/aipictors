@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationEditorContext } from "@/app/[lang]/generation/_contexts/generation-editor-context"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { AuthContextProvider } from "@/app/_components/auth-context-provider"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { config } from "@/config"
@@ -24,9 +24,9 @@ export const ContextProviders = (props: Props) => {
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
           <ApolloProvider client={client}>
-            <GenerationEditorContext.Provider>
+            <GenerationConfigContext.Provider>
               {props.children}
-            </GenerationEditorContext.Provider>
+            </GenerationConfigContext.Provider>
           </ApolloProvider>
         </QueryClientProvider>
       </AuthContextProvider>

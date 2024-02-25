@@ -1,28 +1,28 @@
 "use client"
 
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
-import { useGenerationEditor } from "@/app/[lang]/generation/_hooks/use-generation-editor"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Textarea } from "@/components/ui/textarea"
 
-export const GenerationEditorNegativePromptView = () => {
-  const editor = useGenerationEditor()
+export const GenerationNegativePromptView = () => {
+  const context = useGenerationContext()
 
   const onAddPrompt = (text: string) => {
-    if (editor.context.promptText.includes(text)) {
-      const replacedText = editor.context.promptText.replace(text, "")
+    if (context.config.promptText.includes(text)) {
+      const replacedText = context.config.promptText.replace(text, "")
       const draftText = replacedText
         .split(",")
         .filter((p) => p !== "")
         .join(",")
-      editor.updatePrompt(draftText)
+      context.updatePrompt(draftText)
       return
     }
-    const draftText = editor.context.promptText
+    const draftText = context.config.promptText
       .split(",")
       .filter((p) => p !== "")
       .concat([text])
       .join(",")
-    editor.updatePrompt(draftText)
+    context.updatePrompt(draftText)
   }
 
   return (
@@ -34,11 +34,11 @@ export const GenerationEditorNegativePromptView = () => {
     >
       <div className="flex flex-col px-4 pb-4 h-full gap-y-2">
         <Textarea
-          className="resize-none h-full font-mono min-h-40"
+          className="resize-none h-full font-mono"
           placeholder={"EasyNegativeなど"}
-          value={editor.context.negativePromptText}
+          value={context.config.negativePromptText}
           onChange={(event) => {
-            editor.updateNegativePrompt(event.target.value)
+            context.updateNegativePrompt(event.target.value)
           }}
         />
       </div>

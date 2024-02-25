@@ -346,13 +346,13 @@ export function GenerationTaskCacheView(props: Props) {
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"prompt"}</p>
-          <Textarea disabled={true}>{props.task.prompt}</Textarea>
+          <Textarea disabled={true} value={props.task.prompt} />
           <CopyButton className="mb-4" text={props.task.prompt} />
           <div className="py-2">
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-          <Textarea disabled={true}>{props.task.negativePrompt}</Textarea>
+          <Textarea disabled={true} value={props.task.negativePrompt} />
           <CopyButton className="mb-4" text={props.task.negativePrompt} />
           <div className="py-2">
             <Separator />
