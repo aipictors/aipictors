@@ -19,7 +19,7 @@ type Props = {
   onChange(value: string): void
 }
 
-export const GenerationConfigSampler = (props: Props) => {
+export const GenerationEditorConfigSampler = (props: Props) => {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
