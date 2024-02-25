@@ -28,14 +28,12 @@ export function GenerationCountSelect(props: Props) {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>{"枚数変更"}</SelectLabel>
-          <SelectItem value="1">{"1枚"}</SelectItem>
+          <SelectItem value="1">{"1"}</SelectItem>
           {props.pass === "STANDARD" ||
             (props.pass === "PREMIUM" && (
-              <SelectItem value="2">{"2枚"}</SelectItem>
+              <SelectItem value="2">{"2"}</SelectItem>
             ))}
-          {props.pass === "PREMIUM" && (
-            <SelectItem value="3">{"3枚"}</SelectItem>
-          )}
+          {props.pass === "PREMIUM" && <SelectItem value="3">{"3"}</SelectItem>}
         </SelectGroup>
       </SelectContent>
     </Select>

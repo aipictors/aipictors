@@ -54,7 +54,7 @@ export function GenerationSubmitOperationParts(props: Props) {
             count={props.reservedGenerationCount}
           />
         )}
-        {/* 生成開始ボタン */}
+        <div className="mr-2">枚</div>
         {context.user?.hasSignedImageGenerationTerms === true && (
           <GenerationSubmitButton
             onClick={async () => {
