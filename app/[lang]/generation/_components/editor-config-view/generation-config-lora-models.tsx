@@ -1,11 +1,11 @@
 "use client"
 
 import { ConfigLoraModel } from "@/app/[lang]/generation/_components/editor-config-view/config-lora-model"
-import { LoraModelsDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-models-dialog-button"
+import { LoraModelListDialogButton } from "@/app/[lang]/generation/_components/editor-config-view/lora-model-list-dialog-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useBoolean } from "usehooks-ts"
 
-export const GenerationEditorConfigLoraModels = () => {
+export const GenerationConfigLoraModels = () => {
   const context = useGenerationContext()
 
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
@@ -44,7 +44,7 @@ export const GenerationEditorConfigLoraModels = () => {
           }}
         />
       ))}
-      <LoraModelsDialogButton
+      <LoraModelListDialogButton
         isOpen={isOpen}
         onClose={onClose}
         models={context.loraModels}

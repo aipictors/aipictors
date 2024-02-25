@@ -23,7 +23,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const GenerationEditorCard = (props: Props) => {
+export const GenerationViewCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (

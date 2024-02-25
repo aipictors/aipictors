@@ -24,7 +24,7 @@ type Props = {
   onSelect(id: string, type: string): void
 }
 
-export const GenerationModelsButton = (props: Props) => {
+export const GenerationModelListButton = (props: Props) => {
   const context = useGenerationContext()
 
   const { value, setTrue, setFalse } = useBoolean()

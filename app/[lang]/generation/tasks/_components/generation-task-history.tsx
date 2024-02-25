@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-history"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
+import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-history"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"

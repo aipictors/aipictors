@@ -1,7 +1,7 @@
 "use client"
 
-import { PromptCategoriesDialogContents } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-contents"
-import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { PromptCategoriesDialogContent } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-categories-dialog-content"
+import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/components/ui/button"
@@ -41,7 +41,7 @@ export const GenerationPromptView = () => {
 
   return (
     <>
-      <GenerationEditorCard
+      <GenerationViewCard
         title={"プロンプト"}
         tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
         action={
@@ -82,7 +82,7 @@ export const GenerationPromptView = () => {
                 {"キーワードから選ぶ"}
               </Button>
             </DialogTrigger>
-            <PromptCategoriesDialogContents
+            <PromptCategoriesDialogContent
               selectedPromptIds={selectedPromptIds}
               onClose={setFalse}
               promptCategories={context.promptCategories}
@@ -90,7 +90,7 @@ export const GenerationPromptView = () => {
             />
           </Dialog>
         </div>
-      </GenerationEditorCard>
+      </GenerationViewCard>
     </>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { LoraImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/lora-image-models-list"
+import { LoraImageModelList } from "@/app/[lang]/generation/_components/editor-config-view/lora-image-model-list"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,7 +22,7 @@ type Props = {
   onSelect(name: string, isAdded: boolean): void
 }
 
-export const LoraModelsDialogButton = (props: Props) => {
+export const LoraModelListDialogButton = (props: Props) => {
   const { value, setTrue, setFalse } = useBoolean()
 
   return (
@@ -50,7 +50,7 @@ export const LoraModelsDialogButton = (props: Props) => {
             {"使用するLoRA(エフェクト)を選択してください"}
           </DialogDescription>
         </DialogHeader>
-        <LoraImageModelsList
+        <LoraImageModelList
           models={props.models.map((model) => ({
             ...model,
             genre: model.genre || "その他",
