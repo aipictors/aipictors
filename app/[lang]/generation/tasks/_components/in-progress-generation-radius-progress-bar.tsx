@@ -1,16 +1,13 @@
-import { AppRadiusProgress } from "@/components/app/app-radius-progress"
+import AppRadiusProgress from "@/components/app/app-radius-progress"
 import { useEffect, useState } from "react"
 
 type Props = {
   remainingSeconds?: number
 }
 
-/**
- * 読み込み中の履歴の進捗バー
- * @returns
- */
 export const InProgressGenerationRadiusProgressBar = (props: Props) => {
   const [elapsedGenerationTime, setElapsedGenerationTime] = useState(0)
+  const [maxProgress, setMaxProgress] = useState(0) // 最大進行状況を追跡
 
   useEffect(() => {
     const time = setInterval(() => {
@@ -19,19 +16,22 @@ export const InProgressGenerationRadiusProgressBar = (props: Props) => {
     return () => {
       clearInterval(time)
     }
-  })
+  }, []) // 依存配列を追加して、エフェクトがマウント時にのみ実行されるように
 
-  /**
-   * 残り秒数からの生成進捗（パーセンテージ）
-   */
-  const generationProgress = () => {
-    if (!props.remainingSeconds) return 0
-    return (elapsedGenerationTime / props.remainingSeconds) * 100
-  }
+  useEffect(() => {
+    // 現在の進行状況を計算
+    const currentProgress = props.remainingSeconds
+      ? Math.min(100, (elapsedGenerationTime / props.remainingSeconds) * 100)
+      : 0
+    // 現在の進行状況がこれまでの最大値より大きい場合は更新
+    setMaxProgress((prev) => Math.max(prev, currentProgress))
+  }, [elapsedGenerationTime, props.remainingSeconds]) // 依存配列にelapsedGenerationTimeとprops.remainingSecondsを追加
 
   return (
-    <>
-      <AppRadiusProgress progressPercent={generationProgress()} />
-    </>
+    <AppRadiusProgress
+      percent={maxProgress} // 現在の最大進行状況を使用
+      size={120} // 円のサイズ
+      strokeWidth={3} // 外周の線幅
+    />
   )
 }

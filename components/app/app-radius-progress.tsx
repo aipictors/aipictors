@@ -1,60 +1,47 @@
-import React from "react"
+import { useEffect, useRef } from "react"
 
-interface AppRadiusProgressProps {
-  progressPercent: number // 進捗パーセンテージをpropsとして追加
-}
+const AppRadiusProgress = ({ percent = 0, size = 100, strokeWidth = 10 }) => {
+  const circleRef = useRef<SVGCircleElement>(null)
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
 
-export const AppRadiusProgress: React.FC<AppRadiusProgressProps> = ({
-  progressPercent,
-}) => {
-  const size = 120
-  const radius = 50
-  const circumference = 2 * Math.PI * radius
-  const strokeDashoffset =
-    circumference - (progressPercent / 100) * circumference
+  const integerPercent = Math.floor(percent)
+
+  useEffect(() => {
+    const circle = circleRef.current
+    if (circle) {
+      const offset = circumference - (integerPercent / 100) * circumference
+      circle.style.transition = "stroke-dashoffset 0.5s ease-out"
+      circle.style.strokeDashoffset = offset.toString()
+    }
+  }, [integerPercent, circumference])
 
   return (
-    <>
-      <style>
-        {`@keyframes circleStroke {
-              from {
-                stroke-dashoffset: ${circumference};
-              }
-              to {
-                stroke-dashoffset: ${strokeDashoffset};
-              }
-            }
-            @keyframes rotationObject {
-              from {
-                transform: rotate(90deg);
-              }
-              to {
-                transform: rotate(${progressPercent * 3.6 + 90}deg)
-              }
-            }
-            `}
-      </style>
-      <div className="w-full h-full">
-        {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
-        <svg
-          viewBox={`0 0 ${size} ${size}`}
-          style={{ transform: "rotate(-90deg)" }}
-        >
-          <circle
-            r={radius}
-            cx={size / 2}
-            cy={size / 2}
-            stroke="#4169e1"
-            strokeWidth="5"
-            fill="#F6FBF6"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            style={{
-              animation: "circleStroke 3s ease forwards",
-            }}
-          />
-        </svg>
-      </div>
-    </>
+    // biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <circle
+        ref={circleRef}
+        stroke="black"
+        fill="transparent"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference.toString()} // TypeScriptのためにtoString()を使用
+        strokeDashoffset={circumference.toString()} // 初期値も文字列にする
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        transform={`rotate(-90 ${size / 2} ${size / 2})`}
+      />
+      <text
+        x="50%"
+        y="50%"
+        dominantBaseline="middle"
+        textAnchor="middle"
+        fontSize="1em"
+      >
+        {`${integerPercent}%`}
+      </text>
+    </svg>
   )
 }
+
+export default AppRadiusProgress
