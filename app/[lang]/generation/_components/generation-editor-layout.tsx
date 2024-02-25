@@ -1,3 +1,9 @@
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
+
 type Props = {
   config: React.ReactNode
   promptEditor: React.ReactNode
@@ -14,21 +20,26 @@ type Props = {
 export const GenerationEditorLayout = (props: Props) => {
   return (
     <main className="flex flex-col lg:flex-row gap-4 lg:h-main pb-4 overflow-hidden">
-      <div className="flex flex-col gap-y-4">
-        <div>{props.submission}</div>
-        <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
-          <div className="w-full lg:w-64 xl:w-80">{props.config}</div>
-          <div className="w-full lg:w-80 xl:w-96 flex flex-col md:flex-row lg:flex-col gap-4">
-            <div className="overflow-hidden flex-2">{props.promptEditor}</div>
-            <div className="overflow-hidden flex-1">
-              {props.negativePromptEditor}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex-1 overflow-hidden pb-24 md:pb-0">
-        {props.taskList}
-      </div>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel>
+          <div>{props.submission}</div>
+          <div>{props.config}</div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        <ResizablePanel>
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel>{props.promptEditor}</ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel>{props.negativePromptEditor}</ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        <ResizablePanel>{props.taskList}</ResizablePanel>
+      </ResizablePanelGroup>
     </main>
   )
 }
