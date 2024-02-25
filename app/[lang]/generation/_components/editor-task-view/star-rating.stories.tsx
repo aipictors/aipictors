@@ -1,4 +1,4 @@
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view-view/star-rating"
+import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

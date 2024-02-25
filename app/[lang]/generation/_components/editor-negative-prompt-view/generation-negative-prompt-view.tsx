@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -26,7 +26,7 @@ export const GenerationNegativePromptView = () => {
   }
 
   return (
-    <GenerationEditorCard
+    <GenerationViewCard
       title={"ネガティブプロンプト"}
       tooltip={
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
@@ -42,6 +42,6 @@ export const GenerationNegativePromptView = () => {
           }}
         />
       </div>
-    </GenerationEditorCard>
+    </GenerationViewCard>
   )
 }

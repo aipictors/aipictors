@@ -14,7 +14,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorConfigOpenFavoriteModelToggle = (props: Props) => {
+export const GenerationConfigFavoriteModelToggle = (props: Props) => {
   return (
     <Toggle
       className="w-16"

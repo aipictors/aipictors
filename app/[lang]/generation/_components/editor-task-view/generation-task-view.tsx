@@ -1,8 +1,8 @@
 "use client"
 
-import { GenerationEditorTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-area"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
-import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
+import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
+import { GenerationTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-area"
+import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { useState } from "react"
 
 /**
@@ -40,7 +40,7 @@ export const GenerationTaskView = () => {
   }
 
   return (
-    <GenerationEditorCard title={"生成履歴"}>
+    <GenerationViewCard title={"生成履歴"}>
       <GenerationTaskListActions
         showHistoryAllButton={true}
         rating={rating}
@@ -56,7 +56,7 @@ export const GenerationTaskView = () => {
         onChangeViewCount={() => {}}
       />
 
-      <GenerationEditorTaskListArea
+      <GenerationTaskListArea
         hidedTaskIds={hidedTaskIds}
         rating={rating}
         isEditMode={isEditMode}
@@ -65,6 +65,6 @@ export const GenerationTaskView = () => {
         setSelectedTaskIds={setSelectedTaskIds}
         onCancel={undefined}
       />
-    </GenerationEditorCard>
+    </GenerationViewCard>
   )
 }

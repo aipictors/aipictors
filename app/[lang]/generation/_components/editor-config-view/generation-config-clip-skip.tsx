@@ -12,20 +12,22 @@ type Props = {
   onChange(value: number): void
 }
 
-export const GenerationEditorConfigScale = (props: Props) => {
+/**
+ * ClipSkipの設定
+ * @returns
+ */
+export const GenerationConfigClipSkip = (props: Props) => {
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2 items-center">
-        <span className="font-bold text-sm">{"Scale"}</span>
+      <div className="flex gap-x-2">
+        <span className="font-bold text-sm">{"ClipSkip"}</span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              {
-                "Scale値が小さいほど創造的な画像を生成できます。値が大きいほど、より厳密にテキストを解釈します。"
-              }
+              <p>{"絵柄の雰囲気が変わります"}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -34,7 +36,7 @@ export const GenerationEditorConfigScale = (props: Props) => {
         type="number"
         value={props.value}
         min={1}
-        max={15}
+        max={12}
         onChange={(event) => {
           props.onChange(Number(event.target.value))
         }}

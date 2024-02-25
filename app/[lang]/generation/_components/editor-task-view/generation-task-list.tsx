@@ -28,7 +28,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorTaskList = (props: Props) => {
+export const GenerationTaskList = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return props.tasks.map((task) => (

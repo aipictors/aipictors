@@ -1,7 +1,7 @@
 "use client"
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
-import { GenerationModelsButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-models-button"
+import { GenerationModelListButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-model-list-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
@@ -22,7 +22,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationEditorConfigModels = (props: Props) => {
+export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
 
   const currentModels = context.config.modelIds.map((modelId) => {
@@ -65,7 +65,7 @@ export const GenerationEditorConfigModels = (props: Props) => {
             }}
           />
         ))}
-      <GenerationModelsButton
+      <GenerationModelListButton
         favoritedModelIds={props.favoritedModelIds}
         models={props.models}
         selectedModelId={props.currentModelId}

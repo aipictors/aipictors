@@ -23,7 +23,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export const PromptCategoriesDialogContents = (props: Props) => {
+export const PromptCategoriesDialogContent = (props: Props) => {
   const defaultOpenCategories = props.promptCategories
     .filter((category) =>
       category.prompts.some((prompt) =>
