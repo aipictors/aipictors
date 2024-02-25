@@ -6,8 +6,8 @@ import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graph
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
-  pcViewType: string
   sizeType: string
+  isDialog?: boolean
   onRestore?(taskId: string): void
   onCancel?(): void
 }
@@ -17,7 +17,7 @@ type Props = {
  * @returns
  */
 export function GenerationTaskViewButton(props: Props) {
-  if (props.pcViewType === "dialog")
+  if (props.isDialog)
     return (
       <Dialog>
         <DialogTrigger>
