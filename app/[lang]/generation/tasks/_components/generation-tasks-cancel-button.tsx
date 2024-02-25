@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { XIcon } from "lucide-react"
 
 type Props = {
   onCancel(): void
@@ -15,11 +16,12 @@ export const GenerationTasksCancelButton = (props: Props) => {
     <>
       <Button
         disabled={props.isDisabled}
-        className="h-11 rounded-md w-24 ml-2 px-8"
+        className="h-11 ml-2 w-16"
         variant={"destructive"}
+        size={"icon"}
         onClick={props.onCancel}
       >
-        キャンセル
+        <XIcon className="w-4" />
       </Button>
     </>
   )

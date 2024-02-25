@@ -1,15 +1,11 @@
 "use client"
 
-import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
-import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/editor-submission-view/generation-reserve-count-input"
 import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/editor-submission-view/generation-status-progress"
-import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
-import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
+import { GenerationSubmitOperationParts } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-operation-parts"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { config } from "@/config"
 import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
@@ -112,7 +108,7 @@ export function GenerationSubmissionView(props: Props) {
    * 生成モード変更
    * @param mode 生成モード変更フラグ
    */
-  const onChangeGenerationMode = (mode: boolean) => {
+  const onChangeGenerationMode = (mode: string) => {
     if (
       context.currentPass?.type !== "STANDARD" &&
       context.currentPass?.type !== "PREMIUM"
@@ -121,7 +117,7 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    setGenerationMode(mode ? "reserve" : "normal")
+    setGenerationMode(mode)
   }
 
   /**
@@ -343,94 +339,87 @@ export function GenerationSubmissionView(props: Props) {
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
-        <div className="flex items-center">
-          <div className="flex items-center w-20 space-x-2">
-            <>
-              <Checkbox
-                id="generation-mode-checkbox"
-                onCheckedChange={onChangeGenerationMode}
-              />
-              <label
-                htmlFor="generation-mode-checkbox"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 w-16"
-              >
-                予約
-              </label>
-            </>
-          </div>
-          {generationMode === "normal" && (
-            <GenerationCountSelect
-              pass={context.currentPass?.type ?? "FREE"}
-              selectedCount={generationCount}
-              onChange={setGenerationCount}
-            />
-          )}
-          {generationMode === "reserve" && (
-            <GenerationReserveCountInput
-              maxCount={availableImageGenerationMaxTasksCount - tasksCount}
-              onChange={setReservedGenerationCount}
-              count={reservedGenerationCount}
-            />
-          )}
-          {/* 生成開始ボタン */}
-          {context.user?.hasSignedImageGenerationTerms === true && (
-            <GenerationSubmitButton
-              onClick={async () => {
-                if (generationMode === "reserve") {
-                  await onCreateReservedTask()
-                } else {
-                  await onCreateTask()
-                }
-              }}
-              isLoading={isCreatingTask}
-              isDisabled={context.config.isDisabled}
-              generatingCount={
-                generationMode === "normal"
-                  ? inProgressImageGenerationTasksCount
-                  : inProgressImageGenerationReservedTasksCount
+        <Tabs
+          defaultValue="normal"
+          onValueChange={(value) => {
+            onChangeGenerationMode(value)
+          }}
+        >
+          <TabsList>
+            <TabsTrigger value="normal">通常</TabsTrigger>
+            <TabsTrigger value="reserve">予約</TabsTrigger>
+          </TabsList>
+          <TabsContent value="normal">
+            <GenerationSubmitOperationParts
+              generationMode={generationMode}
+              isCreatingTask={isCreatingTask}
+              inProgressImageGenerationTasksCount={
+                inProgressImageGenerationTasksCount
               }
-              maxGeneratingCount={
-                generationMode === "reserve"
-                  ? availableImageGenerationMaxTasksCount - tasksCount
-                  : maxTasksCount
+              inProgressImageGenerationReservedTasksCount={
+                inProgressImageGenerationReservedTasksCount
               }
-              buttonActionCaption={
-                generationMode === "reserve" ? "予約生成" : "生成"
+              isDeletingReservedTasks={isDeletingReservedTasks}
+              maxTasksCount={maxTasksCount}
+              tasksCount={tasksCount}
+              termsText={props.termsText}
+              availableImageGenerationMaxTasksCount={
+                availableImageGenerationMaxTasksCount
               }
+              generationCount={generationCount}
+              reservedGenerationCount={reservedGenerationCount}
+              setReservedGenerationCount={setReservedGenerationCount}
+              setGenerationCount={setGenerationCount}
+              onCreateReservedTask={onCreateReservedTask}
+              onCreateTask={onCreateTask}
+              onSignTerms={onSignTerms}
+              onDeleteReservedTasks={onDeleteReservedTasks}
             />
-          )}
-          {/* 規約確認開始ボタン */}
-          {context.user?.hasSignedImageGenerationTerms !== true && (
-            <GenerationTermsButton
-              termsMarkdownText={props.termsText}
-              onSubmit={onSignTerms}
-            />
-          )}
-          {/* 生成キャンセル */}
-          {generationMode === "reserve" && (
-            <GenerationTasksCancelButton
-              isDisabled={
-                inProgressImageGenerationReservedTasksCount === 0 ||
-                isDeletingReservedTasks
+          </TabsContent>
+          <TabsContent value="reserve">
+            <GenerationSubmitOperationParts
+              generationMode={generationMode}
+              isCreatingTask={isCreatingTask}
+              inProgressImageGenerationTasksCount={
+                inProgressImageGenerationTasksCount
               }
-              onCancel={onDeleteReservedTasks}
+              inProgressImageGenerationReservedTasksCount={
+                inProgressImageGenerationReservedTasksCount
+              }
+              isDeletingReservedTasks={isDeletingReservedTasks}
+              maxTasksCount={maxTasksCount}
+              tasksCount={tasksCount}
+              termsText={props.termsText}
+              availableImageGenerationMaxTasksCount={
+                availableImageGenerationMaxTasksCount
+              }
+              generationCount={generationCount}
+              reservedGenerationCount={reservedGenerationCount}
+              setReservedGenerationCount={setReservedGenerationCount}
+              setGenerationCount={setGenerationCount}
+              onCreateReservedTask={onCreateReservedTask}
+              onCreateTask={onCreateTask}
+              onSignTerms={onSignTerms}
+              onDeleteReservedTasks={onDeleteReservedTasks}
             />
-          )}
+          </TabsContent>
+        </Tabs>
+        <div className="hidden lg:block xl:block 2xl:block">
+          <GenerationEditorProgress
+            inProgress={inProgress}
+            maxTasksCount={availableImageGenerationMaxTasksCount}
+            normalPredictionGenerationSeconds={
+              engineStatus?.normalPredictionGenerationSeconds ?? 0
+            }
+            normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+            passType={context.currentPass?.type ?? null}
+            remainingImageGenerationTasksCount={tasksCount}
+            standardPredictionGenerationSeconds={
+              engineStatus?.standardPredictionGenerationSeconds ?? 0
+            }
+            standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+          />
         </div>
-        <GenerationEditorProgress
-          inProgress={inProgress}
-          maxTasksCount={availableImageGenerationMaxTasksCount}
-          normalPredictionGenerationSeconds={
-            engineStatus?.normalPredictionGenerationSeconds ?? 0
-          }
-          normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-          passType={context.currentPass?.type ?? null}
-          remainingImageGenerationTasksCount={tasksCount}
-          standardPredictionGenerationSeconds={
-            engineStatus?.standardPredictionGenerationSeconds ?? 0
-          }
-          standardTasksCount={engineStatus?.standardTasksCount ?? 0}
-        />
       </div>
     </AppFixedContent>
   )

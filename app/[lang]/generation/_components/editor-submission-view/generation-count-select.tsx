@@ -22,7 +22,7 @@ export function GenerationCountSelect(props: Props) {
         props.onChange(parseInt(value))
       }}
     >
-      <SelectTrigger className="w-24">
+      <SelectTrigger className="w-24 mr-2">
         <SelectValue placeholder={"枚数"} />
       </SelectTrigger>
       <SelectContent>

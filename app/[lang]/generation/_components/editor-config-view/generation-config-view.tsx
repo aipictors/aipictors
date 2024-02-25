@@ -13,6 +13,12 @@ import { GenerationConfigStep } from "@/app/[lang]/generation/_components/editor
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
@@ -130,7 +136,7 @@ export const GenerationConfigView = () => {
         <div
           className={cn(
             "flex flex-col px-4 gap-y-4",
-            "max-h-[60vh] md:max-h-full",
+            "max-h-auto md:max-h-full",
           )}
         >
           <GenerationConfigFavoriteModelToggle
@@ -153,26 +159,33 @@ export const GenerationConfigView = () => {
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
-          <GenerationConfigScale
-            value={context.config.scale}
-            onChange={context.updateScale}
-          />
-          <GenerationConfigSeed
-            value={context.config.seed}
-            onChange={context.updateSeed}
-          />
-          <GenerationConfigStep
-            value={context.config.steps}
-            onChange={context.updateSteps}
-          />
-          <GenerationConfigSampler
-            value={context.config.sampler}
-            onChange={context.updateSampler}
-          />
-          <GenerationConfigClipSkip
-            value={context.config.clipSkip}
-            onChange={context.updateClipSkip}
-          />
+          <Accordion type="single" collapsible>
+            <AccordionItem value="setting">
+              <AccordionTrigger>詳細設定</AccordionTrigger>
+              <AccordionContent>
+                <GenerationConfigScale
+                  value={context.config.scale}
+                  onChange={context.updateScale}
+                />
+                <GenerationConfigSeed
+                  value={context.config.seed}
+                  onChange={context.updateSeed}
+                />
+                <GenerationConfigStep
+                  value={context.config.steps}
+                  onChange={context.updateSteps}
+                />
+                <GenerationConfigSampler
+                  value={context.config.sampler}
+                  onChange={context.updateSampler}
+                />
+                <GenerationConfigClipSkip
+                  value={context.config.clipSkip}
+                  onChange={context.updateClipSkip}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </ScrollArea>
       <div className="lg:sticky bottom-0 bg-card p-4">
