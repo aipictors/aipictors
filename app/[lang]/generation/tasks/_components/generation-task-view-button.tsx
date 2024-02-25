@@ -20,7 +20,7 @@ export function GenerationTaskViewButton(props: Props) {
   if (props.pcViewType === "dialog")
     return (
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <GenerationTaskCard
             taskNanoid={props.task.nanoid}
             estimatedSeconds={props.task.estimatedSeconds ?? 0}
@@ -43,7 +43,7 @@ export function GenerationTaskViewButton(props: Props) {
 
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <GenerationTaskCard
           taskNanoid={props.task.nanoid}
           taskId={props.task.id}

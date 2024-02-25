@@ -89,7 +89,7 @@ export const GenerationTaskCard = (props: Props) => {
 
   return (
     <div
-      className="relative grid p-0 h-auto overflow-hidden rounded bg-card"
+      className="relative grid p-0 h-full overflow-hidden rounded bg-card"
       onMouseEnter={() => {
         setIsHovered(true)
       }}
