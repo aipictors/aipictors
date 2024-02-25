@@ -1,10 +1,10 @@
 language: "ja"
 early_access: false
 reviews:
-    request_changes_workflow: false
+    request_changes_workflow: true
     high_level_summary: true
-    poem: true
-    review_status: true
+    poem: false
+    review_status: false
     collapse_walkthrough: false
     path_filters:
         - "!**/.xml"
