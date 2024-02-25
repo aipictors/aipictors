@@ -1,7 +1,7 @@
 "use client"
 
+import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
-import { GenerationTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-area"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useState } from "react"
 
@@ -56,7 +56,7 @@ export const GenerationTaskView = () => {
           setDeletedTaskIds([...deletedTaskIds, ...taskIds])
         }}
       />
-      <GenerationTaskListArea
+      <GenerationTaskList
         deletedTaskIds={deletedTaskIds}
         rating={rating}
         isEditMode={isEditMode}

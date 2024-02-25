@@ -21,7 +21,7 @@ export function GenerationTaskHistory() {
 
   const [isEditMode, toggleEditMode] = useState(false)
 
-  const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
+  const [deletedTaskIds, setDeletedTaskIds] = useState<string[]>([])
 
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
 
@@ -49,16 +49,17 @@ export function GenerationTaskHistory() {
         rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
-        deletedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         showCountInput={true}
         viewCount={viewCount}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
-        setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={setViewCount}
+        onAddDeletedTaskIds={(taskIds) => {
+          setDeletedTaskIds([...deletedTaskIds, ...taskIds])
+        }}
       />
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>
@@ -66,7 +67,7 @@ export function GenerationTaskHistory() {
           pcViewType="dialog"
           sizeType="full"
           viewCount={viewCount}
-          hidedTaskIds={hidedTaskIds}
+          hidedTaskIds={deletedTaskIds}
           rating={rating}
           isEditMode={isEditMode}
           selectedTaskIds={selectedTaskIds}
