@@ -74,6 +74,7 @@ export const useGenerationContext = () => {
     cacheStorage.saveSeed(seed)
     cacheStorage.saveSizeType(sizeType)
     cacheStorage.saveClipSkip(clipSkip)
+
     const value = configAction
       .updateNegativePrompt(negativePromptText)
       .updatePrompt(promptText)
@@ -86,6 +87,7 @@ export const useGenerationContext = () => {
       .updateSizeType(sizeType)
       .updateClipSkip(clipSkip)
       .getState()
+
     send({ type: "UPDATE_CONFIG", value })
   }
 

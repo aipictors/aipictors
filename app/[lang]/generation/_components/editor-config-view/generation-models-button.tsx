@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationModelListView } from "@/app/[lang]/generation/_components/editor-config-view/generation-model-list"
+import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,12 +34,12 @@ export const GenerationModelsButton = (props: Props) => {
     setFalse()
   }
 
-  const [changeModelRating, { loading: isLoading }] = useMutation(
+  const [changeRatingModel, { loading: isLoading }] = useMutation(
     updateRatingImageGenerationModelMutation,
   )
 
-  const onChangeModelRating = async (id: number, rating: number) => {
-    const result = await changeModelRating({
+  const onChangeRatingModel = async (id: number, rating: number) => {
+    const result = await changeRatingModel({
       variables: {
         input: {
           modelId: id.toString(),
@@ -83,12 +83,12 @@ export const GenerationModelsButton = (props: Props) => {
             {"使用するモデルを選択してください"}
           </DialogDescription>
         </DialogHeader>
-        <GenerationModelListView
+        <ImageModelsList
           models={props.models}
           favoritedModelIds={props.favoritedModelIds}
           selectedModelId={props.selectedModelId}
           onSelect={onSelectModel}
-          onChangeFavoritedModel={onChangeModelRating}
+          onChangeFavoritedModel={onChangeRatingModel}
         />
         <DialogFooter>
           <Button className="w-full" onClick={setFalse}>

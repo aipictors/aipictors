@@ -11,7 +11,7 @@ type Props = {
  * @param props
  * @returns
  */
-export function GenerationConfigResetButton(props: Props) {
+export function GenerationEditorConfigResetButton(props: Props) {
   return (
     <AppConfirmDialog
       title={"確認"}

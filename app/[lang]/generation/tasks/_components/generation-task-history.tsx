@@ -1,7 +1,7 @@
 "use client"
 
+import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-list-history"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-actions"
-import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-task-list-history"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -21,7 +21,7 @@ export function GenerationTaskHistory() {
 
   const [isEditMode, toggleEditMode] = useState(false)
 
-  const [deletedTaskIds, setDeletedTaskIds] = useState<string[]>([])
+  const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
   const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
 
@@ -49,17 +49,16 @@ export function GenerationTaskHistory() {
         rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
+        hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         showCountInput={true}
         viewCount={viewCount}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
+        setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={setViewCount}
-        onAddDeletedTaskIds={(taskIds) => {
-          setDeletedTaskIds([...deletedTaskIds, ...taskIds])
-        }}
       />
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>
@@ -67,7 +66,7 @@ export function GenerationTaskHistory() {
           pcViewType="dialog"
           sizeType="full"
           viewCount={viewCount}
-          hidedTaskIds={deletedTaskIds}
+          hidedTaskIds={hidedTaskIds}
           rating={rating}
           isEditMode={isEditMode}
           selectedTaskIds={selectedTaskIds}

@@ -1,14 +1,15 @@
 "use client"
 
-import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-clip-skip"
-import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-lora-models"
-import { GenerationConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-models"
-import { GenerationConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-reset-button"
-import { GenerationConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-sampler"
-import { GenerationConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-scale"
-import { GenerationConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-seed"
-import { GenerationConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-size"
-import { GenerationConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-step"
+import { GenerationEditorConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-clipskip"
+import { GenerationEditorConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-lora-models"
+import { GenerationEditorConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-models"
+import { GenerationEditorConfigOpenFavoriteModelToggle } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-open-favorite-model-button"
+import { GenerationEditorConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-reset-button"
+import { GenerationEditorConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-sampler"
+import { GenerationEditorConfigScale } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-scale"
+import { GenerationEditorConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-seed"
+import { GenerationEditorConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-size"
+import { GenerationEditorConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-step"
 import { GenerationEditorCard } from "@/app/[lang]/generation/_components/generation-editor-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -17,9 +18,10 @@ import { Separator } from "@/components/ui/separator"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
-import { useQuery } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
-import { useContext, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { useContext } from "react"
 import { toast } from "sonner"
 
 /**
@@ -34,13 +36,29 @@ export const GenerationConfigView = () => {
 
   const authContext = useContext(AuthContext)
 
+  const [showFavoritedModels, setShowFavoritedModels] = useState(false)
+
   const ref = searchParams.get("ref")
 
-  useQuery(imageGenerationTaskQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn || ref === null,
-    onCompleted(data) {
+  const { data } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn && ref
+      ? {
+          variables: {
+            id: ref,
+          },
+        }
+      : skipToken,
+  )
+
+  /**
+   * URLのnanoidからタスクを復元
+   */
+  useEffect(() => {
+    setTimeout(() => {
       try {
         console.log(data)
+
         if (data?.imageGenerationTask) {
           const task = data.imageGenerationTask
           context.updateModelId(task.model.id, task.model.type)
@@ -52,13 +70,14 @@ export const GenerationConfigView = () => {
           context.updateSteps(task.steps)
           context.updateSampler(task.sampler)
           context.updateClipSkip(task.clipSkip)
+
           toast("タスクを復元しました。")
         }
       } catch (error) {
         console.error(error)
       }
-    },
-  })
+    }, 1000)
+  }, [])
 
   /**
    * 選択中のモデル
@@ -70,13 +89,31 @@ export const GenerationConfigView = () => {
   /**
    * お気に入りのモデル
    */
-  const { data: userSetting } = useQuery(userSettingQuery, {})
+  const favoritedModel = context.models.filter((model) => {
+    return context.config.favoriteModelIds.includes(Number(model.id))
+  })
+
+  /**
+   * お気に入りのモデル
+   */
+  const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
 
   useEffect(() => {
     const favoritedModelIds =
       userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
     context.updateFavoriteModelIds(favoritedModelIds)
   }, [])
+
+  /**
+   * お気に入りモデル表示切替
+   */
+  const onToggleShowFavorite = () => {
+    if (showFavoritedModels) {
+      setShowFavoritedModels(false)
+      return
+    }
+    setShowFavoritedModels(true)
+  }
 
   /**
    * モデルの種類
@@ -96,39 +133,50 @@ export const GenerationConfigView = () => {
             "max-h-[60vh] md:max-h-full",
           )}
         >
-          <GenerationConfigModels />
+          <GenerationEditorConfigOpenFavoriteModelToggle
+            isActive={showFavoritedModels}
+            onToggleShowFavorite={onToggleShowFavorite}
+          />
+          <GenerationEditorConfigModels
+            models={context.models}
+            favoritedModelIds={context.config.favoriteModelIds}
+            showFavoritedModels={showFavoritedModels}
+            currentModelId={context.config.modelId}
+            currentModelIds={context.config.modelIds}
+            onSelectModelId={context.updateModelId}
+          />
           <Separator />
           <GenerationEditorConfigLoraModels />
           <Separator />
-          <GenerationConfigSize
+          <GenerationEditorConfigSize
             modelType={configModelType}
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
-          <GenerationConfigScale
+          <GenerationEditorConfigScale
             value={context.config.scale}
             onChange={context.updateScale}
           />
-          <GenerationConfigSeed
+          <GenerationEditorConfigSeed
             value={context.config.seed}
             onChange={context.updateSeed}
           />
-          <GenerationConfigStep
+          <GenerationEditorConfigStep
             value={context.config.steps}
             onChange={context.updateSteps}
           />
-          <GenerationConfigSampler
+          <GenerationEditorConfigSampler
             value={context.config.sampler}
             onChange={context.updateSampler}
           />
-          <GenerationConfigClipSkip
+          <GenerationEditorConfigClipSkip
             value={context.config.clipSkip}
             onChange={context.updateClipSkip}
           />
         </div>
       </ScrollArea>
       <div className="lg:sticky bottom-0 bg-card p-4">
-        <GenerationConfigResetButton onReset={context.reset} />
+        <GenerationEditorConfigResetButton onReset={context.reset} />
       </div>
     </GenerationEditorCard>
   )

@@ -6,8 +6,8 @@ import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graph
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
+  pcViewType: string
   sizeType: string
-  isDialog?: boolean
   onRestore?(taskId: string): void
   onCancel?(): void
 }
@@ -17,10 +17,10 @@ type Props = {
  * @returns
  */
 export function GenerationTaskViewButton(props: Props) {
-  if (props.isDialog)
+  if (props.pcViewType === "dialog")
     return (
       <Dialog>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <GenerationTaskCard
             taskNanoid={props.task.nanoid}
             estimatedSeconds={props.task.estimatedSeconds ?? 0}
@@ -43,7 +43,7 @@ export function GenerationTaskViewButton(props: Props) {
 
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <GenerationTaskCard
           taskNanoid={props.task.nanoid}
           taskId={props.task.id}

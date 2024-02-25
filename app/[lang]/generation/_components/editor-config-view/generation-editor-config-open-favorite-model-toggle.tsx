@@ -12,7 +12,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationConfigFavoriteToggle = (props: Props) => {
+export const GenerationEditorConfigView = (props: Props) => {
   return (
     <Toggle>
       <StarIcon className="w-4" />
