@@ -59,8 +59,9 @@ const ImageCropperModal = (props: Props) => {
   return (
     <Dialog open={props.isOpen}>
       <DialogContent>
-        <div className="w-[80vw] h-[72vh] mb-16">
+        <div className="w-[80vw] h-[72vh] mb-2">
           <Cropper
+            classes={{ containerClassName: "mb-16" }}
             image={props.src}
             crop={crop}
             zoom={zoom}
