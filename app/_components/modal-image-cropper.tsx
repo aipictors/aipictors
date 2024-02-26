@@ -1,3 +1,4 @@
+import getCroppedImg from "@/app/_utils/getCroppedImg"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useState } from "react"
@@ -22,8 +23,21 @@ const ImageCropperModal = (props: Props) => {
 
   const [zoom, setZoom] = useState(1)
 
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  })
+
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    console.log(croppedArea, croppedAreaPixels)
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const onSubmit = async () => {
+    const croppedImage = await getCroppedImg(props.src, croppedAreaPixels)
+    props.onCrop(croppedImage)
+    props.onClose()
   }
 
   const aspectRatio = props.cropWidth / props.cropHeight
@@ -67,7 +81,7 @@ const ImageCropperModal = (props: Props) => {
             >
               {"キャンセル"}
             </Button>
-            <Button className="ml-2" onClick={props.onClose}>
+            <Button className="ml-2" onClick={onSubmit}>
               {"切り抜く"}
             </Button>
           </div>

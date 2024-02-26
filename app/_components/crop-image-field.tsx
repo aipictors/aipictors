@@ -51,7 +51,13 @@ const CropImageField = (props: Props) => {
   return (
     <>
       <Input type="file" onChange={onFileChange} />
-      {croppedImage && <img alt={"croppedImage"} src={croppedImage} />}
+      {croppedImage && (
+        <img
+          className="max-w-64 m-auto"
+          alt={"croppedImage"}
+          src={croppedImage}
+        />
+      )}
       <ImageCropperModal
         src={image!}
         isOpen={isOpen}
