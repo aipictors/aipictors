@@ -26,6 +26,7 @@ export class GenerationConfigCache {
       vae: this.restoreVae(),
       modelType: this.restoreModelType(),
       clipSkip: this.restoreClipSkip(),
+      isUseRecommendedPrompt: this.restoreUseRecommendedPrompt(),
     })
   }
 
@@ -48,6 +49,8 @@ export class GenerationConfigCache {
       vae: config.generationFeature.defaultVaeValue,
       modelType: modelType,
       clipSkip: config.generationFeature.defaultClipSkipValue,
+      isUseRecommendedPrompt:
+        config.generationFeature.defaultIsUseRecommendedPrompt,
     })
   }
 
@@ -112,6 +115,39 @@ export class GenerationConfigCache {
         return defaultValue
       }
       return parseInt(value)
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * モデル推奨のプロンプトを使用するかどうかを保存
+   * @param modelId
+   */
+  saveUseRecommendedPrompt(useRecommendedPrompt: boolean) {
+    localStorage.setItem(
+      "config.generation.useRecommendedPrompt",
+      useRecommendedPrompt.toString(),
+    )
+  }
+
+  /**
+   * モデル推奨のプロンプトを使用するかどうかを復元する
+   * @returns
+   */
+  restoreUseRecommendedPrompt() {
+    const defaultValue = config.generationFeature.defaultIsUseRecommendedPrompt
+    try {
+      const value = localStorage.getItem(
+        "config.generation.UseRecommendedPrompt",
+      )
+      if (value === null) {
+        return defaultValue
+      }
+      return Boolean(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

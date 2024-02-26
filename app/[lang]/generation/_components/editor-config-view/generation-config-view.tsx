@@ -149,7 +149,12 @@ export const GenerationConfigView = () => {
             showFavoritedModels={showFavoritedModels}
             currentModelId={context.config.modelId}
             currentModelIds={context.config.modelIds}
-            onSelectModelId={context.updateModelId}
+            onSelectModelId={(id: string, type: string, prompt: string) => {
+              context.updateModelId(id, type)
+              if (context.config.isUseRecommendedPrompt && prompt !== "") {
+                context.updatePrompt(prompt)
+              }
+            }}
           />
           <Separator />
           <GenerationConfigLoraModels />

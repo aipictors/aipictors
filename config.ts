@@ -137,6 +137,7 @@ export const config = {
       "SD3_640_1536",
       "SD3_1536_640",
     ],
+    defaultIsUseRecommendedPrompt: false,
   },
   /**
    * サイト

@@ -14,6 +14,7 @@ const zProps = z.object({
   modelType: z.string(),
   clipSkip: z.number(),
   favoriteModelIds: z.array(z.number()),
+  isUseRecommendedPrompt: z.boolean(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -49,6 +50,8 @@ export class GenerationConfigState implements Props {
   readonly clipSkip!: Props["clipSkip"]
 
   readonly isDisabled: boolean
+
+  readonly isUseRecommendedPrompt!: boolean
 
   constructor(props: Props) {
     Object.assign(this, props)

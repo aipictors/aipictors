@@ -20,7 +20,7 @@ type Props = {
   selectedModelId: string | null
   favoritedModelIds: number[]
   onChangeFavoritedModel(modelId: number, rating: number): void
-  onSelect(id: string, type: string): void
+  onSelect(id: string, type: string, prompt: string): void
 }
 
 export const ImageModelsList = (props: Props) => {
@@ -133,7 +133,11 @@ export const ImageModelsList = (props: Props) => {
                       isActive={props.selectedModelId === model.id}
                       onSelect={() => {
                         if (model.type === null) return
-                        props.onSelect(model.id, model.type)
+                        props.onSelect(
+                          model.id,
+                          model.type,
+                          model?.prompts.join(",") ?? "",
+                        )
                       }}
                     />
                     <Button

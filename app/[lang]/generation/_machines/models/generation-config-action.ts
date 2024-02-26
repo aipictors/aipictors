@@ -209,6 +209,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * モデル推奨のプロンプトを使用するかどうかを変更する
+   * @param text
+   * @returns
+   */
+  updateUseRecommendedPrompt(isUseRecommendedPrompt: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      isUseRecommendedPrompt: isUseRecommendedPrompt,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * モデルの設定を変更する
    * @param name LoRAの名前
    * @param value LoRAの値
@@ -273,6 +286,19 @@ export class GenerationConfigAction {
 
     return new GenerationConfigAction(
       new GenerationConfigState({ ...this.state, promptText }),
+      this.props,
+    )
+  }
+
+  /**
+   * モデル推奨のプロンプトを使用するかどうかを変更する
+   * @param value
+   * @returns
+   */
+  changeUseRecommendedPrompt(value: boolean) {
+    const isUseRecommendedPrompt = value
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, isUseRecommendedPrompt }),
       this.props,
     )
   }

@@ -224,6 +224,18 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * モデルの変更時に推奨プロンプトへの切り替えを行うかどうか
+   * @param isUseRecommendedPrompt
+   */
+  const changeUseRecommendedPrompt = (isUseRecommendedPrompt: boolean) => {
+    cacheStorage.saveUseRecommendedPrompt(isUseRecommendedPrompt)
+    const value = configAction
+      .changeUseRecommendedPrompt(isUseRecommendedPrompt)
+      .getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * LoRAモデルを追加する
    * @param modelName
    */
@@ -267,6 +279,7 @@ export const useGenerationContext = () => {
     updateModelId,
     updateFavoriteModelIds,
     changeLoraModel: changeLoraConfig,
+    changeUseRecommendedPrompt,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updatePrompt,

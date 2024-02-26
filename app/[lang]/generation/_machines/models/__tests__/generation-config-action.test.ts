@@ -16,6 +16,7 @@ const config = new GenerationConfigState({
   steps: 0,
   vae: "",
   clipSkip: 0,
+  isUseRecommendedPrompt: false,
 })
 
 describe("ImageGenerationAction", () => {
