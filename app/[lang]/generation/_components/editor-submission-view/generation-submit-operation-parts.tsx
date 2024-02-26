@@ -28,6 +28,19 @@ type Props = {
 }
 
 /**
+ * 生成ボタンのラベル
+ * @param mode
+ * @param isSetI2iImage
+ * @returns
+ */
+export function getSubmitButtonLabel(mode: string, isSetI2iImage: boolean) {
+  if (isSetI2iImage) {
+    return mode === "reserve" ? "画像から予約生成" : "画像から生成"
+  }
+  return mode === "reserve" ? "予約生成" : "生成"
+}
+
+/**
  * 生成実行に関わる操作UI
  * @param props
  * @returns
@@ -76,9 +89,10 @@ export function GenerationSubmitOperationParts(props: Props) {
                 ? props.availableImageGenerationMaxTasksCount - props.tasksCount
                 : props.maxTasksCount
             }
-            buttonActionCaption={
-              props.generationMode === "reserve" ? "予約生成" : "生成"
-            }
+            buttonActionCaption={getSubmitButtonLabel(
+              props.generationMode,
+              context.config.i2iImageBase64 ? true : false,
+            )}
           />
         )}
         {/* 規約確認開始ボタン */}

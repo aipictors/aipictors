@@ -1,6 +1,8 @@
 "use client"
 
+import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
 import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
@@ -28,6 +30,7 @@ import {
   ClipboardCopy,
   FileUp,
   LinkIcon,
+  PenIcon,
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
@@ -171,6 +174,10 @@ export function GenerationTaskSheetView(props: Props) {
     awaitRefetchQueries: true,
   })
 
+  const context = useGenerationContext()
+
+  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const onChangeRating = async (taskId: string, rating: number) => {
@@ -204,6 +211,10 @@ export function GenerationTaskSheetView(props: Props) {
     } else {
       toast("不明なエラーです。")
     }
+  }
+
+  const onInPaint = () => {
+    setShowInPaintDialog(true)
   }
 
   const onPost = () => {
@@ -248,6 +259,9 @@ export function GenerationTaskSheetView(props: Props) {
   if (props.task.status === "IN_PROGRESS") {
     return <InProgressImageGenerationTaskResult />
   }
+
+  const userNanoid = context.user?.nanoid ?? null
+  if (userNanoid === null) return
 
   return (
     <>
@@ -319,6 +333,17 @@ export function GenerationTaskSheetView(props: Props) {
               />
             </AppConfirmDialog>
           </div>
+          <div className="py-2">
+            <Separator />
+          </div>
+          <div className="my-4 flex gap-x-2 justify-end">
+            <GenerationMenuButton
+              title={"インペイント機能で一部分を再生成して修正する"}
+              onClick={onInPaint}
+              text={"部分修正"}
+              icon={PenIcon}
+            />
+          </div>
           <StarRating
             value={rating ?? 0}
             onChange={(value) => {
@@ -387,6 +412,22 @@ export function GenerationTaskSheetView(props: Props) {
           </Button>
         </Link>
       )}
+
+      <InPaintingDialog
+        isOpen={showInPaintDialog}
+        onClose={() => setShowInPaintDialog(false)}
+        taskId={props.task.id}
+        token={props.task.token ?? ""}
+        userNanoid={userNanoid}
+        configSeed={props.task.seed}
+        configSteps={props.task.steps}
+        configSampler={props.task.sampler}
+        configSizeType={props.task.sizeType}
+        configModel={props.task.model?.name}
+        configVae={props.task.vae}
+        configScale={props.task.scale}
+        configClipSkip={props.task.clipSkip}
+      />
     </>
   )
 }

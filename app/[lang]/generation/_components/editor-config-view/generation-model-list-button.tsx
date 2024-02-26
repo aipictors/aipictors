@@ -3,6 +3,7 @@
 import { ImageModelsList } from "@/app/[lang]/generation/_components/editor-config-view/generation-image-model-list"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ type Props = {
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
   favoritedModelIds: number[]
-  onSelect(id: string, type: string): void
+  onSelect(id: string, type: string, prompt: string): void
 }
 
 export const GenerationModelListButton = (props: Props) => {
@@ -29,8 +30,8 @@ export const GenerationModelListButton = (props: Props) => {
 
   const { value, setTrue, setFalse } = useBoolean()
 
-  const onSelectModel = (id: string, type: string) => {
-    props.onSelect(id, type)
+  const onSelectModel = (id: string, type: string, prompt: string) => {
+    props.onSelect(id, type, prompt)
     setFalse()
   }
 
@@ -83,6 +84,25 @@ export const GenerationModelListButton = (props: Props) => {
             {"使用するモデルを選択してください"}
           </DialogDescription>
         </DialogHeader>
+        <div className="items-top flex space-x-2">
+          <Checkbox
+            onCheckedChange={(value: boolean) => {
+              context.changeUseRecommendedPrompt(value)
+              console.log(context.config.isUseRecommendedPrompt)
+            }}
+            checked={context.config.isUseRecommendedPrompt}
+            id="use-recommended-prompt"
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="use-recommended-prompt"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              モデルの推奨プロンプトを設定する
+            </label>
+          </div>
+        </div>
+
         <ImageModelsList
           models={props.models}
           favoritedModelIds={props.favoritedModelIds}

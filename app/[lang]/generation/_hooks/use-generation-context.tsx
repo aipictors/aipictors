@@ -217,9 +217,24 @@ export const useGenerationContext = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  /**
+   * プロンプトの値をLoRAモデルの値を考慮したうえで初期化する
+   */
   const initPromptWithLoraModel = () => {
     const value = configAction.initPromptWithLoraModelValue().getState()
     cacheStorage.savePrompt(value.promptText)
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * モデルの変更時に推奨プロンプトへの切り替えを行うかどうか
+   * @param isUseRecommendedPrompt
+   */
+  const changeUseRecommendedPrompt = (isUseRecommendedPrompt: boolean) => {
+    cacheStorage.saveUseRecommendedPrompt(isUseRecommendedPrompt)
+    const value = configAction
+      .changeUseRecommendedPrompt(isUseRecommendedPrompt)
+      .getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -233,6 +248,18 @@ export const useGenerationContext = () => {
     send({ type: "UPDATE_CONFIG", value })
   }
 
+  /**
+   * i2i画像を変更する
+   * @param i2iImageBase64
+   */
+  const changeI2iImageBase64 = (i2iImageBase64: string) => {
+    const value = configAction.changeI2iImageBase64(i2iImageBase64).getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * データリセット
+   */
   const reset = () => {
     cacheStorage.reset()
     const value = configAction.reset().getState()
@@ -267,6 +294,8 @@ export const useGenerationContext = () => {
     updateModelId,
     updateFavoriteModelIds,
     changeLoraModel: changeLoraConfig,
+    changeI2iImageBase64,
+    changeUseRecommendedPrompt,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updatePrompt,

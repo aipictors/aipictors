@@ -2,6 +2,7 @@
 
 import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-clip-skip"
 import { GenerationConfigFavoriteModelToggle } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-favorite-model-button"
+import { GenerationConfigI2i } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-lora-models"
 import { GenerationConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-models"
 import { GenerationConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-reset-button"
@@ -149,7 +150,12 @@ export const GenerationConfigView = () => {
             showFavoritedModels={showFavoritedModels}
             currentModelId={context.config.modelId}
             currentModelIds={context.config.modelIds}
-            onSelectModelId={context.updateModelId}
+            onSelectModelId={(id: string, type: string, prompt: string) => {
+              context.updateModelId(id, type)
+              if (context.config.isUseRecommendedPrompt && prompt !== "") {
+                context.updatePrompt(prompt)
+              }
+            }}
           />
           <Separator />
           <GenerationConfigLoraModels />
@@ -159,6 +165,7 @@ export const GenerationConfigView = () => {
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
+          <GenerationConfigI2i />
           <Accordion type="single" collapsible>
             <AccordionItem value="setting">
               <AccordionTrigger>詳細設定</AccordionTrigger>

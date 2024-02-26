@@ -14,7 +14,7 @@ type Props = {
    * 表示されるモデルのID（最大3個）
    */
   currentModelIds: string[]
-  onSelectModelId(id: string, type: string): void
+  onSelectModelId(id: string, type: string, prompt: string): void
 }
 
 /**
@@ -49,7 +49,11 @@ export const GenerationConfigModels = (props: Props) => {
             name={model?.displayName ?? ""}
             isSelected={model?.id === props.currentModelId}
             onClick={() => {
-              props.onSelectModelId(model!.id, model!.type)
+              props.onSelectModelId(
+                model!.id,
+                model!.type,
+                model?.prompts.join(",") ?? "",
+              )
             }}
           />
         ))}
@@ -61,7 +65,11 @@ export const GenerationConfigModels = (props: Props) => {
             name={model?.displayName ?? ""}
             isSelected={model?.id === props.currentModelId}
             onClick={() => {
-              props.onSelectModelId(model!.id, model!.type)
+              props.onSelectModelId(
+                model!.id,
+                model!.type,
+                model?.prompts.join(",") ?? "",
+              )
             }}
           />
         ))}

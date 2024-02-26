@@ -39,6 +39,7 @@ export class GenerationConfigAction {
         steps: config.generationFeature.defaultStepsValue,
         vae: config.generationFeature.defaultVaeValue,
         clipSkip: config.generationFeature.defaultClipSkipValue,
+        i2iImageBase64: config.generationFeature.defaultI2iImageBase64,
       }),
       this.props,
     )
@@ -65,7 +66,7 @@ export class GenerationConfigAction {
     return new GenerationConfigAction(
       new GenerationConfigState({
         ...this.state,
-        negativePromptText: text.trim() === "" ? "EasyNegative" : text,
+        negativePromptText: text.trim() === "" ? "" : text,
       }),
       this.props,
     )
@@ -209,6 +210,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * モデル推奨のプロンプトを使用するかどうかを変更する
+   * @param text
+   * @returns
+   */
+  updateUseRecommendedPrompt(isUseRecommendedPrompt: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      isUseRecommendedPrompt: isUseRecommendedPrompt,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * モデルの設定を変更する
    * @param name LoRAの名前
    * @param value LoRAの値
@@ -278,6 +292,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * モデル推奨のプロンプトを使用するかどうかを変更する
+   * @param value
+   * @returns
+   */
+  changeUseRecommendedPrompt(value: boolean) {
+    const isUseRecommendedPrompt = value
+    return new GenerationConfigAction(
+      new GenerationConfigState({ ...this.state, isUseRecommendedPrompt }),
+      this.props,
+    )
+  }
+
+  /**
    * LoRAモデルを変更する
    * @param name
    * @returns
@@ -312,6 +339,19 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       modelType: modelType,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * i2i用の画像を
+   * @param modelType SD1など
+   * @returns
+   */
+  changeI2iImageBase64(i2iImageBase64: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      i2iImageBase64: i2iImageBase64,
     })
     return new GenerationConfigAction(state, this.props)
   }

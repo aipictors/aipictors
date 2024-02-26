@@ -4,10 +4,15 @@ import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/ed
 import { GenerationSubmitOperationParts } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-operation-parts"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
+import { uploadImage } from "@/app/_utils/upload-image"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { config } from "@/config"
-import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
+import {
+  ImageGenerationSizeType,
+  ImageGenerationType,
+} from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-task"
@@ -121,7 +126,7 @@ export function GenerationSubmissionView(props: Props) {
   }
 
   /**
-   * タスクを作成する
+   * タスクを作成ボタンを押したときのコールバック
    */
   const onCreateTask = async () => {
     /**
@@ -152,65 +157,113 @@ export function GenerationSubmissionView(props: Props) {
         return model.id === context.config.modelId
       })
       if (typeof model === "undefined") return
-      const taskCounts = Array.from({ length: generationCount }, (_, i) => i)
 
-      const generationParams = {
-        model: model.name,
-        vae: context.config.vae ?? "",
-        prompt: context.config.promptText,
-        negativePrompt: context.config.negativePromptText,
-        seed: context.config.seed,
-        steps: context.config.steps,
-        scale: context.config.scale,
-        sampler: context.config.sampler,
-        clipSkip: context.config.clipSkip,
-        sizeType: context.config.sizeType as ImageGenerationSizeType,
-        type: "TEXT_TO_IMAGE",
-      }
-      const generationParamsJson = JSON.stringify(generationParams)
-      if (beforeGenerationParams === generationParamsJson) {
-        toast(
-          "前回と同じ生成条件での連続生成はできません。Seedを変更してください。",
+      const userNanoid = context.user?.nanoid ?? null
+      if (userNanoid === null) return
+
+      const generationType = context.config.i2iImageBase64
+        ? "IMAGE_TO_IMAGE"
+        : "TEXT_TO_IMAGE"
+
+      if (generationType === "IMAGE_TO_IMAGE") {
+        const i2iFileName = `${createRandomString(30)}_img2img_src.png`
+        const i2iFileUrl = await uploadImage(
+          context.config.i2iImageBase64,
+          i2iFileName,
+          userNanoid,
         )
-        return
-      }
-      if (context.config.seed !== -1) {
-        setBeforeGenerationParams(generationParamsJson)
-      }
-      const promises = taskCounts.map(() =>
-        createTask({
-          variables: {
-            input: {
-              count: 1,
-              model: model.name,
-              vae: context.config.vae ?? "",
-              prompt: context.config.promptText,
-              negativePrompt: context.config.negativePromptText,
-              seed: context.config.seed,
-              steps: context.config.steps,
-              scale: context.config.scale,
-              sampler: context.config.sampler,
-              clipSkip: context.config.clipSkip,
-              sizeType: context.config.sizeType as ImageGenerationSizeType,
-              type: "TEXT_TO_IMAGE",
-            },
-          },
-        }),
-      )
-      await Promise.all(promises)
-      // タスクの作成後も呼び出す必要がある
-      if (isDesktop) {
-        toast("タスクを作成しました")
+        if (i2iFileUrl === "") {
+          toast("画像のアップロードに失敗しました")
+          return
+        }
+        await createTaskCore(
+          generationCount,
+          model.name,
+          generationType,
+          i2iFileUrl,
+        )
       } else {
-        toast("タスクを作成しました", { position: "top-center" })
+        await createTaskCore(generationCount, model.name, generationType, "")
       }
-      if (typeof context.user?.nanoid !== "string") return
-      await activeImageGeneration({ nanoid: context.user.nanoid })
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
     }
+  }
+
+  /**
+   * 生成APIを使って画像生成を開始する
+   * @param taskCount
+   * @param modelName
+   * @param generationType
+   * @param i2iFileUrl
+   * @returns
+   */
+  const createTaskCore = async (
+    taskCount: number,
+    modelName: string,
+    generationType: string,
+    i2iFileUrl: string,
+  ) => {
+    const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
+    const generationParams = {
+      model: modelName,
+      vae: context.config.vae ?? "",
+      prompt: context.config.promptText,
+      negativePrompt: context.config.negativePromptText,
+      seed: context.config.seed,
+      steps: context.config.steps,
+      scale: context.config.scale,
+      sampler: context.config.sampler,
+      clipSkip: context.config.clipSkip,
+      sizeType: context.config.sizeType as ImageGenerationSizeType,
+      type: generationType,
+      i2iFileUrl: i2iFileUrl,
+      t2tImageUrl: i2iFileUrl,
+      t2tDenoisingStrengthSize: "0.5",
+    }
+    const generationParamsJson = JSON.stringify(generationParams)
+    if (beforeGenerationParams === generationParamsJson) {
+      toast(
+        "前回と同じ生成条件での連続生成はできません。Seedを変更してください。",
+      )
+      return
+    }
+    if (context.config.seed !== -1) {
+      setBeforeGenerationParams(generationParamsJson)
+    }
+    const promises = taskCounts.map(() =>
+      createTask({
+        variables: {
+          input: {
+            count: 1,
+            model: modelName,
+            vae: context.config.vae ?? "",
+            prompt: context.config.promptText,
+            negativePrompt: context.config.negativePromptText,
+            seed: context.config.seed,
+            steps: context.config.steps,
+            scale: context.config.scale,
+            sampler: context.config.sampler,
+            clipSkip: context.config.clipSkip,
+            sizeType: context.config.sizeType as ImageGenerationSizeType,
+            type: generationType as ImageGenerationType,
+            t2tImageUrl: i2iFileUrl,
+            t2tDenoisingStrengthSize: "0.5",
+          },
+        },
+      }),
+    )
+    await Promise.all(promises)
+    // タスクの作成後も呼び出す必要がある
+    if (isDesktop) {
+      toast("タスクを作成しました")
+    } else {
+      toast("タスクを作成しました", { position: "top-center" })
+    }
+    if (typeof context.user?.nanoid !== "string") return
+    await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   /**
@@ -345,10 +398,29 @@ export function GenerationSubmissionView(props: Props) {
             onChangeGenerationMode(value)
           }}
         >
-          <TabsList>
-            <TabsTrigger value="normal">通常</TabsTrigger>
-            <TabsTrigger value="reserve">予約</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center">
+            <TabsList>
+              <TabsTrigger value="normal">通常</TabsTrigger>
+              <TabsTrigger value="reserve">予約</TabsTrigger>
+            </TabsList>
+            <div className="ml-auto block lg:hidden xl:hidden 2xl:hidden">
+              <GenerationEditorProgress
+                isOnlyStatusForSubscriberDisplay={true}
+                inProgress={inProgress}
+                maxTasksCount={availableImageGenerationMaxTasksCount}
+                normalPredictionGenerationSeconds={
+                  engineStatus?.normalPredictionGenerationSeconds ?? 0
+                }
+                normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+                passType={context.currentPass?.type ?? null}
+                remainingImageGenerationTasksCount={tasksCount}
+                standardPredictionGenerationSeconds={
+                  engineStatus?.standardPredictionGenerationSeconds ?? 0
+                }
+                standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+              />
+            </div>
+          </div>
           <TabsContent value="normal">
             <GenerationSubmitOperationParts
               generationMode={generationMode}

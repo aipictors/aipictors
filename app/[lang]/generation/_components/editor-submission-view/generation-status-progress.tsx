@@ -6,6 +6,7 @@ type Props = {
   maxTasksCount: number
   remainingImageGenerationTasksCount: number
   inProgress: boolean
+  isOnlyStatusForSubscriberDisplay?: boolean // 生成機の状態についてサブスクユーザの場合一般と優先どちらも表示するかどうか
   normalPredictionGenerationSeconds: number
   normalTasksCount: number
   standardPredictionGenerationSeconds: number
@@ -104,18 +105,40 @@ export function GenerationEditorProgress(props: Props) {
           {"生成枚数 "} {props.remainingImageGenerationTasksCount}/
           {props.maxTasksCount}
         </Badge>
-        {isPriorityAccount() && (
-          <Badge className="mr-2" variant={"secondary"}>
-            {"優先状態 "}
-            {generateStatus(prioritySpeed)}
-          </Badge>
+
+        {props.isOnlyStatusForSubscriberDisplay ? (
+          <>
+            {isPriorityAccount() ? (
+              <Badge className="mr-2" variant={"secondary"}>
+                {"優先状態 "}
+                {generateStatus(prioritySpeed)}
+              </Badge>
+            ) : (
+              <Badge
+                variant={"secondary"}
+                className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
+              >
+                {"状態"} {generateStatus(speed)}
+              </Badge>
+            )}
+          </>
+        ) : (
+          <>
+            {isPriorityAccount() && (
+              <Badge className="mr-2" variant={"secondary"}>
+                {"優先状態 "}
+                {generateStatus(prioritySpeed)}
+              </Badge>
+            )}
+            <Badge
+              variant={"secondary"}
+              className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
+            >
+              {isPriorityAccount() ? "一般状態" : "状態"}{" "}
+              {generateStatus(speed)}
+            </Badge>
+          </>
         )}
-        <Badge
-          variant={"secondary"}
-          className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
-        >
-          {isPriorityAccount() ? "一般状態" : "状態"} {generateStatus(speed)}
-        </Badge>
         {/* <Badge variant={"secondary"} className={"mr-2"}>
           {"予測"} {props.inProgress ? secondsRemaining() : "-"}
         </Badge> */}

@@ -1,6 +1,8 @@
 "use client"
 
+import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
 import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -30,6 +32,7 @@ import {
   ClipboardCopy,
   FileUp,
   LinkIcon,
+  PenIcon,
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
@@ -168,8 +171,37 @@ export const postGenerationImage = async (
  * @returns
  */
 export function GenerationTaskView(props: Props) {
+  const context = useGenerationContext()
+
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
+
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const authContext = useContext(AuthContext)
+
+  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+
+  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+
+  /**
+   * 生成タスクの情報を取得する
+   */
+  const { data, error, refetch } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn
+      ? {
+          variables: {
+            id: props.taskId,
+          },
+        }
+      : skipToken,
+  )
+
+  const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
+
+  /**
+   * レーティング変更
+   */
   const onChangeRating = async (taskId: string, rating: number) => {
     try {
       await mutation({
@@ -187,21 +219,9 @@ export function GenerationTaskView(props: Props) {
     }
   }
 
-  const authContext = useContext(AuthContext)
-
-  const { data, error, refetch } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn
-      ? {
-          variables: {
-            id: props.taskId,
-          },
-        }
-      : skipToken,
-  )
-
-  const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
-
+  /**
+   * 復元
+   */
   const onReference = () => {
     if (props.onRestore !== undefined) {
       props.onRestore(props.taskId)
@@ -210,12 +230,23 @@ export function GenerationTaskView(props: Props) {
     }
   }
 
+  /**
+   * インペイント
+   */
+  const onInPaint = () => {
+    setShowInPaintDialog(true)
+  }
+
+  /**
+   * 投稿画面に遷移
+   */
   const onPost = () => {
     window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
-  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
-
+  /**
+   * 削除
+   */
   const onDelete = async () => {
     await deleteTask({
       variables: {
@@ -252,11 +283,12 @@ export function GenerationTaskView(props: Props) {
     return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
   }
 
-  // if (error) return <div>{"エラーが発生しました"}</div>
-
   const generationSize: GenerationSize = parseGenerationSize(
     data.imageGenerationTask.sizeType,
   )
+
+  const userNanoid = context.user?.nanoid ?? null
+  if (userNanoid === null) return
 
   const GenerationParameters: GenerationParameters = {
     prompt: data.imageGenerationTask.prompt,
@@ -353,6 +385,17 @@ export function GenerationTaskView(props: Props) {
               />
             </AppConfirmDialog>
           </div>
+          <div className="py-2">
+            <Separator />
+          </div>
+          <div className="my-4 flex gap-x-2 justify-end">
+            <GenerationMenuButton
+              title={"インペイント機能で一部分を再生成して修正する"}
+              onClick={onInPaint}
+              text={"部分修正"}
+              icon={PenIcon}
+            />
+          </div>
           <StarRating
             value={rating ?? 0}
             onChange={(value) => {
@@ -446,6 +489,22 @@ export function GenerationTaskView(props: Props) {
           }
         />
       )}
+
+      <InPaintingDialog
+        isOpen={showInPaintDialog}
+        onClose={() => setShowInPaintDialog(false)}
+        taskId={props.taskId}
+        token={data.imageGenerationTask.token}
+        userNanoid={userNanoid}
+        configSeed={data.imageGenerationTask.seed}
+        configSteps={data.imageGenerationTask.steps}
+        configSampler={data.imageGenerationTask.sampler}
+        configSizeType={data.imageGenerationTask.sizeType}
+        configModel={data.imageGenerationTask.model?.name}
+        configVae={data.imageGenerationTask.vae}
+        configScale={data.imageGenerationTask.scale}
+        configClipSkip={data.imageGenerationTask.clipSkip}
+      />
     </>
   )
 }
