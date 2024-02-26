@@ -345,10 +345,28 @@ export function GenerationSubmissionView(props: Props) {
             onChangeGenerationMode(value)
           }}
         >
-          <TabsList>
-            <TabsTrigger value="normal">通常</TabsTrigger>
-            <TabsTrigger value="reserve">予約</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center">
+            <TabsList>
+              <TabsTrigger value="normal">通常</TabsTrigger>
+              <TabsTrigger value="reserve">予約</TabsTrigger>
+            </TabsList>
+            <div className="ml-auto block lg:hidden xl:hidden 2xl:hidden">
+              <GenerationEditorProgress
+                inProgress={inProgress}
+                maxTasksCount={availableImageGenerationMaxTasksCount}
+                normalPredictionGenerationSeconds={
+                  engineStatus?.normalPredictionGenerationSeconds ?? 0
+                }
+                normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+                passType={context.currentPass?.type ?? null}
+                remainingImageGenerationTasksCount={tasksCount}
+                standardPredictionGenerationSeconds={
+                  engineStatus?.standardPredictionGenerationSeconds ?? 0
+                }
+                standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+              />
+            </div>
+          </div>
           <TabsContent value="normal">
             <GenerationSubmitOperationParts
               generationMode={generationMode}
