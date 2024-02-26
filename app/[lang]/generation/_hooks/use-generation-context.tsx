@@ -185,6 +185,26 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * モデル、プロンプトを変更する
+   * @param modelId
+   */
+  const updateModelIdAndPrompt = (
+    modelId: string,
+    modelType: string,
+    promptText: string,
+  ) => {
+    const value = configAction
+      .updateModelIdAndPrompt(modelId, modelType, promptText)
+      .getState()
+    cacheStorage.saveModelId(modelId)
+    cacheStorage.saveModelType(modelType)
+    cacheStorage.saveModelIds(value.modelIds)
+    cacheStorage.saveSizeType(value.sizeType)
+    cacheStorage.saveVae(value.vae)
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * ClipSkipを変更する
    * @param clipSkip
    */
@@ -307,5 +327,6 @@ export const useGenerationContext = () => {
     updateVae,
     updateSeed,
     updateClipSkip,
+    updateModelIdAndPrompt,
   }
 }

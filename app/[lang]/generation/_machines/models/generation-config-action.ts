@@ -210,6 +210,54 @@ export class GenerationConfigAction {
   }
 
   /**
+   * モデルIDを変更する
+   * @param id
+   * @returns
+   */
+  updateModelIdAndPrompt(id: string, modelType: string, promptText: string) {
+    const modelIds = produce(this.state.modelIds, (draft) => {
+      const index = draft.findIndex((modelId) => {
+        return this.state.modelId === modelId
+      })
+      if (index === -1) return
+      if (!draft.includes(id)) {
+        draft[index] = id
+      }
+    })
+
+    if (this.state.modelType !== modelType) {
+      // 現在の選択中のモデルと違う場合はサイズ、VAEを自動変更させる
+      const state = new GenerationConfigState({
+        ...this.state,
+        sizeType: this.getModelSizeType(this.state.sizeType, modelType),
+        vae: this.getModelVae(modelType),
+        modelId: id,
+        modelIds: modelIds,
+        modelType: modelType,
+        negativePromptText: this.getNegativePromptText(
+          modelType,
+          this.state.negativePromptText,
+        ),
+        promptText: promptText,
+      })
+      return new GenerationConfigAction(state, this.props)
+    }
+    const state = new GenerationConfigState({
+      ...this.state,
+      modelId: id,
+      modelIds: modelIds,
+      modelType: modelType,
+      vae: this.getModelVae(modelType),
+      negativePromptText: this.getNegativePromptText(
+        modelType,
+        this.state.negativePromptText,
+      ),
+      promptText: promptText,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * モデル推奨のプロンプトを使用するかどうかを変更する
    * @param text
    * @returns

@@ -57,21 +57,26 @@ export const ImageModelsList = (props: Props) => {
     return props.favoritedModelIds.includes(modelId)
   }
 
-  /**
-   * カテゴリーのセクション
-   * 種別ごとにモデルを表示
-   */
+  // モデルをフィルタリングする関数
+  const filterModels = () => {
+    return props.models
+      .filter((model) => {
+        // お気に入りフィルタリング
+        return showFavoriteModels ? isFavorited(Number(model.id)) : true
+      })
+      .filter((model) => {
+        // カテゴリフィルタリング
+        return selectedCategory === "ALL" || model.category === selectedCategory
+      })
+      .filter((model) => {
+        // 種別フィルタリング
+        return selectedType === "ALL" || model.type === selectedType
+      })
+  }
+
+  // カテゴリセクションの生成
   const categorySections = activeCategories.map((category) => {
-    const models = !showFavoriteModels
-      ? props.models
-      : props.models
-          .filter((m) => isFavorited(Number(m.id)))
-          .filter((m) => {
-            return m.category === category
-          })
-          .filter((m) => {
-            return selectedType === "ALL" || m.type === selectedType
-          })
+    const models = filterModels().filter((m) => m.category === category)
     if (models.length === 0) return null
     return { category, models }
   })

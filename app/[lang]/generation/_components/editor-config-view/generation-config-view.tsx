@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { config } from "@/config"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
@@ -151,9 +152,18 @@ export const GenerationConfigView = () => {
             currentModelId={context.config.modelId}
             currentModelIds={context.config.modelIds}
             onSelectModelId={(id: string, type: string, prompt: string) => {
-              context.updateModelId(id, type)
-              if (context.config.isUseRecommendedPrompt && prompt !== "") {
-                context.updatePrompt(prompt)
+              if (context.config.isUseRecommendedPrompt) {
+                if (prompt === "") {
+                  context.updateModelIdAndPrompt(
+                    id,
+                    type,
+                    config.generationFeature.defaultPromptValue,
+                  )
+                } else {
+                  context.updateModelIdAndPrompt(id, type, prompt)
+                }
+              } else {
+                context.updateModelId(id, type)
               }
             }}
           />

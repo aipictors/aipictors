@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -110,11 +109,6 @@ export const GenerationModelListButton = (props: Props) => {
           onSelect={onSelectModel}
           onChangeFavoritedModel={onChangeRatingModel}
         />
-        <DialogFooter>
-          <Button className="w-full" onClick={setFalse}>
-            {"完了"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
