@@ -352,6 +352,7 @@ export function GenerationSubmissionView(props: Props) {
             </TabsList>
             <div className="ml-auto block lg:hidden xl:hidden 2xl:hidden">
               <GenerationEditorProgress
+                isOnlyStatusForSubscriberDisplay={true}
                 inProgress={inProgress}
                 maxTasksCount={availableImageGenerationMaxTasksCount}
                 normalPredictionGenerationSeconds={

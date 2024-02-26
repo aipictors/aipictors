@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/tooltip"
 import { config } from "@/config"
 import { HelpCircleIcon } from "lucide-react"
+import Link from "next/link"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   title: string
   tooltip?: string
+  tooltipDetailLink?: string
   action?: React.ReactNode
   children: React.ReactNode
 }
@@ -42,6 +44,9 @@ export const GenerationViewCard = (props: Props) => {
                   </TooltipTrigger>
                   <TooltipContent className="font-size-md whitespace-pre-wrap">
                     {props.tooltip}
+                    {props.tooltipDetailLink && (
+                      <Link href={props.tooltipDetailLink}>{"(詳細)"}</Link>
+                    )}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -52,6 +57,9 @@ export const GenerationViewCard = (props: Props) => {
                 </PopoverTrigger>
                 <PopoverContent className="font-size-md whitespace-pre-wrap">
                   {props.tooltip}
+                  {props.tooltipDetailLink && (
+                    <Link href={props.tooltipDetailLink}>{"(詳細)"}</Link>
+                  )}
                 </PopoverContent>
               </Popover>
             ))}
