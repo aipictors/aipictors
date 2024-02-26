@@ -53,7 +53,7 @@ const CropImageField = (props: Props) => {
       <Input type="file" onChange={onFileChange} />
       {croppedImage && (
         <img
-          className="max-w-64 m-auto"
+          className="max-w-64 max-h-48 m-auto"
           alt={"croppedImage"}
           src={croppedImage}
         />

@@ -16,9 +16,10 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
 /**
  * 画像トリミングを行い新たな画像urlを作成
  */
-export default async function getCroppedImg(
+export default async function getCroppedImage(
   imageSrc: string,
   pixelCrop: Area,
+  fileExtension?: string,
 ): Promise<string> {
   const image = await createImage(imageSrc)
   const canvas = document.createElement("canvas")
@@ -52,8 +53,11 @@ export default async function getCroppedImg(
 
   // canvasを画像に変換
   return new Promise((resolve, reject) => {
-    canvas.toBlob((file) => {
-      if (file !== null) resolve(URL.createObjectURL(file))
-    }, "image/jpeg")
+    canvas.toBlob(
+      (file) => {
+        if (file !== null) resolve(URL.createObjectURL(file))
+      },
+      `image/${fileExtension ?? "png"}`,
+    )
   })
 }

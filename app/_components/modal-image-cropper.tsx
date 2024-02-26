@@ -1,4 +1,5 @@
-import getCroppedImg from "@/app/_utils/getCroppedImg"
+import getCroppedImage from "@/app/_utils/get-cropped-image"
+import getResizedImg from "@/app/_utils/get-resized-image"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useState } from "react"
@@ -30,24 +31,36 @@ const ImageCropperModal = (props: Props) => {
     height: 0,
   })
 
+  const aspectRatio = props.cropWidth / props.cropHeight
+
+  /**
+   * 切り抜きエリア変更時の処理
+   * @param croppedArea
+   * @param croppedAreaPixels
+   */
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
   }
 
+  /**
+   * 切り抜き処理
+   */
   const onSubmit = async () => {
-    const croppedImage = await getCroppedImg(props.src, croppedAreaPixels)
-    props.onCrop(croppedImage)
+    const croppedImage = await getCroppedImage(props.src, croppedAreaPixels)
+    const resizedImage = await getResizedImg(
+      croppedImage,
+      props.cropWidth,
+      props.cropHeight,
+    )
+    props.onCrop(resizedImage)
     props.onClose()
   }
-
-  const aspectRatio = props.cropWidth / props.cropHeight
 
   return (
     <Dialog open={props.isOpen}>
       <DialogContent>
-        <div className="w-[80vw] h-[72vh]">
+        <div className="w-[80vw] h-[72vh] mb-16">
           <Cropper
-            classes={{ containerClassName: "mb-16" }}
             image={props.src}
             crop={crop}
             zoom={zoom}
@@ -86,7 +99,6 @@ const ImageCropperModal = (props: Props) => {
             </Button>
           </div>
         </div>
-        {/* <Slider value={[zoom]} onChange={(value) => setZoom(Number(value))} /> */}
       </DialogContent>
     </Dialog>
   )
