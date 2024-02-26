@@ -235,6 +235,15 @@ export function GenerationTaskView(props: Props) {
    * インペイント
    */
   const onInPaint = () => {
+    if (
+      context.currentPass?.type !== "LITE" &&
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM" &&
+      context.currentPass?.type !== "TWO_DAYS"
+    ) {
+      toast("インペイント機能はLITEプラン以上で利用可能です")
+      return
+    }
     setShowInPaintDialog(true)
   }
 
