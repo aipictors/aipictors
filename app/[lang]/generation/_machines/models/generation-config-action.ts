@@ -39,6 +39,7 @@ export class GenerationConfigAction {
         steps: config.generationFeature.defaultStepsValue,
         vae: config.generationFeature.defaultVaeValue,
         clipSkip: config.generationFeature.defaultClipSkipValue,
+        i2iImageBase64: config.generationFeature.defaultI2iImageBase64,
       }),
       this.props,
     )
@@ -338,6 +339,19 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       modelType: modelType,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * i2i用の画像を
+   * @param modelType SD1など
+   * @returns
+   */
+  changeI2iImageBase64(i2iImageBase64: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      i2iImageBase64: i2iImageBase64,
     })
     return new GenerationConfigAction(state, this.props)
   }

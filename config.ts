@@ -138,6 +138,7 @@ export const config = {
       "SD3_1536_640",
     ],
     defaultIsUseRecommendedPrompt: false,
+    defaultI2iImageBase64: "",
   },
   /**
    * サイト

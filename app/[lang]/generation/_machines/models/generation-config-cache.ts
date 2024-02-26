@@ -27,6 +27,7 @@ export class GenerationConfigCache {
       modelType: this.restoreModelType(),
       clipSkip: this.restoreClipSkip(),
       isUseRecommendedPrompt: this.restoreUseRecommendedPrompt(),
+      i2iImageBase64: "", // i2i用画像はキャッシュしない
     })
   }
 
@@ -51,6 +52,7 @@ export class GenerationConfigCache {
       clipSkip: config.generationFeature.defaultClipSkipValue,
       isUseRecommendedPrompt:
         config.generationFeature.defaultIsUseRecommendedPrompt,
+      i2iImageBase64: "",
     })
   }
 
