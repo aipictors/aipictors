@@ -65,7 +65,7 @@ export class GenerationConfigAction {
     return new GenerationConfigAction(
       new GenerationConfigState({
         ...this.state,
-        negativePromptText: text.trim() === "" ? "EasyNegative" : text,
+        negativePromptText: text.trim() === "" ? "" : text,
       }),
       this.props,
     )
