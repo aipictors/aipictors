@@ -42,7 +42,7 @@ export function GenerationTaskHistory() {
 
   return (
     <div className="space-y-4 pb-4 w-full">
-      <div className="flex items-center">
+      <div className="flex items-center ml-4">
         <Link href="/generation">画像生成に戻る</Link>
       </div>
       <GenerationTaskListActions
