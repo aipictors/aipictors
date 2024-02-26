@@ -101,6 +101,11 @@ export const GenerationTaskList = (props: Props) => {
     toast("設定を復元しました")
   }
 
+  const inProgressTasks = currentTasks.filter((task) => {
+    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
+    return task.status === "IN_PROGRESS"
+  })
+
   const activeTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
     return (
@@ -156,12 +161,14 @@ export const GenerationTaskList = (props: Props) => {
 
   const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
 
+  const combineDisplayRatingTasks = [...inProgressTasks, ...activeRatingTasks]
+
   const sizeType = props.thumbnailSize ?? "small"
 
   return (
     <ScrollArea className="pb-64 md:pb-0">
       <div className={`${getGridClasses(props.thumbnailSize)}`}>
-        {componentTasks.map((task) => (
+        {combineDisplayRatingTasks.map((task) => (
           <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
             <Suspense fallback={<FallbackTaskCard />}>
               {props.isEditMode && (
