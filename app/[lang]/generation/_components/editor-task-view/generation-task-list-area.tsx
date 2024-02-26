@@ -96,6 +96,11 @@ export const GenerationTaskListArea = (props: Props) => {
     toast("設定を復元しました")
   }
 
+  const inProgressTasks = currentTasks.filter((task) => {
+    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
+    return task.status === "IN_PROGRESS"
+  })
+
   const activeTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
     return (
@@ -107,9 +112,11 @@ export const GenerationTaskListArea = (props: Props) => {
 
   const activeRatingTasks = currentRatingTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    // return task.status === "IN_PROGRESS" || task.status === "DONE"
     return task.status === "DONE"
   })
+
+  // 生成中タスクもレーティングでフィルターしているときも表示する
+  const combineDisplayRatingTasks = [...inProgressTasks, ...activeRatingTasks]
 
   const onSelectTask = (taskId: string | null, status: string) => {
     if (status !== "DONE") {
@@ -165,7 +172,7 @@ export const GenerationTaskListArea = (props: Props) => {
     <ScrollArea className="pb-64 md:pb-0">
       <div className={`${getGridClasses(props.thumbnailSize)}`}>
         <GenerationTaskList
-          tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
+          tasks={props.rating === -1 ? activeTasks : combineDisplayRatingTasks}
           isEditMode={props.isEditMode}
           selectedTaskIds={props.selectedTaskIds}
           pcViewType={pcViewType}
