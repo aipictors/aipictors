@@ -33,7 +33,7 @@ type Props = {
 export const InPaintingDialog = (props: Props) => {
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
-      <DialogContent>
+      <DialogContent className="min-w-[80vw]">
         <DialogHeader>一部修正</DialogHeader>
         <InPaintingImageForm
           taskId={props.taskId}

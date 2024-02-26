@@ -182,7 +182,7 @@ export const PainterCanvas = (props: Props) => {
         </Button>
       </div>
       <div className="flex justify-center">
-        <div className="w-full h-[800px] relative max-h-64 max-w-96 overflow-auto m-auto">
+        <div className="w-full h-[800px] relative max-h-64 max-w-[280px] overflow-auto md:max-w-[80vw]">
           {props.isLoading && (
             <Skeleton className="h-[120px] w-[240px] rounded-xl" />
           )}
