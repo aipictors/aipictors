@@ -57,6 +57,7 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "@xstate/react": "^4.1.0",
     "autoprefixer": "^10.4.17",
+    "canvas": "^2.11.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
