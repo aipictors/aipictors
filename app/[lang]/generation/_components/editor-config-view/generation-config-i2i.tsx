@@ -8,19 +8,32 @@ import CropImageField from "@/app/_components/crop-image-field"
  */
 export const GenerationConfigI2i = () => {
   const context = useGenerationContext()
+
   const size = parseGenerationSize(context.config.sizeType)
 
+  /**
+   * クロップ完了
+   * @param croppedImage クロップした画像
+   */
   const onCrop = (croppedImage: string) => {
     context.changeI2iImageBase64(croppedImage)
+  }
+
+  /**
+   * 画像削除
+   */
+  const onDeleteImage = () => {
+    context.changeI2iImageBase64("")
   }
 
   return (
     <div className="flex flex-col gap-y-2">
       <span className="font-bold text-sm">{"画像から生成"}</span>
       <CropImageField
-        onCrop={onCrop}
         cropWidth={size.width}
         cropHeight={size.height}
+        onDeleteImage={onDeleteImage}
+        onCrop={onCrop}
       />
     </div>
   )

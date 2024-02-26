@@ -253,7 +253,7 @@ export const useGenerationContext = () => {
    * @param i2iImageBase64
    */
   const changeI2iImageBase64 = (i2iImageBase64: string) => {
-    const value = configAction.changeLoraModel(i2iImageBase64).getState()
+    const value = configAction.changeI2iImageBase64(i2iImageBase64).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 

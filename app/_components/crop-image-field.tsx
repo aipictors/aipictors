@@ -1,16 +1,27 @@
 import ImageCropperModal from "@/app/_components/modal-image-cropper"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { XIcon } from "lucide-react"
 import { useCallback, useState } from "react"
 
 type Props = {
   cropWidth: number
   cropHeight: number
+  onDeleteImage: () => void
   onCrop: (croppedImage: string) => void
 }
 
+/**
+ * 指定した画像ファイルの切り抜き開始領域
+ * @param props
+ * @returns
+ */
 const CropImageField = (props: Props) => {
   const [image, setImage] = useState<string | undefined>(undefined)
+
   const [croppedImage, setCroppedImage] = useState<string>("")
+
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   /**
@@ -48,15 +59,38 @@ const CropImageField = (props: Props) => {
     setIsOpen(false)
   }
 
+  /**
+   * 画像削除
+   */
+  const onDeleteImage = () => {
+    setImage("")
+    setCroppedImage("")
+    props.onDeleteImage()
+  }
+
   return (
     <>
-      <Input type="file" onChange={onFileChange} />
+      <Input
+        type="file"
+        accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+        onChange={onFileChange}
+      />
       {croppedImage && (
-        <img
-          className="max-w-64 max-h-48 m-auto"
-          alt={"croppedImage"}
-          src={croppedImage}
-        />
+        <Card className="relative">
+          <img
+            className="max-w-64 max-h-48 m-auto"
+            alt={"croppedImage"}
+            src={croppedImage}
+          />
+          <Button
+            className="absolute right-2 top-2"
+            size={"icon"}
+            variant="ghost"
+            onClick={onDeleteImage}
+          >
+            <XIcon className="h-6 w-6" />
+          </Button>
+        </Card>
       )}
       <ImageCropperModal
         src={image!}
