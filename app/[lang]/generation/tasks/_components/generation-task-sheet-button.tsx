@@ -1,8 +1,9 @@
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { GenerationTaskHoverableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-hoverable-card"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import { useState } from "react"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
@@ -16,25 +17,38 @@ type Props = {
  * @returns
  */
 export function GenerationTaskSheetButton(props: Props) {
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <GenerationTaskHoverableCard
-          taskNanoid={props.task.nanoid}
-          taskId={props.task.id}
-          estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          token={props.task.token}
-          optionButtonSize={props.sizeType}
-          rating={props.task.rating ?? 0}
-          onCancel={props.onCancel}
-        />
-      </SheetTrigger>
-      <SheetContent side={"right"} className="p-0 flex flex-col gap-0">
-        <GenerationTaskSheetView
-          task={props.task}
-          onRestore={props.onRestore}
-        />
-      </SheetContent>
-    </Sheet>
+    <>
+      <GenerationTaskHoverableCard
+        taskNanoid={props.task.nanoid}
+        taskId={props.task.id}
+        estimatedSeconds={props.task.estimatedSeconds ?? 0}
+        token={props.task.token}
+        optionButtonSize={props.sizeType}
+        rating={props.task.rating ?? 0}
+        onClick={() => {
+          setIsOpen(true)
+        }}
+        onCancel={props.onCancel}
+      />
+      <Sheet
+        open={isOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen && props.onCancel) {
+            props.onCancel()
+          }
+          setIsOpen((prev) => (prev !== isOpen ? isOpen : prev))
+        }}
+      >
+        <SheetContent side={"right"} className="p-0 flex flex-col gap-0">
+          <GenerationTaskSheetView
+            task={props.task}
+            onRestore={props.onRestore}
+          />
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }

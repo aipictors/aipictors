@@ -65,8 +65,6 @@ export const GenerationConfigView = () => {
   useEffect(() => {
     setTimeout(() => {
       try {
-        console.log(data)
-
         if (data?.imageGenerationTask) {
           const task = data.imageGenerationTask
           context.updateModelId(task.model.id, task.model.type)
