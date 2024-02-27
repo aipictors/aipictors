@@ -1,5 +1,6 @@
 import {
   BabyIcon,
+  BookIcon,
   BrushIcon,
   CakeIcon,
   DogIcon,
@@ -7,6 +8,7 @@ import {
   ScanFaceIcon,
   SchoolIcon,
   ShirtIcon,
+  SparklesIcon,
   SunMediumIcon,
 } from "lucide-react"
 
@@ -14,7 +16,9 @@ type Props = { name: string }
 
 export const PromptCategoryIcon = (props: Props) => {
   const categoryIcons = new Map([
-    ["キャラクター", ScanFaceIcon],
+    ["性別", ScanFaceIcon],
+    ["二次創作", SparklesIcon],
+    ["お題", BookIcon],
     ["髪型", BabyIcon],
     ["服装", ShirtIcon],
     ["髪色", BabyIcon],
