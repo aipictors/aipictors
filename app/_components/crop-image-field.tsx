@@ -24,6 +24,8 @@ const CropImageField = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
+  const cropperClassName = "react-easy-crop-container"
+
   /**
    * ファイル選択後の処理
    */
@@ -35,6 +37,18 @@ const CropImageField = (props: Props) => {
           if (reader.result) {
             setImage(reader.result.toString() || "")
             setIsOpen(true)
+            // syadcnのダイアログ上でクロップモーダルが表示されるときに、クロップ領域が正常に描画されるために必要な処理
+            setTimeout(() => {
+              const element = document.querySelector(`.${cropperClassName}`)
+              if (element) {
+                setTimeout(() => {
+                  element.classList.remove("mt-1")
+                }, 100)
+                setTimeout(() => {
+                  element.classList.add("mt-1")
+                }, 200)
+              }
+            }, 500)
           }
         })
         reader.readAsDataURL(e.target.files[0])
@@ -95,6 +109,7 @@ const CropImageField = (props: Props) => {
       <ImageCropperModal
         src={image!}
         isOpen={isOpen}
+        cropContainerClassName={cropperClassName}
         cropWidth={props.cropWidth}
         cropHeight={props.cropHeight}
         onCrop={onCrop}

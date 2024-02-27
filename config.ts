@@ -93,7 +93,7 @@ export const config = {
      */
     defaultImageModelType: "SD1",
     /**
-     * デフォルトのLoRAモデル名
+     * デフォルトの生成パラメータ
      */
     defaultFavoritedModelIds: [],
     defaultImageLoraModelNames: ["flat1", "flatBG"],
@@ -140,6 +140,25 @@ export const config = {
     defaultIsUseRecommendedPrompt: false,
     defaultI2iImageBase64: "",
     defaultI2iDenoisingStrengthSize: 0.5,
+    /**
+     * ランダム生成プロンプト一覧
+     */
+    randomPrompts: [
+      "masterpiece, best quality, extremely",
+      "(photorealistic:1.4),(RAW photo),yellow eyes,green eyes  ,odd eyes,ikemen <lora:flat2:1> <lora:flat1:1>",
+      "dream pretty magic light,radiate dream pretty magic,masterpiece, best quality, extremely detailed, anime, pretty little girl,dream pretty dress, twintail, puff sleeve, pink hair, blue eyes, fantasy, watercolor, colorful, dream pretty magical girl,dream pretty ojou-sama, dream pretty butterfly,dream pretty star,dream pretty starry sky,great joy,smile",
+      "(monocle),sauvage,maid,long pink hair,masterpiece, best quality, extremely detailed, anime, smile,depth of field, dynamic angle, dutch angle ,looking at viewer,in royal palace,from below<lora:flatBG:-0.7> <lora:hairdetailer:1>",
+      "dream pretty Drink,dream pretty town in the background, dream pretty dress, dream pretty ,🦄,unicorn stuffed animal,masterpiece, best quality, extremely detailed, anime, dream pretty,pretty little girl, ponytail, puff sleeve,pastel pink hair,pastel green eyes, colorful, watercolor,great joy,light smile,peaceful,sit, flower,fluttering white petals,from the side",
+      "masterpiece, best quality, beautiful illustration, 1girl, solo,(best quality), (ultra-detailed:1.2),(illustration),((gothic lolita girl),((Lolita style)),{(wide angle view:1.2), (long shot, wide shot:1.3), |}(short girl:1.2) (loli:1.2) (chibi:1.2) (short stature:1.1) (child girl:1.1) (toddlercon:1.1) (toddler body:1.1) (loli face:1.2) (baby face:1.1) (4yo:1.1),(beautiful detailed eyes:1.1), (highlight in eyes:1.2),(long wavy hair:1.3), (gradient hair:1.3), (((tareme))),(pink head hair:1.1), (cat ears:1.0), (nekomimi:1.0),happy, smile,((pink frilled dress)), lolita dress, happy, surprise, blush, sitting, full body,outdoor, forest, blue sky, sakura, <lora:boldline:0.8> <lora:lightline:0.2>",
+      "(extremely detail game illustration:1.2), masterpiece, (insanely detailed:1.1), detail quality best quality, (very detailed:1.1), (best shadow:1.2) highly detailed light reflection, harmonious, extremely detail background, ultra-detailed, high resolution, production official art, caustics +, very detailed, illustration, novel illustration, Lustrous skin, best shadow, adorable anime round face, vivid contrasting portrait, with healthy pretty anime style makeup, masterpiece, best quality, extremely detailed, anime, masterpiece, best quality, extremely detailed, anime, (violet theme:1.6), horror, (hell), (In western-style house:1.3), (violet light:1.2), (night:1.3), mystical, devil girl, (demon tail), (bat wings on waist:1.2), Beautiful girl alone, (kawaii), cute little, loli face, 16yr old, (Bright bronze hair:1.3), (Medium Hair:1.3), A detailed face, smile, close mouth, (Orange Eyes), (Braids:1.2), medium breasts, Lustrous skin, Skindentation, from front, from above, full body shot, (long shot:1.3), indoor, (standing:1.1), maid costume, (red gotic lolite fashion), red and black dress, puffy short sleeves, (long length), frills, win red tired layers skirt, maid headdress, Giving a slight bow, skirt hold, <lora:flat2:-0.5> <lora:saturation:0.7>",
+      "Gaogaigar,giant robot,giant mecha,golden body,golden lion,golden wings,golden drill,green crystal,giant golden hammer,masterpiece, best quality, extremely detailed, anime,orange eyes,golden tornado,golden storm",
+      "dynamic angle,Hatsune Miku,chibi character,singing,microphone,(((monochrome))),(((monochrome illustration))),spread both arms,((((colorful musical notes)))),(((neon colored music notes))),cute dress,Live stage,neon color lighting,(green eyes),masterpiece, best quality, extremely detailed, anime,pretty little girl, great joy,smile,:d,<lora:hairdetailer:0> <lora:brighter-eye2:0.7>",
+      "(masterpiece, best quality, elaborately crafted costumes, rich in details and textures, perfect anatomy, beautiful eyes, anime:1.25),(depth of field, dynamic angle, cinematic lighting:1.24),Firefighter, fire hose, a man, the man is 27 years old, frown, bravely, messy hair, short hair, (blond hair:1.3), (brown eyes:1.3), fire suit, Fire fighting",
+      "masterpiece, best quality, extremely detailed, anime <lora:hairdetailer:1> <lora:make25d_type1_v100:1> , boy, shorthair, black hair, cool, glasses",
+      "girl,school uniform,long hair,beauty,black hair,blunt bangs,woman,slimbody,hiah quality,streight hair, slender",
+      "girl,school uniform,bob cut,black hair,blunt bangs,beauty,woman,slim body,slender,high quality",
+      "the cut up figs, a cool boy, good-looking guy, handsome man, shorthair, long sleeve, silver hair, white hair, red eyes, ikemen",
+    ],
   },
   /**
    * サイト

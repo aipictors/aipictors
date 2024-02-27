@@ -61,6 +61,6 @@ export class GenerationConfigState implements Props {
 
   constructor(props: Props) {
     Object.assign(this, props)
-    this.isDisabled = this.promptText.length === 0
+    this.isDisabled = false
   }
 }

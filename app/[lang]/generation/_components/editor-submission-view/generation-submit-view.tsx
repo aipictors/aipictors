@@ -252,7 +252,9 @@ export function GenerationSubmissionView(props: Props) {
   ) => {
     const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
 
+    // シードを設定する、連続生成のときはSeedは連番にする
     const seeds: number[] = []
+
     taskCounts.map((i) => {
       if (context.config.seed === -1) {
         seeds.push(-1)
@@ -260,6 +262,16 @@ export function GenerationSubmissionView(props: Props) {
         seeds.push(context.config.seed + i)
       }
     })
+
+    // プロンプトが設定されていない場合はランダムなプロンプトを使用する
+    const promptText = context.config.promptText
+      ? context.config.promptText
+      : config.generationFeature.randomPrompts[
+          Math.floor(
+            Math.random() * config.generationFeature.randomPrompts.length,
+          )
+        ]
+
     const promises = taskCounts.map((i) =>
       createTask({
         variables: {
@@ -267,7 +279,7 @@ export function GenerationSubmissionView(props: Props) {
             count: 1,
             model: modelName,
             vae: context.config.vae ?? "",
-            prompt: context.config.promptText,
+            prompt: promptText,
             negativePrompt: context.config.negativePromptText,
             seed: seeds[i],
             steps: context.config.steps,

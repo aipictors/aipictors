@@ -33,7 +33,19 @@ type Props = {
  * @param isSetI2iImage
  * @returns
  */
-export function getSubmitButtonLabel(mode: string, isSetI2iImage: boolean) {
+export function getSubmitButtonLabel(
+  mode: string,
+  isSetI2iImage: boolean,
+  prompts: string,
+) {
+  if (!prompts) {
+    if (isSetI2iImage) {
+      return mode === "reserve"
+        ? "画像から予約ランダム生成"
+        : "画像からランダム生成"
+    }
+    return mode === "reserve" ? "予約ランダム生成" : "ランダム生成"
+  }
   if (isSetI2iImage) {
     return mode === "reserve" ? "画像から予約生成" : "画像から生成"
   }
@@ -92,6 +104,7 @@ export function GenerationSubmitOperationParts(props: Props) {
             buttonActionCaption={getSubmitButtonLabel(
               props.generationMode,
               context.config.i2iImageBase64 ? true : false,
+              context.config.promptText,
             )}
           />
         )}

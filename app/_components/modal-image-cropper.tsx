@@ -10,6 +10,7 @@ type Props = {
   isOpen: boolean
   cropWidth: number
   cropHeight: number
+  cropContainerClassName?: string
   onCrop: (croppedImage: string) => void
   onClose: () => void
 }
@@ -59,45 +60,50 @@ const ImageCropperModal = (props: Props) => {
   return (
     <Dialog open={props.isOpen}>
       <DialogContent>
-        <div className="w-[80vw] h-[72vh] mb-2">
-          <Cropper
-            classes={{ containerClassName: "mb-16" }}
-            image={props.src}
-            crop={crop}
-            zoom={zoom}
-            aspect={aspectRatio}
-            onCropChange={setCrop}
-            onCropComplete={onCropComplete}
-            onZoomChange={setZoom}
-            showGrid={true}
-          />
-        </div>
-        <div className="flex items-center absolute bottom-4 left-4">
-          <div className="flex items-center">
-            <input
-              type="range"
-              value={zoom}
-              min={1}
-              max={3}
-              step={0.1}
-              aria-labelledby="Zoom"
-              onChange={(e) => {
-                setZoom(Number(e.target.value))
+        <div className="">
+          <div className="w-[80vw] h-[72vh] mb-2">
+            <Cropper
+              classes={{
+                containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
               }}
-              className="ml-2"
+              image={props.src}
+              crop={crop}
+              zoom={zoom}
+              aspect={aspectRatio}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              showGrid={false}
+              objectFit="contain"
             />
           </div>
-          <div className="ml-2 flex items-center">
-            <Button
-              variant={"secondary"}
-              className="ml-2"
-              onClick={props.onClose}
-            >
-              {"キャンセル"}
-            </Button>
-            <Button className="ml-2" onClick={onSubmit}>
-              {"切り抜く"}
-            </Button>
+          <div className="flex items-center absolute bottom-4 left-4">
+            <div className="flex items-center">
+              <input
+                type="range"
+                value={zoom}
+                min={0}
+                max={3}
+                step={0.1}
+                aria-labelledby="Zoom"
+                onChange={(e) => {
+                  setZoom(Number(e.target.value))
+                }}
+                className="ml-2"
+              />
+            </div>
+            <div className="ml-2 flex items-center">
+              <Button
+                variant={"secondary"}
+                className="ml-2"
+                onClick={props.onClose}
+              >
+                {"キャンセル"}
+              </Button>
+              <Button className="ml-2" onClick={onSubmit}>
+                {"切り抜く"}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

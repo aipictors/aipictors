@@ -174,6 +174,10 @@ export const GenerationConfigView = () => {
             onChange={context.updateSizeType}
           />
           <GenerationConfigI2i />
+          <GenerationConfigSeed
+            value={context.config.seed}
+            onChange={context.updateSeed}
+          />
           <Accordion type="single" collapsible>
             <AccordionItem value="setting">
               <AccordionTrigger>詳細設定</AccordionTrigger>
@@ -181,10 +185,6 @@ export const GenerationConfigView = () => {
                 <GenerationConfigScale
                   value={context.config.scale}
                   onChange={context.updateScale}
-                />
-                <GenerationConfigSeed
-                  value={context.config.seed}
-                  onChange={context.updateSeed}
                 />
                 <GenerationConfigStep
                   value={context.config.steps}
