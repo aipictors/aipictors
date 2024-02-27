@@ -34,7 +34,7 @@ export const GenerationConfigI2i = () => {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <span className="font-bold text-sm">{"画像から生成"}</span>
+      <span className="font-bold text-nowrap">{"画像から生成"}</span>
       <CropImageField
         cropWidth={size.width}
         cropHeight={size.height}
