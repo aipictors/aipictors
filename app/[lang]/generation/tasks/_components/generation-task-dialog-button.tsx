@@ -1,6 +1,6 @@
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
-import { GenerationTaskHoverableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-hoverable-card"
+import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
@@ -21,7 +21,7 @@ export function GenerationTaskDialogButton(props: Props) {
 
   return (
     <>
-      <GenerationTaskHoverableCard
+      <GenerationTaskEditableCard
         taskNanoid={props.task.nanoid}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         taskId={props.task.id}

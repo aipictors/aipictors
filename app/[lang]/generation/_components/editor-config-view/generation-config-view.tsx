@@ -95,13 +95,6 @@ export const GenerationConfigView = () => {
   /**
    * お気に入りのモデル
    */
-  const favoritedModel = context.models.filter((model) => {
-    return context.config.favoriteModelIds.includes(Number(model.id))
-  })
-
-  /**
-   * お気に入りのモデル
-   */
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
 
   useEffect(() => {

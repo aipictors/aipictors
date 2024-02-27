@@ -26,10 +26,10 @@ type Props = {
 }
 
 /**
- * 画像生成のホバー可能な履歴
+ * 画像生成の編集可能な履歴
  * @returns
  */
-export const GenerationTaskHoverableCard = (props: Props) => {
+export const GenerationTaskEditableCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
   const [isHovered, setIsHovered] = useState(false)
   const [cancelTask, { loading: isCanceling }] = useMutation(

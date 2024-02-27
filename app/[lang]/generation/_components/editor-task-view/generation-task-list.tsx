@@ -4,7 +4,7 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationTaskCrossPlatformCard } from "@/app/[lang]/generation/tasks/_components/generation-task-cross-platform-card"
+import { GenerationTaskResponsiveCard } from "@/app/[lang]/generation/tasks/_components/generation-task-responsive-card"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
@@ -168,11 +168,11 @@ export const GenerationTaskList = (props: Props) => {
         {componentTasks.map((task) => (
           <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
             <Suspense fallback={<FallbackTaskCard />}>
-              <GenerationTaskCrossPlatformCard
+              <GenerationTaskResponsiveCard
                 task={task}
                 isEditMode={props.isEditMode}
                 sizeType={sizeType}
-                showTypeForDesktop="sheet"
+                isDialog={false}
                 selectedTaskIds={props.selectedTaskIds}
                 onClick={() => onSelectTask(task.nanoid, task.status)}
                 onCancel={props.onCancel}
