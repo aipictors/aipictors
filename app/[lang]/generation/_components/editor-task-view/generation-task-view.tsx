@@ -1,8 +1,9 @@
 "use client"
 
+import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
-import { GenerationTaskListArea } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-area"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { useState } from "react"
 
 /**
@@ -19,7 +20,8 @@ export const GenerationTaskView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
+  const [thumbnailSize, setThumbnailSize] =
+    useState<ThumbnailImageSizeType>("middle")
 
   /**
    * レーティングを変更する
@@ -61,8 +63,7 @@ export const GenerationTaskView = () => {
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={() => {}}
       />
-
-      <GenerationTaskListArea
+      <GenerationTaskList
         hidedTaskIds={hidedTaskIds}
         rating={rating}
         isEditMode={isEditMode}

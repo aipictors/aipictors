@@ -1,6 +1,8 @@
 "use client"
 
+import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
 import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -11,22 +13,19 @@ import {
 import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
-
-import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { AppFixedContent } from "@/components/app/app-fixed-content"
-import { config } from "@/config"
 import { cn } from "@/lib/utils"
+import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,

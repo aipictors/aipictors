@@ -2,6 +2,7 @@
 
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-history"
+import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -23,7 +24,8 @@ export function GenerationTaskHistory() {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [thumbnailSize, setThumbnailSize] = useState<string>("middle")
+  const [thumbnailSize, setThumbnailSize] =
+    useState<ThumbnailImageSizeType>("middle")
 
   const [rating, setRating] = useState(-1)
 
@@ -63,8 +65,6 @@ export function GenerationTaskHistory() {
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationTaskListHistory
-          pcViewType="dialog"
-          sizeType="full"
           viewCount={viewCount}
           hidedTaskIds={hidedTaskIds}
           rating={rating}

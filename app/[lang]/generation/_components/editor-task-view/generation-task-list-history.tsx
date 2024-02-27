@@ -1,26 +1,29 @@
 "use client"
 
-import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
+import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
+import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
+import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
+import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useQuery } from "@apollo/client"
-import { useState } from "react"
+import { ErrorBoundary } from "@sentry/nextjs"
+import { Suspense, useState } from "react"
 import { toast } from "sonner"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  sizeType?: string
   isCreatingTasks: boolean
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
-  thumbnailSize: string
+  thumbnailSize: ThumbnailImageSizeType
   hidedTaskIds: string[]
-  pcViewType?: string
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
 }
@@ -32,6 +35,8 @@ type Props = {
  */
 export const GenerationTaskListHistory = (props: Props) => {
   const context = useGenerationContext()
+
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -53,8 +58,6 @@ export const GenerationTaskListHistory = (props: Props) => {
       where: { minRating: 1 },
     },
   })
-
-  const pcViewType = props.pcViewType ? props.pcViewType : ""
 
   if (tasks === undefined || ratingTasks === undefined) {
     return null
@@ -140,46 +143,66 @@ export const GenerationTaskListHistory = (props: Props) => {
   }
 
   const getGridClasses = (size: string): string => {
-    if (props.sizeType === "full") {
-      switch (size) {
-        case "small":
-          return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
-        case "middle":
-          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
-        case "big":
-          return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5"
-        default:
-          return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
-      }
-    }
     switch (size) {
       case "small":
-        return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-3 2xl:grid-cols-5 lg:grid-cols-4 xl:grid-cols-3"
+        return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
       case "middle":
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
       case "big":
-        return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-1 2xl:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1"
+        return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5"
       default:
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 xl:grid-cols-2"
+        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
     }
   }
+
+  const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
+
+  const sizeType = props.thumbnailSize ?? "small"
 
   return (
     <>
       <ScrollArea>
         <div className={getGridClasses(props.thumbnailSize)}>
-          {props.isCreatingTasks && (
-            <InProgressGenerationCard isCreatingTasks={true} />
-          )}
-          <GenerationTaskList
-            tasks={props.rating === -1 ? activeTasks : activeRatingTasks}
-            isEditMode={props.isEditMode}
-            selectedTaskIds={props.selectedTaskIds}
-            pcViewType={pcViewType}
-            sizeType={props.thumbnailSize ?? "small"}
-            onRestore={onRestore}
-            onSelectTask={onSelectTask}
-          />
+          {componentTasks.map((task) => (
+            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
+              <Suspense fallback={<FallbackTaskCard />}>
+                {props.isEditMode && (
+                  <GenerationTaskCard
+                    onClick={() => onSelectTask(task.nanoid, task.status)}
+                    isSelected={props.selectedTaskIds.includes(
+                      task.nanoid ?? "",
+                    )}
+                    isSelectDisabled={false}
+                    taskNanoid={task.nanoid}
+                    estimatedSeconds={task.estimatedSeconds ?? 0}
+                    taskId={task.id}
+                    token={task.token}
+                    optionButtonSize={sizeType}
+                    rating={task.rating ?? 0}
+                  />
+                )}
+                {!props.isEditMode && !isDesktop && (
+                  <GenerationTaskCard
+                    taskNanoid={task.nanoid}
+                    estimatedSeconds={task.estimatedSeconds ?? 0}
+                    isSelectDisabled={true}
+                    taskId={task.id}
+                    token={task.token}
+                    optionButtonSize={sizeType}
+                    rating={task.rating ?? 0}
+                    isLink={true}
+                  />
+                )}
+                {!props.isEditMode && isDesktop && (
+                  <GenerationTaskDialogButton
+                    task={task}
+                    sizeType={sizeType}
+                    onRestore={onRestore}
+                  />
+                )}
+              </Suspense>
+            </ErrorBoundary>
+          ))}
         </div>
       </ScrollArea>
       {props.viewCount &&
