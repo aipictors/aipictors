@@ -1,6 +1,6 @@
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
-import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
+import { GenerationTaskHoverableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-hoverable-card"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 
@@ -19,7 +19,7 @@ export function GenerationTaskSheetButton(props: Props) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <GenerationTaskCard
+        <GenerationTaskHoverableCard
           taskNanoid={props.task.nanoid}
           taskId={props.task.id}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
