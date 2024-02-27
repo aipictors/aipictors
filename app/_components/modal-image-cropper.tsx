@@ -82,7 +82,7 @@ const ImageCropperModal = (props: Props) => {
               <input
                 type="range"
                 value={zoom}
-                min={0}
+                min={1}
                 max={3}
                 step={0.1}
                 aria-labelledby="Zoom"
