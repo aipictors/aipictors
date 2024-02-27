@@ -18,6 +18,7 @@ const config = new GenerationConfigState({
   clipSkip: 0,
   isUseRecommendedPrompt: false,
   i2iImageBase64: "",
+  i2iDenoisingStrengthSize: 0.5,
 })
 
 describe("ImageGenerationAction", () => {

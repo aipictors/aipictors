@@ -40,6 +40,8 @@ export class GenerationConfigAction {
         vae: config.generationFeature.defaultVaeValue,
         clipSkip: config.generationFeature.defaultClipSkipValue,
         i2iImageBase64: config.generationFeature.defaultI2iImageBase64,
+        i2iDenoisingStrengthSize:
+          config.generationFeature.defaultI2iDenoisingStrengthSize,
       }),
       this.props,
     )
@@ -392,7 +394,7 @@ export class GenerationConfigAction {
   }
 
   /**
-   * i2i用の画像を
+   * i2i用の画像を変更する
    * @param modelType SD1など
    * @returns
    */
@@ -400,6 +402,19 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       i2iImageBase64: i2iImageBase64,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * i2i用のDenoisingStrengthSizeを変更する
+   * @param modelType SD1など
+   * @returns
+   */
+  changeI2iDenoisingStrengthSize(i2iDenoisingStrengthSize: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      i2iDenoisingStrengthSize: i2iDenoisingStrengthSize,
     })
     return new GenerationConfigAction(state, this.props)
   }

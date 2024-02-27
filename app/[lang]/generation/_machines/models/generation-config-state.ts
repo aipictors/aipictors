@@ -16,6 +16,7 @@ const zProps = z.object({
   favoriteModelIds: z.array(z.number()),
   isUseRecommendedPrompt: z.boolean(),
   i2iImageBase64: z.string(),
+  i2iDenoisingStrengthSize: z.number(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -52,9 +53,11 @@ export class GenerationConfigState implements Props {
 
   readonly isDisabled: boolean
 
-  readonly isUseRecommendedPrompt!: boolean
+  readonly isUseRecommendedPrompt!: Props["isUseRecommendedPrompt"]
 
   readonly i2iImageBase64!: string
+
+  readonly i2iDenoisingStrengthSize!: Props["i2iDenoisingStrengthSize"]
 
   constructor(props: Props) {
     Object.assign(this, props)

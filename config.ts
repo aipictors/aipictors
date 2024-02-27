@@ -139,6 +139,7 @@ export const config = {
     ],
     defaultIsUseRecommendedPrompt: false,
     defaultI2iImageBase64: "",
+    defaultI2iDenoisingStrengthSize: 0.5,
   },
   /**
    * サイト

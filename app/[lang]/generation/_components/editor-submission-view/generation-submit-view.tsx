@@ -126,6 +126,44 @@ export function GenerationSubmissionView(props: Props) {
   }
 
   /**
+   * 同じSeedでリクエストを行ったかどうか、同じならエラーを表示する
+   */
+  const checkSameBeforeRequestAndToast: (
+    modelName: string,
+    generationType: string,
+    i2iFileUrl: string,
+  ) => boolean = (modelName, generationType, i2iFileUrl) => {
+    const generationParams = {
+      model: modelName,
+      vae: context.config.vae ?? "",
+      prompt: context.config.promptText,
+      negativePrompt: context.config.negativePromptText,
+      seed: context.config.seed,
+      steps: context.config.steps,
+      scale: context.config.scale,
+      sampler: context.config.sampler,
+      clipSkip: context.config.clipSkip,
+      sizeType: context.config.sizeType as ImageGenerationSizeType,
+      type: generationType,
+      i2iFileUrl: i2iFileUrl,
+      t2tImageUrl: i2iFileUrl,
+      t2tDenoisingStrengthSize:
+        context.config.i2iDenoisingStrengthSize.toString(),
+    }
+    const generationParamsJson = JSON.stringify(generationParams)
+    if (beforeGenerationParams === generationParamsJson) {
+      toast(
+        "前回と同じ生成条件での連続生成はできません。Seedを変更してください。",
+      )
+      return true
+    }
+    if (context.config.seed !== -1) {
+      setBeforeGenerationParams(generationParamsJson)
+    }
+    return false
+  }
+
+  /**
    * タスクを作成ボタンを押したときのコールバック
    */
   const onCreateTask = async () => {
@@ -165,6 +203,12 @@ export function GenerationSubmissionView(props: Props) {
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
+      if (
+        checkSameBeforeRequestAndToast(model.name, generationType, "") === true
+      ) {
+        return
+      }
+
       if (generationType === "IMAGE_TO_IMAGE") {
         const i2iFileName = `${createRandomString(30)}_img2img_src.png`
         const i2iFileUrl = await uploadImage(
@@ -193,7 +237,7 @@ export function GenerationSubmissionView(props: Props) {
   }
 
   /**
-   * 生成APIを使って画像生成を開始する
+   * 生成APIを使って生成を開始する
    * @param taskCount
    * @param modelName
    * @param generationType
@@ -207,32 +251,6 @@ export function GenerationSubmissionView(props: Props) {
     i2iFileUrl: string,
   ) => {
     const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
-    const generationParams = {
-      model: modelName,
-      vae: context.config.vae ?? "",
-      prompt: context.config.promptText,
-      negativePrompt: context.config.negativePromptText,
-      seed: context.config.seed,
-      steps: context.config.steps,
-      scale: context.config.scale,
-      sampler: context.config.sampler,
-      clipSkip: context.config.clipSkip,
-      sizeType: context.config.sizeType as ImageGenerationSizeType,
-      type: generationType,
-      i2iFileUrl: i2iFileUrl,
-      t2tImageUrl: i2iFileUrl,
-      t2tDenoisingStrengthSize: "0.5",
-    }
-    const generationParamsJson = JSON.stringify(generationParams)
-    if (beforeGenerationParams === generationParamsJson) {
-      toast(
-        "前回と同じ生成条件での連続生成はできません。Seedを変更してください。",
-      )
-      return
-    }
-    if (context.config.seed !== -1) {
-      setBeforeGenerationParams(generationParamsJson)
-    }
     const promises = taskCounts.map(() =>
       createTask({
         variables: {
@@ -250,7 +268,8 @@ export function GenerationSubmissionView(props: Props) {
             sizeType: context.config.sizeType as ImageGenerationSizeType,
             type: generationType as ImageGenerationType,
             t2tImageUrl: i2iFileUrl,
-            t2tDenoisingStrengthSize: "0.5",
+            t2tDenoisingStrengthSize:
+              context.config.i2iDenoisingStrengthSize.toString(),
           },
         },
       }),
@@ -285,6 +304,17 @@ export function GenerationSubmissionView(props: Props) {
         return model.id === context.config.modelId
       })
       if (typeof model === "undefined") return
+
+      if (
+        checkSameBeforeRequestAndToast(
+          model.name,
+          context.config.sizeType,
+          "",
+        ) === true
+      ) {
+        return
+      }
+
       const taskCounts = Array.from(
         { length: reservedGenerationCount },
         (_, i) => i,

@@ -28,6 +28,7 @@ export class GenerationConfigCache {
       clipSkip: this.restoreClipSkip(),
       isUseRecommendedPrompt: this.restoreUseRecommendedPrompt(),
       i2iImageBase64: "", // i2i用画像はキャッシュしない
+      i2iDenoisingStrengthSize: this.restoreI2iDenoisingStrengthSize(),
     })
   }
 
@@ -53,6 +54,8 @@ export class GenerationConfigCache {
       isUseRecommendedPrompt:
         config.generationFeature.defaultIsUseRecommendedPrompt,
       i2iImageBase64: "",
+      i2iDenoisingStrengthSize:
+        config.generationFeature.defaultI2iDenoisingStrengthSize,
     })
   }
 
@@ -150,6 +153,40 @@ export class GenerationConfigCache {
         return defaultValue
       }
       return Boolean(value)
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * i2i向けのDenoisingStrengthSizeを保存
+   * @param modelId
+   */
+  saveI2iDenoisingStrengthSize(i2iDenoisingStrengthSize: number) {
+    localStorage.setItem(
+      "config.generation.i2iDenoisingStrengthSize",
+      i2iDenoisingStrengthSize.toString(),
+    )
+  }
+
+  /**
+   * i2i向けのDenoisingStrengthSizeを復元する
+   * @returns
+   */
+  restoreI2iDenoisingStrengthSize() {
+    const defaultValue =
+      config.generationFeature.defaultI2iDenoisingStrengthSize
+    try {
+      const value = localStorage.getItem(
+        "config.generation.i2iDenoisingStrengthSize",
+      )
+      if (value === null) {
+        return defaultValue
+      }
+      return Number(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

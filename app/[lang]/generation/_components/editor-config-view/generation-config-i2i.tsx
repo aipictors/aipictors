@@ -1,7 +1,9 @@
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { parseGenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import CropImageField from "@/app/_components/crop-image-field"
+import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import getImageAsBase64 from "@/app/_utils/get-image-as-base64"
+import { Slider } from "@/components/ui/slider"
 
 /**
  * i2i向け画像設定
@@ -39,6 +41,26 @@ export const GenerationConfigI2i = () => {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
+      <div className="flex gap-x-2 items-center">
+        <span className="text-sm w-24">{"変更度"}</span>
+        <CrossPlatformTooltip
+          text={"元画像の変更度です、推奨値は0.6以下です。"}
+        />
+        <Slider
+          className="color-pink w-full"
+          aria-label="slider-ex-2"
+          min={0.1}
+          max={1.0}
+          step={0.1}
+          value={[context.config.i2iDenoisingStrengthSize]}
+          onValueChange={(value) =>
+            context.changeI2iDenoisingStrengthSize(value[0])
+          }
+        />
+        <span className="font-bold">
+          {context.config.i2iDenoisingStrengthSize.toFixed(2)}
+        </span>
+      </div>
     </div>
   )
 }

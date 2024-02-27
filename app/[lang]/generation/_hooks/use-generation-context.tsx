@@ -247,13 +247,25 @@ export const useGenerationContext = () => {
   }
 
   /**
-   * モデルの変更時に推奨プロンプトへの切り替えを行うかどうか
+   * モデルの変更時に推奨プロンプトへの切り替えを行うかどうかを変更する
    * @param isUseRecommendedPrompt
    */
   const changeUseRecommendedPrompt = (isUseRecommendedPrompt: boolean) => {
     cacheStorage.saveUseRecommendedPrompt(isUseRecommendedPrompt)
     const value = configAction
       .changeUseRecommendedPrompt(isUseRecommendedPrompt)
+      .getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * i2i向けのDenoisingStrengthSizeを変更する
+   * @param i2iDenoisingStrengthSize
+   */
+  const changeI2iDenoisingStrengthSize = (i2iDenoisingStrengthSize: number) => {
+    cacheStorage.saveI2iDenoisingStrengthSize(i2iDenoisingStrengthSize)
+    const value = configAction
+      .changeI2iDenoisingStrengthSize(i2iDenoisingStrengthSize)
       .getState()
     send({ type: "UPDATE_CONFIG", value })
   }
@@ -315,6 +327,7 @@ export const useGenerationContext = () => {
     updateFavoriteModelIds,
     changeLoraModel: changeLoraConfig,
     changeI2iImageBase64,
+    changeI2iDenoisingStrengthSize,
     changeUseRecommendedPrompt,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
