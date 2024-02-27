@@ -17,7 +17,7 @@ export function GenerationSubmitButton(props: Props) {
   return (
     <Button
       onClick={props.onClick}
-      className="w-full"
+      className="w-full text-balance"
       size={"lg"}
       disabled={props.isLoading || props.isDisabled}
     >
