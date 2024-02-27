@@ -264,13 +264,21 @@ export function GenerationSubmissionView(props: Props) {
     })
 
     // プロンプトが設定されていない場合はランダムなプロンプトを使用する
-    const promptText = context.config.promptText
-      ? context.config.promptText
-      : config.generationFeature.randomPrompts[
-          Math.floor(
-            Math.random() * config.generationFeature.randomPrompts.length,
-          )
-        ]
+    const promptsTexts: string[] = []
+
+    taskCounts.map((i) => {
+      if (context.config.promptText) {
+        promptsTexts.push(context.config.promptText)
+      } else {
+        promptsTexts.push(
+          config.generationFeature.randomPrompts[
+            Math.floor(
+              Math.random() * config.generationFeature.randomPrompts.length,
+            )
+          ],
+        )
+      }
+    })
 
     const promises = taskCounts.map((i) =>
       createTask({
@@ -279,7 +287,7 @@ export function GenerationSubmissionView(props: Props) {
             count: 1,
             model: modelName,
             vae: context.config.vae ?? "",
-            prompt: promptText,
+            prompt: promptsTexts[i],
             negativePrompt: context.config.negativePromptText,
             seed: seeds[i],
             steps: context.config.steps,
