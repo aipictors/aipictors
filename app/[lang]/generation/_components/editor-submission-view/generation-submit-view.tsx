@@ -251,7 +251,16 @@ export function GenerationSubmissionView(props: Props) {
     i2iFileUrl: string,
   ) => {
     const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
-    const promises = taskCounts.map(() =>
+
+    const seeds: number[] = []
+    taskCounts.map((i) => {
+      if (context.config.seed === -1) {
+        seeds.push(-1)
+      } else {
+        seeds.push(context.config.seed + i)
+      }
+    })
+    const promises = taskCounts.map((i) =>
       createTask({
         variables: {
           input: {
@@ -260,7 +269,7 @@ export function GenerationSubmissionView(props: Props) {
             vae: context.config.vae ?? "",
             prompt: context.config.promptText,
             negativePrompt: context.config.negativePromptText,
-            seed: context.config.seed,
+            seed: seeds[i],
             steps: context.config.steps,
             scale: context.config.scale,
             sampler: context.config.sampler,
@@ -329,7 +338,7 @@ export function GenerationSubmissionView(props: Props) {
         }
       })
 
-      const promises = taskCounts.map((i) =>
+      const promises = taskCounts.map((i) => {
         createReservedTask({
           variables: {
             input: {
@@ -347,8 +356,8 @@ export function GenerationSubmissionView(props: Props) {
               type: "TEXT_TO_IMAGE",
             },
           },
-        }),
-      )
+        })
+      })
       await Promise.all(promises)
       // タスクの作成後も呼び出す必要がある
       await activeImageGeneration({ nanoid: userNanoid })
