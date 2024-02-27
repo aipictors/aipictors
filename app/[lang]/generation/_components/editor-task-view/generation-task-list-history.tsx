@@ -4,8 +4,7 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
-import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
+import { GenerationTaskCrossPlatformCard } from "@/app/[lang]/generation/tasks/_components/generation-task-cross-platform-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -15,7 +14,6 @@ import { useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense, useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   isCreatingTasks: boolean
@@ -35,8 +33,6 @@ type Props = {
  */
 export const GenerationTaskListHistory = (props: Props) => {
   const context = useGenerationContext()
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -166,40 +162,17 @@ export const GenerationTaskListHistory = (props: Props) => {
           {componentTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
               <Suspense fallback={<FallbackTaskCard />}>
-                {props.isEditMode && (
-                  <GenerationTaskCard
-                    onClick={() => onSelectTask(task.nanoid, task.status)}
-                    isSelected={props.selectedTaskIds.includes(
-                      task.nanoid ?? "",
-                    )}
-                    isSelectDisabled={false}
-                    taskNanoid={task.nanoid}
-                    estimatedSeconds={task.estimatedSeconds ?? 0}
-                    taskId={task.id}
-                    token={task.token}
-                    optionButtonSize={sizeType}
-                    rating={task.rating ?? 0}
-                  />
-                )}
-                {!props.isEditMode && !isDesktop && (
-                  <GenerationTaskCard
-                    taskNanoid={task.nanoid}
-                    estimatedSeconds={task.estimatedSeconds ?? 0}
-                    isSelectDisabled={true}
-                    taskId={task.id}
-                    token={task.token}
-                    optionButtonSize={sizeType}
-                    rating={task.rating ?? 0}
-                    isLink={true}
-                  />
-                )}
-                {!props.isEditMode && isDesktop && (
-                  <GenerationTaskDialogButton
-                    task={task}
-                    sizeType={sizeType}
-                    onRestore={onRestore}
-                  />
-                )}
+                <GenerationTaskCrossPlatformCard
+                  task={task}
+                  isEditMode={props.isEditMode}
+                  selectedTaskIds={props.selectedTaskIds}
+                  sizeType={sizeType}
+                  showTypeForDesktop="dialog"
+                  onClick={() => onSelectTask(task.nanoid, task.status)}
+                  onCancel={() => onSelectTask(task.nanoid, task.status)}
+                  onRestore={onRestore}
+                  onSelectTask={onSelectTask}
+                />
               </Suspense>
             </ErrorBoundary>
           ))}

@@ -42,7 +42,7 @@ export const GenerationConfigI2i = () => {
         onCrop={onCrop}
       />
       <div className="flex gap-x-2 items-center">
-        <span className="text-sm w-24">{"変更度"}</span>
+        <span className="text-sm w-auto text-nowrap">{"変更度"}</span>
         <CrossPlatformTooltip
           text={"元画像の変更度です、推奨値は0.6以下です。"}
         />
