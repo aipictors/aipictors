@@ -85,7 +85,7 @@ export const ImageModelsList = (props: Props) => {
     <>
       <div className="flex gap-x-2">
         <Select onValueChange={selectCategory}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-32 sm:w-40">
             <SelectValue placeholder={"カテゴリ"} />
           </SelectTrigger>
           <SelectContent>
@@ -97,7 +97,7 @@ export const ImageModelsList = (props: Props) => {
           </SelectContent>
         </Select>
         <Select onValueChange={selectType}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-32 sm:w-40">
             <SelectValue placeholder={"種別"} />
           </SelectTrigger>
           <SelectContent>
