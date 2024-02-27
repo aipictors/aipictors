@@ -159,16 +159,17 @@ export const GenerationTaskList = (props: Props) => {
     }
   }
 
-  const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
-
   const combineDisplayRatingTasks = [...inProgressTasks, ...activeRatingTasks]
+
+  const componentTasks =
+    props.rating === -1 ? activeTasks : combineDisplayRatingTasks
 
   const sizeType = props.thumbnailSize ?? "small"
 
   return (
     <ScrollArea className="pb-64 md:pb-0">
       <div className={`${getGridClasses(props.thumbnailSize)}`}>
-        {combineDisplayRatingTasks.map((task) => (
+        {componentTasks.map((task) => (
           <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
             <Suspense fallback={<FallbackTaskCard />}>
               {props.isEditMode && (
