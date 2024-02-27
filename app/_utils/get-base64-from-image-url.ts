@@ -3,7 +3,9 @@
  * @param url 画像URL
  * @returns
  */
-export default async function getImageAsBase64(url: string): Promise<string> {
+export default async function getBase64FromImageUrl(
+  url: string,
+): Promise<string> {
   try {
     const response = await fetch(url)
     const blob = await response.blob() // レスポンスをBlobとして取得

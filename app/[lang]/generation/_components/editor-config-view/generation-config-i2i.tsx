@@ -2,7 +2,7 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { parseGenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import CropImageField from "@/app/_components/crop-image-field"
 import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
-import getImageAsBase64 from "@/app/_utils/get-image-as-base64"
+import getBase64FromImageUrl from "@/app/_utils/get-base64-from-image-url"
 import { Slider } from "@/components/ui/slider"
 
 /**
@@ -20,7 +20,7 @@ export const GenerationConfigI2i = () => {
    */
   const onCrop = async (croppedImage: string) => {
     console.log(croppedImage)
-    const base64 = await getImageAsBase64(croppedImage)
+    const base64 = await getBase64FromImageUrl(croppedImage)
     console.log(base64)
     context.changeI2iImageBase64(base64)
   }
