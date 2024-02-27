@@ -7,7 +7,7 @@ type Props = {
 }
 
 /**
- * 履歴の削除ボタン
+ * 履歴のリセットボタン
  * @param props
  * @returns
  */
@@ -19,7 +19,7 @@ export function GenerationConfigResetButton(props: Props) {
       onNext={props.onReset}
       onCancel={() => {}}
     >
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 w-full">
         <Button variant={"secondary"}>
           <RotateCcw className="w-4" />
           リセット

@@ -4,6 +4,8 @@ import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/ed
 import { GenerationConfigFavoriteModelToggle } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-favorite-model-button"
 import { GenerationConfigI2i } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-lora-models"
+import { GenerationConfigMemoButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-memo-button"
+import { GenerationConfigMemoSettingDialog } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-memo-setting-dialog"
 import { GenerationConfigModels } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-models"
 import { GenerationConfigResetButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-reset-button"
 import { GenerationConfigSampler } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-sampler"
@@ -45,6 +47,8 @@ export const GenerationConfigView = () => {
   const authContext = useContext(AuthContext)
 
   const [showFavoritedModels, setShowFavoritedModels] = useState(false)
+
+  const [showMemoSetting, setShowMemoSetting] = useState(false)
 
   const ref = searchParams.get("ref")
 
@@ -197,7 +201,20 @@ export const GenerationConfigView = () => {
         </div>
       </ScrollArea>
       <div className="lg:sticky bottom-0 bg-card p-4">
-        <GenerationConfigResetButton onReset={context.reset} />
+        <div className="flex gap-x-2">
+          <GenerationConfigMemoButton
+            onClick={() => {
+              setShowMemoSetting(true)
+            }}
+          />
+          <GenerationConfigMemoSettingDialog
+            onClose={() => {
+              setShowMemoSetting(false)
+            }}
+            isOpen={showMemoSetting}
+          />
+          <GenerationConfigResetButton onReset={context.reset} />
+        </div>
       </div>
     </GenerationViewCard>
   )
