@@ -165,6 +165,7 @@ export const postGenerationImage = async (
 }
 
 /**
+ * 履歴一覧の履歴シートの中に表示する履歴情報
  * @param props
  * @returns
  */
