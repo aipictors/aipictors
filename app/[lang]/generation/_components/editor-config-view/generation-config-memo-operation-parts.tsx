@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { useState } from "react"
 
 /**
@@ -37,6 +38,13 @@ export const GenerationConfigMemoOperationParts = () => {
         <DialogContent>
           <DialogHeader />
           <div>メモを設定する</div>
+          <Input type="text" placeholder="タイトル" />
+          <Input type="text" placeholder="説明（省略可）" />
+          <Input type="text" placeholder="プロンプト" />
+          <Input type="text" placeholder="ネガティブプロンプト" />
+          <Input type="number" placeholder="Steps" />
+          <Input type="number" placeholder="Scale" />
+          <Input type="number" placeholder="Seeds" />
           <DialogFooter>
             <Button
               onClick={() => {
