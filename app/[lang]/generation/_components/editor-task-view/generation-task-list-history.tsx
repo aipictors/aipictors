@@ -4,7 +4,7 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationTaskResponsiveCard } from "@/app/[lang]/generation/tasks/_components/generation-task-responsive-card"
+import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -162,9 +162,12 @@ export const GenerationTaskListHistory = (props: Props) => {
           {componentTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
               <Suspense fallback={<FallbackTaskCard />}>
-                <GenerationTaskResponsiveCard
+                <GenerationTaskCard
                   task={task}
                   isEditMode={props.isEditMode}
+                  isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
+                  estimatedSeconds={task.estimatedSeconds ?? 0}
+                  rating={task.rating ?? 0}
                   selectedTaskIds={props.selectedTaskIds}
                   sizeType={sizeType}
                   isDialog={true}

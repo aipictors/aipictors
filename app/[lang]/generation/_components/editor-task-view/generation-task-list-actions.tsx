@@ -9,7 +9,6 @@ import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
-import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { useRouter } from "next/navigation"
@@ -118,18 +117,16 @@ export const GenerationTaskListActions = (props: Props) => {
           )}
         </div>
         {/* 履歴一覧リンク */}
-        {config.isDevelopmentMode &&
-          props.showHistoryAllButton &&
-          !props.isEditMode && (
-            <Button
-              onClick={moveHistoryPage}
-              className="w-16 sm:w-24 ml-auto"
-              variant={"secondary"}
-              size={"sm"}
-            >
-              {"すべて"}
-            </Button>
-          )}
+        {props.showHistoryAllButton && !props.isEditMode && (
+          <Button
+            onClick={moveHistoryPage}
+            className="w-16 sm:w-24 ml-auto"
+            variant={"secondary"}
+            size={"sm"}
+          >
+            {"すべて"}
+          </Button>
+        )}
       </div>
     </>
   )

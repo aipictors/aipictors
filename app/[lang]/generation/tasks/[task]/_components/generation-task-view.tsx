@@ -487,13 +487,11 @@ export function GenerationTaskView(props: Props) {
                   画像生成
                 </Button>
               </Link>
-              {config.isDevelopmentMode && (
-                <Link href="/generation/tasks" className="flex-1 w-full">
-                  <Button className="p-4 w-full" variant={"secondary"}>
-                    画像一覧
-                  </Button>
-                </Link>
-              )}
+              <Link href="/generation/tasks" className="flex-1 w-full">
+                <Button className="p-4 w-full" variant={"secondary"}>
+                  画像一覧
+                </Button>
+              </Link>
             </div>
           }
         />

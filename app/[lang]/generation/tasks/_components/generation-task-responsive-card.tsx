@@ -1,6 +1,5 @@
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
-import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { GenerationTaskLinkCard } from "@/app/[lang]/generation/tasks/_components/generation-task-link-card"
 import { GenerationTaskSheetButton } from "@/app/[lang]/generation/tasks/_components/generation-task-sheet-button"
 import { config } from "@/config"
@@ -12,7 +11,6 @@ type Props = {
   estimatedSeconds?: number
   selectedTaskIds: string[]
   sizeType: ThumbnailImageSizeType
-  isEditMode?: boolean
   isDialog: boolean
   onClick?(): void
   onCancel?(): void
@@ -29,22 +27,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
 
   return (
     <>
-      {props.isEditMode && (
-        <GenerationTaskEditableCard
-          onClick={() =>
-            props.onSelectTask(props.task.nanoid ?? "", props.task.status)
-          }
-          isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
-          isSelectDisabled={false}
-          taskNanoid={props.task.nanoid}
-          estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          taskId={props.task.id}
-          token={props.task.token}
-          optionButtonSize={props.sizeType}
-          rating={props.task.rating ?? 0}
-        />
-      )}
-      {!props.isEditMode && !isDesktop && (
+      {!isDesktop && (
         <GenerationTaskLinkCard
           taskId={props.task.id}
           taskNanoid={props.task.nanoid}
@@ -54,14 +37,14 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
           isSelectDisabled={true}
         />
       )}
-      {props.isDialog && !props.isEditMode && isDesktop && (
+      {props.isDialog && isDesktop && (
         <GenerationTaskDialogButton
           task={props.task}
           sizeType={props.sizeType}
           onRestore={props.onRestore}
         />
       )}
-      {!props.isDialog && !props.isEditMode && isDesktop && (
+      {!props.isDialog && isDesktop && (
         <GenerationTaskSheetButton
           task={props.task}
           sizeType={props.sizeType}
