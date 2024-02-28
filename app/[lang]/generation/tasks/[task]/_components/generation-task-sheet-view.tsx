@@ -244,7 +244,7 @@ export function GenerationTaskSheetView(props: Props) {
   if (userNanoid === null) return
 
   if (isDesktop) {
-    <GenerationTaskSheetViewContent
+    ;<GenerationTaskSheetViewContent
       task={props.task}
       isScroll={props.isScroll ?? false}
       isDisplayImageListButton={true}
