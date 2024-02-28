@@ -1,43 +1,22 @@
 "use client"
 
-import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
-import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationTaskSheetViewContent } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
   GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { PrivateImage } from "@/app/_components/private-image"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
 import { config } from "@/config"
 import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { cn } from "@/lib/utils"
 import { useMutation } from "@apollo/client"
-import {
-  ArrowDownToLine,
-  ArrowUpRightSquare,
-  ClipboardCopy,
-  FileUp,
-  LinkIcon,
-  PenIcon,
-  Trash2,
-} from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
-import { CopyButton } from "./copy-button"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
@@ -264,171 +243,51 @@ export function GenerationTaskSheetView(props: Props) {
   const userNanoid = context.user?.nanoid ?? null
   if (userNanoid === null) return
 
-  return (
-    <>
-      <ScrollArea className={cn({ "w-full max-w-fit mx-auto": isDesktop })}>
-        <div
-          className={cn("space-y-2", {
-            "p-4 w-full max-w-fit mx-auto": isDesktop,
-            "max-h-[88vh]": props.isScroll,
-          })}
-        >
-          <GenerationImageDialogButton
-            taskId={props.task.id}
-            taskToken={props.task.token}
-            children={
-              <PrivateImage
-                className={`max-h-screen m-auto generation-image-${props.task.id}`}
-                taskId={props.task.id}
-                token={props.task.token as string}
-                alt={"-"}
-              />
-            }
-          />
-          <div className="flex gap-x-2">
-            <GenerationMenuButton
-              title={"同じ情報で生成する"}
-              onClick={onReference}
-              text={"復元"}
-              icon={ArrowUpRightSquare}
-            />
-            <GenerationMenuButton
-              title={"投稿する"}
-              onClick={onPost}
-              text={"投稿"}
-              icon={FileUp}
-            />
-            <GenerationMenuButton
-              title={"生成情報をコピーする"}
-              onClick={() => copyGeneration(GenerationParameters)}
-              icon={ClipboardCopy}
-            />
-            {props.task.nanoid !== null && props.task.nanoid !== "" && (
-              <GenerationMenuButton
-                title={"URLをコピーする"}
-                onClick={() => {
-                  if (props.task.nanoid !== null) {
-                    copyUrl(props.task.nanoid)
-                  }
-                }}
-                icon={LinkIcon}
-              />
-            )}
-            <GenerationMenuButton
-              title={"画像を保存する"}
-              onClick={() => saveGenerationImage(props.task.id)}
-              icon={ArrowDownToLine}
-            />
-            <AppConfirmDialog
-              title={"確認"}
-              description={"本当に削除しますか？"}
-              onNext={() => {
-                onDelete()
-              }}
-              onCancel={() => {}}
-            >
-              <GenerationMenuButton
-                title={"生成履歴を削除する"}
-                onClick={() => () => {}}
-                icon={Trash2}
-              />
-            </AppConfirmDialog>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="my-4 flex gap-x-2 justify-end">
-            <GenerationMenuButton
-              title={"インペイント機能で一部分を再生成して修正する"}
-              onClick={onInPaint}
-              text={"部分修正"}
-              icon={PenIcon}
-            />
-          </div>
-          <StarRating
-            value={rating ?? 0}
-            onChange={(value) => {
-              setRating(value)
-              onChangeRating(props.task.nanoid ?? "", value)
-            }}
-          />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Size"}</p>
-            <p>
-              {generationSize.width}x{generationSize.height}
-            </p>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{props.task.model?.name}</p>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <p className="mb-1 font-semibold">{"prompt"}</p>
-          <Textarea disabled={true} value={props.task.prompt} />
-          <CopyButton className="mb-4" text={props.task.prompt} />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-          <Textarea disabled={true} value={props.task.negativePrompt} />
-          <CopyButton className="mb-4" text={props.task.negativePrompt} />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Sampler"}</p>
-            <p>{props.task.sampler}</p>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="flex space-x-4">
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Seed"}</p>
-              <p>{props.task.seed}</p>
-            </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Scale"}</p>
-              <p>{props.task.scale}</p>
-            </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"ClipSkip"}</p>
-              <p>{props.task.clipSkip}</p>
-            </div>
-          </div>
-        </div>
-      </ScrollArea>
-      {!isDesktop && (
-        <Link href="/generation/tasks">
-          <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
-            画像一覧
-          </Button>
-        </Link>
-      )}
+  if (isDesktop) {
+    <GenerationTaskSheetViewContent
+      task={props.task}
+      isScroll={props.isScroll ?? false}
+      isDisplayImageListButton={true}
+      isListFullSize={true}
+      showInPaintDialog={showInPaintDialog}
+      userNanoid={userNanoid}
+      generationSize={generationSize}
+      rating={rating}
+      GenerationParameters={GenerationParameters}
+      onReference={onReference}
+      onPost={onPost}
+      onDelete={onDelete}
+      onInPaint={onInPaint}
+      onChangeRating={onChangeRating}
+      setRating={setRating}
+      setShowInPaintDialog={setShowInPaintDialog}
+      saveGenerationImage={saveGenerationImage}
+      copyGeneration={copyGeneration}
+      copyUrl={copyUrl}
+    />
+  }
 
-      <InPaintingDialog
-        isOpen={showInPaintDialog}
-        onClose={() => setShowInPaintDialog(false)}
-        taskId={props.task.id}
-        token={props.task.token ?? ""}
-        userNanoid={userNanoid}
-        configSeed={props.task.seed}
-        configSteps={props.task.steps}
-        configSampler={props.task.sampler}
-        configSizeType={props.task.sizeType}
-        configModel={props.task.model?.name}
-        configVae={props.task.vae}
-        configScale={props.task.scale}
-        configClipSkip={props.task.clipSkip}
-      />
-    </>
+  return (
+    <GenerationTaskSheetViewContent
+      task={props.task}
+      isScroll={props.isScroll ?? false}
+      isDisplayImageListButton={false}
+      isListFullSize={false}
+      showInPaintDialog={showInPaintDialog}
+      userNanoid={userNanoid}
+      generationSize={generationSize}
+      rating={rating}
+      GenerationParameters={GenerationParameters}
+      onReference={onReference}
+      onPost={onPost}
+      onDelete={onDelete}
+      onInPaint={onInPaint}
+      onChangeRating={onChangeRating}
+      setRating={setRating}
+      setShowInPaintDialog={setShowInPaintDialog}
+      saveGenerationImage={saveGenerationImage}
+      copyGeneration={copyGeneration}
+      copyUrl={copyUrl}
+    />
   )
 }
