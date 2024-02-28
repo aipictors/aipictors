@@ -41,7 +41,7 @@ export const GenerationConfigModels = (props: Props) => {
 
   return (
     <div className="max-w-[100%] w-full 2xl:max-w-72 xl:max-w-72 lg:max-w-72 md:max-w-[100%] sm:max-w-[100%]">
-      <Tabs className="mb-4">
+      <Tabs defaultValue="normal" className="mb-4">
         <TabsList className="w-full">
           <TabsTrigger className="w-full" value="normal">
             最近
