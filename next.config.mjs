@@ -12,10 +12,6 @@ const nextConfig = {
     // ppr: true, // Can only be enabled in canary
     scrollRestoration: true,
   },
-  webpack(config) {
-    config.externals = [...config.externals, { canvas: "canvas" }]
-    return config
-  },
   output: "standalone",
   env: {
     NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,
