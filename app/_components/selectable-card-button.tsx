@@ -31,7 +31,6 @@ export function SelectableCardButton(props: Props) {
   return (
     <button
       type={"button"}
-      disabled={props.isDisabled}
       onClick={props.onClick}
       onMouseEnter={() => {
         if (props.onMouseEnter) props.onMouseEnter()
