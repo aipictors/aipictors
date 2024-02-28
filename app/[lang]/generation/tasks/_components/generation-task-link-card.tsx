@@ -13,7 +13,7 @@ type Props = {
   token: string | null
   isSelected?: boolean
   estimatedSeconds?: number
-  isSelectDisabled?: boolean
+  isSelectDisabled: boolean
   onClick?(): void
   onCancel?(): void
 }

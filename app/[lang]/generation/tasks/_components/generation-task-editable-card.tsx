@@ -20,7 +20,7 @@ type Props = {
   estimatedSeconds?: number
   rating: number
   optionButtonSize: ThumbnailImageSizeType
-  isSelectDisabled?: boolean
+  isSelectDisabled: boolean
   onClick?(): void
   onCancel?(): void
 }

@@ -27,6 +27,7 @@ export function GenerationTaskSheetButton(props: Props) {
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         token={props.task.token}
         optionButtonSize={props.sizeType}
+        isSelectDisabled={true}
         rating={props.task.rating ?? 0}
         onClick={() => {
           setIsOpen(true)
