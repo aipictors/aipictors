@@ -36,6 +36,7 @@ export const GenerationConfigI2i = () => {
     <div className="flex flex-col gap-y-2">
       <span className="font-bold text-nowrap">{"画像から生成"}</span>
       <CropImageField
+        isHidePreviewImage={context.config.i2iImageBase64 === ""}
         cropWidth={size.width}
         cropHeight={size.height}
         onDeleteImage={onDeleteImage}

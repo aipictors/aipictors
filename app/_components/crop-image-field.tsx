@@ -6,6 +6,7 @@ import { XIcon } from "lucide-react"
 import { useCallback, useState } from "react"
 
 type Props = {
+  isHidePreviewImage: boolean
   cropWidth: number
   cropHeight: number
   onDeleteImage: () => void
@@ -82,14 +83,14 @@ const CropImageField = (props: Props) => {
     props.onDeleteImage()
   }
 
-  return (
-    <>
-      <Input
-        type="file"
-        accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
-        onChange={onFileChange}
-      />
-      {croppedImage && (
+  if (croppedImage && !props.isHidePreviewImage) {
+    return (
+      <>
+        <Input
+          type="file"
+          accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+          onChange={onFileChange}
+        />
         <Card className="relative">
           <img
             className="max-w-64 max-h-48 m-auto"
@@ -105,7 +106,26 @@ const CropImageField = (props: Props) => {
             <XIcon className="h-6 w-6" />
           </Button>
         </Card>
-      )}
+        <ImageCropperModal
+          src={image!}
+          isOpen={isOpen}
+          cropContainerClassName={cropperClassName}
+          cropWidth={props.cropWidth}
+          cropHeight={props.cropHeight}
+          onCrop={onCrop}
+          onClose={onClose}
+        />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Input
+        type="file"
+        accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+        onChange={onFileChange}
+      />
       <ImageCropperModal
         src={image!}
         isOpen={isOpen}

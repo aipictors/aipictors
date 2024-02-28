@@ -14,17 +14,44 @@ export const GenerationConfigMemoSavingContent = () => {
 
   return (
     <>
+      {"タイトル"}
       <Input type="text" placeholder="タイトル" />
+      {"説明（省略可）"}
       <Input type="text" placeholder="説明（省略可）" />
+      {"プロンプト"}
       <Textarea placeholder="プロンプト">{context.config.promptText}</Textarea>
+      {"ネガティブプロンプト"}
       <Input
         type="text"
         value={context.config.negativePromptText}
         placeholder="ネガティブプロンプト"
       />
-      <Input type="number" value={context.config.steps} placeholder="Steps" />
-      <Input type="number" value={context.config.scale} placeholder="Scale" />
-      <Input type="number" value={context.config.seed} placeholder="Seeds" />
+      <div className="flex items-center space-x-2">
+        <div>
+          {"Steps"}
+          <Input
+            type="number"
+            value={context.config.steps}
+            placeholder="Steps"
+          />
+        </div>
+        <div>
+          {"Scale"}
+          <Input
+            type="number"
+            value={context.config.scale}
+            placeholder="Scale"
+          />
+        </div>
+        <div>
+          {"Seeds"}
+          <Input
+            type="number"
+            value={context.config.seed}
+            placeholder="Seeds"
+          />
+        </div>
+      </div>
     </>
   )
 }
