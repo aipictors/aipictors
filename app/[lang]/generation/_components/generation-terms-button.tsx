@@ -1,15 +1,19 @@
 "use client"
 
 import { AppMarkdown } from "@/components/app/app-markdown"
-import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { DrawerClose, DrawerFooter } from "@/components/ui/drawer"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Props = {
   termsMarkdownText: string
@@ -23,23 +27,26 @@ type Props = {
  */
 export const GenerationTermsButton = (props: Props) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
         <Button className="w-full">{"生成する"}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{"規約確認"}</DialogTitle>
-        </DialogHeader>
-        <AppMarkdown className="text-sm">{props.termsMarkdownText}</AppMarkdown>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button className="w-full" onClick={props.onSubmit}>
-              同意する
-            </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{"規約確認"}</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          <ScrollArea className="h-64 w-full">
+            <AppMarkdown>{props.termsMarkdownText}</AppMarkdown>
+          </ScrollArea>
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel>同意しない</AlertDialogCancel>
+          <AlertDialogAction onClick={props.onSubmit}>
+            同意する
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

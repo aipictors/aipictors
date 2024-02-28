@@ -13,7 +13,7 @@
     "build-storybook": "storybook build",
     "postinstall": "lefthook install",
     "patch": "bunx patch-package",
-    "chromatic": "npx chromatic --project-token=chpt_493a53501ada93b"
+    "chromatic": "chromatic --project-token=chpt_493a53501ada93b"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",
@@ -57,7 +57,8 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "@xstate/react": "^4.1.0",
     "autoprefixer": "^10.4.17",
-    "canvas": "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.2.1.tgz",
+    "canvas": "github:Brooooooklyn/canvas",
+    "chromatic": "^11.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
