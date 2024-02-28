@@ -24,6 +24,11 @@ type Props = {
   onSelect(id: string, type: string, prompt: string): void
 }
 
+/**
+ * モデル一覧を表示するボタン
+ * @param props
+ * @returns
+ */
 export const GenerationModelListButton = (props: Props) => {
   const context = useGenerationContext()
 

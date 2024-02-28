@@ -458,9 +458,13 @@ export function GenerationSubmissionView(props: Props) {
           }}
         >
           <div className="flex items-center">
-            <TabsList>
-              <TabsTrigger value="normal">通常</TabsTrigger>
-              <TabsTrigger value="reserve">予約</TabsTrigger>
+            <TabsList className="w-32 sm:w-full md:w-full">
+              <TabsTrigger className="w-full" value="normal">
+                通常
+              </TabsTrigger>
+              <TabsTrigger className="w-full" value="reserve">
+                予約
+              </TabsTrigger>
             </TabsList>
             <div className="ml-auto block lg:hidden xl:hidden 2xl:hidden">
               <GenerationEditorProgress

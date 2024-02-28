@@ -3,13 +3,13 @@
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
 import { GenerationModelListButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-model-list-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
   currentModelId: string
   favoritedModelIds: number[]
-  showFavoritedModels: boolean
   /**
    * 表示されるモデルのID（最大3個）
    */
@@ -40,39 +40,55 @@ export const GenerationConfigModels = (props: Props) => {
     .slice(0, 3)
 
   return (
-    <div className="grid gap-y-2">
-      {!props.showFavoritedModels &&
-        currentModels.map((model) => (
-          <ConfigModelButton
-            key={model?.id}
-            imageURL={model?.thumbnailImageURL ?? ""}
-            name={model?.displayName ?? ""}
-            isSelected={model?.id === props.currentModelId}
-            onClick={() => {
-              props.onSelectModelId(
-                model!.id,
-                model!.type,
-                model?.prompts.join(",") ?? "",
-              )
-            }}
-          />
-        ))}
-      {props.showFavoritedModels &&
-        favoritedModels.map((model) => (
-          <ConfigModelButton
-            key={model?.id}
-            imageURL={model?.thumbnailImageURL ?? ""}
-            name={model?.displayName ?? ""}
-            isSelected={model?.id === props.currentModelId}
-            onClick={() => {
-              props.onSelectModelId(
-                model!.id,
-                model!.type,
-                model?.prompts.join(",") ?? "",
-              )
-            }}
-          />
-        ))}
+    <div className="max-w-[100%] w-full 2xl:max-w-72 xl:max-w-72 lg:max-w-72 md:max-w-[100%] sm:max-w-[100%]">
+      <Tabs className="mb-4">
+        <TabsList className="w-full">
+          <TabsTrigger className="w-full" value="normal">
+            最近
+          </TabsTrigger>
+          <TabsTrigger className="w-full" value="favorite">
+            お気に入り
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="normal">
+          <div className="space-y-2">
+            {currentModels.map((model) => (
+              <ConfigModelButton
+                key={model?.id}
+                imageURL={model?.thumbnailImageURL ?? ""}
+                name={model?.displayName ?? ""}
+                isSelected={model?.id === props.currentModelId}
+                onClick={() => {
+                  props.onSelectModelId(
+                    model!.id,
+                    model!.type,
+                    model?.prompts.join(",") ?? "",
+                  )
+                }}
+              />
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="favorite">
+          <div className="space-y-2">
+            {favoritedModels.map((model) => (
+              <ConfigModelButton
+                key={model?.id}
+                imageURL={model?.thumbnailImageURL ?? ""}
+                name={model?.displayName ?? ""}
+                isSelected={model?.id === props.currentModelId}
+                onClick={() => {
+                  props.onSelectModelId(
+                    model!.id,
+                    model!.type,
+                    model?.prompts.join(",") ?? "",
+                  )
+                }}
+              />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
       <GenerationModelListButton
         favoritedModelIds={props.favoritedModelIds}
         models={props.models}
