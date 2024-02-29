@@ -1,12 +1,10 @@
 "use client"
 
+import { GenerationConfigMemoUpdateParts } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-memo-update-parts"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
-import { deleteImageGenerationMemoMutation } from "@/graphql/mutations/delete-image-generation-memo"
-import { useMutation } from "@apollo/client"
-import { Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
 
 type Props = {
@@ -22,21 +20,7 @@ type Props = {
 export const GenerationConfigMemoItem = (props: Props) => {
   if (props.memo === undefined) return null
 
-  const [deleteTask] = useMutation(deleteImageGenerationMemoMutation)
-
   const context = useGenerationContext()
-
-  const onDelete = async () => {
-    await deleteTask({
-      variables: {
-        input: {
-          nanoid: props.memo.nanoid,
-        },
-      },
-    })
-    props.refetchMemos()
-    toast("削除しました")
-  }
 
   const onRestore = () => {
     const modelId =
@@ -89,16 +73,10 @@ export const GenerationConfigMemoItem = (props: Props) => {
             </div>
           </Button>
         </AppConfirmDialog>
-        <AppConfirmDialog
-          title={"設定を削除する"}
-          description={"選択したメモを削除しますか？"}
-          onNext={onDelete}
-          onCancel={() => {}}
-        >
-          <Button className="absolute right-2" variant={"ghost"} size={"icon"}>
-            <Trash2Icon className="w-4" />
-          </Button>
-        </AppConfirmDialog>
+        <GenerationConfigMemoUpdateParts
+          memo={props.memo}
+          refetchMemos={props.refetchMemos}
+        />
       </div>
     </>
   )

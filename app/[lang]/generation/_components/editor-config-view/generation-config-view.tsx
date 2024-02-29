@@ -24,10 +24,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
+import { imageGenerationMemosQuery } from "@/graphql/queries/image-generation/image-generation-memos"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { cn } from "@/lib/utils"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { skipToken, useQuery, useSuspenseQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
@@ -123,6 +124,16 @@ export const GenerationConfigView = () => {
    */
   const configModelType = currentModel?.type ?? "SD1"
 
+  const { data: memos, refetch } = useQuery(imageGenerationMemosQuery, {
+    variables: {
+      limit: 64,
+      offset: 0,
+      orderBy: {
+        createdAt: "DESC",
+      },
+    },
+  })
+
   return (
     <GenerationViewCard
       title={"設定"}
@@ -202,6 +213,8 @@ export const GenerationConfigView = () => {
             }}
           />
           <GenerationConfigMemoSettingDialog
+            memos={memos}
+            refetch={refetch}
             onClose={() => {
               setShowMemoSetting(false)
             }}
