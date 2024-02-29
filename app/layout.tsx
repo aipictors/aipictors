@@ -7,6 +7,7 @@ import { config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
 import Script from "next/script"
+import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
 import { notoSansFont } from "./_fonts/noto-sans-font"
 
@@ -33,6 +34,7 @@ const RootLayout = (props: Props) => {
           notoSansFont.variable,
         )}
       >
+        <NextTopLoader shadow={false} height={2} />
         <ContextProviders>
           {props.children}
           <Toaster />
