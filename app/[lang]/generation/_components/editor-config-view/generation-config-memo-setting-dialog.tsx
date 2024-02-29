@@ -9,6 +9,8 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
+import { imageGenerationMemosQuery } from "@/graphql/queries/image-generation/image-generation-memos"
+import { useQuery } from "@apollo/client"
 
 type Props = {
   isOpen: boolean
@@ -21,6 +23,16 @@ type Props = {
  * @returns
  */
 export const GenerationConfigMemoSettingDialog = (props: Props) => {
+  const { data: memos, refetch } = useQuery(imageGenerationMemosQuery, {
+    variables: {
+      limit: 320,
+      offset: 0,
+      orderBy: {
+        createdAt: "DESC",
+      },
+    },
+  })
+
   return (
     <Dialog
       open={props.isOpen}
@@ -30,16 +42,17 @@ export const GenerationConfigMemoSettingDialog = (props: Props) => {
     >
       <DialogContent>
         <DialogHeader />
-        <GenerationConfigMemoList />
+        <GenerationConfigMemoList memos={memos} refetchMemos={refetch} />
         <DialogFooter>
-          <GenerationConfigMemoOperationParts />
           <Button
+            variant={"secondary"}
             onClick={() => {
               props.onClose()
             }}
           >
             {"閉じる"}
           </Button>
+          <GenerationConfigMemoOperationParts refetchMemos={refetch} />
         </DialogFooter>
       </DialogContent>
     </Dialog>

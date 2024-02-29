@@ -8,15 +8,24 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useState } from "react"
+
+type Props = {
+  refetchMemos: () => void
+}
 
 /**
  * 履歴メモ設定ダイアログ
  * @param props
  * @returns
  */
-export const GenerationConfigMemoOperationParts = () => {
+export const GenerationConfigMemoOperationParts = (props: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  const closeDialog = () => {
+    setIsOpen(false)
+  }
 
   return (
     <>
@@ -25,24 +34,29 @@ export const GenerationConfigMemoOperationParts = () => {
           setIsOpen(true)
         }}
         className="h-11"
-        variant="secondary"
       >
         {"現在の設定をメモする"}
       </Button>
       <Dialog
         open={isOpen}
         onOpenChange={() => {
-          setIsOpen(false)
+          closeDialog()
         }}
       >
         <DialogContent>
           <DialogHeader />
-          <div>メモを設定する</div>
-          <GenerationConfigMemoSavingContent />
+          <div>{"保存したメモは復元できます"}</div>
+          <ScrollArea className="h-full">
+            <GenerationConfigMemoSavingContent
+              refetchMemos={props.refetchMemos}
+              onClose={closeDialog}
+            />
+          </ScrollArea>
           <DialogFooter>
             <Button
+              variant={"secondary"}
               onClick={() => {
-                setIsOpen(false)
+                closeDialog()
               }}
             >
               {"閉じる"}

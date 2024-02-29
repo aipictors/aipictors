@@ -40,7 +40,7 @@ export const GenerationConfigModels = (props: Props) => {
     .slice(0, 3)
 
   return (
-    <div className="max-w-[100%] w-full 2xl:max-w-72 xl:max-w-72 lg:max-w-72 md:max-w-[100%] sm:max-w-[100%]">
+    <>
       <Tabs defaultValue="normal" className="mb-4">
         <TabsList className="w-full">
           <TabsTrigger className="w-full" value="normal">
@@ -51,7 +51,7 @@ export const GenerationConfigModels = (props: Props) => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="normal">
-          <div className="space-y-2">
+          <div className="space-y-2 flex flex-col">
             {currentModels.map((model) => (
               <ConfigModelButton
                 key={model?.id}
@@ -70,7 +70,7 @@ export const GenerationConfigModels = (props: Props) => {
           </div>
         </TabsContent>
         <TabsContent value="favorite">
-          <div className="space-y-2">
+          <div className="space-y-2 flex flex-col">
             {favoritedModels.map((model) => (
               <ConfigModelButton
                 key={model?.id}
@@ -95,6 +95,6 @@ export const GenerationConfigModels = (props: Props) => {
         selectedModelId={props.currentModelId}
         onSelect={props.onSelectModelId}
       />
-    </div>
+    </>
   )
 }

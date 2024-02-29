@@ -13,6 +13,7 @@ type Props = {
 
 export const MessageInput = (props: Props) => {
   const [message, setMessage] = useState("")
+
   const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const handleSubmit = () => {
