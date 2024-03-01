@@ -22,6 +22,9 @@ export const GenerationConfigMemoItem = (props: Props) => {
 
   const context = useGenerationContext()
 
+  /**
+   * リストア
+   */
   const onRestore = () => {
     const modelId =
       props.memo.model.id === "0" ? context.config.modelId : props.memo.model.id
@@ -57,6 +60,27 @@ export const GenerationConfigMemoItem = (props: Props) => {
     toast("設定を復元しました")
   }
 
+  /**
+   * タイムスタンプ
+   * @param createdAt
+   * @returns
+   */
+  const formatTimestamp = (createdAt: number) => {
+    const date = new Date(createdAt * 1000)
+
+    const year = date.getFullYear()
+
+    const month = (date.getMonth() + 1).toString().padStart(2, "0")
+
+    const day = date.getDate().toString().padStart(2, "0")
+
+    const hours = date.getHours().toString().padStart(2, "0")
+
+    const minutes = date.getMinutes().toString().padStart(2, "0")
+
+    return `${year}/${month}/${day} ${hours}:${minutes}`
+  }
+
   return (
     <>
       <div className="relative items-center flex">
@@ -70,6 +94,11 @@ export const GenerationConfigMemoItem = (props: Props) => {
             <div className="text-left absolute left-2">
               <div className="left-2">{props.memo.title}</div>
               <div className="left-2 top-12">{props.memo.explanation}</div>
+              {props.memo.createdAt && (
+                <div className="left-2 top-12 opacity-40">
+                  {formatTimestamp(props.memo.createdAt)}
+                </div>
+              )}
             </div>
           </Button>
         </AppConfirmDialog>
