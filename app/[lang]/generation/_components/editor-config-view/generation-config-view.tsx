@@ -99,24 +99,12 @@ export const GenerationConfigView = () => {
   /**
    * お気に入りのモデル
    */
-  const { data: userSetting } = useSuspenseQuery(userSettingQuery, {})
-
-  useEffect(() => {
-    const favoritedModelIds =
-      userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
-    context.updateFavoriteModelIds(favoritedModelIds)
-  }, [])
-
-  /**
-   * お気に入りモデル表示切替
-   */
-  const onToggleShowFavorite = () => {
-    if (showFavoritedModels) {
-      setShowFavoritedModels(false)
-      return
-    }
-    setShowFavoritedModels(true)
-  }
+  const { data: userSetting, refetch: refetchSetting } = useQuery(
+    userSettingQuery,
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+    },
+  )
 
   /**
    * モデルの種類
@@ -125,6 +113,7 @@ export const GenerationConfigView = () => {
   const configModelType = currentModel?.type ?? "SD1"
 
   const { data: memos, refetch } = useQuery(imageGenerationMemosQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       limit: 64,
       offset: 0,
@@ -133,6 +122,17 @@ export const GenerationConfigView = () => {
       },
     },
   })
+
+  useEffect(() => {
+    if (authContext.isLoading) return
+    if (authContext.isNotLoggedIn) return
+    // ログイン状態が変わったら再取得
+    refetch()
+    refetchSetting()
+    const favoritedModelIds =
+      userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
+    context.updateFavoriteModelIds(favoritedModelIds)
+  }, [authContext.isLoggedIn])
 
   return (
     <GenerationViewCard
