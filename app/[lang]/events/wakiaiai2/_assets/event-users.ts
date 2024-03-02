@@ -18,7 +18,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP", "EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kakowara.jpg?alt=media&token=5c95941e-9aae-4eae-b61d-07cd6d169efc",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kakowara.jpg?alt=media&token=bb06210f-ad6c-4331-98de-9f163315a8ad",
     twitterId: "kakowara365",
     aipictorsId: null,
     siteURL: null,
