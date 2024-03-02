@@ -50,6 +50,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "ざくろ舞",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_Kilroy.jpg?alt=media&token=a98136f9-0cd9-49a3-be52-a88187bdd70a",
+    twitterId: null,
+    aipictorsId: null,
+    siteURL: "https://bsky.app/profile/zacromai.bsky.social",
+    siteTitle: "BlueSky",
+    links: [],
+  },
+  {
     name: "Aipictors",
     types: ["EXHIBIT"],
     message: null,
