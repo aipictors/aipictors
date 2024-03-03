@@ -53,7 +53,7 @@ const EventWakiaiaiPage = async () => {
             rel="noopener noreferrer"
           >
             <Button variant={"outline"} className="text-lg font-bold m-4">
-              出展・展示参加募集中！3/20〆切
+              出展/展示参加募集3/20〆切
               <MousePointerClickIcon className="ml-2" />
             </Button>
           </a>

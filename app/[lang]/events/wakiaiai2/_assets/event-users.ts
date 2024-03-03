@@ -6,7 +6,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP", "EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kotobanoaya.jpg?alt=media&token=6e974a20-455b-4d76-9c07-5dae27aa5566",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kotobanoaya_160.jpg?alt=media&token=e3b4a56c-23cc-4be5-93a4-2adea6e05109",
     twitterId: "ko_to_ba_no_aya",
     aipictorsId: null,
     siteURL: null,
@@ -30,7 +30,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FKARA_Beee.png?alt=media&token=a287494f-9ef3-48bc-abf2-f2bf68d0e0c3",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_KARA_Beee_160.png?alt=media&token=15ac947e-c5ac-443a-ba35-8ebd7224185a",
     twitterId: "KARA_Beee",
     aipictorsId: null,
     siteURL: null,
@@ -42,7 +42,7 @@ export const eventUsers: EventUser[] = [
     types: ["EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_Wood_Pecker_.jpg?alt=media&token=0ad33815-a944-4fa8-b5d5-2745eb8daf09",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_Wood_Pecker_160.jpg?alt=media&token=f96c838e-85f6-4429-9be4-356327c3d584",
     twitterId: "Wood_Pecker_",
     aipictorsId: null,
     siteURL: null,
@@ -66,7 +66,7 @@ export const eventUsers: EventUser[] = [
     types: ["EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2FaTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp?alt=media&token=e7da37fe-0a77-4b08-b48f-8fcd33d555a8",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_aipictors_160.png?alt=media&token=6f7a88ee-78ae-49cd-8476-940f2d2f4707",
     twitterId: "Aipictors",
     aipictorsId: null,
     siteURL: null,
@@ -78,7 +78,7 @@ export const eventUsers: EventUser[] = [
     types: ["EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Faz0tlecX.jpg?alt=media&token=2218b7c1-70f2-487d-a9a7-4c6f5a0b4e13",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_prompton_160.jpg?alt=media&token=0c91c377-890f-43c1-9c93-12c8568f993e",
     twitterId: "promptonio",
     aipictorsId: null,
     siteURL: null,

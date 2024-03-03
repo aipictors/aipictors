@@ -42,7 +42,7 @@ export const EventCreatorCard = (props: Props) => {
               alt={props.user.name}
               src={props.user.iconImageURL}
               className="h-full rounded shadow-xl w-full"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ height: "100%", objectFit: "contain" }}
             />
           </a>
         </div>
