@@ -36,11 +36,13 @@ export const EventCreatorCard = (props: Props) => {
                 item_list_name: props.user.name,
               })
             }}
+            style={{ display: "block", width: "100%", height: "100%" }}
           >
             <img
               alt={props.user.name}
               src={props.user.iconImageURL}
               className="h-full rounded shadow-xl w-full"
+              style={{ height: "100%", objectFit: "contain" }}
             />
           </a>
         </div>

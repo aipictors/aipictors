@@ -1,8 +1,10 @@
 import { eventUsers } from "@/app/[lang]/events/wakiaiai/_assets/event-users"
 import { EventCreatorCard } from "@/app/[lang]/events/wakiaiai/_components/event-creator-card"
 import { EventImage } from "@/app/[lang]/events/wakiaiai/_components/event-image"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { MousePointerClickIcon } from "lucide-react"
 import type { Metadata } from "next"
 
 const EventWakiaiaiPage = async () => {
@@ -47,6 +49,12 @@ const EventWakiaiaiPage = async () => {
               "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会"
             }
           </p>
+          <a href="/events/wakiaiai2" target="_blank" rel="noopener noreferrer">
+            <Button variant={"outline"} className="text-lg font-bold m-4">
+              和気あいAI2開催決定
+              <MousePointerClickIcon className="ml-2" />
+            </Button>
+          </a>
         </div>
       </div>
       <div className={cn("grid md:grid-cols-2 md:grid-flow-col gap-2")}>
