@@ -12,6 +12,7 @@ import { GenerationConfigScale } from "@/app/[lang]/generation/_components/edito
 import { GenerationConfigSeed } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-seed"
 import { GenerationConfigSize } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-size"
 import { GenerationConfigStep } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-step"
+import { GenerationEditorConfigVae } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-vae"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -199,6 +200,10 @@ export const GenerationConfigView = () => {
                 <GenerationConfigClipSkip
                   value={context.config.clipSkip}
                   onChange={context.updateClipSkip}
+                />
+                <GenerationEditorConfigVae
+                  value={context.config.vae}
+                  onChange={context.updateVae}
                 />
               </AccordionContent>
             </AccordionItem>
