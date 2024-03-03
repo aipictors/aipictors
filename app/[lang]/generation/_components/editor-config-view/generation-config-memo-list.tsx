@@ -51,7 +51,7 @@ export const GenerationConfigMemoList = (props: Props) => {
         value={searchWord}
         placeholder="タイトル、説明、プロンプトで検索"
       />
-      <ScrollArea className="h-full p-4">
+      <ScrollArea className="h-full max-h-96 p-4">
         {filterModels.map(
           (memo) =>
             memo && (

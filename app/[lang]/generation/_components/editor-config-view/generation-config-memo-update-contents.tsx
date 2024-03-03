@@ -1,5 +1,6 @@
 "use client"
 
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,6 +34,8 @@ type Props = {
  * @returns
  */
 export const GenerationConfigMemoUpdateContent = (props: Props) => {
+  const context = useGenerationContext()
+
   const [title, setTitle] = useState(props.memo.title)
 
   const [description, setDescription] = useState(props.memo.explanation)
@@ -108,6 +111,44 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
       },
     })
     props.refetchMemos()
+  }
+
+  /**
+   * リストア
+   */
+  const onRestore = () => {
+    const modelId =
+      props.memo.model.id === "0" ? context.config.modelId : props.memo.model.id
+    const promptText =
+      props.memo.prompts === "" ? context.config.promptText : props.memo.prompts
+    const negativePromptText =
+      props.memo.negativePrompts === ""
+        ? context.config.negativePromptText
+        : props.memo.negativePrompts
+    const scale = props.memo.scale
+    const seed = props.memo.seed
+    const clipSkip = props.memo.clipSkip
+    const steps = props.memo.steps
+    const sampler = props.memo.sampler
+    const sizeType = context.config.sizeType
+    const vae = context.config.vae ?? ""
+    const modelType = context.config.modelType
+
+    context.updateSettings(
+      modelId,
+      steps,
+      modelType,
+      sampler,
+      scale,
+      vae,
+      promptText,
+      negativePromptText,
+      seed,
+      sizeType,
+      clipSkip,
+    )
+
+    toast("設定を復元しました")
   }
 
   return (
@@ -240,7 +281,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
           </Select>
         </div>
       </div>
-      <div className="flex items-center mt-8 mb-4">
+      <div className="flex items-center mt-4 mb-0">
         {isDeletingMemo ? (
           <Loader2 className="w-16 mr-2 animate-spin" />
         ) : (
@@ -251,15 +292,25 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             onCancel={() => {}}
           >
             <Button className="w-16 h-11 mr-2" variant={"ghost"} size={"icon"}>
-              <Trash2Icon className="w-4" />
+              <Trash2Icon className="w-4 mr-4" />
             </Button>
           </AppConfirmDialog>
         )}
 
+        <Button
+          variant={"secondary"}
+          className="w-full mr-4"
+          onClick={() => {
+            onRestore()
+          }}
+        >
+          {"使用する"}
+        </Button>
         {isUpdatingMemo ? (
           <Loader2 className="w-16 animate-spin" />
         ) : (
           <Button
+            variant={"secondary"}
             className="w-full"
             onClick={() => {
               if (title === "") {
