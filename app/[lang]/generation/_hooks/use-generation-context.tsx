@@ -157,7 +157,7 @@ export const useGenerationContext = () => {
    */
   const updateVae = (vae: string | null) => {
     cacheStorage.saveVae(vae)
-    const value = configAction.updateVae(vae)
+    const value = configAction.updateVae(vae).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
