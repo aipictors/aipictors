@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "predev": "graphql-codegen-esm --config codegen.ts",
-    "build": "graphql-codegen-esm --config codegen.ts && next build",
+    "build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
     "start": "next start",
     "check": "tsc --noEmit",
     "refactor": "biome check --apply ./app ./graphql && biome format ./app ./graphql --write",

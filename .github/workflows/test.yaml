@@ -23,13 +23,13 @@ jobs:
       - run: time bun i --frozen-lockfile
 
       - name: Prebuild
-        run: time bun predev
+        run: time bun run predev
 
       - name: Lint
         run: bunx oxlint@latest --nextjs-plugin
 
       - name: Run Type Cheking
-        run: time bun check
+        run: time bun run check
 
       - name: Run Test
-        run: time bun test
+        run: time bun run test
