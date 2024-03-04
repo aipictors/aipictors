@@ -43,7 +43,6 @@ export class GenerationConfigAction {
         i2iImageBase64: config.generationFeature.defaultI2iImageBase64,
         i2iDenoisingStrengthSize:
           config.generationFeature.defaultI2iDenoisingStrengthSize,
-        previewTask: null,
       }),
       this.props,
     )

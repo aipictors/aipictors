@@ -91,11 +91,10 @@ export class GenerationConfigState implements Props {
 
   readonly i2iDenoisingStrengthSize!: Props["i2iDenoisingStrengthSize"]
 
-  readonly previewTask: Props["previewTask"]
+  readonly previewTask!: Props["previewTask"]
 
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = false
-    this.previewTask = null
   }
 }

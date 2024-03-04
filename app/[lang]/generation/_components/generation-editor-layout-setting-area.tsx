@@ -46,6 +46,8 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
     )
   }
 
+  console.log(context.config.previewTask)
+
   /**
    * プレビュータスクが設定されている場合
    */
@@ -61,7 +63,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
       <div>{props.submission}</div>
       <ResizablePanelGroup
         direction="horizontal"
-        className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden"
+        className="flex flex-1 flex-col lg:flex-row mt-2 gap-4 overflow-hidden"
       >
         <ResizablePanel className="lg:min-w-40 xl:min-w-40">
           {props.config}
