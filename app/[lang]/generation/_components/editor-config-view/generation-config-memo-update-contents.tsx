@@ -86,6 +86,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
     })
     props.refetchMemos()
     toast("削除しました")
+    props.onClose()
   }
 
   console.log(prompts)

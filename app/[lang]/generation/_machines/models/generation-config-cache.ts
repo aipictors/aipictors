@@ -29,6 +29,7 @@ export class GenerationConfigCache {
       isUseRecommendedPrompt: this.restoreUseRecommendedPrompt(),
       i2iImageBase64: "", // i2i用画像はキャッシュしない
       i2iDenoisingStrengthSize: this.restoreI2iDenoisingStrengthSize(),
+      previewTask: null,
     })
   }
 
@@ -56,6 +57,7 @@ export class GenerationConfigCache {
       i2iImageBase64: "",
       i2iDenoisingStrengthSize:
         config.generationFeature.defaultI2iDenoisingStrengthSize,
+      previewTask: null,
     })
   }
 

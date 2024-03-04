@@ -30,11 +30,12 @@ export const GenerationTaskCard = (props: Props) => {
           onClick={() =>
             props.onSelectTask(props.task.nanoid ?? "", props.task.status)
           }
+          taskId={props.task.id}
           isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
           isSelectDisabled={false}
           taskNanoid={props.task.nanoid}
+          task={props.task}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          taskId={props.task.id}
           token={props.task.token}
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}

@@ -1,5 +1,6 @@
 import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
+import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { produce } from "immer"
 
 type Props = {
@@ -42,6 +43,7 @@ export class GenerationConfigAction {
         i2iImageBase64: config.generationFeature.defaultI2iImageBase64,
         i2iDenoisingStrengthSize:
           config.generationFeature.defaultI2iDenoisingStrengthSize,
+        previewTask: null,
       }),
       this.props,
     )
@@ -306,6 +308,14 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       favoriteModelIds: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  updatePreviewTask(value: ImageGenerationTaskFieldsFragment | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      previewTask: value,
     })
     return new GenerationConfigAction(state, this.props)
   }

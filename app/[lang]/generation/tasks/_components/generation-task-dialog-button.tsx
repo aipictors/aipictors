@@ -26,6 +26,7 @@ export function GenerationTaskDialogButton(props: Props) {
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         taskId={props.task.id}
         token={props.task.token}
+        task={props.task}
         optionButtonSize={props.sizeType}
         isSelectDisabled={true}
         rating={props.task.rating ?? 0}

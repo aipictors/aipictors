@@ -17,6 +17,38 @@ const zProps = z.object({
   isUseRecommendedPrompt: z.boolean(),
   i2iImageBase64: z.string(),
   i2iDenoisingStrengthSize: z.number(),
+  previewTask: z
+    .object({
+      id: z.string(),
+      prompt: z.string(),
+      negativePrompt: z.string(),
+      seed: z.number(),
+      steps: z.number(),
+      scale: z.number(),
+      sampler: z.string(),
+      clipSkip: z.number(),
+      sizeType: z.string(),
+      t2tImageUrl: z.string().nullable(),
+      t2tMaskImageUrl: z.string().nullable(),
+      t2tDenoisingStrengthSize: z.string().nullable(),
+      t2tInpaintingFillSize: z.string().nullable(),
+      rating: z.number().nullable(),
+      completedAt: z.number().nullable(),
+      status: z.string(),
+      isDeleted: z.boolean(),
+      count: z.number(),
+      generationType: z.string(),
+      vae: z.string().nullable(),
+      token: z.string().nullable(),
+      nanoid: z.string().nullable(),
+      estimatedSeconds: z.number().nullable(),
+      model: z.object({
+        id: z.string(),
+        name: z.string(),
+        type: z.string(),
+      }),
+    })
+    .nullable(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -59,8 +91,11 @@ export class GenerationConfigState implements Props {
 
   readonly i2iDenoisingStrengthSize!: Props["i2iDenoisingStrengthSize"]
 
+  readonly previewTask: Props["previewTask"]
+
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = false
+    this.previewTask = null
   }
 }
