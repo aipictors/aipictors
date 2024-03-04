@@ -63,6 +63,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
       <div>{props.submission}</div>
       <ResizablePanelGroup
         direction="horizontal"
+        style={{ height: "calc(100% - 130px)" }}
         className="flex flex-1 flex-col lg:flex-row mt-2 gap-4 overflow-hidden"
       >
         <ResizablePanel className="lg:min-w-40 xl:min-w-40">

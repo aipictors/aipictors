@@ -15,7 +15,7 @@ import { config } from "@/config"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
-  value: string | null
+  value: string
   onChange(value: string | null): void
 }
 
@@ -40,7 +40,7 @@ export const GenerationEditorConfigVae = (props: Props) => {
         </TooltipProvider>
       </div>
       <Select
-        value={props.value ?? ""}
+        value={props.value}
         onValueChange={(value) => {
           props.onChange(value)
         }}
@@ -49,7 +49,6 @@ export const GenerationEditorConfigVae = (props: Props) => {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="null">{"なし"}</SelectItem>
           {config.generationFeature.vaeValues.map((value) => (
             <SelectItem key={value} value={value}>
               {value}

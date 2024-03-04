@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 
 type Props = {
@@ -32,12 +33,21 @@ export const ConfigLoraModel = (props: Props) => {
             defaultValue={[props.value]}
             min={-1}
             max={1}
-            step={0.01}
+            step={0.1}
             onValueChange={(value) => {
               props.setValue(value[0])
             }}
           />
-          <span className="font-bold">{props.value.toFixed(2)}</span>
+          <Input
+            type="number"
+            value={props.value.toFixed(2)}
+            className="font-bold w-20"
+            min={-1}
+            max={1}
+            onChange={(event) => {
+              props.setValue(Number(event.target.value))
+            }}
+          />
         </div>
         <Button size={"sm"} variant={"secondary"} onClick={props.onDelete}>
           {"削除"}

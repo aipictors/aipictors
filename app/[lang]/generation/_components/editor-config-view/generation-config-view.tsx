@@ -47,8 +47,6 @@ export const GenerationConfigView = () => {
 
   const authContext = useContext(AuthContext)
 
-  const [showFavoritedModels, setShowFavoritedModels] = useState(false)
-
   const [showMemoSetting, setShowMemoSetting] = useState(false)
 
   const ref = searchParams.get("ref")
@@ -81,6 +79,7 @@ export const GenerationConfigView = () => {
           context.updateSteps(task.steps)
           context.updateSampler(task.sampler)
           context.updateClipSkip(task.clipSkip)
+          context.updateVae(task.vae)
 
           toast("タスクを復元しました。")
         }
@@ -202,7 +201,7 @@ export const GenerationConfigView = () => {
                   onChange={context.updateClipSkip}
                 />
                 <GenerationEditorConfigVae
-                  value={context.config.vae}
+                  value={context.config.vae ?? ""}
                   onChange={context.updateVae}
                 />
               </AccordionContent>
