@@ -10,17 +10,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
+
+type Props = {
+  label?: string
+  isWidthFull?: boolean
+}
 
 /**
  * ログイン
  * @param props
  * @returns
  */
-export function LoginDialogButton() {
+export function LoginDialogButton(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>{"ログイン"}</Button>
+        <Button className={cn(props.isWidthFull ? "w-full" : "")}>
+          {props.label ? props.label : "ログイン"}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -1,5 +1,6 @@
 "use client"
 
+import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
 import { GenerationCountSelect } from "@/app/[lang]/generation/_components/editor-submission-view/generation-count-select"
 import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/editor-submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
@@ -108,13 +109,18 @@ export function GenerationSubmitOperationParts(props: Props) {
             )}
           />
         )}
-        {/* 規約確認開始ボタン */}
-        {context.user?.hasSignedImageGenerationTerms !== true && (
-          <GenerationTermsButton
-            termsMarkdownText={props.termsText}
-            onSubmit={props.onSignTerms}
-          />
+        {/* 未ログインならログイン */}
+        {context.user === null && (
+          <LoginDialogButton label="生成" isWidthFull={true} />
         )}
+        {/* 規約確認開始ボタン */}
+        {context.user !== null &&
+          context.user?.hasSignedImageGenerationTerms !== true && (
+            <GenerationTermsButton
+              termsMarkdownText={props.termsText}
+              onSubmit={props.onSignTerms}
+            />
+          )}
         {/* 生成キャンセル */}
         {props.generationMode === "reserve" && (
           <GenerationTasksCancelButton
