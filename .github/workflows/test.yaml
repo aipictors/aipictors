@@ -32,4 +32,4 @@ jobs:
         run: time bun run check
 
       - name: Run Test
-        run: time bun run test
+        run: time bun test
