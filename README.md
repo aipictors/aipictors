@@ -31,6 +31,9 @@ powershell -c "irm bun.sh/install.ps1|iex"
 エディタは、[Visual Studio Code](https://code.visualstudio.com/)を推奨しています。  
 
 [推奨されている拡張機能](.vscode/extensions.json)をインストールしてください。  
+```bash
+bun run ext
+```
 再読み込みを要求された場合はVSCodeの再起動を行ってください。  
 Visual Studio Codeの設定については、[settings.json](.vscode/settings.json)を参照してください。  
 
