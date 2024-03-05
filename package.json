@@ -14,7 +14,7 @@
     "postinstall": "lefthook install",
     "patch": "bunx patch-package",
     "chromatic": "chromatic --project-token=chpt_493a53501ada93b",
-    "ext": "bun run install-vscode-extensions.ts"
+    "ext": "bun run scripts/install-vscode-extensions.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",

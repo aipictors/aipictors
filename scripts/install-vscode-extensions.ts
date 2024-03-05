@@ -21,4 +21,4 @@ async function installVscodeExtensions() {
   }
 }
 
-installVscodeExtensions()
+await installVscodeExtensions()
