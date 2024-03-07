@@ -5,7 +5,7 @@ import { PrivateImage } from "@/app/_components/private-image"
 import { Card } from "@/components/ui/card"
 
 /**
- * タスク内容
+ * タスクプレビュー内容
  * @param props
  * @returns
  */

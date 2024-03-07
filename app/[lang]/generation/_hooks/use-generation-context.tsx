@@ -93,6 +93,14 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * モードを変更する
+   * @param mode
+   */
+  const changeMode = (mode: string) => {
+    send({ type: mode })
+  }
+
+  /**
    * プロンプトを変更する
    * @param text
    */
@@ -334,6 +342,7 @@ export const useGenerationContext = () => {
     user: dataContext.user,
     currentPass: dataContext.currentPass,
     reset,
+    changeMode,
     updateSettings,
     updateModelId,
     updateFavoriteModelIds,

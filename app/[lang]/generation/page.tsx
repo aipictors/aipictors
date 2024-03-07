@@ -3,7 +3,8 @@ import { GenerationConfigView } from "@/app/[lang]/generation/_components/editor
 import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-negative-prompt-view"
 import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"
-import { GenerationTaskContentView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-content-view"
+import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-content-preview"
+import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-details-view"
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
 import { readFile } from "fs/promises"
@@ -37,7 +38,8 @@ const GenerationPage = async () => {
       negativePromptEditor={<GenerationNegativePromptView />}
       submission={<GenerationSubmissionView termsText={termsMarkdownText} />}
       taskList={<GenerationTaskListView />}
-      taskContent={<GenerationTaskContentView />}
+      taskDetails={<GenerationTaskDetailsView />}
+      taskContent={<GenerationTaskContentPreview />}
     />
   )
 }

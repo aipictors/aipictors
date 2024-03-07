@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationEditorLayoutHistoryListArea } from "@/app/[lang]/generation/_components/generation-editor-layout-history-list-area"
 import { GenerationEditorLayoutSettingArea } from "@/app/[lang]/generation/_components/generation-editor-layout-setting-area"
 import {
   ResizableHandle,
@@ -15,6 +16,7 @@ type Props = {
   negativePromptEditor: React.ReactNode
   submission: React.ReactNode
   taskList: React.ReactNode
+  taskDetails: React.ReactNode
   taskContent: React.ReactNode
 }
 
@@ -60,7 +62,10 @@ export const GenerationEditorLayout = (props: Props) => {
         </ResizablePanel>
         <ResizableHandle withHandle className="mr-4 ml-4" />
         <ResizablePanel className="lg:min-w-80 xl:min-w-80">
-          {props.taskList}
+          <GenerationEditorLayoutHistoryListArea
+            taskList={props.taskList}
+            taskDetails={props.taskDetails}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </main>

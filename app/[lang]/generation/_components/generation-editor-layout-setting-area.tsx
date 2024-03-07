@@ -1,6 +1,6 @@
 "use client"
 
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -23,8 +23,11 @@ type Props = {
  * @returns
  */
 export const GenerationEditorLayoutSettingArea = (props: Props) => {
-  const context = useGenerationContext()
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
 
   /**
    * スマホの場合リサイザーなし
@@ -46,15 +49,10 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
     )
   }
 
-  console.log(context.config.previewTask)
-
   /**
    * プレビュータスクが設定されている場合
    */
-  if (
-    context.config.previewTask !== null &&
-    context.config.previewTask !== undefined
-  ) {
+  if (state === "HISTORY_PREVIEW") {
     return <>{props.taskContent}</>
   }
 

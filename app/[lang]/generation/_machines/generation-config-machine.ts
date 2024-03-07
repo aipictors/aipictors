@@ -44,6 +44,20 @@ export const generationConfigMachine = createMachine({
             return props.event.value
           }),
         },
+        OPEN_HISTORY_PREVIEW: {
+          target: "HISTORY_PREVIEW",
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    HISTORY_PREVIEW: {
+      description: "履歴プレビュー",
+      on: {
+        CLOSE: "PROMPT_VIEW",
+        OPEN_FULL_HISTORY: "HISTORY_VIEW",
       },
     },
 

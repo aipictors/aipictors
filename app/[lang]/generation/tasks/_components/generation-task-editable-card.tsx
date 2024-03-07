@@ -1,3 +1,4 @@
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
@@ -92,16 +93,19 @@ export const GenerationTaskEditableCard = (props: Props) => {
     )
   }
 
+  const { send } = GenerationConfigContext.useActorRef()
+
   return (
     <div
       className="relative grid p-0 h-full overflow-hidden rounded bg-card"
       onMouseEnter={() => {
         context.updatePreviewTask(props.task)
-        console.log(props.task)
+        send({ type: "OPEN_HISTORY_PREVIEW" })
         setIsHovered(true)
       }}
       onMouseLeave={() => {
         context.updatePreviewTask(null)
+        send({ type: "CLOSE" })
         setIsHovered(false)
       }}
     >

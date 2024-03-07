@@ -1,4 +1,5 @@
 import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import { GenerationTaskChangeModeButton } from "@/app/[lang]/generation/tasks/_components/generation-task-change-mode-button"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
 import { GenerationTaskLinkCard } from "@/app/[lang]/generation/tasks/_components/generation-task-link-card"
 import { GenerationTaskSheetButton } from "@/app/[lang]/generation/tasks/_components/generation-task-sheet-button"
@@ -45,7 +46,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
         />
       )}
       {!props.isDialog && isDesktop && (
-        <GenerationTaskSheetButton
+        <GenerationTaskChangeModeButton
           task={props.task}
           sizeType={props.sizeType}
           onRestore={props.onRestore}
