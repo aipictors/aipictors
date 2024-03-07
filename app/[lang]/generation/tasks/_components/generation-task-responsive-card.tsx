@@ -2,7 +2,6 @@ import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail
 import { GenerationTaskChangeModeButton } from "@/app/[lang]/generation/tasks/_components/generation-task-change-mode-button"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
 import { GenerationTaskLinkCard } from "@/app/[lang]/generation/tasks/_components/generation-task-link-card"
-import { GenerationTaskSheetButton } from "@/app/[lang]/generation/tasks/_components/generation-task-sheet-button"
 import { config } from "@/config"
 import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useMediaQuery } from "usehooks-ts"
