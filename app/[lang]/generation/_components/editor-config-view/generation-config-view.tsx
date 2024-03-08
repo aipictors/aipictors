@@ -37,10 +37,12 @@ import { toast } from "sonner"
 
 /**
  * エディタの設定
+ * ローカルストレージにより設定内容が保存されて、復元されるのでサーバレンダリングと
+ * クライアントレンダリングの不一致を解決するため遅延インポートで本コンポーネントを読み込むこと
  * @param props
  * @returns
  */
-export const GenerationConfigView = () => {
+export default function GenerationConfigView() {
   const context = useGenerationContext()
 
   const searchParams = useSearchParams()
