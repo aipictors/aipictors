@@ -14,16 +14,13 @@ on:
       - "app/**/*"
 
 jobs:
-  run:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v1
       - run: time bun i --frozen-lockfile
-
-      - name: Prebuild
-        run: time bun run predev
 
       - name: Lint
         run: bunx oxlint@latest --nextjs-plugin
@@ -33,3 +30,14 @@ jobs:
 
       - name: Run Test
         run: time bun test
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v1
+        with:
+          version: latest
+      - name: Run Biome
+        run: biome ci .
