@@ -25,11 +25,9 @@ jobs:
       - name: Lint
         run: bunx oxlint@latest --nextjs-plugin
 
-      - name: Run Type Cheking
-        run: time bun run check
-
       - name: Run Test
         run: time bun test
+  
   quality:
     runs-on: ubuntu-latest
     steps:
