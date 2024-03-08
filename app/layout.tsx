@@ -15,7 +15,21 @@ type Props = {
   children: React.ReactNode
 }
 
-const RootLayout = (props: Props) => {
+const verifyIdToken = async (idToken: string) => {
+  const apiKey = config.firebaseConfig.apiKey
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    },
+  )
+  const json = await resp.json()
+  return json
+}
+
+const RootLayout = async (props: Props) => {
   return (
     <html lang={"ja"} suppressHydrationWarning>
       <head>

@@ -59,7 +59,11 @@ export const AuthContextProvider = (props: Props) => {
       logEvent(getAnalytics(), config.logEvent.login, {
         method: user.providerId,
       })
-      getIdTokenResult(user, true).then((result) => {
+      getIdTokenResult(user).then((result) => {
+        // loginWithToken({
+        //   idToken: result.token,
+        //   refreshToken: user.refreshToken,
+        // })
         setUser({
           id: user.uid,
           username: user.uid,

@@ -73,6 +73,7 @@
     "firebase": "^10.8.0",
     "graphql": "^16.8.1",
     "immer": "^10.0.3",
+    "jwt-decode": "^4.0.0",
     "konva": "^9.3.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.331.0",
