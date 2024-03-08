@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import React from "react"
+import type React from "react"
 
 type WorkImageThumbnailCarouselProps = {
   allImageURLs: string[]
@@ -37,7 +37,7 @@ export const WorkImageThumbnailCarousel: React.FC<
             <CarouselItem
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
-              className={`basis-1/3 ${isSelected ? "selected-style" : ""}`}
+              className={`basis-1/3${isSelected ? "selected-style" : ""}`}
             >
               <img
                 className={imageClassName}

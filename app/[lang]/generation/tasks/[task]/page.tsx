@@ -7,7 +7,7 @@ type Props = {
 
 const TaskPage = async (props: Props) => {
   return (
-    <div className="w-full max-w-fit mx-auto">
+    <div className="mx-auto w-full max-w-fit">
       <GenerationTaskView taskId={props.params.task} />
     </div>
   )

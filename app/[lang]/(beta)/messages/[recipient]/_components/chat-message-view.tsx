@@ -54,7 +54,7 @@ export function ChatMessageView(props: Props) {
   const messages = data?.viewer?.messageThread?.messages ?? []
 
   return (
-    <div className="w-full sticky top-0 overflow-y-hidden h-main flex flex-col-reverse md:flex-col pt-2">
+    <div className="sticky top-0 flex h-main w-full flex-col-reverse overflow-y-hidden pt-2 md:flex-col">
       <SupportMessageList
         messages={messages}
         recipientIconImageURL={

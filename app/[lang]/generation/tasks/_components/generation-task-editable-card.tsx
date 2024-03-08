@@ -1,13 +1,13 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
 import { config } from "@/config"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
@@ -97,7 +97,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   return (
     <div
-      className="relative grid p-0 h-full overflow-hidden rounded bg-card"
+      className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
         context.updatePreviewTask(props.task)
         send({ type: "OPEN_HISTORY_PREVIEW" })

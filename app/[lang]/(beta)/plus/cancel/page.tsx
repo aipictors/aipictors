@@ -11,13 +11,13 @@ import Link from "next/link"
 const PlusCancelPage = async () => {
   return (
     <AppPageCenter>
-      <div className="space-y-16 max-w-sm w-full mx-auto px-6 pt-16">
+      <div className="mx-auto w-full max-w-sm space-y-16 px-6 pt-16">
         <div className="space-y-4">
-          <div className="w-full flex justify-center">
+          <div className="flex w-full justify-center">
             <FrownIcon className="h-16 w-16" />
           </div>
           <div className="space-y-2">
-            <p className="text-xl font-bold flex justify-center">
+            <p className="flex justify-center font-bold text-xl">
               {"決済に失敗しました"}
             </p>
             <p>

@@ -15,19 +15,19 @@ type Props = {
 
 export const ConfigLoraModel = (props: Props) => {
   return (
-    <div className="space-x-2 flex">
+    <div className="flex space-x-2">
       <img
-        className="rounded w-16 object-cover"
+        className="w-16 rounded object-cover"
         src={props.imageURL ?? ""}
         alt={props.name}
         draggable={false}
       />
-      <div className="flex flex-col w-full gap-y-1 overflow-hidden">
+      <div className="flex w-full flex-col gap-y-1 overflow-hidden">
         <div className="flex flex-col">
-          <p className="text-lg font-bold whitespace-pre-wrap">{props.name}</p>
-          <p className="text-sm whitespace-pre-wrap">{props.description}</p>
+          <p className="whitespace-pre-wrap font-bold text-lg">{props.name}</p>
+          <p className="whitespace-pre-wrap text-sm">{props.description}</p>
         </div>
-        <div className="flex gap-x-2 items-center">
+        <div className="flex items-center gap-x-2">
           <Slider
             aria-label="slider-ex-2"
             defaultValue={[props.value]}
@@ -41,7 +41,7 @@ export const ConfigLoraModel = (props: Props) => {
           <Input
             type="number"
             value={props.value.toFixed(2)}
-            className="font-bold w-20"
+            className="w-20 font-bold"
             min={-1}
             max={1}
             onChange={(event) => {

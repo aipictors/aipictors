@@ -227,7 +227,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
         <Loader2 className="w-4 animate-spin" />
       ) : (
         <Button
-          className="w-full mt-8 mb-4"
+          className="mt-8 mb-4 w-full"
           onClick={() => {
             if (title === "") {
               toast("タイトルを入力してください")

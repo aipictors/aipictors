@@ -4,15 +4,15 @@ import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-sub
 import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
-import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
-import { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
+import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import type { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cn } from "@/lib/utils"
 import {
   ArrowDownToLine,
@@ -58,7 +58,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
     if (!props.isDisplayImageListButton) return null
     return (
       <Link href="/generation/tasks">
-        <Button className="w-full p-4 mt-16 mb-4" variant={"secondary"}>
+        <Button className="mt-16 mb-4 w-full p-4" variant={"secondary"}>
           画像一覧
         </Button>
       </Link>
@@ -81,7 +81,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
             taskToken={props.task.token}
             children={
               <PrivateImage
-                className={`max-h-screen m-auto generation-image-${props.task.id}`}
+                className={`generation-image- m-auto max-h-screen${props.task.id}`}
                 taskId={props.task.id}
                 token={props.task.token as string}
                 alt={"-"}
@@ -140,7 +140,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="my-4 flex gap-x-2 justify-end">
+          <div className="my-4 flex justify-end gap-x-2">
             <GenerationMenuButton
               title={"インペイント機能で一部分を再生成して修正する"}
               onClick={props.onInPaint}

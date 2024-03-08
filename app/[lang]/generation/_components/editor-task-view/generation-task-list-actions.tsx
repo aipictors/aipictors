@@ -6,7 +6,7 @@ import { GenerationTaskActionDropdownMenu } from "@/app/[lang]/generation/_compo
 import { GenerationTaskCountSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-count-select"
 import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-delete-button"
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
@@ -69,8 +69,8 @@ export const GenerationTaskListActions = (props: Props) => {
   return (
     <>
       {/* 操作一覧 */}
-      <div className="flex px-4 pb-2 items-center">
-        <div className="flex space-x-2 items-center w-full">
+      <div className="flex items-center px-4 pb-2">
+        <div className="flex w-full items-center space-x-2">
           {/* 履歴選択・キャンセルボタン */}
           <Toggle
             className="w-16"
@@ -120,7 +120,7 @@ export const GenerationTaskListActions = (props: Props) => {
         {props.showHistoryAllButton && !props.isEditMode && (
           <Button
             onClick={moveHistoryPage}
-            className="w-16 sm:w-24 ml-auto"
+            className="ml-auto w-16 sm:w-24"
             variant={"secondary"}
             size={"sm"}
           >

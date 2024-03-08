@@ -16,7 +16,7 @@ export const GenerationTasksCancelButton = (props: Props) => {
     <>
       <Button
         disabled={props.isDisabled}
-        className="h-11 ml-2 w-16"
+        className="ml-2 h-11 w-16"
         variant={"destructive"}
         size={"icon"}
         onClick={props.onCancel}

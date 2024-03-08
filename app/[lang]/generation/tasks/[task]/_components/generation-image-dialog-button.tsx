@@ -19,15 +19,15 @@ export function GenerationImageDialogButton(props: Props) {
       <DialogTrigger
         className={
           props.isAbsolute === true
-            ? "absolute hover:opacity-80 rounded-full right-2 bottom-2"
+            ? "absolute right-2 bottom-2 rounded-full hover:opacity-80"
             : ""
         }
       >
         <span>{props.children}</span>
       </DialogTrigger>
-      <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
+      <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
         <PrivateImage
-          className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
+          className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
           taskId={props.taskId}
           token={props.taskToken as string}
           alt={"-"}

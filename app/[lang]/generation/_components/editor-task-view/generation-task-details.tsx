@@ -5,7 +5,7 @@ import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_c
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
-import {
+import type {
   ImageGenerationSizeType,
   ImageGenerationStatus,
   ImageGenerationType,
@@ -72,7 +72,7 @@ export const GenerationTaskDetails = () => {
 
   return (
     <>
-      <ScrollArea className="pb-64 md:pb-0 absolute">
+      <ScrollArea className="absolute pb-64 md:pb-0">
         {imageGenerationTask && (
           <GenerationTaskSheetView
             task={{

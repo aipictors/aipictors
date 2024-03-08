@@ -1,6 +1,6 @@
 import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { produce } from "immer"
 
 type Props = {
@@ -330,7 +330,7 @@ export class GenerationConfigAction {
     )
     const loraModelTexts = limitedLoraModels.map((model) => {
       const [name, value] = model.split(":")
-      const numericValue = parseFloat(value)
+      const numericValue = Number.parseFloat(value)
 
       // valueが数値でない、または-1から1の範囲外の場合は0に設定
       const adjustedValue =

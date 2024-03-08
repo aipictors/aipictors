@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.6.0/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -20,16 +20,27 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "noUnusedImports": "error"
       },
       "complexity": {
         "noStaticOnlyClass": "off"
       },
-      "nursery": {
-        "noUnusedImports": "error"
-      },
       "style": {
         "noNonNullAssertion": "off"
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "options": {
+            "attributes": [
+              "className"
+            ],
+            "functions": [
+              "cn"
+            ]
+          }
+        }
       }
     }
   },
@@ -43,8 +54,8 @@
     }
   },
   "json": {
-    "parser": {
-      "allowTrailingCommas": true
+    "formatter": {
+      "trailingCommas": "none"
     }
   }
 }

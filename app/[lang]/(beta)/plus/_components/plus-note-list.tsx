@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export const PlusNoteList = () => {
   return (
-    <ul className="space-y-2 ml-6 list-disc">
+    <ul className="ml-6 list-disc space-y-2">
       <li>
         {
           "本プランの加入期間は、加入日から翌月同日までの1か月間となります。加入期間満了日までにお客様が自ら解約しない限り、本プランの加入期間は翌日から同一期間更新したものとみなし、以後同様とします。"

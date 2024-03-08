@@ -20,9 +20,9 @@ const SensitiveThemePage = async (props: Props) => {
       offset: 0,
       limit: 1,
       where: {
-        year: parseInt(props.params.year),
-        month: parseInt(props.params.month),
-        day: parseInt(props.params.day),
+        year: Number.parseInt(props.params.year),
+        month: Number.parseInt(props.params.month),
+        day: Number.parseInt(props.params.day),
       },
     },
   })

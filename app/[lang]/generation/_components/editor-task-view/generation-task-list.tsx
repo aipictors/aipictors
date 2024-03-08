@@ -1,7 +1,7 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"

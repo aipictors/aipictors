@@ -1,6 +1,6 @@
 import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
 import { config } from "@/config"
-import { PassType } from "@/graphql/__generated__/graphql"
+import type { PassType } from "@/graphql/__generated__/graphql"
 import { createPassCheckoutSessionMutation } from "@/graphql/mutations/create-pass-checkout-session"
 import { useMutation } from "@apollo/client"
 import { getAnalytics, logEvent } from "firebase/analytics"

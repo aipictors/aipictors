@@ -62,12 +62,6 @@ Visual Studio Codeの設定については、[settings.json](.vscode/settings.js
 bun i
 ```
 
-2. GraphQLのコードをビルドする。
-
-```bash
-bun run predev
-```
-
 3. 開発サーバーを起動する。
 
 ```bash

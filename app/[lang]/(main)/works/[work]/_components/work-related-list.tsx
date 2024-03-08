@@ -31,12 +31,12 @@ export default function WorkRelatedList({ works }: WorkRelatedListProps) {
           {works.map((work) => (
             <CarouselItem
               key={work.id}
-              className="basis-1/4 md:basis-1/5 lg:basis-1/6"
+              className="basis-1/4 lg:basis-1/6 md:basis-1/5"
             >
               <Link href={`/works/${work.id}`}>
                 <Image
                   key={work.id}
-                  className="h-24 w-24 md:h-32 md:w-32 lg:h-40 lg:w-40 object-cover rounded"
+                  className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32"
                   alt=""
                   src={work.largeThumbnailImageURL}
                   height={work.largeThumbnailImageHeight}

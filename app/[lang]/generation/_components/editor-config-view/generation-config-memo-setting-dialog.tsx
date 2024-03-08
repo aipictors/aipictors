@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
-import { ImageGenerationMemosQuery } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemosQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   isOpen: boolean

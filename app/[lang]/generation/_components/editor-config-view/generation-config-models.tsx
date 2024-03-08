@@ -58,7 +58,7 @@ export const GenerationConfigModels = (props: Props) => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="normal">
-          <div className="space-y-2 flex flex-col">
+          <div className="flex flex-col space-y-2">
             {currentModels.map((model) => (
               <ConfigModelButton
                 key={model?.id}
@@ -77,7 +77,7 @@ export const GenerationConfigModels = (props: Props) => {
           </div>
         </TabsContent>
         <TabsContent value="favorite">
-          <div className="space-y-2 flex flex-col">
+          <div className="flex flex-col space-y-2">
             {favoritedModels.map((model) => (
               <ConfigModelButton
                 key={model?.id}

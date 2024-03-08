@@ -3,7 +3,7 @@ import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generat
 import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
 import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { config } from "@/config"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useContext } from "react"
 
 export const useGenerationContext = () => {

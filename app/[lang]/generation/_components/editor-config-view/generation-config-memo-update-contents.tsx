@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { config } from "@/config"
-import { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationMemoMutation } from "@/graphql/mutations/delete-image-generation-memo"
 import { updateImageGenerationMemoMutation } from "@/graphql/mutations/update-image-generation-memo"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
@@ -282,9 +282,9 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
           </Select>
         </div>
       </div>
-      <div className="flex items-center mt-4 mb-0">
+      <div className="mt-4 mb-0 flex items-center">
         {isDeletingMemo ? (
-          <Loader2 className="w-16 mr-2 animate-spin" />
+          <Loader2 className="mr-2 w-16 animate-spin" />
         ) : (
           <AppConfirmDialog
             title={"設定を削除する"}
@@ -292,15 +292,15 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             onNext={onDelete}
             onCancel={() => {}}
           >
-            <Button className="w-16 h-11 mr-2" variant={"ghost"} size={"icon"}>
-              <Trash2Icon className="w-4 mr-4" />
+            <Button className="mr-2 h-11 w-16" variant={"ghost"} size={"icon"}>
+              <Trash2Icon className="mr-4 w-4" />
             </Button>
           </AppConfirmDialog>
         )}
 
         <Button
           variant={"secondary"}
-          className="w-full mr-4"
+          className="mr-4 w-full"
           onClick={() => {
             onRestore()
           }}

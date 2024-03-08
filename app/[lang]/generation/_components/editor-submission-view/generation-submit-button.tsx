@@ -28,7 +28,7 @@ export function GenerationSubmitButton(props: Props) {
         {props.generatingCount > 0 && (
           <Loader2Icon
             color={theme === "light" ? "white" : "black"}
-            className={"ml-2 w-4 animate-spin dark:black"}
+            className={"dark:black ml-2 w-4 animate-spin"}
           />
         )}
       </div>

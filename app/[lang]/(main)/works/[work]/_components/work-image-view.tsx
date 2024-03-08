@@ -1,7 +1,8 @@
 "use client"
 
 import { WorkImageThumbnailCarousel } from "@/app/[lang]/(main)/works/[work]/_components/work-image-thumbnail-carousel"
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 
 type Props = {
   workImageURL?: string
@@ -33,7 +34,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
     return (
       <div>
         <img
-          className="bg-card w-auto h-full xl:h-screen object-contain rounded"
+          className="h-full w-auto rounded bg-card object-contain xl:h-screen"
           alt="Selected work"
           src={selectedImage}
         />
@@ -49,7 +50,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   if (workImageURL) {
     return (
       <img
-        className="w-auto h-auto xl:h-screen object-contain rounded"
+        className="h-auto w-auto rounded object-contain xl:h-screen"
         alt=""
         src={workImageURL}
       />

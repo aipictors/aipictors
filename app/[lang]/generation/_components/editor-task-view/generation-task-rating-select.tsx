@@ -21,7 +21,7 @@ export function GenerationTaskRatingSelect(props: Props) {
   return (
     <Select
       onValueChange={(value: string) => {
-        props.onChange(parseInt(value))
+        props.onChange(Number.parseInt(value))
       }}
     >
       <SelectTrigger className="h-9 w-32">

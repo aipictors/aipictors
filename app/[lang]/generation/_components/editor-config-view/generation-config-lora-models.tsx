@@ -12,7 +12,7 @@ export const GenerationConfigLoraModels = () => {
 
   const currentModels = context.promptLoraModels.map((model) => {
     const [name, value] = model.split(":")
-    return { name, value: parseFloat(value) }
+    return { name, value: Number.parseFloat(value) }
   })
 
   const currentLoraModelNames = context.promptLoraModels.map((model) => {

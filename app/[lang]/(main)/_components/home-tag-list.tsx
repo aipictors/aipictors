@@ -5,7 +5,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import { HotTagsQuery } from "@/graphql/__generated__/graphql"
+import type { HotTagsQuery } from "@/graphql/__generated__/graphql"
 import Autoplay from "embla-carousel-autoplay"
 import React from "react"
 

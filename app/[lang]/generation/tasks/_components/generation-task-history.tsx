@@ -2,7 +2,7 @@
 
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-history"
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -43,8 +43,8 @@ export function GenerationTaskHistory() {
   }
 
   return (
-    <div className="space-y-4 pb-4 w-full">
-      <div className="flex items-center ml-4">
+    <div className="w-full space-y-4 pb-4">
+      <div className="ml-4 flex items-center">
         <Link href="/generation">画像生成に戻る</Link>
       </div>
       <GenerationTaskListActions

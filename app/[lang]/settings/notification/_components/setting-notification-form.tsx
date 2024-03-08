@@ -10,7 +10,7 @@ export const SettingNotificationForm = () => {
         <div className="flex justify-between">
           <label
             htmlFor="1"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {"全年齢いいね"}
           </label>
@@ -19,7 +19,7 @@ export const SettingNotificationForm = () => {
         <div className="flex justify-between">
           <label
             htmlFor="2"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {"R-18いいね"}
           </label>
@@ -31,7 +31,7 @@ export const SettingNotificationForm = () => {
         <div className="flex justify-between">
           <label
             htmlFor="3"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {"定期いいね通知"}
           </label>
@@ -40,7 +40,7 @@ export const SettingNotificationForm = () => {
         <div className="flex justify-between">
           <label
             htmlFor="4"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {"リアルタイムいいね通知"}
           </label>
@@ -49,7 +49,7 @@ export const SettingNotificationForm = () => {
         <div className="flex justify-between">
           <label
             htmlFor="5"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {"コメント"}
           </label>

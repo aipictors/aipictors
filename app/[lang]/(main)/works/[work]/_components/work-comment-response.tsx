@@ -15,10 +15,10 @@ type Props = {
  */
 export const WorkCommentResponse = (props: Props) => {
   return (
-    <div className="flex items-start pl-16 space-x-2">
+    <div className="flex items-start space-x-2 pl-16">
       <Avatar>
         <AvatarImage
-          className="rounded-full w-12"
+          className="w-12 rounded-full"
           src={props.userIconImageURL}
           alt=""
         />
@@ -26,7 +26,7 @@ export const WorkCommentResponse = (props: Props) => {
       </Avatar>
       <div className="space-y-0">
         <p>{props.userName}</p>
-        <p className="text-sm whitespace-pre-wrap overflow-hidden break-words">
+        <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
           {props.text}
         </p>
         {props.stickerImageURL && (

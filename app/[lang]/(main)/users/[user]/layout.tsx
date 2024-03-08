@@ -27,7 +27,7 @@ const UserLayout = async (props: Props) => {
 
   return (
     <AppPage>
-      <div className="flex flex-col w-full justify-center">
+      <div className="flex w-full flex-col justify-center">
         <UserProfile user={userResp.data.user} />
         <main className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={props.params} />

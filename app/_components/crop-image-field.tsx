@@ -93,12 +93,12 @@ const CropImageField = (props: Props) => {
         />
         <Card className="relative">
           <img
-            className="max-w-64 max-h-48 m-auto"
+            className="m-auto max-h-48 max-w-64"
             alt={"croppedImage"}
             src={croppedImage}
           />
           <Button
-            className="absolute right-2 top-2"
+            className="absolute top-2 right-2"
             size={"icon"}
             variant="ghost"
             onClick={onDeleteImage}

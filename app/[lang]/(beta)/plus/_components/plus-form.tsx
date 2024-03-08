@@ -54,21 +54,21 @@ export const PlusForm = () => {
   return (
     <div
       className={cn(
-        "space-y-4 md:space-y-0 justify-between gap-x-4",
+        "justify-between gap-x-4 space-y-4 md:space-y-0",
         currentPass && "flex flex-col md:flex-row",
       )}
     >
-      <div className="space-y-4 flex-1">
+      <div className="flex-1 space-y-4">
         <p>{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
         <div>
           <div className="flex">
-            <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm">
               {"次回の請求日"}
             </span>
             <p>{nextDateText}</p>
           </div>
           <div className="flex">
-            <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm">
               {"次回の請求額"}
             </span>
             <p>{`${currentPass.price}円（税込）`}</p>
@@ -95,7 +95,7 @@ export const PlusForm = () => {
           <Separator />
           <PassBenefitList passType={currentPass.type} />
           <Separator />
-          <p className="text-sm opacity-60 font-bold">{"画像生成の特典"}</p>
+          <p className="font-bold text-sm opacity-60">{"画像生成の特典"}</p>
           <PassImageGenerationBenefitList passType={currentPass.type} />
           <Separator />
           <p className="text-xs">

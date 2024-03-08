@@ -1,4 +1,4 @@
-import { KonvaEventObject } from "konva/lib/Node"
+import type { KonvaEventObject } from "konva/lib/Node"
 import { useCallback, useState } from "react"
 
 type LineObject = {

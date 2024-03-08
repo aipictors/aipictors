@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
-import { LucideIcon } from "lucide-react"
-import { IconType } from "react-icons"
+import type { LucideIcon } from "lucide-react"
+import type { IconType } from "react-icons"
 
 type Props = {
   icon?: LucideIcon | IconType
@@ -19,10 +19,10 @@ export const GenerationMenuButton = (props: Props) => {
       onClick={props.onClick}
       disabled={props.disabled}
       size={"sm"}
-      className={`${props.className} pad-0`}
+      className={`${props.className}pad-0`}
     >
       <div className="pad-8">
-        {props.icon && <props.icon className="m-auto w-4 h-4" />}
+        {props.icon && <props.icon className="m-auto h-4 w-4" />}
       </div>
       {props.text && <p className="ml-1">{props.text}</p>}
     </Button>

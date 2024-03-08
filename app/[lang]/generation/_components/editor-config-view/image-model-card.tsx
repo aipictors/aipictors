@@ -16,23 +16,23 @@ export const ImageModelCard = (props: Props) => {
     <div className={classes} onClick={props.onSelect} onKeyUp={() => {}}>
       <img
         className={
-          "relative focus:outline-none bg-cover bg-center w-full rounded-lg border-2"
+          "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-none"
         }
         src={props.thumbnailImageURL ?? ""}
         alt={props.displayName ?? ""}
         style={{ transformOrigin: "center" }}
       />
       <div className="">
-        <span className="text-sm font-bold break-words whitespace-pre-wrap">
+        <span className="whitespace-pre-wrap break-words font-bold text-sm">
           {props.displayName ?? ""}
         </span>
         {props.type && (
-          <span className="absolute text-white top-2 left-1 bg-black bg-opacity-50 rounded-lg p-4">
+          <span className="absolute top-2 left-1 rounded-lg bg-black bg-opacity-50 p-4 text-white">
             {props.type}
           </span>
         )}
         {props.description && (
-          <span className="text-sm break-words whitespace-pre-wrap">
+          <span className="whitespace-pre-wrap break-words text-sm">
             {props.description}
           </span>
         )}

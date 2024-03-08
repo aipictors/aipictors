@@ -59,7 +59,7 @@ export const LoginDialog = (props: Props) => {
     <div>
       <div className="my-2 space-y-2">
         <p className="text-sm">{"SNSアカウントでログイン"}</p>
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col gap-2 md:flex-row">
           <SocialLoginButton
             disabled={isLoading}
             provider={new GoogleAuthProvider()}
@@ -75,12 +75,12 @@ export const LoginDialog = (props: Props) => {
         </div>
       </div>
       <Separator />
-      <div className="w-full my-2 space-y-2">
+      <div className="my-2 w-full space-y-2">
         <p className="text-sm">{"またはアカウント情報でログイン"}</p>
         <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
       <Separator />
-      <div className={"flex flex-col w-full gap-y-2"}>
+      <div className={"flex w-full flex-col gap-y-2"}>
         <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
         <Link
           className="w-full"

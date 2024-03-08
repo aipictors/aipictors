@@ -68,7 +68,7 @@ export const MutedTagList = () => {
             </div>
           </div>
           <Button
-            className="bg-primary text-white rounded-full p-4"
+            className="rounded-full bg-primary p-4 text-white"
             onClick={handleMute}
           >
             {"変更を保存"}
@@ -76,7 +76,7 @@ export const MutedTagList = () => {
         </div>
       </div>
       {data?.viewer?.mutedTags.length === 0 && (
-        <div className="bg-info rounded p-4">
+        <div className="rounded bg-info p-4">
           <p>{"ミュートしているタグはありません"}</p>
         </div>
       )}

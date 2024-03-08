@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 const AppSupportPage = async () => {
   return (
     <>
-      <div className="flex justify-center py-8 min-h-screen">
+      <div className="flex min-h-screen justify-center py-8">
         <div>
           <p className="text-center">{"お問い合わせはこちらまで"}</p>
           <p className="text-center font-bold">hello@aipictors.com</p>

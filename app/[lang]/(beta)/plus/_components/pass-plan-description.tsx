@@ -39,7 +39,7 @@ export const PassPlanDescription = (props: Props) => {
           <p>{"認証マークの表示"}</p>
         </div>
         <div className="space-y-1">
-          <p className="text-sm font-bold opacity-60">{"画像生成"}</p>
+          <p className="font-bold text-sm opacity-60">{"画像生成"}</p>
           {props.features.map((feature) => (
             <p key={feature}>{feature}</p>
           ))}

@@ -23,7 +23,7 @@ export function GenerationTaskCountSelect(props: Props) {
     <Select
       value={props.value.toString()}
       onValueChange={(value: string) => {
-        props.onChange(value === "" ? 50 : parseInt(value, 10))
+        props.onChange(value === "" ? 50 : Number.parseInt(value, 10))
       }}
     >
       <SelectTrigger className="w-16">

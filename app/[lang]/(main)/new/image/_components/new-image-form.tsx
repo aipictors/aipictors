@@ -203,15 +203,15 @@ const NewImageForm = () => {
       <div
         {...attributes}
         {...listeners}
-        className="m-4 w-24 h-24 md:w-60 md:h-60 overflow-hidden rounded relative"
+        className="relative m-4 h-24 w-24 overflow-hidden rounded md:h-60 md:w-60"
       >
         <img
           src={props.image}
           alt={`選択された画像 ${props.id + 1}`}
-          className="w-24 h-24 md:w-60 md:h-60 object-cover"
+          className="h-24 w-24 object-cover md:h-60 md:w-60"
         />
         <Button
-          className="text-sm absolute top-0 right-0 bg-white text-red-500 hover:bg-gray-200"
+          className="absolute top-0 right-0 bg-white text-red-500 text-sm hover:bg-gray-200"
           onClick={() => handleRemoveImage(props.id)}
         >
           {"✕"}
@@ -224,12 +224,12 @@ const NewImageForm = () => {
     <>
       <div>
         <div
-          className={`items-center bg-black ${
-            isHovered ? "border-2 border-dashed border-white" : ""
+          className={`items-center bg-black${
+            isHovered ? "border-2 border-white border-dashed" : ""
           }`}
         >
           <div
-            className="flex flex-col items-center justify-center p-4 m-4 bg-blue-500 text-white rounded cursor-pointer"
+            className="m-4 flex cursor-pointer flex-col items-center justify-center rounded bg-blue-500 p-4 text-white"
             {...getRootProps()}
           >
             <input
@@ -257,7 +257,7 @@ const NewImageForm = () => {
               </SortableContext>
             </div>
           </DndContext>
-          <div className="m-4 text-white flex flex-col">
+          <div className="m-4 flex flex-col text-white">
             <p className="text-sm">JPEG、PNG、GIF、WEBP、BMP、MP4</p>
             <p className="text-sm">
               1枚32MB以内、最大200枚、動画は32MB、12秒まで
@@ -280,7 +280,7 @@ const NewImageForm = () => {
             />
           </div>
 
-          <div className="flex flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <p className="text-sm">キャプション</p>
             <AutoResizeTextarea
               maxLength={3000}
@@ -289,7 +289,7 @@ const NewImageForm = () => {
             />
           </div>
 
-          <div className="flex flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <p className="text-sm">年齢制限</p>
             <div
             // onChange={handleAgeRestrictionChange}
@@ -308,7 +308,7 @@ const NewImageForm = () => {
             </div>
           </div>
 
-          <div className="flex flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <p className="text-sm">公開モード</p>
             <div
             // onChange={handlePublicModeChange}
@@ -343,7 +343,7 @@ const NewImageForm = () => {
               <option value="リアル系">リアル系</option>
             </select>
           </div>
-          <div className="flex flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <p className="text-sm">使用AI</p>
             <select
               onChange={(e) => handleAiUsedChange(e.target.value)}
@@ -353,14 +353,14 @@ const NewImageForm = () => {
               <option value="そのほか">そのほか</option>
             </select>
           </div>
-          <div className="flex flex-col mt-4">
+          <div className="mt-4 flex flex-col">
             <p className="text-sm">予約投稿</p>
             <div className="block md:flex">
               <Input
                 type="date"
                 value={reservationDate}
                 onChange={handleReservationDateChange}
-                className="mr-0 md:mr-2 mt-2 md:mt-0"
+                className="mt-2 mr-0 md:mt-0 md:mr-2"
               />
               <Input
                 type="time"

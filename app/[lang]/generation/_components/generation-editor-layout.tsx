@@ -33,7 +33,7 @@ export const GenerationEditorLayout = (props: Props) => {
    */
   if (!isDesktop) {
     return (
-      <main className="flex flex-col lg:flex-row gap-4 lg:h-main pb-4 overflow-hidden">
+      <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
         <div className="flex flex-col gap-y-4">
           <GenerationEditorLayoutSettingArea
             config={props.config}
@@ -49,7 +49,7 @@ export const GenerationEditorLayout = (props: Props) => {
   }
 
   return (
-    <main className="flex flex-col lg:flex-row gap-4 lg:h-main pb-4 overflow-hidden">
+    <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel>
           <GenerationEditorLayoutSettingArea

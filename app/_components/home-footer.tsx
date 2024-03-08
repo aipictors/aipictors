@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils"
  */
 export const HomeFooter = () => {
   return (
-    <footer className={cn("container max-w-none", "py-4 border-t space-y-2")}>
-      <div className="flex flex-col md:flex-row gap-y-2 gap-x-2">
+    <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
+      <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">
         <div className="flex gap-x-4">
           <a
             href={"https://www.aipictors.com/terms/"}

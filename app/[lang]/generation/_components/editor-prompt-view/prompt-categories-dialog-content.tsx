@@ -14,7 +14,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+import type { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   selectedPromptIds: string[]
@@ -34,9 +34,9 @@ export const PromptCategoriesDialogContent = (props: Props) => {
 
   return (
     <>
-      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
+      <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
         <DialogHeader />
-        <ScrollArea className="h-full overflow-auto max-h-[80vh]">
+        <ScrollArea className="h-full max-h-[80vh] overflow-auto">
           <Accordion
             type="multiple"
             className="w-full"

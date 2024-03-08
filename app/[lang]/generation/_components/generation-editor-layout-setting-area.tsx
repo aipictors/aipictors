@@ -36,11 +36,11 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
     return (
       <>
         <div>{props.submission}</div>
-        <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
+        <div className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row">
           <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
-          <div className="lg:min-w-64 xl:min-w-96 flex flex-col md:flex-row lg:flex-col gap-4">
-            <div className="overflow-hidden flex-1">{props.promptEditor}</div>
-            <div className="overflow-hidden flex-1 min-w-80">
+          <div className="flex flex-col gap-4 lg:min-w-64 xl:min-w-96 md:flex-row lg:flex-col">
+            <div className="flex-1 overflow-hidden">{props.promptEditor}</div>
+            <div className="min-w-80 flex-1 overflow-hidden">
               {props.negativePromptEditor}
             </div>
           </div>
@@ -62,22 +62,22 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
       <ResizablePanelGroup
         direction="horizontal"
         style={{ height: "calc(100% - 130px)" }}
-        className="flex flex-1 flex-col lg:flex-row mt-2 gap-4 overflow-hidden"
+        className="mt-2 flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
       >
         <ResizablePanel className="lg:min-w-40 xl:min-w-40">
           {props.config}
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel className="lg:min-w-40 xl:min-w-40 flex flex-col md:flex-row lg:flex-col gap-4">
+        <ResizablePanel className="flex flex-col gap-4 lg:min-w-40 xl:min-w-40 md:flex-row lg:flex-col">
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel>
-              <div className="overflow-hidden h-full flex-1">
+              <div className="h-full flex-1 overflow-hidden">
                 {props.promptEditor}
               </div>
             </ResizablePanel>
-            <ResizableHandle className="mb-2 mt-2" />
+            <ResizableHandle className="mt-2 mb-2" />
             <ResizablePanel>
-              <div className="overflow-hidden h-full flex-1 min-w-80">
+              <div className="h-full min-w-80 flex-1 overflow-hidden">
                 {props.negativePromptEditor}
               </div>
             </ResizablePanel>

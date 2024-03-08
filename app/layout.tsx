@@ -30,7 +30,7 @@ const RootLayout = (props: Props) => {
       </head>
       <body
         className={cn(
-          "min-h-screen font-sans antialiased no-margin",
+          "no-margin min-h-screen font-sans antialiased",
           notoSansFont.variable,
         )}
       >

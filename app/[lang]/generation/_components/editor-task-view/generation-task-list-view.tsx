@@ -3,7 +3,7 @@
 import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { useState } from "react"
 
 /**

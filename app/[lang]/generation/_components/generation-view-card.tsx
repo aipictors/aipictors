@@ -13,8 +13,8 @@ type Props = {
 
 export const GenerationViewCard = (props: Props) => {
   return (
-    <Card className="h-full flex flex-col w-full max-w-none overflow-hidden">
-      <div className="flex px-4 pt-2 pb-2 justify-between">
+    <Card className="flex h-full w-full max-w-none flex-col overflow-hidden">
+      <div className="flex justify-between px-4 pt-2 pb-2">
         <div className="flex items-center">
           <span className="font-bold">{props.title}</span>
         </div>

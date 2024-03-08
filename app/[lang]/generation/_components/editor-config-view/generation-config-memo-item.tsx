@@ -1,7 +1,7 @@
 "use client"
 
 import { GenerationMemoItemContents } from "@/app/[lang]/generation/_components/editor-config-view/generation-memo-item-contents"
-import { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
 
 type Props = {
   memo: ImageGenerationMemoNode
@@ -18,7 +18,7 @@ export const GenerationConfigMemoItem = (props: Props) => {
 
   return (
     <>
-      <div className="relative items-center flex">
+      <div className="relative flex items-center">
         <GenerationMemoItemContents
           memo={props.memo}
           refetchMemos={props.refetchMemos}

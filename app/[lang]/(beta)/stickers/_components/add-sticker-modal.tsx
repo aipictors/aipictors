@@ -27,11 +27,11 @@ export const AddStickerModal = (props: Props) => {
         <div className="flex flex-col">
           <p>{"非公開の作成済みスタンプ"}</p>
           <div className="flex">
-            <img alt={""} className="w-9 h-9" src="gibbresh.png" />
-            <img alt="" className="w-9 h-9" src="gibbresh.png" />
+            <img alt={""} className="h-9 w-9" src="gibbresh.png" />
+            <img alt="" className="h-9 w-9" src="gibbresh.png" />
           </div>
           <p>{"選択スタンプ"}</p>
-          <img alt="" className="w-9 h-9" src="gibbresh.png" />
+          <img alt="" className="h-9 w-9" src="gibbresh.png" />
           <p>{"タイトル"}</p>
           <input className="border-2 border-gray-300" placeholder="タイトル" />
           <div className="flex flex-col">

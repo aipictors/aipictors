@@ -1,7 +1,7 @@
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/app/[lang]/generation/tasks/_components/generation-task-responsive-card"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment

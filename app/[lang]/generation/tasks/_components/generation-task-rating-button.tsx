@@ -74,27 +74,27 @@ export const GenerationTaskRatingButton = (props: Props) => {
       type={"button"}
       onClick={onRating}
       className={cn(
-        "absolute opacity-80 hover:opacity-40 rounded-full left-2 bottom-2 transition-all",
+        "absolute bottom-2 left-2 rounded-full opacity-80 transition-all hover:opacity-40",
       )}
     >
-      <div className="flex bg-white rounded-lg px-1">
+      <div className="flex rounded-lg bg-white px-1">
         {isLoading ? (
           <Loader2Icon
             color="black"
-            className={`animate-spin ${sizeClassName()}`}
+            className={`animate-spin${sizeClassName()}`}
           />
         ) : (
           <StarIcon
             color="black"
             className={cn(
               props.nowRating !== 0 && !isLoading
-                ? `fill-yellow-500 ${sizeClassName()}`
-                : `fill-white ${sizeClassName()}`,
+                ? `fill-yellow-500${sizeClassName()}`
+                : `fill-white${sizeClassName()}`,
             )}
           />
         )}
         {props.nowRating !== 0 && (
-          <p className={`text-black ${fontSizeClassName()}`}>
+          <p className={`text-black${fontSizeClassName()}`}>
             {props.nowRating}
           </p>
         )}

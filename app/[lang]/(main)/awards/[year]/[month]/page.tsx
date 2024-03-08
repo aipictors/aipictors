@@ -15,9 +15,9 @@ type Props = {
  * @returns
  */
 const MonthAwardsPage = async (props: Props) => {
-  const year = parseInt(props.params.year)
+  const year = Number.parseInt(props.params.year)
 
-  const month = parseInt(props.params.month)
+  const month = Number.parseInt(props.params.month)
 
   return (
     <AppPage>

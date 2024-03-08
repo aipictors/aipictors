@@ -18,16 +18,16 @@ export const StickerCard = (props: Props) => {
           alt={props.title ?? "no title"}
         />
         <CardContent className="flex flex-col justify-between space-y-1 p-2">
-          <h3 className="text-sm font-bold text-ellipsis overflow-hidden whitespace-nowrap">
+          <h3 className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-sm">
             {props.title ?? "no title"}
           </h3>
           <div className="flex items-center space-x-4">
             <div className="flex">
-              <DownloadIcon className="w-4 mr-2" />
+              <DownloadIcon className="mr-2 w-4" />
               <span>{props.downloadsCount}</span>
             </div>
             <div className="flex">
-              <StampIcon className="w-4 mr-2" />
+              <StampIcon className="mr-2 w-4" />
               <span>{props.usesCount}</span>
             </div>
           </div>

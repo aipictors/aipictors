@@ -10,13 +10,13 @@ type Props = {
 export const SenderMessage = (props: Props) => {
   return (
     <div className="flex justify-end">
-      <div className="max-w-sm flex flex-col gap-y-2">
+      <div className="flex max-w-sm flex-col gap-y-2">
         <Card
           className={
-            "px-6 py-2 rounded-tl-xl rounded-tr-sm rounded-bl-xl rounded-br-xl"
+            "rounded-tl-xl rounded-tr-sm rounded-br-xl rounded-bl-xl px-6 py-2"
           }
         >
-          <p className="whitespace-pre-wrap overflow-hidden break-words">
+          <p className="overflow-hidden whitespace-pre-wrap break-words">
             {props.text}
           </p>
         </Card>
