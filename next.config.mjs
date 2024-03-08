@@ -32,6 +32,13 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.node$/,
+      loader: "node-loader",
+    })
+    return config
+  },
 }
 
 export default withSentryConfig(
