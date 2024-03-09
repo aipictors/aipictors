@@ -1,14 +1,9 @@
 "use client"
 
-import { GenerationEditorLayoutHistoryListArea } from "@/app/[lang]/generation/_components/generation-editor-layout-history-list-area"
-import { GenerationEditorLayoutSettingArea } from "@/app/[lang]/generation/_components/generation-editor-layout-setting-area"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
+import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
+import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
+import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
+import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
 
 type Props = {
   config: React.ReactNode
@@ -26,50 +21,24 @@ type Props = {
  * @returns
  */
 export const GenerationEditorLayout = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
-  /**
-   * スマホの場合リサイザーなし
-   */
-  if (!isDesktop) {
-    return (
-      <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
-        <div className="flex flex-col gap-y-4">
-          <GenerationEditorLayoutSettingArea
-            config={props.config}
-            submission={props.submission}
-            promptEditor={props.promptEditor}
-            negativePromptEditor={props.negativePromptEditor}
-            taskContentPreview={props.taskContentPreview}
-            taskDetails={props.taskDetails}
-          />
-        </div>
-        <div className="flex-1 overflow-hidden">{props.taskList}</div>
-      </main>
-    )
-  }
-
   return (
-    <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel>
-          <GenerationEditorLayoutSettingArea
-            config={props.config}
-            submission={props.submission}
-            promptEditor={props.promptEditor}
-            negativePromptEditor={props.negativePromptEditor}
-            taskContentPreview={props.taskContentPreview}
-            taskDetails={props.taskDetails}
-          />
-        </ResizablePanel>
-        <ResizableHandle withHandle className="mr-4 ml-4" />
-        <ResizablePanel className="lg:min-w-80 xl:min-w-80">
-          <GenerationEditorLayoutHistoryListArea
-            taskList={props.taskList}
-            taskDetails={props.taskDetails}
-          />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </main>
+    <GenerationView
+      header={<GenerationHeaderView submission={props.submission} />}
+      aside={
+        <GenerationAsideView
+          taskList={props.taskList}
+          taskDetails={props.taskDetails}
+        />
+      }
+      main={
+        <GenerationMainView
+          config={props.config}
+          promptEditor={props.promptEditor}
+          negativePromptEditor={props.negativePromptEditor}
+          taskContentPreview={props.taskContentPreview}
+          taskDetails={props.taskDetails}
+        />
+      }
+    />
   )
 }

@@ -11,7 +11,6 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   config: React.ReactNode
-  submission: React.ReactNode
   promptEditor: React.ReactNode
   negativePromptEditor: React.ReactNode
   taskContentPreview: React.ReactNode
@@ -36,7 +35,6 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
   if (!isDesktop) {
     return (
       <>
-        <div>{props.submission}</div>
         <div className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row">
           <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
           <div className="flex flex-col gap-4 lg:min-w-64 xl:min-w-96 md:flex-row lg:flex-col">
@@ -66,7 +64,6 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
 
   return (
     <>
-      <div>{props.submission}</div>
       <ResizablePanelGroup
         direction="horizontal"
         style={{ height: "calc(100% - 130px)" }}
