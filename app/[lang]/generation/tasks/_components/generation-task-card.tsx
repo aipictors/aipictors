@@ -12,7 +12,7 @@ type Props = {
   selectedTaskIds: string[]
   rating: number
   sizeType: ThumbnailImageSizeType
-  taskContentPositionType: TaskContentPositionType
+  taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
   isPreviewByHover: boolean
   onClick?(): void
