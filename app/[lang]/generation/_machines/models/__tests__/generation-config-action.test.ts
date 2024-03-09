@@ -20,6 +20,7 @@ const config = new GenerationConfigState({
   i2iImageBase64: "",
   i2iDenoisingStrengthSize: 0.5,
   previewTask: null,
+  displayTask: null,
 })
 
 describe("ImageGenerationAction", () => {
