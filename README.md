@@ -72,6 +72,13 @@ bun run dev
 
 [localhost:3000](http://localhost:3000)からアクセスできます。
 
+### 3. コミット前に
+
+下記でビルドエラーが起きないかどうかチェックすること。
+
+```bash
+bun run check
+```
 
 # 📙 ドキュメント
 
