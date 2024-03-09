@@ -13,7 +13,7 @@
     "postinstall": "lefthook install",
     "ncu": "bunx ncu -p bun -t patch -u",
     "chromatic": "chromatic --project-token=chpt_493a53501ada93b",
-    "ext": "bun run scripts/install-vscode-extensions.ts"
+    "init:vscode": "bun run scripts/install-vscode-extensions.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.9.6",
