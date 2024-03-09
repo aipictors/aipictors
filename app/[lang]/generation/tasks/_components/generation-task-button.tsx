@@ -24,7 +24,7 @@ export function GenerationTaskButton(props: Props) {
   const context = useGenerationContext()
 
   const onClickTask = () => {
-    context.updatePreviewTask(props.task)
+    context.updateDisplayTask(props.task)
     if (props.taskContentPositionType === "right") {
       send({ type: "OPEN_FULL_HISTORY_ON_LIST" })
     } else {

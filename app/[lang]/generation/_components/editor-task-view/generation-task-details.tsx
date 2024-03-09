@@ -16,7 +16,7 @@ import type {
 export const GenerationTaskDetails = () => {
   const context = useGenerationContext()
 
-  const imageGenerationTask = context.config.previewTask
+  const imageGenerationTask = context.config.displayTask
 
   return (
     <>

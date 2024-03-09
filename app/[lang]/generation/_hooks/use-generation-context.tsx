@@ -258,6 +258,17 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * 表示中の生成タスク
+   * @param task
+   */
+  const updateDisplayTask = (
+    task: ImageGenerationTaskFieldsFragment | null,
+  ) => {
+    const value = configAction.updateDisplayTask(task).getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * プロンプトの値をLoRAモデルの値を考慮したうえで初期化する
    */
   const initPromptWithLoraModel = () => {
@@ -363,5 +374,6 @@ export const useGenerationContext = () => {
     updateClipSkip,
     updateModelIdAndPrompt,
     updatePreviewTask,
+    updateDisplayTask,
   }
 }

@@ -67,8 +67,11 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
-        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
-        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
       },
     },
 
@@ -77,8 +80,11 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
-        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
-        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
       },
     },
 
