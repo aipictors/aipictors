@@ -2,11 +2,15 @@
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import type {
   ImageGenerationSizeType,
   ImageGenerationStatus,
   ImageGenerationType,
 } from "@/graphql/__generated__/graphql"
+import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { useContext } from "react"
 
 /**
  * タスク詳細内容
@@ -16,8 +20,25 @@ import type {
 export const GenerationTaskContent = () => {
   const context = useGenerationContext()
 
-  const imageGenerationTask = context.config.previewTask
+  if (context.config.previewTaskId === null) {
+    return null
+  }
 
+  const authContext = useContext(AuthContext)
+
+  const { data } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn
+      ? {
+          variables: {
+            id: context.config.previewTaskId,
+          },
+          fetchPolicy: "cache-first",
+        }
+      : skipToken,
+  )
+
+  const imageGenerationTask = data?.imageGenerationTask
   if (imageGenerationTask === null || imageGenerationTask === undefined) {
     return null
   }

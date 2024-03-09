@@ -11,7 +11,7 @@ import type {
 } from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { useSuspenseQuery } from "@apollo/client"
-import { skipToken, useQuery } from "@apollo/client"
+import { skipToken } from "@apollo/client"
 import { useContext } from "react"
 
 /**
