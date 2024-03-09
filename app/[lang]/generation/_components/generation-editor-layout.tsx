@@ -2,14 +2,12 @@
 
 import { GenerationEditorLayoutHistoryListArea } from "@/app/[lang]/generation/_components/generation-editor-layout-history-list-area"
 import { GenerationEditorLayoutSettingArea } from "@/app/[lang]/generation/_components/generation-editor-layout-setting-area"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { config } from "@/config"
-import { useCallback, useEffect } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -29,27 +27,6 @@ type Props = {
  */
 export const GenerationEditorLayout = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
-  const { send } = GenerationConfigContext.useActorRef()
-
-  const state = GenerationConfigContext.useSelector((snap) => {
-    return snap.value
-  })
-
-  const handleEscapeKeyDown = useCallback((event: { keyCode: number }) => {
-    if (event.keyCode === 27) {
-      if (
-        state === "HISTORY_VIEW_ON_SETTING" ||
-        state === "HISTORY_VIEW_ON_LIST"
-      ) {
-        send({ type: "CLOSE_PREVIEW" })
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleEscapeKeyDown, false)
-  }, [])
 
   /**
    * スマホの場合リサイザーなし
