@@ -48,7 +48,7 @@ export function GenerationTaskDialogButton(props: Props) {
           <GenerationTaskSheetView
             isScroll={true}
             task={props.task}
-            onRestore={props.onRestore}
+            isReferenceLink={true}
           />
         </DialogContent>
       </Dialog>

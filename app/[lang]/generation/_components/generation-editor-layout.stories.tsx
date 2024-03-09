@@ -20,6 +20,8 @@ export const LITE: Story = {
     taskList: <div className="h-full bg-yellow-500">{"history"}</div>,
     submission: <div className="h-full bg-pink-500">{"submission"}</div>,
     taskDetails: <div className="h-full bg-indigo-500">{"taskDetails"}</div>,
-    taskContent: <div className="h-full bg-purple-500">{"taskContent"}</div>,
+    taskContentPreview: (
+      <div className="h-full bg-purple-500">{"taskContent"}</div>
+    ),
   },
 }

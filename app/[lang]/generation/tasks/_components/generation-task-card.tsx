@@ -1,3 +1,4 @@
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/app/[lang]/generation/tasks/_components/generation-task-responsive-card"
@@ -11,7 +12,9 @@ type Props = {
   selectedTaskIds: string[]
   rating: number
   sizeType: ThumbnailImageSizeType
+  taskContentPositionType: TaskContentPositionType
   isDialog: boolean
+  isPreviewByHover: boolean
   onClick?(): void
   onCancel?(): void
   onRestore?(taskId: string): void
@@ -30,6 +33,7 @@ export const GenerationTaskCard = (props: Props) => {
           onClick={() =>
             props.onSelectTask(props.task.nanoid ?? "", props.task.status)
           }
+          isPreviewByHover={props.isPreviewByHover}
           taskId={props.task.id}
           isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
           isSelectDisabled={false}
@@ -44,6 +48,8 @@ export const GenerationTaskCard = (props: Props) => {
       {!props.isEditMode && (
         <GenerationTaskResponsiveCard
           task={props.task}
+          taskContentPositionType={props.taskContentPositionType}
+          isPreviewByHover={props.isPreviewByHover}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
           selectedTaskIds={props.selectedTaskIds}
           sizeType={props.sizeType}

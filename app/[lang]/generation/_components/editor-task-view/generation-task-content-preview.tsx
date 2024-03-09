@@ -23,7 +23,8 @@ export const GenerationTaskContentPreview = () => {
       <Card className="flex h-[100vh] w-auto flex-col">
         <div className="m-auto max-h-[100vh]">
           <PrivateImage
-            className={`generation-image- max-h-[72vh]${imageGenerationTask.id}`}
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
             taskId={imageGenerationTask.id}
             token={imageGenerationTask.token ?? ""}
             alt={"-"}

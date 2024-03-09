@@ -67,12 +67,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   return (
     <>
-      <ScrollArea
-        className={cn({ "w-full max-w-fit mx-auto": props.isListFullSize })}
-      >
+      <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
         <div
           className={cn("space-y-2 p-4", {
-            "w-full max-w-fit mx-auto": props.isListFullSize,
+            "w-full mx-auto": props.isListFullSize,
             "max-h-[88vh]": props.isScroll,
           })}
         >
@@ -81,7 +79,8 @@ export function GenerationTaskSheetViewContent(props: Props) {
             taskToken={props.task.token}
             children={
               <PrivateImage
-                className={`generation-image- m-auto max-h-screen${props.task.id}`}
+                // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                className={`m-auto max-h-96 generation-image-${props.task.id}`}
                 taskId={props.task.id}
                 token={props.task.token as string}
                 alt={"-"}

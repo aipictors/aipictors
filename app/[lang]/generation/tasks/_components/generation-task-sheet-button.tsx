@@ -45,10 +45,7 @@ export function GenerationTaskSheetButton(props: Props) {
         }}
       >
         <SheetContent side={"right"} className="flex flex-col gap-0 p-0">
-          <GenerationTaskSheetView
-            task={props.task}
-            onRestore={props.onRestore}
-          />
+          <GenerationTaskSheetView task={props.task} />
         </SheetContent>
       </Sheet>
     </>

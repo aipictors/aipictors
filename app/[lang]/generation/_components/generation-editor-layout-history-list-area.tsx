@@ -17,7 +17,9 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
     return snap.value
   })
 
-  if (state === "HISTORY_VIEW") {
+  const { send } = GenerationConfigContext.useActorRef()
+
+  if (state === "HISTORY_VIEW_ON_LIST") {
     return <>{props.taskDetails}</>
   }
 

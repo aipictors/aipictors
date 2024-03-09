@@ -14,19 +14,16 @@ export const GenerationTaskDetailsView = () => {
   const { send } = GenerationConfigContext.useActorRef()
 
   const onCancel = () => {
-    send({ type: "CLOSE" })
+    send({ type: "CLOSE_PREVIEW" })
   }
 
   return (
     <GenerationViewCard
-      title={"生成履歴"}
-      tooltip={
-        "履歴は1週間、スタンダードの場合は2週間まで保存されます。★を付与することで永久保存できます。プランによって保存できる上限が変わります。"
-      }
-      tooltipDetailLink={"/plus"}
+      title={"履歴詳細"}
+      tooltip={"履歴に関する操作が可能です"}
     >
       <Button className="m-2" variant={"secondary"} onClick={onCancel}>
-        {"閉じる"}
+        {"閉じる（Escape）"}
       </Button>
 
       <GenerationTaskDetails />

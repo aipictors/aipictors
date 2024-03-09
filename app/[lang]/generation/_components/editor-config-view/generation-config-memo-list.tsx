@@ -3,11 +3,11 @@
 import { GenerationConfigMemoItem } from "@/app/[lang]/generation/_components/editor-config-view/generation-config-memo-item"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import type { ImageGenerationMemosQuery } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
 import { useEffect, useState } from "react"
 
 type Props = {
-  memos: ImageGenerationMemosQuery | undefined
+  memos: ImageGenerationMemoNode[] | undefined
   refetchMemos: () => void
 }
 
@@ -18,7 +18,7 @@ type Props = {
  */
 export const GenerationConfigMemoList = (props: Props) => {
   if (props.memos === undefined) {
-    return <>{"メモから設定を復元できます"}</>
+    return <>{"プリセットから設定を復元できます"}</>
   }
 
   const [searchWord, setSearchWord] = useState("")
@@ -29,7 +29,7 @@ export const GenerationConfigMemoList = (props: Props) => {
 
   const filterModels =
     searchWord !== ""
-      ? props.memos?.imageGenerationMemos.filter((memo) => {
+      ? props.memos.filter((memo) => {
           return (
             memo?.title?.toLowerCase().includes(searchWord.toLowerCase()) ||
             memo?.explanation
@@ -38,11 +38,11 @@ export const GenerationConfigMemoList = (props: Props) => {
             memo?.prompts?.toLowerCase().includes(searchWord.toLowerCase())
           )
         })
-      : props.memos?.imageGenerationMemos
+      : props.memos
 
   return (
     <>
-      {"メモから設定を復元できます"}
+      {"プリセットから設定を復元できます"}
       <Input
         onChange={(event) => {
           setSearchWord(event.target.value)
@@ -53,7 +53,7 @@ export const GenerationConfigMemoList = (props: Props) => {
       />
       <ScrollArea className="h-full max-h-96 p-4">
         {filterModels.map(
-          (memo) =>
+          (memo: ImageGenerationMemoNode) =>
             memo && (
               <GenerationConfigMemoItem
                 memo={{

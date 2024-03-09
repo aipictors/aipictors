@@ -5,7 +5,9 @@ import { GenerationImagePostButton } from "@/app/[lang]/generation/_components/e
 import { GenerationTaskActionDropdownMenu } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-count-select"
 import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-delete-button"
+import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-preview-mode-button"
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
@@ -16,6 +18,7 @@ import { useRouter } from "next/navigation"
 type Props = {
   rating: number
   thumbnailSize: ThumbnailImageSizeType
+  taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   isEditMode: boolean
@@ -25,9 +28,11 @@ type Props = {
   onChangeRating(rating: number): void
   onChangeViewCount(count: number): void
   setThumbnailSize(size: ThumbnailImageSizeType): void
+  onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void
+  onTogglePreviewMode(): void
 }
 
 /**
@@ -101,10 +106,17 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
+          <GenerationTaskPreviewModeButton
+            onTogglePreviewMode={props.onTogglePreviewMode}
+          />
           {
             <GenerationTaskActionDropdownMenu
               thumbnailSize={props.thumbnailSize}
               onChange={props.setThumbnailSize}
+              taskContentPositionType={props.taskContentPositionType}
+              onChangeTaskContentPositionType={
+                props.onChangeTaskContentPositionType
+              }
             />
           }
           {props.showCountInput && props.viewCount && (

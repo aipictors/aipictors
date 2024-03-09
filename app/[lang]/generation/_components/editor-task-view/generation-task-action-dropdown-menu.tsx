@@ -1,3 +1,4 @@
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +18,8 @@ import { MoreHorizontalIcon } from "lucide-react"
 type Props = {
   thumbnailSize: ThumbnailImageSizeType
   onChange(size: ThumbnailImageSizeType): void
+  taskContentPositionType: TaskContentPositionType
+  onChangeTaskContentPositionType(type: TaskContentPositionType): void
 }
 
 /**
@@ -56,6 +59,36 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                 onCheckedChange={props.onChange.bind(null, "big")}
               >
                 大
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            {"履歴詳細の表示場所"}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuLabel>{"場所変更"}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={props.taskContentPositionType === "left"}
+                onCheckedChange={props.onChangeTaskContentPositionType.bind(
+                  null,
+                  "left",
+                )}
+              >
+                左
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={props.taskContentPositionType === "right"}
+                onCheckedChange={props.onChangeTaskContentPositionType.bind(
+                  null,
+                  "right",
+                )}
+              >
+                右
               </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>

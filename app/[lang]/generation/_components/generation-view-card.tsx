@@ -4,7 +4,7 @@ import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import { Card } from "@/components/ui/card"
 
 type Props = {
-  title: string
+  title?: string
   tooltip?: string
   tooltipDetailLink?: string
   action?: React.ReactNode

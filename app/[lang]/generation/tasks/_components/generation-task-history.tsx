@@ -2,6 +2,7 @@
 
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-history"
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
@@ -27,6 +28,9 @@ export function GenerationTaskHistory() {
   const [thumbnailSize, setThumbnailSize] =
     useState<ThumbnailImageSizeType>("middle")
 
+  const [showTaskPositionType, changeShowTaskPositionType] =
+    useState<TaskContentPositionType>("right")
+
   const [rating, setRating] = useState(-1)
 
   const [viewCount, setViewCount] = useState(50)
@@ -50,17 +54,20 @@ export function GenerationTaskHistory() {
       <GenerationTaskListActions
         rating={rating}
         thumbnailSize={thumbnailSize}
+        taskContentPositionType={showTaskPositionType}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         showCountInput={true}
         viewCount={viewCount}
+        onChangeTaskContentPositionType={changeShowTaskPositionType}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
         onChangeViewCount={setViewCount}
+        onTogglePreviewMode={() => {}}
       />
       <Separator />
       <Suspense fallback={<AppLoadingPage />}>

@@ -28,10 +28,7 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CHANGE_MODEL: "PROMPT_VIEW",
-        SELECT_RESULT: "HISTORY_VIEW",
-
         OPEN_LORA_MODELS_VIEW: "LORA_MODELS_VIEW",
-
         OPEN_MODELS_VIEW: {
           target: "MODELS_VIEW",
           actions: assign((props) => {
@@ -50,23 +47,38 @@ export const generationConfigMachine = createMachine({
             return props.event.value
           }),
         },
+        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
+        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
       },
     },
 
     HISTORY_PREVIEW: {
       description: "履歴プレビュー",
+
       on: {
         CLOSE: "PROMPT_VIEW",
-        OPEN_FULL_HISTORY: "HISTORY_VIEW",
+        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
+        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
       },
     },
 
-    HISTORY_VIEW: {
-      description: "生成履歴",
+    HISTORY_VIEW_ON_SETTING: {
+      description: "生成履歴（設定に重ねて表示）",
 
       on: {
-        CLOSE: "PROMPT_VIEW",
-        SELECT_RESULT: "HISTORY_VIEW",
+        CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
+        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
+      },
+    },
+
+    HISTORY_VIEW_ON_LIST: {
+      description: "生成履歴（一覧に重ねて表示）",
+
+      on: {
+        CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
+        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
       },
     },
 

@@ -15,7 +15,7 @@ export function GenerationConfigMemoButton(props: Props) {
     <div className="flex w-full flex-col gap-y-2">
       <Button onClick={props.onClick} variant={"secondary"}>
         <StickyNote className="w-4" />
-        メモ
+        プリセット
       </Button>
     </div>
   )

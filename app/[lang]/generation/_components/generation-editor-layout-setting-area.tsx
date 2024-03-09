@@ -14,7 +14,8 @@ type Props = {
   submission: React.ReactNode
   promptEditor: React.ReactNode
   negativePromptEditor: React.ReactNode
-  taskContent: React.ReactNode
+  taskContentPreview: React.ReactNode
+  taskDetails: React.ReactNode
 }
 
 /**
@@ -50,10 +51,17 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
   }
 
   /**
-   * プレビュータスクが設定されている場合
+   * 履歴プレビューモード
    */
   if (state === "HISTORY_PREVIEW") {
-    return <>{props.taskContent}</>
+    return <>{props.taskContentPreview}</>
+  }
+
+  /**
+   * 履歴詳細表示モード
+   */
+  if (state === "HISTORY_VIEW_ON_SETTING") {
+    return <>{props.taskDetails}</>
   }
 
   return (

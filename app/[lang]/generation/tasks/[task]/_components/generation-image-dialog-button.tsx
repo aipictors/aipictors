@@ -20,7 +20,7 @@ export function GenerationImageDialogButton(props: Props) {
         className={
           props.isAbsolute === true
             ? "absolute right-2 bottom-2 rounded-full hover:opacity-80"
-            : ""
+            : "m-auto block"
         }
       >
         <span>{props.children}</span>

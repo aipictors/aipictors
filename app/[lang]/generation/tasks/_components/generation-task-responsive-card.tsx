@@ -1,3 +1,4 @@
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskChangeModeButton } from "@/app/[lang]/generation/tasks/_components/generation-task-change-mode-button"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
@@ -11,7 +12,9 @@ type Props = {
   estimatedSeconds?: number
   selectedTaskIds: string[]
   sizeType: ThumbnailImageSizeType
+  taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
+  isPreviewByHover: boolean
   onClick?(): void
   onCancel?(): void
   onRestore?(taskId: string): void
@@ -47,7 +50,9 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
       {!props.isDialog && isDesktop && (
         <GenerationTaskChangeModeButton
           task={props.task}
+          isPreviewByHover={props.isPreviewByHover}
           sizeType={props.sizeType}
+          taskContentPositionType={props.taskContentPositionType}
           onRestore={props.onRestore}
           onCancel={props.onCancel}
         />
