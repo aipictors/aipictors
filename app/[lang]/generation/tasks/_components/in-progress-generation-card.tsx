@@ -37,13 +37,13 @@ export const InProgressGenerationCard = (props: Props) => {
     <>
       <Card>
         <div>
-          <div className="flex relative">
-            <div className="p-4 flex flex-col gap-y-2 m-auto">
-              <Loader2Icon className="h-6 w-6 animate-spin m-auto" />
-              <span className="text-sm ta-c m-auto mb-4">
+          <div className="relative flex">
+            <div className="m-auto flex flex-col gap-y-2 p-4">
+              <Loader2Icon className="m-auto h-6 w-6 animate-spin" />
+              <span className="ta-c m-auto mb-4 text-sm">
                 {"generating..."}
               </span>
-              <span className="text-sm ta-c m-auto">{`予想時間: ${waitSecondsLabel()}`}</span>
+              <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
             </div>
             <GenerationTaskCancelButton
               onCancel={props.onCancel}

@@ -3,7 +3,7 @@ import getResizedImg from "@/app/_utils/get-resized-image"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useState } from "react"
-import Cropper, { Area } from "react-easy-crop"
+import Cropper, { type Area } from "react-easy-crop"
 
 type Props = {
   src: string
@@ -61,7 +61,7 @@ const ImageCropperModal = (props: Props) => {
     <Dialog open={props.isOpen}>
       <DialogContent>
         <div className="">
-          <div className="w-[80vw] h-[72vh] mb-2">
+          <div className="mb-2 h-[72vh] w-[80vw]">
             <Cropper
               classes={{
                 containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
@@ -77,7 +77,7 @@ const ImageCropperModal = (props: Props) => {
               objectFit="contain"
             />
           </div>
-          <div className="flex items-center absolute bottom-4 left-4">
+          <div className="absolute bottom-4 left-4 flex items-center">
             <div className="flex items-center">
               <input
                 type="range"

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 import { cn } from "@/lib/utils"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
@@ -122,12 +122,12 @@ export const ImageModelsList = (props: Props) => {
           />
         </Button>
       </div>
-      <ScrollArea className="overflow-auto -mx-4 max-h-[50vh] min-h-[50vh]">
+      <ScrollArea className="-mx-4 max-h-[50vh] min-h-[50vh] overflow-auto">
         <div className="space-y-4">
           {removeDuplicates(categorySections).map((item) => (
-            <div key={item.category} className="px-4 space-y-2">
+            <div key={item.category} className="space-y-2 px-4">
               <p className="font-bold">{toCategoryName(item.category)}</p>
-              <div className="grid grid-cols-3 gap-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+              <div className="grid grid-cols-3 gap-2 2xl:grid-cols-8 lg:grid-cols-5 md:grid-cols-3 xl:grid-cols-6">
                 {item.models.map((model) => (
                   <div className="relative">
                     <ImageModelCard
@@ -146,7 +146,7 @@ export const ImageModelsList = (props: Props) => {
                       }}
                     />
                     <Button
-                      className="absolute right-2 top-2"
+                      className="absolute top-2 right-2"
                       aria-label={"お気に入り"}
                       size={"icon"}
                       variant="ghost"

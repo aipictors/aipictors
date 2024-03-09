@@ -34,7 +34,7 @@ export const CrossPlatformTooltip = (props: Props) => {
             <TooltipTrigger>
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
-            <TooltipContent className="font-size-md whitespace-pre-wrap">
+            <TooltipContent className="whitespace-pre-wrap font-size-md">
               {props.text}
               {props.detailLink && (
                 <Link href={props.detailLink}>{"(詳細)"}</Link>
@@ -47,7 +47,7 @@ export const CrossPlatformTooltip = (props: Props) => {
           <PopoverTrigger asChild>
             <HelpCircleIcon className="w-4" />
           </PopoverTrigger>
-          <PopoverContent className="font-size-md whitespace-pre-wrap">
+          <PopoverContent className="whitespace-pre-wrap font-size-md">
             {props.text}
             {props.detailLink && (
               <Link href={props.detailLink}>{"(詳細)"}</Link>

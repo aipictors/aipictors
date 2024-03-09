@@ -29,7 +29,7 @@ export function SelectableCardButton(props: Props) {
       onClick={props.onClick}
       className={cn(
         "relative",
-        "p-0 h-auto overflow-hidden rounded bg-card",
+        "h-auto overflow-hidden rounded bg-card p-0",
         "border-2 border-input",
         {
           "hover:opacity-80": !props.isSelected,
@@ -46,7 +46,7 @@ export function SelectableCardButton(props: Props) {
       </div>
       {!props.isDisabled && (
         <div
-          className={cn("absolute bg-white rounded-full right-2 top-2", {
+          className={cn("absolute top-2 right-2 rounded-full bg-white", {
             "opacity-50 border-solid border-2 border-black": !props.isSelected,
           })}
         >

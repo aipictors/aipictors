@@ -1,5 +1,5 @@
 import { config } from "@/config"
-import { PassType } from "@/graphql/__generated__/graphql"
+import type { PassType } from "@/graphql/__generated__/graphql"
 
 export const toPassFeatures = (passType: PassType) => {
   if (passType === "LITE") {

@@ -1,8 +1,8 @@
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {
@@ -44,7 +44,7 @@ export function GenerationTaskSheetButton(props: Props) {
           setIsOpen((prev) => (prev !== isOpen ? isOpen : prev))
         }}
       >
-        <SheetContent side={"right"} className="p-0 flex flex-col gap-0">
+        <SheetContent side={"right"} className="flex flex-col gap-0 p-0">
           <GenerationTaskSheetView
             task={props.task}
             onRestore={props.onRestore}

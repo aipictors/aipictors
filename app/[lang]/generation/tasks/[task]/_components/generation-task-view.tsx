@@ -5,9 +5,9 @@ import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
-import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
-  GenerationSize,
+  type GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
@@ -286,11 +286,11 @@ export function GenerationTaskView(props: Props) {
   }
 
   if (data?.imageGenerationTask.status === "CANCELED") {
-    return <p className="mb-1 font-semibold text-center">{"キャンセル済み"}</p>
+    return <p className="mb-1 text-center font-semibold">{"キャンセル済み"}</p>
   }
 
   if (data?.imageGenerationTask.status === "ERROR") {
-    return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
+    return <p className="mb-1 text-center font-semibold">{"生成エラー"}</p>
   }
 
   const generationSize: GenerationSize = parseGenerationSize(
@@ -324,10 +324,10 @@ export function GenerationTaskView(props: Props) {
   return (
     <>
       <ScrollArea
-        className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""}`}
+        className={`${isDesktop ? "mx-auto w-full max-w-fit p-4" : ""}`}
       >
         <div
-          className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""} ${
+          className={`${isDesktop ? "mx-auto w-full max-w-fit p-4" : ""}${
             props.isScroll ? "max-h-[88vh]" : ""
           }`}
         >
@@ -335,16 +335,16 @@ export function GenerationTaskView(props: Props) {
             <DialogTrigger asChild>
               <Button className={"px-2"} variant={"ghost"}>
                 <PrivateImage
-                  className={`max-h-screen m-auto generation-image-${props.taskId}`}
+                  className={`generation-image- m-auto max-h-screen${props.taskId}`}
                   taskId={data.imageGenerationTask.id}
                   token={data.imageGenerationTask.token}
                   alt={"-"}
                 />
               </Button>
             </DialogTrigger>
-            <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
+            <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
               <PrivateImage
-                className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
+                className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
                 taskId={data.imageGenerationTask.id}
                 token={data.imageGenerationTask.token}
                 alt={"-"}
@@ -352,7 +352,7 @@ export function GenerationTaskView(props: Props) {
             </DialogContent>
           </Dialog>
 
-          <div className="my-4 flex gap-x-2 justify-end">
+          <div className="my-4 flex justify-end gap-x-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
@@ -398,7 +398,7 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="my-4 flex gap-x-2 justify-end">
+          <div className="my-4 flex justify-end gap-x-2">
             <GenerationMenuButton
               title={"インペイント機能で一部分を再生成して修正する"}
               onClick={onInPaint}
@@ -481,15 +481,15 @@ export function GenerationTaskView(props: Props) {
               <Link
                 href="/generation"
                 className={cn(
-                  `flex-1 w-full ${config.isDevelopmentMode && "mr-2"}`,
+                  `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
                 )}
               >
-                <Button className="p-4 w-full" variant={"secondary"}>
+                <Button className="w-full p-4" variant={"secondary"}>
                   画像生成
                 </Button>
               </Link>
-              <Link href="/generation/tasks" className="flex-1 w-full">
-                <Button className="p-4 w-full" variant={"secondary"}>
+              <Link href="/generation/tasks" className="w-full flex-1">
+                <Button className="w-full p-4" variant={"secondary"}>
                   画像一覧
                 </Button>
               </Link>

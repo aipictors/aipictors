@@ -11,17 +11,17 @@ export const ConfigModelButton = (props: Props) => {
   return (
     <Button
       variant={props.isSelected ? "default" : "secondary"}
-      className="w-full p-2 h-auto overflow-y-hidden"
+      className="h-auto w-full overflow-y-hidden p-2"
       onClick={props.onClick}
     >
-      <div className="flex space-x-4 w-full">
+      <div className="flex w-full space-x-4">
         <img
           src={props.imageURL ?? ""}
           alt={props.name}
-          className="rounded w-full max-w-[4rem] object-cover"
+          className="w-full max-w-[4rem] rounded object-cover"
           draggable={false}
         />
-        <p className="break-all text-sm font-bold whitespace-pre-wrap">
+        <p className="whitespace-pre-wrap break-all font-bold text-sm">
           {props.name}
         </p>
       </div>

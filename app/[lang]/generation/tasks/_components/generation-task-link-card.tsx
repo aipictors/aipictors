@@ -62,7 +62,7 @@ export const GenerationTaskLinkCard = (props: Props) => {
   }
 
   return (
-    <div className="relative grid p-0 h-full overflow-hidden rounded bg-card">
+    <div className="relative grid h-full overflow-hidden rounded bg-card p-0">
       <SelectableCardButton
         onClick={props.onClick}
         isSelected={props.isSelected}

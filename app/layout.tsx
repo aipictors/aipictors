@@ -5,7 +5,7 @@ import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
 import { config } from "@/config"
 import { cn } from "@/lib/utils"
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next"
 import Script from "next/script"
 import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
@@ -30,7 +30,7 @@ const RootLayout = (props: Props) => {
       </head>
       <body
         className={cn(
-          "min-h-screen font-sans antialiased no-margin",
+          "no-margin min-h-screen font-sans antialiased",
           notoSansFont.variable,
         )}
       >
@@ -64,13 +64,6 @@ export const metadata: Metadata = {
     title: config.metadata.nameJA,
     description: config.metadata.descriptionJA,
   },
-}
-
-export const viewport: Viewport = {
-  initialScale: 1,
-  maximumScale: 1,
-  width: "device-width",
-  userScalable: false,
 }
 
 export default RootLayout

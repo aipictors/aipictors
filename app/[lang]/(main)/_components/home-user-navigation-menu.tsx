@@ -25,7 +25,7 @@ import {
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
-import { MouseEventHandler, useContext, useState } from "react"
+import { type MouseEventHandler, useContext, useState } from "react"
 
 type Props = {
   onLogout(): void
@@ -54,7 +54,7 @@ type MenuItemMoveProps = {
 }
 
 const MenuItemMove = ({ onClick, icon, label, isNext }: MenuItemMoveProps) => (
-  <DropdownMenuLabel className="font-normal cursor-pointer" onClick={onClick}>
+  <DropdownMenuLabel className="cursor-pointer font-normal" onClick={onClick}>
     {isNext ? (
       <div className="flex">
         {icon ? icon : <></>}
@@ -89,9 +89,9 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const getThemeIcon = () => {
     return theme === THEME_DARK ? (
-      <MoonIcon className="w-4 inline-block mr-2" />
+      <MoonIcon className="mr-2 inline-block w-4" />
     ) : (
-      <SunIcon className="w-4 inline-block mr-2" />
+      <SunIcon className="mr-2 inline-block w-4" />
     )
   }
 
@@ -129,23 +129,23 @@ export const HomeUserNavigationMenu = (props: Props) => {
         <DropdownMenuContent>
           <MenuItemLink
             href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
-            icon={<UserCircleIcon className="w-4 inline-block mr-2" />}
+            icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
             label="マイページ"
           />
           <MenuItemLink
             href="/plus"
-            icon={<GemIcon className="w-4 inline-block mr-2" />}
+            icon={<GemIcon className="mr-2 inline-block w-4" />}
             label="Aipictors+"
           />
           <MenuItemLink
             href="/account/login"
-            icon={<UserCogIcon className="w-4 inline-block mr-2" />}
+            icon={<UserCogIcon className="mr-2 inline-block w-4" />}
             label="アカウント"
           />
           {config.isDevelopmentMode && (
             <MenuItemLink
               href="/settings/notification"
-              icon={<SettingsIcon className="w-4 inline-block mr-2" />}
+              icon={<SettingsIcon className="mr-2 inline-block w-4" />}
               label="設定"
             />
           )}
@@ -156,7 +156,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             isNext={true}
           />
           <DropdownMenuItem onClick={props.onLogout}>
-            <LogOutIcon className="w-4 inline-block mr-2" />
+            <LogOutIcon className="mr-2 inline-block w-4" />
             <p>ログアウト</p>
           </DropdownMenuItem>
         </DropdownMenuContent>

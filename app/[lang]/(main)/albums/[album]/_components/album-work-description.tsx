@@ -3,7 +3,7 @@
 import { FollowButton } from "@/app/_components/button/follow-button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
-import { AlbumQuery } from "@/graphql/__generated__/graphql"
+import type { AlbumQuery } from "@/graphql/__generated__/graphql"
 import { AvatarImage } from "@radix-ui/react-avatar"
 
 type Props = {

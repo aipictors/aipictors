@@ -8,7 +8,7 @@ type Props = {
 
 export const HomeWorkList = (props: Props) => {
   return (
-    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 pr-4 pb-4 w-full">
+    <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
       {props.works?.map((work) => (
         <li key={work.id}>
           <Link href={`/works/${work.id}`}>

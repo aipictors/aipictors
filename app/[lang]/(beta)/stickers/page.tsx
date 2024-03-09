@@ -26,7 +26,7 @@ const StickersPage = async () => {
       <StickerListHeader />
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
-        <h2 className="text-lg font-bold">{"新着"}</h2>
+        <h2 className="font-bold text-lg">{"新着"}</h2>
         <StickerList stickers={stickersResp.data.stickers} />
       </section>
     </main>

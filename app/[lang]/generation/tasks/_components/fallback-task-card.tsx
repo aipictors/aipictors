@@ -8,7 +8,7 @@ import { Loader2Icon } from "lucide-react"
 export const FallbackTaskCard = () => {
   return (
     <Card>
-      <div className="p-4 flex flex-col">
+      <div className="flex flex-col p-4">
         <Loader2Icon className="h-6 w-6 animate-spin" />
       </div>
     </Card>

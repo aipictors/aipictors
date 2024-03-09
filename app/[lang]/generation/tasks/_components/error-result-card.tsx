@@ -8,7 +8,7 @@ import { FrownIcon } from "lucide-react"
 export const ErrorResultCard = () => {
   return (
     <Card>
-      <div className="p-4 flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 p-4">
         <FrownIcon className="h-6 w-6" />
         <span className="text-sm">{"エラーが発生しました"}</span>
       </div>

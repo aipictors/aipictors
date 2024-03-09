@@ -8,7 +8,7 @@ export const SettingInterfaceForm = () => {
       <div className="flex justify-between">
         <label
           htmlFor="1"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           {"サムネイルにいいねボタンを表示"}
         </label>
@@ -17,7 +17,7 @@ export const SettingInterfaceForm = () => {
       <div className="flex justify-between">
         <label
           htmlFor="2"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           {"ポップアップ（作品ダイアログ）を表示"}
         </label>

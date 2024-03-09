@@ -8,7 +8,7 @@ import type { Metadata } from "next"
 const StickersDownloadsPage = async () => {
   return (
     <AppPage>
-      <div className="flex flex-col max-w-lg w-full p-4 space-y-8">
+      <div className="flex w-full max-w-lg flex-col space-y-8 p-4">
         <p className="font-bold text-2xl">{"DL済みスタンプ"}</p>
       </div>
     </AppPage>

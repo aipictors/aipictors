@@ -21,7 +21,7 @@ export const TagWorkSection = (props: Props) => {
   return (
     <section className="space-y-4">
       <div className="flex justify-between">
-        <h2 className="items-center space-x-2 text-2xl font-bold">
+        <h2 className="items-center space-x-2 font-bold text-2xl">
           {props.title}
         </h2>
       </div>

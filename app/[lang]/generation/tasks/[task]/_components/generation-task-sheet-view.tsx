@@ -3,13 +3,13 @@
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetViewContent } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
-import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
-  GenerationSize,
+  type GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { config } from "@/config"
-import { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"

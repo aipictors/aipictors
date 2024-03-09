@@ -27,7 +27,7 @@ export const WorkUser = (props: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex flex-row items-center p-4 gap-x-2">
+        <CardTitle className="flex flex-row items-center gap-x-2 p-4">
           <Avatar>
             <AvatarImage src={props.userIconImageURL} alt="" />
             <AvatarFallback />

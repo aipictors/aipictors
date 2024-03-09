@@ -1,4 +1,4 @@
-import { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,

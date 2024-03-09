@@ -1,6 +1,6 @@
 import { PassPlanDescription } from "@/app/[lang]/(beta)/plus/_components/pass-plan-description"
 import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
-import { PassType } from "@/graphql/__generated__/graphql"
+import type { PassType } from "@/graphql/__generated__/graphql"
 
 type Props = {
   isLoading: boolean
@@ -9,7 +9,7 @@ type Props = {
 
 export const PassPlanList = (props: Props) => {
   return (
-    <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2">
+    <div className="flex flex-col space-y-2 lg:flex-row lg:space-x-2 lg:space-y-0">
       <div className="flex-1">
         <PassPlanDescription
           title="ライト"

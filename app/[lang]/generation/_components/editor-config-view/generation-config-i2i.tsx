@@ -34,7 +34,7 @@ export const GenerationConfigI2i = () => {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <span className="font-bold text-nowrap">{"画像から生成"}</span>
+      <span className="text-nowrap font-bold">{"画像から生成"}</span>
       <CropImageField
         isHidePreviewImage={context.config.i2iImageBase64 === ""}
         cropWidth={size.width}
@@ -42,8 +42,8 @@ export const GenerationConfigI2i = () => {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
-      <div className="flex gap-x-2 items-center">
-        <span className="text-sm w-auto text-nowrap">{"変更度"}</span>
+      <div className="flex items-center gap-x-2">
+        <span className="w-auto text-nowrap text-sm">{"変更度"}</span>
         <CrossPlatformTooltip
           text={"元画像の変更度です、推奨値は0.6以下です。"}
         />

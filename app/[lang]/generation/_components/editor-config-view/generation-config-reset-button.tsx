@@ -19,7 +19,7 @@ export function GenerationConfigResetButton(props: Props) {
       onNext={props.onReset}
       onCancel={() => {}}
     >
-      <div className="flex flex-col gap-y-2 w-full">
+      <div className="flex w-full flex-col gap-y-2">
         <Button variant={"secondary"}>
           <RotateCcw className="w-4" />
           リセット

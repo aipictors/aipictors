@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
-import { LucideIcon } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { forwardRef } from "react"
-import { IconType } from "react-icons"
+import type { IconType } from "react-icons"
 
 type Props = {
   icon?: LucideIcon | IconType
@@ -23,7 +23,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           size={"sm"}
           className="w-full justify-start"
         >
-          {props.icon && <props.icon className="w-4 mr-4" />}
+          {props.icon && <props.icon className="mr-4 w-4" />}
           <span>{props.children}</span>
         </Button>
       )
@@ -38,7 +38,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           size={"sm"}
           onClick={props.onClick}
         >
-          {props.icon && <props.icon className="w-4 mr-4" />}
+          {props.icon && <props.icon className="mr-4 w-4" />}
           <span>{props.children}</span>
         </Button>
       )
@@ -57,7 +57,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
             size={"sm"}
             className="w-full justify-start"
           >
-            {props.icon && <props.icon className="w-4 mr-4" />}
+            {props.icon && <props.icon className="mr-4 w-4" />}
             <span>{props.children}</span>
           </Button>
         </a>
@@ -72,7 +72,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           size={"sm"}
           disabled={props.isDisabled}
         >
-          {props.icon && <props.icon className="w-4 mr-4" />}
+          {props.icon && <props.icon className="mr-4 w-4" />}
           <span>{props.children}</span>
         </Button>
       </Link>

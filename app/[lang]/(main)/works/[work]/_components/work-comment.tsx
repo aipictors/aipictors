@@ -17,7 +17,7 @@ export const WorkComment = (props: Props) => {
     <div className="flex items-start space-x-2">
       <Avatar>
         <AvatarImage
-          className="rounded-full w-12"
+          className="w-12 rounded-full"
           src={props.userIconImageURL}
           alt=""
         />
@@ -26,7 +26,7 @@ export const WorkComment = (props: Props) => {
       <div>
         <span>{props.userName}</span>
         {props.text && (
-          <p className="text-sm whitespace-pre-wrap overflow-hidden break-words">
+          <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
             {props.text}
           </p>
         )}

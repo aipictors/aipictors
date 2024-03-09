@@ -9,7 +9,7 @@ import { uploadImage } from "@/app/_utils/upload-image"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { config } from "@/config"
-import {
+import type {
   ImageGenerationSizeType,
   ImageGenerationType,
 } from "@/graphql/__generated__/graphql"
@@ -458,7 +458,7 @@ export function GenerationSubmissionView(props: Props) {
           }}
         >
           <div className="flex items-center">
-            <TabsList className="w-32 sm:w-full md:w-full">
+            <TabsList className="w-32 md:w-full sm:w-full">
               <TabsTrigger className="w-full" value="normal">
                 通常
               </TabsTrigger>
@@ -466,7 +466,7 @@ export function GenerationSubmissionView(props: Props) {
                 予約
               </TabsTrigger>
             </TabsList>
-            <div className="ml-auto block lg:hidden xl:hidden 2xl:hidden">
+            <div className="ml-auto block 2xl:hidden lg:hidden xl:hidden">
               <GenerationEditorProgress
                 isOnlyStatusForSubscriberDisplay={true}
                 inProgress={inProgress}
@@ -539,7 +539,7 @@ export function GenerationSubmissionView(props: Props) {
             />
           </TabsContent>
         </Tabs>
-        <div className="hidden lg:block xl:block 2xl:block">
+        <div className="hidden 2xl:block lg:block xl:block">
           <GenerationEditorProgress
             inProgress={inProgress}
             maxTasksCount={availableImageGenerationMaxTasksCount}

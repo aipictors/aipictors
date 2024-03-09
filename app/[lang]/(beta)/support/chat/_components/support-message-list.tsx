@@ -25,7 +25,7 @@ export const SupportMessageList = (props: Props) => {
 
   return (
     <div
-      className="flex-1 overflow-x-auto h-full space-y-4 mb-16"
+      className="mb-16 h-full flex-1 space-y-4 overflow-x-auto"
       ref={containerRef}
     >
       {messages.map((message) =>

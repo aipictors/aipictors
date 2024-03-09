@@ -5,7 +5,7 @@ import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generat
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import {
+import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoriesQuery,

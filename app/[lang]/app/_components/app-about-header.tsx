@@ -4,11 +4,11 @@ import Link from "next/link"
 
 export const AppAboutHeader = () => {
   return (
-    <div className="px-4 w-full mx-auto pb-32 relative">
-      <div className="absolute inset-0 z-[-1] w-full h-full opacity-20 top-[-8%]">
+    <div className="relative mx-auto w-full px-4 pb-32">
+      <div className="absolute inset-0 top-[-8%] z-[-1] h-full w-full opacity-20">
         <AppCanvas />
       </div>
-      <div className="flex justify-center py-16 relative">
+      <div className="relative flex justify-center py-16">
         <Image
           src="/icon.svg"
           alt="icon"
@@ -20,7 +20,7 @@ export const AppAboutHeader = () => {
       <div className="space-y-8">
         <div className="flex justify-center">
           <div className="w-full max-w-md space-y-4">
-            <p className="font-bold text-3xl text-center">
+            <p className="text-center font-bold text-3xl">
               {"Aipictorsのアプリが登場"}
             </p>
             <p className="leading-relaxed">

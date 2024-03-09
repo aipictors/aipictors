@@ -2,7 +2,7 @@
 
 import { PromptCategoryIcon } from "@/app/[lang]/generation/_components/editor-prompt-view/prompt-category-icon"
 import { Button } from "@/components/ui/button"
-import { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+import type { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {
@@ -16,14 +16,14 @@ export const GenerationEditorLite = (props: Props) => {
   const [promptIds, setPromptIds] = useState<string[]>([])
 
   return (
-    <main className="flex justify-center w-full">
-      <div className="max-w-[30rem] w-full p-4 space-y-8">
+    <main className="flex w-full justify-center">
+      <div className="w-full max-w-[30rem] space-y-8 p-4">
         <p className="font-bold text-2xl">{"画像生成"}</p>
         <div>
           {props.promptCategories.map((promptCategory) => (
             <div key={promptCategory.id}>
               <Button>
-                <div className="flex-1 flex items-center space-x-2">
+                <div className="flex flex-1 items-center space-x-2">
                   <PromptCategoryIcon name={promptCategory.name} />
                   <p>{promptCategory.name}</p>
                   <p>

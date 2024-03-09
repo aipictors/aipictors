@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
+import type { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { assign, createMachine } from "xstate"
 
 /**

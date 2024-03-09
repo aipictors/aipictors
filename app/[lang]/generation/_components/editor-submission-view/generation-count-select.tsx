@@ -19,10 +19,10 @@ export function GenerationCountSelect(props: Props) {
     <Select
       value={props.selectedCount.toString()}
       onValueChange={(value) => {
-        props.onChange(parseInt(value))
+        props.onChange(Number.parseInt(value))
       }}
     >
-      <SelectTrigger className="w-24 mr-2">
+      <SelectTrigger className="mr-2 w-24">
         <SelectValue placeholder={"枚数"} />
       </SelectTrigger>
       <SelectContent>

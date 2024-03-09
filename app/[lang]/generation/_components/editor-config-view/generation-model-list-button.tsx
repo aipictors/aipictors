@@ -81,7 +81,7 @@ export const GenerationModelListButton = (props: Props) => {
           {"すべてのモデル"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
+      <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"モデルを選択"}</DialogTitle>
           <DialogDescription>
@@ -100,7 +100,7 @@ export const GenerationModelListButton = (props: Props) => {
           <div className="grid gap-1.5 leading-none">
             <label
               htmlFor="use-recommended-prompt"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               モデルの推奨プロンプトを設定する
             </label>

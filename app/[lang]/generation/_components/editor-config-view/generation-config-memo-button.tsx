@@ -12,7 +12,7 @@ type Props = {
  */
 export function GenerationConfigMemoButton(props: Props) {
   return (
-    <div className="flex flex-col gap-y-2 w-full">
+    <div className="flex w-full flex-col gap-y-2">
       <Button onClick={props.onClick} variant={"secondary"}>
         <StickyNote className="w-4" />
         メモ

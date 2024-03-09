@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
   markdownText: string
@@ -18,7 +18,7 @@ type Props = {
 
 export const GenerationDocument = (props: Props) => {
   return (
-    <div className="overflow-hidden space-y-4 w-full">
+    <div className="w-full space-y-4 overflow-hidden">
       <AppMarkdown>{props.markdownText}</AppMarkdown>
       <div className="w-full overflow-auto">
         <Table className="min-w-full text-sm">

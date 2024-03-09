@@ -11,7 +11,7 @@ export const NavigationDrawer = (props: Props) => {
     <Sheet>
       <SheetOverlay />
       <SheetContent>
-        <div className="h-full overflow-auto p-4 bg-white">
+        <div className="h-full overflow-auto bg-white p-4">
           {props.children}
         </div>
       </SheetContent>

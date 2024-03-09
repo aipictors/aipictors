@@ -15,7 +15,7 @@ type Props = {
 export const GenerationConfigScale = (props: Props) => {
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2 items-center">
+      <div className="flex items-center gap-x-2">
         <span className="font-bold text-sm">{"Scale"}</span>
         <TooltipProvider>
           <Tooltip>

@@ -9,7 +9,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {
@@ -56,14 +56,14 @@ export const GenerationMemoItemContents = (props: Props) => {
         onClick={() => {
           setIsOpen(true)
         }}
-        className="w-full h-16"
+        className="h-16 w-full"
         variant="ghost"
       >
-        <div className="text-left absolute left-2">
+        <div className="absolute left-2 text-left">
           <div className="left-2">{props.memo.title}</div>
-          <div className="left-2 top-12">{props.memo.explanation}</div>
+          <div className="top-12 left-2">{props.memo.explanation}</div>
           {props.memo.createdAt && (
-            <div className="left-2 top-12 opacity-40">
+            <div className="top-12 left-2 opacity-40">
               {formatTimestamp(props.memo.createdAt)}
             </div>
           )}

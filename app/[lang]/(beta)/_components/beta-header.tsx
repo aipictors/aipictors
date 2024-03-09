@@ -31,11 +31,11 @@ export const BetaHeader = (props: Props) => {
 
   return (
     <AppHeader>
-      <div className="flex md:flex-1 gap-x-2 items-center min-w-fit">
+      <div className="flex min-w-fit items-center gap-x-2 md:flex-1">
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              className="md:hidden mr-2"
+              className="mr-2 md:hidden"
               variant={"secondary"}
               size={"icon"}
             >
@@ -52,14 +52,14 @@ export const BetaHeader = (props: Props) => {
           <Link href="https://www.aipictors.com">
             <Image
               src="/icon.svg"
-              className="w-10 h-10 rounded-full"
+              className="h-10 w-10 rounded-full"
               alt="Avatar"
               width={40}
               height={40}
             />
           </Link>
         </div>
-        <div className="flex flex-row flex-grow items-center pl-2">
+        <div className="flex flex-grow flex-row items-center pl-2">
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
       </div>

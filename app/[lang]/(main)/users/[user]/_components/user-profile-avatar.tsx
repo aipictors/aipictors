@@ -7,7 +7,7 @@ type UserProfileAvatarProps = {
 
 export const UserProfileAvatar = ({ alt, src }: UserProfileAvatarProps) => {
   return (
-    <Avatar className="w-20 h-20 border-2">
+    <Avatar className="h-20 w-20 border-2">
       <AvatarImage alt={alt} src={src} />
       <AvatarFallback />
     </Avatar>

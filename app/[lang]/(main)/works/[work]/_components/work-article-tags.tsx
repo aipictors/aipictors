@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import React from "react"
+import type React from "react"
 
 type WorkArticleTagProps = {
   tagNames: string[]

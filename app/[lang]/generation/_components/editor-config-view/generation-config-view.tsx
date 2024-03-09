@@ -144,7 +144,7 @@ export default function GenerationConfigView() {
       <ScrollArea type="always">
         <div
           className={cn(
-            "flex flex-col px-4 gap-y-4",
+            "flex flex-col gap-y-4 px-4",
             "max-h-auto md:max-h-full",
           )}
         >
@@ -211,7 +211,7 @@ export default function GenerationConfigView() {
           </Accordion>
         </div>
       </ScrollArea>
-      <div className="lg:sticky bottom-0 bg-card p-4">
+      <div className="bottom-0 bg-card p-4 lg:sticky">
         <div className="flex gap-x-2">
           <GenerationConfigMemoButton
             onClick={() => {

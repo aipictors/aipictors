@@ -1,4 +1,5 @@
-import { join } from "path"
+import { readFile } from "node:fs/promises"
+import { join } from "node:path"
 import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-negative-prompt-view"
 import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"
@@ -6,7 +7,6 @@ import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_component
 import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-details-view"
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-view"
 import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
-import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 

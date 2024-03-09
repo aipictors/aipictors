@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
-import { AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
-import { ReactElement } from "react"
+import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
+import type { ReactElement } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -34,7 +34,7 @@ export const SocialLoginButton = (props: Props) => {
 
   return (
     <Button
-      className="w-full flex items-center justify-center"
+      className="flex w-full items-center justify-center"
       onClick={onLogin}
       disabled={props.disabled}
     >

@@ -24,7 +24,7 @@ const EventWakiaiaiPage = async () => {
 
   return (
     <div className="space-y-2 py-4">
-      <div className="flex flex-col md:flex-row items-center">
+      <div className="flex flex-col items-center md:flex-row">
         <div className="flex flex-grow-3">
           <EventImage
             alt={"和気あいAI"}
@@ -33,12 +33,12 @@ const EventWakiaiaiPage = async () => {
             }
           />
         </div>
-        <div className="w-full flex-2 md:px-4 py-8 space-y-8">
+        <div className="w-full flex-2 space-y-8 py-8 md:px-4">
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-green-500">
+            <h2 className="font-bold text-green-500 text-lg">
               {"2024年4月13日（土）"}
             </h2>
-            <h1 className={"text-4xl font-bold text-green-500"}>
+            <h1 className={"font-bold text-4xl text-green-500"}>
               {"和気あいAI２"}
             </h1>
           </div>
@@ -52,14 +52,14 @@ const EventWakiaiaiPage = async () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button variant={"outline"} className="text-lg font-bold m-4">
+            <Button variant={"outline"} className="m-4 font-bold text-lg">
               出展/展示参加募集3/20〆切
               <MousePointerClickIcon className="ml-2" />
             </Button>
           </a>
         </div>
       </div>
-      <div className={cn("grid md:grid-cols-2 md:grid-flow-col gap-2")}>
+      <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
         <Card>
           <CardHeader>
             <CardTitle>{"4月13日（土） 10時〜16時"}</CardTitle>
@@ -90,7 +90,7 @@ const EventWakiaiaiPage = async () => {
       </div>
       <iframe
         title="Google Map"
-        className="rounded w-full h-400 border-0"
+        className="h-400 w-full rounded border-0"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d173236.96306047565!2d136.8223456376915!3d35.06173419127466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60037fbd4e27a501%3A0xced4a78d8bbf60fe!2z5aSq55Sw5bed6aeF6KW_5bqD5aC077yI5aSn5bGL5qC55bqD5aC077yJ!5e0!3m2!1sja!2sjp!4v1688692547024!5m2!1sja!2sjp"
         width="100%"
         height={400}
@@ -99,26 +99,26 @@ const EventWakiaiaiPage = async () => {
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
-      <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2"}>
+      <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
         {aUsers.map((user, index) => (
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
 
-      <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2"}>
+      <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
         {bUsers.map((user, index) => (
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
 
-      <div className={"grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2"}>
+      <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
         {cUsers.map((user, index) => (
           <EventCreatorCard key={user.name} user={user} />
         ))}
       </div>
 
-      <footer className="bg-gray-200 text-center p-4">
-        <p className="text-sm text-gray-600 mt-2">
+      <footer className="bg-gray-200 p-4 text-center">
+        <p className="mt-2 text-gray-600 text-sm">
           © 2024 和気あいAI. All rights reserved.
         </p>
         <div className="mt-4">

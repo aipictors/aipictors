@@ -116,7 +116,7 @@ export function GenerationEditorProgress(props: Props) {
             ) : (
               <Badge
                 variant={"secondary"}
-                className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
+                className={`mr-2${isPriorityAccount() ? "opacity-50" : ""}`}
               >
                 {"状態"} {generateStatus(speed)}
               </Badge>
@@ -132,7 +132,7 @@ export function GenerationEditorProgress(props: Props) {
             )}
             <Badge
               variant={"secondary"}
-              className={`mr-2 ${isPriorityAccount() ? "opacity-50" : ""}`}
+              className={`mr-2${isPriorityAccount() ? "opacity-50" : ""}`}
             >
               {isPriorityAccount() ? "一般状態" : "状態"}{" "}
               {generateStatus(speed)}

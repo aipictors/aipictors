@@ -121,7 +121,7 @@ export class GenerationConfigCache {
       if (value === null) {
         return defaultValue
       }
-      return parseInt(value)
+      return Number.parseInt(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)
@@ -356,7 +356,7 @@ export class GenerationConfigCache {
       if (value === null) {
         return defaultValue
       }
-      return parseInt(value)
+      return Number.parseInt(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)
@@ -384,7 +384,7 @@ export class GenerationConfigCache {
       if (value === null) {
         return defaultValue
       }
-      return parseInt(value)
+      return Number.parseInt(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

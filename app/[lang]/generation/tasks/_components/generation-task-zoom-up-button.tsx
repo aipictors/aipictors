@@ -40,7 +40,7 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
           }}
         >
           <ZoomIn
-            className={cn(`fill-white ${sizeClassName()}`)}
+            className={cn(`fill-white${sizeClassName()}`)}
             color="black"
           />
         </div>
