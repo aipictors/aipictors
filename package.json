@@ -57,7 +57,7 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "@xstate/react": "^4.1.0",
     "autoprefixer": "^10.4.18",
-    "canvas": "npm:@napi-rs/canvas",
+    "canvas": "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.2.1.tgz",
     "check": "^1.0.0",
     "chromatic": "^11.0.7",
     "class-variance-authority": "^0.7.0",
@@ -131,8 +131,5 @@
   },
   "engine": {
     "node": "21.5.0"
-  },
-  "overrides": {
-    "canvas": "npm:@napi-rs/canvas"
   }
 }
