@@ -22,12 +22,7 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
 
   const handleEscapeKeyDown = useCallback((event: { keyCode: number }) => {
     if (event.keyCode === 27) {
-      if (
-        state === "HISTORY_VIEW_ON_SETTING" ||
-        state === "HISTORY_VIEW_ON_LIST"
-      ) {
-        send({ type: "CLOSE_PREVIEW" })
-      }
+      send({ type: "CLOSE_PREVIEW" })
     }
   }, [])
 
