@@ -12,10 +12,12 @@ type Props = {
  */
 export function GenerationConfigMemoButton(props: Props) {
   return (
-    <div className="flex w-full flex-col gap-y-2">
+    <div
+      title="生成情報にメモをつけて保存、復元することができます。"
+      className="flex w-16 flex-col gap-y-2"
+    >
       <Button onClick={props.onClick} variant={"secondary"}>
         <StickyNote className="w-4" />
-        マイプリセット
       </Button>
     </div>
   )
