@@ -41,6 +41,23 @@ export const GenerationTaskDetails = () => {
 
   const imageGenerationTask = data?.imageGenerationTask
 
+  // const ApolloContext = getApolloContext()
+  // const client = useContext(ApolloContext)
+
+  // const test = client.client?.readQuery({
+  //   query: gql(`
+  //   query ImageGenerationTask($id: ID!) {
+  //     imageGenerationTask(id: $id) {
+  //       id
+  //     }
+  // }
+  // `),
+  //   variables: {
+  //     id: context.config.viewTaskId,
+  //   },
+  // })
+  // console.log(test)
+
   return (
     <>
       <ScrollArea className="absolute pb-64 md:pb-0">
