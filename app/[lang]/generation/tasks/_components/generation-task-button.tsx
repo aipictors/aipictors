@@ -24,12 +24,14 @@ export function GenerationTaskButton(props: Props) {
   const context = useGenerationContext()
 
   const onClickTask = () => {
-    context.updateDisplayTask(props.task)
-    if (props.taskContentPositionType === "right") {
-      send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
-    } else {
-      send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
-    }
+    context.updateViewTaskId(props.task.nanoid)
+    setTimeout(() => {
+      if (props.taskContentPositionType === "right") {
+        send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
+      } else {
+        send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
+      }
+    }, 100)
   }
 
   return (

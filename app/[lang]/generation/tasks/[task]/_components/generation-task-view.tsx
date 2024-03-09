@@ -194,6 +194,7 @@ export function GenerationTaskView(props: Props) {
           variables: {
             id: props.taskId,
           },
+          fetchPolicy: "cache-first",
         }
       : skipToken,
   )

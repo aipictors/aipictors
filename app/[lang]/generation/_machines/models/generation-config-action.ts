@@ -314,10 +314,10 @@ export class GenerationConfigAction {
   /**
    * プレビュー表示するタスクを更新する
    */
-  updatePreviewTask(value: ImageGenerationTaskFieldsFragment | null) {
+  updatePreviewTask(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
-      previewTask: value,
+      previewTaskId: value,
     })
     return new GenerationConfigAction(state, this.props)
   }
@@ -325,10 +325,10 @@ export class GenerationConfigAction {
   /**
    * 表示するタスクを更新する
    */
-  updateDisplayTask(value: ImageGenerationTaskFieldsFragment | null) {
+  updateViewTaskId(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
-      displayTask: value,
+      viewTaskId: value,
     })
     return new GenerationConfigAction(state, this.props)
   }

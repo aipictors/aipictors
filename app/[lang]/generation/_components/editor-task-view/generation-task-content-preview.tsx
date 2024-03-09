@@ -2,7 +2,11 @@
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { PrivateImage } from "@/app/_components/private-image"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { Card } from "@/components/ui/card"
+import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { useContext } from "react"
 
 /**
  * タスクプレビュー内容
@@ -12,28 +16,47 @@ import { Card } from "@/components/ui/card"
 export const GenerationTaskContentPreview = () => {
   const context = useGenerationContext()
 
-  const imageGenerationTask = context.config.previewTask
+  const authContext = useContext(AuthContext)
 
-  if (imageGenerationTask === null || imageGenerationTask === undefined) {
+  if (
+    authContext === null ||
+    context.config.previewTaskId === null ||
+    context.config.previewTaskId === undefined
+  ) {
     return null
   }
+
+  const { data } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn
+      ? {
+          variables: {
+            id: context.config.previewTaskId,
+          },
+        }
+      : skipToken,
+  )
+
+  const imageGenerationTask = data?.imageGenerationTask
 
   return (
     <>
       <Card className="flex h-[100vh] w-auto flex-col">
-        <div className="m-auto max-h-[100vh]">
-          <PrivateImage
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
-            taskId={imageGenerationTask.id}
-            token={imageGenerationTask.token ?? ""}
-            alt={"-"}
-          />
-          <div className="m-auto mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{imageGenerationTask.model?.name}</p>
+        {imageGenerationTask && (
+          <div className="m-auto max-h-[100vh]">
+            <PrivateImage
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              className={`max-h-[64vh] generation-image-${imageGenerationTask.id}`}
+              taskId={imageGenerationTask.id}
+              token={imageGenerationTask.token ?? ""}
+              alt={"-"}
+            />
+            <div className="m-auto mb-1">
+              <p className="mb-1 font-semibold">{"Model"}</p>
+              <p>{imageGenerationTask.model?.name}</p>
+            </div>
           </div>
-        </div>
+        )}
       </Card>
     </>
   )

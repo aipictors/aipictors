@@ -248,23 +248,19 @@ export const useGenerationContext = () => {
 
   /**
    * プレビュー表示の生成タスク
-   * @param task
+   * @param taskId タスクID
    */
-  const updatePreviewTask = (
-    task: ImageGenerationTaskFieldsFragment | null,
-  ) => {
-    const value = configAction.updatePreviewTask(task).getState()
+  const updatePreviewTaskId = (taskId: string | null) => {
+    const value = configAction.updatePreviewTask(taskId).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
    * 表示中の生成タスク
-   * @param task
+   * @param taskId タスクID
    */
-  const updateDisplayTask = (
-    task: ImageGenerationTaskFieldsFragment | null,
-  ) => {
-    const value = configAction.updateDisplayTask(task).getState()
+  const updateViewTaskId = (taskId: string | null) => {
+    const value = configAction.updateViewTaskId(taskId).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -373,7 +369,7 @@ export const useGenerationContext = () => {
     updateSeed,
     updateClipSkip,
     updateModelIdAndPrompt,
-    updatePreviewTask,
-    updateDisplayTask,
+    updatePreviewTaskId: updatePreviewTaskId,
+    updateViewTaskId: updateViewTaskId,
   }
 }

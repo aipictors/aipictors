@@ -101,13 +101,13 @@ export const GenerationTaskEditableCard = (props: Props) => {
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
         if (props.isPreviewByHover) {
-          context.updatePreviewTask(props.task)
+          context.updatePreviewTaskId(props.task.nanoid)
           send({ type: "OPEN_HISTORY_PREVIEW" })
         }
         setIsHovered(true)
       }}
       onMouseLeave={() => {
-        context.updatePreviewTask(null)
+        context.updatePreviewTaskId(null)
         send({ type: "CLOSE" })
         setIsHovered(false)
       }}

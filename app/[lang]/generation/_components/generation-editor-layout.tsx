@@ -4,6 +4,8 @@ import { GenerationAsideView } from "@/app/[lang]/generation/_components/generat
 import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
 import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
 import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { Suspense } from "react"
 
 type Props = {
   config: React.ReactNode
@@ -25,19 +27,23 @@ export const GenerationEditorLayout = (props: Props) => {
     <GenerationView
       header={<GenerationHeaderView submission={props.submission} />}
       aside={
-        <GenerationAsideView
-          taskList={props.taskList}
-          taskDetails={props.taskDetails}
-        />
+        <Suspense fallback={<AppLoadingPage />}>
+          <GenerationAsideView
+            taskList={props.taskList}
+            taskDetails={props.taskDetails}
+          />
+        </Suspense>
       }
       main={
-        <GenerationMainView
-          config={props.config}
-          promptEditor={props.promptEditor}
-          negativePromptEditor={props.negativePromptEditor}
-          taskContentPreview={props.taskContentPreview}
-          taskDetails={props.taskDetails}
-        />
+        <Suspense fallback={<AppLoadingPage />}>
+          <GenerationMainView
+            config={props.config}
+            promptEditor={props.promptEditor}
+            negativePromptEditor={props.negativePromptEditor}
+            taskContentPreview={props.taskContentPreview}
+            taskDetails={props.taskDetails}
+          />
+        </Suspense>
       }
     />
   )
