@@ -47,8 +47,8 @@ export const generationConfigMachine = createMachine({
             return props.event.value
           }),
         },
-        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
-        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
+        OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
+        OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
       },
     },
 
@@ -57,13 +57,13 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE: "PROMPT_VIEW",
-        OPEN_FULL_HISTORY_ON_SETTING: "HISTORY_VIEW_ON_SETTING",
-        OPEN_FULL_HISTORY_ON_LIST: "HISTORY_VIEW_ON_LIST",
+        OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
+        OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
       },
     },
 
-    HISTORY_VIEW_ON_SETTING: {
-      description: "生成履歴（設定に重ねて表示）",
+    HISTORY_VIEW_ON_MAIN_AND_HEADER: {
+      description: "生成履歴（メイン、ヘッダーコンテンツに重ねて表示）",
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
@@ -75,8 +75,8 @@ export const generationConfigMachine = createMachine({
       },
     },
 
-    HISTORY_VIEW_ON_LIST: {
-      description: "生成履歴（一覧に重ねて表示）",
+    HISTORY_VIEW_ON_ASIDE: {
+      description: "生成履歴（サイドコンテンツに重ねて表示）",
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",

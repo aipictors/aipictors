@@ -16,7 +16,10 @@ export const GenerationHeaderView = (props: Props) => {
     return snap.value
   })
 
-  if (state === "HISTORY_PREVIEW" || state === "HISTORY_VIEW_ON_SETTING") {
+  if (
+    state === "HISTORY_PREVIEW" ||
+    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER"
+  ) {
     return null
   }
 

@@ -58,7 +58,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
   /**
    * 履歴詳細表示モード
    */
-  if (state === "HISTORY_VIEW_ON_SETTING") {
+  if (state === "HISTORY_VIEW_ON_MAIN_AND_HEADER") {
     return <>{props.taskDetails}</>
   }
 

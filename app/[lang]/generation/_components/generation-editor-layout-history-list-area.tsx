@@ -30,7 +30,7 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
     document.addEventListener("keydown", handleEscapeKeyDown, false)
   }, [])
 
-  if (state === "HISTORY_VIEW_ON_LIST") {
+  if (state === "HISTORY_VIEW_ON_ASIDE") {
     return <>{props.taskDetails}</>
   }
 
