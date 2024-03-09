@@ -11,7 +11,7 @@
 
 # ⚙️ 環境構築
 
-### 1. bunの環境を構築
+### 1. bun の環境を構築
 
 開発には[**bun**](https://bun.sh/)が必要です。環境に応じてインストールしてください。
 
@@ -20,7 +20,7 @@
 curl -fsSL https://bun.sh/install | bash
 ```
 
-Windowsの場合はこちら。
+Windows の場合はこちら。
 
 ```powershell
 # 動作の確認はしていますが、基本的にはWSL2を推奨します。
@@ -34,10 +34,10 @@ powershell -c "irm bun.sh/install.ps1|iex"
 拡張機能は以下のコマンドでまとめてインストールすることもできます。
 
 ```bash
-bun run ext
+bun run init:vscode
 ```
 
-コマンド「code」がインストールされいない場合はVSCodeでコマンドパレットを開き以下を実行してください。
+コマンド「code」がインストールされいない場合は VSCode でコマンドパレットを開き以下を実行してください。
 
 ```
 > Shell Command: Install 'code' command in PATH
@@ -49,8 +49,8 @@ bun run ext
 shift + command + P
 ```
 
-再読み込みを要求された場合はVSCodeの再起動を行ってください。
-Visual Studio Codeの設定については、[settings.json](.vscode/settings.json)を参照してください。
+再読み込みを要求された場合は VSCode の再起動を行ってください。
+Visual Studio Code の設定については、[settings.json](.vscode/settings.json)を参照してください。
 
 ![@recommended](/docs/images//extension.png)
 
@@ -80,19 +80,17 @@ bun run dev
 bun run check
 ```
 
-
 # 📙 ドキュメント
 
-リポジトリ内のREADMEを閲覧する。
+リポジトリ内の README を閲覧する。
 
-README以外にも、[docs](/docs)ディレクトリにドキュメントがあります。
+README 以外にも、[docs](/docs)ディレクトリにドキュメントがあります。
 
-- [Biomeについて](/docs/biome.md)
-- [lefthookについて](/docs/lefthook.md)
+- [Biome について](/docs/biome.md)
+- [lefthook について](/docs/lefthook.md)
 - [単体テストについて](/docs/testing.md)
 
 # 📣 不具合 / ご意見ご要望
 
-不具合の報告は[こちらから](https://github.com/aipictors/aipictors/issues/new/choose)(GitHubアカウントが必要)。
+不具合の報告は[こちらから](https://github.com/aipictors/aipictors/issues/new/choose)(GitHub アカウントが必要)。
 その他、ご意見ご要望は[Discord](https://discord.gg/aipictors)で受け付けています。
-
