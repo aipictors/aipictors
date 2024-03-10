@@ -255,14 +255,25 @@ export const useGenerationContext = () => {
   }
 
   /**
-   * 表示中の生成タスク、一覧
-   * @param taskId タスクID
+   * 表示中タスク
+   * @param taskId
+   * @param taskIds
    */
   const updateViewTask = (taskId: string | null, taskIds: string[]) => {
     const value = configAction
       .updateViewTaskIds(taskIds)
       .updateViewTaskId(taskId)
       .getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * 表示中タスク
+   * @param taskId
+   * @param taskIds
+   */
+  const updateViewTaskId = (taskId: string | null) => {
+    const value = configAction.updateViewTaskId(taskId).getState()
     send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -373,5 +384,6 @@ export const useGenerationContext = () => {
     updateModelIdAndPrompt,
     updatePreviewTaskId: updatePreviewTaskId,
     updateViewTask: updateViewTask,
+    updateViewTaskId: updateViewTaskId,
   }
 }

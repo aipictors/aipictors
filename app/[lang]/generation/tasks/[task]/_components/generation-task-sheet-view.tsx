@@ -254,8 +254,7 @@ export function GenerationTaskSheetView(props: Props) {
       return
     }
     const nextTaskId = taskIds[index + 1]
-    console.log(nextTaskId)
-    context.updateViewTask(nextTaskId, taskIds)
+    context.updateViewTaskId(nextTaskId)
   }
 
   /**
@@ -272,28 +271,30 @@ export function GenerationTaskSheetView(props: Props) {
       return
     }
     const nextTaskId = taskIds[index - 1]
-    console.log(nextTaskId)
-    context.updateViewTask(nextTaskId, taskIds)
+    context.updateViewTaskId(nextTaskId)
   }
 
   /**
    * 左右キーで履歴切替
    */
-  const handleDirectionKeyDown = useCallback((event: { keyCode: number }) => {
-    if (event.keyCode === 37) {
-      onPrevTask()
-    }
-    if (event.keyCode === 39) {
-      onNextTask()
-    }
-  }, [])
+  const handleDirectionKeyDown = useCallback(
+    (event: { keyCode: number }) => {
+      if (event.keyCode === 37) {
+        onPrevTask()
+      }
+      if (event.keyCode === 39) {
+        onNextTask()
+      }
+    },
+    [context],
+  )
 
   useEffect(() => {
     document.addEventListener("keydown", handleDirectionKeyDown)
     return () => {
       document.removeEventListener("keydown", handleDirectionKeyDown)
     }
-  }, [])
+  }, [context])
 
   const generationSize: GenerationSize = parseGenerationSize(
     props.task.sizeType,
