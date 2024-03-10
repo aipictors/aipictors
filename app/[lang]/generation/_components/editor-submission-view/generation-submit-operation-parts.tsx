@@ -38,19 +38,22 @@ export function getSubmitButtonLabel(
   mode: string,
   isSetI2iImage: boolean,
   prompts: string,
+  seed: number,
 ) {
+  const seedLabel = (seed === -1 ? "" : "(Seed固定)")
+
   if (!prompts) {
     if (isSetI2iImage) {
       return mode === "reserve"
         ? "画像から予約ランダム生成"
-        : "画像からランダム生成"
+        : "画像からランダム生成" + seedLabel
     }
-    return mode === "reserve" ? "予約ランダム生成" : "ランダム生成"
+    return mode === "reserve" ? "予約ランダム生成" : "ランダム生成" + seedLabel
   }
   if (isSetI2iImage) {
-    return mode === "reserve" ? "画像から予約生成" : "画像から生成"
+    return mode === "reserve" ? "画像から予約生成" : "画像から生成" + seedLabel
   }
-  return mode === "reserve" ? "予約生成" : "生成"
+  return mode === "reserve" ? "予約生成" : "生成" + seedLabel
 }
 
 /**
@@ -106,6 +109,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               props.generationMode,
               context.config.i2iImageBase64 ? true : false,
               context.config.promptText,
+              context.config.seed,
             )}
           />
         )}

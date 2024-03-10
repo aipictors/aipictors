@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
+  ChevronLeft,
+  ChevronRight,
   ClipboardCopy,
   FileUp,
   LinkIcon,
@@ -41,6 +43,8 @@ type Props = {
   onDelete(): void
   onInPaint(): void
   onChangeRating(nanoid: string, rating: number): void
+  onNextTask(): void
+  onPrevTask(): void
   setRating: (value: number) => void
   setShowInPaintDialog: (value: boolean) => void
   saveGenerationImage(taskId: string): void
@@ -65,6 +69,19 @@ export function GenerationTaskSheetViewContent(props: Props) {
     )
   }
 
+  /**
+   * カンマ前までの文字列を取得
+   * @param text
+   * @returns
+   */
+  const extractStringBeforeComma = (text: string) => {
+    const commaIndex = text.indexOf(".")
+    if (commaIndex === -1) {
+      return text
+    }
+    return text.substring(0, commaIndex)
+  }
+
   return (
     <>
       <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
@@ -74,20 +91,38 @@ export function GenerationTaskSheetViewContent(props: Props) {
             "max-h-[88vh]": props.isScroll,
           })}
         >
-          <GenerationImageDialogButton
-            taskId={props.task.id}
-            taskToken={props.task.token}
-            children={
-              <PrivateImage
-                // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                className={`m-auto max-h-96 generation-image-${props.task.id}`}
-                taskId={props.task.id}
-                token={props.task.token as string}
-                alt={"-"}
-              />
-            }
-          />
-          <div className="flex gap-x-2">
+          <div className="relative bg-gray-100 dark:bg-gray-900">
+            <Button
+              className="absolute top-[50%] left-8"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={props.onPrevTask}
+            >
+              <ChevronLeft className="w-8" />
+            </Button>
+            <GenerationImageDialogButton
+              taskId={props.task.id}
+              taskToken={props.task.token}
+              children={
+                <PrivateImage
+                  // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                  className={`m-auto max-h-96 generation-image-${props.task.id}`}
+                  taskId={props.task.id}
+                  token={props.task.token as string}
+                  alt={"-"}
+                />
+              }
+            />
+            <Button
+              className="absolute top-[50%] right-8"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={props.onNextTask}
+            >
+              <ChevronRight className="w-8" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={props.onReference}
@@ -140,35 +175,36 @@ export function GenerationTaskSheetViewContent(props: Props) {
             <Separator />
           </div>
           <div className="my-4 flex justify-end gap-x-2">
-            <GenerationMenuButton
-              title={"インペイント機能で一部分を再生成して修正する"}
-              onClick={props.onInPaint}
-              text={"部分修正"}
-              icon={PenIcon}
+            <StarRating
+              value={props.rating ?? 0}
+              onChange={(value) => {
+                props.setRating(value)
+                props.onChangeRating(props.task.nanoid ?? "", value)
+              }}
             />
-          </div>
-          <StarRating
-            value={props.rating ?? 0}
-            onChange={(value) => {
-              props.setRating(value)
-              props.onChangeRating(props.task.nanoid ?? "", value)
-            }}
-          />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Size"}</p>
-            <p>
-              {props.generationSize.width}x{props.generationSize.height}
-            </p>
+            <div className="ml-auto">
+              <GenerationMenuButton
+                title={"インペイント機能で一部分を再生成して修正する"}
+                onClick={props.onInPaint}
+                text={"部分修正"}
+                icon={PenIcon}
+              />
+            </div>
           </div>
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{props.task.model?.name}</p>
+          <div className="mb-1 flex gap-x-2">
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Size"}</p>
+              <p>
+                {props.generationSize.width}x{props.generationSize.height}
+              </p>
+            </div>
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Model"}</p>
+              <p>{extractStringBeforeComma(props.task.model?.name)}</p>
+            </div>
           </div>
           <div className="py-2">
             <Separator />

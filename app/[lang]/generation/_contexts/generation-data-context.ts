@@ -5,7 +5,6 @@ import type {
   ImageModelsQuery,
   PromptCategoriesQuery,
   ViewerCurrentPassQuery,
-  ViewerImageGenerationTasksQuery,
 } from "@/graphql/__generated__/graphql"
 import { createContext } from "react"
 

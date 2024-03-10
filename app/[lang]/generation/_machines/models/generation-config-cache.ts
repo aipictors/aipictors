@@ -31,6 +31,7 @@ export class GenerationConfigCache {
       i2iDenoisingStrengthSize: this.restoreI2iDenoisingStrengthSize(),
       previewTaskId: null,
       viewTaskId: null,
+      viewTaskIds: [],
     })
   }
 
@@ -60,6 +61,7 @@ export class GenerationConfigCache {
         config.generationFeature.defaultI2iDenoisingStrengthSize,
       previewTaskId: null,
       viewTaskId: null,
+      viewTaskIds: [],
     })
   }
 

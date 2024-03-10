@@ -233,6 +233,19 @@ export function GenerationTaskView(props: Props) {
   }
 
   /**
+   * カンマ前までの文字列を取得
+   * @param text
+   * @returns
+   */
+  const extractStringBeforeComma = (text: string) => {
+    const commaIndex = text.indexOf(".")
+    if (commaIndex === -1) {
+      return text
+    }
+    return text.substring(0, commaIndex)
+  }
+
+  /**
    * インペイント
    */
   const onInPaint = () => {
@@ -354,7 +367,7 @@ export function GenerationTaskView(props: Props) {
             </DialogContent>
           </Dialog>
 
-          <div className="my-4 flex justify-end gap-x-2">
+          <div className="flex flex-wrap justify-end gap-x-2 gap-y-2 pt-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
@@ -400,36 +413,39 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="my-4 flex justify-end gap-x-2">
-            <GenerationMenuButton
-              title={"インペイント機能で一部分を再生成して修正する"}
-              onClick={onInPaint}
-              text={"部分修正"}
-              icon={PenIcon}
+          <div className="my-4 flex items-center gap-x-2">
+            <StarRating
+              value={rating ?? 0}
+              onChange={(value) => {
+                setRating(value)
+                onChangeRating(props.taskId, value)
+              }}
             />
-          </div>
-          <StarRating
-            value={rating ?? 0}
-            onChange={(value) => {
-              setRating(value)
-              onChangeRating(props.taskId, value)
-            }}
-          />
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Size"}</p>
-            <p>
-              {generationSize.width}x{generationSize.height}
-            </p>
+            <div className="ml-auto">
+              <GenerationMenuButton
+                title={"インペイント機能で一部分を再生成して修正する"}
+                onClick={onInPaint}
+                text={"部分修正"}
+                icon={PenIcon}
+              />
+            </div>
           </div>
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{data.imageGenerationTask.model?.name}</p>
+          <div className="mb-1 flex gap-x-2">
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Size"}</p>
+              <p>
+                {generationSize.width}x{generationSize.height}
+              </p>
+            </div>
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Model"}</p>
+              <p>
+                {extractStringBeforeComma(data.imageGenerationTask.model?.name)}
+              </p>
+            </div>
           </div>
           <div className="py-2">
             <Separator />

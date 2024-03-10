@@ -46,7 +46,7 @@ export const GenerationTaskRatingButton = (props: Props) => {
    */
   const sizeClassName = () => {
     if (props.size === 1) {
-      return "h-6 w-6"
+      return "h-4 w-4"
     }
     if (props.size === 2) {
       return "h-8 w-8"

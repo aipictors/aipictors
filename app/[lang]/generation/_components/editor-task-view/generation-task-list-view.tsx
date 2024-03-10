@@ -5,7 +5,9 @@ import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/e
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
+import { config } from "@/config"
 import { useState } from "react"
+import { useMediaQuery } from "usehooks-ts"
 
 /**
  * タスク関連
@@ -26,8 +28,11 @@ export const GenerationTaskListView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [thumbnailSize, setThumbnailSize] =
-    useState<ThumbnailImageSizeType>("middle")
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(
+    isDesktop ? 5 : 3,
+  )
 
   /**
    * レーティングを変更する

@@ -10,6 +10,7 @@ import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { cn } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense, useState } from "react"
@@ -138,27 +139,44 @@ export const GenerationTaskListHistory = (props: Props) => {
     props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
-  const getGridClasses = (size: string): string => {
-    switch (size) {
-      case "small":
-        return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
-      case "middle":
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
-      case "big":
-        return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5"
-      default:
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
-    }
-  }
-
   const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
+
+  // 左右の作品へ遷移するときに使用するnanoidのリスト
+  const taskNanoidList = componentTasks.map((task) => task.nanoid ?? "")
+
+  context.updateViewTaskIds(taskNanoidList)
 
   const sizeType = props.thumbnailSize ?? "small"
 
   return (
     <>
       <ScrollArea>
-        <div className={getGridClasses(props.thumbnailSize)}>
+        <div
+          className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
+            "grid-cols-0":
+              props.thumbnailSize === (0 as ThumbnailImageSizeType),
+            "grid-cols-1":
+              props.thumbnailSize === (1 as ThumbnailImageSizeType),
+            "grid-cols-2":
+              props.thumbnailSize === (2 as ThumbnailImageSizeType),
+            "grid-cols-3":
+              props.thumbnailSize === (3 as ThumbnailImageSizeType),
+            "grid-cols-4":
+              props.thumbnailSize === (4 as ThumbnailImageSizeType),
+            "grid-cols-5":
+              props.thumbnailSize === (5 as ThumbnailImageSizeType),
+            "grid-cols-6":
+              props.thumbnailSize === (6 as ThumbnailImageSizeType),
+            "grid-cols-7":
+              props.thumbnailSize === (7 as ThumbnailImageSizeType),
+            "grid-cols-8":
+              props.thumbnailSize === (8 as ThumbnailImageSizeType),
+            "grid-cols-9":
+              props.thumbnailSize === (9 as ThumbnailImageSizeType),
+            "grid-cols-10":
+              props.thumbnailSize === (10 as ThumbnailImageSizeType),
+          })}
+        >
           {componentTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
               <Suspense fallback={<FallbackTaskCard />}>

@@ -236,6 +236,38 @@ export function GenerationTaskSheetView(props: Props) {
     })
   }
 
+  /**
+   * 次のタスクに戻る
+   * @returns
+   */
+  const onNextTask = () => {
+    const nowTask = context.config.viewTaskId
+    const taskIds = context.config.viewTaskIds
+    if (nowTask === null || taskIds === null) return
+    const index = taskIds.indexOf(nowTask)
+    if (taskIds.length === index + 1) {
+      toast("次の履歴がありません")
+    }
+    const nextTaskId = taskIds[index + 1]
+    context.updateViewTaskId(nextTaskId)
+  }
+
+  /**
+   * 前のタスクに戻る
+   * @returns
+   */
+  const onPrevTask = () => {
+    const nowTask = context.config.viewTaskId
+    const taskIds = context.config.viewTaskIds
+    if (nowTask === null || taskIds === null) return
+    const index = taskIds.indexOf(nowTask)
+    if (taskIds.length === index - 1) {
+      toast("前の履歴がありません")
+    }
+    const nextTaskId = taskIds[index - 1]
+    context.updateViewTaskId(nextTaskId)
+  }
+
   const generationSize: GenerationSize = parseGenerationSize(
     props.task.sizeType,
   )
@@ -277,6 +309,8 @@ export function GenerationTaskSheetView(props: Props) {
         onDelete={onDelete}
         onInPaint={onInPaint}
         onChangeRating={onChangeRating}
+        onNextTask={onNextTask}
+        onPrevTask={onPrevTask}
         setRating={setRating}
         setShowInPaintDialog={setShowInPaintDialog}
         saveGenerationImage={saveGenerationImage}
@@ -301,6 +335,8 @@ export function GenerationTaskSheetView(props: Props) {
       onPost={onPost}
       onDelete={onDelete}
       onInPaint={onInPaint}
+      onNextTask={onNextTask}
+      onPrevTask={onPrevTask}
       onChangeRating={onChangeRating}
       setRating={setRating}
       setShowInPaintDialog={setShowInPaintDialog}

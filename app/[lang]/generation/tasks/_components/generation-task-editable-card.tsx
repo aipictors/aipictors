@@ -71,14 +71,14 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   /**
    * 履歴画像上に表示されるボタンのサイズ
-   * @param type サイズ
+   * @param size サイズ
    * @returns
    */
-  const optionButtonSize = (type: string) => {
-    if (type === "small") {
+  const optionButtonSize = (size: number) => {
+    if (size < 3) {
       return 1
     }
-    if (type === "middle") {
+    if (size < 5) {
       return 2
     }
     return 3

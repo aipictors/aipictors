@@ -11,9 +11,11 @@ import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/tas
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
+import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { useRouter } from "next/navigation"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   rating: number
@@ -71,6 +73,8 @@ export const GenerationTaskListActions = (props: Props) => {
 
   const isEmpty = props.selectedTaskIds.length === 0
 
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <>
       {/* 操作一覧 */}
@@ -106,9 +110,11 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
-          <GenerationTaskPreviewModeButton
-            onTogglePreviewMode={props.onTogglePreviewMode}
-          />
+          {isDesktop && (
+            <GenerationTaskPreviewModeButton
+              onTogglePreviewMode={props.onTogglePreviewMode}
+            />
+          )}
           {
             <GenerationTaskActionDropdownMenu
               thumbnailSize={props.thumbnailSize}
@@ -136,7 +142,7 @@ export const GenerationTaskListActions = (props: Props) => {
             variant={"secondary"}
             size={"sm"}
           >
-            {"すべて"}
+            {"全件一覧"}
           </Button>
         )}
       </div>

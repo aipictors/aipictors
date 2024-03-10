@@ -45,14 +45,14 @@ export const GenerationConfigI2i = () => {
       <div className="flex items-center gap-x-2">
         <span className="w-auto text-nowrap text-sm">{"変更度"}</span>
         <CrossPlatformTooltip
-          text={"元画像の変更度です、推奨値は0.6以下です。"}
+          text={"変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。"}
         />
         <Slider
           className="color-pink w-full"
           aria-label="slider-ex-2"
           min={0.1}
           max={1.0}
-          step={0.1}
+          step={0.01}
           value={[context.config.i2iDenoisingStrengthSize]}
           onValueChange={(value) =>
             context.changeI2iDenoisingStrengthSize(value[0])

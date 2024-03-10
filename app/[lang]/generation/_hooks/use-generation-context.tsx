@@ -3,7 +3,6 @@ import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generat
 import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
 import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { config } from "@/config"
-import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useContext } from "react"
 
 export const useGenerationContext = () => {
@@ -265,6 +264,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * 表示中の生成タスク
+   * @param taskId タスクID
+   */
+  const updateViewTaskIds = (taskIds: string[]) => {
+    const value = configAction.updateViewTaskIds(taskIds).getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * プロンプトの値をLoRAモデルの値を考慮したうえで初期化する
    */
   const initPromptWithLoraModel = () => {
@@ -371,5 +379,6 @@ export const useGenerationContext = () => {
     updateModelIdAndPrompt,
     updatePreviewTaskId: updatePreviewTaskId,
     updateViewTaskId: updateViewTaskId,
+    updateViewTaskIds: updateViewTaskIds,
   }
 }
