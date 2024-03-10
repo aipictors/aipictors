@@ -158,16 +158,16 @@ export const GenerationTaskList = (props: Props) => {
     <ScrollArea className="pb-64 md:pb-0">
       <div
         className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
-          "grid-cols-0": props.thumbnailSize === (0 as ThumbnailImageSizeType),
-          "grid-cols-1": props.thumbnailSize === (1 as ThumbnailImageSizeType),
-          "grid-cols-2": props.thumbnailSize === (2 as ThumbnailImageSizeType),
-          "grid-cols-3": props.thumbnailSize === (3 as ThumbnailImageSizeType),
-          "grid-cols-4": props.thumbnailSize === (4 as ThumbnailImageSizeType),
+          "grid-cols-0": props.thumbnailSize === (10 as ThumbnailImageSizeType),
+          "grid-cols-1": props.thumbnailSize === (9 as ThumbnailImageSizeType),
+          "grid-cols-2": props.thumbnailSize === (8 as ThumbnailImageSizeType),
+          "grid-cols-3": props.thumbnailSize === (7 as ThumbnailImageSizeType),
+          "grid-cols-4": props.thumbnailSize === (6 as ThumbnailImageSizeType),
           "grid-cols-5": props.thumbnailSize === (5 as ThumbnailImageSizeType),
-          "grid-cols-6": props.thumbnailSize === (6 as ThumbnailImageSizeType),
-          "grid-cols-7": props.thumbnailSize === (7 as ThumbnailImageSizeType),
-          "grid-cols-8": props.thumbnailSize === (8 as ThumbnailImageSizeType),
-          "grid-cols-9": props.thumbnailSize === (9 as ThumbnailImageSizeType),
+          "grid-cols-6": props.thumbnailSize === (4 as ThumbnailImageSizeType),
+          "grid-cols-7": props.thumbnailSize === (3 as ThumbnailImageSizeType),
+          "grid-cols-8": props.thumbnailSize === (2 as ThumbnailImageSizeType),
+          "grid-cols-9": props.thumbnailSize === (1 as ThumbnailImageSizeType),
           "grid-cols-10":
             props.thumbnailSize === (10 as ThumbnailImageSizeType),
         })}

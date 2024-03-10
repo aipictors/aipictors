@@ -14,7 +14,7 @@ import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-im
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -156,6 +156,10 @@ export function GenerationTaskSheetView(props: Props) {
 
   const context = useGenerationContext()
 
+  const viewTaskId = context.config.viewTaskId
+
+  const viewTaskIds = context.config.viewTaskIds
+
   const [showInPaintDialog, setShowInPaintDialog] = useState(false)
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
@@ -241,16 +245,17 @@ export function GenerationTaskSheetView(props: Props) {
    * @returns
    */
   const onNextTask = () => {
-    const nowTask = context.config.viewTaskId
-    const taskIds = context.config.viewTaskIds
+    const nowTask = viewTaskId
+    const taskIds = viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
-    if (!taskIds.length || taskIds.length === index + 1) {
+    if (!taskIds.length || taskIds.length === index) {
       toast("次の履歴がありません")
       return
     }
     const nextTaskId = taskIds[index + 1]
-    context.updateViewTaskId(nextTaskId)
+    console.log(nextTaskId)
+    context.updateViewTask(nextTaskId, taskIds)
   }
 
   /**
@@ -258,17 +263,37 @@ export function GenerationTaskSheetView(props: Props) {
    * @returns
    */
   const onPrevTask = () => {
-    const nowTask = context.config.viewTaskId
-    const taskIds = context.config.viewTaskIds
+    const nowTask = viewTaskId
+    const taskIds = viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
-    if (!taskIds.length || taskIds.length === index - 1) {
+    if (!taskIds.length || index === 0) {
       toast("前の履歴がありません")
       return
     }
     const nextTaskId = taskIds[index - 1]
-    context.updateViewTaskId(nextTaskId)
+    console.log(nextTaskId)
+    context.updateViewTask(nextTaskId, taskIds)
   }
+
+  /**
+   * 左右キーで履歴切替
+   */
+  const handleDirectionKeyDown = useCallback((event: { keyCode: number }) => {
+    if (event.keyCode === 37) {
+      onPrevTask()
+    }
+    if (event.keyCode === 39) {
+      onNextTask()
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleDirectionKeyDown)
+    return () => {
+      document.removeEventListener("keydown", handleDirectionKeyDown)
+    }
+  }, [])
 
   const generationSize: GenerationSize = parseGenerationSize(
     props.task.sizeType,

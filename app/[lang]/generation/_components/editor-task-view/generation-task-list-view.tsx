@@ -30,9 +30,7 @@ export const GenerationTaskListView = () => {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(
-    isDesktop ? 5 : 3,
-  )
+  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(7)
 
   /**
    * レーティングを変更する
