@@ -144,10 +144,6 @@ export const GenerationTaskListHistory = (props: Props) => {
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskNanoidList = componentTasks.map((task) => task.nanoid ?? "")
 
-  context.updateViewTaskIds(taskNanoidList)
-
-  const sizeType = props.thumbnailSize ?? "small"
-
   return (
     <>
       <ScrollArea>
@@ -188,7 +184,7 @@ export const GenerationTaskListHistory = (props: Props) => {
                   isPreviewByHover={false}
                   rating={task.rating ?? 0}
                   selectedTaskIds={props.selectedTaskIds}
-                  sizeType={sizeType}
+                  sizeType={props.thumbnailSize}
                   isDialog={true}
                   onClick={() => onSelectTask(task.nanoid, task.status)}
                   onCancel={() => onSelectTask(task.nanoid, task.status)}

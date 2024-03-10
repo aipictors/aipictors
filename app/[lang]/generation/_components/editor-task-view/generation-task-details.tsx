@@ -1,5 +1,6 @@
 "use client"
 
+import { useCachedImageGenerationTask } from "@/app/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -9,9 +10,6 @@ import type {
   ImageGenerationStatus,
   ImageGenerationType,
 } from "@/graphql/__generated__/graphql"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { useSuspenseQuery } from "@apollo/client"
-import { skipToken } from "@apollo/client"
 import { useContext } from "react"
 
 /**
@@ -27,36 +25,9 @@ export const GenerationTaskDetails = () => {
     return null
   }
 
-  const { data } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn
-      ? {
-          variables: {
-            id: context.config.viewTaskId,
-          },
-          fetchPolicy: "cache-first",
-        }
-      : skipToken,
+  const imageGenerationTask = useCachedImageGenerationTask(
+    context.config.viewTaskId,
   )
-
-  const imageGenerationTask = data?.imageGenerationTask
-
-  // const ApolloContext = getApolloContext()
-  // const client = useContext(ApolloContext)
-
-  // const test = client.client?.readQuery({
-  //   query: gql(`
-  //   query ImageGenerationTask($id: ID!) {
-  //     imageGenerationTask(id: $id) {
-  //       id
-  //     }
-  // }
-  // `),
-  //   variables: {
-  //     id: context.config.viewTaskId,
-  //   },
-  // })
-  // console.log(test)
 
   return (
     <>

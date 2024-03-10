@@ -7,6 +7,7 @@ import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
+  taskIds?: string[]
   sizeType: ThumbnailImageSizeType
   taskContentPositionType?: TaskContentPositionType
   isPreviewByHover: boolean
@@ -24,14 +25,19 @@ export function GenerationTaskButton(props: Props) {
   const context = useGenerationContext()
 
   const onClickTask = () => {
-    context.updateViewTaskId(props.task.nanoid)
+    if (props.taskIds?.length) {
+      context.updateViewTaskIds(props.taskIds)
+    }
     setTimeout(() => {
-      if (props.taskContentPositionType === "right") {
-        send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
-      } else {
-        send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
-      }
-    }, 100)
+      context.updateViewTaskId(props.task.id)
+      setTimeout(() => {
+        if (props.taskContentPositionType === "right") {
+          send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
+        } else {
+          send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
+        }
+      }, 100)
+    }, 500)
   }
 
   return (

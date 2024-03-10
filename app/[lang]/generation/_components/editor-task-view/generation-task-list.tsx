@@ -152,9 +152,7 @@ export const GenerationTaskList = (props: Props) => {
     props.rating === -1 ? activeTasks : combineDisplayRatingTasks
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
-  const taskNanoidList = componentTasks.map((task) => task.nanoid ?? "")
-
-  context.updateViewTaskIds(taskNanoidList)
+  const taskIdList = componentTasks.map((task) => task.id)
 
   return (
     <ScrollArea className="pb-64 md:pb-0">
@@ -179,6 +177,7 @@ export const GenerationTaskList = (props: Props) => {
             <Suspense fallback={<FallbackTaskCard />}>
               <GenerationTaskCard
                 task={task}
+                taskIds={taskIdList}
                 taskContentPositionType={props.taskContentPositionType}
                 isEditMode={props.isEditMode}
                 isPreviewByHover={props.isPreviewMode}

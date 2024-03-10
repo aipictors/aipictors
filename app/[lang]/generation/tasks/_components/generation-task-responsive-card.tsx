@@ -9,6 +9,7 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
+  taskIds?: string[]
   estimatedSeconds?: number
   selectedTaskIds: string[]
   sizeType: ThumbnailImageSizeType
@@ -50,6 +51,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
       {!props.isDialog && isDesktop && (
         <GenerationTaskButton
           task={props.task}
+          taskIds={props.taskIds}
           isPreviewByHover={props.isPreviewByHover}
           sizeType={props.sizeType}
           taskContentPositionType={props.taskContentPositionType}

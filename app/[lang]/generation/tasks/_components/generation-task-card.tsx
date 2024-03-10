@@ -6,6 +6,7 @@ import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
+  taskIds?: string[]
   isEditMode: boolean
   isSelected?: boolean
   estimatedSeconds?: number
@@ -48,6 +49,7 @@ export const GenerationTaskCard = (props: Props) => {
       {!props.isEditMode && (
         <GenerationTaskResponsiveCard
           task={props.task}
+          taskIds={props.taskIds}
           taskContentPositionType={props.taskContentPositionType}
           isPreviewByHover={props.isPreviewByHover}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}

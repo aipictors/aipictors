@@ -245,8 +245,9 @@ export function GenerationTaskSheetView(props: Props) {
     const taskIds = context.config.viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
-    if (taskIds.length === index + 1) {
+    if (!taskIds.length || taskIds.length === index + 1) {
       toast("次の履歴がありません")
+      return
     }
     const nextTaskId = taskIds[index + 1]
     context.updateViewTaskId(nextTaskId)
@@ -261,8 +262,9 @@ export function GenerationTaskSheetView(props: Props) {
     const taskIds = context.config.viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
-    if (taskIds.length === index - 1) {
+    if (!taskIds.length || taskIds.length === index - 1) {
       toast("前の履歴がありません")
+      return
     }
     const nextTaskId = taskIds[index - 1]
     context.updateViewTaskId(nextTaskId)
