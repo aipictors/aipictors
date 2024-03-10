@@ -1,11 +1,10 @@
 "use client"
 
+import { useCachedImageGenerationTask } from "@/app/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { Card } from "@/components/ui/card"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { useContext } from "react"
 
 /**
@@ -26,18 +25,9 @@ export const GenerationTaskContentPreview = () => {
     return null
   }
 
-  const { data } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn
-      ? {
-          variables: {
-            id: context.config.previewTaskId,
-          },
-        }
-      : skipToken,
+  const imageGenerationTask = useCachedImageGenerationTask(
+    context.config.previewTaskId,
   )
-
-  const imageGenerationTask = data?.imageGenerationTask
 
   return (
     <>
