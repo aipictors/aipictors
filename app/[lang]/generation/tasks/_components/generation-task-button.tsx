@@ -1,5 +1,6 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
@@ -7,6 +8,8 @@ import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/
 type Props = {
   task: ImageGenerationTaskFieldsFragment
   sizeType: ThumbnailImageSizeType
+  taskContentPositionType?: TaskContentPositionType
+  isPreviewByHover: boolean
   onRestore?(taskId: string): void
   onCancel?(): void
 }
@@ -15,14 +18,20 @@ type Props = {
  * 画像生成の履歴
  * @returns
  */
-export function GenerationTaskChangeModeButton(props: Props) {
+export function GenerationTaskButton(props: Props) {
   const { send } = GenerationConfigContext.useActorRef()
 
   const context = useGenerationContext()
 
   const onClickTask = () => {
-    context.updatePreviewTask(props.task)
-    send({ type: "OPEN_FULL_HISTORY" })
+    context.updateViewTaskId(props.task.nanoid)
+    setTimeout(() => {
+      if (props.taskContentPositionType === "right") {
+        send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
+      } else {
+        send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
+      }
+    }, 100)
   }
 
   return (
@@ -30,6 +39,7 @@ export function GenerationTaskChangeModeButton(props: Props) {
       <GenerationTaskEditableCard
         taskNanoid={props.task.nanoid}
         taskId={props.task.id}
+        isPreviewByHover={props.isPreviewByHover}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         token={props.task.token}
         optionButtonSize={props.sizeType}
@@ -41,22 +51,6 @@ export function GenerationTaskChangeModeButton(props: Props) {
         }}
         onCancel={props.onCancel}
       />
-      {/* <Sheet
-        open={isOpen}
-        onOpenChange={(isOpen) => {
-          if (!isOpen && props.onCancel) {
-            props.onCancel()
-          }
-          setIsOpen((prev) => (prev !== isOpen ? isOpen : prev))
-        }}
-      >
-        <SheetContent side={"right"} className="p-0 flex flex-col gap-0">
-          <GenerationTaskSheetView
-            task={props.task}
-            onRestore={props.onRestore}
-          />
-        </SheetContent>
-      </Sheet> */}
     </>
   )
 }

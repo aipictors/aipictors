@@ -25,9 +25,10 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
-import { imageGenerationMemosQuery } from "@/graphql/queries/image-generation/image-generation-memos"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
+import { viewerCurrentImageGenerationMemosQuery } from "@/graphql/queries/viewer/viewer-current-image-generation-memos"
+import { viewerFavoritedImageGenerationModelsQuery } from "@/graphql/queries/viewer/viewer-favorited-image-generation-models"
 import { cn } from "@/lib/utils"
 import { skipToken, useQuery, useSuspenseQuery } from "@apollo/client"
 import { useSearchParams } from "next/navigation"
@@ -114,33 +115,39 @@ export default function GenerationConfigView() {
    */
   const configModelType = currentModel?.type ?? "SD1"
 
-  const { data: memos, refetch } = useQuery(imageGenerationMemosQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      limit: 64,
-      offset: 0,
-      orderBy: {
-        createdAt: "DESC",
-      },
+  /**
+   * メモ一覧
+   */
+  const { data: memos, refetch } = useQuery(
+    viewerCurrentImageGenerationMemosQuery,
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
     },
-  })
+  )
+
+  /**
+   * お気に入りのモデル一覧
+   */
+  const { data: favoritedModels } = useQuery(
+    viewerFavoritedImageGenerationModelsQuery,
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+    },
+  )
 
   useEffect(() => {
     if (authContext.isLoading) return
     if (authContext.isNotLoggedIn) return
-    // ログイン状態が変わったら再取得
-    refetch()
-    refetchSetting()
+    if (favoritedModels === undefined) return
     const favoritedModelIds =
-      userSetting?.userSetting?.favoritedImageGenerationModelIds ?? []
+      favoritedModels.viewer?.favoritedImageGenerationModels.map((model) =>
+        Number(model.id),
+      ) ?? []
     context.updateFavoriteModelIds(favoritedModelIds)
-  }, [authContext.isLoggedIn])
+  }, [favoritedModels])
 
   return (
-    <GenerationViewCard
-      title={"設定"}
-      tooltip={"イラストの絵柄を調整することができます。"}
-    >
+    <GenerationViewCard>
       <ScrollArea type="always">
         <div
           className={cn(
@@ -219,7 +226,15 @@ export default function GenerationConfigView() {
             }}
           />
           <GenerationConfigMemoSettingDialog
-            memos={memos}
+            memos={
+              memos?.viewer?.currentImageGenerationMemos.map((memo) => ({
+                ...memo,
+                model: {
+                  ...memo.model,
+                  recommendedPrompt: "",
+                },
+              })) ?? []
+            }
             refetch={refetch}
             onClose={() => {
               setShowMemoSetting(false)

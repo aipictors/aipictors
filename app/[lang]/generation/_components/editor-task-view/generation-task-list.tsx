@@ -1,6 +1,7 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
@@ -17,8 +18,10 @@ import { toast } from "sonner"
 type Props = {
   rating: number
   isEditMode: boolean
+  isPreviewMode: boolean
   selectedTaskIds: string[]
   thumbnailSize: ThumbnailImageSizeType
+  taskContentPositionType: TaskContentPositionType
   hidedTaskIds: string[]
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
@@ -170,7 +173,9 @@ export const GenerationTaskList = (props: Props) => {
             <Suspense fallback={<FallbackTaskCard />}>
               <GenerationTaskCard
                 task={task}
+                taskContentPositionType={props.taskContentPositionType}
                 isEditMode={props.isEditMode}
+                isPreviewByHover={props.isPreviewMode}
                 isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
                 sizeType={sizeType}
                 isDialog={false}

@@ -25,6 +25,7 @@ type Props = {
   optionButtonSize: ThumbnailImageSizeType
   isSelectDisabled: boolean
   task: ImageGenerationTaskFieldsFragment
+  isPreviewByHover?: boolean
   onClick?(): void
   onCancel?(): void
 }
@@ -99,12 +100,14 @@ export const GenerationTaskEditableCard = (props: Props) => {
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
-        context.updatePreviewTask(props.task)
-        send({ type: "OPEN_HISTORY_PREVIEW" })
+        if (props.isPreviewByHover) {
+          context.updatePreviewTaskId(props.task.nanoid)
+          send({ type: "OPEN_HISTORY_PREVIEW" })
+        }
         setIsHovered(true)
       }}
       onMouseLeave={() => {
-        context.updatePreviewTask(null)
+        context.updatePreviewTaskId(null)
         send({ type: "CLOSE" })
         setIsHovered(false)
       }}

@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { useCallback, useEffect } from "react"
 
 type Props = {
   taskList: React.ReactNode
@@ -17,7 +18,19 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
     return snap.value
   })
 
-  if (state === "HISTORY_VIEW") {
+  const { send } = GenerationConfigContext.useActorRef()
+
+  const handleEscapeKeyDown = useCallback((event: { keyCode: number }) => {
+    if (event.keyCode === 27) {
+      send({ type: "CLOSE_PREVIEW" })
+    }
+  }, [])
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleEscapeKeyDown, false)
+  }, [])
+
+  if (state === "HISTORY_VIEW_ON_ASIDE") {
     return <>{props.taskDetails}</>
   }
 

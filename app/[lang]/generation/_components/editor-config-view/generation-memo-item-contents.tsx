@@ -77,7 +77,7 @@ export const GenerationMemoItemContents = (props: Props) => {
       >
         <DialogContent>
           <DialogHeader />
-          <div>{"保存したメモは復元できます"}</div>
+          <div>{"保存したプリセットは復元できます"}</div>
           <ScrollArea className="h-full">
             <GenerationConfigMemoUpdateContent
               refetchMemos={props.refetchMemos}

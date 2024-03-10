@@ -292,8 +292,8 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             onNext={onDelete}
             onCancel={() => {}}
           >
-            <Button className="mr-2 h-11 w-16" variant={"ghost"} size={"icon"}>
-              <Trash2Icon className="mr-4 w-4" />
+            <Button className="mr-4 h-11 w-16" variant={"ghost"} size={"icon"}>
+              <Trash2Icon className="w-4" />
             </Button>
           </AppConfirmDialog>
         )}

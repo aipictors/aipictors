@@ -9,12 +9,12 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog"
-import type { ImageGenerationMemosQuery } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
 
 type Props = {
   isOpen: boolean
   onClose: () => void
-  memos: ImageGenerationMemosQuery | undefined
+  memos: ImageGenerationMemoNode[] | undefined
   refetch: () => void
 }
 

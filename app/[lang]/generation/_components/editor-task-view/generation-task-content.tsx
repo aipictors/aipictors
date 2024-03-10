@@ -1,20 +1,23 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { PrivateImage } from "@/app/_components/private-image"
+import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AuthContext } from "@/app/_contexts/auth-context"
-import { Card } from "@/components/ui/card"
+import type {
+  ImageGenerationSizeType,
+  ImageGenerationStatus,
+  ImageGenerationType,
+} from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { useSuspenseQuery } from "@apollo/client"
-import { skipToken } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { useContext } from "react"
 
 /**
- * タスク内容
+ * タスク詳細内容
  * @param props
  * @returns
  */
-export const GenerationTaskContentPreview = () => {
+export const GenerationTaskContent = () => {
   const context = useGenerationContext()
 
   if (context.config.previewTaskId === null) {
@@ -36,28 +39,21 @@ export const GenerationTaskContentPreview = () => {
   )
 
   const imageGenerationTask = data?.imageGenerationTask
-
   if (imageGenerationTask === null || imageGenerationTask === undefined) {
     return null
   }
 
   return (
     <>
-      <Card className="flex h-[100vh] w-auto flex-col">
-        <div className="m-auto max-h-[100vh]">
-          <PrivateImage
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
-            taskId={imageGenerationTask.id}
-            token={imageGenerationTask.token ?? ""}
-            alt={"-"}
-          />
-          <div className="m-auto mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{imageGenerationTask.model?.name}</p>
-          </div>
-        </div>
-      </Card>
+      <GenerationTaskSheetView
+        task={{
+          ...imageGenerationTask,
+          status: imageGenerationTask.status as ImageGenerationStatus,
+          sizeType: imageGenerationTask.sizeType as ImageGenerationSizeType,
+          generationType:
+            imageGenerationTask.generationType as ImageGenerationType,
+        }}
+      />
     </>
   )
 }

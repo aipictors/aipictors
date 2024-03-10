@@ -29,6 +29,7 @@ export function GenerationTaskDialogButton(props: Props) {
         task={props.task}
         optionButtonSize={props.sizeType}
         isSelectDisabled={true}
+        isPreviewByHover={false}
         rating={props.task.rating ?? 0}
         onClick={() => {
           setIsOpen(true)
@@ -48,7 +49,7 @@ export function GenerationTaskDialogButton(props: Props) {
           <GenerationTaskSheetView
             isScroll={true}
             task={props.task}
-            onRestore={props.onRestore}
+            isReferenceLink={true}
           />
         </DialogContent>
       </Dialog>

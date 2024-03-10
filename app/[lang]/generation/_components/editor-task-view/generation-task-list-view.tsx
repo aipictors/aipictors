@@ -3,6 +3,7 @@
 import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { useState } from "react"
 
@@ -15,6 +16,11 @@ export const GenerationTaskListView = () => {
   const [rating, setRating] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
+
+  const [isPreviewMode, togglePreviewMode] = useState(false)
+
+  const [showTaskPositionType, changeShowTaskPositionType] =
+    useState<TaskContentPositionType>("right")
 
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
@@ -41,6 +47,13 @@ export const GenerationTaskListView = () => {
     toggleEditMode((value) => !value)
   }
 
+  /**
+   * プレビューモードを切り替える
+   */
+  const onTogglePreviewMode = () => {
+    togglePreviewMode((value) => !value)
+  }
+
   return (
     <GenerationViewCard
       title={"生成履歴"}
@@ -56,19 +69,24 @@ export const GenerationTaskListView = () => {
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
+        taskContentPositionType={showTaskPositionType}
         onChangeRating={onChangeRating}
         setThumbnailSize={setThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
+        onTogglePreviewMode={onTogglePreviewMode}
         onChangeViewCount={() => {}}
+        onChangeTaskContentPositionType={changeShowTaskPositionType}
       />
       <GenerationTaskList
         hidedTaskIds={hidedTaskIds}
         rating={rating}
         isEditMode={isEditMode}
+        isPreviewMode={isPreviewMode}
         selectedTaskIds={selectedTaskIds}
         thumbnailSize={thumbnailSize}
+        taskContentPositionType={showTaskPositionType}
         setSelectedTaskIds={setSelectedTaskIds}
         onCancel={undefined}
       />

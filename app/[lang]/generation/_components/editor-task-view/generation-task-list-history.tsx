@@ -167,6 +167,7 @@ export const GenerationTaskListHistory = (props: Props) => {
                   isEditMode={props.isEditMode}
                   isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
                   estimatedSeconds={task.estimatedSeconds ?? 0}
+                  isPreviewByHover={false}
                   rating={task.rating ?? 0}
                   selectedTaskIds={props.selectedTaskIds}
                   sizeType={sizeType}

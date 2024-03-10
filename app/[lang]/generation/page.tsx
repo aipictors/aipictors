@@ -39,7 +39,7 @@ const GenerationPage = async () => {
       submission={<GenerationSubmissionView termsText={termsMarkdownText} />}
       taskList={<GenerationTaskListView />}
       taskDetails={<GenerationTaskDetailsView />}
-      taskContent={<GenerationTaskContentPreview />}
+      taskContentPreview={<GenerationTaskContentPreview />}
     />
   )
 }

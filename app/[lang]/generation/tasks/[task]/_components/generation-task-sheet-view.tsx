@@ -20,7 +20,7 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
-  onRestore?: (taskId: string) => void
+  isReferenceLink?: boolean
   isScroll?: boolean
 }
 
@@ -160,6 +160,23 @@ export function GenerationTaskSheetView(props: Props) {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
+  const onRestore = () => {
+    context.updateSettings(
+      props.task.model.id,
+      props.task.steps,
+      props.task.model.type,
+      props.task.sampler,
+      props.task.scale,
+      props.task.vae ?? "",
+      props.task.prompt,
+      props.task.negativePrompt,
+      props.task.seed,
+      props.task.sizeType,
+      props.task.clipSkip,
+    )
+    toast("設定を復元しました")
+  }
+
   const onChangeRating = async (taskId: string, rating: number) => {
     if (taskId === "") {
       toast("選択できない履歴です")
@@ -184,9 +201,9 @@ export function GenerationTaskSheetView(props: Props) {
   const [rating, setRating] = useState(props.task.rating ?? 0)
 
   const onReference = () => {
-    if (props.onRestore !== undefined && props.task.nanoid !== null) {
-      props.onRestore(props.task.nanoid)
-    } else if (props.onRestore === undefined && props.task.nanoid !== null) {
+    if (!props.isReferenceLink && props.task.nanoid !== null) {
+      onRestore()
+    } else if (props.isReferenceLink && props.task.nanoid !== null) {
       window.location.href = `/generation/?ref=${props.task.nanoid ?? ""}`
     } else {
       toast("不明なエラーです。")
@@ -244,34 +261,36 @@ export function GenerationTaskSheetView(props: Props) {
   if (userNanoid === null) return
 
   if (isDesktop) {
-    ;<GenerationTaskSheetViewContent
-      task={props.task}
-      isScroll={props.isScroll ?? false}
-      isDisplayImageListButton={true}
-      isListFullSize={true}
-      showInPaintDialog={showInPaintDialog}
-      userNanoid={userNanoid}
-      generationSize={generationSize}
-      rating={rating}
-      GenerationParameters={GenerationParameters}
-      onReference={onReference}
-      onPost={onPost}
-      onDelete={onDelete}
-      onInPaint={onInPaint}
-      onChangeRating={onChangeRating}
-      setRating={setRating}
-      setShowInPaintDialog={setShowInPaintDialog}
-      saveGenerationImage={saveGenerationImage}
-      copyGeneration={copyGeneration}
-      copyUrl={copyUrl}
-    />
+    return (
+      <GenerationTaskSheetViewContent
+        task={props.task}
+        isScroll={props.isScroll ?? false}
+        isDisplayImageListButton={false}
+        isListFullSize={true}
+        showInPaintDialog={showInPaintDialog}
+        userNanoid={userNanoid}
+        generationSize={generationSize}
+        rating={rating}
+        GenerationParameters={GenerationParameters}
+        onReference={onReference}
+        onPost={onPost}
+        onDelete={onDelete}
+        onInPaint={onInPaint}
+        onChangeRating={onChangeRating}
+        setRating={setRating}
+        setShowInPaintDialog={setShowInPaintDialog}
+        saveGenerationImage={saveGenerationImage}
+        copyGeneration={copyGeneration}
+        copyUrl={copyUrl}
+      />
+    )
   }
 
   return (
     <GenerationTaskSheetViewContent
       task={props.task}
       isScroll={props.isScroll ?? false}
-      isDisplayImageListButton={false}
+      isDisplayImageListButton={true}
       isListFullSize={false}
       showInPaintDialog={showInPaintDialog}
       userNanoid={userNanoid}

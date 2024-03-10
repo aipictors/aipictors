@@ -194,6 +194,7 @@ export function GenerationTaskView(props: Props) {
           variables: {
             id: props.taskId,
           },
+          fetchPolicy: "cache-first",
         }
       : skipToken,
   )
@@ -335,7 +336,8 @@ export function GenerationTaskView(props: Props) {
             <DialogTrigger asChild>
               <Button className={"px-2"} variant={"ghost"}>
                 <PrivateImage
-                  className={`generation-image- m-auto max-h-screen${props.taskId}`}
+                  // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                  className={`generation-image-${props.taskId} m-auto max-h-screen`}
                   taskId={data.imageGenerationTask.id}
                   token={data.imageGenerationTask.token}
                   alt={"-"}
