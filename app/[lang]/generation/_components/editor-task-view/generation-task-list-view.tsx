@@ -61,7 +61,7 @@ export const GenerationTaskListView = () => {
     <GenerationViewCard
       title={"生成履歴"}
       tooltip={
-        "履歴は1週間、スタンダードの場合は2週間まで保存されます。★を付与することで永久保存できます。プランによって保存できる上限が変わります。"
+        "履歴は3日間、スタンダードの場合は2週間まで保存されます。★を付与することで永久保存できます。プランによって保存できる上限が変わります。"
       }
       tooltipDetailLink={"/plus"}
     >
