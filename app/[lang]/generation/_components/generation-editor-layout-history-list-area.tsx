@@ -35,7 +35,10 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
     }
   }, [])
 
-  if (state === "HISTORY_VIEW_ON_ASIDE") {
+  if (
+    state === "HISTORY_VIEW_ON_ASIDE" ||
+    state === "HISTORY_LIST_FULL_AND_PREVIEW"
+  ) {
     return <>{props.taskDetails}</>
   }
 

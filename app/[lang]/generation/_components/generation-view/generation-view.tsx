@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -22,6 +23,10 @@ type Props = {
 export const GenerationView = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
   /**
    * スマホの場合リサイザーなし
    */
@@ -33,6 +38,21 @@ export const GenerationView = (props: Props) => {
           {props.main}
         </div>
         <div className="flex-1 overflow-hidden">{props.aside}</div>
+      </main>
+    )
+  }
+
+  if (
+    state === "HISTORY_LIST_FULL_VIEW" ||
+    state === "HISTORY_LIST_FULL_AND_PREVIEW"
+  ) {
+    return (
+      <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel className="lg:min-w-80 xl:min-w-80">
+            {props.aside}
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </main>
     )
   }

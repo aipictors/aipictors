@@ -49,6 +49,7 @@ export const generationConfigMachine = createMachine({
         },
         OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
+        OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL_VIEW",
       },
     },
 
@@ -67,6 +68,7 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL_VIEW",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -80,6 +82,35 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    HISTORY_LIST_FULL_VIEW: {
+      description: "履歴全画面表示",
+
+      on: {
+        OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
+        OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_LIST_FULL_AND_PREVIEW",
+        OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_LIST_FULL_AND_PREVIEW",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    HISTORY_LIST_FULL_AND_PREVIEW: {
+      description: "履歴全画面かつプレビュー表示",
+
+      on: {
+        CLOSE_PREVIEW: "HISTORY_LIST_FULL_VIEW",
+        OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value

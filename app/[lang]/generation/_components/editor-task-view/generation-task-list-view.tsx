@@ -5,10 +5,8 @@ import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/e
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
-import { config } from "@/config"
-import { useState } from "react"
-import { useMediaQuery } from "usehooks-ts"
-
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { Suspense, useState } from "react"
 /**
  * タスク関連
  * @param props
@@ -28,9 +26,9 @@ export const GenerationTaskListView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(7)
+
+  const [page, setPage] = useState(0)
 
   /**
    * レーティングを変更する
@@ -38,6 +36,9 @@ export const GenerationTaskListView = () => {
    */
   const onChangeRating = (rating: number) => {
     setRating(rating)
+
+    // ページングもリセットする
+    setPage(0)
   }
 
   /**
@@ -66,7 +67,7 @@ export const GenerationTaskListView = () => {
       tooltipDetailLink={"/plus"}
     >
       <GenerationTaskListActions
-        showHistoryAllButton={true}
+        showHistoryExpandButton={true}
         rating={rating}
         thumbnailSize={thumbnailSize}
         selectedTaskIds={selectedTaskIds}
@@ -82,17 +83,21 @@ export const GenerationTaskListView = () => {
         onChangeViewCount={() => {}}
         onChangeTaskContentPositionType={changeShowTaskPositionType}
       />
-      <GenerationTaskList
-        hidedTaskIds={hidedTaskIds}
-        rating={rating}
-        isEditMode={isEditMode}
-        isPreviewMode={isPreviewMode}
-        selectedTaskIds={selectedTaskIds}
-        thumbnailSize={thumbnailSize}
-        taskContentPositionType={showTaskPositionType}
-        setSelectedTaskIds={setSelectedTaskIds}
-        onCancel={undefined}
-      />
+      <Suspense fallback={<AppLoadingPage />}>
+        <GenerationTaskList
+          currentPage={page}
+          hidedTaskIds={hidedTaskIds}
+          rating={rating}
+          isEditMode={isEditMode}
+          isPreviewMode={isPreviewMode}
+          selectedTaskIds={selectedTaskIds}
+          thumbnailSize={thumbnailSize}
+          taskContentPositionType={showTaskPositionType}
+          onCancel={undefined}
+          setCurrentPage={setPage}
+          setSelectedTaskIds={setSelectedTaskIds}
+        />
+      </Suspense>
     </GenerationViewCard>
   )
 }

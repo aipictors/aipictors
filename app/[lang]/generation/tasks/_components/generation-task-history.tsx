@@ -25,8 +25,7 @@ export function GenerationTaskHistory() {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [thumbnailSize, setThumbnailSize] =
-    useState<ThumbnailImageSizeType>(5)
+  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(5)
 
   const [showTaskPositionType, changeShowTaskPositionType] =
     useState<TaskContentPositionType>("right")
