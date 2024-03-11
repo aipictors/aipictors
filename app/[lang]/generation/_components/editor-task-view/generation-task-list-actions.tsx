@@ -14,7 +14,7 @@ import { Toggle } from "@/components/ui/toggle"
 import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
-import { MaximizeIcon } from "lucide-react"
+import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -45,6 +45,10 @@ type Props = {
  */
 export const GenerationTaskListActions = (props: Props) => {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
 
   const router = useRouter()
 
@@ -144,7 +148,11 @@ export const GenerationTaskListActions = (props: Props) => {
             variant={"outline"}
             className="ml-auto w-16"
           >
-            <MaximizeIcon className="w-4" />
+            {state === "HISTORY_LIST_FULL" ? (
+              <MinimizeIcon className="w-4" />
+            ) : (
+              <MaximizeIcon className="w-4" />
+            )}
           </Toggle>
         )}
       </div>
