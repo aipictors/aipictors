@@ -1,6 +1,5 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
@@ -22,7 +21,7 @@ type Props = {
   isSelected?: boolean
   estimatedSeconds?: number
   rating: number
-  optionButtonSize: ThumbnailImageSizeType
+  optionButtonSize: number
   isSelectDisabled: boolean
   task: ImageGenerationTaskFieldsFragment
   isPreviewByHover?: boolean

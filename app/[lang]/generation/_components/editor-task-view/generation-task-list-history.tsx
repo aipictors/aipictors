@@ -1,7 +1,6 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
@@ -21,7 +20,7 @@ type Props = {
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
-  thumbnailSize: ThumbnailImageSizeType
+  thumbnailSize: number
   hidedTaskIds: string[]
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
@@ -149,28 +148,16 @@ export const GenerationTaskListHistory = (props: Props) => {
       <ScrollArea>
         <div
           className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
-            "grid-cols-0":
-              props.thumbnailSize === (10 as ThumbnailImageSizeType),
-            "grid-cols-1":
-              props.thumbnailSize === (9 as ThumbnailImageSizeType),
-            "grid-cols-2":
-              props.thumbnailSize === (8 as ThumbnailImageSizeType),
-            "grid-cols-3":
-              props.thumbnailSize === (7 as ThumbnailImageSizeType),
-            "grid-cols-4":
-              props.thumbnailSize === (6 as ThumbnailImageSizeType),
-            "grid-cols-5":
-              props.thumbnailSize === (5 as ThumbnailImageSizeType),
-            "grid-cols-6":
-              props.thumbnailSize === (4 as ThumbnailImageSizeType),
-            "grid-cols-7":
-              props.thumbnailSize === (3 as ThumbnailImageSizeType),
-            "grid-cols-8":
-              props.thumbnailSize === (2 as ThumbnailImageSizeType),
-            "grid-cols-9":
-              props.thumbnailSize === (1 as ThumbnailImageSizeType),
-            "grid-cols-10":
-              props.thumbnailSize === (0 as ThumbnailImageSizeType),
+            "grid-cols-0": props.thumbnailSize === 10,
+            "grid-cols-1": props.thumbnailSize === 9,
+            "grid-cols-2": props.thumbnailSize === 8,
+            "grid-cols-3": props.thumbnailSize === 7,
+            "grid-cols-4": props.thumbnailSize === 6,
+            "grid-cols-5": props.thumbnailSize === 5,
+            "grid-cols-6": props.thumbnailSize === 4,
+            "grid-cols-7": props.thumbnailSize === 3,
+            "grid-cols-8": props.thumbnailSize === 2,
+            "grid-cols-9": props.thumbnailSize === 1,
           })}
         >
           {componentTasks.map((task) => (

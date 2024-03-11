@@ -1,5 +1,4 @@
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,10 +16,10 @@ import { Slider } from "@/components/ui/slider"
 import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
-  thumbnailSize: ThumbnailImageSizeType
+  thumbnailSize: number
   taskContentPositionType: TaskContentPositionType
   onChangeTaskContentPositionType(type: TaskContentPositionType): void
-  onChange(size: ThumbnailImageSizeType): void
+  onChange(size: number): void
 }
 
 /**
@@ -46,13 +45,11 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
               <Slider
                 className="color-pink w-32 px-2 py-4"
                 aria-label="slider-ex-2"
-                min={2}
-                max={10}
+                min={1}
+                max={9}
                 step={1}
                 value={[props.thumbnailSize]}
-                onValueChange={(value) =>
-                  props.onChange(value[0] as ThumbnailImageSizeType)
-                }
+                onValueChange={(value) => props.onChange(value[0])}
               />
               {/* <DropdownMenuCheckboxItem
                 checked={props.thumbnailSize === "small"}

@@ -9,7 +9,6 @@ import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_compon
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Toggle } from "@/components/ui/toggle"
 import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
@@ -20,7 +19,7 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   rating: number
-  thumbnailSize: ThumbnailImageSizeType
+  thumbnailSize: number
   taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
@@ -30,7 +29,7 @@ type Props = {
   viewCount?: number
   onChangeRating(rating: number): void
   onChangeViewCount(count: number): void
-  setThumbnailSize(size: ThumbnailImageSizeType): void
+  setThumbnailSize(size: number): void
   onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void

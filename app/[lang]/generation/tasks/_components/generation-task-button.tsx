@@ -1,14 +1,13 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
   taskIds?: string[]
-  sizeType: ThumbnailImageSizeType
+  sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isPreviewByHover: boolean
   onRestore?(taskId: string): void

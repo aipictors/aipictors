@@ -2,8 +2,9 @@
 
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-history"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
@@ -19,13 +20,17 @@ export const todayText = () => {
  * @returns
  */
 export function GenerationTaskHistory() {
+  const context = useGenerationContext()
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
   const [isEditMode, toggleEditMode] = useState(false)
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
-
-  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(5)
 
   const [showTaskPositionType, changeShowTaskPositionType] =
     useState<TaskContentPositionType>("right")
@@ -45,6 +50,28 @@ export function GenerationTaskHistory() {
     toggleEditMode((value) => !value)
   }
 
+  /**
+   * サムネイルサイズ
+   */
+  const thumbnailSize = () => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.config.thumbnailSizeInHistoryListFull
+    }
+    return context.config.thumbnailSizeInPromptView
+  }
+
+  /**
+   * サムネイルサイズを変更する
+   * @param value
+   * @returns
+   */
+  const updateThumbnailSize = (value: number) => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.updateThumbnailSizeInHistoryListFull(value)
+    }
+    return context.updateThumbnailSizeInPromptView(value)
+  }
+
   return (
     <div className="w-full space-y-4 pb-4">
       <div className="ml-4 flex items-center">
@@ -52,7 +79,7 @@ export function GenerationTaskHistory() {
       </div>
       <GenerationTaskListActions
         rating={rating}
-        thumbnailSize={thumbnailSize}
+        thumbnailSize={thumbnailSize()}
         taskContentPositionType={showTaskPositionType}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
@@ -61,7 +88,7 @@ export function GenerationTaskHistory() {
         viewCount={viewCount}
         onChangeTaskContentPositionType={changeShowTaskPositionType}
         onChangeRating={onChangeRating}
-        setThumbnailSize={setThumbnailSize}
+        setThumbnailSize={updateThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
@@ -76,7 +103,7 @@ export function GenerationTaskHistory() {
           rating={rating}
           isEditMode={isEditMode}
           selectedTaskIds={selectedTaskIds}
-          thumbnailSize={thumbnailSize}
+          thumbnailSize={thumbnailSize()}
           isCreatingTasks={false}
           setSelectedTaskIds={setSelectedTaskIds}
         />

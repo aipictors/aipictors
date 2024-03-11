@@ -32,6 +32,9 @@ export class GenerationConfigCache {
       previewTaskId: null,
       viewTaskId: null,
       viewTaskIds: [],
+      thumbnailSizeInPromptView: this.restoreThumbnailSizeInPromptView(),
+      thumbnailSizeInHistoryListFull:
+        this.restoreThumbnailSizeInHistoryListFull(),
     })
   }
 
@@ -62,6 +65,10 @@ export class GenerationConfigCache {
       previewTaskId: null,
       viewTaskId: null,
       viewTaskIds: [],
+      thumbnailSizeInPromptView:
+        config.generationFeature.defaultThumbnailSizeInPromptView,
+      thumbnailSizeInHistoryListFull:
+        config.generationFeature.defaultThumbnailSizeInHistoryListFull,
     })
   }
 
@@ -159,6 +166,74 @@ export class GenerationConfigCache {
         return defaultValue
       }
       return Boolean(value)
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * プロンプト表示モードのサムネイルサイズを保存
+   * @param modelId
+   */
+  saveThumbnailSizeInPromptView(thumbnailSizeInPromptView: number) {
+    localStorage.setItem(
+      "config.generation.thumbnailSizeInPromptView",
+      thumbnailSizeInPromptView.toString(),
+    )
+  }
+
+  /**
+   * プロンプト表示モードのサムネイルサイズを復元する
+   * @returns
+   */
+  restoreThumbnailSizeInPromptView() {
+    const defaultValue =
+      config.generationFeature.defaultThumbnailSizeInPromptView
+    try {
+      const value = localStorage.getItem(
+        "config.generation.thumbnailSizeInPromptView",
+      )
+      if (value === null) {
+        return defaultValue
+      }
+      return Number(value)
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * 履歴一覧表示モードのサムネイルサイズを保存
+   * @param modelId
+   */
+  saveThumbnailSizeInHistoryListFull(thumbnailSizeInHistoryListFull: number) {
+    localStorage.setItem(
+      "config.generation.thumbnailSizeInHistoryListFull",
+      thumbnailSizeInHistoryListFull.toString(),
+    )
+  }
+
+  /**
+   * 履歴一覧表示モードのサムネイルサイズを復元する
+   * @returns
+   */
+  restoreThumbnailSizeInHistoryListFull() {
+    const defaultValue =
+      config.generationFeature.defaultThumbnailSizeInHistoryListFull
+    try {
+      const value = localStorage.getItem(
+        "config.generation.thumbnailSizeInHistoryListFull",
+      )
+      if (value === null) {
+        return defaultValue
+      }
+      return Number(value)
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

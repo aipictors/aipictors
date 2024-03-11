@@ -3,8 +3,9 @@
 import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Suspense, useState } from "react"
 /**
@@ -13,6 +14,12 @@ import { Suspense, useState } from "react"
  * @returns
  */
 export const GenerationTaskListView = () => {
+  const context = useGenerationContext()
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
   const [rating, setRating] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
@@ -25,8 +32,6 @@ export const GenerationTaskListView = () => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
-
-  const [thumbnailSize, setThumbnailSize] = useState<ThumbnailImageSizeType>(7)
 
   const [page, setPage] = useState(0)
 
@@ -58,6 +63,28 @@ export const GenerationTaskListView = () => {
     togglePreviewMode((value) => !value)
   }
 
+  /**
+   * サムネイルサイズ
+   */
+  const thumbnailSize = () => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.config.thumbnailSizeInHistoryListFull
+    }
+    return context.config.thumbnailSizeInPromptView
+  }
+
+  /**
+   * サムネイルサイズを変更する
+   * @param value
+   * @returns
+   */
+  const updateThumbnailSize = (value: number) => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.updateThumbnailSizeInHistoryListFull(value)
+    }
+    return context.updateThumbnailSizeInPromptView(value)
+  }
+
   return (
     <GenerationViewCard
       title={"生成履歴"}
@@ -69,13 +96,13 @@ export const GenerationTaskListView = () => {
       <GenerationTaskListActions
         showHistoryExpandButton={true}
         rating={rating}
-        thumbnailSize={thumbnailSize}
+        thumbnailSize={thumbnailSize()}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         taskContentPositionType={showTaskPositionType}
         onChangeRating={onChangeRating}
-        setThumbnailSize={setThumbnailSize}
+        setThumbnailSize={updateThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
@@ -91,7 +118,7 @@ export const GenerationTaskListView = () => {
           isEditMode={isEditMode}
           isPreviewMode={isPreviewMode}
           selectedTaskIds={selectedTaskIds}
-          thumbnailSize={thumbnailSize}
+          thumbnailSize={thumbnailSize()}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}
           setCurrentPage={setPage}

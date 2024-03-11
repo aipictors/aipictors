@@ -278,6 +278,30 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * プロンプト表示モードのサムネイルサイズを変更する
+   * @param thumbnailSize
+   */
+  const updateThumbnailSizeInPromptView = (thumbnailSize: number) => {
+    cacheStorage.saveThumbnailSizeInPromptView(thumbnailSize)
+    const value = configAction
+      .updateThumbnailSizeInPromptView(thumbnailSize)
+      .getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * 生成履歴一覧モードのサムネイルサイズを変更する
+   * @param thumbnailSize
+   */
+  const updateThumbnailSizeInHistoryListFull = (thumbnailSize: number) => {
+    cacheStorage.saveThumbnailSizeInHistoryListFull(thumbnailSize)
+    const value = configAction
+      .updateThumbnailSizeInHistoryListFull(thumbnailSize)
+      .getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * プロンプトの値をLoRAモデルの値を考慮したうえで初期化する
    */
   const initPromptWithLoraModel = () => {
@@ -385,5 +409,7 @@ export const useGenerationContext = () => {
     updatePreviewTaskId: updatePreviewTaskId,
     updateViewTask: updateViewTask,
     updateViewTaskId: updateViewTaskId,
+    updateThumbnailSizeInPromptView: updateThumbnailSizeInPromptView,
+    updateThumbnailSizeInHistoryListFull: updateThumbnailSizeInHistoryListFull,
   }
 }

@@ -1,5 +1,4 @@
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/app/[lang]/generation/tasks/_components/generation-task-responsive-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
@@ -12,7 +11,7 @@ type Props = {
   estimatedSeconds?: number
   selectedTaskIds: string[]
   rating: number
-  sizeType: ThumbnailImageSizeType
+  sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
   isPreviewByHover: boolean

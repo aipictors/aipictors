@@ -344,6 +344,32 @@ export class GenerationConfigAction {
   }
 
   /**
+   * プロンプト表示モードのサムネイルサイズ
+   * @param value
+   * @returns
+   */
+  updateThumbnailSizeInPromptView(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      thumbnailSizeInPromptView: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * プロンプト表示モードのサムネイルサイズ
+   * @param value
+   * @returns
+   */
+  updateThumbnailSizeInHistoryListFull(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      thumbnailSizeInHistoryListFull: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * プロンプトの入力内容を最適化する
    * @returns
    */
