@@ -123,7 +123,7 @@ export const config = {
     defaultVaeValue: "kl-f8-anime2",
     vaeValues: [
       "kl-f8-anime2",
-      "ClearVAE_V2.3",
+      "clearvae_v23",
       "sdxl_vae",
       "vae-ft-mse-840000-ema-pruned",
     ],

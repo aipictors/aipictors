@@ -171,7 +171,7 @@ export function GenerationTaskSheetView(props: Props) {
       props.task.model.type,
       props.task.sampler,
       props.task.scale,
-      props.task.vae ?? "",
+      props.task.vae?.replace(".ckpt", "").replace(".safetensors", "") ?? "",
       props.task.prompt,
       props.task.negativePrompt,
       props.task.seed,
