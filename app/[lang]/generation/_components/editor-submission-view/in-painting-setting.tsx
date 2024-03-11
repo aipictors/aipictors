@@ -32,6 +32,7 @@ export const InPaintingSetting = (props: Props) => {
             aria-label="slider-ex-2"
             max={1}
             min={0.1}
+            step={0.1}
             defaultValue={[0.5]}
           />
           <p>{"強"}</p>
