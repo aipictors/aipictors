@@ -5,10 +5,9 @@ import { GenerationTaskListHistory } from "@/app/[lang]/generation/_components/e
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
-import { Suspense, useState } from "react"
+import { useState } from "react"
 
 export const todayText = () => {
   const today = new Date()
@@ -96,18 +95,16 @@ export function GenerationTaskHistory() {
         onTogglePreviewMode={() => {}}
       />
       <Separator />
-      <Suspense fallback={<AppLoadingPage />}>
-        <GenerationTaskListHistory
-          viewCount={viewCount}
-          hidedTaskIds={hidedTaskIds}
-          rating={rating}
-          isEditMode={isEditMode}
-          selectedTaskIds={selectedTaskIds}
-          thumbnailSize={thumbnailSize()}
-          isCreatingTasks={false}
-          setSelectedTaskIds={setSelectedTaskIds}
-        />
-      </Suspense>
+      <GenerationTaskListHistory
+        viewCount={viewCount}
+        hidedTaskIds={hidedTaskIds}
+        rating={rating}
+        isEditMode={isEditMode}
+        selectedTaskIds={selectedTaskIds}
+        thumbnailSize={thumbnailSize()}
+        isCreatingTasks={false}
+        setSelectedTaskIds={setSelectedTaskIds}
+      />
     </div>
   )
 }

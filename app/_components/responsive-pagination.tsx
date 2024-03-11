@@ -48,36 +48,48 @@ export const ResponsivePagination = ({
             />
           </PaginationItem>
         )}
-        {/* 略記号を使用したページ番号の動的生成 */}
-        {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
-          <PaginationItem key={page}>
-            {/* 現在のページの前後にページを表示するロジック */}
-            {Math.abs(page - currentPage) <= 2 &&
-              (page === currentPage ? (
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handlePageChange(page)
-                  }}
-                  isActive
-                >
-                  {page}
-                </PaginationLink>
-              ) : (
-                <PaginationLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    handlePageChange(page)
-                  }}
-                >
-                  {page}
-                </PaginationLink>
-              ))}
+        {/* 前ページ */}
+        {currentPage > 1 && (
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              {currentPage - 1 + 1}
+            </PaginationLink>
           </PaginationItem>
-        ))}
-        {pageCount > (isDesktop ? 5 : 3) && <PaginationEllipsis />}{" "}
+        )}
+        {/* 現在のページ */}
+        <PaginationItem>
+          <PaginationLink href="#" isActive>
+            {currentPage + 1}
+          </PaginationLink>
+        </PaginationItem>
+        {/* 次のページ */}
+        {currentPage + 1 !== pageCount && (
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              {currentPage + 1 + 1}
+            </PaginationLink>
+          </PaginationItem>
+        )}
+        {currentPage + 1 !== pageCount && pageCount > (isDesktop ? 5 : 3) && (
+          <PaginationEllipsis />
+        )}{" "}
+        {/* 末尾ページ */}
+        {currentPage + 1 !== pageCount && (
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              onClick={() => handlePageChange(pageCount - 1)}
+            >
+              {pageCount}
+            </PaginationLink>
+          </PaginationItem>
+        )}
         {/* Nextボタン */}
         {currentPage + 1 !== pageCount && (
           <PaginationItem>

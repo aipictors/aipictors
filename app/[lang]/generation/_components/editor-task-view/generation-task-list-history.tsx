@@ -6,6 +6,7 @@ import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fall
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
@@ -140,49 +141,51 @@ export const GenerationTaskListHistory = (props: Props) => {
 
   const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
 
-  // 左右の作品へ遷移するときに使用するnanoidのリスト
-  const taskNanoidList = componentTasks.map((task) => task.nanoid ?? "")
-
   return (
     <>
-      <ScrollArea>
-        <div
-          className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
-            "grid-cols-0": props.thumbnailSize === 10,
-            "grid-cols-1": props.thumbnailSize === 9,
-            "grid-cols-2": props.thumbnailSize === 8,
-            "grid-cols-3": props.thumbnailSize === 7,
-            "grid-cols-4": props.thumbnailSize === 6,
-            "grid-cols-5": props.thumbnailSize === 5,
-            "grid-cols-6": props.thumbnailSize === 4,
-            "grid-cols-7": props.thumbnailSize === 3,
-            "grid-cols-8": props.thumbnailSize === 2,
-            "grid-cols-9": props.thumbnailSize === 1,
-          })}
-        >
-          {componentTasks.map((task) => (
-            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
-              <Suspense fallback={<FallbackTaskCard />}>
-                <GenerationTaskCard
-                  task={task}
-                  isEditMode={props.isEditMode}
-                  isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
-                  estimatedSeconds={task.estimatedSeconds ?? 0}
-                  isPreviewByHover={false}
-                  rating={task.rating ?? 0}
-                  selectedTaskIds={props.selectedTaskIds}
-                  sizeType={props.thumbnailSize}
-                  isDialog={true}
-                  onClick={() => onSelectTask(task.nanoid, task.status)}
-                  onCancel={() => onSelectTask(task.nanoid, task.status)}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-        </div>
-      </ScrollArea>
+      <Suspense fallback={<AppLoadingPage />}>
+        <ScrollArea>
+          <div
+            className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
+              "grid-cols-0": props.thumbnailSize === 10,
+              "grid-cols-1": props.thumbnailSize === 9,
+              "grid-cols-2": props.thumbnailSize === 8,
+              "grid-cols-3": props.thumbnailSize === 7,
+              "grid-cols-4": props.thumbnailSize === 6,
+              "grid-cols-5": props.thumbnailSize === 5,
+              "grid-cols-6": props.thumbnailSize === 4,
+              "grid-cols-7": props.thumbnailSize === 3,
+              "grid-cols-8": props.thumbnailSize === 2,
+              "grid-cols-9": props.thumbnailSize === 1,
+            })}
+          >
+            {componentTasks.map((task) => (
+              <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
+                <Suspense fallback={<FallbackTaskCard />}>
+                  <GenerationTaskCard
+                    task={task}
+                    isEditMode={props.isEditMode}
+                    isSelected={props.selectedTaskIds.includes(
+                      task.nanoid ?? "",
+                    )}
+                    estimatedSeconds={task.estimatedSeconds ?? 0}
+                    isPreviewByHover={false}
+                    rating={task.rating ?? 0}
+                    selectedTaskIds={props.selectedTaskIds}
+                    sizeType={props.thumbnailSize}
+                    isDialog={true}
+                    onClick={() => onSelectTask(task.nanoid, task.status)}
+                    onCancel={() => onSelectTask(task.nanoid, task.status)}
+                    onRestore={onRestore}
+                    onSelectTask={onSelectTask}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            ))}
+          </div>
+        </ScrollArea>
+      </Suspense>
+
       {props.viewCount &&
         tasks.viewer &&
         tasks.viewer.remainingImageGenerationTasksTotalCount && (

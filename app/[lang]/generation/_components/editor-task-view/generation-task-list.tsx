@@ -90,6 +90,20 @@ export const GenerationTaskList = (props: Props) => {
     ratingTasks.viewer?.imageGenerationTasks ?? []
 
   /**
+   * フィルターしたレーティングが０のタスク（一部）
+   */
+  const currentRatingZeroTasks =
+    props.rating === 0
+      ? imageGenerationTasks.filter((task) => {
+          return (
+            task.rating === 0 &&
+            task.nanoid &&
+            !props.hidedTaskIds.includes(task.nanoid)
+          )
+        })
+      : []
+
+  /**
    * フィルターしたレーティング済みタスク
    */
   const currentRatingTasks = imageGenerationRatingTasks.filter((task) => {
@@ -135,9 +149,13 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
+  const activeRatingZeroTasks = currentRatingZeroTasks.filter((task) => {
+    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
+    return task.status === "DONE"
+  })
+
   const activeRatingTasks = currentRatingTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    // return task.status === "IN_PROGRESS" || task.status === "DONE"
     return task.status === "DONE"
   })
 
@@ -166,7 +184,11 @@ export const GenerationTaskList = (props: Props) => {
     props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
-  const combineDisplayRatingTasks = [...inProgressTasks, ...activeRatingTasks]
+  const combineDisplayRatingTasks = [
+    ...inProgressTasks,
+    ...activeRatingTasks,
+    ...activeRatingZeroTasks,
+  ]
 
   const componentTasks =
     props.rating === -1 ? activeTasks : combineDisplayRatingTasks
