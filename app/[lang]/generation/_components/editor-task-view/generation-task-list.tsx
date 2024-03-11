@@ -245,6 +245,7 @@ export const GenerationTaskList = (props: Props) => {
       </ScrollArea>
       <div className="p-2">
         {(props.rating === -1 || props.rating === 0) &&
+          tasks.viewer !== undefined &&
           tasks.viewer?.remainingImageGenerationTasksTotalCount && (
             <ResponsivePagination
               perPage={64}
