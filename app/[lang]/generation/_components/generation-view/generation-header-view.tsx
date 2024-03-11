@@ -19,9 +19,7 @@ export const GenerationHeaderView = (props: Props) => {
   if (
     state === "HISTORY_LIST_FULL" ||
     state === "HISTORY_PREVIEW" ||
-    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER" ||
-    state === "HISTORY_LIST_FULL_VIEW" ||
-    state === "HISTORY_LIST_FULL_VIEW_PREVIEW"
+    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER"
   ) {
     return null
   }

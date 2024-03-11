@@ -141,7 +141,7 @@ export const GenerationTaskListActions = (props: Props) => {
           )}
         </div>
         {/* 履歴全画面表示 */}
-        {props.showHistoryExpandButton && (
+        {isDesktop && props.showHistoryExpandButton && (
           <Toggle
             onClick={openFullHistory}
             variant={"outline"}

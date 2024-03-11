@@ -94,7 +94,8 @@ export const GenerationTaskRatingButton = (props: Props) => {
           />
         )}
         {props.nowRating !== 0 && (
-          <p className={`text-black${fontSizeClassName()}`}>
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          <p className={`text-black ${fontSizeClassName()}`}>
             {props.nowRating}
           </p>
         )}

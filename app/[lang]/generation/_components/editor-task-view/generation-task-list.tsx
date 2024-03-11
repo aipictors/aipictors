@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
@@ -41,6 +42,10 @@ export const GenerationTaskList = (props: Props) => {
   const context = useGenerationContext()
 
   const isTimeout = useFocusTimeout()
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
 
   const { data: tasks, refetch } = useSuspenseQuery(
     viewerImageGenerationTasksQuery,
@@ -225,7 +230,7 @@ export const GenerationTaskList = (props: Props) => {
                   isPreviewByHover={props.isPreviewMode}
                   isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
                   sizeType={props.thumbnailSize}
-                  isDialog={false}
+                  isDialog={state === "HISTORY_LIST_FULL"}
                   rating={props.rating}
                   selectedTaskIds={props.selectedTaskIds}
                   onClick={() => onSelectTask(task.nanoid, task.status)}

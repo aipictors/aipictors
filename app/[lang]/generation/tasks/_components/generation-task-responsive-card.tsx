@@ -43,6 +43,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
       {props.isDialog && isDesktop && (
         <GenerationTaskDialogButton
           task={props.task}
+          taskIds={props.taskIds}
           sizeType={props.sizeType}
           onRestore={props.onRestore}
         />

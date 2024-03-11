@@ -51,10 +51,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
   /**
    * 履歴プレビューモード
    */
-  if (
-    state === "HISTORY_PREVIEW" ||
-    state === "HISTORY_LIST_FULL_VIEW_PREVIEW"
-  ) {
+  if (state === "HISTORY_PREVIEW") {
     return <>{props.taskContentPreview}</>
   }
 
@@ -63,8 +60,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
    */
   if (
     state === "HISTORY_LIST_FULL" ||
-    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER" ||
-    state === "HISTORY_LIST_FULL_VIEW"
+    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER"
   ) {
     return <>{props.taskDetails}</>
   }
