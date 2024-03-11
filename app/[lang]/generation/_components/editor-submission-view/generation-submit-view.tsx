@@ -464,6 +464,8 @@ export function GenerationSubmissionView(props: Props) {
               </TabsTrigger>
               <TabsTrigger className="w-full" value="reserve">
                 予約
+                {inProgressImageGenerationReservedTasksCount !== 0 &&
+                  `(${inProgressImageGenerationReservedTasksCount}生成中)`}
               </TabsTrigger>
             </TabsList>
             <div className="ml-auto block 2xl:hidden lg:hidden xl:hidden">

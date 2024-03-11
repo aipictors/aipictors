@@ -249,7 +249,7 @@ export function GenerationTaskSheetView(props: Props) {
     const taskIds = viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
-    if (!taskIds.length || taskIds.length === index) {
+    if (!taskIds.length || taskIds.length === index + 1) {
       toast("次の履歴がありません")
       return
     }
