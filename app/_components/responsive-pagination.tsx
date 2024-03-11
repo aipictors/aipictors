@@ -39,12 +39,15 @@ export const ResponsivePagination = ({
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            onClick={() => handlePageChange(currentPage - 1)}
-          />
-        </PaginationItem>
+        {/* Prevボタン */}
+        {currentPage !== 0 && (
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => handlePageChange(currentPage - 1)}
+            />
+          </PaginationItem>
+        )}
         {/* 略記号を使用したページ番号の動的生成 */}
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((page) => (
           <PaginationItem key={page}>
@@ -75,15 +78,18 @@ export const ResponsivePagination = ({
           </PaginationItem>
         ))}
         {pageCount > (isDesktop ? 5 : 3) && <PaginationEllipsis />}{" "}
-        <PaginationItem>
-          <PaginationNext
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              handlePageChange(currentPage + 1)
-            }}
-          />
-        </PaginationItem>
+        {/* Nextボタン */}
+        {currentPage + 1 !== pageCount && (
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                handlePageChange(currentPage + 1)
+              }}
+            />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   )

@@ -86,10 +86,13 @@ export const GenerationTaskList = (props: Props) => {
     return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
   })
 
+  const imageGenerationRatingTasks =
+    ratingTasks.viewer?.imageGenerationTasks ?? []
+
   /**
    * フィルターしたレーティング済みタスク
    */
-  const currentRatingTasks = imageGenerationTasks.filter((task) => {
+  const currentRatingTasks = imageGenerationRatingTasks.filter((task) => {
     return (
       task.rating === props.rating &&
       task.nanoid &&

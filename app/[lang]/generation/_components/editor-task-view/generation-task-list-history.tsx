@@ -50,7 +50,7 @@ export const GenerationTaskListHistory = (props: Props) => {
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: config.query.maxLimit,
-      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      offset: 0,
       where: { minRating: 1 },
     },
   })
