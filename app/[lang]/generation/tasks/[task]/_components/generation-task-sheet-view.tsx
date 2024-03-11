@@ -290,9 +290,11 @@ export function GenerationTaskSheetView(props: Props) {
   )
 
   useEffect(() => {
-    document.addEventListener("keydown", handleDirectionKeyDown)
-    return () => {
-      document.removeEventListener("keydown", handleDirectionKeyDown)
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", handleDirectionKeyDown)
+      return () => {
+        document.removeEventListener("keydown", handleDirectionKeyDown)
+      }
     }
   }, [context])
 
