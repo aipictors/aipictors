@@ -172,8 +172,6 @@ export const GenerationTaskList = (props: Props) => {
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
 
-  console.log(tasks.viewer)
-
   return (
     <>
       <ScrollArea className="pb-64 md:pb-0">

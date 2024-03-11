@@ -42,10 +42,9 @@ export const GenerationView = (props: Props) => {
     )
   }
 
-  if (
-    state === "HISTORY_LIST_FULL_VIEW" ||
-    state === "HISTORY_LIST_FULL_AND_PREVIEW"
-  ) {
+  console.log(state)
+
+  if (state === "HISTORY_LIST_FULL") {
     return (
       <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
         <ResizablePanelGroup direction="horizontal">
