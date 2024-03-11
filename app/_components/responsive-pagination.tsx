@@ -31,7 +31,7 @@ export const ResponsivePagination = ({
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pageCount) {
+    if (newPage >= 0 && newPage <= pageCount) {
       onPageChange(newPage)
     }
   }
@@ -49,7 +49,7 @@ export const ResponsivePagination = ({
           </PaginationItem>
         )}
         {/* 前ページ */}
-        {currentPage > 1 && (
+        {currentPage > 0 && (
           <PaginationItem>
             <PaginationLink
               href="#"
