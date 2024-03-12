@@ -36,6 +36,10 @@ export const ResponsivePagination = ({
     }
   }
 
+  if (pageCount === 0) {
+    return null
+  }
+
   return (
     <Pagination>
       <PaginationContent>

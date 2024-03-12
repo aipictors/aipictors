@@ -246,13 +246,16 @@ export const GenerationTaskList = (props: Props) => {
       <div className="p-2">
         {(props.rating === -1 || props.rating === 0) &&
           tasks.viewer !== undefined &&
-          tasks.viewer?.remainingImageGenerationTasksTotalCount && (
-            <ResponsivePagination
-              perPage={64}
-              maxCount={tasks.viewer.remainingImageGenerationTasksTotalCount}
-              currentPage={props.currentPage}
-              onPageChange={props.setCurrentPage}
-            />
+          tasks.viewer?.remainingImageGenerationTasksTotalCount !==
+            undefined && (
+            <>
+              <ResponsivePagination
+                perPage={64}
+                maxCount={tasks.viewer.remainingImageGenerationTasksTotalCount}
+                currentPage={props.currentPage}
+                onPageChange={props.setCurrentPage}
+              />
+            </>
           )}
       </div>
     </>
