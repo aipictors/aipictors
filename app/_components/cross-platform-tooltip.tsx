@@ -17,6 +17,7 @@ import { useMediaQuery } from "usehooks-ts"
 type Props = {
   text: string
   detailLink?: string
+  isTargetBlank?: boolean
 }
 
 /**
@@ -36,8 +37,17 @@ export const CrossPlatformTooltip = (props: Props) => {
             </TooltipTrigger>
             <TooltipContent className="whitespace-pre-wrap font-size-md">
               {props.text}
-              {props.detailLink && (
+              {props.detailLink && !props.isTargetBlank && (
                 <Link href={props.detailLink}>{"(詳細)"}</Link>
+              )}
+              {props.detailLink && props.isTargetBlank === true && (
+                <Link
+                  href={props.detailLink}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {"(詳細)"}
+                </Link>
               )}
             </TooltipContent>
           </Tooltip>

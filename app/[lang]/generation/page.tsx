@@ -12,6 +12,8 @@ import { GenerationMainView } from "@/app/[lang]/generation/_components/generati
 import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
+import Image from "next/image"
+import Link from "next/link"
 
 /**
  * 画像生成
@@ -45,6 +47,17 @@ const GenerationPage = async () => {
       }
       aside={
         <GenerationAsideView
+          advertising={
+            <Link href="/plus" className="block sm:hidden mb-4">
+              <Image
+                className="w-full border mb-4 rounded-md"
+                src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
+                alt="Aipictors+"
+                width={40}
+                height={40}
+              />
+            </Link>
+          }
           taskList={<GenerationTaskListView />}
           taskDetails={<GenerationTaskDetailsView />}
         />

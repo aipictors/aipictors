@@ -34,7 +34,14 @@ export const GenerationConfigI2i = () => {
 
   return (
     <div className="flex flex-col gap-y-2">
-      <span className="text-nowrap font-bold">{"画像から生成"}</span>
+      <div className="flex gap-x-2">
+        <span className="text-nowrap font-bold">{"画像から生成"}</span>
+        <CrossPlatformTooltip
+          text={"使い方動画"}
+          detailLink={"https://youtu.be/d1nKrnUy3wY?feature=shared"}
+          isTargetBlank={true}
+        />
+      </div>
       <CropImageField
         isHidePreviewImage={context.config.i2iImageBase64 === ""}
         cropWidth={size.width}

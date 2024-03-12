@@ -5,6 +5,7 @@ import { GenerationSubmitOperationParts } from "@/app/[lang]/generation/_compone
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
+import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import { uploadImage } from "@/app/_utils/upload-image"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,6 +21,7 @@ import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { useMutation, useQuery } from "@apollo/client"
+import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -463,9 +465,16 @@ export function GenerationSubmissionView(props: Props) {
                 通常
               </TabsTrigger>
               <TabsTrigger className="w-full" value="reserve">
-                予約
-                {inProgressImageGenerationReservedTasksCount !== 0 &&
-                  `(${inProgressImageGenerationReservedTasksCount}生成中)`}
+                <div className="flex gap-x-2">
+                  予約
+                  {inProgressImageGenerationReservedTasksCount !== 0 &&
+                    `(${inProgressImageGenerationReservedTasksCount}生成中)`}
+                  <CrossPlatformTooltip
+                    text={"使い方動画"}
+                    detailLink={"https://youtu.be/toZ83wGm4y0?feature=shared"}
+                    isTargetBlank={true}
+                  />
+                </div>
               </TabsTrigger>
             </TabsList>
             <div className="ml-auto block 2xl:hidden lg:hidden xl:hidden">
@@ -542,20 +551,29 @@ export function GenerationSubmissionView(props: Props) {
           </TabsContent>
         </Tabs>
         <div className="hidden 2xl:block lg:block xl:block">
-          <GenerationEditorProgress
-            inProgress={inProgress}
-            maxTasksCount={availableImageGenerationMaxTasksCount}
-            normalPredictionGenerationSeconds={
-              engineStatus?.normalPredictionGenerationSeconds ?? 0
-            }
-            normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-            passType={context.currentPass?.type ?? null}
-            remainingImageGenerationTasksCount={tasksCount}
-            standardPredictionGenerationSeconds={
-              engineStatus?.standardPredictionGenerationSeconds ?? 0
-            }
-            standardTasksCount={engineStatus?.standardTasksCount ?? 0}
-          />
+          <div className="flex">
+            <GenerationEditorProgress
+              inProgress={inProgress}
+              maxTasksCount={availableImageGenerationMaxTasksCount}
+              normalPredictionGenerationSeconds={
+                engineStatus?.normalPredictionGenerationSeconds ?? 0
+              }
+              normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+              passType={context.currentPass?.type ?? null}
+              remainingImageGenerationTasksCount={tasksCount}
+              standardPredictionGenerationSeconds={
+                engineStatus?.standardPredictionGenerationSeconds ?? 0
+              }
+              standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+            />
+            {context.currentPass?.type !== "PREMIUM" && (
+              <div className="ml-auto">
+                <Link href="/plus">
+                  <div className="text-sm">{"高速生成、生成枚数を増やす"}</div>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </AppFixedContent>
