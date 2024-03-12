@@ -15,11 +15,14 @@ type Props = {
   features: string[]
   isPrimary?: boolean
   isDisabled?: boolean
+  isCurrent?: boolean
+  isHide?: boolean
   isLoading: boolean
   onClick(): Promise<void>
 }
 
 export const PassPlanDescription = (props: Props) => {
+  console.log(props.isCurrent)
   return (
     <Card className={cn("h-full", props.isPrimary && "border-blue-500")}>
       <CardHeader className="space-y-2">
@@ -27,13 +30,22 @@ export const PassPlanDescription = (props: Props) => {
         <CardTitle>{`${toMoneyNumberText(props.price)}円（税込）`}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-4">
-        <Button
-          className="w-full"
-          disabled={props.isDisabled ?? props.isLoading}
-          onClick={props.onClick}
-        >
-          {props.isDisabled ? "準備中" : "決済する"}
-        </Button>
+        {(props.isHide === false || props.isHide === undefined) &&
+          props.isCurrent && (
+            <Button className="w-full" disabled={true} onClick={props.onClick}>
+              {"加入中"}
+            </Button>
+          )}
+        {(props.isHide === false || props.isHide === undefined) &&
+          !props.isCurrent && (
+            <Button
+              className="w-full"
+              disabled={props.isDisabled ?? props.isLoading}
+              onClick={props.onClick}
+            >
+              {props.isDisabled ? "準備中" : "決済する"}
+            </Button>
+          )}
         <div className="space-y-1">
           <p>{"広告の非表示"}</p>
           <p>{"認証マークの表示"}</p>
