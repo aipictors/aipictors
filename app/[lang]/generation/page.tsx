@@ -48,9 +48,9 @@ const GenerationPage = async () => {
       aside={
         <GenerationAsideView
           advertising={
-            <Link href="/plus" className="block sm:hidden mb-4">
+            <Link href="/plus" className="mb-4 block sm:hidden">
               <Image
-                className="w-full border mb-4 rounded-md"
+                className="mb-4 w-full rounded-md border"
                 src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
                 alt="Aipictors+"
                 width={40}
