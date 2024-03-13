@@ -25,17 +25,19 @@ export const InPaintingSetting = (props: Props) => {
       <div className="space-y-4">
         <div className="flex">
           <p>{"ノイズ除去強度："}</p>
-          <p>{"弱"}</p>
-          <Slider
-            onChange={handleStrengthSizeChange}
-            className="color-pink w-32"
-            aria-label="slider-ex-2"
-            max={1}
-            min={0.1}
-            step={0.1}
-            defaultValue={[0.5]}
-          />
-          <p>{"強"}</p>
+          <div className="flex items-center space-x-2">
+            <p>{"弱"}</p>
+            <Slider
+              onChange={handleStrengthSizeChange}
+              className="color-pink w-32"
+              aria-label="slider-ex-2"
+              max={1}
+              min={0.1}
+              step={0.1}
+              defaultValue={[0.5]}
+            />
+            <p>{"強"}</p>
+          </div>
         </div>
         <div>
           <p>{"マスク方式："}</p>

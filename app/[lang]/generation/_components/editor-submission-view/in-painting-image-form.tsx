@@ -152,7 +152,7 @@ export const InPaintingImageForm = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex flex-col space-y-2">
         <div>
           <p className="text-lg">{"一部修正"}</p>
           <p className="text-md">
