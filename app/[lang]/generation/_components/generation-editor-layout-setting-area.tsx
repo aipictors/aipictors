@@ -85,7 +85,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
             </ResizablePanel>
             <ResizableHandle className="mt-2 mb-2" />
             <ResizablePanel>
-              <div className="h-full min-w-80 flex-1 overflow-hidden">
+              <div className="h-full flex-1 overflow-hidden">
                 {props.negativePromptEditor}
               </div>
             </ResizablePanel>
