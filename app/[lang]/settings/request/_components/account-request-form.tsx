@@ -10,7 +10,7 @@ export const SettingRequestForm = () => {
         {"支援リクエストを受けるには累計いいね数20必要です（現在：現在数）"}
       </p>
       <div className="flex">
-        <div className="flex justify-between w-full">
+        <div className="flex w-full justify-between">
           <Label>{"支援リクエストを許可する"}</Label>
           <Switch id="airplane-mode" />
         </div>

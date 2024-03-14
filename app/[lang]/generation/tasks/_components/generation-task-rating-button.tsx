@@ -40,63 +40,30 @@ export const GenerationTaskRatingButton = (props: Props) => {
     changeRating(props.taskNanoid, props.nowRating !== 0 ? 0 : 1)
   }
 
-  /**
-   * アイコンサイズのクラスを返す
-   * @returns アイコンサイズのクラス
-   */
-  const sizeClassName = () => {
-    if (props.size === 1) {
-      return "h-6 w-6"
-    }
-    if (props.size === 2) {
-      return "h-8 w-8"
-    }
-    return "h-12 w-12"
-  }
-
-  /**
-   * フォントサイズのクラスを返す
-   * @returns フォントサイズのクラス
-   */
-  const fontSizeClassName = () => {
-    if (props.size === 1) {
-      return "text-sm"
-    }
-    if (props.size === 2) {
-      return "text-xl"
-    }
-    return "text-4xl"
-  }
-
   return (
     <button
       disabled={isLoading}
       type={"button"}
       onClick={onRating}
       className={cn(
-        "absolute opacity-80 hover:opacity-40 rounded-full left-2 bottom-2 transition-all",
+        "absolute bottom-2 left-2 rounded-full opacity-80 transition-all hover:opacity-40",
       )}
     >
-      <div className="flex bg-white rounded-lg px-1">
+      <div className="flex rounded-lg bg-white px-1">
         {isLoading ? (
-          <Loader2Icon
-            color="black"
-            className={`animate-spin ${sizeClassName()}`}
-          />
+          <Loader2Icon color="black" className={"animate-spin"} />
         ) : (
           <StarIcon
             color="black"
             className={cn(
               props.nowRating !== 0 && !isLoading
-                ? `fill-yellow-500 ${sizeClassName()}`
-                : `fill-white ${sizeClassName()}`,
+                ? "fill-yellow-500"
+                : "fill-white",
             )}
           />
         )}
         {props.nowRating !== 0 && (
-          <p className={`text-black ${fontSizeClassName()}`}>
-            {props.nowRating}
-          </p>
+          <p className={cn("text-black")}>{props.nowRating}</p>
         )}
       </div>
     </button>

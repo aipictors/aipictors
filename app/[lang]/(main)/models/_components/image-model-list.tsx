@@ -12,7 +12,7 @@ export const ImageModelList = (props: Props) => {
     <div className="flex">
       <div className="flex flex-col">
         <p className="text-2xl">{"モデル"}</p>
-        <div className="grid-cols-4 grid-cols-1fr">
+        <div className="grid-cols-1fr grid-cols-4">
           {props.imageModels.map((imageModel) => (
             <div key={imageModel.id} className="overflow-hidden">
               <Link href={`/models/${imageModel.id}`}>

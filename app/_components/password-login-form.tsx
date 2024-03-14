@@ -21,7 +21,7 @@ export const PasswordLoginForm = (props: Props) => {
   }
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="w-full space-y-2">
       <Input
         disabled={props.isLoading}
         placeholder={"ユーザID"}

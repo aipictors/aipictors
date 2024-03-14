@@ -32,7 +32,7 @@ export const WorkArticle = (props: Props) => {
         title={props.work.title}
         imageUrl={props.work.imageURL}
       />
-      <h1 className="text-lg font-bold">{props.work.title}</h1>
+      <h1 className="font-bold text-lg">{props.work.title}</h1>
       <div className="flex flex-col space-y-2">
         <span className="text-sm">{"使用モデル名"}</span>
         <span className="text-sm">{toDateTimeText(props.work.createdAt)}</span>
@@ -45,11 +45,11 @@ export const WorkArticle = (props: Props) => {
         )}
         <WorkArticleTags tagNames={props.work.tagNames} />
       </div>
-      <p className="whitespace-pre-wrap overflow-hidden break-words">
+      <p className="overflow-hidden whitespace-pre-wrap break-words">
         {props.work.description}
       </p>
-      <div className="flex justify-between items-center">
-        <div className="flex space-x-2 items-center">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
           <Avatar>
             <Link href={`/users/${props.work.user.login}`}>
               <AvatarImage src={props.work.user.iconImage?.downloadURL} />

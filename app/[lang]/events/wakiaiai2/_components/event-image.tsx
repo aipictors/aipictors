@@ -9,7 +9,7 @@ export const EventImage = (props: Props) => {
       <img
         alt={props.alt}
         src={props.imageURL}
-        className="w-full object-cover object-top rounded-t-md rounded-bl-md rounded-br-3xl"
+        className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
       />
     </div>
   )

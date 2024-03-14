@@ -32,6 +32,7 @@ export const InPaintingSetting = (props: Props) => {
             aria-label="slider-ex-2"
             max={1}
             min={0.1}
+            step={0.1}
             defaultValue={[0.5]}
           />
           <p>{"強"}</p>
@@ -40,13 +41,13 @@ export const InPaintingSetting = (props: Props) => {
           <p>{"マスク方式："}</p>
           <RadioGroup onChange={handleRadioChange} defaultValue="1">
             <div className="flex">
-              <div className="flex-col space-x-5 w-48">
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="0" id="r1" />
                 <Label className="color-blue" htmlFor="r1">
                   {"塗りつぶし"}
                 </Label>
               </div>
-              <div className="flex-col space-x-5 w-48">
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="1" id="r2" />
                 <Label className="color-blue" htmlFor="r2">
                   {"もとに近い"}
@@ -54,13 +55,13 @@ export const InPaintingSetting = (props: Props) => {
               </div>
             </div>
             <div className="flex">
-              <div className="flex-col space-x-5 w-48">
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="2" id="r3" />
                 <Label className="color-blue" htmlFor="r3">
                   {"もとから大きく変更"}
                 </Label>
               </div>
-              <div className="flex-col space-x-5 w-48">
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="3" id="r4" />
                 <Label className="color-blue" htmlFor="r4">
                   {"ほぼ変えない"}

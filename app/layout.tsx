@@ -7,6 +7,7 @@ import { config } from "@/config"
 import { cn } from "@/lib/utils"
 import type { Metadata } from "next"
 import Script from "next/script"
+import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
 import { notoSansFont } from "./_fonts/noto-sans-font"
 
@@ -29,10 +30,11 @@ const RootLayout = (props: Props) => {
       </head>
       <body
         className={cn(
-          "min-h-screen font-sans antialiased no-margin",
+          "no-margin min-h-screen font-sans antialiased",
           notoSansFont.variable,
         )}
       >
+        <NextTopLoader shadow={false} height={2} />
         <ContextProviders>
           {props.children}
           <Toaster />

@@ -24,7 +24,7 @@ export const CopyButton = (props: Props) => {
       variant={"secondary"}
       disabled={props.disabled}
       size={"sm"}
-      className={`${props.className} pad-16 whitespace-normal w-full`}
+      className={`${props.className}pad-16 w-full whitespace-normal`}
       onClick={copyToClipboard}
     >
       <p className="break-all text-left">コピー</p>

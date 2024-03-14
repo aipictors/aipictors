@@ -14,7 +14,7 @@ export const AppMilestoneList = () => {
       {milestones.milestones.map((milestone) => (
         <div
           key={milestone.id}
-          className="bg-white shadow-lg rounded-lg overflow-hidden"
+          className="overflow-hidden rounded-lg bg-white shadow-lg"
         >
           <div className="p-4">
             <p>{milestone.version}</p>

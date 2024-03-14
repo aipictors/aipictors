@@ -1,6 +1,6 @@
-import { join } from "path"
+import { readFile } from "node:fs/promises"
+import { join } from "node:path"
 import { AppMarkdown } from "@/components/app/app-markdown"
-import { readFile } from "fs/promises"
 import type { Metadata } from "next"
 
 const FlutterTermsPage = async () => {

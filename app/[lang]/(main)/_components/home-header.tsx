@@ -2,7 +2,6 @@
 
 import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
-import { LoginDialog } from "@/app/[lang]/_components/login-dialog"
 import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
 import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -36,11 +35,11 @@ export const HomeHeader = () => {
 
   return (
     <AppHeader>
-      <div className="flex md:flex-1 gap-x-4 items-center min-w-fit">
+      <div className="flex min-w-fit items-center gap-x-4 md:flex-1">
         <Sheet>
           <SheetTrigger asChild>
             <Button
-              className="md:hidden mr-2"
+              className="mr-2 md:hidden"
               variant={"secondary"}
               size={"icon"}
             >
@@ -56,17 +55,17 @@ export const HomeHeader = () => {
         <Link className="flex items-center" href="https://www.aipictors.com">
           <Image
             src="/icon.svg"
-            className="w-10 h-10 rounded-full"
+            className="h-10 w-10 rounded-full"
             alt="Avatar"
             width={40}
             height={40}
           />
         </Link>
-        <div className="flex-1 w-full hidden md:block">
+        <div className="hidden w-full flex-1 md:block">
           <Input placeholder={"作品を検索"} />
         </div>
       </div>
-      <div className="flex gap-x-4 items-center">
+      <div className="flex items-center gap-x-4">
         <div className="flex gap-x-2">
           <Button
             className="md:hidden"
@@ -119,11 +118,7 @@ export const HomeHeader = () => {
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         )}
-        {authContext.isNotLoggedIn && (
-          <LoginDialog>
-            <LoginDialogButton />
-          </LoginDialog>
-        )}
+        {authContext.isNotLoggedIn && <LoginDialogButton />}
       </div>
       <LogoutDialogLegacy
         isOpen={isOpenLogoutDialog}

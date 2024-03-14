@@ -20,7 +20,7 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
    */
   const sizeClassName = () => {
     if (props.size === 1) {
-      return "h-6 w-6"
+      return "h-4 w-4"
     }
     if (props.size === 2) {
       return "h-8 w-8"
@@ -34,15 +34,17 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
       taskId={props.taskId}
       taskToken={props.token}
       children={
-        <div
-          onMouseEnter={() => {
-            props.setIsHovered(true)
-          }}
-        >
-          <ZoomIn
-            className={cn(`fill-white ${sizeClassName()}`)}
-            color="black"
-          />
+        <div className="flex rounded-lg bg-white px-1 opacity-80">
+          <div
+            onMouseEnter={() => {
+              props.setIsHovered(true)
+            }}
+          >
+            <ZoomIn
+              className={cn(`fill-white${sizeClassName()}`)}
+              color="black"
+            />
+          </div>
         </div>
       }
     />

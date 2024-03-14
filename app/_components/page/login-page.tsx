@@ -77,10 +77,10 @@ export const LoginPage = () => {
   }
 
   return (
-    <AppPageCenter className="w-full p-4 pb-4 md:pt-16 h-full md:max-w-screen-lg">
-      <div className="w-full flex flex-col pt-4 md:pt-0 lg:h-full justify-center items-center lg:flex-row lg:items-start">
-        <div className="flex-1 w-full flex flex-col items-center h-full ">
-          <div className="w-full lg:w-80 space-y-4">
+    <AppPageCenter className="h-full w-full p-4 pb-4 md:max-w-screen-lg md:pt-16">
+      <div className="flex w-full flex-col items-center justify-center pt-4 lg:h-full lg:flex-row lg:items-start md:pt-0">
+        <div className="flex h-full w-full flex-1 flex-col items-center">
+          <div className="w-full space-y-4 lg:w-80">
             <h1 className="w-full text-lg">
               {"ここから先はログインが必要です"}
             </h1>
@@ -96,7 +96,7 @@ export const LoginPage = () => {
               <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
             </div>
             <Separator />
-            <div className={"flex flex-col w-full gap-y-2"}>
+            <div className={"flex w-full flex-col gap-y-2"}>
               <p className="text-sm">{"アカウントをお持ちで無い方はこちら"}</p>
               <Link
                 className="w-full"
@@ -110,8 +110,8 @@ export const LoginPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex-1 w-full h-full hidden lg:block">
-          <Card className="p-4 w-full h-full bg-zinc-200 dark:bg-zinc-500">
+        <div className="hidden h-full w-full flex-1 lg:block">
+          <Card className="h-full w-full bg-zinc-200 p-4 dark:bg-zinc-500">
             <p className="text-sm">{"aipictors.com"}</p>
             <AppCanvas />
           </Card>

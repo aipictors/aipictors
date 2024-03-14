@@ -5,18 +5,12 @@ import packageJSON from "./package.json" assert { type: "json" }
 /**
  * @type {import('next').NextConfig}
  */
-
-// Configuration as an asynchronous function for dynamic handling
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
     // ppr: true, // Can only be enabled in canary
     scrollRestoration: true,
-  },
-  webpack(config) {
-    config.externals = [...config.externals, { canvas: "canvas" }]
-    return config
   },
   output: "standalone",
   env: {
@@ -38,20 +32,31 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  sentry: {
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.node$/,
+      loader: "node-loader",
+    })
+    return config
+  },
+}
+
+export default withSentryConfig(
+  nextConfig,
+  {
+    silent: true,
+    org: "nocker",
+    project: "aipictors-next",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+  },
+  {
     widenClientFileUpload: true,
     transpileClientSDK: true,
     tunnelRoute: "/monitoring",
     hideSourceMaps: true,
     disableLogger: true,
     automaticVercelMonitors: true,
+    disableClientWebpackPlugin: true,
+    disableServerWebpackPlugin: true,
   },
-}
-
-const sentryWebpackPluginOptions = {
-  silent: true,
-  org: "nocker",
-  project: "aipictors-next",
-}
-
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+)

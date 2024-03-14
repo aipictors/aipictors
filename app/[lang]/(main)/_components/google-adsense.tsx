@@ -3,7 +3,8 @@
 import { config } from "@/config"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
-import React, { useEffect } from "react"
+import type React from "react"
+import { useEffect } from "react"
 
 type Props = {
   slot: string

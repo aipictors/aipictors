@@ -30,9 +30,9 @@ export const MessageThreadList = () => {
   const messageThreads = threads.viewer?.messageThreads ?? []
 
   return (
-    <aside className="sticky h-main min-w-80 w-80 pl-4 pb-4">
+    <aside className="sticky h-main w-80 min-w-80 pb-4 pl-4">
       <ScrollArea className="h-full">
-        <div className="space-y-2 w-full">
+        <div className="w-full space-y-2">
           {messageThreads.map((messageThread) => (
             <Link
               key={messageThread.id}
@@ -40,10 +40,10 @@ export const MessageThreadList = () => {
               href={`/messages/${messageThread.id}`}
             >
               <Button
-                className="h-auto p-4 flex flex-col overflow-hidden gap-y-2"
+                className="flex h-auto flex-col gap-y-2 overflow-hidden p-4"
                 variant={"secondary"}
               >
-                <div className="w-full flex items-center gap-x-4">
+                <div className="flex w-full items-center gap-x-4">
                   <Avatar>
                     <AvatarImage
                       src={messageThread.recipient.iconImage?.downloadURL}
@@ -54,8 +54,8 @@ export const MessageThreadList = () => {
                     {messageThread.recipient.name}
                   </span>
                 </div>
-                <div className="w-full flex flex-col items-start gap-y-2">
-                  <p className="overflow-ellipsis overflow-hidden whitespace-pre-wrap break-words text-left">
+                <div className="flex w-full flex-col items-start gap-y-2">
+                  <p className="overflow-hidden overflow-ellipsis whitespace-pre-wrap break-words text-left">
                     {messageThread.latestMessage.text}
                   </p>
                   <p>{toDateTimeText(messageThread.latestMessage.createdAt)}</p>

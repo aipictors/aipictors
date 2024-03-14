@@ -13,6 +13,7 @@ type Props = {
 
 export const MessageInput = (props: Props) => {
   const [message, setMessage] = useState("")
+
   const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const handleSubmit = () => {
@@ -66,19 +67,19 @@ export const MessageInput = (props: Props) => {
   }
 
   return (
-    <div className="w-full pb-sm md:pb-md flex gap-x-4 items-end pb-4">
+    <div className="flex w-full items-end gap-x-4 pb-4 pb-sm md:pb-md">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
           <img src={image} alt={`Selected ${index}`} />
           <IoIosCloseCircle
-            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center cursor-pointer"
+            className="absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center"
             onClick={() => handleDeleteImage(index)}
           />
         </div>
       ))}
       <Textarea
-        className="resize-none border rounded-md p-2 h-auto"
+        className="h-auto resize-none rounded-md border p-2"
         placeholder="メッセージを入力してください"
         value={message}
         onChange={(event) => setMessage(event.target.value)}

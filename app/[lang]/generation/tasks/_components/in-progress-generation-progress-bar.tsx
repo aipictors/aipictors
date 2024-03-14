@@ -25,9 +25,6 @@ export const InProgressGenerationProgressBar = (props: Props) => {
    * 残り秒数からの生成進捗（パーセンテージ）
    */
   const generationProgress = () => {
-    if (elapsedGenerationTime > 0.1) {
-      return 100
-    }
     if (!props.remainingSeconds) return 0
     return (elapsedGenerationTime / props.remainingSeconds) * 100
   }

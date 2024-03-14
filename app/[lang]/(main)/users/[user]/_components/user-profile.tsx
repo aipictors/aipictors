@@ -1,6 +1,6 @@
 import { UserProfileAvatar } from "@/app/[lang]/(main)/users/[user]/_components/user-profile-avatar"
 import { FollowButton } from "@/app/_components/button/follow-button"
-import { UserQuery } from "@/graphql/__generated__/graphql"
+import type { UserQuery } from "@/graphql/__generated__/graphql"
 import UserProfileInfo from "./user-profile-info"
 
 type UserProfileProps = {
@@ -10,7 +10,7 @@ type UserProfileProps = {
 const UserProfile = (props: UserProfileProps) => {
   return (
     <header className="relative h-64 px-4">
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center px-4 py-6 bg-gradient-to-t from-background/40">
+      <div className="absolute right-0 bottom-0 left-0 flex items-center justify-center bg-gradient-to-t from-background/40 px-4 py-6">
         <div className="flex items-center gap-4">
           <UserProfileAvatar
             alt={props.user.name}

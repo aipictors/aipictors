@@ -8,6 +8,7 @@
     "aipictors",
     "codegen",
     "denoising",
+    "favorited",
     "followee",
     "followees",
     "immer",
@@ -24,11 +25,14 @@
     "usehooks",
     "xstate"
   ],
-  "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "always"
+  "[typescript][typescriptreact][json][jsonc][css]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.biome": "always",
+      "quickfix.biome": "explicit"
+    }
   },
-  "editor.defaultFormatter": "biomejs.biome",
-  "editor.formatOnSave": true,
   "files.associations": {
     "*.svg": "html",
     "*.xml": "html",
@@ -42,13 +46,15 @@
     ".firebase": true,
     ".idea": true,
     ".next": true,
-    ".vitepress/cache": true,
+    ".sentryclirc": true,
     ".yarn": true,
+    "build-storybook.log": true,
     "dist": true,
     "graphql/__generated__": true,
     "next-env.d.ts": true,
     "package-lock.json": true,
-    "pnpm-lock.yaml": true
+    "pnpm-lock.yaml": true,
+    "bun.lockb": true
   },
   "search.exclude": {
     "*.lock": true,
@@ -64,8 +70,7 @@
     "process",
     "react-day-picker",
     "tailwind-merge",
-    "tailwindcss",
-    "vitest/dist"
+    "tailwindcss"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative"
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { HTMLProps, forwardRef } from "react"
+import { type HTMLProps, forwardRef } from "react"
 import { RiTwitterXLine } from "react-icons/ri"
 
 interface XIntentProps extends HTMLProps<HTMLAnchorElement> {

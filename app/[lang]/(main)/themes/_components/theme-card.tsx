@@ -6,15 +6,15 @@ export const ThemeCard = () => {
   return (
     <Card>
       <img
-        className="w-40 object-cover rounded-lg"
+        className="w-40 rounded-lg object-cover"
         src="https://bit.ly/dan-abramov"
         alt="Dan Abramov"
       />
-      <div className="p-2 flex flex-col justify-between h-full space-y-1">
-        <p className="text-sm font-bold">{"作品名"}</p>
+      <div className="flex h-full flex-col justify-between space-y-1 p-2">
+        <p className="font-bold text-sm">{"作品名"}</p>
         <div className="flex items-center space-x-2">
           <img
-            className="w-10 h-10 rounded-full"
+            className="h-10 w-10 rounded-full"
             src="https://bit.ly/dan-abramov"
             alt="Dan Abrahmov"
           />

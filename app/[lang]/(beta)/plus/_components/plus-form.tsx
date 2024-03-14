@@ -41,70 +41,79 @@ export const PlusForm = () => {
     return null
   }
 
-  if (data.viewer.currentPass === null) {
-    return <PlusAbout />
-  }
-
   const currentPass = data.viewer.currentPass
 
-  const nextDateText = toDateText(currentPass.periodEnd)
+  const nextDateText = currentPass ? toDateText(currentPass.periodEnd) : ""
 
-  const currentPassName = toPassName(currentPass.type)
+  const currentPassName = currentPass ? toPassName(currentPass.type) : ""
 
   return (
-    <div
-      className={cn(
-        "space-y-4 md:space-y-0 justify-between gap-x-4",
-        currentPass && "flex flex-col md:flex-row",
+    <>
+      {currentPass ? (
+        <>
+          <div
+            className={cn(
+              "justify-between gap-x-4 space-y-4 md:space-y-0",
+              currentPass && "flex flex-col md:flex-row",
+            )}
+          >
+            <div className="flex-1 space-y-4">
+              <p>{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
+              <div>
+                <div className="flex">
+                  <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm">
+                    {"次回の請求日"}
+                  </span>
+                  <p>{nextDateText}</p>
+                </div>
+                <div className="flex">
+                  <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm">
+                    {"次回の請求額"}
+                  </span>
+                  <p>{`${currentPass.price}円（税込）`}</p>
+                </div>
+              </div>
+              <p>
+                {
+                  "決済方法の変更やプランのキャンセル及び変更はこちらのリンクから行えます。"
+                }
+              </p>
+              <Button
+                className="w-full"
+                onClick={onOpenCustomerPortal}
+                disabled={isLoading}
+              >
+                {"プランをキャンセルまたは変更する"}
+              </Button>
+            </div>
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle>{`${currentPassName}の特典`}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <Separator />
+                <PassBenefitList passType={currentPass.type} />
+                <Separator />
+                <p className="font-bold text-sm opacity-60">
+                  {"画像生成の特典"}
+                </p>
+                <PassImageGenerationBenefitList passType={currentPass.type} />
+                <Separator />
+                <p className="text-xs">
+                  {
+                    "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          {currentPass.type !== "PREMIUM" && (
+            <PlusAbout hideSubmitButton={true} showUpgradePlansOnly={true} />
+          )}
+        </>
+      ) : (
+        <PlusAbout showUpgradePlansOnly={true} />
       )}
-    >
-      <div className="space-y-4 flex-1">
-        <p>{`現在、あなたは「${currentPassName}」をご利用中です。`}</p>
-        <div>
-          <div className="flex">
-            <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              {"次回の請求日"}
-            </span>
-            <p>{nextDateText}</p>
-          </div>
-          <div className="flex">
-            <span className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-              {"次回の請求額"}
-            </span>
-            <p>{`${currentPass.price}円（税込）`}</p>
-          </div>
-        </div>
-        <p>
-          {
-            "決済方法の変更やプランのキャンセル及び変更はこちらのリンクから行えます。"
-          }
-        </p>
-        <Button
-          className="w-full"
-          onClick={onOpenCustomerPortal}
-          disabled={isLoading}
-        >
-          {"プランをキャンセルまたは変更する"}
-        </Button>
-      </div>
-      <Card className="flex-1">
-        <CardHeader>
-          <CardTitle>{`${currentPassName}の特典`}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-2">
-          <Separator />
-          <PassBenefitList passType={currentPass.type} />
-          <Separator />
-          <p className="text-sm opacity-60 font-bold">{"画像生成の特典"}</p>
-          <PassImageGenerationBenefitList passType={currentPass.type} />
-          <Separator />
-          <p className="text-xs">
-            {
-              "本プランは何らかの理由により内容を追加、又は廃止する場合があります。"
-            }
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+    </>
   )
 }

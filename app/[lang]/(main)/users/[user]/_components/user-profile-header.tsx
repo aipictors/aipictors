@@ -16,7 +16,7 @@ export const UserProfileHeader = (props: Props) => {
           className="w-full object-cover"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center text-red-500">
+        <div className="flex h-full w-full items-center justify-center text-red-500">
           Header Not Found
         </div>
       )}

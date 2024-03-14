@@ -14,6 +14,7 @@ type Story = StoryObj<typeof meta>
 export const デフォルト: Story = {
   args: {
     isSelected: false,
+    isDisabled: true,
     children: <img src="https://picsum.photos/seed/1/300/300" alt="" />,
   },
 }
@@ -21,6 +22,7 @@ export const デフォルト: Story = {
 export const 選択中: Story = {
   args: {
     isSelected: true,
+    isDisabled: true,
     children: <img src="https://picsum.photos/seed/1/300/300" alt="" />,
   },
 }

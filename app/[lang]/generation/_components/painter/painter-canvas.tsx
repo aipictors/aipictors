@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Slider } from "@/components/ui/slider"
-import Konva from "konva"
+import type Konva from "konva"
 import { useEffect, useRef, useState } from "react"
 import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"
 import useImage from "use-image"
@@ -148,7 +148,7 @@ export const PainterCanvas = (props: Props) => {
 
   return (
     <>
-      <div className="flex mb-4">
+      <div className="mb-4 flex">
         <p>{"ブラシサイズ："}</p>
         <Slider
           className="color-pink w-32"
@@ -160,7 +160,7 @@ export const PainterCanvas = (props: Props) => {
           onValueChange={(value) => setBrushSize(value[0])}
         />
       </div>
-      <div className="flex mb-4">
+      <div className="mb-4 flex">
         <Select onValueChange={(value) => setTool(value)} value={tool}>
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Select a tool" />
@@ -168,12 +168,11 @@ export const PainterCanvas = (props: Props) => {
           <SelectContent>
             <SelectGroup>
               <SelectItem value="pen">ペン</SelectItem>
-              <SelectItem value="eraser">消しゴム</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
         <Button
-          className="ml-2 mr-2"
+          className="mr-2 ml-2"
           size={"sm"}
           variant={"secondary"}
           onClick={undo}
@@ -182,7 +181,7 @@ export const PainterCanvas = (props: Props) => {
         </Button>
       </div>
       <div className="flex justify-center">
-        <div className="w-full h-[800px] relative max-h-64 max-w-96 overflow-auto m-auto">
+        <div className="relative h-[800px] max-h-64 w-full max-w-[280px] overflow-auto md:max-w-[80vw]">
           {props.isLoading && (
             <Skeleton className="h-[120px] w-[240px] rounded-xl" />
           )}

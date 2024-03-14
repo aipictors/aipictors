@@ -13,7 +13,7 @@ type Props = {
  */
 export const SmallSquareThumbnail = (props: Props) => {
   if (props.work === null) {
-    return <div className="w-20 h-20 mr-2" />
+    return <div className="mr-2 h-20 w-20" />
   }
 
   const image = (
@@ -27,7 +27,7 @@ export const SmallSquareThumbnail = (props: Props) => {
     //   alt=""
     // />
     <Image
-      className="w-20 h-20 object-cover"
+      className="h-20 w-20 object-cover"
       src={
         props.work.smallThumbnailImageURL
           ? props.work.smallThumbnailImageURL
@@ -43,8 +43,8 @@ export const SmallSquareThumbnail = (props: Props) => {
     <div
       className={
         props.isFocus
-          ? "w-20 h-20 mr-2 overflow-hidden rounded-lg border-2 border-solid border-primary opacity-75"
-          : "w-20 h-20 mr-2 overflow-hidden rounded-lg hover:opacity-75 transition-all"
+          ? "mr-2 h-20 w-20 overflow-hidden rounded-lg border-2 border-primary border-solid opacity-75"
+          : "mr-2 h-20 w-20 overflow-hidden rounded-lg transition-all hover:opacity-75"
       }
       style={{}}
     >

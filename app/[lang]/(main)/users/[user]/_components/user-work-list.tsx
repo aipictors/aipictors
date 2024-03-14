@@ -16,7 +16,7 @@ export const UserWorkList = (props: Props) => {
         <p>{"R18（n）"}</p>
         <Switch />
       </div>
-      <ul className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 pr-4 pb-4">
+      <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
         {props.works.map((work) => (
           <Link key={work.id} href={`/works/${work.id}`}>
             <WorkCard

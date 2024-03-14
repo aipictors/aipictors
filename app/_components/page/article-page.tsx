@@ -9,6 +9,6 @@ type Props = {
  */
 export const ArticlePage = (props: Props) => {
   return (
-    <div className="p-4 w-full max-w-screen-lg mx-auto">{props.children}</div>
+    <div className="mx-auto w-full max-w-screen-lg p-4">{props.children}</div>
   )
 }

@@ -5,7 +5,8 @@ import { AccountRouteList } from "@/app/[lang]/account/_components/account-route
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
-import React, { useContext } from "react"
+import type React from "react"
+import { useContext } from "react"
 
 type Props = {
   children: React.ReactNode

@@ -1,36 +1,38 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view-view/star-rating"
+import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
+import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
-import { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
-  GenerationSize,
+  type GenerationSize,
   parseGenerationSize,
 } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { AppFixedContent } from "@/components/app/app-fixed-content"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
-
-import { AppFixedContent } from "@/components/app/app-fixed-content"
-import { config } from "@/config"
 import { cn } from "@/lib/utils"
+import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
   FileUp,
   LinkIcon,
+  PenIcon,
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
@@ -38,6 +40,7 @@ import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
+
 type Props = {
   taskId: string
   onRestore?: (taskId: string) => void
@@ -169,8 +172,38 @@ export const postGenerationImage = async (
  * @returns
  */
 export function GenerationTaskView(props: Props) {
+  const context = useGenerationContext()
+
   const [mutation] = useMutation(updateRatingImageGenerationTaskMutation)
+
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const authContext = useContext(AuthContext)
+
+  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+
+  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+
+  /**
+   * 生成タスクの情報を取得する
+   */
+  const { data, error, refetch } = useSuspenseQuery(
+    imageGenerationTaskQuery,
+    authContext.isLoggedIn
+      ? {
+          variables: {
+            id: props.taskId,
+          },
+          fetchPolicy: "cache-first",
+        }
+      : skipToken,
+  )
+
+  const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
+
+  /**
+   * レーティング変更
+   */
   const onChangeRating = async (taskId: string, rating: number) => {
     try {
       await mutation({
@@ -188,21 +221,9 @@ export function GenerationTaskView(props: Props) {
     }
   }
 
-  const authContext = useContext(AuthContext)
-
-  const { data, error, refetch } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn
-      ? {
-          variables: {
-            id: props.taskId,
-          },
-        }
-      : skipToken,
-  )
-
-  const [rating, setRating] = useState(data?.imageGenerationTask.rating ?? 0)
-
+  /**
+   * 復元
+   */
   const onReference = () => {
     if (props.onRestore !== undefined) {
       props.onRestore(props.taskId)
@@ -211,12 +232,45 @@ export function GenerationTaskView(props: Props) {
     }
   }
 
+  /**
+   * カンマ前までの文字列を取得
+   * @param text
+   * @returns
+   */
+  const extractStringBeforeComma = (text: string) => {
+    const commaIndex = text.indexOf(".")
+    if (commaIndex === -1) {
+      return text
+    }
+    return text.substring(0, commaIndex)
+  }
+
+  /**
+   * インペイント
+   */
+  const onInPaint = () => {
+    if (
+      context.currentPass?.type !== "LITE" &&
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM" &&
+      context.currentPass?.type !== "TWO_DAYS"
+    ) {
+      toast("インペイント機能はLITEプラン以上で利用可能です")
+      return
+    }
+    setShowInPaintDialog(true)
+  }
+
+  /**
+   * 投稿画面に遷移
+   */
   const onPost = () => {
     window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
-  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
-
+  /**
+   * 削除
+   */
   const onDelete = async () => {
     await deleteTask({
       variables: {
@@ -246,18 +300,19 @@ export function GenerationTaskView(props: Props) {
   }
 
   if (data?.imageGenerationTask.status === "CANCELED") {
-    return <p className="mb-1 font-semibold text-center">{"キャンセル済み"}</p>
+    return <p className="mb-1 text-center font-semibold">{"キャンセル済み"}</p>
   }
 
   if (data?.imageGenerationTask.status === "ERROR") {
-    return <p className="mb-1 font-semibold text-center">{"生成エラー"}</p>
+    return <p className="mb-1 text-center font-semibold">{"生成エラー"}</p>
   }
-
-  // if (error) return <div>{"エラーが発生しました"}</div>
 
   const generationSize: GenerationSize = parseGenerationSize(
     data.imageGenerationTask.sizeType,
   )
+
+  const userNanoid = context.user?.nanoid ?? null
+  if (userNanoid === null) return
 
   const GenerationParameters: GenerationParameters = {
     prompt: data.imageGenerationTask.prompt,
@@ -283,10 +338,10 @@ export function GenerationTaskView(props: Props) {
   return (
     <>
       <ScrollArea
-        className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""}`}
+        className={`${isDesktop ? "mx-auto w-full max-w-fit p-4" : ""}`}
       >
         <div
-          className={`${isDesktop ? "p-4 w-full max-w-fit mx-auto" : ""} ${
+          className={`${isDesktop ? "mx-auto w-full max-w-fit p-4" : ""}${
             props.isScroll ? "max-h-[88vh]" : ""
           }`}
         >
@@ -294,16 +349,17 @@ export function GenerationTaskView(props: Props) {
             <DialogTrigger asChild>
               <Button className={"px-2"} variant={"ghost"}>
                 <PrivateImage
-                  className={`max-h-screen m-auto generation-image-${props.taskId}`}
+                  // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                  className={`generation-image-${props.taskId} m-auto max-h-screen`}
                   taskId={data.imageGenerationTask.id}
                   token={data.imageGenerationTask.token}
                   alt={"-"}
                 />
               </Button>
             </DialogTrigger>
-            <DialogContent className={"w-[auto] max-h-[96vh] max-w-[96vw]"}>
+            <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
               <PrivateImage
-                className={"h-[auto] max-h-[88vh] max-w-[88vw] m-auto"}
+                className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
                 taskId={data.imageGenerationTask.id}
                 token={data.imageGenerationTask.token}
                 alt={"-"}
@@ -311,7 +367,7 @@ export function GenerationTaskView(props: Props) {
             </DialogContent>
           </Dialog>
 
-          <div className="my-4 flex gap-x-2 justify-end">
+          <div className="flex flex-wrap justify-end gap-x-2 gap-y-2 pt-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
@@ -354,28 +410,42 @@ export function GenerationTaskView(props: Props) {
               />
             </AppConfirmDialog>
           </div>
-          <StarRating
-            value={rating ?? 0}
-            onChange={(value) => {
-              setRating(value)
-              onChangeRating(props.taskId, value)
-            }}
-          />
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Size"}</p>
-            <p>
-              {generationSize.width}x{generationSize.height}
-            </p>
+          <div className="my-4 flex items-center gap-x-2">
+            <StarRating
+              value={rating ?? 0}
+              onChange={(value) => {
+                setRating(value)
+                onChangeRating(props.taskId, value)
+              }}
+            />
+            <div className="ml-auto">
+              <GenerationMenuButton
+                title={"インペイント機能で一部分を再生成して修正する"}
+                onClick={onInPaint}
+                text={"部分修正"}
+                icon={PenIcon}
+              />
+            </div>
           </div>
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Model"}</p>
-            <p>{data.imageGenerationTask.model?.name}</p>
+          <div className="mb-1 flex gap-x-2">
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Size"}</p>
+              <p>
+                {generationSize.width}x{generationSize.height}
+              </p>
+            </div>
+            <div className="basis-1/3">
+              <p className="mb-1 font-semibold">{"Model"}</p>
+              <p>
+                {extractStringBeforeComma(data.imageGenerationTask.model?.name)}
+              </p>
+            </div>
           </div>
           <div className="py-2">
             <Separator />
@@ -429,24 +499,38 @@ export function GenerationTaskView(props: Props) {
               <Link
                 href="/generation"
                 className={cn(
-                  `flex-1 w-full ${config.isDevelopmentMode && "mr-2"}`,
+                  `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
                 )}
               >
-                <Button className="p-4 w-full" variant={"secondary"}>
+                <Button className="w-full p-4" variant={"secondary"}>
                   画像生成
                 </Button>
               </Link>
-              {config.isDevelopmentMode && (
-                <Link href="/generation/tasks" className="flex-1 w-full">
-                  <Button className="p-4 w-full" variant={"secondary"}>
-                    画像一覧
-                  </Button>
-                </Link>
-              )}
+              <Link href="/generation/tasks" className="w-full flex-1">
+                <Button className="w-full p-4" variant={"secondary"}>
+                  画像一覧
+                </Button>
+              </Link>
             </div>
           }
         />
       )}
+
+      <InPaintingDialog
+        isOpen={showInPaintDialog}
+        onClose={() => setShowInPaintDialog(false)}
+        taskId={props.taskId}
+        token={data.imageGenerationTask.token}
+        userNanoid={userNanoid}
+        configSeed={data.imageGenerationTask.seed}
+        configSteps={data.imageGenerationTask.steps}
+        configSampler={data.imageGenerationTask.sampler}
+        configSizeType={data.imageGenerationTask.sizeType}
+        configModel={data.imageGenerationTask.model?.name}
+        configVae={data.imageGenerationTask.vae}
+        configScale={data.imageGenerationTask.scale}
+        configClipSkip={data.imageGenerationTask.clipSkip}
+      />
     </>
   )
 }

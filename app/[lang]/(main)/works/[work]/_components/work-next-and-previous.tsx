@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { WorkQuery } from "@/graphql/__generated__/graphql"
+import type { WorkQuery } from "@/graphql/__generated__/graphql"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
@@ -24,12 +24,12 @@ export const WorkNextAndPrevious = (props: Props) => {
 
   return (
     <div className="invisible lg:visible">
-      <div className="flex text-md py-2">
+      <div className="flex py-2 text-md">
         <h2>{"前後の作品"}</h2>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircleIcon className="w-4 ml-1" />
+              <HelpCircleIcon className="ml-1 w-4" />
             </TooltipTrigger>
             <TooltipContent>
               <p>{"[Q][E]キーで移動することもできます"}</p>
@@ -37,7 +37,7 @@ export const WorkNextAndPrevious = (props: Props) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex mb-4">
+      <div className="mb-4 flex">
         <SmallSquareThumbnail work={props.work.nextWork} linkToWork={true} />
         <SmallSquareThumbnail work={props.work} isFocus={true} />
         <SmallSquareThumbnail

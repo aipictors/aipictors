@@ -44,4 +44,4 @@ pre-commit:
 pre-push:
   commands:
     tsc:
-      run: bun run check
+      run: bun run refactor && bun run check

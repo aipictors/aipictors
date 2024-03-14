@@ -15,10 +15,10 @@ export const GenerationTaskCancelButton = (props: Props) => {
   return (
     <>
       {props.isCanceling ? (
-        <Loader2 className="ml-auto mr-4 mt-4 h-6 w-6 animate-spin" />
+        <Loader2 className="mt-4 mr-4 ml-auto h-6 w-6 animate-spin" />
       ) : (
         <Button
-          className="ml-auto mr-2 mt-2"
+          className="absolute right-2 mt-2 mr-2 ml-auto"
           size={"icon"}
           variant="ghost"
           disabled={props.isDisabled}

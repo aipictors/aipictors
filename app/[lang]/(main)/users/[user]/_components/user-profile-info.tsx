@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "react-icons/ri"
 
 type UserProfileInfoProps = {
@@ -31,15 +32,15 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
     : biography.slice(0, 100)
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl">
       <div className="flex flex-col">
-        <h1 className="text-2xl font-bold">{name}</h1>
+        <h1 className="font-bold text-2xl">{name}</h1>
         <div className="flex items-center gap-4">
-          <span className="text-base flex items-center">
-            <RiHeartLine className="fill-red-500 mr-1" />
+          <span className="flex items-center text-base">
+            <RiHeartLine className="mr-1 fill-red-500" />
             {receivedLikesCount}
           </span>
-          <span className="text-base flex items-center">
+          <span className="flex items-center text-base">
             <RiEye2Line className="mr-1" />
             {receivedViewsCount}
           </span>
@@ -51,15 +52,13 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
         {biography && (
           <div>
             <p
-              className={`mt-4 text-gray ${
-                showFullBiography ? "" : "truncate"
-              }`}
+              className={`mt-4 text-gray${showFullBiography ? "" : "truncate"}`}
             >
               {truncatedBiography}
               {!showFullBiography && biography.length > 100 && (
                 // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                 <span
-                  className="text-blue-500 cursor-pointer"
+                  className="cursor-pointer text-blue-500"
                   onClick={toggleBiography}
                 >
                   {" Read More"}

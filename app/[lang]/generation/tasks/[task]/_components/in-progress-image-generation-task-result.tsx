@@ -1,6 +1,6 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view-view/star-rating"
+import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,10 +21,10 @@ import { CopyButton } from "./copy-button"
 export const InProgressImageGenerationTaskResult = () => {
   return (
     <>
-      <div className="p-4 w-full max-w-fit mx-auto">
-        <p className="mb-1 font-semibold text-center">{"生成中"}</p>
+      <div className="mx-auto w-full max-w-fit p-4">
+        <p className="mb-1 text-center font-semibold">{"生成中"}</p>
         <Skeleton className="h-[400px] w-[400px] rounded-xl" />
-        <div className="my-4 flex gap-x-2 justify-end">
+        <div className="my-4 flex justify-end gap-x-2">
           <GenerationMenuButton
             title={"同じ情報で生成する"}
             onClick={() => {}}
@@ -82,20 +82,20 @@ export const InProgressImageGenerationTaskResult = () => {
           <Separator />
         </div>
         <p className="mb-1 font-semibold">{"prompt"}</p>
-        <Skeleton className="h-8 mb-2 w-[196px]" />
+        <Skeleton className="mb-2 h-8 w-[196px]" />
         <CopyButton className="mb-4" disabled={true} text={""} />
         <div className="py-2">
           <Separator />
         </div>
         <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-        <Skeleton className="h-8 mb-2 w-[196px]" />
+        <Skeleton className="mb-2 h-8 w-[196px]" />
         <CopyButton className="mb-4" disabled={true} text={""} />
         <div className="py-2">
           <Separator />
         </div>
         <div className="mb-1">
           <p className="mb-1 font-semibold">{"Sampler"}</p>
-          <Skeleton className="h-8 mb-2 w-[196px]" />
+          <Skeleton className="mb-2 h-8 w-[196px]" />
         </div>
         <div className="py-2">
           <Separator />
@@ -103,15 +103,15 @@ export const InProgressImageGenerationTaskResult = () => {
         <div className="flex space-x-4">
           <div className="w-full">
             <p className="mb-1 font-semibold">{"Seed"}</p>
-            <Skeleton className="h-8 mb-2 w-[40px]" />
+            <Skeleton className="mb-2 h-8 w-[40px]" />
           </div>
           <div className="w-full">
             <p className="mb-1 font-semibold">{"Scale"}</p>
-            <Skeleton className="h-8 mb-2 w-[40px]" />
+            <Skeleton className="mb-2 h-8 w-[40px]" />
           </div>
           <div className="w-full">
             <p className="mb-1 font-semibold">{"Scale"}</p>
-            <Skeleton className="h-8 mb-2 w-[40px]" />
+            <Skeleton className="mb-2 h-8 w-[40px]" />
           </div>
         </div>
       </div>

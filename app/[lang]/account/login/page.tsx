@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 const AccountLoginPage = async () => {
   return (
     <AppPageCenter>
-      <p className="leading-none font-bold text-2xl">ユーザID</p>
+      <p className="font-bold text-2xl leading-none">ユーザID</p>
       <AccountLoginForm />
     </AppPageCenter>
   )

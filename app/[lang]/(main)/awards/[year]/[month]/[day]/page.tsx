@@ -22,11 +22,11 @@ type Props = {
 const DayAwardsPage = async (props: Props) => {
   const client = createClient()
 
-  const year = parseInt(props.params.year)
+  const year = Number.parseInt(props.params.year)
 
-  const month = parseInt(props.params.month)
+  const month = Number.parseInt(props.params.month)
 
-  const day = parseInt(props.params.day)
+  const day = Number.parseInt(props.params.day)
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,

@@ -1,0 +1,25 @@
+name: Production Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**/*"
+      - "graphql/**/*"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+      - run: time bun i --frozen-lockfile && bunx graphql-codegen-esm --config codegen.ts
+
+      - name: Run Test
+        run: time bun test
+
+      - name: Production Build
+        run: time bun run build

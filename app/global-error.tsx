@@ -1,9 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { captureException } from "@sentry/nextjs"
 import type { Metadata } from "next"
-import { useEffect } from "react"
 
 type Props = {
   error: Error & { digest?: string }
@@ -11,9 +9,9 @@ type Props = {
 }
 
 export default function RootGlobalError(props: Props) {
-  useEffect(() => {
-    captureException(props.error)
-  }, [props.error])
+  // useEffect(() => {
+  //   captureException(props.error)
+  // }, [props.error])
 
   return (
     <html lang="ja">

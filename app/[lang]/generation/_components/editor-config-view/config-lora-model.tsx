@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 
 type Props = {
@@ -14,30 +15,39 @@ type Props = {
 
 export const ConfigLoraModel = (props: Props) => {
   return (
-    <div className="space-x-2 flex">
+    <div className="flex space-x-2">
       <img
-        className="rounded w-16 object-cover"
+        className="w-16 rounded object-cover"
         src={props.imageURL ?? ""}
         alt={props.name}
         draggable={false}
       />
-      <div className="flex flex-col w-full gap-y-1 overflow-hidden">
+      <div className="flex w-full flex-col gap-y-1 overflow-hidden">
         <div className="flex flex-col">
-          <p className="text-lg font-bold whitespace-pre-wrap">{props.name}</p>
-          <p className="text-sm whitespace-pre-wrap">{props.description}</p>
+          <p className="whitespace-pre-wrap font-bold text-lg">{props.name}</p>
+          <p className="whitespace-pre-wrap text-sm">{props.description}</p>
         </div>
-        <div className="flex gap-x-2 items-center">
+        <div className="flex items-center gap-x-2">
           <Slider
             aria-label="slider-ex-2"
             defaultValue={[props.value]}
             min={-1}
             max={1}
-            step={0.01}
+            step={0.1}
             onValueChange={(value) => {
               props.setValue(value[0])
             }}
           />
-          <span className="font-bold">{props.value.toFixed(2)}</span>
+          <Input
+            type="number"
+            value={props.value.toFixed(2)}
+            className="w-20 font-bold"
+            min={-1}
+            max={1}
+            onChange={(event) => {
+              props.setValue(Number(event.target.value))
+            }}
+          />
         </div>
         <Button size={"sm"} variant={"secondary"} onClick={props.onDelete}>
           {"削除"}

@@ -1,35 +1,25 @@
-import { join } from "path"
-import { GenerationEditorConfigView } from "@/app/[lang]/generation/_components/editor-config-view/generation-editor-config-view"
-import { GenerationEditorNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-editor-negative-prompt-view"
-import { GenerationEditorPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-editor-prompt-view"
-import { GenerationEditorSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-editor-submit-view"
-import { GenerationEditorTaskView } from "@/app/[lang]/generation/_components/editor-task-view-view/generation-editor-task-view"
-import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
-import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
-import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
-import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
-import { createClient } from "@/lib/client"
-import { readFile } from "fs/promises"
+import { readFile } from "node:fs/promises"
+import { join } from "node:path"
+import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-negative-prompt-view"
+import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-prompt-view"
+import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"
+import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-content-preview"
+import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-details-view"
+import { GenerationTaskListView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-view"
+import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
+import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
+import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
+import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
 import type { Metadata } from "next"
+import dynamic from "next/dynamic"
+import Image from "next/image"
+import Link from "next/link"
 
+/**
+ * 画像生成
+ * @returns
+ */
 const GenerationPage = async () => {
-  const client = createClient()
-
-  const promptCategoriesResp = await client.query({
-    query: promptCategoriesQuery,
-    variables: {},
-  })
-
-  const imageModelsResp = await client.query({
-    query: imageModelsQuery,
-    variables: {},
-  })
-
-  const imageLoraModelsResp = await client.query({
-    query: imageLoraModelsQuery,
-    variables: {},
-  })
-
   /**
    * 利用規約
    */
@@ -46,30 +36,40 @@ const GenerationPage = async () => {
   //   "utf-8",
   // )
 
-  // <div className="overflow-x-hidden w-full">
-
   return (
-    <GenerationEditorLayout
-      config={
-        <GenerationEditorConfigView
-          models={imageModelsResp.data.imageModels}
-          loraModels={imageLoraModelsResp.data.imageLoraModels}
+    <GenerationView
+      header={
+        <GenerationHeaderView
+          submission={
+            <GenerationSubmissionView termsText={termsMarkdownText} />
+          }
         />
       }
-      promptEditor={
-        <GenerationEditorPromptView
-          promptCategories={promptCategoriesResp.data.promptCategories}
+      aside={
+        <GenerationAsideView
+          advertising={
+            <Link href="/plus" className="mb-4 block sm:hidden">
+              <Image
+                className="mb-4 w-full rounded-md border"
+                src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
+                alt="Aipictors+"
+                width={40}
+                height={40}
+              />
+            </Link>
+          }
+          taskList={<GenerationTaskListView />}
+          taskDetails={<GenerationTaskDetailsView />}
         />
       }
-      negativePromptEditor={<GenerationEditorNegativePromptView />}
-      history={
-        <div className="flex flex-col h-full gap-y-2">
-          <GenerationEditorSubmissionView
-            imageModels={imageModelsResp.data.imageModels}
-            termsMarkdownText={termsMarkdownText}
-          />
-          <GenerationEditorTaskView />
-        </div>
+      main={
+        <GenerationMainView
+          config={<GenerationConfigView />}
+          promptEditor={<GenerationPromptView />}
+          negativePromptEditor={<GenerationNegativePromptView />}
+          taskContentPreview={<GenerationTaskContentPreview />}
+          taskDetails={<GenerationTaskDetailsView />}
+        />
       }
     />
   )
@@ -81,5 +81,14 @@ export const metadata: Metadata = {
 }
 
 export const revalidate = 60
+
+const GenerationConfigView = dynamic(
+  () => {
+    return import(
+      "@/app/[lang]/generation/_components/editor-config-view/generation-config-view"
+    )
+  },
+  { ssr: false },
+)
 
 export default GenerationPage

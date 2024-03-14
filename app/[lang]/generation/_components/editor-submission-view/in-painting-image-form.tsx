@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
-import { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
+import type { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -88,16 +88,30 @@ export const InPaintingImageForm = (props: Props) => {
       toast("モデル情報が正しく取得できませんでした")
       return
     }
+    if (promptText === "") {
+      toast("修正内容のキーワード（プロンプト）を入力してください")
+      return
+    }
     try {
       const srcImageBase64 = await createBase64FromImageURL(data)
-      if (srcImageBase64 === "") return
+      if (srcImageBase64 === "" || srcImageBase64 === undefined) {
+        toast(
+          "画像の読み込みに失敗しました、しばらくしてから再度実行してください。",
+        )
+        return
+      }
       const srcFileName = `${createRandomString(30)}_inpaint_mask_src.png`
       const srcImageURL = await uploadImage(
         srcImageBase64,
         srcFileName,
         props.userNanoid,
       )
-      if (srcImageURL === "") return
+      if (srcImageURL === "" || srcImageURL === undefined) {
+        toast(
+          "画像の読み込みに失敗しました、しばらくしてから再度実行してください。",
+        )
+        return
+      }
       const maskFileName = `${createRandomString(30)}_img2img_src.png`
       const maskImageURL = await uploadImage(
         maskImageBase64,

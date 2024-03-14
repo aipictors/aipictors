@@ -17,8 +17,8 @@ export const EventCreatorCard = (props: Props) => {
   return (
     <Card>
       <div className="flex space-x-2">
-        <div className="min-w-fit w-40 h-40">
-          {/* biome-ignore lint/a11y/useValidAnchor: TODO: 対応 */}
+        <div className="h-40 w-40 min-w-fit">
+          {/* TODO: 対応 */}
           <a
             aria-label="Twitter"
             target="_blank"
@@ -41,7 +41,7 @@ export const EventCreatorCard = (props: Props) => {
             <img
               alt={props.user.name}
               src={props.user.iconImageURL}
-              className="h-full rounded shadow-xl w-full"
+              className="h-full w-full rounded shadow-xl"
               style={{ height: "100%", objectFit: "contain" }}
             />
           </a>
