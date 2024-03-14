@@ -62,6 +62,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "滝川 海老郎",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_syuribox.png?alt=media&token=12785028-ea9a-455c-a10f-16dd80fd132d",
+    twitterId: "syuribox",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "Aipictors",
     types: ["EXHIBIT"],
     message: null,
