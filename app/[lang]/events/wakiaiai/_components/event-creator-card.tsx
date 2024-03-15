@@ -46,10 +46,8 @@ export const EventCreatorCard = (props: Props) => {
             />
           </a>
         </div>
-        <div className="px-2 md:px-2 space-y-2 md:space-y-4 h-full pt-4 overflow-hidden flex flex-col">
-          <div
-            className="flex-1 space-y-2 sm:space-y-4 min-w-0"
-          >
+        <div className="flex h-full flex-col space-y-2 overflow-hidden px-2 pt-4 md:space-y-4 md:px-2">
+          <div className="min-w-0 flex-1 space-y-2 sm:space-y-4">
             <div className="flex space-x-1 sm:space-x-2">
               {props.user.types.map((type) => (
                 <EventUserTag key={type} type={type} />
@@ -57,7 +55,7 @@ export const EventCreatorCard = (props: Props) => {
             </div>
             <h2 className="font-bold text-sm">{props.user.name}</h2>
           </div>
-          <div className="flex space-x-2 h-auto">
+          <div className="flex h-auto space-x-2">
             {props.user.twitterId !== null && (
               <a
                 href={`https://twitter.com/${props.user.twitterId}`}

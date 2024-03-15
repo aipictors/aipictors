@@ -15,10 +15,10 @@ export function SubscriptionDialogContent() {
   return (
     <>
       <div>
-        <Link className="text-center font-bold pt-2" href="/plus">
+        <Link className="pt-2 text-center font-bold" href="/plus">
           プラン変更、詳細はこちら
         </Link>
-        <ScrollArea className="p-4 min-w-64 h-full max-h-[64vh]">
+        <ScrollArea className="h-full max-h-[64vh] min-w-64 p-4">
           <Suspense fallback={<AppLoadingPage />}>
             <PlusAbout hideSubmitButton={true} showUpgradePlansOnly={true} />
           </Suspense>
