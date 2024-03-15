@@ -3,19 +3,12 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
       time: "09:00"
-      # Use Japan Standard Time (UTC +09:00)
       timezone: "Asia/Tokyo"
     target-branch: "main"
     labels:
       - "Dependabot"
-    groups:
-      production-dependencies:
-        dependency-type: production
-        patterns:
-          - "*"
-      dev-dependencies:
-        dependency-type: development
-        patterns:
-          - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
