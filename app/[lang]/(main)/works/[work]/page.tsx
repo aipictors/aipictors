@@ -78,7 +78,7 @@ export async function generateMetadata(
   if (workResp.data.work === null) return {}
 
   return {
-    robots: { index: true },
+    robots: { index: false },
     title: workResp.data.work.title,
     description: workResp.data.work.description,
     openGraph: {
