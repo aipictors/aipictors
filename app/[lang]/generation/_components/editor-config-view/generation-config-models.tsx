@@ -40,6 +40,26 @@ export const GenerationConfigModels = (props: Props) => {
     })
     .slice(0, 3)
 
+  /**
+   * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
+   * @param input
+   * @returns
+   */
+  const trimString = (input: string) => {
+    const suffix = input.match(/_v\d+.*$/)?.[0]
+
+    const underscoreIndex = input.indexOf("_")
+
+    if (underscoreIndex !== -1) {
+      return (
+        input.substring(0, underscoreIndex) +
+        (suffix !== undefined ? suffix : "")
+      )
+    }
+
+    return input
+  }
+
   return (
     <>
       <div className="flex items-center space-x-2">
@@ -63,7 +83,7 @@ export const GenerationConfigModels = (props: Props) => {
               <ConfigModelButton
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
-                name={model?.displayName ?? ""}
+                name={trimString(model?.displayName ?? "")}
                 isSelected={model?.id === props.currentModelId}
                 onClick={() => {
                   props.onSelectModelId(

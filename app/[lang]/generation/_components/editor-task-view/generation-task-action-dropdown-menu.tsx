@@ -13,7 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider"
+import { config } from "@/config"
 import { MoreHorizontalIcon } from "lucide-react"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   thumbnailSize: number
@@ -28,6 +30,8 @@ type Props = {
  * @returns
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,57 +55,40 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                 value={[props.thumbnailSize]}
                 onValueChange={(value) => props.onChange(value[0])}
               />
-              {/* <DropdownMenuCheckboxItem
-                checked={props.thumbnailSize === "small"}
-                onCheckedChange={props.onChange.bind(null, "small")}
-              >
-                小
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={props.thumbnailSize === "middle"}
-                onCheckedChange={props.onChange.bind(null, "middle")}
-              >
-                中
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={props.thumbnailSize === "big"}
-                onCheckedChange={props.onChange.bind(null, "big")}
-              >
-                大
-              </DropdownMenuCheckboxItem> */}
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {"履歴詳細の表示場所"}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuLabel>{"場所変更"}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={props.taskContentPositionType === "left"}
-                onCheckedChange={props.onChangeTaskContentPositionType.bind(
-                  null,
-                  "left",
-                )}
-              >
-                左
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={props.taskContentPositionType === "right"}
-                onCheckedChange={props.onChangeTaskContentPositionType.bind(
-                  null,
-                  "right",
-                )}
-              >
-                右
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+        {isDesktop && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              {"履歴詳細の表示場所"}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuLabel>{"場所変更"}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  checked={props.taskContentPositionType === "left"}
+                  onCheckedChange={props.onChangeTaskContentPositionType.bind(
+                    null,
+                    "left",
+                  )}
+                >
+                  左
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={props.taskContentPositionType === "right"}
+                  onCheckedChange={props.onChangeTaskContentPositionType.bind(
+                    null,
+                    "right",
+                  )}
+                >
+                  右
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

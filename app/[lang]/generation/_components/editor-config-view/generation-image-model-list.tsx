@@ -59,19 +59,25 @@ export const ImageModelsList = (props: Props) => {
 
   // モデルをフィルタリングする関数
   const filterModels = () => {
-    return props.models
-      .filter((model) => {
-        // お気に入りフィルタリング
-        return showFavoriteModels ? isFavorited(Number(model.id)) : true
-      })
-      .filter((model) => {
-        // カテゴリフィルタリング
-        return selectedCategory === "ALL" || model.category === selectedCategory
-      })
-      .filter((model) => {
-        // 種別フィルタリング
-        return selectedType === "ALL" || model.type === selectedType
-      })
+    return (
+      props.models
+        .filter((model) => {
+          // お気に入りフィルタリング
+          return showFavoriteModels ? isFavorited(Number(model.id)) : true
+        })
+        .filter((model) => {
+          // カテゴリフィルタリング
+          return (
+            selectedCategory === "ALL" || model.category === selectedCategory
+          )
+        })
+        .filter((model) => {
+          // 種別フィルタリング
+          return selectedType === "ALL" || model.type === selectedType
+        })
+        // 追加: displayNameで昇順にソート
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+    )
   }
 
   // カテゴリセクションの生成

@@ -8,6 +8,26 @@ type Props = {
 }
 
 export const ImageModelCard = (props: Props) => {
+  /**
+   * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
+   * @param input
+   * @returns
+   */
+  const trimString = (input: string) => {
+    const suffix = input.match(/_v\d+.*$/)?.[0]
+
+    const underscoreIndex = input.indexOf("_")
+
+    if (underscoreIndex !== -1) {
+      return (
+        input.substring(0, underscoreIndex) +
+        (suffix !== undefined ? suffix : "")
+      )
+    }
+
+    return input
+  }
+
   const classes = `flex relative cursor-pointer flex-col rounded-md border border-neutral-1100 bg-neutral-1100 transition-all hover:bg-gray-200 dark:hover:bg-gray-600 ${
     props.isActive ? "border-2 border-blue-500" : ""
   }`
@@ -24,7 +44,7 @@ export const ImageModelCard = (props: Props) => {
       />
       <div className="">
         <span className="whitespace-pre-wrap break-words font-bold text-sm">
-          {props.displayName ?? ""}
+          {trimString(props.displayName ?? "")}
         </span>
         {props.type && (
           <span className="absolute top-2 left-1 rounded-lg bg-black bg-opacity-50 p-4 text-white">
