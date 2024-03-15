@@ -28,6 +28,7 @@ export const imageGenerationTaskFieldsFragment = gql(`
     }
     vae
     token
+    thumbnailToken
     nanoid
     estimatedSeconds
   }

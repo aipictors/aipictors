@@ -24,6 +24,7 @@ const config = new GenerationConfigState({
   viewTaskIds: [],
   thumbnailSizeInPromptView: 7,
   thumbnailSizeInHistoryListFull: 7,
+  taskListThumbnailType: "light",
 })
 
 describe("ImageGenerationAction", () => {

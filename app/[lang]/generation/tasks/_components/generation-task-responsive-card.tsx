@@ -35,6 +35,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
           taskId={props.task.id}
           taskNanoid={props.task.nanoid}
           token={props.task.token}
+          thumbnailToken={props.task.thumbnailToken}
           isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
           isSelectDisabled={true}

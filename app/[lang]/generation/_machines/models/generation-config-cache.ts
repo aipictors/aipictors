@@ -35,6 +35,7 @@ export class GenerationConfigCache {
       thumbnailSizeInPromptView: this.restoreThumbnailSizeInPromptView(),
       thumbnailSizeInHistoryListFull:
         this.restoreThumbnailSizeInHistoryListFull(),
+      taskListThumbnailType: this.restoreTaskListThumbnailType(),
     })
   }
 
@@ -69,6 +70,7 @@ export class GenerationConfigCache {
         config.generationFeature.defaultThumbnailSizeInPromptView,
       thumbnailSizeInHistoryListFull:
         config.generationFeature.defaultThumbnailSizeInHistoryListFull,
+      taskListThumbnailType: config.generationFeature.defaultThumbnailType,
     })
   }
 
@@ -234,6 +236,39 @@ export class GenerationConfigCache {
         return defaultValue
       }
       return Number(value)
+    } catch (error) {
+      if (error instanceof Error) {
+        captureException(error)
+      }
+      return defaultValue
+    }
+  }
+
+  /**
+   * 履歴一覧表示モードのサムネイルサイズを保存
+   * @param modelId
+   */
+  saveTaskListThumbnailType(taskListThumbnailType: string) {
+    localStorage.setItem(
+      "config.generation.taskListThumbnailType",
+      taskListThumbnailType.toString(),
+    )
+  }
+
+  /**
+   * タスク一覧のサムネイル種別を復元
+   * @returns
+   */
+  restoreTaskListThumbnailType() {
+    const defaultValue = config.generationFeature.defaultThumbnailType
+    try {
+      const value = localStorage.getItem(
+        "config.generation.taskListThumbnailType",
+      )
+      if (value === null) {
+        return defaultValue
+      }
+      return value
     } catch (error) {
       if (error instanceof Error) {
         captureException(error)

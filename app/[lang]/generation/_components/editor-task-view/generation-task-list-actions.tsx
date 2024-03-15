@@ -9,6 +9,7 @@ import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_compon
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
+import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
 import { Toggle } from "@/components/ui/toggle"
 import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
@@ -20,6 +21,7 @@ import { useMediaQuery } from "usehooks-ts"
 type Props = {
   rating: number
   thumbnailSize: number
+  thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
@@ -29,6 +31,7 @@ type Props = {
   viewCount?: number
   onChangeRating(rating: number): void
   onChangeViewCount(count: number): void
+  onChangeThumbnailType(type: TaskListThumbnailType): void
   setThumbnailSize(size: number): void
   onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
@@ -124,8 +127,10 @@ export const GenerationTaskListActions = (props: Props) => {
           {
             <GenerationTaskActionDropdownMenu
               thumbnailSize={props.thumbnailSize}
+              thumbnailType={props.thumbnailType}
               onChange={props.setThumbnailSize}
               taskContentPositionType={props.taskContentPositionType}
+              onChangeThumbnailType={props.onChangeThumbnailType}
               onChangeTaskContentPositionType={
                 props.onChangeTaskContentPositionType
               }

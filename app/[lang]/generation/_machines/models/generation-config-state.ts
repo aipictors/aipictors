@@ -22,6 +22,7 @@ const zProps = z.object({
   viewTaskIds: z.array(z.string()),
   thumbnailSizeInPromptView: z.number(),
   thumbnailSizeInHistoryListFull: z.number(),
+  taskListThumbnailType: z.string(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -73,6 +74,8 @@ export class GenerationConfigState implements Props {
   readonly thumbnailSizeInPromptView!: Props["thumbnailSizeInPromptView"]
 
   readonly thumbnailSizeInHistoryListFull!: Props["thumbnailSizeInHistoryListFull"]
+
+  readonly taskListThumbnailType!: Props["taskListThumbnailType"]
 
   constructor(props: Props) {
     Object.assign(this, props)

@@ -1,3 +1,4 @@
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
@@ -11,6 +12,7 @@ type Props = {
   taskId: string
   taskNanoid: string | null
   token: string | null
+  thumbnailToken: string | null
   isSelected?: boolean
   estimatedSeconds?: number
   isSelectDisabled: boolean
@@ -23,6 +25,8 @@ type Props = {
  * @returns
  */
 export const GenerationTaskLinkCard = (props: Props) => {
+  const context = useGenerationContext()
+
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
     {
@@ -61,6 +65,11 @@ export const GenerationTaskLinkCard = (props: Props) => {
     )
   }
 
+  const viewToken =
+    context.config.taskListThumbnailType === "light"
+      ? props.thumbnailToken ?? ""
+      : props.token ?? ""
+
   return (
     <div className="relative grid h-full overflow-hidden rounded bg-card p-0">
       <SelectableCardButton
@@ -72,7 +81,7 @@ export const GenerationTaskLinkCard = (props: Props) => {
           <PrivateImage
             className={`generation-image-${props.taskNanoid}`}
             taskId={props.taskId}
-            token={props.token}
+            token={viewToken}
             alt={"-"}
           />
         </Link>

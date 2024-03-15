@@ -466,6 +466,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * タスク一覧の表示サムネイル種別（原画像もしくは軽量化画像）を変更する
+   * @param type
+   * @returns
+   */
+  changeTaskListThumbnailType(type: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      taskListThumbnailType: type,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * i2i用のDenoisingStrengthSizeを変更する
    * @param modelType SD1など
    * @returns

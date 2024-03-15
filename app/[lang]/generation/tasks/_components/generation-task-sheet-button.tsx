@@ -27,6 +27,7 @@ export function GenerationTaskSheetButton(props: Props) {
         token={props.task.token}
         optionButtonSize={props.sizeType}
         task={props.task}
+        thumbnailToken={props.task.thumbnailToken}
         isSelectDisabled={true}
         isPreviewByHover={true}
         rating={props.task.rating ?? 0}

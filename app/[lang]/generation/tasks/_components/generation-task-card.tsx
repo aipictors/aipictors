@@ -41,6 +41,7 @@ export const GenerationTaskCard = (props: Props) => {
           task={props.task}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
           token={props.task.token}
+          thumbnailToken={props.task.thumbnailToken}
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}
         />

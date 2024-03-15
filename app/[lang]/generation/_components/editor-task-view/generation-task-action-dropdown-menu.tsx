@@ -1,4 +1,5 @@
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
+import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -19,8 +20,10 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   thumbnailSize: number
+  thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
   onChangeTaskContentPositionType(type: TaskContentPositionType): void
+  onChangeThumbnailType(type: TaskListThumbnailType): void
   onChange(size: number): void
 }
 
@@ -55,6 +58,33 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                 value={[props.thumbnailSize]}
                 onValueChange={(value) => props.onChange(value[0])}
               />
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{"サムネイル画質"}</DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuLabel>{"画質変更"}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={props.thumbnailType === "light"}
+                onCheckedChange={props.onChangeThumbnailType.bind(
+                  null,
+                  "light",
+                )}
+              >
+                軽量画質
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={props.thumbnailType === "original"}
+                onCheckedChange={props.onChangeThumbnailType.bind(
+                  null,
+                  "original",
+                )}
+              >
+                高画質
+              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>

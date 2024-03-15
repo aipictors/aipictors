@@ -6,6 +6,7 @@ import { GenerationViewCard } from "@/app/[lang]/generation/_components/generati
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
+import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Suspense, useState } from "react"
 /**
@@ -85,6 +86,10 @@ export const GenerationTaskListView = () => {
     return context.updateThumbnailSizeInPromptView(value)
   }
 
+  const changeThumbnailType = (value: TaskListThumbnailType) => {
+    context.changeTaskListThumbnailType(value)
+  }
+
   return (
     <GenerationViewCard
       title={"生成履歴"}
@@ -97,10 +102,14 @@ export const GenerationTaskListView = () => {
         showHistoryExpandButton={true}
         rating={rating}
         thumbnailSize={thumbnailSize()}
+        thumbnailType={
+          context.config.taskListThumbnailType as TaskListThumbnailType
+        }
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         taskContentPositionType={showTaskPositionType}
+        onChangeThumbnailType={changeThumbnailType}
         onChangeRating={onChangeRating}
         setThumbnailSize={updateThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}

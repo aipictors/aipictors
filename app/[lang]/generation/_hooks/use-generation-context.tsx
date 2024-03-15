@@ -354,6 +354,16 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * タスク一覧の表示サムネイル種別（原画像もしくは軽量化画像）を変更する
+   * @param
+   */
+  const changeTaskListThumbnailType = (type: string) => {
+    cacheStorage.saveTaskListThumbnailType(type)
+    const value = configAction.changeTaskListThumbnailType(type).getState()
+    send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * データリセット
    */
   const reset = () => {
@@ -394,6 +404,7 @@ export const useGenerationContext = () => {
     changeI2iImageBase64,
     changeI2iDenoisingStrengthSize,
     changeUseRecommendedPrompt,
+    changeTaskListThumbnailType,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updatePrompt,

@@ -46,6 +46,7 @@ export function GenerationTaskButton(props: Props) {
         isPreviewByHover={props.isPreviewByHover}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
         token={props.task.token}
+        thumbnailToken={props.task.thumbnailToken}
         optionButtonSize={props.sizeType}
         task={props.task}
         isSelectDisabled={true}

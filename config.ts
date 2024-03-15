@@ -148,6 +148,7 @@ export const config = {
     defaultI2iDenoisingStrengthSize: 0.5,
     defaultThumbnailSizeInPromptView: 7,
     defaultThumbnailSizeInHistoryListFull: 7,
+    defaultThumbnailType: "light",
     /**
      * ランダム生成プロンプト一覧
      */

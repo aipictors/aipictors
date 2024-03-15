@@ -19,6 +19,7 @@ type Props = {
   taskNanoid: string | null
   token: string | null
   isSelected?: boolean
+  thumbnailToken: string | null
   estimatedSeconds?: number
   rating: number
   optionButtonSize: number
@@ -83,7 +84,11 @@ export const GenerationTaskEditableCard = (props: Props) => {
     return 3
   }
 
-  if (props.token == null || props.taskNanoid == null) {
+  if (
+    props.token == null ||
+    props.thumbnailToken == null ||
+    props.taskNanoid == null
+  ) {
     return (
       <InProgressGenerationCard
         estimatedSeconds={props.estimatedSeconds}
@@ -94,6 +99,11 @@ export const GenerationTaskEditableCard = (props: Props) => {
   }
 
   const { send } = GenerationConfigContext.useActorRef()
+
+  const viewToken =
+    context.config.taskListThumbnailType === "light"
+      ? props.thumbnailToken
+      : props.token
 
   return (
     <div
@@ -117,9 +127,10 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isDisabled={props.isSelectDisabled}
       >
         <PrivateImage
-          className={`generation-image-${props.taskNanoid}`}
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          className={`m-auto generation-image-${props.taskNanoid}`}
           taskId={props.taskId}
-          token={props.token}
+          token={viewToken}
           alt={"-"}
         />
       </SelectableCardButton>
