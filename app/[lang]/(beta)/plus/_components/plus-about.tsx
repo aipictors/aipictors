@@ -6,7 +6,12 @@ import { useMutation } from "@apollo/client"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { toast } from "sonner"
 
-export const PlusAbout = () => {
+type Props = {
+  showUpgradePlansOnly?: boolean
+  hideSubmitButton?: boolean
+}
+
+export const PlusAbout = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     createPassCheckoutSessionMutation,
   )
@@ -33,5 +38,12 @@ export const PlusAbout = () => {
     }
   }
 
-  return <PassPlanList onSelect={onSelect} isLoading={isLoading} />
+  return (
+    <PassPlanList
+      showUpgradePlansOnly={props.showUpgradePlansOnly}
+      hideSubmitButton={props.hideSubmitButton}
+      onSelect={onSelect}
+      isLoading={isLoading}
+    />
+  )
 }

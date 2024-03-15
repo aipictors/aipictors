@@ -5,8 +5,7 @@ export const middleware = (request: NextRequest) => {
 
   // サイトマップ
   if (pathname === "/sitemap.xml") {
-    const pageURL =
-      "https://subgraph-aipictors-6ouzjmdzha-an.a.run.app/sitemap.xml"
+    const pageURL = "https://run.aipictors.com/sitemap.xml"
     return NextResponse.redirect(pageURL)
   }
 

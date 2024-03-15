@@ -58,7 +58,10 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
   /**
    * 履歴詳細表示モード
    */
-  if (state === "HISTORY_VIEW_ON_MAIN_AND_HEADER") {
+  if (
+    state === "HISTORY_LIST_FULL" ||
+    state === "HISTORY_VIEW_ON_MAIN_AND_HEADER"
+  ) {
     return <>{props.taskDetails}</>
   }
 
@@ -82,7 +85,7 @@ export const GenerationEditorLayoutSettingArea = (props: Props) => {
             </ResizablePanel>
             <ResizableHandle className="mt-2 mb-2" />
             <ResizablePanel>
-              <div className="h-full min-w-80 flex-1 overflow-hidden">
+              <div className="h-full flex-1 overflow-hidden">
                 {props.negativePromptEditor}
               </div>
             </ResizablePanel>

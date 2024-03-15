@@ -1,15 +1,16 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
 import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { cn } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense, useState } from "react"
@@ -20,7 +21,7 @@ type Props = {
   rating: number
   isEditMode: boolean
   selectedTaskIds: string[]
-  thumbnailSize: ThumbnailImageSizeType
+  thumbnailSize: number
   hidedTaskIds: string[]
   viewCount?: number
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
@@ -50,7 +51,7 @@ export const GenerationTaskListHistory = (props: Props) => {
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: config.query.maxLimit,
-      offset: (currentPage - 1) * (props.viewCount ?? 0),
+      offset: 0,
       where: { minRating: 1 },
     },
   })
@@ -138,50 +139,53 @@ export const GenerationTaskListHistory = (props: Props) => {
     props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
-  const getGridClasses = (size: string): string => {
-    switch (size) {
-      case "small":
-        return "p-2 grid grid-cols-3 gap-2 p-4 sm:pl-4 md:grid-cols-7 2xl:grid-cols-12 lg:grid-cols-10 xl:grid-cols-11"
-      case "middle":
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-6 2xl:grid-cols-10 lg:grid-cols-8 xl:grid-cols-9"
-      case "big":
-        return "p-2 grid grid-cols-1 gap-2 p-4 sm:pl-4 md:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-5 xl:grid-cols-5"
-      default:
-        return "p-2 grid grid-cols-2 gap-2 p-4 sm:pl-4 md:grid-cols-2 2xl:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6"
-    }
-  }
-
   const componentTasks = props.rating === -1 ? activeTasks : activeRatingTasks
-
-  const sizeType = props.thumbnailSize ?? "small"
 
   return (
     <>
-      <ScrollArea>
-        <div className={getGridClasses(props.thumbnailSize)}>
-          {componentTasks.map((task) => (
-            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
-              <Suspense fallback={<FallbackTaskCard />}>
-                <GenerationTaskCard
-                  task={task}
-                  isEditMode={props.isEditMode}
-                  isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
-                  estimatedSeconds={task.estimatedSeconds ?? 0}
-                  isPreviewByHover={false}
-                  rating={task.rating ?? 0}
-                  selectedTaskIds={props.selectedTaskIds}
-                  sizeType={sizeType}
-                  isDialog={true}
-                  onClick={() => onSelectTask(task.nanoid, task.status)}
-                  onCancel={() => onSelectTask(task.nanoid, task.status)}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-        </div>
-      </ScrollArea>
+      <Suspense fallback={<AppLoadingPage />}>
+        <ScrollArea>
+          <div
+            className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
+              "grid-cols-0": props.thumbnailSize === 10,
+              "grid-cols-1": props.thumbnailSize === 9,
+              "grid-cols-2": props.thumbnailSize === 8,
+              "grid-cols-3": props.thumbnailSize === 7,
+              "grid-cols-4": props.thumbnailSize === 6,
+              "grid-cols-5": props.thumbnailSize === 5,
+              "grid-cols-6": props.thumbnailSize === 4,
+              "grid-cols-7": props.thumbnailSize === 3,
+              "grid-cols-8": props.thumbnailSize === 2,
+              "grid-cols-9": props.thumbnailSize === 1,
+            })}
+          >
+            {componentTasks.map((task) => (
+              <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
+                <Suspense fallback={<FallbackTaskCard />}>
+                  <GenerationTaskCard
+                    task={task}
+                    isEditMode={props.isEditMode}
+                    isSelected={props.selectedTaskIds.includes(
+                      task.nanoid ?? "",
+                    )}
+                    estimatedSeconds={task.estimatedSeconds ?? 0}
+                    isPreviewByHover={false}
+                    rating={task.rating ?? 0}
+                    selectedTaskIds={props.selectedTaskIds}
+                    sizeType={props.thumbnailSize}
+                    isDialog={true}
+                    onClick={() => onSelectTask(task.nanoid, task.status)}
+                    onCancel={() => onSelectTask(task.nanoid, task.status)}
+                    onRestore={onRestore}
+                    onSelectTask={onSelectTask}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            ))}
+          </div>
+        </ScrollArea>
+      </Suspense>
+
       {props.viewCount &&
         tasks.viewer &&
         tasks.viewer.remainingImageGenerationTasksTotalCount && (

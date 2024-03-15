@@ -168,7 +168,6 @@ export const PainterCanvas = (props: Props) => {
           <SelectContent>
             <SelectGroup>
               <SelectItem value="pen">ペン</SelectItem>
-              <SelectItem value="eraser">消しゴム</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

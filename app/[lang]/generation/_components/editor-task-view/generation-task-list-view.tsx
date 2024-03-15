@@ -3,16 +3,23 @@
 import { GenerationTaskList } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-actions"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
-import { useState } from "react"
-
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { Suspense, useState } from "react"
 /**
  * タスク関連
  * @param props
  * @returns
  */
 export const GenerationTaskListView = () => {
+  const context = useGenerationContext()
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
   const [rating, setRating] = useState(-1)
 
   const [isEditMode, toggleEditMode] = useState(false)
@@ -26,8 +33,7 @@ export const GenerationTaskListView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [thumbnailSize, setThumbnailSize] =
-    useState<ThumbnailImageSizeType>("middle")
+  const [page, setPage] = useState(0)
 
   /**
    * レーティングを変更する
@@ -35,6 +41,9 @@ export const GenerationTaskListView = () => {
    */
   const onChangeRating = (rating: number) => {
     setRating(rating)
+
+    // ページングもリセットする
+    setPage(0)
   }
 
   /**
@@ -54,24 +63,46 @@ export const GenerationTaskListView = () => {
     togglePreviewMode((value) => !value)
   }
 
+  /**
+   * サムネイルサイズ
+   */
+  const thumbnailSize = () => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.config.thumbnailSizeInHistoryListFull
+    }
+    return context.config.thumbnailSizeInPromptView
+  }
+
+  /**
+   * サムネイルサイズを変更する
+   * @param value
+   * @returns
+   */
+  const updateThumbnailSize = (value: number) => {
+    if (state === "HISTORY_LIST_FULL") {
+      return context.updateThumbnailSizeInHistoryListFull(value)
+    }
+    return context.updateThumbnailSizeInPromptView(value)
+  }
+
   return (
     <GenerationViewCard
       title={"生成履歴"}
       tooltip={
-        "履歴は1週間、スタンダードの場合は2週間まで保存されます。★を付与することで永久保存できます。プランによって保存できる上限が変わります。"
+        "履歴は3日間、スタンダードの場合は2週間まで保存されます。★を付与することで永久保存できます。プランによって保存できる上限が変わります。"
       }
       tooltipDetailLink={"/plus"}
     >
       <GenerationTaskListActions
-        showHistoryAllButton={true}
+        showHistoryExpandButton={true}
         rating={rating}
-        thumbnailSize={thumbnailSize}
+        thumbnailSize={thumbnailSize()}
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
         isEditMode={isEditMode}
         taskContentPositionType={showTaskPositionType}
         onChangeRating={onChangeRating}
-        setThumbnailSize={setThumbnailSize}
+        setThumbnailSize={updateThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
         onToggleEditMode={onToggleEditMode}
@@ -79,17 +110,21 @@ export const GenerationTaskListView = () => {
         onChangeViewCount={() => {}}
         onChangeTaskContentPositionType={changeShowTaskPositionType}
       />
-      <GenerationTaskList
-        hidedTaskIds={hidedTaskIds}
-        rating={rating}
-        isEditMode={isEditMode}
-        isPreviewMode={isPreviewMode}
-        selectedTaskIds={selectedTaskIds}
-        thumbnailSize={thumbnailSize}
-        taskContentPositionType={showTaskPositionType}
-        setSelectedTaskIds={setSelectedTaskIds}
-        onCancel={undefined}
-      />
+      <Suspense fallback={<AppLoadingPage />}>
+        <GenerationTaskList
+          currentPage={page}
+          hidedTaskIds={hidedTaskIds}
+          rating={rating}
+          isEditMode={isEditMode}
+          isPreviewMode={isPreviewMode}
+          selectedTaskIds={selectedTaskIds}
+          thumbnailSize={thumbnailSize()}
+          taskContentPositionType={showTaskPositionType}
+          onCancel={undefined}
+          setCurrentPage={setPage}
+          setSelectedTaskIds={setSelectedTaskIds}
+        />
+      </Suspense>
     </GenerationViewCard>
   )
 }

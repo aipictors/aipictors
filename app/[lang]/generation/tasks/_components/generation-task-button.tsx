@@ -1,13 +1,13 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
-  sizeType: ThumbnailImageSizeType
+  taskIds?: string[]
+  sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isPreviewByHover: boolean
   onRestore?(taskId: string): void
@@ -24,13 +24,17 @@ export function GenerationTaskButton(props: Props) {
   const context = useGenerationContext()
 
   const onClickTask = () => {
-    context.updateViewTaskId(props.task.nanoid)
     setTimeout(() => {
-      if (props.taskContentPositionType === "right") {
-        send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
-      } else {
-        send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
+      if (props.taskIds?.length) {
+        context.updateViewTask(props.task.id, props.taskIds)
       }
+      setTimeout(() => {
+        if (props.taskContentPositionType === "right") {
+          send({ type: "OPEN_FULL_HISTORY_ON_ASIDE" })
+        } else {
+          send({ type: "OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER" })
+        }
+      }, 100)
     }, 100)
   }
 

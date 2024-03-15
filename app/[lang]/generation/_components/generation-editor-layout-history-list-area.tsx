@@ -27,7 +27,12 @@ export const GenerationEditorLayoutHistoryListArea = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    document.addEventListener("keydown", handleEscapeKeyDown, false)
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", handleEscapeKeyDown, false)
+      return () => {
+        document.removeEventListener("keydown", handleEscapeKeyDown)
+      }
+    }
   }, [])
 
   if (state === "HISTORY_VIEW_ON_ASIDE") {

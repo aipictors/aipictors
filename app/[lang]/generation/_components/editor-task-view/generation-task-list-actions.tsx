@@ -7,27 +7,29 @@ import { GenerationTaskCountSelect } from "@/app/[lang]/generation/_components/e
 import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-delete-button"
 import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-preview-mode-button"
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-rating-select"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
-import { Button } from "@/components/ui/button"
 import { Toggle } from "@/components/ui/toggle"
+import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
+import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   rating: number
-  thumbnailSize: ThumbnailImageSizeType
+  thumbnailSize: number
   taskContentPositionType: TaskContentPositionType
   selectedTaskIds: string[]
   hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
-  showHistoryAllButton?: boolean
+  showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
   onChangeViewCount(count: number): void
-  setThumbnailSize(size: ThumbnailImageSizeType): void
+  setThumbnailSize(size: number): void
   onChangeTaskContentPositionType(size: TaskContentPositionType): void
   setSelectedTaskIds(selectedTaskIds: string[]): void
   setHidedTaskIds(selectedTaskIds: string[]): void
@@ -42,6 +44,10 @@ type Props = {
  */
 export const GenerationTaskListActions = (props: Props) => {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
 
   const router = useRouter()
 
@@ -65,11 +71,15 @@ export const GenerationTaskListActions = (props: Props) => {
     }
   }
 
-  const moveHistoryPage = () => {
-    router.push("/generation/tasks")
+  const { send } = GenerationConfigContext.useActorRef()
+
+  const openFullHistory = () => {
+    send({ type: "OPEN_FULL_HISTORY_LIST" })
   }
 
   const isEmpty = props.selectedTaskIds.length === 0
+
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <>
@@ -106,9 +116,11 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
-          <GenerationTaskPreviewModeButton
-            onTogglePreviewMode={props.onTogglePreviewMode}
-          />
+          {isDesktop && (
+            <GenerationTaskPreviewModeButton
+              onTogglePreviewMode={props.onTogglePreviewMode}
+            />
+          )}
           {
             <GenerationTaskActionDropdownMenu
               thumbnailSize={props.thumbnailSize}
@@ -128,16 +140,19 @@ export const GenerationTaskListActions = (props: Props) => {
             />
           )}
         </div>
-        {/* 履歴一覧リンク */}
-        {props.showHistoryAllButton && !props.isEditMode && (
-          <Button
-            onClick={moveHistoryPage}
-            className="ml-auto w-16 sm:w-24"
-            variant={"secondary"}
-            size={"sm"}
+        {/* 履歴全画面表示 */}
+        {isDesktop && props.showHistoryExpandButton && (
+          <Toggle
+            onClick={openFullHistory}
+            variant={"outline"}
+            className="ml-auto w-16"
           >
-            {"すべて"}
-          </Button>
+            {state === "HISTORY_LIST_FULL" ? (
+              <MinimizeIcon className="w-4" />
+            ) : (
+              <MaximizeIcon className="w-4" />
+            )}
+          </Toggle>
         )}
       </div>
     </>

@@ -6,9 +6,14 @@ import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/ed
 import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-content-preview"
 import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-details-view"
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-view"
-import { GenerationEditorLayout } from "@/app/[lang]/generation/_components/generation-editor-layout"
+import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
+import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
+import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
+import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
+import Image from "next/image"
+import Link from "next/link"
 
 /**
  * 画像生成
@@ -32,14 +37,40 @@ const GenerationPage = async () => {
   // )
 
   return (
-    <GenerationEditorLayout
-      config={<GenerationConfigView />}
-      promptEditor={<GenerationPromptView />}
-      negativePromptEditor={<GenerationNegativePromptView />}
-      submission={<GenerationSubmissionView termsText={termsMarkdownText} />}
-      taskList={<GenerationTaskListView />}
-      taskDetails={<GenerationTaskDetailsView />}
-      taskContentPreview={<GenerationTaskContentPreview />}
+    <GenerationView
+      header={
+        <GenerationHeaderView
+          submission={
+            <GenerationSubmissionView termsText={termsMarkdownText} />
+          }
+        />
+      }
+      aside={
+        <GenerationAsideView
+          advertising={
+            <Link href="/plus" className="mb-4 block sm:hidden">
+              <Image
+                className="mb-4 w-full rounded-md border"
+                src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
+                alt="Aipictors+"
+                width={40}
+                height={40}
+              />
+            </Link>
+          }
+          taskList={<GenerationTaskListView />}
+          taskDetails={<GenerationTaskDetailsView />}
+        />
+      }
+      main={
+        <GenerationMainView
+          config={<GenerationConfigView />}
+          promptEditor={<GenerationPromptView />}
+          negativePromptEditor={<GenerationNegativePromptView />}
+          taskContentPreview={<GenerationTaskContentPreview />}
+          taskDetails={<GenerationTaskDetailsView />}
+        />
+      }
     />
   )
 }

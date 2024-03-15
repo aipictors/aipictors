@@ -1,6 +1,5 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
@@ -22,7 +21,7 @@ type Props = {
   isSelected?: boolean
   estimatedSeconds?: number
   rating: number
-  optionButtonSize: ThumbnailImageSizeType
+  optionButtonSize: number
   isSelectDisabled: boolean
   task: ImageGenerationTaskFieldsFragment
   isPreviewByHover?: boolean
@@ -71,14 +70,14 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   /**
    * 履歴画像上に表示されるボタンのサイズ
-   * @param type サイズ
+   * @param size サイズ
    * @returns
    */
-  const optionButtonSize = (type: string) => {
-    if (type === "small") {
+  const optionButtonSize = (size: number) => {
+    if (size < 3) {
       return 1
     }
-    if (type === "middle") {
+    if (size < 5) {
       return 2
     }
     return 3
@@ -101,7 +100,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
         if (props.isPreviewByHover) {
-          context.updatePreviewTaskId(props.task.nanoid)
+          context.updatePreviewTaskId(props.task.id)
           send({ type: "OPEN_HISTORY_PREVIEW" })
         }
         setIsHovered(true)

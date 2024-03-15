@@ -14,7 +14,7 @@ import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-im
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -156,6 +156,10 @@ export function GenerationTaskSheetView(props: Props) {
 
   const context = useGenerationContext()
 
+  const viewTaskId = context.config.viewTaskId
+
+  const viewTaskIds = context.config.viewTaskIds
+
   const [showInPaintDialog, setShowInPaintDialog] = useState(false)
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
@@ -167,7 +171,7 @@ export function GenerationTaskSheetView(props: Props) {
       props.task.model.type,
       props.task.sampler,
       props.task.scale,
-      props.task.vae ?? "",
+      props.task.vae?.replace(".ckpt", "").replace(".safetensors", "") ?? "",
       props.task.prompt,
       props.task.negativePrompt,
       props.task.seed,
@@ -236,6 +240,64 @@ export function GenerationTaskSheetView(props: Props) {
     })
   }
 
+  /**
+   * 次のタスクに戻る
+   * @returns
+   */
+  const onNextTask = () => {
+    const nowTask = viewTaskId
+    const taskIds = viewTaskIds
+    if (nowTask === null || taskIds === null) return
+    const index = taskIds.indexOf(nowTask)
+    if (!taskIds.length || taskIds.length === index + 1) {
+      toast("次の履歴がありません")
+      return
+    }
+    const nextTaskId = taskIds[index + 1]
+    context.updateViewTaskId(nextTaskId)
+  }
+
+  /**
+   * 前のタスクに戻る
+   * @returns
+   */
+  const onPrevTask = () => {
+    const nowTask = viewTaskId
+    const taskIds = viewTaskIds
+    if (nowTask === null || taskIds === null) return
+    const index = taskIds.indexOf(nowTask)
+    if (!taskIds.length || index === 0) {
+      toast("前の履歴がありません")
+      return
+    }
+    const nextTaskId = taskIds[index - 1]
+    context.updateViewTaskId(nextTaskId)
+  }
+
+  /**
+   * 左右キーで履歴切替
+   */
+  const handleDirectionKeyDown = useCallback(
+    (event: { keyCode: number }) => {
+      if (event.keyCode === 37) {
+        onPrevTask()
+      }
+      if (event.keyCode === 39) {
+        onNextTask()
+      }
+    },
+    [context],
+  )
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", handleDirectionKeyDown)
+      return () => {
+        document.removeEventListener("keydown", handleDirectionKeyDown)
+      }
+    }
+  }, [context])
+
   const generationSize: GenerationSize = parseGenerationSize(
     props.task.sizeType,
   )
@@ -277,6 +339,8 @@ export function GenerationTaskSheetView(props: Props) {
         onDelete={onDelete}
         onInPaint={onInPaint}
         onChangeRating={onChangeRating}
+        onNextTask={onNextTask}
+        onPrevTask={onPrevTask}
         setRating={setRating}
         setShowInPaintDialog={setShowInPaintDialog}
         saveGenerationImage={saveGenerationImage}
@@ -301,6 +365,8 @@ export function GenerationTaskSheetView(props: Props) {
       onPost={onPost}
       onDelete={onDelete}
       onInPaint={onInPaint}
+      onNextTask={onNextTask}
+      onPrevTask={onPrevTask}
       onChangeRating={onChangeRating}
       setRating={setRating}
       setShowInPaintDialog={setShowInPaintDialog}

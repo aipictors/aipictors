@@ -1,5 +1,4 @@
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskButton } from "@/app/[lang]/generation/tasks/_components/generation-task-button"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
 import { GenerationTaskLinkCard } from "@/app/[lang]/generation/tasks/_components/generation-task-link-card"
@@ -9,9 +8,10 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
+  taskIds?: string[]
   estimatedSeconds?: number
   selectedTaskIds: string[]
-  sizeType: ThumbnailImageSizeType
+  sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
   isPreviewByHover: boolean
@@ -43,6 +43,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
       {props.isDialog && isDesktop && (
         <GenerationTaskDialogButton
           task={props.task}
+          taskIds={props.taskIds}
           sizeType={props.sizeType}
           onRestore={props.onRestore}
         />
@@ -50,6 +51,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
       {!props.isDialog && isDesktop && (
         <GenerationTaskButton
           task={props.task}
+          taskIds={props.taskIds}
           isPreviewByHover={props.isPreviewByHover}
           sizeType={props.sizeType}
           taskContentPositionType={props.taskContentPositionType}

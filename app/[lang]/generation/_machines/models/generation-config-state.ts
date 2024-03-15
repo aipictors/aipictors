@@ -19,6 +19,9 @@ const zProps = z.object({
   i2iDenoisingStrengthSize: z.number(),
   previewTaskId: z.string().nullable(),
   viewTaskId: z.string().nullable(),
+  viewTaskIds: z.array(z.string()),
+  thumbnailSizeInPromptView: z.number(),
+  thumbnailSizeInHistoryListFull: z.number(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -64,6 +67,12 @@ export class GenerationConfigState implements Props {
   readonly previewTaskId!: Props["previewTaskId"]
 
   readonly viewTaskId!: Props["viewTaskId"]
+
+  readonly viewTaskIds!: Props["viewTaskIds"]
+
+  readonly thumbnailSizeInPromptView!: Props["thumbnailSizeInPromptView"]
+
+  readonly thumbnailSizeInHistoryListFull!: Props["thumbnailSizeInHistoryListFull"]
 
   constructor(props: Props) {
     Object.assign(this, props)

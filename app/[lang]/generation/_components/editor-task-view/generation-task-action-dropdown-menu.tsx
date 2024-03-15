@@ -1,5 +1,4 @@
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,13 +12,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Slider } from "@/components/ui/slider"
 import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
-  thumbnailSize: ThumbnailImageSizeType
-  onChange(size: ThumbnailImageSizeType): void
+  thumbnailSize: number
   taskContentPositionType: TaskContentPositionType
   onChangeTaskContentPositionType(type: TaskContentPositionType): void
+  onChange(size: number): void
 }
 
 /**
@@ -42,7 +42,16 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
             <DropdownMenuSubContent>
               <DropdownMenuLabel>{"サイズ変更"}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
+              <Slider
+                className="color-pink w-32 px-2 py-4"
+                aria-label="slider-ex-2"
+                min={1}
+                max={9}
+                step={1}
+                value={[props.thumbnailSize]}
+                onValueChange={(value) => props.onChange(value[0])}
+              />
+              {/* <DropdownMenuCheckboxItem
                 checked={props.thumbnailSize === "small"}
                 onCheckedChange={props.onChange.bind(null, "small")}
               >
@@ -59,7 +68,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                 onCheckedChange={props.onChange.bind(null, "big")}
               >
                 大
-              </DropdownMenuCheckboxItem>
+              </DropdownMenuCheckboxItem> */}
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>

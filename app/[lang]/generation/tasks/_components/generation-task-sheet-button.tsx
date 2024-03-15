@@ -1,4 +1,3 @@
-import type { ThumbnailImageSizeType } from "@/app/[lang]/generation/_types/thumbnail-image-size-type"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -7,7 +6,7 @@ import { useState } from "react"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
-  sizeType: ThumbnailImageSizeType
+  sizeType: number
   onRestore?(taskId: string): void
   onCancel?(): void
 }

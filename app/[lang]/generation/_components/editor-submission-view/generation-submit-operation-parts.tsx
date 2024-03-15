@@ -5,8 +5,18 @@ import { GenerationCountSelect } from "@/app/[lang]/generation/_components/edito
 import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/editor-submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/generation-terms-button"
+import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/subscription-dialog-content"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 type Props = {
   generationMode: string
@@ -38,19 +48,22 @@ export function getSubmitButtonLabel(
   mode: string,
   isSetI2iImage: boolean,
   prompts: string,
+  seed: number,
 ) {
+  const seedLabel = seed === -1 ? "" : "(Seed固定)"
+
   if (!prompts) {
     if (isSetI2iImage) {
       return mode === "reserve"
         ? "画像から予約ランダム生成"
-        : "画像からランダム生成"
+        : `画像からランダム生成${seedLabel}`
     }
-    return mode === "reserve" ? "予約ランダム生成" : "ランダム生成"
+    return mode === "reserve" ? "予約ランダム生成" : `ランダム生成${seedLabel}`
   }
   if (isSetI2iImage) {
-    return mode === "reserve" ? "画像から予約生成" : "画像から生成"
+    return mode === "reserve" ? "画像から予約生成" : `画像から生成${seedLabel}`
   }
-  return mode === "reserve" ? "予約生成" : "生成"
+  return mode === "reserve" ? "予約生成" : `生成${seedLabel}`
 }
 
 /**
@@ -60,6 +73,13 @@ export function getSubmitButtonLabel(
  */
 export function GenerationSubmitOperationParts(props: Props) {
   const context = useGenerationContext()
+
+  const isCurrentPremiumPlan = () => {
+    if (context.currentPass?.type === "PREMIUM") {
+      return true
+    }
+    return false
+  }
 
   return (
     <>
@@ -81,7 +101,8 @@ export function GenerationSubmitOperationParts(props: Props) {
           />
         )}
         <div className="mr-2">枚</div>
-        {context.user?.hasSignedImageGenerationTerms === true && (
+        {/* プレミアムの場合はサブスク案内ダイアログはなし */}
+        {isCurrentPremiumPlan() && (
           <GenerationSubmitButton
             onClick={async () => {
               if (props.generationMode === "reserve") {
@@ -106,9 +127,96 @@ export function GenerationSubmitOperationParts(props: Props) {
               props.generationMode,
               context.config.i2iImageBase64 ? true : false,
               context.config.promptText,
+              context.config.seed,
             )}
           />
         )}
+        {/* 生成上限に達した場合はサブスク案内ダイアログ */}
+        {!isCurrentPremiumPlan() &&
+          props.tasksCount < props.availableImageGenerationMaxTasksCount - 1 &&
+          context.user?.hasSignedImageGenerationTerms === true && (
+            <GenerationSubmitButton
+              onClick={async () => {
+                if (props.generationMode === "reserve") {
+                  await props.onCreateReservedTask()
+                } else {
+                  await props.onCreateTask()
+                }
+              }}
+              isLoading={props.isCreatingTask}
+              isDisabled={context.config.isDisabled}
+              generatingCount={
+                props.generationMode === "normal"
+                  ? props.inProgressImageGenerationTasksCount
+                  : props.inProgressImageGenerationReservedTasksCount
+              }
+              maxGeneratingCount={
+                props.generationMode === "reserve"
+                  ? props.availableImageGenerationMaxTasksCount -
+                    props.tasksCount
+                  : props.maxTasksCount
+              }
+              buttonActionCaption={getSubmitButtonLabel(
+                props.generationMode,
+                context.config.i2iImageBase64 ? true : false,
+                context.config.promptText,
+                context.config.seed,
+              )}
+            />
+          )}
+
+        {!isCurrentPremiumPlan() &&
+          props.tasksCount >= props.availableImageGenerationMaxTasksCount - 1 &&
+          context.user?.hasSignedImageGenerationTerms === true && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <GenerationSubmitButton
+                  onClick={async () => {
+                    if (props.generationMode === "reserve") {
+                      await props.onCreateReservedTask()
+                    } else {
+                      await props.onCreateTask()
+                    }
+                  }}
+                  isLoading={props.isCreatingTask}
+                  isDisabled={context.config.isDisabled}
+                  generatingCount={
+                    props.generationMode === "normal"
+                      ? props.inProgressImageGenerationTasksCount
+                      : props.inProgressImageGenerationReservedTasksCount
+                  }
+                  maxGeneratingCount={
+                    props.generationMode === "reserve"
+                      ? props.availableImageGenerationMaxTasksCount -
+                        props.tasksCount
+                      : props.maxTasksCount
+                  }
+                  buttonActionCaption={getSubmitButtonLabel(
+                    props.generationMode,
+                    context.config.i2iImageBase64 ? true : false,
+                    context.config.promptText,
+                    context.config.seed,
+                  )}
+                />
+              </DialogTrigger>
+              <DialogContent className="min-w-[64vw]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {
+                      "Aipictorsの生成機能をご利用いただき、ありがとうございます。"
+                    }
+                  </DialogTitle>
+                  <DialogDescription>
+                    {
+                      "Aipictors+に加入することで生成枚数などの特典を受けることができます。"
+                    }
+                  </DialogDescription>
+                </DialogHeader>
+                <SubscriptionDialogContent />
+              </DialogContent>
+            </Dialog>
+          )}
+
         {/* 未ログインならログイン */}
         {context.user === null && (
           <LoginDialogButton label="生成" isWidthFull={true} />

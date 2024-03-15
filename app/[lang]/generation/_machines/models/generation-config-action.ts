@@ -1,6 +1,5 @@
 import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
-import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { produce } from "immer"
 
 type Props = {
@@ -329,6 +328,43 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       viewTaskId: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * 表示元のタスク一覧を更新する
+   */
+  updateViewTaskIds(value: string[]) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      viewTaskIds: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * プロンプト表示モードのサムネイルサイズ
+   * @param value
+   * @returns
+   */
+  updateThumbnailSizeInPromptView(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      thumbnailSizeInPromptView: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * プロンプト表示モードのサムネイルサイズ
+   * @param value
+   * @returns
+   */
+  updateThumbnailSizeInHistoryListFull(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      thumbnailSizeInHistoryListFull: value,
     })
     return new GenerationConfigAction(state, this.props)
   }

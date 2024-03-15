@@ -21,6 +21,9 @@ const config = new GenerationConfigState({
   i2iDenoisingStrengthSize: 0.5,
   previewTaskId: null,
   viewTaskId: null,
+  viewTaskIds: [],
+  thumbnailSizeInPromptView: 7,
+  thumbnailSizeInHistoryListFull: 7,
 })
 
 describe("ImageGenerationAction", () => {
