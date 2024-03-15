@@ -14,8 +14,9 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer
 import { cn } from "@/lib/utils"
 import { useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense } from "react"
+import { Suspense, startTransition } from "react"
 import { toast } from "sonner"
+import { useInterval } from "usehooks-ts"
 
 type Props = {
   rating: number
@@ -55,14 +56,14 @@ export const GenerationTaskList = (props: Props) => {
     fetchPolicy: "cache-first",
   })
 
-  // useInterval(
-  //   () => {
-  //     startTransition(() => {
-  //       refetch()
-  //     })
-  //   },
-  //   isTimeout ? 8000 : 2000,
-  // )
+  useInterval(
+    () => {
+      startTransition(() => {
+        refetch()
+      })
+    },
+    isTimeout ? 8000 : 2000,
+  )
 
   const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
@@ -200,7 +201,7 @@ export const GenerationTaskList = (props: Props) => {
 
   return (
     <>
-      <ScrollArea className="pb-64 md:pb-0">
+      <ScrollArea>
         <div
           className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
             "grid-cols-0": props.thumbnailSize === 10,
@@ -240,7 +241,7 @@ export const GenerationTaskList = (props: Props) => {
           ))}
         </div>
       </ScrollArea>
-      <div className="p-2">
+      <div className="p-2 pb-64 md:pb-2">
         {(props.rating === -1 || props.rating === 0) &&
           tasks.viewer !== undefined &&
           tasks.viewer?.remainingImageGenerationTasksTotalCount !==
