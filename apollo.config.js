@@ -2,7 +2,7 @@ module.exports = {
   client: {
     service: {
       name: "default",
-      url: "https://run.aipictors.com/graphql",
+      url: "https://x-6ouzjmdzha-an.a.run.app/graphql",
     },
     includes: ["graphql/**/*.ts"],
   },
