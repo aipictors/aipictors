@@ -450,6 +450,18 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
 
+  /**
+   * 予約生成が可能かどうか
+   * @returns
+   */
+  const isEnabledReservedGeneration = () => {
+    return (
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM" ||
+      context.currentPass?.type === "TWO_DAYS"
+    )
+  }
+
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
@@ -460,23 +472,25 @@ export function GenerationSubmissionView(props: Props) {
           }}
         >
           <div className="flex items-center">
-            <TabsList className="w-32 md:w-full sm:w-full">
-              <TabsTrigger className="w-full" value="normal">
-                通常
-              </TabsTrigger>
-              <TabsTrigger className="w-full" value="reserve">
-                <div className="flex gap-x-2">
-                  予約
-                  {inProgressImageGenerationReservedTasksCount !== 0 &&
-                    `(${inProgressImageGenerationReservedTasksCount}生成中)`}
-                  <CrossPlatformTooltip
-                    text={"使い方動画"}
-                    detailLink={"https://youtu.be/toZ83wGm4y0?feature=shared"}
-                    isTargetBlank={true}
-                  />
-                </div>
-              </TabsTrigger>
-            </TabsList>
+            {isEnabledReservedGeneration() && (
+              <TabsList className="w-32 md:w-full sm:w-full">
+                <TabsTrigger className="w-full" value="normal">
+                  通常
+                </TabsTrigger>
+                <TabsTrigger className="w-full" value="reserve">
+                  <div className="flex gap-x-2">
+                    予約
+                    {inProgressImageGenerationReservedTasksCount !== 0 &&
+                      `(${inProgressImageGenerationReservedTasksCount}生成中)`}
+                    <CrossPlatformTooltip
+                      text={"使い方動画"}
+                      detailLink={"https://youtu.be/toZ83wGm4y0?feature=shared"}
+                      isTargetBlank={true}
+                    />
+                  </div>
+                </TabsTrigger>
+              </TabsList>
+            )}
             <div className="ml-auto block 2xl:hidden lg:hidden xl:hidden">
               <GenerationEditorProgress
                 isOnlyStatusForSubscriberDisplay={true}
@@ -569,7 +583,9 @@ export function GenerationSubmissionView(props: Props) {
             {context.currentPass?.type !== "PREMIUM" && (
               <div className="ml-auto">
                 <Link href="/plus">
-                  <div className="text-sm">{"高速生成、生成枚数を増やす"}</div>
+                  <div className="text-sm">
+                    {"高速生成、生成枚数、機能を増やす"}
+                  </div>
                 </Link>
               </div>
             )}

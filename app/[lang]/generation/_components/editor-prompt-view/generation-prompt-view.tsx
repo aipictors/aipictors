@@ -71,7 +71,13 @@ export const GenerationPromptView = () => {
               context.initPromptWithLoraModel()
             }}
           />
-          <Dialog open={value}>
+          <Dialog
+            open={value}
+            onOpenChange={(isOpen) => {
+              if (isOpen) return
+              setFalse()
+            }}
+          >
             <DialogTrigger asChild>
               <Button
                 onClick={setTrue}

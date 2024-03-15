@@ -506,11 +506,6 @@ export function GenerationTaskView(props: Props) {
                   画像生成
                 </Button>
               </Link>
-              <Link href="/generation/tasks" className="w-full flex-1">
-                <Button className="w-full p-4" variant={"secondary"}>
-                  画像一覧
-                </Button>
-              </Link>
             </div>
           }
         />

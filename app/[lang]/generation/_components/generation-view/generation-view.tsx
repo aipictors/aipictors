@@ -44,8 +44,6 @@ export const GenerationView = (props: Props) => {
     )
   }
 
-  console.log(state)
-
   if (state === "HISTORY_LIST_FULL") {
     return (
       <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">

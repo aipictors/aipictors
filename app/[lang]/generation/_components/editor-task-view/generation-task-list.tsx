@@ -12,11 +12,10 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { cn } from "@/lib/utils"
-import { useSuspenseQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense, startTransition } from "react"
+import { Suspense } from "react"
 import { toast } from "sonner"
-import { useInterval } from "usehooks-ts"
 
 type Props = {
   rating: number
@@ -47,36 +46,34 @@ export const GenerationTaskList = (props: Props) => {
     return snap.value
   })
 
-  const { data: tasks, refetch } = useSuspenseQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: 64,
-        offset: props.currentPage * 64,
-        where: {},
-      },
+  const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: 64,
+      offset: props.currentPage * 64,
+      where: {},
     },
-  )
+    fetchPolicy: "cache-first",
+  })
 
-  useInterval(
-    () => {
-      startTransition(() => {
-        refetch()
-      })
-    },
-    isTimeout ? 8000 : 2000,
-  )
+  // useInterval(
+  //   () => {
+  //     startTransition(() => {
+  //       refetch()
+  //     })
+  //   },
+  //   isTimeout ? 8000 : 2000,
+  // )
 
-  const { data: ratingTasks } = useSuspenseQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: config.query.maxLimit,
-        offset: 0,
-        where: { minRating: 1 },
-      },
+  const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: config.query.maxLimit,
+      offset: 0,
+      where: { minRating: 1 },
     },
-  )
+    fetchPolicy: "cache-first",
+  })
+
+  console.log(ratingTasks)
 
   if (tasks === undefined || ratingTasks === undefined) {
     return null

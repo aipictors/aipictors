@@ -1,5 +1,4 @@
 import type { TypePolicies } from "@apollo/client"
-import { offsetLimitPagination } from "@apollo/client/utilities"
 
 export const typePolicies: TypePolicies = {
   Query: {
@@ -7,7 +6,7 @@ export const typePolicies: TypePolicies = {
   },
   Viewer: {
     fields: {
-      imageGenerationTasks: offsetLimitPagination(["where"]),
+      // imageGenerationTasks: offsetLimitPagination(["where"]),
     },
   },
 }
