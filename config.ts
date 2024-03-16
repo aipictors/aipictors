@@ -2,6 +2,11 @@
  * 設定
  */
 export const config = {
+  fcm: {
+    get vapidKey() {
+      return "BOvVhnNNznMu2HYzfZVdJa5hQwnAQW5Prld1gboUgkRY3rO6d3oLMP3WP0bKazNWm9AVI0LBQ8L94FTbN_Y4rn4"
+    },
+  },
   /**
    * パスの仕様: 認証バッジ
    */
