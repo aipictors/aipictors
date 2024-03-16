@@ -74,8 +74,6 @@ export const GenerationTaskList = (props: Props) => {
     fetchPolicy: "cache-first",
   })
 
-  console.log(ratingTasks)
-
   if (tasks === undefined || ratingTasks === undefined) {
     return null
   }

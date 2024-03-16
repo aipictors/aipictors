@@ -2,6 +2,7 @@
 
 import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
 import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -58,6 +59,8 @@ type Props = {
  * @returns
  */
 export function GenerationTaskSheetViewContent(props: Props) {
+  const context = useGenerationContext()
+
   const imageListButton = () => {
     if (!props.isDisplayImageListButton) return null
     return (
@@ -109,6 +112,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   className={`m-auto max-h-96 generation-image-${props.task.id}`}
                   taskId={props.task.id}
                   token={props.task.token as string}
+                  isThumbnail={context.config.taskListThumbnailType === "light"}
                   alt={"-"}
                 />
               }

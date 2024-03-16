@@ -30,6 +30,7 @@ export function GenerationImageDialogButton(props: Props) {
           className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
           taskId={props.taskId}
           token={props.taskToken as string}
+          isThumbnail={false}
           alt={"-"}
         />
       </DialogContent>

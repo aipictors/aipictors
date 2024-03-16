@@ -82,6 +82,7 @@ export const GenerationTaskLinkCard = (props: Props) => {
             className={`generation-image-${props.taskNanoid}`}
             taskId={props.taskId}
             token={viewToken}
+            isThumbnail={context.config.taskListThumbnailType === "light"}
             alt={"-"}
           />
         </Link>

@@ -5,13 +5,12 @@ import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_compo
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { Suspense, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -41,6 +40,8 @@ export const GenerationTaskEditableCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [isHovered, setIsHovered] = useState(false)
+
+  const [viewToken, setViewToken] = useState("")
 
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
@@ -122,28 +123,18 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        <Suspense fallback={<AppLoadingPage />}>
-          {context.config.taskListThumbnailType === "light" && (
-            <PrivateImage
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`m-auto generation-image-${props.taskNanoid}`}
-              taskId={props.taskId}
-              token={props.thumbnailToken}
-              alt={"-"}
-            />
-          )}
-        </Suspense>
-        <Suspense fallback={<AppLoadingPage />}>
-          {context.config.taskListThumbnailType === "original" && (
-            <PrivateImage
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`m-auto generation-image-${props.taskNanoid}`}
-              taskId={props.taskId}
-              token={props.token}
-              alt={"-"}
-            />
-          )}
-        </Suspense>
+        <PrivateImage
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          className={`m-auto generation-image-${props.taskNanoid}`}
+          taskId={props.taskId}
+          token={
+            context.config.taskListThumbnailType === "light"
+              ? props.thumbnailToken
+              : props.token
+          }
+          isThumbnail={context.config.taskListThumbnailType === "light"}
+          alt={"-"}
+        />
       </SelectableCardButton>
       {/* 拡大ボタン */}
       {isDesktop && isHovered && (
