@@ -1,3 +1,4 @@
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { PrivateImage } from "@/app/_components/private-image"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
@@ -14,6 +15,8 @@ type Props = {
  * @returns
  */
 export function GenerationImageDialogButton(props: Props) {
+  const context = useGenerationContext()
+
   return (
     <Dialog>
       <DialogTrigger
@@ -30,6 +33,7 @@ export function GenerationImageDialogButton(props: Props) {
           className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
           taskId={props.taskId}
           token={props.taskToken as string}
+          isThumbnail={context.config.taskListThumbnailType === "light"}
           alt={"-"}
         />
       </DialogContent>

@@ -49,8 +49,8 @@ export const GenerationTaskList = (props: Props) => {
 
   const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: 64,
-      offset: props.currentPage * 64,
+      limit: 32,
+      offset: props.currentPage * 32,
       where: {},
     },
     fetchPolicy: "cache-first",
@@ -73,8 +73,6 @@ export const GenerationTaskList = (props: Props) => {
     },
     fetchPolicy: "cache-first",
   })
-
-  console.log(ratingTasks)
 
   if (tasks === undefined || ratingTasks === undefined) {
     return null
@@ -202,6 +200,7 @@ export const GenerationTaskList = (props: Props) => {
   return (
     <>
       <ScrollArea>
+        {/* <Suspense fallback={<AppLoadingPage />}> */}
         <div
           className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
             "grid-cols-0": props.thumbnailSize === 10,
@@ -240,6 +239,7 @@ export const GenerationTaskList = (props: Props) => {
             </ErrorBoundary>
           ))}
         </div>
+        {/* </Suspense> */}
       </ScrollArea>
       <div className="p-2 pb-64 md:pb-2">
         {(props.rating === -1 || props.rating === 0) &&

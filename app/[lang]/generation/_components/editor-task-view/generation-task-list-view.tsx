@@ -7,8 +7,8 @@ import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/gener
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { Suspense, useState } from "react"
+import { useState } from "react"
+
 /**
  * タスク関連
  * @param props
@@ -119,21 +119,21 @@ export const GenerationTaskListView = () => {
         onChangeViewCount={() => {}}
         onChangeTaskContentPositionType={changeShowTaskPositionType}
       />
-      <Suspense fallback={<AppLoadingPage />}>
-        <GenerationTaskList
-          currentPage={page}
-          hidedTaskIds={hidedTaskIds}
-          rating={rating}
-          isEditMode={isEditMode}
-          isPreviewMode={isPreviewMode}
-          selectedTaskIds={selectedTaskIds}
-          thumbnailSize={thumbnailSize()}
-          taskContentPositionType={showTaskPositionType}
-          onCancel={undefined}
-          setCurrentPage={setPage}
-          setSelectedTaskIds={setSelectedTaskIds}
-        />
-      </Suspense>
+      {/* <Suspense fallback={<AppLoadingPage />}> */}
+      <GenerationTaskList
+        currentPage={page}
+        hidedTaskIds={hidedTaskIds}
+        rating={rating}
+        isEditMode={isEditMode}
+        isPreviewMode={isPreviewMode}
+        selectedTaskIds={selectedTaskIds}
+        thumbnailSize={thumbnailSize()}
+        taskContentPositionType={showTaskPositionType}
+        onCancel={undefined}
+        setCurrentPage={setPage}
+        setSelectedTaskIds={setSelectedTaskIds}
+      />
+      {/* </Suspense> */}
     </GenerationViewCard>
   )
 }

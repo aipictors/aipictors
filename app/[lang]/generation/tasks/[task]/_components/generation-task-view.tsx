@@ -353,6 +353,7 @@ export function GenerationTaskView(props: Props) {
                   className={`generation-image-${props.taskId} m-auto max-h-screen`}
                   taskId={data.imageGenerationTask.id}
                   token={data.imageGenerationTask.token}
+                  isThumbnail={context.config.taskListThumbnailType === "light"}
                   alt={"-"}
                 />
               </Button>
@@ -362,6 +363,7 @@ export function GenerationTaskView(props: Props) {
                 className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
                 taskId={data.imageGenerationTask.id}
                 token={data.imageGenerationTask.token}
+                isThumbnail={false}
                 alt={"-"}
               />
             </DialogContent>

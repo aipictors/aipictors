@@ -39,6 +39,7 @@ export const GenerationTaskContentPreview = () => {
               className={`max-h-[64vh] generation-image-${imageGenerationTask.id}`}
               taskId={imageGenerationTask.id}
               token={imageGenerationTask.token ?? ""}
+              isThumbnail={context.config.taskListThumbnailType === "light"}
               alt={"-"}
             />
             <div className="m-auto mb-1">
