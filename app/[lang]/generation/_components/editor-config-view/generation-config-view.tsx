@@ -147,7 +147,10 @@ export default function GenerationConfigView() {
   }, [favoritedModels])
 
   return (
-    <GenerationViewCard>
+    <GenerationViewCard
+      title={"モデル"}
+      tooltip={"イラストに使用するモデルです、絵柄を変更できます。"}
+    >
       <ScrollArea type="always">
         <div
           className={cn(
@@ -192,7 +195,7 @@ export default function GenerationConfigView() {
           <Accordion type="single" collapsible>
             <AccordionItem value="setting">
               <AccordionTrigger>詳細設定</AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="space-y-2">
                 <GenerationConfigScale
                   value={context.config.scale}
                   onChange={context.updateScale}
