@@ -19,7 +19,7 @@ export const GenerationConfigSize = (props: Props) => {
       <span className="font-bold text-sm">{"サイズ"}</span>
       <Select value={props.value} onValueChange={props.onChange}>
         <SelectGroup>
-          <SelectTrigger>
+          <SelectTrigger className="break-all text-start">
             <SelectValue placeholder="サイズ" />
           </SelectTrigger>
           <SelectContent>

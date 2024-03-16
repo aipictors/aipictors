@@ -3,7 +3,6 @@
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/editor-config-view/config-model-button"
 import { GenerationModelListButton } from "@/app/[lang]/generation/_components/editor-config-view/generation-model-list-button"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
 
@@ -62,12 +61,6 @@ export const GenerationConfigModels = (props: Props) => {
 
   return (
     <>
-      <div className="flex items-center space-x-2">
-        <h2 className="font-bold text-sm">{"モデル"}</h2>
-        <CrossPlatformTooltip
-          text={"イラストに使用するモデルです、絵柄を変更できます。"}
-        />
-      </div>
       <Tabs defaultValue="normal">
         <TabsList className="w-full">
           <TabsTrigger className="w-full" value="normal">

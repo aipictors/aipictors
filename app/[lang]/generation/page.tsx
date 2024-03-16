@@ -45,6 +45,15 @@ const GenerationPage = async () => {
           }
         />
       }
+      main={
+        <GenerationMainView
+          config={<GenerationConfigView />}
+          promptEditor={<GenerationPromptView />}
+          negativePromptEditor={<GenerationNegativePromptView />}
+          taskContentPreview={<GenerationTaskContentPreview />}
+          taskDetails={<GenerationTaskDetailsView />}
+        />
+      }
       aside={
         <GenerationAsideView
           advertising={
@@ -59,15 +68,6 @@ const GenerationPage = async () => {
             </Link>
           }
           taskList={<GenerationTaskListView />}
-          taskDetails={<GenerationTaskDetailsView />}
-        />
-      }
-      main={
-        <GenerationMainView
-          config={<GenerationConfigView />}
-          promptEditor={<GenerationPromptView />}
-          negativePromptEditor={<GenerationNegativePromptView />}
-          taskContentPreview={<GenerationTaskContentPreview />}
           taskDetails={<GenerationTaskDetailsView />}
         />
       }
