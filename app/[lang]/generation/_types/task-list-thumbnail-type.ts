@@ -1,1 +1,1 @@
-export type TaskListThumbnailType = "light" | "original"
+export type TaskListThumbnailType = "light" | "wait" | "original"

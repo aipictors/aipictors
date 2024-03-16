@@ -5,12 +5,13 @@ import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_compo
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -100,11 +101,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   const { send } = GenerationConfigContext.useActorRef()
 
-  const viewToken =
-    context.config.taskListThumbnailType === "light"
-      ? props.thumbnailToken
-      : props.token
-
   return (
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
@@ -126,13 +122,28 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        <PrivateImage
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          className={`m-auto generation-image-${props.taskNanoid}`}
-          taskId={props.taskId}
-          token={viewToken}
-          alt={"-"}
-        />
+        <Suspense fallback={<AppLoadingPage />}>
+          {context.config.taskListThumbnailType === "light" && (
+            <PrivateImage
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              className={`m-auto generation-image-${props.taskNanoid}`}
+              taskId={props.taskId}
+              token={props.thumbnailToken}
+              alt={"-"}
+            />
+          )}
+        </Suspense>
+        <Suspense fallback={<AppLoadingPage />}>
+          {context.config.taskListThumbnailType === "original" && (
+            <PrivateImage
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              className={`m-auto generation-image-${props.taskNanoid}`}
+              taskId={props.taskId}
+              token={props.token}
+              alt={"-"}
+            />
+          )}
+        </Suspense>
       </SelectableCardButton>
       {/* 拡大ボタン */}
       {isDesktop && isHovered && (
