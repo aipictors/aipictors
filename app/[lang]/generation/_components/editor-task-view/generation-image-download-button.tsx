@@ -1,3 +1,4 @@
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { downloadGeneratedImageFiles } from "@/app/[lang]/generation/_utils/download-generated-image-files"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/react-query"
@@ -15,6 +16,8 @@ type Props = {
  * @returns
  */
 export function GenerationImageDownloadButton(props: Props) {
+  const context = useGenerationContext()
+
   const { status, mutateAsync } = useMutation({
     mutationFn: downloadGeneratedImageFiles,
     onError(error) {
@@ -26,6 +29,13 @@ export function GenerationImageDownloadButton(props: Props) {
   })
 
   const onClick = async () => {
+    if (context.config.taskListThumbnailType !== "original") {
+      toast(
+        "高画質モードでサムネイル表示している場合のみダウンロードできます。",
+      )
+      return
+    }
+
     await mutateAsync(props.selectedTaskIds)
   }
 
