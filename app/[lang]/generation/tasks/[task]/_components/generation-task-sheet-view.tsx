@@ -283,15 +283,23 @@ export function GenerationTaskSheetView(props: Props) {
    * 左右キーで履歴切替
    */
   const handleDirectionKeyDown = useCallback(
-    (event: { keyCode: number }) => {
-      if (event.keyCode === 37) {
+    (event: KeyboardEvent) => {
+      // 入力欄やテキストエリアにフォーカスしている場合は何もしない
+      const tagName = document.activeElement?.tagName.toLowerCase()
+      if (tagName === "input" || tagName === "textarea") {
+        return
+      }
+
+      // 左キーが押された場合は前のタスクへ
+      if (event.code === "ArrowLeft") {
         onPrevTask()
       }
-      if (event.keyCode === 39) {
+      // 右キーが押された場合は次のタスクへ
+      if (event.code === "ArrowRight") {
         onNextTask()
       }
     },
-    [context],
+    [context], // ここで指定した依存配列に `onPrevTask` と `onNextTask` も含める必要があるかもしれません
   )
 
   useEffect(() => {
