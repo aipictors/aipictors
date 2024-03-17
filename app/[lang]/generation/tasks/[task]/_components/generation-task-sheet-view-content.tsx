@@ -1,7 +1,7 @@
 "use client"
 
-import { InPaintingDialog } from "@/app/[lang]/generation/_components/editor-submission-view/in-painting-dialog"
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { InPaintingDialog } from "@/app/[lang]/generation/_components/submission-view/in-painting-dialog"
+import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
