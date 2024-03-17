@@ -1,5 +1,4 @@
-import { GlowingGradientBorderButton } from "@/app/_components/button/glowing-gradient-border-button"
-import { Button } from "@/components/ui/button"
+import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
 import { Loader2Icon } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -16,7 +15,7 @@ export function GenerationSubmitButton(props: Props) {
   const { theme } = useTheme()
 
   return (
-    <GlowingGradientBorderButton
+    <GradientBorderButton
       onClick={props.onClick}
       className="w-full text-balance"
       size={"lg"}

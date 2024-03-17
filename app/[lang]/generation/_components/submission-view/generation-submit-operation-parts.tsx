@@ -8,7 +8,7 @@ import { GenerationTermsButton } from "@/app/[lang]/generation/_components/submi
 import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
-import { GlowingGradientBorderButton } from "@/app/_components/button/glowing-gradient-border-button"
+import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
 import {
   Dialog,
   DialogContent,
@@ -223,7 +223,7 @@ export function GenerationSubmitOperationParts(props: Props) {
             label="生成"
             isWidthFull={true}
             triggerChildren={
-              <GlowingGradientBorderButton
+              <GradientBorderButton
                 onClick={() => {}}
                 className="w-full text-balance"
                 children={"生成"}
@@ -238,7 +238,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               termsMarkdownText={props.termsText}
               onSubmit={props.onSignTerms}
               triggerChildren={
-                <GlowingGradientBorderButton
+                <GradientBorderButton
                   onClick={() => {}}
                   className="w-full text-balance"
                   children={"生成"}
