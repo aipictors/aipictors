@@ -1,6 +1,5 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { AuthContextProvider } from "@/app/_components/auth-context-provider"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { config } from "@/config"
@@ -25,11 +24,7 @@ export const ContextProviders = (props: Props) => {
     <AppThemeProvider>
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
-          <ApolloProvider client={client}>
-            <GenerationConfigContext.Provider>
-              {props.children}
-            </GenerationConfigContext.Provider>
-          </ApolloProvider>
+          <ApolloProvider client={client}>{props.children}</ApolloProvider>
         </QueryClientProvider>
       </AuthContextProvider>
     </AppThemeProvider>

@@ -1,9 +1,10 @@
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { GenerationContextProvider } from "@/app/[lang]/generation/_components/generation-context-provider"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/lib/client"
+import dynamic from "next/dynamic"
 
 type Props = {
   children: React.ReactNode
@@ -40,6 +41,22 @@ export async function GenerationLayout(props: Props) {
     </>
   )
 }
+
+const GenerationContextProvider = dynamic(
+  () => {
+    return import(
+      "@/app/[lang]/generation/_components/generation-context-provider"
+    ).then((m) => {
+      return m.GenerationContextProvider
+    })
+  },
+  {
+    ssr: false,
+    loading() {
+      return <AppLoadingPage />
+    },
+  },
+)
 
 export const revalidate = 60
 
