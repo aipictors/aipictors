@@ -144,7 +144,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
         />
       )}
       {/* お気に入りボタン */}
-      {isDesktop && isHovered && (
+      {isDesktop && (isHovered || props.rating !== 0) && (
         <GenerationTaskRatingButton
           nowRating={props.rating}
           taskNanoid={props.taskNanoid}
