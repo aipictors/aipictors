@@ -491,7 +491,7 @@ export function GenerationSubmissionView(props: Props) {
                 </TabsTrigger>
               </TabsList>
             )}
-            <div className="ml-auto block 2xl:hidden lg:hidden xl:hidden">
+            <div className="ml-auto block 2xl:hidden lg:hidden md:hidden xl:hidden">
               <GenerationEditorProgress
                 isOnlyStatusForSubscriberDisplay={true}
                 inProgress={inProgress}
@@ -564,7 +564,7 @@ export function GenerationSubmissionView(props: Props) {
             />
           </TabsContent>
         </Tabs>
-        <div className="hidden 2xl:block lg:block xl:block">
+        <div className="hidden 2xl:block lg:block md:block xl:block">
           <div className="flex">
             <GenerationEditorProgress
               inProgress={inProgress}
