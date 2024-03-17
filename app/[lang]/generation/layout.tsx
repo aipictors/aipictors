@@ -1,5 +1,5 @@
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { GenerationContextProvider } from "@/app/[lang]/generation/_components/providers/generation-context-provider"
+import { GenerationContextProvider } from "@/app/[lang]/generation/_components/generation-context-provider"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"

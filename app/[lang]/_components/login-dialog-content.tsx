@@ -1,9 +1,9 @@
 "use client"
 
-import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import CloudflareTurnstile, {
   type Status,
-} from "@/app/[lang]/generation/_components/cloudflare-turnstile"
+} from "@/app/[lang]/_components/cloudflare-turnstile"
+import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
 import { PasswordLoginForm } from "@/app/_components/password-login-form"
 import type { FormLogin } from "@/app/_types/form-login"
 import { Button } from "@/components/ui/button"

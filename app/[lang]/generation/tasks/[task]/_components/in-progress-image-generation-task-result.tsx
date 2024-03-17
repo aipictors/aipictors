@@ -1,6 +1,6 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/editor-task-view/star-rating"
+import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"

@@ -27,11 +27,11 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
+  // logging: {
+  //   fetches: {
+  //     fullUrl: true,
+  //   },
+  // },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.node$/,

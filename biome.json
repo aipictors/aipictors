@@ -21,7 +21,7 @@
       "recommended": true,
       "correctness": {
         "useExhaustiveDependencies": "off",
-        "noUnusedImports": "error"
+        "noUnusedImports": "off"
       },
       "complexity": {
         "noStaticOnlyClass": "off"

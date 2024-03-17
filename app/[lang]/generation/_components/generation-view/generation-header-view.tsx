@@ -24,5 +24,5 @@ export const GenerationHeaderView = (props: Props) => {
     return null
   }
 
-  return <>{props.submission}</>
+  return props.submission
 }
