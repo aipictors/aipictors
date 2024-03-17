@@ -74,7 +74,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                   "light",
                 )}
               >
-                軽量画質
+                低画質
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={props.thumbnailType === "original"}
