@@ -1,19 +1,18 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/editor-negative-prompt-view/generation-negative-prompt-view"
-import { GenerationPromptView } from "@/app/[lang]/generation/_components/editor-prompt-view/generation-prompt-view"
-import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/editor-submission-view/generation-submit-view"
-import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-content-preview"
-import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-details-view"
-import { GenerationTaskListView } from "@/app/[lang]/generation/_components/editor-task-view/generation-task-list-view"
+import { GenerationAdvertisementView } from "@/app/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
 import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
 import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
 import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
+import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/negative-prompt-view/generation-negative-prompt-view"
+import { GenerationPromptView } from "@/app/[lang]/generation/_components/prompt-view/generation-prompt-view"
+import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/submission-view/generation-submit-view"
+import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-task-content-preview"
+import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/task-view/generation-task-details-view"
+import { GenerationTaskListView } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
-import Image from "next/image"
-import Link from "next/link"
 
 /**
  * 画像生成
@@ -56,17 +55,7 @@ const GenerationPage = async () => {
       }
       aside={
         <GenerationAsideView
-          advertising={
-            <Link href="/plus" className="mb-4 block sm:hidden">
-              <Image
-                className="mb-4 w-full rounded-md border"
-                src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
-                alt="Aipictors+"
-                width={40}
-                height={40}
-              />
-            </Link>
-          }
+          advertisement={<GenerationAdvertisementView />}
           taskList={<GenerationTaskListView />}
           taskDetails={<GenerationTaskDetailsView />}
         />
@@ -85,7 +74,7 @@ export const revalidate = 60
 const GenerationConfigView = dynamic(
   () => {
     return import(
-      "@/app/[lang]/generation/_components/editor-config-view/generation-config-view"
+      "@/app/[lang]/generation/_components/config-view/generation-config-view"
     )
   },
   { ssr: false },

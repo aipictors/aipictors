@@ -11,6 +11,10 @@ type Props = {
   children: React.ReactNode
 }
 
+/**
+ * レイアウトで使用するカード
+ * @param props
+ */
 export const GenerationViewCard = (props: Props) => {
   return (
     <Card className="flex h-full w-full max-w-none flex-col overflow-hidden">

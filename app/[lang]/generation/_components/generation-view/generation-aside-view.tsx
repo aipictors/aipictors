@@ -1,11 +1,21 @@
 "use client"
 
-import { GenerationEditorLayoutHistoryListArea } from "@/app/[lang]/generation/_components/generation-editor-layout-history-list-area"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useCallback, useEffect } from "react"
 
 type Props = {
-  advertising: React.ReactNode
+  /**
+   * 広告
+   */
+  advertisement: React.ReactNode
+  /**
+   * タスクの一覧
+   */
   taskList: React.ReactNode
+  /**
+   * タスクの詳細
+   */
   taskDetails: React.ReactNode
 }
 
@@ -17,13 +27,39 @@ type Props = {
 export const GenerationAsideView = (props: Props) => {
   const context = useGenerationContext()
 
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
+  const { send } = GenerationConfigContext.useActorRef()
+
+  const handleEscapeKeyDown = useCallback((event: { keyCode: number }) => {
+    if (event.keyCode === 27) {
+      send({ type: "CLOSE_PREVIEW" })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    document.addEventListener("keydown", handleEscapeKeyDown, false)
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKeyDown)
+    }
+  }, [])
+
+  if (state === "HISTORY_VIEW_ON_ASIDE") {
+    return (
+      <>
+        {context.currentPass?.type !== "PREMIUM" && props.advertisement}
+        {props.taskDetails}
+      </>
+    )
+  }
+
   return (
     <>
-      {context.currentPass?.type !== "PREMIUM" && props.advertising}
-      <GenerationEditorLayoutHistoryListArea
-        taskList={props.taskList}
-        taskDetails={props.taskDetails}
-      />
+      {context.currentPass?.type !== "PREMIUM" && props.advertisement}
+      {props.taskList}
     </>
   )
 }
