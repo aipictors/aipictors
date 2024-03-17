@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 type Props = {
   label?: string
   isWidthFull?: boolean
+  triggerChildren?: React.ReactNode
 }
 
 /**
@@ -26,9 +27,13 @@ export function LoginDialogButton(props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={cn(props.isWidthFull ? "w-full" : "")}>
-          {props.label ? props.label : "ログイン"}
-        </Button>
+        {props.triggerChildren ? (
+          props.triggerChildren
+        ) : (
+          <Button className={cn(props.isWidthFull ? "w-full" : "")}>
+            {props.label ? props.label : "ログイン"}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 type Props = {
   termsMarkdownText: string
   onSubmit(): void
+  triggerChildren?: React.ReactNode
 }
 
 /**
@@ -29,7 +30,11 @@ export const GenerationTermsButton = (props: Props) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="w-full">{"生成する"}</Button>
+        {props.triggerChildren ? (
+          props.triggerChildren
+        ) : (
+          <Button className="w-full">{"生成"}</Button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

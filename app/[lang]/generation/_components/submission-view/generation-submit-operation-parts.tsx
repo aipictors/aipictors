@@ -8,6 +8,7 @@ import { GenerationTermsButton } from "@/app/[lang]/generation/_components/submi
 import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
+import { GlowingGradientBorderButton } from "@/app/_components/button/glowing-gradient-border-button"
 import {
   Dialog,
   DialogContent,
@@ -218,7 +219,17 @@ export function GenerationSubmitOperationParts(props: Props) {
 
         {/* 未ログインならログイン */}
         {context.user === null && (
-          <LoginDialogButton label="生成" isWidthFull={true} />
+          <LoginDialogButton
+            label="生成"
+            isWidthFull={true}
+            triggerChildren={
+              <GlowingGradientBorderButton
+                onClick={() => {}}
+                className="w-full text-balance"
+                children={"生成"}
+              />
+            }
+          />
         )}
         {/* 規約確認開始ボタン */}
         {context.user !== null &&
@@ -226,6 +237,13 @@ export function GenerationSubmitOperationParts(props: Props) {
             <GenerationTermsButton
               termsMarkdownText={props.termsText}
               onSubmit={props.onSignTerms}
+              triggerChildren={
+                <GlowingGradientBorderButton
+                  onClick={() => {}}
+                  className="w-full text-balance"
+                  children={"生成"}
+                />
+              }
             />
           )}
         {/* 生成キャンセル */}

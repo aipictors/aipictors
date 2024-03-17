@@ -10,8 +10,6 @@ import { StarIcon } from "lucide-react"
 
 type Props = {
   onChange(value: number): void
-  usedRatingCount: number
-  maxRatingCount: number
 }
 
 /**
@@ -26,9 +24,8 @@ export function GenerationTaskRatingSelect(props: Props) {
         props.onChange(Number.parseInt(value))
       }}
     >
-      <SelectTrigger className="h-9 w-44">
+      <SelectTrigger className="h-9 w-32">
         <StarIcon className="w-4" />
-        {`(${props.usedRatingCount}/${props.maxRatingCount})`}
         <SelectValue placeholder="すべて" />
       </SelectTrigger>
       <SelectContent>
