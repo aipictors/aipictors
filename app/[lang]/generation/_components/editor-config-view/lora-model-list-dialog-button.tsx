@@ -16,10 +16,11 @@ import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
-  onClose(): void
   models: ImageLoraModelsQuery["imageLoraModels"]
   selectedModelNames: string[]
+  availableImageGenerationMaxTasksCount: number
   onSelect(name: string, isAdded: boolean): void
+  onClose(): void
 }
 
 export const LoraModelListDialogButton = (props: Props) => {
@@ -47,7 +48,8 @@ export const LoraModelListDialogButton = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"LoRAを選択"}</DialogTitle>
           <DialogDescription>
-            {"使用するLoRA(エフェクト)を選択してください"}
+            <p>{"使用するLoRA(エフェクト)を選択してください"}</p>
+            <p>{`使用できるLoRA数 :${props.selectedModelNames.length}/${props.availableImageGenerationMaxTasksCount}`}</p>
           </DialogDescription>
         </DialogHeader>
         <LoraImageModelList

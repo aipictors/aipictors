@@ -499,7 +499,7 @@ export class GenerationConfigAction {
   addLoraModel(name: string) {
     // 選択可能な数を超えている場合
     if (
-      this.props.availableLoraModelsCount <
+      this.props.availableLoraModelsCount <=
       this.getPromptLoraModelNames().length
     ) {
       return this

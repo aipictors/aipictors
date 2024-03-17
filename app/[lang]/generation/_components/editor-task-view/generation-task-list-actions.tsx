@@ -117,7 +117,11 @@ export const GenerationTaskListActions = (props: Props) => {
             />
           )}
           {!props.isEditMode && (
-            <GenerationTaskRatingSelect onChange={props.onChangeRating} />
+            <GenerationTaskRatingSelect
+              usedRatingCount={0}
+              maxRatingCount={0}
+              onChange={props.onChangeRating}
+            />
           )}
           {isDesktop && (
             <GenerationTaskPreviewModeButton

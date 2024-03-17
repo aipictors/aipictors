@@ -133,7 +133,7 @@ export const ImageModelsList = (props: Props) => {
           {removeDuplicates(categorySections).map((item) => (
             <div key={item.category} className="space-y-2 px-4">
               <p className="font-bold">{toCategoryName(item.category)}</p>
-              <div className="grid grid-cols-3 gap-2 2xl:grid-cols-8 lg:grid-cols-5 md:grid-cols-3 xl:grid-cols-6">
+              <div className="grid grid-cols-4 gap-2 2xl:grid-cols-8 lg:grid-cols-5 md:grid-cols-4 xl:grid-cols-6">
                 {item.models.map((model) => (
                   <div className="relative">
                     <ImageModelCard

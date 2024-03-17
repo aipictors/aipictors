@@ -27,6 +27,11 @@ export const GenerationConfigLoraModels = () => {
     return currentLoraModelNames.includes(model.name)
   })
 
+  /**
+   * 使用可能なLoRA数
+   */
+  const availableImageGenerationMaxTasksCount = context.availableLoraModelsCount
+
   return (
     <div className="space-y-2">
       {selectedModels.map((model) => (
@@ -46,9 +51,12 @@ export const GenerationConfigLoraModels = () => {
       ))}
       <LoraModelListDialogButton
         isOpen={isOpen}
-        onClose={onClose}
         models={context.loraModels}
         selectedModelNames={currentLoraModelNames}
+        availableImageGenerationMaxTasksCount={
+          availableImageGenerationMaxTasksCount
+        }
+        onClose={onClose}
         onSelect={context.changeLoraModel}
       />
     </div>

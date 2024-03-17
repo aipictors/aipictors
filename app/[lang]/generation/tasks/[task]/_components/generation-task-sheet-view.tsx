@@ -195,6 +195,7 @@ export function GenerationTaskSheetView(props: Props) {
           },
         },
       })
+      setRating(rating)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -202,7 +203,11 @@ export function GenerationTaskSheetView(props: Props) {
     }
   }
 
-  const [rating, setRating] = useState(props.task.rating ?? 0)
+  const [rating, setRating] = useState(0)
+
+  useEffect(() => {
+    setRating(props.task.rating ?? 0)
+  }, [])
 
   const onReference = () => {
     if (!props.isReferenceLink && props.task.nanoid !== null) {

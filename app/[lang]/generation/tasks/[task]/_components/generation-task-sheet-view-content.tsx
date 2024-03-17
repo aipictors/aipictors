@@ -180,7 +180,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           <div className="my-4 flex justify-end gap-x-2">
             <StarRating
-              value={props.task.rating ?? 0}
+              value={props.rating}
               onChange={(value) => {
                 props.setRating(value)
                 props.onChangeRating(props.task.nanoid ?? "", value)
