@@ -1,5 +1,6 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTaskProtectedButton } from "@/app/[lang]/generation/tasks/_components/generation-task-protected-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
@@ -22,6 +23,7 @@ type Props = {
   thumbnailToken: string | null
   estimatedSeconds?: number
   rating: number
+  isProtected: boolean
   optionButtonSize: number
   isSelectDisabled: boolean
   task: ImageGenerationTaskFieldsFragment
@@ -147,6 +149,14 @@ export const GenerationTaskEditableCard = (props: Props) => {
       {isDesktop && (isHovered || props.rating !== 0) && (
         <GenerationTaskRatingButton
           nowRating={props.rating}
+          taskNanoid={props.taskNanoid}
+          size={optionButtonSize(props.optionButtonSize)}
+        />
+      )}
+      {/* 保護ボタン */}
+      {isDesktop && (isHovered || props.isProtected) && (
+        <GenerationTaskProtectedButton
+          isProtected={props.isProtected ?? false}
           taskNanoid={props.taskNanoid}
           size={optionButtonSize(props.optionButtonSize)}
         />

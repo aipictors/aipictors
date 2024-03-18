@@ -19,6 +19,7 @@ export const imageGenerationTaskFieldsFragment = gql(`
     completedAt
     status
     isDeleted
+    isProtected
     count
     generationType
     model {

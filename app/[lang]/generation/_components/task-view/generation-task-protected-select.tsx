@@ -6,18 +6,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { StarIcon } from "lucide-react"
+import { LockKeyholeIcon } from "lucide-react"
 
 type Props = {
   onChange(value: number): void
 }
 
 /**
- * お気に入り
+ * 保護
  * @param props
  * @returns
  */
-export function GenerationTaskRatingSelect(props: Props) {
+export function GenerationTaskProtectedSelect(props: Props) {
   return (
     <Select
       onValueChange={(value: string) => {
@@ -25,18 +25,14 @@ export function GenerationTaskRatingSelect(props: Props) {
       }}
     >
       <SelectTrigger className="h-9 w-24">
-        <StarIcon className="w-4" />
+        <LockKeyholeIcon className="w-4" />
         <SelectValue placeholder="-" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectItem value="-1">-</SelectItem>
-          <SelectItem value="0">0</SelectItem>
-          <SelectItem value="1">1</SelectItem>
-          <SelectItem value="2">2</SelectItem>
-          <SelectItem value="3">3</SelectItem>
-          <SelectItem value="4">4</SelectItem>
-          <SelectItem value="5">5</SelectItem>
+          <SelectItem value="0">無</SelectItem>
+          <SelectItem value="1">有</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

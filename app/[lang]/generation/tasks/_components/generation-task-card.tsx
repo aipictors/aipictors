@@ -44,6 +44,7 @@ export const GenerationTaskCard = (props: Props) => {
           thumbnailToken={props.task.thumbnailToken}
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}
+          isProtected={props.task.isProtected ?? false}
         />
       )}
       {!props.isEditMode && (

@@ -20,6 +20,7 @@ import { useInterval } from "usehooks-ts"
 
 type Props = {
   rating: number
+  protect: number
   isEditMode: boolean
   isPreviewMode: boolean
   selectedTaskIds: string[]
@@ -51,7 +52,12 @@ export const GenerationTaskList = (props: Props) => {
     variables: {
       limit: 32,
       offset: props.currentPage * 32,
-      where: {},
+      where: {
+        minRating: 0,
+        ...(props.protect !== -1 && {
+          isProtected: props.protect === 1 ? true : false,
+        }),
+      },
     },
     fetchPolicy: "cache-first",
   })
@@ -69,7 +75,12 @@ export const GenerationTaskList = (props: Props) => {
     variables: {
       limit: config.query.maxLimit,
       offset: 0,
-      where: { minRating: 1 },
+      where: {
+        minRating: 1,
+        ...(props.protect !== -1 && {
+          isProtected: props.protect === 1 ? true : false,
+        }),
+      },
     },
     fetchPolicy: "cache-first",
   })

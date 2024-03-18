@@ -6,6 +6,7 @@ import { GenerationTaskActionDropdownMenu } from "@/app/[lang]/generation/_compo
 import { GenerationTaskCountSelect } from "@/app/[lang]/generation/_components/task-view/generation-task-count-select"
 import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/_components/task-view/generation-task-delete-button"
 import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
+import { GenerationTaskProtectedSelect } from "@/app/[lang]/generation/_components/task-view/generation-task-protected-select"
 import { GenerationTaskRatingSelect } from "@/app/[lang]/generation/_components/task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
@@ -30,6 +31,7 @@ type Props = {
   showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
+  onChangeProtect(protect: number): void
   onChangeViewCount(count: number): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
   setThumbnailSize(size: number): void
@@ -89,7 +91,6 @@ export const GenerationTaskListActions = (props: Props) => {
       {/* 操作一覧 */}
       <div className="flex items-center px-4 pb-2">
         <div className="flex w-full items-center space-x-2">
-          {/* 履歴選択・キャンセルボタン */}
           <Toggle
             className="w-16"
             onClick={props.onToggleEditMode}
@@ -118,6 +119,9 @@ export const GenerationTaskListActions = (props: Props) => {
           )}
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
+          )}
+          {!props.isEditMode && (
+            <GenerationTaskProtectedSelect onChange={props.onChangeProtect} />
           )}
           {isDesktop && (
             <GenerationTaskPreviewModeButton

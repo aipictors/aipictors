@@ -31,6 +31,7 @@ export function GenerationTaskSheetButton(props: Props) {
         isSelectDisabled={true}
         isPreviewByHover={true}
         rating={props.task.rating ?? 0}
+        isProtected={props.task.isProtected ?? false}
         onClick={() => {
           setIsOpen(true)
         }}

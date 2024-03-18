@@ -23,6 +23,8 @@ export const GenerationTaskListView = () => {
 
   const [rating, setRating] = useState(-1)
 
+  const [protect, setProtect] = useState(-1)
+
   const [isEditMode, toggleEditMode] = useState(false)
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
@@ -42,6 +44,17 @@ export const GenerationTaskListView = () => {
    */
   const onChangeRating = (rating: number) => {
     setRating(rating)
+
+    // ページングもリセットする
+    setPage(0)
+  }
+
+  /**
+   * 保護を変更する
+   * @param rating レーティング
+   */
+  const onChangeProtect = (protect: number) => {
+    setProtect(protect)
 
     // ページングもリセットする
     setPage(0)
@@ -111,6 +124,7 @@ export const GenerationTaskListView = () => {
         taskContentPositionType={showTaskPositionType}
         onChangeThumbnailType={changeThumbnailType}
         onChangeRating={onChangeRating}
+        onChangeProtect={onChangeProtect}
         setThumbnailSize={updateThumbnailSize}
         setSelectedTaskIds={setSelectedTaskIds}
         setHidedTaskIds={setHidedTaskIds}
@@ -124,6 +138,7 @@ export const GenerationTaskListView = () => {
         currentPage={page}
         hidedTaskIds={hidedTaskIds}
         rating={rating}
+        protect={protect}
         isEditMode={isEditMode}
         isPreviewMode={isPreviewMode}
         selectedTaskIds={selectedTaskIds}

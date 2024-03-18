@@ -50,6 +50,7 @@ export function GenerationTaskButton(props: Props) {
         optionButtonSize={props.sizeType}
         task={props.task}
         isSelectDisabled={true}
+        isProtected={props.task.isProtected ?? false}
         rating={props.task.rating ?? 0}
         onClick={() => {
           onClickTask()
