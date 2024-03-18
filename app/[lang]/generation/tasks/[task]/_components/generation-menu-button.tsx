@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button"
 import type { LucideIcon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 import type { IconType } from "react-icons"
 
 type Props = {
   icon?: LucideIcon | IconType
+  isLoading?: boolean
   onClick?(): void
   title?: string
   className?: string
@@ -12,7 +14,18 @@ type Props = {
 }
 
 export const GenerationMenuButton = (props: Props) => {
-  return (
+  return props.isLoading ? (
+    <Button
+      title={props.title}
+      variant={"secondary"}
+      onClick={() => {}}
+      disabled={true}
+      size={"sm"}
+      className={`${props.className}pad-0`}
+    >
+      <Loader2Icon color="black" className={"m-auto h-4 w-4 animate-spin"} />
+    </Button>
+  ) : (
     <Button
       title={props.title}
       variant={"secondary"}

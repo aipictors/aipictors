@@ -23,6 +23,8 @@ import {
   ClipboardCopy,
   FileUp,
   LinkIcon,
+  LockKeyholeIcon,
+  LockKeyholeOpenIcon,
   PenIcon,
   Trash2,
 } from "lucide-react"
@@ -38,7 +40,9 @@ type Props = {
   userNanoid: string
   generationSize: GenerationSize
   rating: number
+  isProtected: boolean
   GenerationParameters: GenerationParameters
+  isProtectedLoading: boolean
   onReference(): void
   onPost(): void
   onDelete(): void
@@ -49,6 +53,7 @@ type Props = {
   setRating: (value: number) => void
   setShowInPaintDialog: (value: boolean) => void
   saveGenerationImage(taskId: string): void
+  toggleProtectedImage(taskId: string): void
   copyGeneration(generationParameters: GenerationParameters): void
   copyUrl(nanoid: string): void
 }
@@ -159,6 +164,12 @@ export function GenerationTaskSheetViewContent(props: Props) {
               title={"画像を保存する"}
               onClick={() => props.saveGenerationImage(props.task.id)}
               icon={ArrowDownToLine}
+            />
+            <GenerationMenuButton
+              title={"保護する"}
+              onClick={() => props.toggleProtectedImage(props.task.id)}
+              icon={props.isProtected ? LockKeyholeIcon : LockKeyholeOpenIcon}
+              isLoading={props.isProtectedLoading}
             />
             <AppConfirmDialog
               title={"確認"}

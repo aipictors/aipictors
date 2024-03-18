@@ -11,6 +11,7 @@ import {
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
+import { updateProtectedImageGenerationTaskMutation } from "@/graphql/mutations/update-protected-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
@@ -156,6 +157,12 @@ export function GenerationTaskSheetView(props: Props) {
 
   const context = useGenerationContext()
 
+  const [rating, setRating] = useState(0)
+
+  const [isProtected, setIsProtected] = useState(
+    props.task.isProtected ?? false,
+  )
+
   const viewTaskId = context.config.viewTaskId
 
   const viewTaskIds = context.config.viewTaskIds
@@ -203,10 +210,9 @@ export function GenerationTaskSheetView(props: Props) {
     }
   }
 
-  const [rating, setRating] = useState(0)
-
   useEffect(() => {
     setRating(props.task.rating ?? 0)
+    setIsProtected(props.task.isProtected ?? false)
   }, [])
 
   const onReference = () => {
@@ -243,6 +249,26 @@ export function GenerationTaskSheetView(props: Props) {
         },
       },
     })
+  }
+
+  const [protectTask, { loading: isProtectedLoading }] = useMutation(
+    updateProtectedImageGenerationTaskMutation,
+  )
+
+  const toggleProtectedImage = async () => {
+    if (props.task.nanoid === null) {
+      toast("存在しない履歴です")
+      return
+    }
+    await protectTask({
+      variables: {
+        input: {
+          nanoid: props.task.nanoid,
+          isProtected: !isProtected,
+        },
+      },
+    })
+    setIsProtected(!isProtected)
   }
 
   /**
@@ -346,7 +372,9 @@ export function GenerationTaskSheetView(props: Props) {
         userNanoid={userNanoid}
         generationSize={generationSize}
         rating={rating}
+        isProtected={isProtected}
         GenerationParameters={GenerationParameters}
+        isProtectedLoading={isProtectedLoading}
         onReference={onReference}
         onPost={onPost}
         onDelete={onDelete}
@@ -357,6 +385,7 @@ export function GenerationTaskSheetView(props: Props) {
         setRating={setRating}
         setShowInPaintDialog={setShowInPaintDialog}
         saveGenerationImage={saveGenerationImage}
+        toggleProtectedImage={toggleProtectedImage}
         copyGeneration={copyGeneration}
         copyUrl={copyUrl}
       />
@@ -373,7 +402,9 @@ export function GenerationTaskSheetView(props: Props) {
       userNanoid={userNanoid}
       generationSize={generationSize}
       rating={rating}
+      isProtected={isProtected}
       GenerationParameters={GenerationParameters}
+      isProtectedLoading={isProtectedLoading}
       onReference={onReference}
       onPost={onPost}
       onDelete={onDelete}
@@ -381,6 +412,7 @@ export function GenerationTaskSheetView(props: Props) {
       onNextTask={onNextTask}
       onPrevTask={onPrevTask}
       onChangeRating={onChangeRating}
+      toggleProtectedImage={toggleProtectedImage}
       setRating={setRating}
       setShowInPaintDialog={setShowInPaintDialog}
       saveGenerationImage={saveGenerationImage}
