@@ -1,10 +1,12 @@
 "use client"
 
+import { GenerationStatePersistent } from "@/app/[lang]/generation/_components/generation-state-persistent"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
+import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import { config } from "@/config"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
@@ -42,15 +44,55 @@ export const GenerationContextProvider = (props: Props) => {
     refetch()
   }, [authContext.isLoggedIn])
 
-  const cacheStorage = new GenerationConfigCache()
+  // TODO: 後で移動
+  const getDefaultNegativePrompt = (modelType: string) => {
+    if (modelType === "SD1") {
+      return "EasyNegative"
+    }
+    if (modelType === "SD2") {
+      return "Mayng"
+    }
+    if (modelType === "SDXL") {
+      return "negativeXL_D"
+    }
+    return "EasyNegative"
+  }
 
-  // if (authContext.isLoading) {
-  //   return <AppLoadingPage />
-  // }
+  const modelType = config.generationFeature.defaultImageModelType
 
-  // if (authContext.isNotLoggedIn) {
-  //   return <LoginPage />
-  // }
+  // TODO: 後で移動
+  const cacheStorage = new GenerationConfigState({
+    modelId: config.generationFeature.defaultImageModelId,
+    modelIds: config.generationFeature.defaultImageModelIds,
+    favoriteModelIds: [],
+    promptText: "",
+    negativePromptText: getDefaultNegativePrompt(modelType),
+    sampler: config.generationFeature.defaultSamplerValue,
+    scale: config.generationFeature.defaultScaleValue,
+    seed: -1,
+    sizeType: "SD1_512_768",
+    steps: config.generationFeature.defaultStepsValue,
+    vae: config.generationFeature.defaultVaeValue,
+    modelType: modelType,
+    clipSkip: config.generationFeature.defaultClipSkipValue,
+    isUseRecommendedPrompt:
+      config.generationFeature.defaultIsUseRecommendedPrompt,
+    i2iImageBase64: "",
+    i2iDenoisingStrengthSize:
+      config.generationFeature.defaultI2iDenoisingStrengthSize,
+    previewTaskId: null,
+    viewTaskId: null,
+    viewTaskIds: [],
+    thumbnailSizeInPromptView:
+      config.generationFeature.defaultThumbnailSizeInPromptView,
+    thumbnailSizeInHistoryListFull:
+      config.generationFeature.defaultThumbnailSizeInHistoryListFull,
+    taskListThumbnailType: config.generationFeature.defaultThumbnailType,
+  })
+
+  const stateText = localStorage.getItem("generation.state")
+
+  const snapshot = stateText ? JSON.parse(stateText) : undefined
 
   return (
     <GenerationDataContext.Provider
@@ -63,9 +105,12 @@ export const GenerationContextProvider = (props: Props) => {
       }}
     >
       <GenerationConfigContext.Provider
-        options={{ input: cacheStorage.restore() }}
+        options={{
+          snapshot: snapshot,
+          input: cacheStorage,
+        }}
       >
-        {props.children}
+        <GenerationStatePersistent>{props.children}</GenerationStatePersistent>
       </GenerationConfigContext.Provider>
     </GenerationDataContext.Provider>
   )

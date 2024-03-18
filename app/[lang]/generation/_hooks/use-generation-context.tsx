@@ -1,7 +1,6 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
 import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
-import { GenerationConfigCache } from "@/app/[lang]/generation/_machines/models/generation-config-cache"
 import { config } from "@/config"
 import { useContext } from "react"
 
@@ -12,9 +11,7 @@ export const useGenerationContext = () => {
     return state.context
   })
 
-  const { send } = GenerationConfigContext.useActorRef()
-
-  const cacheStorage = new GenerationConfigCache()
+  const actor = GenerationConfigContext.useActorRef()
 
   /**
    * 生成可能な枚数
@@ -63,18 +60,6 @@ export const useGenerationContext = () => {
     sizeType: string,
     clipSkip: number,
   ) => {
-    cacheStorage.savePrompt(promptText)
-    cacheStorage.saveSteps(steps)
-    cacheStorage.saveNegativePrompt(negativePromptText)
-    cacheStorage.saveModelId(modelId)
-    cacheStorage.saveModelType(modelType)
-    cacheStorage.saveVae(vae)
-    cacheStorage.saveSampler(negativePromptText)
-    cacheStorage.saveScale(scale)
-    cacheStorage.saveSeed(seed)
-    cacheStorage.saveSizeType(sizeType)
-    cacheStorage.saveClipSkip(clipSkip)
-
     const value = configAction
       .updatePrompt(promptText)
       .updateSteps(steps)
@@ -87,8 +72,7 @@ export const useGenerationContext = () => {
       .updateClipSkip(clipSkip)
       .updateNegativePrompt(negativePromptText)
       .getState()
-
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -96,7 +80,7 @@ export const useGenerationContext = () => {
    * @param mode
    */
   const changeMode = (mode: string) => {
-    send({ type: mode })
+    actor.send({ type: mode })
   }
 
   /**
@@ -104,9 +88,8 @@ export const useGenerationContext = () => {
    * @param text
    */
   const updatePrompt = (text: string) => {
-    cacheStorage.savePrompt(text)
     const value = configAction.updatePrompt(text).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -114,9 +97,8 @@ export const useGenerationContext = () => {
    * @param text
    */
   const updateNegativePrompt = (text: string) => {
-    cacheStorage.saveNegativePrompt(text)
     const value = configAction.updateNegativePrompt(text).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -124,9 +106,8 @@ export const useGenerationContext = () => {
    * @param text
    */
   const updateSampler = (text: string) => {
-    cacheStorage.saveSampler(text)
     const value = configAction.updateSampler(text).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -134,9 +115,8 @@ export const useGenerationContext = () => {
    * @param step
    */
   const updateSteps = (step: number) => {
-    cacheStorage.saveSteps(step)
     const value = configAction.updateSteps(step).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -144,9 +124,8 @@ export const useGenerationContext = () => {
    * @param scale
    */
   const updateScale = (scale: number) => {
-    cacheStorage.saveScale(scale)
     const value = configAction.updateScale(scale).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -155,7 +134,7 @@ export const useGenerationContext = () => {
    */
   const updateSizeType = (sizeType: string) => {
     const value = configAction.updateSizeType(sizeType).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -163,9 +142,8 @@ export const useGenerationContext = () => {
    * @param vae
    */
   const updateVae = (vae: string | null) => {
-    cacheStorage.saveVae(vae)
     const value = configAction.updateVae(vae).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -173,9 +151,8 @@ export const useGenerationContext = () => {
    * @param seed
    */
   const updateSeed = (seed: number) => {
-    cacheStorage.saveSeed(seed)
     const value = configAction.updateSeed(seed).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -184,12 +161,7 @@ export const useGenerationContext = () => {
    */
   const updateModelId = (modelId: string, modelType: string) => {
     const value = configAction.updateModelId(modelId, modelType).getState()
-    cacheStorage.saveModelId(modelId)
-    cacheStorage.saveModelType(modelType)
-    cacheStorage.saveModelIds(value.modelIds)
-    cacheStorage.saveSizeType(value.sizeType)
-    cacheStorage.saveVae(value.vae)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -204,12 +176,7 @@ export const useGenerationContext = () => {
     const value = configAction
       .updateModelIdAndPrompt(modelId, modelType, promptText)
       .getState()
-    cacheStorage.saveModelId(modelId)
-    cacheStorage.saveModelType(modelType)
-    cacheStorage.saveModelIds(value.modelIds)
-    cacheStorage.saveSizeType(value.sizeType)
-    cacheStorage.saveVae(value.vae)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -218,8 +185,7 @@ export const useGenerationContext = () => {
    */
   const updateClipSkip = (clipSkip: number) => {
     const value = configAction.updateClipSkip(clipSkip).getState()
-    cacheStorage.saveClipSkip(value.clipSkip)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -231,8 +197,7 @@ export const useGenerationContext = () => {
     const value = configAction
       .updateLoraModelValue(modelName, modelValue)
       .getState()
-    cacheStorage.savePrompt(value.promptText)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -241,8 +206,7 @@ export const useGenerationContext = () => {
    */
   const updateFavoriteModelIds = (modelIds: number[]) => {
     const value = configAction.updateFavoriteModelIds(modelIds).getState()
-    cacheStorage.savaFavoriteModelIds(value.favoriteModelIds)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -251,7 +215,7 @@ export const useGenerationContext = () => {
    */
   const updatePreviewTaskId = (taskId: string | null) => {
     const value = configAction.updatePreviewTask(taskId).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -264,7 +228,7 @@ export const useGenerationContext = () => {
       .updateViewTaskIds(taskIds)
       .updateViewTaskId(taskId)
       .getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -274,7 +238,7 @@ export const useGenerationContext = () => {
    */
   const updateViewTaskId = (taskId: string | null) => {
     const value = configAction.updateViewTaskId(taskId).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -282,11 +246,10 @@ export const useGenerationContext = () => {
    * @param thumbnailSize
    */
   const updateThumbnailSizeInPromptView = (thumbnailSize: number) => {
-    cacheStorage.saveThumbnailSizeInPromptView(thumbnailSize)
     const value = configAction
       .updateThumbnailSizeInPromptView(thumbnailSize)
       .getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -294,11 +257,10 @@ export const useGenerationContext = () => {
    * @param thumbnailSize
    */
   const updateThumbnailSizeInHistoryListFull = (thumbnailSize: number) => {
-    cacheStorage.saveThumbnailSizeInHistoryListFull(thumbnailSize)
     const value = configAction
       .updateThumbnailSizeInHistoryListFull(thumbnailSize)
       .getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -306,8 +268,7 @@ export const useGenerationContext = () => {
    */
   const initPromptWithLoraModel = () => {
     const value = configAction.initPromptWithLoraModelValue().getState()
-    cacheStorage.savePrompt(value.promptText)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -315,11 +276,10 @@ export const useGenerationContext = () => {
    * @param isUseRecommendedPrompt
    */
   const changeUseRecommendedPrompt = (isUseRecommendedPrompt: boolean) => {
-    cacheStorage.saveUseRecommendedPrompt(isUseRecommendedPrompt)
     const value = configAction
       .changeUseRecommendedPrompt(isUseRecommendedPrompt)
       .getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -327,11 +287,10 @@ export const useGenerationContext = () => {
    * @param i2iDenoisingStrengthSize
    */
   const changeI2iDenoisingStrengthSize = (i2iDenoisingStrengthSize: number) => {
-    cacheStorage.saveI2iDenoisingStrengthSize(i2iDenoisingStrengthSize)
     const value = configAction
       .changeI2iDenoisingStrengthSize(i2iDenoisingStrengthSize)
       .getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -340,8 +299,7 @@ export const useGenerationContext = () => {
    */
   const changeLoraConfig = (modelName: string) => {
     const value = configAction.changeLoraModel(modelName).getState()
-    cacheStorage.savePrompt(value.promptText)
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -350,7 +308,7 @@ export const useGenerationContext = () => {
    */
   const changeI2iImageBase64 = (i2iImageBase64: string) => {
     const value = configAction.changeI2iImageBase64(i2iImageBase64).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
@@ -358,18 +316,16 @@ export const useGenerationContext = () => {
    * @param
    */
   const changeTaskListThumbnailType = (type: string) => {
-    cacheStorage.saveTaskListThumbnailType(type)
     const value = configAction.changeTaskListThumbnailType(type).getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
    * データリセット
    */
   const reset = () => {
-    cacheStorage.reset()
     const value = configAction.reset().getState()
-    send({ type: "UPDATE_CONFIG", value })
+    actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   return {
