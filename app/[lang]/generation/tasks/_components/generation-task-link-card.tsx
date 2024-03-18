@@ -58,9 +58,10 @@ export const GenerationTaskLinkCard = (props: Props) => {
   if (props.token == null || props.taskNanoid == null) {
     return (
       <InProgressGenerationCard
-        estimatedSeconds={props.estimatedSeconds}
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
+        initImageGenerationWaitCount={context.config.imageGenerationWaitCount}
+        imageGenerationWaitCount={context.config.imageGenerationWaitCount}
       />
     )
   }

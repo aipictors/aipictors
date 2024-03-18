@@ -93,9 +93,10 @@ export const GenerationTaskEditableCard = (props: Props) => {
   ) {
     return (
       <InProgressGenerationCard
-        estimatedSeconds={props.estimatedSeconds}
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
+        initImageGenerationWaitCount={context.config.imageGenerationWaitCount}
+        imageGenerationWaitCount={context.config.imageGenerationWaitCount}
       />
     )
   }

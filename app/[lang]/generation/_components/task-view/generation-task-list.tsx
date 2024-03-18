@@ -205,27 +205,12 @@ export const GenerationTaskList = (props: Props) => {
   ]
 
   const componentTasks =
-    props.protect === -1 ? activeTasks : combineDisplayProtectedTasks
+    props.protect === -1 || props.protect === 0
+      ? activeTasks
+      : combineDisplayProtectedTasks
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
-
-  console.log(
-    props.protect !== 1 &&
-      tasks.viewer !== undefined &&
-      tasks.viewer?.remainingImageGenerationTasksTotalCount !== undefined,
-  )
-
-  if (
-    tasks.viewer !== undefined &&
-    tasks.viewer?.remainingImageGenerationTasksTotalCount !== undefined
-  ) {
-    console.log(
-      props.protect === 0 || props.protect === -1
-        ? tasks.viewer.remainingImageGenerationTasksTotalCount
-        : componentTasks.length,
-    )
-  }
 
   return (
     <>

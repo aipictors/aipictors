@@ -22,7 +22,7 @@ import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
 import { useMutation, useQuery } from "@apollo/client"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -461,6 +461,15 @@ export function GenerationSubmissionView(props: Props) {
       context.currentPass?.type === "TWO_DAYS"
     )
   }
+
+  /**
+   * 待ち人数
+   */
+  const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
+
+  useEffect(() => {
+    context.updateImageGenerationWaitCount(imageGenerationWaitCount)
+  }, [imageGenerationWaitCount])
 
   return (
     <AppFixedContent position="bottom">
