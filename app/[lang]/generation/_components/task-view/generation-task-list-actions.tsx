@@ -16,7 +16,6 @@ import { config } from "@/config"
 import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -53,8 +52,6 @@ export const GenerationTaskListActions = (props: Props) => {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
-
-  const router = useRouter()
 
   const onTrashTasks = async () => {
     try {

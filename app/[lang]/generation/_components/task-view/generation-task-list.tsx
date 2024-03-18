@@ -50,10 +50,12 @@ export const GenerationTaskList = (props: Props) => {
 
   const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: 32,
+      limit: props.protect !== 1 ? 32 : config.query.maxLimit,
       offset: props.currentPage * 32,
       where: {
-        minRating: 0,
+        ...(props.rating !== -1 && {
+          rating: props.rating,
+        }),
         ...(props.protect !== -1 && {
           isProtected: props.protect === 1 ? true : false,
         }),
@@ -71,21 +73,21 @@ export const GenerationTaskList = (props: Props) => {
     isTimeout ? 8000 : 2000,
   )
 
-  const { data: ratingTasks } = useQuery(viewerImageGenerationTasksQuery, {
+  const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: config.query.maxLimit,
       offset: 0,
       where: {
-        minRating: 1,
-        ...(props.protect !== -1 && {
-          isProtected: props.protect === 1 ? true : false,
+        isProtected: true,
+        ...(props.rating !== -1 && {
+          rating: props.rating,
         }),
       },
     },
     fetchPolicy: "cache-first",
   })
 
-  if (tasks === undefined || ratingTasks === undefined) {
+  if (tasks === undefined || protectedTasks === undefined) {
     return null
   }
 
@@ -98,8 +100,8 @@ export const GenerationTaskList = (props: Props) => {
     return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
   })
 
-  const imageGenerationRatingTasks =
-    ratingTasks.viewer?.imageGenerationTasks ?? []
+  const imageGenerationProtectedTasks =
+    protectedTasks.viewer?.imageGenerationTasks ?? []
 
   /**
    * フィルターしたレーティングが０のタスク（一部）
@@ -116,11 +118,11 @@ export const GenerationTaskList = (props: Props) => {
       : []
 
   /**
-   * フィルターしたレーティング済みタスク
+   * 保護済みタスク
    */
-  const currentRatingTasks = imageGenerationRatingTasks.filter((task) => {
+  const currentProtectedTasks = imageGenerationProtectedTasks.filter((task) => {
     return (
-      task.rating === props.rating &&
+      task.isProtected === (props.protect === 1 ? true : false) &&
       task.nanoid &&
       !props.hidedTaskIds.includes(task.nanoid)
     )
@@ -166,7 +168,7 @@ export const GenerationTaskList = (props: Props) => {
     return task.status === "DONE"
   })
 
-  const activeRatingTasks = currentRatingTasks.filter((task) => {
+  const activeProtectedTasks = currentProtectedTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
     return task.status === "DONE"
   })
@@ -196,17 +198,34 @@ export const GenerationTaskList = (props: Props) => {
     props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
-  const combineDisplayRatingTasks = [
+  const combineDisplayProtectedTasks = [
     ...inProgressTasks,
-    ...activeRatingTasks,
+    ...activeProtectedTasks,
     ...activeRatingZeroTasks,
   ]
 
   const componentTasks =
-    props.rating === -1 ? activeTasks : combineDisplayRatingTasks
+    props.protect === -1 ? activeTasks : combineDisplayProtectedTasks
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
+
+  console.log(
+    props.protect !== 1 &&
+      tasks.viewer !== undefined &&
+      tasks.viewer?.remainingImageGenerationTasksTotalCount !== undefined,
+  )
+
+  if (
+    tasks.viewer !== undefined &&
+    tasks.viewer?.remainingImageGenerationTasksTotalCount !== undefined
+  ) {
+    console.log(
+      props.protect === 0 || props.protect === -1
+        ? tasks.viewer.remainingImageGenerationTasksTotalCount
+        : componentTasks.length,
+    )
+  }
 
   return (
     <>
@@ -253,14 +272,19 @@ export const GenerationTaskList = (props: Props) => {
         {/* </Suspense> */}
       </ScrollArea>
       <div className="p-2 pb-64 md:pb-2">
-        {(props.rating === -1 || props.rating === 0) &&
+        {props.protect !== 1 &&
           tasks.viewer !== undefined &&
           tasks.viewer?.remainingImageGenerationTasksTotalCount !==
             undefined && (
             <>
               <ResponsivePagination
-                perPage={64}
-                maxCount={tasks.viewer.remainingImageGenerationTasksTotalCount}
+                perPage={32}
+                maxCount={
+                  (props.protect === 0 || props.protect === -1) &&
+                  (props.rating === 0 || props.rating === -1)
+                    ? tasks.viewer.remainingImageGenerationTasksTotalCount
+                    : componentTasks.length
+                }
                 currentPage={props.currentPage}
                 onPageChange={props.setCurrentPage}
               />
