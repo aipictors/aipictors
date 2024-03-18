@@ -37,6 +37,9 @@ const nextConfig = {
     return config
   },
   productionBrowserSourceMaps: true,
+  env: {
+    NEXT_PUBLIC_VERSION: packageJSON.version,
+  },
   /**
    * 128MB
    */

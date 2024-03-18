@@ -237,13 +237,9 @@ export const config = {
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
   },
   /**
-   * Sentry
+   * バージョン
    */
-  sentry: {
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN!,
-    environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT!,
-    release: process.env.NEXT_PUBLIC_SENTRY_RELEASE!,
-  },
+  version: process.env.NEXT_PUBLIC_VERSION!,
   /**
    * サイトのURL
    */
