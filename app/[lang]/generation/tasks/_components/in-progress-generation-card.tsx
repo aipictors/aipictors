@@ -1,12 +1,15 @@
 import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
+import { InProgressGenerationProgressBar } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-progress-bar"
 import { Card } from "@/components/ui/card"
 import { Loader2Icon } from "lucide-react"
+import { useEffect, useState } from "react"
 
 type Props = {
   onCancel?(): void
-  estimatedSeconds?: number
   isCreatingTasks?: boolean
   isCanceling?: boolean
+  initImageGenerationWaitCount: number
+  imageGenerationWaitCount: number
 }
 
 /**
@@ -14,23 +17,29 @@ type Props = {
  * @returns
  */
 export const InProgressGenerationCard = (props: Props) => {
-  const waitSecondsLabel = () => {
-    if (props.estimatedSeconds === undefined) {
-      return "計算中"
+  const [initWaitCount, setInitWaitCount] = useState(-1)
+
+  useEffect(() => {
+    if (initWaitCount === -1) {
+      setInitWaitCount(props.initImageGenerationWaitCount)
     }
-    if (props.estimatedSeconds > 120) {
+  }, [])
+
+  const waitSecondsLabel = () => {
+    const waitSecondsOnOneTask = 15
+    if (initWaitCount * waitSecondsOnOneTask > 120) {
       return "数分"
     }
-    if (props.estimatedSeconds > 60) {
+    if (initWaitCount * waitSecondsOnOneTask > 60) {
       return "1分"
     }
-    if (props.estimatedSeconds > 15) {
+    if (initWaitCount * waitSecondsOnOneTask > 20) {
+      return "数十秒"
+    }
+    if (initWaitCount * waitSecondsOnOneTask > 0) {
       return "十数秒"
     }
-    if (props.estimatedSeconds > 0) {
-      return "数秒"
-    }
-    return "数秒"
+    return "十数秒"
   }
 
   return (
@@ -44,6 +53,9 @@ export const InProgressGenerationCard = (props: Props) => {
                 {"generating..."}
               </span>
               <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
+              <InProgressGenerationProgressBar
+                per={(1 - props.imageGenerationWaitCount / initWaitCount) * 100}
+              />
             </div>
             <GenerationTaskCancelButton
               onCancel={props.onCancel}
