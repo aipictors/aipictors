@@ -1,5 +1,6 @@
 // @ts-check
 import { withSentryConfig } from "@sentry/nextjs"
+import packageJSON from "./package.json" assert { type: "json" }
 
 /**
  * @type {import('next').NextConfig}
@@ -36,6 +37,10 @@ const nextConfig = {
     return config
   },
   productionBrowserSourceMaps: true,
+  /**
+   * 128MB
+   */
+  cacheMaxMemorySize: 2 ** 20 * 128,
 }
 
 export default withSentryConfig(
@@ -45,6 +50,7 @@ export default withSentryConfig(
     org: "nocker",
     project: "aipictors-web",
     authToken: process.env.SENTRY_AUTH_TOKEN,
+    release: packageJSON.version,
   },
   {
     tunnelRoute: "/monitoring",
