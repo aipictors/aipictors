@@ -54,7 +54,11 @@ export const InProgressGenerationCard = (props: Props) => {
               </span>
               <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
               <InProgressGenerationProgressBar
-                per={(1 - props.imageGenerationWaitCount / initWaitCount) * 100}
+                per={
+                  initWaitCount === 0
+                    ? 0
+                    : (1 - props.imageGenerationWaitCount / initWaitCount) * 100
+                }
               />
             </div>
             <GenerationTaskCancelButton
