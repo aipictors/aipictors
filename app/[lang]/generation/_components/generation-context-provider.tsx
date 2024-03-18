@@ -90,7 +90,10 @@ export const GenerationContextProvider = (props: Props) => {
     taskListThumbnailType: config.generationFeature.defaultThumbnailType,
   })
 
-  const stateText = localStorage.getItem("generation.state")
+  const stateText =
+    typeof window !== "undefined"
+      ? localStorage.getItem("generation.state")
+      : null
 
   const snapshot = stateText ? JSON.parse(stateText) : undefined
 

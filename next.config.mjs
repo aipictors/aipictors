@@ -1,6 +1,5 @@
 // @ts-check
 import { withSentryConfig } from "@sentry/nextjs"
-import packageJSON from "./package.json" assert { type: "json" }
 
 /**
  * @type {import('next').NextConfig}
@@ -13,9 +12,6 @@ const nextConfig = {
     scrollRestoration: true,
   },
   output: "standalone",
-  env: {
-    NEXT_PUBLIC_SENTRY_RELEASE: packageJSON.version,
-  },
   // @next/imageの設定 画像最適化なし
   images: {
     remotePatterns: [
@@ -39,6 +35,7 @@ const nextConfig = {
     })
     return config
   },
+  productionBrowserSourceMaps: true,
 }
 
 export default withSentryConfig(
@@ -46,17 +43,12 @@ export default withSentryConfig(
   {
     silent: true,
     org: "nocker",
-    project: "aipictors-next",
+    project: "aipictors-web",
     authToken: process.env.SENTRY_AUTH_TOKEN,
   },
   {
-    widenClientFileUpload: true,
-    transpileClientSDK: true,
     tunnelRoute: "/monitoring",
-    hideSourceMaps: true,
+    hideSourceMaps: false,
     disableLogger: true,
-    automaticVercelMonitors: true,
-    disableClientWebpackPlugin: true,
-    disableServerWebpackPlugin: true,
   },
 )

@@ -1,10 +1,11 @@
 import { init } from "@sentry/nextjs"
+import packageJSON from "./package.json" assert { type: "json" }
 
 init({
   debug: false,
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN!,
   environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT!,
-  release: process.env.NEXT_PUBLIC_SENTRY_RELEASE!,
+  release: packageJSON.version,
   tracesSampleRate: 0.001,
   ignoreErrors: ["ApolloError"],
   beforeSend(event) {
