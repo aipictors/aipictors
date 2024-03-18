@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "graphql-codegen-esm --config codegen.ts && next dev --turbo",
-    "build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
+    "build": "next build",
+    "gcp-build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
     "start": "next start",
     "check": "tsc --noEmit",
     "refactor": "biome check --apply-unsafe ./app ./graphql && biome format ./app ./graphql --write",

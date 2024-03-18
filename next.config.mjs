@@ -49,6 +49,5 @@ export default withSentryConfig(
   {
     tunnelRoute: "/monitoring",
     hideSourceMaps: false,
-    disableLogger: true,
   },
 )
