@@ -90,7 +90,9 @@ export const GenerationContextProvider = (props: Props) => {
     taskListThumbnailType: config.generationFeature.defaultThumbnailType,
   })
 
-  const snapshot = JSON.parse(localStorage.getItem("generation.state") ?? "{}")
+  const stateText = localStorage.getItem("generation.state")
+
+  const snapshot = stateText ? JSON.parse(stateText) : undefined
 
   return (
     <GenerationDataContext.Provider
