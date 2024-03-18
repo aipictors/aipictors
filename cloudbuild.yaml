@@ -23,6 +23,8 @@ steps:
       - "--builder=gcr.io/buildpacks/builder:v1"
       - "--network=cloudbuild"
       - "--path=."
+      - "--env"
+      - SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN
     id: Buildpack
     entrypoint: pack
   - name: gcr.io/cloud-builders/docker
