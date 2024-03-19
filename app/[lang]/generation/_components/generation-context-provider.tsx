@@ -89,6 +89,7 @@ export const GenerationContextProvider = (props: Props) => {
       config.generationFeature.defaultThumbnailSizeInHistoryListFull,
     taskListThumbnailType: config.generationFeature.defaultThumbnailType,
     imageGenerationWaitCount: 0,
+    isCreatingTask: false,
   })
 
   const stateText =

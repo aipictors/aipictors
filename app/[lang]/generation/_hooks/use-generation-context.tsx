@@ -330,6 +330,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * 生成中かどうかを更新する
+   * @param
+   */
+  const updateIsCreatingTask = (isCreatingTask: boolean) => {
+    const value = configAction.updateIsCreatingTask(isCreatingTask).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * データリセット
    */
   const reset = () => {
@@ -383,6 +392,7 @@ export const useGenerationContext = () => {
     updateSeed,
     updateClipSkip,
     updateModelIdAndPrompt,
+    updateIsCreatingTask,
     updatePreviewTaskId: updatePreviewTaskId,
     updateViewTask: updateViewTask,
     updateViewTaskId: updateViewTaskId,

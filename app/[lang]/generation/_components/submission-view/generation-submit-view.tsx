@@ -74,6 +74,10 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
+  useEffect(() => {
+    context.updateIsCreatingTask(isCreatingTask)
+  }, [isCreatingTask])
+
   const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
@@ -89,7 +93,7 @@ export function GenerationSubmissionView(props: Props) {
     })
 
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: isCreatingTask ? 1000 : 10000,
+    pollInterval: isCreatingTask ? 1000 : 60000,
   })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {

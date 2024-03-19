@@ -70,7 +70,7 @@ export const GenerationTaskList = (props: Props) => {
         refetch()
       })
     },
-    isTimeout ? 8000 : 2000,
+    isTimeout ? 600000 : context.config.isCreatingTask ? 2000 : 300000,
   )
 
   const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {

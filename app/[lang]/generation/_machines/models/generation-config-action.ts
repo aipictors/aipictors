@@ -492,6 +492,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * 生成中かどうか
+   * @param value
+   * @returns
+   */
+  updateIsCreatingTask(value: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      isCreatingTask: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * i2i用のDenoisingStrengthSizeを変更する
    * @param modelType SD1など
    * @returns

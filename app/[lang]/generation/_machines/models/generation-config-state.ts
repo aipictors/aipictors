@@ -24,6 +24,7 @@ const zProps = z.object({
   thumbnailSizeInHistoryListFull: z.number(),
   taskListThumbnailType: z.string(),
   imageGenerationWaitCount: z.number(),
+  isCreatingTask: z.boolean(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -79,6 +80,8 @@ export class GenerationConfigState implements Props {
   readonly taskListThumbnailType!: Props["taskListThumbnailType"]
 
   readonly imageGenerationWaitCount!: Props["imageGenerationWaitCount"]
+
+  readonly isCreatingTask!: Props["isCreatingTask"]
 
   constructor(props: Props) {
     Object.assign(this, props)
