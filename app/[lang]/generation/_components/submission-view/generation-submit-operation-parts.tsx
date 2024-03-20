@@ -75,10 +75,6 @@ export function GenerationSubmitOperationParts(props: Props) {
     return false
   }
 
-  console.log(
-    authContext.isLoading || (authContext.isLoggedIn && context.user === null),
-  )
-
   return (
     <>
       <div className="flex items-center">

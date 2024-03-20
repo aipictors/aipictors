@@ -37,7 +37,7 @@ export const GenerationConfigI2i = () => {
       <div className="flex gap-x-2">
         <span className="text-nowrap font-bold">{"画像から生成"}</span>
         <CrossPlatformTooltip
-          text={"使い方動画"}
+          text={"任意の画像から、画像生成することができます ※機能紹介動画"}
           detailLink={"https://youtu.be/d1nKrnUy3wY?feature=shared"}
           isTargetBlank={true}
         />
