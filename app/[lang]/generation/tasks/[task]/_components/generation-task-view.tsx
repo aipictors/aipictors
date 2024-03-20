@@ -293,8 +293,8 @@ export function GenerationTaskView(props: Props) {
   }
 
   if (
-    data.imageGenerationTask == null ||
-    data.imageGenerationTask.token == null
+    data.imageGenerationTask.status !== "RESERVED" &&
+    (data.imageGenerationTask == null || data.imageGenerationTask.token == null)
   ) {
     return <div>{"画像が見つかりませんでした"}</div>
   }
@@ -333,7 +333,7 @@ export function GenerationTaskView(props: Props) {
   ) {
     return (
       <>
-        <InProgressImageGenerationTaskResult />
+        <InProgressImageGenerationTaskResult task={data?.imageGenerationTask} />
       </>
     )
   }
@@ -348,30 +348,33 @@ export function GenerationTaskView(props: Props) {
             props.isScroll ? "max-h-[88vh]" : ""
           }`}
         >
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className={"px-2"} variant={"ghost"}>
+          {data.imageGenerationTask.token && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className={"px-2"} variant={"ghost"}>
+                  <PrivateImage
+                    // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                    className={`generation-image-${props.taskId} m-auto max-h-screen`}
+                    taskId={data.imageGenerationTask.id}
+                    token={data.imageGenerationTask.token}
+                    isThumbnail={
+                      context.config.taskListThumbnailType === "light"
+                    }
+                    alt={"-"}
+                  />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
                 <PrivateImage
-                  // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                  className={`generation-image-${props.taskId} m-auto max-h-screen`}
+                  className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
                   taskId={data.imageGenerationTask.id}
                   token={data.imageGenerationTask.token}
-                  isThumbnail={context.config.taskListThumbnailType === "light"}
+                  isThumbnail={false}
                   alt={"-"}
                 />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
-              <PrivateImage
-                className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
-                taskId={data.imageGenerationTask.id}
-                token={data.imageGenerationTask.token}
-                isThumbnail={false}
-                alt={"-"}
-              />
-            </DialogContent>
-          </Dialog>
-
+              </DialogContent>
+            </Dialog>
+          )}
           <div className="flex flex-wrap justify-end gap-x-2 gap-y-2 pt-2">
             <GenerationMenuButton
               title={"同じ情報で生成する"}
@@ -516,21 +519,23 @@ export function GenerationTaskView(props: Props) {
         />
       )}
 
-      <InPaintingDialog
-        isOpen={showInPaintDialog}
-        onClose={() => setShowInPaintDialog(false)}
-        taskId={props.taskId}
-        token={data.imageGenerationTask.token}
-        userNanoid={userNanoid}
-        configSeed={data.imageGenerationTask.seed}
-        configSteps={data.imageGenerationTask.steps}
-        configSampler={data.imageGenerationTask.sampler}
-        configSizeType={data.imageGenerationTask.sizeType}
-        configModel={data.imageGenerationTask.model?.name}
-        configVae={data.imageGenerationTask.vae}
-        configScale={data.imageGenerationTask.scale}
-        configClipSkip={data.imageGenerationTask.clipSkip}
-      />
+      {data.imageGenerationTask.token && (
+        <InPaintingDialog
+          isOpen={showInPaintDialog}
+          onClose={() => setShowInPaintDialog(false)}
+          taskId={props.taskId}
+          token={data.imageGenerationTask.token}
+          userNanoid={userNanoid}
+          configSeed={data.imageGenerationTask.seed}
+          configSteps={data.imageGenerationTask.steps}
+          configSampler={data.imageGenerationTask.sampler}
+          configSizeType={data.imageGenerationTask.sizeType}
+          configModel={data.imageGenerationTask.model?.name}
+          configVae={data.imageGenerationTask.vae}
+          configScale={data.imageGenerationTask.scale}
+          configClipSkip={data.imageGenerationTask.clipSkip}
+        />
+      )}
     </>
   )
 }

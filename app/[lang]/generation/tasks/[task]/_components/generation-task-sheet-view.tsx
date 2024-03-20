@@ -355,7 +355,7 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   if (props.task.status === "IN_PROGRESS") {
-    return <InProgressImageGenerationTaskResult />
+    return <InProgressImageGenerationTaskResult task={props.task} />
   }
 
   const userNanoid = context.user?.nanoid ?? null

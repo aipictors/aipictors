@@ -1,6 +1,5 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
 import { GenerationTaskProtectedButton } from "@/app/[lang]/generation/tasks/_components/generation-task-protected-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
@@ -11,8 +10,8 @@ import { SelectableCardButton } from "@/app/_components/selectable-card-button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import { cancelImageGenerationReservedTaskMutation } from "@/graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
-import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"
@@ -50,16 +49,13 @@ export const GenerationTaskEditableCard = (props: Props) => {
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
     {
-      refetchQueries: [viewerImageGenerationTasksQuery],
+      refetchQueries: [{ query: viewerImageGenerationTasksQuery }],
       awaitRefetchQueries: true,
     },
   )
 
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =
-    useMutation(deleteImageGenerationTaskMutation, {
-      refetchQueries: [viewerImageGenerationTasksQuery],
-      awaitRefetchQueries: true,
-    })
+    useMutation(cancelImageGenerationReservedTaskMutation)
 
   /**
    * 生成タスクをキャンセルする
@@ -87,8 +83,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
    * @returns
    */
   const onCancelReservedTask = async (taskNanoid: string | null) => {
-    console.log(props.task)
-    console.log(taskNanoid)
     if (taskNanoid === null) return
     try {
       await cancelReservedTask({ variables: { input: { nanoid: taskNanoid } } })

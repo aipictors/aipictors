@@ -91,6 +91,36 @@ export function GenerationTaskSheetViewContent(props: Props) {
     return text.substring(0, commaIndex)
   }
 
+  /**
+   * 次のタスクに戻れるか
+   * @returns
+   */
+  const canNextTask = (): boolean => {
+    const nowTask = props.task.id
+    const taskIds = context.config.viewTaskIds
+    if (nowTask === null || taskIds === null) return false
+    const index = taskIds.indexOf(nowTask)
+    if (!taskIds.length || taskIds.length === index + 1) {
+      return false
+    }
+    return true
+  }
+
+  /**
+   * 前のタスクに戻れるか
+   * @returns
+   */
+  const canPrevTask = (): boolean => {
+    const nowTask = props.task.id
+    const taskIds = context.config.viewTaskIds
+    if (nowTask === null || taskIds === null) return false
+    const index = taskIds.indexOf(nowTask)
+    if (!taskIds.length || index === 0) {
+      return false
+    }
+    return true
+  }
+
   return (
     <>
       <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
@@ -100,17 +130,21 @@ export function GenerationTaskSheetViewContent(props: Props) {
             "max-h-[88vh]": props.isScroll,
           })}
         >
-          {props.task.status !== "RESERVED" && (
-            <>
-              <div className="relative bg-gray-100 dark:bg-gray-900">
-                <Button
-                  className="absolute top-[50%] left-8"
-                  variant={"ghost"}
-                  size={"icon"}
-                  onClick={props.onPrevTask}
-                >
-                  <ChevronLeft className="w-8" />
-                </Button>
+          <div className="relative bg-gray-100 dark:bg-gray-900">
+            {/* 前ボタン */}
+            {canPrevTask() && (
+              <Button
+                className="absolute top-[50%] left-8"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={props.onPrevTask}
+              >
+                <ChevronLeft className="w-8" />
+              </Button>
+            )}
+
+            {props.task.status !== "RESERVED" ? (
+              <>
                 <GenerationImageDialogButton
                   taskId={props.task.id}
                   taskToken={props.task.token}
@@ -127,15 +161,31 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     />
                   }
                 />
-                <Button
-                  className="absolute top-[50%] right-8"
-                  variant={"ghost"}
-                  size={"icon"}
-                  onClick={props.onNextTask}
-                >
-                  <ChevronRight className="w-8" />
-                </Button>
-              </div>
+              </>
+            ) : (
+              <>
+                <p className="text-center">{"予約生成中"}</p>
+                <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
+                  <Skeleton
+                    className={"m-auto h-[400px] w-[400px] rounded-xl"}
+                  />
+                </div>
+              </>
+            )}
+            {/* 次ボタン */}
+            {canNextTask() && (
+              <Button
+                className="absolute top-[50%] right-8"
+                variant={"ghost"}
+                size={"icon"}
+                onClick={props.onNextTask}
+              >
+                <ChevronRight className="w-8" />
+              </Button>
+            )}
+          </div>
+          {props.task.status !== "RESERVED" && (
+            <>
               <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
                 <GenerationMenuButton
                   title={"同じ情報で生成する"}
@@ -220,14 +270,6 @@ export function GenerationTaskSheetViewContent(props: Props) {
               </div>
             </>
           )}
-          {props.task.status === "RESERVED" && (
-            <>
-              <p className="text-center">{"予約生成中"}</p>
-              <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
-                <Skeleton className={"m-auto h-[400px] w-[400px] rounded-xl"} />
-              </div>
-            </>
-          )}
           <div className="mb-1 flex gap-x-2">
             <div className="basis-1/3">
               <p className="mb-1 font-semibold">{"Size"}</p>
@@ -278,7 +320,6 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
         </div>
       </ScrollArea>
-      {imageListButton()}
       <InPaintingDialog
         isOpen={props.showInPaintDialog}
         onClose={() => props.setShowInPaintDialog(false)}

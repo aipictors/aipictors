@@ -1,7 +1,6 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { Loader2Icon } from "lucide-react"
 
@@ -57,7 +56,6 @@ export const ReservedGenerationCard = (props: Props) => {
             <div className="m-auto flex flex-col gap-y-2 p-4">
               <Loader2Icon className="m-auto h-6 w-6 animate-spin" />
               <span className="ta-c m-auto mb-4 text-sm">{"reserved..."}</span>
-              <Skeleton className="max-h-[120px] max-w-[240px] rounded-xl" />
             </div>
           </div>
         </div>
