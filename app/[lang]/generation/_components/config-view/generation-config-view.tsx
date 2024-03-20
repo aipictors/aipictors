@@ -187,11 +187,14 @@ export default function GenerationConfigView() {
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
+          <Separator />
           <GenerationConfigI2i />
+          <Separator />
           <GenerationConfigSeed
             value={context.config.seed}
             onChange={context.updateSeed}
           />
+          <Separator />
           <Accordion type="single" collapsible>
             <AccordionItem value="setting">
               <AccordionTrigger>詳細設定</AccordionTrigger>
