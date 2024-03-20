@@ -21,6 +21,8 @@ type Props = {
   models: ImageModelsQuery["imageModels"]
   selectedModelId: string | null
   favoritedModelIds: number[]
+  isInitFavorited: boolean
+  label?: string
   onSelect(id: string, type: string, prompt: string): void
 }
 
@@ -78,13 +80,13 @@ export const GenerationModelListButton = (props: Props) => {
           variant={"secondary"}
           onClick={setTrue}
         >
-          {"すべてのモデル"}
+          {props.label ? props.label : "すべてのモデル"}
         </Button>
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"モデルを選択"}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="hidden md:block xl:block">
             {"使用するモデルを選択してください"}
           </DialogDescription>
         </DialogHeader>
@@ -108,6 +110,7 @@ export const GenerationModelListButton = (props: Props) => {
         </div>
 
         <ImageModelsList
+          isInitFavorited={props.isInitFavorited}
           models={props.models}
           favoritedModelIds={props.favoritedModelIds}
           selectedModelId={props.selectedModelId}

@@ -88,6 +88,15 @@ export const GenerationConfigModels = (props: Props) => {
               />
             ))}
           </div>
+          <div className="mt-4">
+            <GenerationModelListButton
+              isInitFavorited={false}
+              favoritedModelIds={props.favoritedModelIds}
+              models={props.models}
+              selectedModelId={props.currentModelId}
+              onSelect={props.onSelectModelId}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="favorite">
           <div className="flex flex-col space-y-2">
@@ -107,14 +116,18 @@ export const GenerationConfigModels = (props: Props) => {
               />
             ))}
           </div>
+          <div className="mt-4">
+            <GenerationModelListButton
+              label="すべてのお気に入りモデル"
+              isInitFavorited={true}
+              favoritedModelIds={props.favoritedModelIds}
+              models={props.models}
+              selectedModelId={props.currentModelId}
+              onSelect={props.onSelectModelId}
+            />{" "}
+          </div>
         </TabsContent>
       </Tabs>
-      <GenerationModelListButton
-        favoritedModelIds={props.favoritedModelIds}
-        models={props.models}
-        selectedModelId={props.currentModelId}
-        onSelect={props.onSelectModelId}
-      />
     </>
   )
 }

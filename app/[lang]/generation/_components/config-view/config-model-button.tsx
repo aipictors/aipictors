@@ -1,8 +1,10 @@
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 type Props = {
   imageURL: string
   name: string
+  type?: string
   isSelected: boolean
   onClick(): void
 }
@@ -21,9 +23,16 @@ export const ConfigModelButton = (props: Props) => {
           className="w-full max-w-[4rem] rounded object-cover"
           draggable={false}
         />
-        <p className="whitespace-pre-wrap break-all font-bold text-sm">
-          {props.name}
-        </p>
+        <div>
+          <p className="whitespace-pre-wrap break-all font-bold text-sm">
+            {props.name}
+          </p>
+          {props.type && (
+            <Badge className="mt-4 grid w-16 text-xs opacity-50">
+              {props.type}
+            </Badge>
+          )}
+        </div>
       </div>
     </Button>
   )

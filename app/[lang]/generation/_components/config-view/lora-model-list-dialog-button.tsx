@@ -48,7 +48,9 @@ export const LoraModelListDialogButton = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"LoRAを選択"}</DialogTitle>
           <DialogDescription>
-            <p>{"使用するLoRA(エフェクト)を選択してください"}</p>
+            <p className="hidden md:block xl:block">
+              {"使用するLoRA(エフェクト)を選択してください"}
+            </p>
             <p>{`使用できるLoRA数 :${props.selectedModelNames.length}/${props.availableImageGenerationMaxTasksCount}`}</p>
           </DialogDescription>
         </DialogHeader>

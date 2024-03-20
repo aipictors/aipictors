@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge"
+
 type Props = {
   displayName: string | null
   description?: string | null
@@ -47,9 +49,9 @@ export const ImageModelCard = (props: Props) => {
           {trimString(props.displayName ?? "")}
         </span>
         {props.type && (
-          <span className="absolute top-2 left-1 rounded-lg bg-black bg-opacity-50 p-4 text-white">
-            {props.type}
-          </span>
+          <div className="absolute top-0 left-0">
+            <Badge>{props.type}</Badge>
+          </div>
         )}
         {props.description && (
           <span className="whitespace-pre-wrap break-words text-sm">
