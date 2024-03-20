@@ -509,7 +509,7 @@ export function GenerationTaskView(props: Props) {
                   `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
                 )}
               >
-                <Button className="w-full p-4" variant={"secondary"}>
+                <Button className="w-full" variant={"secondary"}>
                   詳細を閉じる
                 </Button>
               </Link>
