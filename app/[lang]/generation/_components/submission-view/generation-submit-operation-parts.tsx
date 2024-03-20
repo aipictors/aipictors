@@ -83,7 +83,38 @@ export function GenerationSubmitOperationParts(props: Props) {
           count={props.generationCount}
         />
         <div className="mr-2">枚</div>
-        {/* プレミアムの場合はサブスク案内ダイアログはなし */}
+        {/* 未ログインならログイン */}
+        {context.user === null && (
+          <LoginDialogButton
+            label="生成"
+            isWidthFull={true}
+            triggerChildren={
+              <GradientBorderButton
+                onClick={() => {}}
+                className="w-full text-balance"
+                children={"生成"}
+              />
+            }
+          />
+        )}
+        {/* 規約確認開始ボタン */}
+        {context.user !== null &&
+          context.user?.hasSignedImageGenerationTerms !== true && (
+            <GenerationTermsButton
+              termsMarkdownText={props.termsText}
+              isLoading={props.isCreatingTask}
+              onSubmit={props.onSignTerms}
+              triggerChildren={
+                <GradientBorderButton
+                  disabled={props.isCreatingTask}
+                  onClick={() => {}}
+                  className="w-full text-balance"
+                  children={props.isCreatingTask ? "処理中.." : "生成"}
+                />
+              }
+            />
+          )}
+        {/* プレミアムの場合はサブスク案内ダイアログなしver */}
         {isCurrentPremiumPlan() && (
           <GenerationSubmitButton
             onClick={async () => {
@@ -105,7 +136,7 @@ export function GenerationSubmitOperationParts(props: Props) {
             )}
           />
         )}
-        {/* 生成上限に達した場合はサブスク案内ダイアログ */}
+        {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
           props.tasksCount < props.availableImageGenerationMaxTasksCount - 1 &&
           context.user?.hasSignedImageGenerationTerms === true && (
@@ -129,7 +160,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               )}
             />
           )}
-
+        {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
           props.tasksCount >= props.availableImageGenerationMaxTasksCount - 1 &&
           context.user?.hasSignedImageGenerationTerms === true && (
@@ -172,38 +203,6 @@ export function GenerationSubmitOperationParts(props: Props) {
                 <SubscriptionDialogContent />
               </DialogContent>
             </Dialog>
-          )}
-
-        {/* 未ログインならログイン */}
-        {context.user === null && (
-          <LoginDialogButton
-            label="生成"
-            isWidthFull={true}
-            triggerChildren={
-              <GradientBorderButton
-                onClick={() => {}}
-                className="w-full text-balance"
-                children={"生成"}
-              />
-            }
-          />
-        )}
-        {/* 規約確認開始ボタン */}
-        {context.user !== null &&
-          context.user?.hasSignedImageGenerationTerms !== true && (
-            <GenerationTermsButton
-              termsMarkdownText={props.termsText}
-              isLoading={props.isCreatingTask}
-              onSubmit={props.onSignTerms}
-              triggerChildren={
-                <GradientBorderButton
-                  disabled={props.isCreatingTask}
-                  onClick={() => {}}
-                  className="w-full text-balance"
-                  children={props.isCreatingTask ? "処理中.." : "生成"}
-                />
-              }
-            />
           )}
       </div>
     </>
