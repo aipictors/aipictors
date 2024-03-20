@@ -82,7 +82,9 @@ export default function GenerationConfigView() {
           context.updateSteps(task.steps)
           context.updateSampler(task.sampler)
           context.updateClipSkip(task.clipSkip)
-          context.updateVae(task.vae)
+          context.updateVae(
+            task.vae?.toLocaleLowerCase() ?? "vae-ft-mse-840000-ema-pruned",
+          )
 
           toast("タスクを復元しました。")
         }

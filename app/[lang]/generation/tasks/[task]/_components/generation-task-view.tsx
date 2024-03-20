@@ -474,25 +474,35 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1">
-            <p className="mb-1 font-semibold">{"Sampler"}</p>
-            <p>{data.imageGenerationTask.sampler}</p>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="flex space-x-4">
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Seed"}</p>
-              <p>{data.imageGenerationTask.seed}</p>
-            </div>
+          <div className="mb-1 flex space-x-4">
             <div className="w-full">
               <p className="mb-1 font-semibold">{"Scale"}</p>
               <p>{data.imageGenerationTask.scale}</p>
             </div>
             <div className="w-full">
+              <p className="mb-1 font-semibold">{"Scale"}</p>
+              <p>{data.imageGenerationTask.steps}</p>
+            </div>
+            <div className="w-full">
+              <p className="mb-1 font-semibold">{"Sampler"}</p>
+              <p>{data.imageGenerationTask.sampler}</p>
+            </div>
+          </div>
+          <div className="py-2">
+            <Separator />
+          </div>
+          <div className="mb-32 flex space-x-4">
+            <div className="w-full">
               <p className="mb-1 font-semibold">{"ClipSkip"}</p>
               <p>{data.imageGenerationTask.clipSkip}</p>
+            </div>
+            <div className="w-full">
+              <p className="mb-1 font-semibold">{"Vae"}</p>
+              <p>{data.imageGenerationTask.vae}</p>
+            </div>
+            <div className="w-full">
+              <p className="mb-1 font-semibold">{"Seed"}</p>
+              <p>{data.imageGenerationTask.seed}</p>
             </div>
           </div>
         </div>
