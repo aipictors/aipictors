@@ -49,7 +49,7 @@ export const GenerationTaskList = (props: Props) => {
     return snap.value
   })
 
-  const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
+  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: props.protect !== 1 ? 32 : config.query.maxLimit,
       offset: props.currentPage * 32,
@@ -63,22 +63,12 @@ export const GenerationTaskList = (props: Props) => {
       },
     },
     fetchPolicy: "cache-first",
+    pollInterval: context.config.isCreatingTask
+      ? isTimeout
+        ? 3000
+        : 2000
+      : 600000,
   })
-
-  useInterval(
-    () => {
-      startTransition(() => {
-        refetch()
-      })
-    },
-    context.config.isCreatingTask ? (isTimeout ? 3000 : 2000) : 600000,
-  )
-
-  useEffect(() => {
-    startTransition(() => {
-      refetch()
-    })
-  }, [context.config.isCreatingTask])
 
   const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
