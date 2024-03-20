@@ -11,11 +11,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { LoaderIcon } from "lucide-react"
 
 type Props = {
   label?: string
   isWidthFull?: boolean
   triggerChildren?: React.ReactNode
+  isLoading?: boolean
 }
 
 /**
@@ -26,12 +28,20 @@ type Props = {
 export function LoginDialogButton(props: Props) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger disabled={props.isLoading} asChild>
         {props.triggerChildren ? (
           props.triggerChildren
         ) : (
-          <Button className={cn(props.isWidthFull ? "w-full" : "")}>
+          <Button
+            disabled={props.isLoading}
+            className={cn(props.isWidthFull ? "w-full" : "")}
+          >
             {props.label ? props.label : "ログイン"}
+            {props.isLoading && (
+              <span className="ml-2 animate-spin">
+                <LoaderIcon />
+              </span>
+            )}
           </Button>
         )}
       </DialogTrigger>

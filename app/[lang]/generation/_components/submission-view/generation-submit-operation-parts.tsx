@@ -1,14 +1,13 @@
 "use client"
 
 import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
-import { GenerationCountSelect } from "@/app/[lang]/generation/_components/submission-view/generation-count-select"
 import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/app/[lang]/generation/_components/submission-view/generation-terms-button"
 import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTasksCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-tasks-cancel-button"
 import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import {
   Dialog,
   DialogContent,
@@ -17,6 +16,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Loader2Icon } from "lucide-react"
+import { useContext } from "react"
 
 type Props = {
   isCreatingTask: boolean
@@ -65,12 +66,18 @@ export function getSubmitButtonLabel(
 export function GenerationSubmitOperationParts(props: Props) {
   const context = useGenerationContext()
 
+  const authContext = useContext(AuthContext)
+
   const isCurrentPremiumPlan = () => {
     if (context.currentPass?.type === "PREMIUM") {
       return true
     }
     return false
   }
+
+  console.log(
+    authContext.isLoading || (authContext.isLoggedIn && context.user === null),
+  )
 
   return (
     <>
@@ -83,22 +90,39 @@ export function GenerationSubmitOperationParts(props: Props) {
           count={props.generationCount}
         />
         <div className="mr-2">枚</div>
-        {/* 未ログインならログイン */}
-        {context.user === null && (
+        {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
+        {(!authContext.isLoggedIn || context.user === null) && (
           <LoginDialogButton
             label="生成"
+            isLoading={
+              authContext.isLoading ||
+              (authContext.isLoggedIn && context.user === null)
+            }
             isWidthFull={true}
             triggerChildren={
               <GradientBorderButton
                 onClick={() => {}}
                 className="w-full text-balance"
-                children={"生成"}
+                children={
+                  <>
+                    <div className="flex items-center">
+                      {"生成"}
+                      {(authContext.isLoading ||
+                        (authContext.isLoggedIn && context.user === null)) && (
+                        <span className="ml-2 animate-spin">
+                          <Loader2Icon />
+                        </span>
+                      )}
+                    </div>
+                  </>
+                }
               />
             }
           />
         )}
         {/* 規約確認開始ボタン */}
-        {context.user !== null &&
+        {authContext.isLoggedIn &&
+          context.user !== null &&
           context.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
               termsMarkdownText={props.termsText}
@@ -115,27 +139,28 @@ export function GenerationSubmitOperationParts(props: Props) {
             />
           )}
         {/* プレミアムの場合はサブスク案内ダイアログなしver */}
-        {isCurrentPremiumPlan() && (
-          <GenerationSubmitButton
-            onClick={async () => {
-              await props.onCreateTask()
-            }}
-            isLoading={props.isCreatingTask}
-            isDisabled={context.config.isDisabled}
-            generatingCount={
-              props.inProgressImageGenerationTasksCount +
-              props.inProgressImageGenerationReservedTasksCount
-            }
-            maxGeneratingCount={
-              props.availableImageGenerationMaxTasksCount - props.tasksCount
-            }
-            buttonActionCaption={getSubmitButtonLabel(
-              context.config.i2iImageBase64 ? true : false,
-              context.config.promptText,
-              context.config.seed,
-            )}
-          />
-        )}
+        {isCurrentPremiumPlan() &&
+          context.user?.hasSignedImageGenerationTerms === true && (
+            <GenerationSubmitButton
+              onClick={async () => {
+                await props.onCreateTask()
+              }}
+              isLoading={props.isCreatingTask}
+              isDisabled={context.config.isDisabled}
+              generatingCount={
+                props.inProgressImageGenerationTasksCount +
+                props.inProgressImageGenerationReservedTasksCount
+              }
+              maxGeneratingCount={
+                props.availableImageGenerationMaxTasksCount - props.tasksCount
+              }
+              buttonActionCaption={getSubmitButtonLabel(
+                context.config.i2iImageBase64 ? true : false,
+                context.config.promptText,
+                context.config.seed,
+              )}
+            />
+          )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
           props.tasksCount < props.availableImageGenerationMaxTasksCount - 1 &&
