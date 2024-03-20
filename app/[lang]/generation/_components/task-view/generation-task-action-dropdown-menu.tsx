@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider"
 import { config } from "@/config"
-import { MoreHorizontalIcon } from "lucide-react"
+import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-tasks"
+import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
+import { useMutation } from "@apollo/client"
+import { Loader2, MoreHorizontalIcon } from "lucide-react"
+import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
-
 type Props = {
   thumbnailSize: number
   thumbnailType: TaskListThumbnailType
@@ -34,6 +37,26 @@ type Props = {
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
+    useMutation(deleteReservedImageGenerationTasksMutation, {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    })
+
+  /**
+   * 予約タスクを一括削除する
+   */
+  const onDeleteReservedTasks = async () => {
+    try {
+      await deleteReservedTasks()
+      toast("予約タスクを削除しました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -119,6 +142,22 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
             </DropdownMenuPortal>
           </DropdownMenuSub>
         )}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{"一括削除"}</DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuLabel>{"項目"}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {!isDeletingReservedTasks ? (
+                <Button variant={"ghost"} className="w-full">
+                  {"予約一括削除"}
+                </Button>
+              ) : (
+                <Loader2 className="w-4 animate-spin" />
+              )}
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   )

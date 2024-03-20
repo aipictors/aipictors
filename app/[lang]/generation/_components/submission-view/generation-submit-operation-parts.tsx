@@ -19,23 +19,17 @@ import {
 } from "@/components/ui/dialog"
 
 type Props = {
-  generationMode: string
   isCreatingTask: boolean
   inProgressImageGenerationTasksCount: number
   inProgressImageGenerationReservedTasksCount: number
-  isDeletingReservedTasks: boolean
   maxTasksCount: number
   tasksCount: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
   generationCount: number
-  reservedGenerationCount: number
   setGenerationCount: (count: number) => void
-  onCreateReservedTask: () => void
   onCreateTask: () => void
   onSignTerms: () => void
-  onDeleteReservedTasks: () => void
-  setReservedGenerationCount(count: number): void
 }
 
 /**
@@ -45,7 +39,6 @@ type Props = {
  * @returns
  */
 export function getSubmitButtonLabel(
-  mode: string,
   isSetI2iImage: boolean,
   prompts: string,
   seed: number,
@@ -54,16 +47,14 @@ export function getSubmitButtonLabel(
 
   if (!prompts) {
     if (isSetI2iImage) {
-      return mode === "reserve"
-        ? "画像から予約ランダム生成"
-        : `画像からランダム生成${seedLabel}`
+      return `画像からランダム生成${seedLabel}`
     }
-    return mode === "reserve" ? "予約ランダム生成" : `ランダム生成${seedLabel}`
+    return `ランダム生成${seedLabel}`
   }
   if (isSetI2iImage) {
-    return mode === "reserve" ? "画像から予約生成" : `画像から生成${seedLabel}`
+    return `画像から生成${seedLabel}`
   }
-  return mode === "reserve" ? "予約生成" : `生成${seedLabel}`
+  return `生成${seedLabel}`
 }
 
 /**
@@ -84,47 +75,30 @@ export function GenerationSubmitOperationParts(props: Props) {
   return (
     <>
       <div className="flex items-center">
-        {props.generationMode === "normal" && (
-          <GenerationCountSelect
-            pass={context.currentPass?.type ?? "FREE"}
-            selectedCount={props.generationCount}
-            onChange={props.setGenerationCount}
-          />
-        )}
-        {props.generationMode === "reserve" && (
-          <GenerationReserveCountInput
-            maxCount={
-              props.availableImageGenerationMaxTasksCount - props.tasksCount
-            }
-            onChange={props.setReservedGenerationCount}
-            count={props.reservedGenerationCount}
-          />
-        )}
+        <GenerationReserveCountInput
+          maxCount={
+            props.availableImageGenerationMaxTasksCount - props.tasksCount
+          }
+          onChange={props.setGenerationCount}
+          count={props.generationCount}
+        />
         <div className="mr-2">枚</div>
         {/* プレミアムの場合はサブスク案内ダイアログはなし */}
         {isCurrentPremiumPlan() && (
           <GenerationSubmitButton
             onClick={async () => {
-              if (props.generationMode === "reserve") {
-                await props.onCreateReservedTask()
-              } else {
-                await props.onCreateTask()
-              }
+              await props.onCreateTask()
             }}
             isLoading={props.isCreatingTask}
             isDisabled={context.config.isDisabled}
             generatingCount={
-              props.generationMode === "normal"
-                ? props.inProgressImageGenerationTasksCount
-                : props.inProgressImageGenerationReservedTasksCount
+              props.inProgressImageGenerationTasksCount +
+              props.inProgressImageGenerationReservedTasksCount
             }
             maxGeneratingCount={
-              props.generationMode === "reserve"
-                ? props.availableImageGenerationMaxTasksCount - props.tasksCount
-                : props.maxTasksCount
+              props.availableImageGenerationMaxTasksCount - props.tasksCount
             }
             buttonActionCaption={getSubmitButtonLabel(
-              props.generationMode,
               context.config.i2iImageBase64 ? true : false,
               context.config.promptText,
               context.config.seed,
@@ -137,27 +111,18 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
-                if (props.generationMode === "reserve") {
-                  await props.onCreateReservedTask()
-                } else {
-                  await props.onCreateTask()
-                }
+                await props.onCreateTask()
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
               generatingCount={
-                props.generationMode === "normal"
-                  ? props.inProgressImageGenerationTasksCount
-                  : props.inProgressImageGenerationReservedTasksCount
+                props.inProgressImageGenerationTasksCount +
+                props.inProgressImageGenerationReservedTasksCount
               }
               maxGeneratingCount={
-                props.generationMode === "reserve"
-                  ? props.availableImageGenerationMaxTasksCount -
-                    props.tasksCount
-                  : props.maxTasksCount
+                props.availableImageGenerationMaxTasksCount - props.tasksCount
               }
               buttonActionCaption={getSubmitButtonLabel(
-                props.generationMode,
                 context.config.i2iImageBase64 ? true : false,
                 context.config.promptText,
                 context.config.seed,
@@ -172,27 +137,19 @@ export function GenerationSubmitOperationParts(props: Props) {
               <DialogTrigger asChild>
                 <GenerationSubmitButton
                   onClick={async () => {
-                    if (props.generationMode === "reserve") {
-                      await props.onCreateReservedTask()
-                    } else {
-                      await props.onCreateTask()
-                    }
+                    await props.onCreateTask()
                   }}
                   isLoading={props.isCreatingTask}
                   isDisabled={context.config.isDisabled}
                   generatingCount={
-                    props.generationMode === "normal"
-                      ? props.inProgressImageGenerationTasksCount
-                      : props.inProgressImageGenerationReservedTasksCount
+                    props.inProgressImageGenerationTasksCount +
+                    props.inProgressImageGenerationReservedTasksCount
                   }
                   maxGeneratingCount={
-                    props.generationMode === "reserve"
-                      ? props.availableImageGenerationMaxTasksCount -
-                        props.tasksCount
-                      : props.maxTasksCount
+                    props.availableImageGenerationMaxTasksCount -
+                    props.tasksCount
                   }
                   buttonActionCaption={getSubmitButtonLabel(
-                    props.generationMode,
                     context.config.i2iImageBase64 ? true : false,
                     context.config.promptText,
                     context.config.seed,
@@ -246,16 +203,6 @@ export function GenerationSubmitOperationParts(props: Props) {
               }
             />
           )}
-        {/* 生成キャンセル */}
-        {props.generationMode === "reserve" && (
-          <GenerationTasksCancelButton
-            isDisabled={
-              props.inProgressImageGenerationReservedTasksCount === 0 ||
-              props.isDeletingReservedTasks
-            }
-            onCancel={props.onDeleteReservedTasks}
-          />
-        )}
       </div>
     </>
   )

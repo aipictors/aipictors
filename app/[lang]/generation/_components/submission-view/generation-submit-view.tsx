@@ -5,10 +5,8 @@ import { GenerationSubmitOperationParts } from "@/app/[lang]/generation/_compone
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
-import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import { uploadImage } from "@/app/_utils/upload-image"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { config } from "@/config"
 import type {
   ImageGenerationSizeType,
@@ -16,7 +14,6 @@ import type {
 } from "@/graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
-import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-tasks"
 import { signImageGenerationTermsMutation } from "@/graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
@@ -40,8 +37,6 @@ export function GenerationSubmissionView(props: Props) {
   const [reservedGenerationCount, setReservedGenerationCount] = useState(1)
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
-
-  const [generationMode, setGenerationMode] = useState("normal")
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
@@ -82,12 +77,6 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
-  const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
-    useMutation(deleteReservedImageGenerationTasksMutation, {
-      refetchQueries: [viewerCurrentPassQuery],
-      awaitRefetchQueries: true,
-    })
-
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
     pollInterval: 2000,
   })
@@ -109,22 +98,6 @@ export function GenerationSubmissionView(props: Props) {
         toast(error.message)
       }
     }
-  }
-
-  /**
-   * 生成モード変更
-   * @param mode 生成モード変更フラグ
-   */
-  const onChangeGenerationMode = (mode: string) => {
-    if (
-      context.currentPass?.type !== "STANDARD" &&
-      context.currentPass?.type !== "PREMIUM"
-    ) {
-      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
-      return
-    }
-
-    setGenerationMode(mode)
   }
 
   /**
@@ -170,28 +143,33 @@ export function GenerationSubmissionView(props: Props) {
    */
   const onCreateTask = async () => {
     /**
-     * 同時生成可能枚数
+     * 生成種別
      */
-    const inProgressImageGenerationTasksCount =
-      status?.viewer?.inProgressImageGenerationTasksCount === undefined
-        ? 1
-        : status?.viewer?.inProgressImageGenerationTasksCount
+    const generationType = context.config.i2iImageBase64
+      ? "IMAGE_TO_IMAGE"
+      : "TEXT_TO_IMAGE"
 
-    // 生成中かつフリープランならサブスクに誘導
+    // 生成中かつスタンダード、プレミアム以外ならサブスクに誘導
     if (
       inProgressImageGenerationTasksCount !== 0 &&
-      context.currentPass === null
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
     ) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
 
-    // 同時生成枚数を超過していたらエラー
-    if (inProgressImageGenerationTasksCount + generationCount > maxTasksCount) {
+    // i2iの場合は連続生成数を超過していたらエラーにする
+    if (
+      generationType === "IMAGE_TO_IMAGE" &&
+      inProgressImageGenerationTasksCount + generationCount > maxTasksCount
+    ) {
       toast("同時生成枚数の上限です。")
       return
     }
 
+    // 生成リクエストしたい回数分生成リクエストを行う
+    // もし通常の連続生成を超過したら予約生成に切り替える
     try {
       const model = context.models.find((model) => {
         return model.id === context.config.modelId
@@ -199,11 +177,10 @@ export function GenerationSubmissionView(props: Props) {
       if (typeof model === "undefined") return
 
       const userNanoid = context.user?.nanoid ?? null
-      if (userNanoid === null) return
-
-      const generationType = context.config.i2iImageBase64
-        ? "IMAGE_TO_IMAGE"
-        : "TEXT_TO_IMAGE"
+      if (userNanoid === null) {
+        toast("画面更新して再度お試し下さい。")
+        return
+      }
 
       if (
         checkSameBeforeRequestAndToast(model.name, generationType, "") === true
@@ -282,90 +259,18 @@ export function GenerationSubmissionView(props: Props) {
       }
     })
 
-    const promises = taskCounts.map((i) =>
-      createTask({
-        variables: {
-          input: {
-            count: 1,
-            model: modelName,
-            vae: context.config.vae ?? "",
-            prompt: promptsTexts[i],
-            negativePrompt: context.config.negativePromptText,
-            seed: seeds[i],
-            steps: context.config.steps,
-            scale: context.config.scale,
-            sampler: context.config.sampler,
-            clipSkip: context.config.clipSkip,
-            sizeType: context.config.sizeType as ImageGenerationSizeType,
-            type: generationType as ImageGenerationType,
-            t2tImageUrl: i2iFileUrl,
-            t2tDenoisingStrengthSize:
-              context.config.i2iDenoisingStrengthSize.toString(),
-          },
-        },
-      }),
-    )
-    await Promise.all(promises)
-    // タスクの作成後も呼び出す必要がある
-    if (isDesktop) {
-      toast("タスクを作成しました")
-    } else {
-      toast("タスクを作成しました", { position: "top-center" })
-    }
-    if (typeof context.user?.nanoid !== "string") return
-    await activeImageGeneration({ nanoid: context.user.nanoid })
-  }
-
-  /**
-   * 予約タスクを作成する
-   */
-  const onCreateReservedTask = async () => {
-    if (
-      context.currentPass?.type !== "STANDARD" &&
-      context.currentPass?.type !== "PREMIUM"
-    ) {
-      toast("STANDARD、PREMIUMのプランで予約生成可能です。")
-      return
-    }
-    const userNanoid = context.user?.nanoid ?? null
-    if (userNanoid === null) return
-
-    try {
-      const model = context.models.find((model) => {
-        return model.id === context.config.modelId
-      })
-      if (typeof model === "undefined") return
-
-      if (
-        checkSameBeforeRequestAndToast(
-          model.name,
-          context.config.sizeType,
-          "",
-        ) === true
-      ) {
+    const nowGeneratingCount = inProgressImageGenerationTasksCount // 生成中枚数
+    const promises = taskCounts.map((i) => {
+      if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
+        // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
         return
       }
-
-      const taskCounts = Array.from(
-        { length: reservedGenerationCount },
-        (_, i) => i,
-      )
-
-      const seeds: number[] = []
-      taskCounts.map((i) => {
-        if (context.config.seed === -1) {
-          seeds.push(-1)
-        } else {
-          seeds.push(context.config.seed + i)
-        }
-      })
-
-      const promises = taskCounts.map((i) => {
+      if (i + 1 + nowGeneratingCount > maxTasksCount) {
         createReservedTask({
           variables: {
             input: {
               count: 1,
-              model: model.name,
+              model: modelName,
               vae: context.config.vae ?? "",
               prompt: context.config.promptText,
               negativePrompt: context.config.negativePromptText,
@@ -379,36 +284,42 @@ export function GenerationSubmissionView(props: Props) {
             },
           },
         })
-      })
-      await Promise.all(promises)
-      // タスクの作成後も呼び出す必要がある
-      await activeImageGeneration({ nanoid: userNanoid })
-      if (isDesktop) {
-        toast("タスクを予約しました、自動的に生成されます")
       } else {
-        toast("タスクを予約しました、自動的に生成されます", {
-          position: "top-center",
+        createTask({
+          variables: {
+            input: {
+              count: 1,
+              model: modelName,
+              vae: context.config.vae ?? "",
+              prompt: promptsTexts[i],
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps: context.config.steps,
+              scale: context.config.scale,
+              sampler: context.config.sampler,
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config.sizeType as ImageGenerationSizeType,
+              type: generationType as ImageGenerationType,
+              t2tImageUrl: i2iFileUrl,
+              t2tDenoisingStrengthSize:
+                context.config.i2iDenoisingStrengthSize.toString(),
+            },
+          },
         })
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message)
-      }
+    })
+    await Promise.all(promises)
+    // タスクの作成後も呼び出す必要がある
+    if (isDesktop) {
+      toast("タスクを作成しました")
+    } else {
+      toast("タスクを作成しました", { position: "top-center" })
     }
-  }
-
-  /**
-   * 予約タスクを一括削除する
-   */
-  const onDeleteReservedTasks = async () => {
-    try {
-      await deleteReservedTasks()
-      toast("予約タスクを削除しました")
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message)
-      }
+    if (typeof context.user?.nanoid !== "string") {
+      toast("画面更新して再度お試し下さい。")
+      return
     }
+    await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   const engineStatus = status?.imageGenerationEngineStatus
@@ -488,105 +399,25 @@ export function GenerationSubmissionView(props: Props) {
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
-        <Tabs
-          defaultValue="normal"
-          onValueChange={(value) => {
-            onChangeGenerationMode(value)
-          }}
-        >
-          <div className="flex items-center">
-            {isEnabledReservedGeneration() && (
-              <TabsList className="w-32 md:w-full sm:w-full">
-                <TabsTrigger className="w-full" value="normal">
-                  通常
-                </TabsTrigger>
-                <TabsTrigger className="w-full" value="reserve">
-                  <div className="flex gap-x-2">
-                    予約
-                    {inProgressImageGenerationReservedTasksCount !== 0 &&
-                      `(${inProgressImageGenerationReservedTasksCount}生成中)`}
-                    <CrossPlatformTooltip
-                      text={"使い方動画"}
-                      detailLink={"https://youtu.be/toZ83wGm4y0?feature=shared"}
-                      isTargetBlank={true}
-                    />
-                  </div>
-                </TabsTrigger>
-              </TabsList>
-            )}
-            <div className="ml-auto block 2xl:hidden lg:hidden md:hidden xl:hidden">
-              <GenerationEditorProgress
-                isOnlyStatusForSubscriberDisplay={true}
-                inProgress={inProgress}
-                maxTasksCount={availableImageGenerationMaxTasksCount}
-                normalPredictionGenerationSeconds={
-                  engineStatus?.normalPredictionGenerationSeconds ?? 0
-                }
-                normalTasksCount={engineStatus?.normalTasksCount ?? 0}
-                passType={context.currentPass?.type ?? null}
-                remainingImageGenerationTasksCount={tasksCount}
-                standardPredictionGenerationSeconds={
-                  engineStatus?.standardPredictionGenerationSeconds ?? 0
-                }
-                standardTasksCount={engineStatus?.standardTasksCount ?? 0}
-              />
-            </div>
-          </div>
-          <TabsContent value="normal">
-            <GenerationSubmitOperationParts
-              generationMode={generationMode}
-              isCreatingTask={isCreatingTask}
-              inProgressImageGenerationTasksCount={
-                inProgressImageGenerationTasksCount
-              }
-              inProgressImageGenerationReservedTasksCount={
-                inProgressImageGenerationReservedTasksCount
-              }
-              isDeletingReservedTasks={isDeletingReservedTasks}
-              maxTasksCount={maxTasksCount}
-              tasksCount={tasksCount}
-              termsText={props.termsText}
-              availableImageGenerationMaxTasksCount={
-                availableImageGenerationMaxTasksCount
-              }
-              generationCount={generationCount}
-              reservedGenerationCount={reservedGenerationCount}
-              setReservedGenerationCount={setReservedGenerationCount}
-              setGenerationCount={setGenerationCount}
-              onCreateReservedTask={onCreateReservedTask}
-              onCreateTask={onCreateTask}
-              onSignTerms={onSignTerms}
-              onDeleteReservedTasks={onDeleteReservedTasks}
-            />
-          </TabsContent>
-          <TabsContent value="reserve">
-            <GenerationSubmitOperationParts
-              generationMode={generationMode}
-              isCreatingTask={isCreatingTask}
-              inProgressImageGenerationTasksCount={
-                inProgressImageGenerationTasksCount
-              }
-              inProgressImageGenerationReservedTasksCount={
-                inProgressImageGenerationReservedTasksCount
-              }
-              isDeletingReservedTasks={isDeletingReservedTasks}
-              maxTasksCount={maxTasksCount}
-              tasksCount={tasksCount}
-              termsText={props.termsText}
-              availableImageGenerationMaxTasksCount={
-                availableImageGenerationMaxTasksCount
-              }
-              generationCount={generationCount}
-              reservedGenerationCount={reservedGenerationCount}
-              setReservedGenerationCount={setReservedGenerationCount}
-              setGenerationCount={setGenerationCount}
-              onCreateReservedTask={onCreateReservedTask}
-              onCreateTask={onCreateTask}
-              onSignTerms={onSignTerms}
-              onDeleteReservedTasks={onDeleteReservedTasks}
-            />
-          </TabsContent>
-        </Tabs>
+        <GenerationSubmitOperationParts
+          isCreatingTask={isCreatingTask}
+          inProgressImageGenerationTasksCount={
+            inProgressImageGenerationTasksCount
+          }
+          inProgressImageGenerationReservedTasksCount={
+            inProgressImageGenerationReservedTasksCount
+          }
+          maxTasksCount={maxTasksCount}
+          tasksCount={tasksCount}
+          termsText={props.termsText}
+          availableImageGenerationMaxTasksCount={
+            availableImageGenerationMaxTasksCount
+          }
+          generationCount={generationCount}
+          setGenerationCount={setGenerationCount}
+          onCreateTask={onCreateTask}
+          onSignTerms={onSignTerms}
+        />
         <div className="hidden 2xl:block lg:block md:block xl:block">
           <div className="flex">
             <GenerationEditorProgress
