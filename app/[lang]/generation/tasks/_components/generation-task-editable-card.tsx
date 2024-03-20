@@ -48,10 +48,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
-    {
-      refetchQueries: [{ query: viewerImageGenerationTasksQuery }],
-      awaitRefetchQueries: true,
-    },
   )
 
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =

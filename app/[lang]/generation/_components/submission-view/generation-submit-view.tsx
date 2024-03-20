@@ -81,10 +81,13 @@ export function GenerationSubmissionView(props: Props) {
     pollInterval: 2000,
   })
 
-  const [signTerms] = useMutation(signImageGenerationTermsMutation, {
-    refetchQueries: [viewerCurrentPassQuery],
-    awaitRefetchQueries: true,
-  })
+  const [signTerms, { loading: isSigningTerms }] = useMutation(
+    signImageGenerationTermsMutation,
+    {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+    },
+  )
 
   /**
    * 規約に同意する
@@ -148,6 +151,15 @@ export function GenerationSubmissionView(props: Props) {
     const generationType = context.config.i2iImageBase64
       ? "IMAGE_TO_IMAGE"
       : "TEXT_TO_IMAGE"
+
+    if (
+      generationCount > 1 &&
+      context.currentPass?.type !== "STANDARD" &&
+      context.currentPass?.type !== "PREMIUM"
+    ) {
+      toast("STANDARD以上のプランで2枚以上を同時指定可能です。")
+      return
+    }
 
     // 生成中かつスタンダード、プレミアム以外ならサブスクに誘導
     if (
@@ -376,18 +388,6 @@ export function GenerationSubmissionView(props: Props) {
   ])
 
   /**
-   * 予約生成が可能かどうか
-   * @returns
-   */
-  const isEnabledReservedGeneration = () => {
-    return (
-      context.currentPass?.type === "STANDARD" ||
-      context.currentPass?.type === "PREMIUM" ||
-      context.currentPass?.type === "TWO_DAYS"
-    )
-  }
-
-  /**
    * 待ち人数
    */
   const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
@@ -400,7 +400,7 @@ export function GenerationSubmissionView(props: Props) {
     <AppFixedContent position="bottom">
       <div className="space-y-2">
         <GenerationSubmitOperationParts
-          isCreatingTask={isCreatingTask}
+          isCreatingTask={isCreatingTask || isSigningTerms}
           inProgressImageGenerationTasksCount={
             inProgressImageGenerationTasksCount
           }

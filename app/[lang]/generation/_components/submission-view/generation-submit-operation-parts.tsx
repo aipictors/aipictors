@@ -193,12 +193,14 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user?.hasSignedImageGenerationTerms !== true && (
             <GenerationTermsButton
               termsMarkdownText={props.termsText}
+              isLoading={props.isCreatingTask}
               onSubmit={props.onSignTerms}
               triggerChildren={
                 <GradientBorderButton
+                  disabled={props.isCreatingTask}
                   onClick={() => {}}
                   className="w-full text-balance"
-                  children={"生成"}
+                  children={props.isCreatingTask ? "処理中.." : "生成"}
                 />
               }
             />

@@ -19,6 +19,7 @@ export function GradientBorderButton(props: Props) {
     <button
       onClick={props.onClick}
       type="button"
+      disabled={props.disabled}
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
       className={`flex font-medium hover:opacity-80 duration-200 rounded-md bg-gradient-to-tr from-pink-300 to-blue-300 p-1 dark:text-black ${props.className}`}
     >

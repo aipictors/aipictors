@@ -15,7 +15,7 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer
 import { cn } from "@/lib/utils"
 import { useMutation, useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense, startTransition } from "react"
+import { Suspense, startTransition, useEffect } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
@@ -71,8 +71,14 @@ export const GenerationTaskList = (props: Props) => {
         refetch()
       })
     },
-    isTimeout ? 600000 : context.config.isCreatingTask ? 2000 : 300000,
+    context.config.isCreatingTask ? (isTimeout ? 3000 : 2000) : 600000,
   )
+
+  useEffect(() => {
+    startTransition(() => {
+      refetch()
+    })
+  }, [context.config.isCreatingTask])
 
   const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {

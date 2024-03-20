@@ -83,7 +83,10 @@ export const InPaintingImageForm = (props: Props) => {
   }
 
   const onCreateTask = async () => {
-    if (!props.userNanoid) return
+    if (!props.userNanoid) {
+      toast("画面更新して再度お試し下さい。")
+      return
+    }
     if (props.configModel === null || props.configVae === null) {
       toast("モデル情報が正しく取得できませんでした")
       return

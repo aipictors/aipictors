@@ -52,6 +52,9 @@ export const InProgressGenerationCard = (props: Props) => {
               <span className="ta-c m-auto mb-4 text-sm">
                 {"generating..."}
               </span>
+              <p className="text-sm">
+                待ち: {props.imageGenerationWaitCount}/{initWaitCount}
+              </p>
               <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
               <InProgressGenerationProgressBar
                 per={

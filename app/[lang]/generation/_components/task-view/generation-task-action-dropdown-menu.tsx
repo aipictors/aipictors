@@ -1,3 +1,4 @@
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
 import { Button } from "@/components/ui/button"
@@ -37,6 +38,20 @@ type Props = {
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const context = useGenerationContext()
+
+  /**
+   * 予約生成が可能かどうか
+   * @returns
+   */
+  const isEnabledReservedGeneration = () => {
+    return (
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM" ||
+      context.currentPass?.type === "TWO_DAYS"
+    )
+  }
 
   const [deleteReservedTasks, { loading: isDeletingReservedTasks }] =
     useMutation(deleteReservedImageGenerationTasksMutation, {
@@ -142,22 +157,28 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
             </DropdownMenuPortal>
           </DropdownMenuSub>
         )}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{"一括削除"}</DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuLabel>{"項目"}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {!isDeletingReservedTasks ? (
-                <Button variant={"ghost"} className="w-full">
-                  {"予約一括削除"}
-                </Button>
-              ) : (
-                <Loader2 className="w-4 animate-spin" />
-              )}
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+        {isEnabledReservedGeneration() && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>{"一括削除"}</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuLabel>{"項目"}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {!isDeletingReservedTasks ? (
+                  <Button
+                    onClick={onDeleteReservedTasks}
+                    variant={"ghost"}
+                    className="w-full"
+                  >
+                    {"予約一括削除"}
+                  </Button>
+                ) : (
+                  <Loader2 className="w-4 animate-spin" />
+                )}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
