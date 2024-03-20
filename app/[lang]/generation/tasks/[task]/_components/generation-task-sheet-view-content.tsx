@@ -12,6 +12,7 @@ import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cn } from "@/lib/utils"
@@ -99,116 +100,134 @@ export function GenerationTaskSheetViewContent(props: Props) {
             "max-h-[88vh]": props.isScroll,
           })}
         >
-          <div className="relative bg-gray-100 dark:bg-gray-900">
-            <Button
-              className="absolute top-[50%] left-8"
-              variant={"ghost"}
-              size={"icon"}
-              onClick={props.onPrevTask}
-            >
-              <ChevronLeft className="w-8" />
-            </Button>
-            <GenerationImageDialogButton
-              taskId={props.task.id}
-              taskToken={props.task.token}
-              children={
-                <PrivateImage
-                  // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                  className={`m-auto max-h-96 generation-image-${props.task.id}`}
+          {props.task.status !== "RESERVED" && (
+            <>
+              <div className="relative bg-gray-100 dark:bg-gray-900">
+                <Button
+                  className="absolute top-[50%] left-8"
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={props.onPrevTask}
+                >
+                  <ChevronLeft className="w-8" />
+                </Button>
+                <GenerationImageDialogButton
                   taskId={props.task.id}
-                  token={props.task.token as string}
-                  isThumbnail={context.config.taskListThumbnailType === "light"}
-                  alt={"-"}
-                />
-              }
-            />
-            <Button
-              className="absolute top-[50%] right-8"
-              variant={"ghost"}
-              size={"icon"}
-              onClick={props.onNextTask}
-            >
-              <ChevronRight className="w-8" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
-            <GenerationMenuButton
-              title={"同じ情報で生成する"}
-              onClick={props.onReference}
-              text={"復元"}
-              icon={ArrowUpRightSquare}
-            />
-            <GenerationMenuButton
-              title={"投稿する"}
-              onClick={props.onPost}
-              text={"投稿"}
-              icon={FileUp}
-            />
-            <GenerationMenuButton
-              title={"生成情報をコピーする"}
-              onClick={() => props.copyGeneration(props.GenerationParameters)}
-              icon={ClipboardCopy}
-            />
-            {props.task.nanoid !== null && props.task.nanoid !== "" && (
-              <GenerationMenuButton
-                title={"URLをコピーする"}
-                onClick={() => {
-                  if (props.task.nanoid !== null) {
-                    props.copyUrl(props.task.nanoid)
+                  taskToken={props.task.token}
+                  children={
+                    <PrivateImage
+                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                      className={`m-auto max-h-96 generation-image-${props.task.id}`}
+                      taskId={props.task.id}
+                      token={props.task.token as string}
+                      isThumbnail={
+                        context.config.taskListThumbnailType === "light"
+                      }
+                      alt={"-"}
+                    />
                   }
-                }}
-                icon={LinkIcon}
-              />
-            )}
-            <GenerationMenuButton
-              title={"画像を保存する"}
-              onClick={() => props.saveGenerationImage(props.task.id)}
-              icon={ArrowDownToLine}
-            />
-            <GenerationMenuButton
-              title={"保護する"}
-              onClick={() => props.toggleProtectedImage(props.task.id)}
-              icon={props.isProtected ? LockKeyholeIcon : LockKeyholeOpenIcon}
-              isLoading={props.isProtectedLoading}
-            />
-            <AppConfirmDialog
-              title={"確認"}
-              description={"本当に削除しますか？"}
-              onNext={() => {
-                props.onDelete()
-              }}
-              onCancel={() => {}}
-            >
-              <GenerationMenuButton
-                title={"生成履歴を削除する"}
-                onClick={() => () => {}}
-                icon={Trash2}
-              />
-            </AppConfirmDialog>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
-          <div className="my-4 flex justify-end gap-x-2">
-            <StarRating
-              value={props.rating}
-              onChange={(value) => {
-                props.setRating(value)
-                props.onChangeRating(props.task.nanoid ?? "", value)
-              }}
-            />
-            <div className="ml-auto">
-              <GenerationMenuButton
-                title={"インペイント機能で一部分を再生成して修正する"}
-                onClick={props.onInPaint}
-                text={"部分修正"}
-                icon={PenIcon}
-              />
-            </div>
-          </div>
-          <div className="py-2">
-            <Separator />
-          </div>
+                />
+                <Button
+                  className="absolute top-[50%] right-8"
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={props.onNextTask}
+                >
+                  <ChevronRight className="w-8" />
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
+                <GenerationMenuButton
+                  title={"同じ情報で生成する"}
+                  onClick={props.onReference}
+                  text={"復元"}
+                  icon={ArrowUpRightSquare}
+                />
+                <GenerationMenuButton
+                  title={"投稿する"}
+                  onClick={props.onPost}
+                  text={"投稿"}
+                  icon={FileUp}
+                />
+                <GenerationMenuButton
+                  title={"生成情報をコピーする"}
+                  onClick={() =>
+                    props.copyGeneration(props.GenerationParameters)
+                  }
+                  icon={ClipboardCopy}
+                />
+                {props.task.nanoid !== null && props.task.nanoid !== "" && (
+                  <GenerationMenuButton
+                    title={"URLをコピーする"}
+                    onClick={() => {
+                      if (props.task.nanoid !== null) {
+                        props.copyUrl(props.task.nanoid)
+                      }
+                    }}
+                    icon={LinkIcon}
+                  />
+                )}
+                <GenerationMenuButton
+                  title={"画像を保存する"}
+                  onClick={() => props.saveGenerationImage(props.task.id)}
+                  icon={ArrowDownToLine}
+                />
+                <GenerationMenuButton
+                  title={"保護する"}
+                  onClick={() => props.toggleProtectedImage(props.task.id)}
+                  icon={
+                    props.isProtected ? LockKeyholeIcon : LockKeyholeOpenIcon
+                  }
+                  isLoading={props.isProtectedLoading}
+                />
+                <AppConfirmDialog
+                  title={"確認"}
+                  description={"本当に削除しますか？"}
+                  onNext={() => {
+                    props.onDelete()
+                  }}
+                  onCancel={() => {}}
+                >
+                  <GenerationMenuButton
+                    title={"生成履歴を削除する"}
+                    onClick={() => () => {}}
+                    icon={Trash2}
+                  />
+                </AppConfirmDialog>
+              </div>
+              <div className="py-2">
+                <Separator />
+              </div>
+              <div className="my-4 flex justify-end gap-x-2">
+                <StarRating
+                  value={props.rating}
+                  onChange={(value) => {
+                    props.setRating(value)
+                    props.onChangeRating(props.task.nanoid ?? "", value)
+                  }}
+                />
+                <div className="ml-auto">
+                  <GenerationMenuButton
+                    title={"インペイント機能で一部分を再生成して修正する"}
+                    onClick={props.onInPaint}
+                    text={"部分修正"}
+                    icon={PenIcon}
+                  />
+                </div>
+              </div>
+              <div className="py-2">
+                <Separator />
+              </div>
+            </>
+          )}
+          {props.task.status === "RESERVED" && (
+            <>
+              <p className="text-center">{"予約生成中"}</p>
+              <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
+                <Skeleton className={"m-auto h-[400px] w-[400px] rounded-xl"} />
+              </div>
+            </>
+          )}
           <div className="mb-1 flex gap-x-2">
             <div className="basis-1/3">
               <p className="mb-1 font-semibold">{"Size"}</p>

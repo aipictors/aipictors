@@ -74,10 +74,6 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
-  useEffect(() => {
-    context.updateIsCreatingTask(isCreatingTask)
-  }, [isCreatingTask])
-
   const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
@@ -93,7 +89,7 @@ export function GenerationSubmissionView(props: Props) {
     })
 
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: isCreatingTask ? 1000 : 60000,
+    pollInterval: 2000,
   })
 
   const [signTerms] = useMutation(signImageGenerationTermsMutation, {
@@ -453,6 +449,20 @@ export function GenerationSubmissionView(props: Props) {
    */
   const inProgressImageGenerationReservedTasksCount =
     status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
+
+  useEffect(() => {
+    if (
+      inProgressImageGenerationTasksCount > 0 ||
+      inProgressImageGenerationReservedTasksCount > 0
+    ) {
+      context.updateIsCreatingTask(true)
+    } else {
+      context.updateIsCreatingTask(false)
+    }
+  }, [
+    inProgressImageGenerationReservedTasksCount,
+    inProgressImageGenerationTasksCount,
+  ])
 
   /**
    * 予約生成が可能かどうか

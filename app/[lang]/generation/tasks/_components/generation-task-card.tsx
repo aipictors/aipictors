@@ -26,6 +26,10 @@ type Props = {
  * @returns
  */
 export const GenerationTaskCard = (props: Props) => {
+  if (props.task.status === "RESERVED") {
+    console.log("GenerationTaskCard", props.task.status)
+  }
+
   return (
     <>
       {props.isEditMode && (

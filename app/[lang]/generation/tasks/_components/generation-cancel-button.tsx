@@ -18,7 +18,7 @@ export const GenerationTaskCancelButton = (props: Props) => {
         <Loader2 className="mt-4 mr-4 ml-auto h-6 w-6 animate-spin" />
       ) : (
         <Button
-          className="absolute right-2 mt-2 mr-2 ml-auto"
+          className="absolute right-2 z-10 mt-2 mr-2 ml-auto"
           size={"icon"}
           variant="ghost"
           disabled={props.isDisabled}

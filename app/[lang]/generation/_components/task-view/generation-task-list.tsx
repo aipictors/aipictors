@@ -10,9 +10,10 @@ import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { config } from "@/config"
+import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { cn } from "@/lib/utils"
-import { useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense, startTransition } from "react"
 import { toast } from "sonner"
@@ -97,7 +98,10 @@ export const GenerationTaskList = (props: Props) => {
    * 非表示指定のタスクを除外
    */
   const currentTasks = imageGenerationTasks.filter((task) => {
-    return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
+    return (
+      task.status === "RESERVED" ||
+      (task.nanoid && !props.hidedTaskIds.includes(task.nanoid))
+    )
   })
 
   const imageGenerationProtectedTasks =
@@ -151,7 +155,7 @@ export const GenerationTaskList = (props: Props) => {
 
   const inProgressTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    return task.status === "IN_PROGRESS"
+    return task.status === "IN_PROGRESS" || task.status === "RESERVED"
   })
 
   const activeTasks = currentTasks.filter((task) => {
@@ -159,7 +163,8 @@ export const GenerationTaskList = (props: Props) => {
     return (
       task.status === "PENDING" ||
       task.status === "IN_PROGRESS" ||
-      task.status === "DONE"
+      task.status === "DONE" ||
+      task.status === "RESERVED"
     )
   })
 

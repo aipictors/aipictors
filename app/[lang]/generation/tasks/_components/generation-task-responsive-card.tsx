@@ -2,6 +2,7 @@ import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/tas
 import { GenerationTaskButton } from "@/app/[lang]/generation/tasks/_components/generation-task-button"
 import { GenerationTaskDialogButton } from "@/app/[lang]/generation/tasks/_components/generation-task-dialog-button"
 import { GenerationTaskLinkCard } from "@/app/[lang]/generation/tasks/_components/generation-task-link-card"
+import { ReservedGenerationLinkCard } from "@/app/[lang]/generation/tasks/_components/reserved-generation-link-card"
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { useMediaQuery } from "usehooks-ts"
@@ -28,9 +29,16 @@ type Props = {
 export const GenerationTaskResponsiveCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
+  if (props.task.status === "RESERVED") {
+    console.log("GenerationTaskResponsiveCard", props.task.status)
+  }
+
   return (
     <>
-      {!isDesktop && (
+      {!isDesktop && props.task.status === "RESERVED" && (
+        <ReservedGenerationLinkCard taskNanoid={props.task.nanoid ?? ""} />
+      )}
+      {!isDesktop && props.task.status !== "RESERVED" && (
         <GenerationTaskLinkCard
           taskId={props.task.id}
           taskNanoid={props.task.nanoid}

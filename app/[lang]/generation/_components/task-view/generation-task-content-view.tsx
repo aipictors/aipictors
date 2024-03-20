@@ -37,6 +37,8 @@ export const GenerationTaskContentPreview = () => {
 
   const imageGenerationTask = data?.imageGenerationTask
 
+  console.log(imageGenerationTask)
+
   if (imageGenerationTask === null || imageGenerationTask === undefined) {
     return null
   }

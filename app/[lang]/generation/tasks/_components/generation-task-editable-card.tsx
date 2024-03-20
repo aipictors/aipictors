@@ -1,14 +1,18 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
 import { GenerationTaskProtectedButton } from "@/app/[lang]/generation/tasks/_components/generation-task-protected-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
+import { ReservedGenerationCard } from "@/app/[lang]/generation/tasks/_components/reserved-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
+import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"
@@ -51,6 +55,12 @@ export const GenerationTaskEditableCard = (props: Props) => {
     },
   )
 
+  const [cancelReservedTask, { loading: isCancelingReservedTask }] =
+    useMutation(deleteImageGenerationTaskMutation, {
+      refetchQueries: [viewerImageGenerationTasksQuery],
+      awaitRefetchQueries: true,
+    })
+
   /**
    * 生成タスクをキャンセルする
    * @param taskNanoid
@@ -72,6 +82,28 @@ export const GenerationTaskEditableCard = (props: Props) => {
   }
 
   /**
+   * 予約生成タスクをキャンセルする
+   * @param taskNanoid
+   * @returns
+   */
+  const onCancelReservedTask = async (taskNanoid: string | null) => {
+    console.log(props.task)
+    console.log(taskNanoid)
+    if (taskNanoid === null) return
+    try {
+      await cancelReservedTask({ variables: { input: { nanoid: taskNanoid } } })
+      if (props.onCancel) {
+        props.onCancel()
+      }
+      toast("予約タスクをキャンセルしました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  /**
    * 履歴画像上に表示されるボタンのサイズ
    * @param size サイズ
    * @returns
@@ -84,6 +116,23 @@ export const GenerationTaskEditableCard = (props: Props) => {
       return 2
     }
     return 3
+  }
+
+  if (props.task.status === "RESERVED") {
+    console.log("GenerationTaskEditableCard", props.task.status)
+  }
+
+  if (props.task.status === "RESERVED") {
+    return (
+      <ReservedGenerationCard
+        onClick={props.onClick}
+        onCancel={() => onCancelReservedTask(props.task.nanoid)}
+        isCanceling={isCanceling}
+        taskId={props.taskId}
+        isPreviewByHover={props.isPreviewByHover}
+        setIsHovered={setIsHovered}
+      />
+    )
   }
 
   if (
@@ -124,18 +173,22 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        <PrivateImage
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          className={`m-auto generation-image-${props.taskNanoid}`}
-          taskId={props.taskId}
-          token={
-            context.config.taskListThumbnailType === "light"
-              ? props.thumbnailToken
-              : props.token
-          }
-          isThumbnail={context.config.taskListThumbnailType === "light"}
-          alt={"-"}
-        />
+        {props.thumbnailToken && props.token ? (
+          <PrivateImage
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`m-auto generation-image-${props.taskNanoid}`}
+            taskId={props.taskId}
+            token={
+              context.config.taskListThumbnailType === "light"
+                ? props.thumbnailToken
+                : props.token
+            }
+            isThumbnail={context.config.taskListThumbnailType === "light"}
+            alt={"-"}
+          />
+        ) : (
+          <Skeleton className="h-[120px] w-[240px] rounded-xl" />
+        )}
       </SelectableCardButton>
       {/* 拡大ボタン */}
       {isDesktop && isHovered && (

@@ -38,6 +38,10 @@ export function GenerationTaskButton(props: Props) {
     }, 100)
   }
 
+  if (props.task.status === "RESERVED") {
+    console.log("GenerationTaskButton", props.task.status)
+  }
+
   return (
     <>
       <GenerationTaskEditableCard

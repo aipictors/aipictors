@@ -327,7 +327,10 @@ export function GenerationTaskView(props: Props) {
     modelName: data.imageGenerationTask.model?.name ?? "",
   }
 
-  if (data?.imageGenerationTask.status === "IN_PROGRESS") {
+  if (
+    data?.imageGenerationTask.status === "IN_PROGRESS" ||
+    data?.imageGenerationTask.status === "RESERVED"
+  ) {
     return (
       <>
         <InProgressImageGenerationTaskResult />
