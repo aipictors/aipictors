@@ -197,7 +197,15 @@ export default function GenerationConfigView() {
           <Separator />
           <Accordion type="single" collapsible>
             <AccordionItem value="setting">
-              <AccordionTrigger>詳細設定</AccordionTrigger>
+              <AccordionTrigger>
+                <div className="text-left">
+                  <p>詳細設定</p>
+                  <p className="text-sm opacity-40">
+                    Scale:{context.config.scale}, Steps:{context.config.steps},
+                    Sampler:{context.config.sampler}, Vae:{context.config.vae}
+                  </p>
+                </div>
+              </AccordionTrigger>
               <AccordionContent className="space-y-2">
                 <GenerationConfigScale
                   value={context.config.scale}
