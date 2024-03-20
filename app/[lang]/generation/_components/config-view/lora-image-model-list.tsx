@@ -53,7 +53,7 @@ export const LoraImageModelList = (props: Props) => {
       </Select>
 
       <ScrollArea className="h-full max-h-[64vh]">
-        <div className="grid grid-cols-3 gap-4 lg:grid-cols-7 md:grid-cols-8 xl:grid-cols-12">
+        <div className="grid grid-cols-3 gap-4 pr-4 lg:grid-cols-7 md:grid-cols-8 xl:grid-cols-12">
           {filteredModels.map((model) => (
             <div key={model.id}>
               <ImageModelCard

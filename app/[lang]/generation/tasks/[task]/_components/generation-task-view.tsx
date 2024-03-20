@@ -459,19 +459,18 @@ export function GenerationTaskView(props: Props) {
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"prompt"}</p>
-          <Textarea disabled={true}>{data.imageGenerationTask.prompt}</Textarea>
-          <CopyButton className="mt-2" text={data.imageGenerationTask.prompt} />
+          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+            {data.imageGenerationTask.prompt}
+          </p>
+          <CopyButton text={data.imageGenerationTask.prompt} />
           <div className="py-2">
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-          <Textarea disabled={true}>
+          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
             {data.imageGenerationTask.negativePrompt}
-          </Textarea>
-          <CopyButton
-            className="mt-2"
-            text={data.imageGenerationTask.negativePrompt}
-          />
+          </p>
+          <CopyButton text={data.imageGenerationTask.negativePrompt} />
           <div className="py-2">
             <Separator />
           </div>
@@ -511,7 +510,7 @@ export function GenerationTaskView(props: Props) {
                 )}
               >
                 <Button className="w-full p-4" variant={"secondary"}>
-                  画像生成
+                  詳細を閉じる
                 </Button>
               </Link>
             </div>

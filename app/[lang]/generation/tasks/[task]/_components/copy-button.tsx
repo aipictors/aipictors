@@ -24,7 +24,10 @@ export const CopyButton = (props: Props) => {
       variant={"secondary"}
       disabled={props.disabled}
       size={"sm"}
-      className={`${props.className}pad-16 w-full whitespace-normal`}
+      className={`${
+        props.className
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      } m-0 pad-16 w-full whitespace-normal`}
       onClick={copyToClipboard}
     >
       <p className="break-all text-left">コピー</p>

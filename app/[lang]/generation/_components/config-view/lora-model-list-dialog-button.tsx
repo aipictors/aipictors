@@ -46,7 +46,9 @@ export const LoraModelListDialogButton = (props: Props) => {
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
         <DialogHeader>
-          <DialogTitle>{"LoRAを選択"}</DialogTitle>
+          <DialogTitle className="hidden md:block xl:block">
+            {"LoRAを選択"}
+          </DialogTitle>
           <DialogDescription>
             <p className="hidden md:block xl:block">
               {"使用するLoRA(エフェクト)を選択してください"}

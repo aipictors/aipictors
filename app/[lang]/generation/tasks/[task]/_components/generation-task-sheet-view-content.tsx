@@ -125,7 +125,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
     <>
       <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
         <div
-          className={cn("space-y-2 p-4", {
+          className={cn("p-4", {
             "w-full mx-auto": props.isListFullSize,
             "max-h-[88vh]": props.isScroll,
           })}
@@ -286,14 +286,18 @@ export function GenerationTaskSheetViewContent(props: Props) {
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"prompt"}</p>
-          <Textarea disabled={true} value={props.task.prompt} />
-          <CopyButton className="mb-4" text={props.task.prompt} />
+          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+            {props.task.prompt}
+          </p>
+          <CopyButton text={props.task.prompt} />
           <div className="py-2">
             <Separator />
           </div>
           <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-          <Textarea disabled={true} value={props.task.negativePrompt} />
-          <CopyButton className="mb-4" text={props.task.negativePrompt} />
+          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+            {props.task.negativePrompt}
+          </p>
+          <CopyButton text={props.task.negativePrompt} />
           <div className="py-2">
             <Separator />
           </div>

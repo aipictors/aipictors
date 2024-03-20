@@ -119,14 +119,18 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
           <Separator />
         </div>
         <p className="mb-1 font-semibold">{"prompt"}</p>
-        <Textarea disabled={true} value={props.task.prompt} />
-        <CopyButton className="mb-4" text={props.task.prompt} />
+        <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+          {props.task.prompt}
+        </p>
+        <CopyButton text={props.task.prompt} />
         <div className="py-2">
           <Separator />
         </div>
         <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-        <Textarea disabled={true} value={props.task.negativePrompt} />
-        <CopyButton className="mb-4" text={props.task.negativePrompt} />
+        <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+          {props.task.negativePrompt}
+        </p>
+        <CopyButton text={props.task.negativePrompt} />
         <div className="py-2">
           <Separator />
         </div>
