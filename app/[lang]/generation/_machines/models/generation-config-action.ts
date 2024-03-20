@@ -687,7 +687,7 @@ export class GenerationConfigAction {
 
   getModelVae(modelType: string) {
     if (modelType === "SD1") {
-      return "ClearVAE_V2.3"
+      return "vae-ft-mse-840000-ema-pruned"
     }
     if (modelType === "SD2") {
       return "kl-f8-anime2"
@@ -695,7 +695,7 @@ export class GenerationConfigAction {
     if (modelType === "SDXL") {
       return "sdxl_vae"
     }
-    return "ClearVAE_V2.3"
+    return "clearvae_v23"
   }
 
   getPromptLoraModelNames() {
