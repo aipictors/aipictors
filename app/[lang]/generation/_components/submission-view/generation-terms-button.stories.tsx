@@ -24,5 +24,6 @@ const text = `生成機能では、以下の利用は禁止されております
 export const Default: Story = {
   args: {
     termsMarkdownText: text,
+    isLoading: false,
   },
 }
