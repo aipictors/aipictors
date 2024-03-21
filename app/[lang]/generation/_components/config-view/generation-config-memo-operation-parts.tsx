@@ -33,7 +33,7 @@ export const GenerationConfigMemoOperationParts = (props: Props) => {
         onClick={() => {
           setIsOpen(true)
         }}
-        className="h-11"
+        className="mb-2 h-10 md:mb-0"
       >
         {"現在の設定をメモする"}
       </Button>

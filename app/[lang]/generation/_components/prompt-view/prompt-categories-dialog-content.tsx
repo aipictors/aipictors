@@ -39,7 +39,7 @@ export const PromptCategoriesDialogContent = (props: Props) => {
         <ScrollArea className="h-full max-h-[80vh] overflow-auto">
           <Accordion
             type="multiple"
-            className="w-full"
+            className="w-full pr-4"
             defaultValue={defaultOpenCategories}
           >
             {props.promptCategories.map((promptCategory) => (
