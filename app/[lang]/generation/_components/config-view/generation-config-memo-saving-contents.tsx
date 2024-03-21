@@ -51,6 +51,12 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
 
   const [seed, setSeed] = useState(context.config.seed)
 
+  const [vae, setVae] = useState(
+    context.config.vae === ""
+      ? "vae-ft-mse-840000-ema-pruned"
+      : context.config.vae,
+  )
+
   const [sampler, setSampler] = useState(
     context.config.sampler === "" ? "DPM++ 2M Karras" : context.config.sampler,
   )
@@ -84,6 +90,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
           seed: seed,
           steps: steps,
           scale: scale,
+          vae: vae ?? "",
           clipSkip: clipSkip,
           width: width,
           height: height,
@@ -134,7 +141,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
         {negativePrompts}
       </Textarea>
       <div className="flex items-center space-x-2">
-        <div>
+        <div className="w-full">
           {"Steps"}
           <Input
             onChange={(event) => {
@@ -145,7 +152,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
             placeholder="Steps"
           />
         </div>
-        <div>
+        <div className="w-full">
           {"Scale"}
           <Input
             onChange={(event) => {
@@ -156,7 +163,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
             placeholder="Scale"
           />
         </div>
-        <div>
+        <div className="w-full">
           {"Seeds"}
           <Input
             onChange={(event) => {
@@ -169,7 +176,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
         </div>
       </div>
       <div className="flex items-center space-x-2">
-        <div>
+        <div className="w-full">
           {"ClipSkip"}
           <Input
             onChange={(event) => {
@@ -180,29 +187,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
             placeholder="ClipSkip"
           />
         </div>
-        {/* <div>
-          {"幅"}
-          <Input
-            onChange={(event) => {
-              setWidth(Number(event.target.value))
-            }}
-            type="number"
-            value={width}
-            placeholder="幅"
-          />
-        </div>
-        <div>
-          {"高さ"}
-          <Input
-            onChange={(event) => {
-              setHeight(Number(event.target.value))
-            }}
-            type="number"
-            value={height}
-            placeholder="高さ"
-          />
-        </div> */}
-        <div>
+        <div className="w-full">
           {"Sampler"}
           <Select
             value={sampler}
@@ -217,6 +202,26 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
               {config.generationFeature.samplerValues.map((sampler) => (
                 <SelectItem key={sampler} value={sampler}>
                   {sampler}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          {"VAE"}
+          <Select
+            value={vae ?? "vae-ft-mse-840000-ema-pruned"}
+            onValueChange={(value) => {
+              setVae(value)
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              {config.generationFeature.vaeValues.map((vae) => (
+                <SelectItem key={vae} value={vae}>
+                  {vae}
                 </SelectItem>
               ))}
             </SelectContent>

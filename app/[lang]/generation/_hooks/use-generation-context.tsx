@@ -66,11 +66,11 @@ export const useGenerationContext = () => {
       .updateModelId(modelId, modelType)
       .updateSampler(sampler)
       .updateScale(scale)
-      .updateVae(vae)
       .updateSeed(seed)
       .updateSizeType(sizeType)
       .updateClipSkip(clipSkip)
       .updateNegativePrompt(negativePromptText)
+      .updateVae(vae)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

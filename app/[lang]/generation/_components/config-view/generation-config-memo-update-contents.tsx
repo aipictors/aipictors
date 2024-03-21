@@ -58,6 +58,10 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
     props.memo.sampler === "" ? "DPM++ 2M Karras" : props.memo.sampler,
   )
 
+  const [vae, setVae] = useState(
+    props.memo.vae === "" ? "vae-ft-mse-840000-ema-pruned" : props.memo.vae,
+  )
+
   const [clipSkip, setClipSkip] = useState(props.memo.clipSkip)
 
   const [width, setWidth] = useState(0)
@@ -89,8 +93,6 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
     props.onClose()
   }
 
-  console.log(prompts)
-
   const onCreateMemo = async () => {
     await updateMemo({
       variables: {
@@ -105,6 +107,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
           seed: seed,
           steps: steps,
           scale: scale,
+          vae: vae,
           clipSkip: clipSkip,
           width: width,
           height: height,
@@ -130,10 +133,13 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
     const seed = props.memo.seed
     const clipSkip = props.memo.clipSkip
     const steps = props.memo.steps
-    const sampler = props.memo.sampler
     const sizeType = context.config.sizeType
-    const vae = context.config.vae ?? ""
     const modelType = context.config.modelType
+    const vae = !props.memo.vae
+      ? !context.config.vae
+        ? "vae-ft-mse-840000-ema-pruned"
+        : context.config.vae
+      : props.memo.vae
 
     context.updateSettings(
       modelId,
@@ -141,7 +147,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
       modelType,
       sampler,
       scale,
-      vae,
+      vae ?? props.memo.vae,
       promptText,
       negativePromptText,
       seed,
@@ -193,7 +199,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
         {negativePrompts}
       </Textarea>
       <div className="flex items-center space-x-2">
-        <div>
+        <div className="w-full">
           {"Steps"}
           <Input
             onChange={(event) => {
@@ -204,7 +210,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             placeholder="Steps"
           />
         </div>
-        <div>
+        <div className="w-full">
           {"Scale"}
           <Input
             onChange={(event) => {
@@ -215,7 +221,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             placeholder="Scale"
           />
         </div>
-        <div>
+        <div className="w-full">
           {"Seeds"}
           <Input
             onChange={(event) => {
@@ -228,7 +234,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
         </div>
       </div>
       <div className="flex items-center space-x-2">
-        <div>
+        <div className="w-full">
           {"ClipSkip"}
           <Input
             onChange={(event) => {
@@ -239,29 +245,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
             placeholder="ClipSkip"
           />
         </div>
-        {/* <div>
-          {"幅"}
-          <Input
-            onChange={(event) => {
-              setWidth(Number(event.target.value))
-            }}
-            type="number"
-            value={width}
-            placeholder="幅"
-          />
-        </div>
-        <div>
-          {"高さ"}
-          <Input
-            onChange={(event) => {
-              setHeight(Number(event.target.value))
-            }}
-            type="number"
-            value={height}
-            placeholder="高さ"
-          />
-        </div> */}
-        <div>
+        <div className="w-full">
           {"Sampler"}
           <Select
             value={sampler}
@@ -276,6 +260,26 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
               {config.generationFeature.samplerValues.map((sampler) => (
                 <SelectItem key={sampler} value={sampler}>
                   {sampler}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full">
+          {"VAE"}
+          <Select
+            value={vae ?? "vae-ft-mse-840000-ema-pruned"}
+            onValueChange={(value) => {
+              setVae(value)
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              {config.generationFeature.vaeValues.map((vae) => (
+                <SelectItem key={vae} value={vae}>
+                  {vae}
                 </SelectItem>
               ))}
             </SelectContent>

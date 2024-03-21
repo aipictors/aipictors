@@ -15,6 +15,7 @@ export const imageGenerationMemoFieldsFragment = gql(`
       name
       type
     }
+    vae
     seed
     steps
     scale

@@ -151,7 +151,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   children={
                     <PrivateImage
                       // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                      className={`m-auto max-h-96 generation-image-${props.task.id}`}
+                      className={`m-auto h-72 max-h-96 generation-image-${props.task.id}`}
                       taskId={props.task.id}
                       token={props.task.token as string}
                       isThumbnail={
