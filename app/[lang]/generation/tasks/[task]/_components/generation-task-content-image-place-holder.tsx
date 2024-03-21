@@ -2,7 +2,6 @@
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
-import { useTheme } from "next-themes"
 
 type Props = {
   className?: string
@@ -14,15 +13,13 @@ type Props = {
  * @returns
  */
 export function GenerationTaskContentImagePlaceHolder(props: Props) {
-  const { theme } = useTheme()
-
   return (
     <Skeleton
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
       className={`${props.className} relative`}
     >
       <Loader2Icon
-        color={theme === "light" ? "black" : "white"}
+        color={"gray"}
         className={"dark:black absolute top-[50%] left-[48%] w-8 animate-spin"}
       />
     </Skeleton>
