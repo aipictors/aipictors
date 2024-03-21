@@ -49,7 +49,11 @@ export const GenerationTaskList = (props: Props) => {
     return snap.value
   })
 
-  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
+  const {
+    data: tasks,
+    startPolling,
+    stopPolling,
+  } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: props.protect !== 1 ? 32 : config.query.maxLimit,
       offset: props.currentPage * 32,
@@ -63,26 +67,31 @@ export const GenerationTaskList = (props: Props) => {
       },
     },
     fetchPolicy: "cache-first",
-    pollInterval: context.config.isCreatingTask
-      ? isTimeout
-        ? 3000
-        : 2000
-      : 600000,
   })
 
-  const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit: config.query.maxLimit,
-      offset: 0,
-      where: {
-        isProtected: true,
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
+  const { data: protectedTasks, startPolling: protectStartPolling } = useQuery(
+    viewerImageGenerationTasksQuery,
+    {
+      variables: {
+        limit: config.query.maxLimit,
+        offset: 0,
+        where: {
+          isProtected: true,
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+        },
       },
+      fetchPolicy: "cache-first",
     },
-    fetchPolicy: "cache-first",
-  })
+  )
+
+  useEffect(() => {
+    stopPolling()
+    startPolling(
+      context.config.isCreatingTask ? (isTimeout ? 3000 : 2000) : 600000,
+    )
+  }, [context.config.isCreatingTask, isTimeout, startPolling, stopPolling])
 
   if (tasks === undefined || protectedTasks === undefined) {
     return null
