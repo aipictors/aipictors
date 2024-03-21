@@ -22,7 +22,7 @@ export const GenerationTaskDetailsView = () => {
       title={"履歴詳細"}
       tooltip={"履歴に関する操作が可能です"}
     >
-      <Button className="m-2" variant={"secondary"} onClick={onCancel}>
+      <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
         {"閉じる（Escape）"}
       </Button>
 

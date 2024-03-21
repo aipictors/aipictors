@@ -93,6 +93,7 @@ export const saveGenerationImage = (taskId: string) => {
     `.generation-image-${taskId}`,
   ) as HTMLImageElement
   if (!imageElement) {
+    toast("しばらくしてからお試し下さい。")
     return
   }
   const imageUrl = imageElement.src

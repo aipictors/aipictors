@@ -24,7 +24,9 @@ type Props = {
  * @returns
  */
 export function SelectableCardButton(props: Props) {
-  const { theme } = useTheme()
+  const { theme, systemTheme } = useTheme()
+
+  const currentTheme = theme === "system" ? systemTheme : theme
 
   return (
     <button
@@ -32,7 +34,7 @@ export function SelectableCardButton(props: Props) {
       onClick={props.onClick}
       className={cn(
         "relative",
-        "h-auto overflow-hidden rounded bg-card p-0",
+        "h-auto rounded bg-card p-0 p-2overflow-hidden",
         "border-2 border-input",
         {
           "hover:opacity-80": !props.isSelected,
@@ -60,7 +62,7 @@ export function SelectableCardButton(props: Props) {
           {props.isSelected ? (
             <CheckIcon
               className="p-1"
-              color={theme === "light" ? "white" : "black"}
+              color={currentTheme === "light" ? "white" : "black"}
             />
           ) : (
             <CheckIcon className="p-1 opacity-0" />
