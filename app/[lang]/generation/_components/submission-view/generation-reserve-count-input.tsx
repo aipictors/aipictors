@@ -9,7 +9,7 @@ type Props = {
 export function GenerationReserveCountInput(props: Props) {
   return (
     <Input
-      className={"mr-2 w-20"}
+      className={"mr-2 w-16 md:w-20"}
       onChange={(e) => {
         if (Number(e.target.value) > props.maxCount) {
           props.onChange(props.maxCount)

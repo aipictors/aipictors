@@ -8,6 +8,7 @@ import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/s
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
 import { AuthContext } from "@/app/_contexts/auth-context"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, Minus, Plus } from "lucide-react"
 import { useContext } from "react"
 
 type Props = {
@@ -75,17 +76,49 @@ export function GenerationSubmitOperationParts(props: Props) {
     return false
   }
 
+  const onMinusButtonClick = () => {
+    if (props.generationCount <= 1) {
+      return
+    }
+    props.setGenerationCount(props.generationCount - 1)
+  }
+
+  const onPlusButtonClick = () => {
+    if (props.generationCount >= props.availableImageGenerationMaxTasksCount) {
+      return
+    }
+    props.setGenerationCount(props.generationCount + 1)
+  }
+
   return (
     <>
       <div className="flex items-center">
-        <GenerationReserveCountInput
-          maxCount={
-            props.availableImageGenerationMaxTasksCount - props.tasksCount
-          }
-          onChange={props.setGenerationCount}
-          count={props.generationCount}
-        />
-        <div className="mr-2">枚</div>
+        <div className="flex items-center">
+          <Button
+            className="mr-2 block md:hidden"
+            size={"icon"}
+            variant={"ghost"}
+            onClick={onMinusButtonClick}
+          >
+            <Minus className="m-auto" />
+          </Button>
+          <GenerationReserveCountInput
+            maxCount={
+              props.availableImageGenerationMaxTasksCount - props.tasksCount
+            }
+            onChange={props.setGenerationCount}
+            count={props.generationCount}
+          />
+          <div className="mr-2 hidden md:block">枚</div>
+          <Button
+            className="mr-2 block md:hidden"
+            size={"icon"}
+            variant={"ghost"}
+            onClick={onPlusButtonClick}
+          >
+            <Plus className="m-auto" />
+          </Button>
+        </div>
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (
           <LoginDialogButton
