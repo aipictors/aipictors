@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationTaskListViewPlaceholder } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view-placeholder"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
@@ -53,6 +54,7 @@ export const GenerationTaskList = (props: Props) => {
     data: tasks,
     startPolling,
     stopPolling,
+    loading: normalLoading,
   } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit: props.protect !== 1 ? 32 : config.query.maxLimit,
@@ -69,22 +71,23 @@ export const GenerationTaskList = (props: Props) => {
     fetchPolicy: "cache-first",
   })
 
-  const { data: protectedTasks, startPolling: protectStartPolling } = useQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit: config.query.maxLimit,
-        offset: 0,
-        where: {
-          isProtected: true,
-          ...(props.rating !== -1 && {
-            rating: props.rating,
-          }),
-        },
+  const {
+    data: protectedTasks,
+    startPolling: protectStartPolling,
+    loading: protectedLoading,
+  } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: config.query.maxLimit,
+      offset: 0,
+      where: {
+        isProtected: true,
+        ...(props.rating !== -1 && {
+          rating: props.rating,
+        }),
       },
-      fetchPolicy: "cache-first",
     },
-  )
+    fetchPolicy: "cache-first",
+  })
 
   useEffect(() => {
     stopPolling()
@@ -221,6 +224,10 @@ export const GenerationTaskList = (props: Props) => {
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
+
+  if (normalLoading) {
+    return <GenerationTaskListViewPlaceholder />
+  }
 
   return (
     <>
