@@ -352,7 +352,11 @@ export function GenerationTaskSheetViewContent(props: Props) {
             </div>
             <div className="w-full">
               <p className="mb-1 font-semibold">{"Vae"}</p>
-              <p>{props.task.vae}</p>
+              <p>
+                {props.task.vae
+                  ?.replace(".ckpt", "")
+                  .replace(".safetensors", "") ?? ""}
+              </p>
             </div>
             <div className="w-full">
               <p className="mb-1 font-semibold">{"Seed"}</p>
