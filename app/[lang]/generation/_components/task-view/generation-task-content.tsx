@@ -1,5 +1,6 @@
 "use client"
 
+import { generationTaskError } from "@/app/[lang]/generation/_components/task-view/generation-task-error"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AuthContext } from "@/app/_contexts/auth-context"
@@ -10,6 +11,7 @@ import type {
 } from "@/graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { ErrorBoundary } from "@sentry/nextjs"
 import { useContext } from "react"
 
 /**
@@ -45,15 +47,17 @@ export const GenerationTaskContent = () => {
 
   return (
     <>
-      <GenerationTaskSheetView
-        task={{
-          ...imageGenerationTask,
-          status: imageGenerationTask.status as ImageGenerationStatus,
-          sizeType: imageGenerationTask.sizeType as ImageGenerationSizeType,
-          generationType:
-            imageGenerationTask.generationType as ImageGenerationType,
-        }}
-      />
+      <ErrorBoundary fallback={generationTaskError}>
+        <GenerationTaskSheetView
+          task={{
+            ...imageGenerationTask,
+            status: imageGenerationTask.status as ImageGenerationStatus,
+            sizeType: imageGenerationTask.sizeType as ImageGenerationSizeType,
+            generationType:
+              imageGenerationTask.generationType as ImageGenerationType,
+          }}
+        />
+      </ErrorBoundary>
     </>
   )
 }
