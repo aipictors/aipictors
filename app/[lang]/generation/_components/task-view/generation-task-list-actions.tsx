@@ -86,7 +86,7 @@ export const GenerationTaskListActions = (props: Props) => {
   return (
     <>
       {/* 操作一覧 */}
-      <div className="flex items-center px-4 pb-2">
+      <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
         <div className="flex w-full items-center space-x-2">
           <Toggle
             className="w-16"
