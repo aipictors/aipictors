@@ -15,7 +15,12 @@ const Component = (props: Props) => {
   const { data } = useSuspenseQuery({
     queryKey: [props.taskId, props.isThumbnail],
     queryFn() {
-      return fetchImage(config.wordpressEndpoint.privateImage, props.token)
+      try {
+        return fetchImage(config.wordpressEndpoint.privateImage, props.token)
+      } catch (error) {
+        console.error(error)
+        return ""
+      }
     },
   })
 
