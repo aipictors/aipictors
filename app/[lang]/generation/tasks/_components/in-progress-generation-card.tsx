@@ -25,22 +25,22 @@ export const InProgressGenerationCard = (props: Props) => {
     }
   }, [])
 
-  const waitSecondsLabel = () => {
-    const waitSecondsOnOneTask = 15
-    if (initWaitCount * waitSecondsOnOneTask > 120) {
-      return "数分"
-    }
-    if (initWaitCount * waitSecondsOnOneTask > 60) {
-      return "1分"
-    }
-    if (initWaitCount * waitSecondsOnOneTask > 20) {
-      return "数十秒"
-    }
-    if (initWaitCount * waitSecondsOnOneTask > 0) {
-      return "十数秒"
-    }
-    return "十数秒"
-  }
+  // const waitSecondsLabel = () => {
+  //   const waitSecondsOnOneTask = 15
+  //   if (initWaitCount * waitSecondsOnOneTask > 120) {
+  //     return "数分"
+  //   }
+  //   if (initWaitCount * waitSecondsOnOneTask > 60) {
+  //     return "1分"
+  //   }
+  //   if (initWaitCount * waitSecondsOnOneTask > 20) {
+  //     return "数十秒"
+  //   }
+  //   if (initWaitCount * waitSecondsOnOneTask > 0) {
+  //     return "十数秒"
+  //   }
+  //   return "十数秒"
+  // }
 
   return (
     <>
@@ -48,14 +48,17 @@ export const InProgressGenerationCard = (props: Props) => {
         <div>
           <div className="relative flex">
             <div className="m-auto flex flex-col gap-y-2 p-4">
-              <Loader2Icon className="m-auto h-6 w-6 animate-spin" />
+              <Loader2Icon className="mr-auto h-6 w-6 animate-spin" />
               <span className="ta-c m-auto mb-4 text-sm">
                 {"generating..."}
               </span>
-              <p className="text-sm">
-                待ち: {props.imageGenerationWaitCount}/{initWaitCount}
-              </p>
-              <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
+              {initWaitCount !== 0 && (
+                <p className="text-sm">
+                  待ち: {props.imageGenerationWaitCount}/{initWaitCount}
+                </p>
+              )}
+              {/* <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
+               */}
               <InProgressGenerationProgressBar
                 per={
                   initWaitCount === 0

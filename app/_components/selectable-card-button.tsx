@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { CheckIcon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 type Props = {
   /**
@@ -23,6 +24,8 @@ type Props = {
  * @returns
  */
 export function SelectableCardButton(props: Props) {
+  const { theme } = useTheme()
+
   return (
     <button
       type={"button"}
@@ -46,11 +49,22 @@ export function SelectableCardButton(props: Props) {
       </div>
       {!props.isDisabled && (
         <div
-          className={cn("absolute top-2 right-2 rounded-full bg-white", {
-            "opacity-50 border-solid border-2 border-black": !props.isSelected,
-          })}
+          className={cn(
+            "absolute top-2 right-2 rounded-full border-2 bg-black dark:bg-white",
+            {
+              "opacity-50 border-solid border-2 border-black":
+                !props.isSelected,
+            },
+          )}
         >
-          <CheckIcon color={props.isSelected ? "black" : "white"} />
+          {props.isSelected ? (
+            <CheckIcon
+              className="p-1"
+              color={theme === "light" ? "white" : "black"}
+            />
+          ) : (
+            <CheckIcon className="p-1 opacity-0" />
+          )}
         </div>
       )}
     </button>

@@ -19,9 +19,7 @@ export const GenerationConfigI2i = () => {
    * @param croppedImage クロップした画像
    */
   const onCrop = async (croppedImage: string) => {
-    console.log(croppedImage)
     const base64 = await getBase64FromImageUrl(croppedImage)
-    console.log(base64)
     context.changeI2iImageBase64(base64)
   }
 
@@ -49,26 +47,34 @@ export const GenerationConfigI2i = () => {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
-      <div className="flex items-center gap-x-2">
-        <span className="w-auto text-nowrap text-sm">{"変更度"}</span>
-        <CrossPlatformTooltip
-          text={"変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。"}
-        />
-        <Slider
-          className="color-pink w-full"
-          aria-label="slider-ex-2"
-          min={0.1}
-          max={1.0}
-          step={0.01}
-          value={[context.config.i2iDenoisingStrengthSize]}
-          onValueChange={(value) =>
-            context.changeI2iDenoisingStrengthSize(value[0])
-          }
-        />
-        <span className="font-bold">
-          {context.config.i2iDenoisingStrengthSize.toFixed(2)}
-        </span>
-      </div>
+      {context.config.i2iImageBase64 !== "" && (
+        <div className="flex items-center gap-x-2">
+          <div className="flex w-20 items-center">
+            <span className="w-12 whitespace-nowrap text-nowrap text-sm">
+              {"変更度"}
+            </span>
+            <CrossPlatformTooltip
+              text={
+                "変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。"
+              }
+            />
+          </div>
+          <Slider
+            className="color-pink w-full"
+            aria-label="slider-ex-2"
+            min={0.1}
+            max={1.0}
+            step={0.01}
+            value={[context.config.i2iDenoisingStrengthSize]}
+            onValueChange={(value) =>
+              context.changeI2iDenoisingStrengthSize(value[0])
+            }
+          />
+          <span className="font-bold">
+            {context.config.i2iDenoisingStrengthSize.toFixed(2)}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

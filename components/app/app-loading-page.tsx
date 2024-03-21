@@ -1,7 +1,7 @@
 export function AppLoadingPage() {
   return (
-    <div className="flex flex-col justify-center items-center w-full h-screen">
-      <div className="animate-ping h-4 w-4 bg-primary rounded-full" />
+    <div className="flex h-screen w-full flex-col items-center justify-center">
+      <div className="h-4 w-4 animate-ping rounded-full bg-primary" />
     </div>
   )
 }

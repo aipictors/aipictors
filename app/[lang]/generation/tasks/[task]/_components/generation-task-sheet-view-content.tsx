@@ -5,10 +5,12 @@ import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-r
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import type { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -30,6 +32,7 @@ import {
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
+import { Suspense } from "react"
 import { CopyButton } from "./copy-button"
 
 type Props = {
@@ -145,22 +148,30 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
             {props.task.status !== "RESERVED" ? (
               <>
-                <GenerationImageDialogButton
-                  taskId={props.task.id}
-                  taskToken={props.task.token}
-                  children={
-                    <PrivateImage
-                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                      className={`m-auto h-72 max-h-96 generation-image-${props.task.id}`}
-                      taskId={props.task.id}
-                      token={props.task.token as string}
-                      isThumbnail={
-                        context.config.taskListThumbnailType === "light"
-                      }
-                      alt={"-"}
+                <Suspense
+                  fallback={
+                    <GenerationTaskContentImagePlaceHolder
+                      className={"m-auto h-72 max-h-96 max-w-['50vw']"}
                     />
                   }
-                />
+                >
+                  <GenerationImageDialogButton
+                    taskId={props.task.id}
+                    taskToken={props.task.token}
+                    children={
+                      <PrivateImage
+                        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                        className={`m-auto h-72 max-h-96 generation-image-${props.task.id}`}
+                        taskId={props.task.id}
+                        token={props.task.token as string}
+                        isThumbnail={
+                          context.config.taskListThumbnailType === "light"
+                        }
+                        alt={"-"}
+                      />
+                    }
+                  />
+                </Suspense>
               </>
             ) : (
               <>

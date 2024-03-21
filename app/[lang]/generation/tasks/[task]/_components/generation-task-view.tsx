@@ -4,6 +4,7 @@ import { InPaintingDialog } from "@/app/[lang]/generation/_components/submission
 import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
@@ -36,7 +37,7 @@ import {
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
-import { useContext, useState } from "react"
+import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
@@ -352,26 +353,40 @@ export function GenerationTaskView(props: Props) {
             <Dialog>
               <DialogTrigger asChild>
                 <Button className={"px-2"} variant={"ghost"}>
-                  <PrivateImage
-                    // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                    className={`generation-image-${props.taskId} m-auto max-h-screen`}
-                    taskId={data.imageGenerationTask.id}
-                    token={data.imageGenerationTask.token}
-                    isThumbnail={
-                      context.config.taskListThumbnailType === "light"
+                  <Suspense
+                    fallback={
+                      <GenerationTaskContentImagePlaceHolder
+                        className={"m-auto h-80 max-h-96 w-80 max-w-['50vw']"}
+                      />
                     }
-                    alt={"-"}
-                  />
+                  >
+                    <PrivateImage
+                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                      className={`generation-image-${props.taskId} m-auto max-h-screen`}
+                      taskId={data.imageGenerationTask.id}
+                      token={data.imageGenerationTask.token}
+                      isThumbnail={true}
+                      alt={"-"}
+                    />
+                  </Suspense>
                 </Button>
               </DialogTrigger>
               <DialogContent className={"max-h-[96vh] w-[auto] max-w-[96vw]"}>
-                <PrivateImage
-                  className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
-                  taskId={data.imageGenerationTask.id}
-                  token={data.imageGenerationTask.token}
-                  isThumbnail={false}
-                  alt={"-"}
-                />
+                <Suspense
+                  fallback={
+                    <GenerationTaskContentImagePlaceHolder
+                      className={"h-72 max-h-96 w-72 max-w-['50vw']"}
+                    />
+                  }
+                >
+                  <PrivateImage
+                    className={"m-auto h-[auto] max-h-[88vh] max-w-[80vw]"}
+                    taskId={data.imageGenerationTask.id}
+                    token={data.imageGenerationTask.token}
+                    isThumbnail={false}
+                    alt={"-"}
+                  />
+                </Suspense>
               </DialogContent>
             </Dialog>
           )}
