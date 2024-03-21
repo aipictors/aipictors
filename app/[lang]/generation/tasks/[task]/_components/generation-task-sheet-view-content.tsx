@@ -160,8 +160,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     taskToken={props.task.token}
                     children={
                       <PrivateImage
-                        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                        className={`m-auto h-72 max-h-96 generation-image-${props.task.id}`}
+                        className={"m-auto h-72 max-h-96"}
                         taskId={props.task.id}
                         token={props.task.token as string}
                         isThumbnail={
@@ -170,6 +169,23 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         alt={"-"}
                       />
                     }
+                  />
+                </Suspense>
+                {/* ダウンロード用（非表示） */}
+                <Suspense
+                  fallback={
+                    <GenerationTaskContentImagePlaceHolder
+                      className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                    />
+                  }
+                >
+                  <PrivateImage
+                    // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                    className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
+                    taskId={props.task.id}
+                    token={props.task.token as string}
+                    isThumbnail={false}
+                    alt={"-"}
                   />
                 </Suspense>
               </>

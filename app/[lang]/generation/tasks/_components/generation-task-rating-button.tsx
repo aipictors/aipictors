@@ -9,6 +9,7 @@ type Props = {
   taskNanoid: string
   nowRating: number
   size: number
+  onRatingChange(rating: number): void
 }
 
 /**
@@ -29,6 +30,7 @@ export const GenerationTaskRatingButton = (props: Props) => {
           },
         },
       })
+      props.onRatingChange(rating)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)

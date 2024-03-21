@@ -120,7 +120,7 @@ export const GenerationTaskListActions = (props: Props) => {
           {!props.isEditMode && (
             <GenerationTaskProtectedSelect onChange={props.onChangeProtect} />
           )}
-          {isDesktop && (
+          {isDesktop && state !== "HISTORY_LIST_FULL" && (
             <GenerationTaskPreviewModeButton
               onTogglePreviewMode={props.onTogglePreviewMode}
             />

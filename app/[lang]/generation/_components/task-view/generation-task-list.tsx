@@ -234,7 +234,7 @@ export const GenerationTaskList = (props: Props) => {
       <ScrollArea>
         {/* <Suspense fallback={<AppLoadingPage />}> */}
         <div
-          className={cn("grid gap-2 p-2 pt-0 sm:pl-4", {
+          className={cn("grid gap-2 p-2 pt-0 pr-4 sm:pl-4", {
             "grid-cols-0": props.thumbnailSize === 10,
             "grid-cols-1": props.thumbnailSize === 9,
             "grid-cols-2": props.thumbnailSize === 8,

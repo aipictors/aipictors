@@ -9,6 +9,7 @@ type Props = {
   taskNanoid: string
   isProtected: boolean
   size: number
+  onProtectedChange(isProtected: boolean): void
 }
 
 /**
@@ -29,6 +30,7 @@ export const GenerationTaskProtectedButton = (props: Props) => {
           },
         },
       })
+      props.onProtectedChange(isProtected)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)

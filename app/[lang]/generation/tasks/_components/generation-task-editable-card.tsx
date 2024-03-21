@@ -46,6 +46,10 @@ export const GenerationTaskEditableCard = (props: Props) => {
 
   const [isHovered, setIsHovered] = useState(false)
 
+  const [rating, setRating] = useState(props.rating)
+
+  const [isProtected, setIsProtected] = useState(props.isProtected)
+
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
   )
@@ -190,19 +194,25 @@ export const GenerationTaskEditableCard = (props: Props) => {
         />
       )}
       {/* お気に入りボタン */}
-      {isDesktop && (isHovered || props.rating !== 0) && (
+      {isDesktop && (isHovered || rating !== 0) && (
         <GenerationTaskRatingButton
-          nowRating={props.rating}
+          nowRating={rating}
           taskNanoid={props.taskNanoid}
           size={optionButtonSize(props.optionButtonSize)}
+          onRatingChange={(newRating) => {
+            setRating(newRating)
+          }}
         />
       )}
       {/* 保護ボタン */}
-      {isDesktop && (isHovered || props.isProtected) && (
+      {isDesktop && (isHovered || isProtected) && (
         <GenerationTaskProtectedButton
-          isProtected={props.isProtected ?? false}
+          isProtected={isProtected}
           taskNanoid={props.taskNanoid}
           size={optionButtonSize(props.optionButtonSize)}
+          onProtectedChange={(isProtected) => {
+            setIsProtected(isProtected)
+          }}
         />
       )}
     </div>
