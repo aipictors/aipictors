@@ -51,11 +51,11 @@ export const GenerationTaskProtectedButton = (props: Props) => {
         "absolute top-2 left-2 rounded-full opacity-80 transition-all hover:opacity-40",
       )}
     >
-      <div className="flex rounded-lg bg-white px-1">
+      <div className="flex rounded-lg bg-white px-1 py-1">
         {isLoading ? (
           <Loader2Icon color="black" className={"animate-spin"} />
         ) : props.isProtected ? (
-          <LockKeyholeIcon color="black" className={"fill-yellow-500"} />
+          <LockKeyholeIcon color="black" className={"fill-gray"} />
         ) : (
           <LockKeyholeOpenIcon color="black" className={"fill-white"} />
         )}

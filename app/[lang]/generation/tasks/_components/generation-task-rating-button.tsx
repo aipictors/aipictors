@@ -51,21 +51,21 @@ export const GenerationTaskRatingButton = (props: Props) => {
         "absolute bottom-2 left-2 rounded-full opacity-80 transition-all hover:opacity-40",
       )}
     >
-      <div className="flex rounded-lg bg-white px-1">
+      <div className="flex rounded-lg bg-white px-1 py-1">
         {isLoading ? (
           <Loader2Icon color="black" className={"animate-spin"} />
+        ) : props.nowRating !== 0 ? (
+          <StarIcon color="white" className={"fill-black"} />
         ) : (
           <StarIcon
             color="black"
             className={cn(
-              props.nowRating !== 0 && !isLoading
-                ? "fill-yellow-500"
-                : "fill-white",
+              props.nowRating !== 0 && !isLoading ? "fill-black" : "fill-white",
             )}
           />
         )}
         {props.nowRating !== 0 && (
-          <p className={cn("text-black")}>{props.nowRating}</p>
+          <p className={cn("px-1 text-black")}>{props.nowRating}</p>
         )}
       </div>
     </button>

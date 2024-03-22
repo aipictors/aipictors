@@ -14,36 +14,19 @@ type Props = {
  * @returns
  */
 export const GenerationTaskZoomUpButton = (props: Props) => {
-  /**
-   * アイコンサイズのクラスを返す
-   * @returns アイコンサイズのクラス
-   */
-  const sizeClassName = () => {
-    if (props.size === 1) {
-      return "h-4 w-4"
-    }
-    if (props.size === 2) {
-      return "h-8 w-8"
-    }
-    return "h-12 w-12"
-  }
-
   return (
     <GenerationImageDialogButton
       isAbsolute={true}
       taskId={props.taskId}
       taskToken={props.token}
       children={
-        <div className="flex rounded-lg bg-white px-1 opacity-80">
+        <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
           <div
             onMouseEnter={() => {
               props.setIsHovered(true)
             }}
           >
-            <ZoomIn
-              className={cn(`fill-white${sizeClassName()}`)}
-              color="black"
-            />
+            <ZoomIn color="black" />
           </div>
         </div>
       }
