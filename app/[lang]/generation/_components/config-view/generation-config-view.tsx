@@ -1,5 +1,6 @@
 "use client"
 
+import { once } from "events"
 import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/config-view/generation-config-clip-skip"
 import { GenerationConfigI2i } from "@/app/[lang]/generation/_components/config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "@/app/[lang]/generation/_components/config-view/generation-config-lora-models"
@@ -52,6 +53,8 @@ export default function GenerationConfigView() {
 
   const [showMemoSetting, setShowMemoSetting] = useState(false)
 
+  const [isInitTask, setIsInitTask] = useState(false)
+
   const ref = searchParams.get("ref")
 
   const { data } = useSuspenseQuery(
@@ -69,30 +72,34 @@ export default function GenerationConfigView() {
    * URLのnanoidからタスクを復元
    */
   useEffect(() => {
+    if (isInitTask) return
+    if (data === undefined) return
+    setIsInitTask(true)
+
     setTimeout(() => {
       try {
         if (data?.imageGenerationTask) {
           const task = data.imageGenerationTask
-          context.updateModelId(task.model.id, task.model.type)
-          context.updatePrompt(task.prompt)
-          context.updateNegativePrompt(task.negativePrompt)
-          context.updateSizeType(task.sizeType)
-          context.updateScale(task.scale)
-          context.updateSeed(task.seed)
-          context.updateSteps(task.steps)
-          context.updateSampler(task.sampler)
-          context.updateClipSkip(task.clipSkip)
-          context.updateVae(
-            task.vae?.toLocaleLowerCase() ?? "vae-ft-mse-840000-ema-pruned",
+          context.updateSettings(
+            task.model.id,
+            task.steps,
+            task.model.type,
+            task.sampler,
+            task.scale,
+            task.vae ?? "",
+            task.prompt,
+            task.negativePrompt,
+            task.seed,
+            task.sizeType,
+            task.clipSkip,
           )
-
           toast("タスクを復元しました。")
         }
       } catch (error) {
         console.error(error)
       }
     }, 1000)
-  }, [])
+  }, [data])
 
   /**
    * 選択中のモデル
