@@ -6,12 +6,14 @@ type Props = {
   name: string
   type?: string
   isSelected: boolean
+  isDisabled?: boolean
   onClick(): void
 }
 
 export const ConfigModelButton = (props: Props) => {
   return (
     <Button
+      disabled={props.isDisabled}
       variant={props.isSelected ? "default" : "secondary"}
       className="h-auto w-full overflow-y-hidden p-2"
       onClick={props.onClick}

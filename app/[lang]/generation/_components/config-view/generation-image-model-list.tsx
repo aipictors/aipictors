@@ -33,6 +33,8 @@ export const ImageModelsList = (props: Props) => {
 
   const [selectedCategory, selectCategory] = useState("ALL")
 
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false)
+
   const [showFavoriteModels, setShowFavoriteModels] = useState(
     props.isInitFavorited,
   )
@@ -99,7 +101,18 @@ export const ImageModelsList = (props: Props) => {
   return (
     <>
       <div className="flex gap-x-2">
-        <Select onValueChange={selectCategory}>
+        <Select
+          onOpenChange={() => {
+            if (isSelectorOpen) {
+              setTimeout(() => {
+                setIsSelectorOpen(!isSelectorOpen)
+              }, 100)
+            } else {
+              setIsSelectorOpen(!isSelectorOpen)
+            }
+          }}
+          onValueChange={selectCategory}
+        >
           <SelectTrigger className="w-32 sm:w-40">
             <SelectValue placeholder={"カテゴリ"} />
           </SelectTrigger>
@@ -111,7 +124,18 @@ export const ImageModelsList = (props: Props) => {
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={selectType}>
+        <Select
+          onOpenChange={() => {
+            if (isSelectorOpen) {
+              setTimeout(() => {
+                setIsSelectorOpen(!isSelectorOpen)
+              }, 100)
+            } else {
+              setIsSelectorOpen(!isSelectorOpen)
+            }
+          }}
+          onValueChange={selectType}
+        >
           <SelectTrigger className="w-32 sm:w-40">
             <SelectValue placeholder={"種別"} />
           </SelectTrigger>
@@ -168,6 +192,7 @@ export const ImageModelsList = (props: Props) => {
                         size={"icon"}
                         variant="ghost"
                         onClick={() => {
+                          if (isSelectorOpen) return
                           props.onChangeFavoritedModel(
                             Number(model.id),
                             isFavorited(Number(model.id)) ? 0 : 1,
@@ -197,6 +222,7 @@ export const ImageModelsList = (props: Props) => {
                         name={model?.displayName ?? ""}
                         isSelected={props?.selectedModelId === model.id}
                         type={model?.type ?? ""}
+                        isDisabled={isSelectorOpen}
                         onClick={() => {
                           if (model.type === null) return
                           props.onSelect(
@@ -213,6 +239,7 @@ export const ImageModelsList = (props: Props) => {
                         size={"icon"}
                         variant="ghost"
                         onClick={() => {
+                          console.log("test")
                           props.onChangeFavoritedModel(
                             Number(model.id),
                             isFavorited(Number(model.id)) ? 0 : 1,
