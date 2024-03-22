@@ -347,29 +347,6 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
 
-  useEffect(() => {
-    if (
-      inProgressImageGenerationTasksCount > 0 ||
-      inProgressImageGenerationReservedTasksCount > 0
-    ) {
-      context.updateIsCreatingTask(true)
-    } else {
-      context.updateIsCreatingTask(false)
-    }
-  }, [
-    inProgressImageGenerationReservedTasksCount,
-    inProgressImageGenerationTasksCount,
-  ])
-
-  /**
-   * 待ち人数
-   */
-  const imageGenerationWaitCount = context.viewer.imageGenerationWaitCount ?? 0
-
-  useEffect(() => {
-    context.updateImageGenerationWaitCount(imageGenerationWaitCount)
-  }, [imageGenerationWaitCount])
-
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">

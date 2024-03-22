@@ -92,13 +92,17 @@ export const GenerationTaskList = (props: Props) => {
     fetchPolicy: "cache-first",
   })
 
+  const hasActiveTasks =
+    queryData.viewer.inProgressImageGenerationTasksCount > 0 ||
+    queryData.viewer.inProgressImageGenerationReservedTasksCount > 0
+
   useEffect(() => {
-    if (context.config.isCreatingTask) {
+    if (hasActiveTasks) {
       startPolling(isTimeout ? 3000 : 2000)
       return
     }
     startPolling(600000)
-  }, [context.config.isCreatingTask, isTimeout])
+  }, [hasActiveTasks, isTimeout])
 
   if (tasks === undefined || protectedTasks === undefined) {
     return null

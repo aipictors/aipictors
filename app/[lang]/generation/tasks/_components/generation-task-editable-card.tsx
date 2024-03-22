@@ -1,5 +1,6 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
 import { GenerationTaskProtectedButton } from "@/app/[lang]/generation/tasks/_components/generation-task-protected-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
@@ -41,6 +42,8 @@ type Props = {
  */
 export const GenerationTaskEditableCard = (props: Props) => {
   const context = useGenerationContext()
+
+  const data = useGenerationQuery()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
@@ -138,8 +141,8 @@ export const GenerationTaskEditableCard = (props: Props) => {
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
-        initImageGenerationWaitCount={context.config.imageGenerationWaitCount}
-        imageGenerationWaitCount={context.config.imageGenerationWaitCount}
+        initImageGenerationWaitCount={data.viewer.imageGenerationWaitCount}
+        imageGenerationWaitCount={data.viewer.imageGenerationWaitCount}
       />
     )
   }

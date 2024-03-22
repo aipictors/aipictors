@@ -321,24 +321,6 @@ export const useGenerationContext = () => {
   }
 
   /**
-   * 待ち人数を更新する
-   * @param
-   */
-  const updateImageGenerationWaitCount = (count: number) => {
-    const value = configAction.updateImageGenerationWaitCount(count).getState()
-    actor.send({ type: "UPDATE_CONFIG", value })
-  }
-
-  /**
-   * 生成中かどうかを更新する
-   * @param
-   */
-  const updateIsCreatingTask = (isCreatingTask: boolean) => {
-    const value = configAction.updateIsCreatingTask(isCreatingTask).getState()
-    actor.send({ type: "UPDATE_CONFIG", value })
-  }
-
-  /**
    * データリセット
    */
   const reset = () => {
@@ -380,7 +362,6 @@ export const useGenerationContext = () => {
     changeI2iImageBase64,
     changeI2iDenoisingStrengthSize,
     changeUseRecommendedPrompt,
-    updateImageGenerationWaitCount,
     changeTaskListThumbnailType,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
@@ -394,7 +375,6 @@ export const useGenerationContext = () => {
     updateSeed,
     updateClipSkip,
     updateModelIdAndPrompt,
-    updateIsCreatingTask,
     updatePreviewTaskId: updatePreviewTaskId,
     updateViewTask: updateViewTask,
     updateViewTaskId: updateViewTaskId,
