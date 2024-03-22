@@ -20,6 +20,12 @@ export const StarRating = (props: Props) => {
    * キー入力でレーティング変更できるようにする
    */
   const handleNumberKeyDown = useCallback((event: { keyCode: number }) => {
+    // 入力欄やテキストエリアにフォーカスしている場合は何もしない
+    const tagName = document.activeElement?.tagName.toLowerCase()
+    if (tagName === "input" || tagName === "textarea") {
+      return
+    }
+
     if (event.keyCode === 49) {
       if (props.value === 1) {
         props.onChange(0)
