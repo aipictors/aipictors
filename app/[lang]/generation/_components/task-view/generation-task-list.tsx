@@ -3,6 +3,7 @@
 import { GenerationTaskListViewPlaceholder } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view-placeholder"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
@@ -43,6 +44,8 @@ type Props = {
  */
 export const GenerationTaskList = (props: Props) => {
   const context = useGenerationContext()
+
+  const queryData = useGenerationQuery()
 
   const isTimeout = useFocusTimeout()
 
@@ -90,17 +93,20 @@ export const GenerationTaskList = (props: Props) => {
   })
 
   useEffect(() => {
-    stopPolling()
-    startPolling(
-      context.config.isCreatingTask ? (isTimeout ? 3000 : 2000) : 600000,
-    )
-  }, [context.config.isCreatingTask, isTimeout, startPolling, stopPolling])
+    if (context.config.isCreatingTask) {
+      startPolling(isTimeout ? 3000 : 2000)
+      return
+    }
+    startPolling(600000)
+  }, [context.config.isCreatingTask, isTimeout])
 
   if (tasks === undefined || protectedTasks === undefined) {
     return null
   }
 
   const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
+
+  console.log("imageGenerationTasks", imageGenerationTasks)
 
   /**
    * 非表示指定のタスクを除外
@@ -274,24 +280,19 @@ export const GenerationTaskList = (props: Props) => {
         {/* </Suspense> */}
       </ScrollArea>
       <div className="p-2 pb-64 md:pb-2">
-        {props.protect !== 1 &&
-          tasks.viewer !== undefined &&
-          tasks.viewer?.remainingImageGenerationTasksTotalCount !==
-            undefined && (
-            <>
-              <ResponsivePagination
-                perPage={32}
-                maxCount={
-                  (props.protect === 0 || props.protect === -1) &&
-                  (props.rating === 0 || props.rating === -1)
-                    ? tasks.viewer.remainingImageGenerationTasksTotalCount
-                    : componentTasks.length
-                }
-                currentPage={props.currentPage}
-                onPageChange={props.setCurrentPage}
-              />
-            </>
-          )}
+        {props.protect !== 1 && (
+          <ResponsivePagination
+            perPage={32}
+            maxCount={
+              (props.protect === 0 || props.protect === -1) &&
+              (props.rating === 0 || props.rating === -1)
+                ? queryData.viewer.remainingImageGenerationTasksTotalCount
+                : componentTasks.length
+            }
+            currentPage={props.currentPage}
+            onPageChange={props.setCurrentPage}
+          />
+        )}
       </div>
     </>
   )

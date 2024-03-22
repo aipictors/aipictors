@@ -1,11 +1,11 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { GenerationDataContext } from "@/app/[lang]/generation/_contexts/generation-data-context"
+import { GenerationQueryContext } from "@/app/[lang]/generation/_contexts/generation-query-context"
 import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
 import { config } from "@/config"
 import { useContext } from "react"
 
 export const useGenerationContext = () => {
-  const dataContext = useContext(GenerationDataContext)
+  const dataContext = useContext(GenerationQueryContext)
 
   const configContext = GenerationConfigContext.useSelector((state) => {
     return state.context
@@ -347,6 +347,8 @@ export const useGenerationContext = () => {
   }
 
   return {
+    viewer: dataContext.viewer,
+    engineStatus: dataContext.engineStatus,
     config: configContext,
     get maxTasksCount() {
       return maxTasksCount()

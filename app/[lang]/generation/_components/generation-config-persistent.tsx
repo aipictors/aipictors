@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const GenerationStatePersistent = (props: Props) => {
+export const GenerationConfigPersistent = (props: Props) => {
   const actor = GenerationConfigContext.useActorRef()
 
   useEffect(() => {

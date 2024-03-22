@@ -4,6 +4,7 @@ import { GenerationEditorProgress } from "@/app/[lang]/generation/_components/su
 import { GenerationSubmitOperationParts } from "@/app/[lang]/generation/_components/submission-view/generation-submit-operation-parts"
 import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
 import { uploadImage } from "@/app/_utils/upload-image"
 import { AppFixedContent } from "@/components/app/app-fixed-content"
@@ -30,6 +31,8 @@ type Props = {
 export function GenerationSubmissionView(props: Props) {
   const context = useGenerationContext()
 
+  const queryData = useGenerationQuery()
+
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [generationCount, setGenerationCount] = useState(1)
@@ -43,29 +46,6 @@ export function GenerationSubmissionView(props: Props) {
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
-      // TODO: キャッシュの更新（不要かも）
-      // update(cache, result) {
-      //   const data = cache.readQuery({
-      //     query: viewerImageGenerationTasksQuery,
-      //     variables: { limit: 64, offset: 0, where: {} },
-      //   })
-      //   if (!result.data) return
-      //   if (data === null || data.viewer === null) return
-      //   cache.writeQuery({
-      //     query: viewerImageGenerationTasksQuery,
-      //     variables: { limit: 64, offset: 0, where: {} },
-      //     data: {
-      //       ...data,
-      //       viewer: {
-      //         ...data.viewer,
-      //         imageGenerationTasks: [
-      //           ...data.viewer.imageGenerationTasks,
-      //           result.data.createImageGenerationTask,
-      //         ],
-      //       },
-      //     },
-      //   })
-      // },
     },
   )
 
@@ -76,10 +56,6 @@ export function GenerationSubmissionView(props: Props) {
       awaitRefetchQueries: true,
     },
   )
-
-  const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: 2000,
-  })
 
   const [signTerms, { loading: isSigningTerms }] = useMutation(
     signImageGenerationTermsMutation,
@@ -334,44 +310,42 @@ export function GenerationSubmissionView(props: Props) {
     await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
-  const engineStatus = status?.imageGenerationEngineStatus
-
   /**
    * 画像生成中
    * 生成のキャンセルが可能
    */
   const inProgress =
-    status?.viewer?.inProgressImageGenerationTasksCount !== undefined &&
-    status?.viewer?.inProgressImageGenerationTasksCount !== 0
+    queryData.viewer.inProgressImageGenerationTasksCount !== undefined &&
+    queryData.viewer.inProgressImageGenerationTasksCount !== 0
 
   /**
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =
-    status?.viewer?.availableImageGenerationMaxTasksCount ?? 30
+    queryData.viewer.availableImageGenerationMaxTasksCount ?? 30
 
   /**
    * 生成済み枚数
    */
-  const tasksCount = status?.viewer?.remainingImageGenerationTasksCount ?? 0
+  const tasksCount = queryData.viewer.remainingImageGenerationTasksCount ?? 0
 
   /**
    * 同時生成最大枚数
    */
   const maxTasksCount =
-    status?.viewer?.availableConsecutiveImageGenerationsCount ?? 0
+    queryData.viewer.availableConsecutiveImageGenerationsCount ?? 0
 
   /**
    * 生成中の枚数
    */
   const inProgressImageGenerationTasksCount =
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+    queryData.viewer.inProgressImageGenerationTasksCount ?? 0
 
   /**
    * 予約生成中の枚数
    */
   const inProgressImageGenerationReservedTasksCount =
-    status?.viewer?.inProgressImageGenerationReservedTasksCount ?? 0
+    queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
 
   useEffect(() => {
     if (
@@ -390,7 +364,7 @@ export function GenerationSubmissionView(props: Props) {
   /**
    * 待ち人数
    */
-  const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
+  const imageGenerationWaitCount = context.viewer.imageGenerationWaitCount ?? 0
 
   useEffect(() => {
     context.updateImageGenerationWaitCount(imageGenerationWaitCount)
@@ -424,15 +398,17 @@ export function GenerationSubmissionView(props: Props) {
               inProgress={inProgress}
               maxTasksCount={availableImageGenerationMaxTasksCount}
               normalPredictionGenerationSeconds={
-                engineStatus?.normalPredictionGenerationSeconds ?? 0
+                queryData.engineStatus.normalPredictionGenerationSeconds ?? 0
               }
-              normalTasksCount={engineStatus?.normalTasksCount ?? 0}
+              normalTasksCount={queryData.engineStatus.normalTasksCount ?? 0}
               passType={context.currentPass?.type ?? null}
               remainingImageGenerationTasksCount={tasksCount}
               standardPredictionGenerationSeconds={
-                engineStatus?.standardPredictionGenerationSeconds ?? 0
+                queryData.engineStatus.standardPredictionGenerationSeconds ?? 0
               }
-              standardTasksCount={engineStatus?.standardTasksCount ?? 0}
+              standardTasksCount={
+                queryData.engineStatus.standardTasksCount ?? 0
+              }
             />
             {context.currentPass?.type !== "PREMIUM" && (
               <div className="ml-auto">
