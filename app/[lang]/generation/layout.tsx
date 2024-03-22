@@ -1,5 +1,6 @@
 import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
-import { GenerationContextProvider } from "@/app/[lang]/generation/_components/generation-context-provider"
+import { GenerationConfigProvider } from "@/app/[lang]/generation/_components/generation-config-provider"
+import { GenerationQueryProvider } from "@/app/[lang]/generation/_components/generation-query-provider"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
@@ -30,13 +31,15 @@ export async function GenerationLayout(props: Props) {
   return (
     <>
       <BetaHeader title="画像生成 β" />
-      <GenerationContextProvider
+      <GenerationQueryProvider
         promptCategories={promptCategoriesResp.data.promptCategories}
         imageModels={imageModelsResp.data.imageModels}
         imageLoraModels={imageLoraModelsResp.data.imageLoraModels}
       >
-        <div className="container max-w-none">{props.children}</div>
-      </GenerationContextProvider>
+        <GenerationConfigProvider>
+          <div className="container max-w-none">{props.children}</div>
+        </GenerationConfigProvider>
+      </GenerationQueryProvider>
     </>
   )
 }

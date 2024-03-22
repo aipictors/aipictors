@@ -24,7 +24,7 @@ import {
 import { CopyButton } from "./copy-button"
 
 type Props = {
-  task: ImageGenerationTaskNode | ImageGenerationTaskFieldsFragment | undefined
+  task: ImageGenerationTaskFieldsFragment | undefined
 }
 
 /**
@@ -159,7 +159,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
           <div className="w-full">
             <p className="mb-1 font-semibold">{"Vae"}</p>
             <p>
-              {props.task.vae.replace(".ckpt", "").replace(".safetensors", "")}
+              {props.task.vae?.replace(".ckpt", "").replace(".safetensors", "")}
             </p>
           </div>
           <div className="w-full">

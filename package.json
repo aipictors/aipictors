@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "graphql-codegen-esm --config codegen.ts && next dev --turbo",
     "build": "next build",
+    "build:graphql": "graphql-codegen-esm --config codegen.ts",
     "gcp-build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
     "start": "next start",
     "check": "tsc --noEmit",
