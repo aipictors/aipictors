@@ -62,33 +62,30 @@ export const GenerationView = (props: Props) => {
   useEffect(() => {
     if (isInitTask) return
     if (data === undefined) return
-    console.log(isInitTask)
     setIsInitTask(true)
 
-    setTimeout(() => {
-      try {
-        if (data?.imageGenerationTask) {
-          const task = data.imageGenerationTask
-          context.updateSettings(
-            task.model.id,
-            task.steps,
-            task.model.type,
-            task.sampler,
-            task.scale,
-            task.vae ?? "",
-            task.prompt,
-            task.negativePrompt,
-            task.seed,
-            task.sizeType,
-            task.clipSkip,
-          )
-          toast("タスクを復元しました。")
-        }
-      } catch (error) {
-        console.error(error)
+    try {
+      if (data?.imageGenerationTask) {
+        const task = data.imageGenerationTask
+        context.updateSettings(
+          task.model.id,
+          task.steps,
+          task.model.type,
+          task.sampler,
+          task.scale,
+          task.vae ?? "",
+          task.prompt,
+          task.negativePrompt,
+          task.seed,
+          task.sizeType,
+          task.clipSkip,
+        )
+        toast("タスクを復元しました。")
       }
-    }, 1000)
-  }, [])
+    } catch (error) {
+      console.error(error)
+    }
+  }, [data])
 
   /**
    * スマホの場合リサイザーなし
