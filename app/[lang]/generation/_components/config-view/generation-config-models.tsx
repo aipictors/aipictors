@@ -45,6 +45,13 @@ export const GenerationConfigModels = (props: Props) => {
    * @returns
    */
   const trimString = (input: string) => {
+    if (input === "blue_pencil-v10") {
+      return "blue_pencil"
+    }
+    if (input === "lametta_v1745_fp16") {
+      return "lametta"
+    }
+
     const suffix = input.match(/_v\d+.*$/)?.[0]
 
     const underscoreIndex = input.indexOf("_")
@@ -104,7 +111,7 @@ export const GenerationConfigModels = (props: Props) => {
               <ConfigModelButton
                 key={model?.id}
                 imageURL={model?.thumbnailImageURL ?? ""}
-                name={model?.displayName ?? ""}
+                name={trimString(model?.displayName ?? "")}
                 isSelected={model?.id === props.currentModelId}
                 onClick={() => {
                   props.onSelectModelId(

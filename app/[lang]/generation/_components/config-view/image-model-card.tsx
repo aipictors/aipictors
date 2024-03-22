@@ -16,6 +16,13 @@ export const ImageModelCard = (props: Props) => {
    * @returns
    */
   const trimString = (input: string) => {
+    if (input === "blue_pencil-v10") {
+      return "blue_pencil"
+    }
+    if (input === "lametta_v1745_fp16") {
+      return "lametta"
+    }
+
     const suffix = input.match(/_v\d+.*$/)?.[0]
 
     const underscoreIndex = input.indexOf("_")
