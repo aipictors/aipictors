@@ -1,6 +1,7 @@
 "use client"
 
 import { InPaintingDialog } from "@/app/[lang]/generation/_components/submission-view/in-painting-dialog"
+import { generationTaskError } from "@/app/[lang]/generation/_components/task-view/generation-task-error"
 import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
@@ -18,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cn } from "@/lib/utils"
+import { ErrorBoundary } from "@sentry/nextjs"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -148,46 +150,48 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
             {props.task.status !== "RESERVED" ? (
               <>
-                <Suspense
-                  fallback={
-                    <GenerationTaskContentImagePlaceHolder
-                      className={"m-auto h-72 max-h-96 max-w-['50vw']"}
-                    />
-                  }
-                >
-                  <GenerationImageDialogButton
-                    taskId={props.task.id}
-                    taskToken={props.task.token}
-                    children={
-                      <PrivateImage
-                        className={"m-auto h-72 max-h-96"}
-                        taskId={props.task.id}
-                        token={props.task.token as string}
-                        isThumbnail={
-                          context.config.taskListThumbnailType === "light"
-                        }
-                        alt={"-"}
+                <ErrorBoundary fallback={generationTaskError}>
+                  <Suspense
+                    fallback={
+                      <GenerationTaskContentImagePlaceHolder
+                        className={"m-auto h-72 max-h-96 max-w-['50vw']"}
                       />
                     }
-                  />
-                </Suspense>
-                {/* ダウンロード用（非表示） */}
-                <Suspense
-                  fallback={
-                    <GenerationTaskContentImagePlaceHolder
-                      className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                  >
+                    <GenerationImageDialogButton
+                      taskId={props.task.id}
+                      taskToken={props.task.token}
+                      children={
+                        <PrivateImage
+                          className={"m-auto h-72 max-h-96"}
+                          taskId={props.task.id}
+                          token={props.task.token as string}
+                          isThumbnail={
+                            context.config.taskListThumbnailType === "light"
+                          }
+                          alt={"-"}
+                        />
+                      }
                     />
-                  }
-                >
-                  <PrivateImage
-                    // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                    className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
-                    taskId={props.task.id}
-                    token={props.task.token as string}
-                    isThumbnail={false}
-                    alt={"-"}
-                  />
-                </Suspense>
+                  </Suspense>
+                  {/* ダウンロード用（非表示） */}
+                  <Suspense
+                    fallback={
+                      <GenerationTaskContentImagePlaceHolder
+                        className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                      />
+                    }
+                  >
+                    <PrivateImage
+                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                      className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
+                      taskId={props.task.id}
+                      token={props.task.token as string}
+                      isThumbnail={false}
+                      alt={"-"}
+                    />
+                  </Suspense>
+                </ErrorBoundary>
               </>
             ) : (
               <>
