@@ -17,7 +17,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Loader2Icon, Minus, Plus } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 
 type Props = {
@@ -94,30 +102,57 @@ export function GenerationSubmitOperationParts(props: Props) {
     <>
       <div className="flex items-center">
         <div className="flex items-center">
-          <Button
-            className="mr-2 block md:hidden"
-            size={"icon"}
-            variant={"ghost"}
-            onClick={onMinusButtonClick}
-          >
-            <Minus className="m-auto" />
-          </Button>
-          <GenerationReserveCountInput
-            maxCount={
-              props.availableImageGenerationMaxTasksCount - props.tasksCount
-            }
-            onChange={props.setGenerationCount}
-            count={props.generationCount}
-          />
-          <div className="mr-2 hidden md:block">枚</div>
-          <Button
-            className="mr-2 block md:hidden"
-            size={"icon"}
-            variant={"ghost"}
-            onClick={onPlusButtonClick}
-          >
-            <Plus className="m-auto" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="block md:hidden">
+              <Button
+                className="mr-2"
+                size={"icon"}
+                variant={"ghost"}
+                onClick={onMinusButtonClick}
+              >
+                <SettingsIcon className="m-auto" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <div className="flex items-center p-2">
+                <Button
+                  className="mr-2"
+                  size={"icon"}
+                  variant={"ghost"}
+                  onClick={onMinusButtonClick}
+                >
+                  <Minus className="m-auto" />
+                </Button>
+                <GenerationReserveCountInput
+                  maxCount={
+                    props.availableImageGenerationMaxTasksCount -
+                    props.tasksCount
+                  }
+                  onChange={props.setGenerationCount}
+                  count={props.generationCount}
+                />
+
+                <Button
+                  className="mr-2"
+                  size={"icon"}
+                  variant={"ghost"}
+                  onClick={onPlusButtonClick}
+                >
+                  <Plus className="m-auto" />
+                </Button>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <div className="hidden items-center md:flex">
+            <GenerationReserveCountInput
+              maxCount={
+                props.availableImageGenerationMaxTasksCount - props.tasksCount
+              }
+              onChange={props.setGenerationCount}
+              count={props.generationCount}
+            />
+            <div className="mr-2">枚</div>
+          </div>
         </div>
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (

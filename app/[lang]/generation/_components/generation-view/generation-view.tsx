@@ -80,7 +80,7 @@ export const GenerationView = (props: Props) => {
           task.sizeType,
           task.clipSkip,
         )
-        toast("タスクを復元しました。")
+        toast("タスクを復元しました。", { position: "top-center" })
       }
     } catch (error) {
       console.error(error)
