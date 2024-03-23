@@ -41,9 +41,9 @@ const nextConfig = {
     NEXT_PUBLIC_VERSION: packageJSON.version,
   },
   /**
-   * 128MB
+   * 32MB
    */
-  cacheMaxMemorySize: 2 ** 20 * 128,
+  cacheMaxMemorySize: 2 ** 20 * 32,
 }
 
 export default withSentryConfig(
