@@ -4,6 +4,7 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { captureException } from "@sentry/nextjs"
 import { useSearchParams } from "next/navigation"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"
@@ -13,7 +14,7 @@ type Props = {
 }
 
 /**
- * エディタの初期化を提供する
+ * URLからエディタの状態を復元する
  * @param props
  */
 export const GenerationConfigRestoration = (props: Props) => {
@@ -25,55 +26,53 @@ export const GenerationConfigRestoration = (props: Props) => {
 
   const ref = searchParams.get("ref")
 
+  const promptText = searchParams.get("prompts")
+
   const { data } = useSuspenseQuery(
     imageGenerationTaskQuery,
-    authContext.isLoggedIn && ref
-      ? {
-          variables: {
-            id: ref,
-          },
-        }
+    authContext.isLoggedIn && ref !== null
+      ? { variables: { id: ref } }
       : skipToken,
   )
-
-  const prompts = searchParams.get("prompts")
 
   /**
    * URLのnanoidからタスクを復元
    */
   useEffect(() => {
-    if (data !== undefined && data !== null) {
-      try {
-        if (data?.imageGenerationTask) {
-          const task = data.imageGenerationTask
-          context.updateSettings(
-            task.model.id,
-            task.steps,
-            task.model.type,
-            task.sampler,
-            task.scale,
-            task.vae ?? "",
-            task.prompt,
-            task.negativePrompt,
-            task.seed,
-            task.sizeType,
-            task.clipSkip,
-          )
-          toast("タスクを復元しました。", { position: "top-center" })
-        }
-      } catch (error) {
-        console.error(error)
-      }
+    if (data === undefined) return
+    if (data === null) return
+    try {
+      const task = data.imageGenerationTask
+      context.updateSettings(
+        task.model.id,
+        task.steps,
+        task.model.type,
+        task.sampler,
+        task.scale,
+        task.vae ?? "",
+        task.prompt,
+        task.negativePrompt,
+        task.seed,
+        task.sizeType,
+        task.clipSkip,
+      )
+      toast("タスクを復元しました。", { position: "top-center" })
+    } catch (error) {
+      captureException(error)
+      toast("タスクの復元に失敗しました。")
     }
-    if (prompts !== undefined && prompts !== null) {
-      try {
-        context.updatePrompt(prompts)
-        toast("プロンプトを復元しました。", { position: "top-center" })
-      } catch (error) {
-        console.error(error)
-      }
+  }, [data?.imageGenerationTask.id])
+
+  useEffect(() => {
+    if (promptText !== "string") return
+    try {
+      context.updatePrompt(promptText)
+      toast("プロンプトを復元しました。", { position: "top-center" })
+    } catch (error) {
+      captureException(error)
+      toast("プロンプトの復元に失敗しました。")
     }
-  }, [data, prompts])
+  }, [promptText])
 
   return props.children
 }
