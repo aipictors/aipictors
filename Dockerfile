@@ -4,13 +4,17 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY package.json yarn.lock* ./
 
 RUN yarn --frozen-lockfile
 
 # Builder
 
 FROM node:20-alpine AS builder
+
+ARG SENTRY_AUTH_TOKEN
+
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 
 WORKDIR /app
 
