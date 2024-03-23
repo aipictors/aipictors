@@ -89,7 +89,7 @@ export const GenerationAbout = () => {
       <Separator />
       <section className="p-2">
         <p className="mt-4 text-center font-bold text-xl">
-          どこでもいつでも簡単に生成できる！
+          スマホ対応！どこでもいつでも簡単に生成できる！
         </p>
         <img
           className="auto"
