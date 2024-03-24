@@ -25,16 +25,13 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
 import { userSettingQuery } from "@/graphql/queries/user/user-setting"
 import { viewerCurrentImageGenerationMemosQuery } from "@/graphql/queries/viewer/viewer-current-image-generation-memos"
 import { viewerFavoritedImageGenerationModelsQuery } from "@/graphql/queries/viewer/viewer-favorited-image-generation-models"
 import { cn } from "@/lib/utils"
-import { skipToken, useQuery, useSuspenseQuery } from "@apollo/client"
-import { useSearchParams } from "next/navigation"
+import { useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
-import { toast } from "sonner"
 
 /**
  * エディタの設定
@@ -46,53 +43,9 @@ import { toast } from "sonner"
 export default function GenerationConfigView() {
   const context = useGenerationContext()
 
-  const searchParams = useSearchParams()
-
   const authContext = useContext(AuthContext)
 
   const [showMemoSetting, setShowMemoSetting] = useState(false)
-
-  const ref = searchParams.get("ref")
-
-  const { data } = useSuspenseQuery(
-    imageGenerationTaskQuery,
-    authContext.isLoggedIn && ref
-      ? {
-          variables: {
-            id: ref,
-          },
-        }
-      : skipToken,
-  )
-
-  /**
-   * URLのnanoidからタスクを復元
-   */
-  useEffect(() => {
-    setTimeout(() => {
-      try {
-        if (data?.imageGenerationTask) {
-          const task = data.imageGenerationTask
-          context.updateModelId(task.model.id, task.model.type)
-          context.updatePrompt(task.prompt)
-          context.updateNegativePrompt(task.negativePrompt)
-          context.updateSizeType(task.sizeType)
-          context.updateScale(task.scale)
-          context.updateSeed(task.seed)
-          context.updateSteps(task.steps)
-          context.updateSampler(task.sampler)
-          context.updateClipSkip(task.clipSkip)
-          context.updateVae(
-            task.vae?.toLocaleLowerCase() ?? "vae-ft-mse-840000-ema-pruned",
-          )
-
-          toast("タスクを復元しました。")
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    }, 1000)
-  }, [])
 
   /**
    * 選択中のモデル

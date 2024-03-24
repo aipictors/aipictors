@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationConfigPersistent } from "@/app/[lang]/generation/_components/generation-config-persistent"
+import { GenerationConfigRestoration } from "@/app/[lang]/generation/_components/generation-config-restoration"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
@@ -74,7 +75,11 @@ export const GenerationConfigProvider = (props: Props) => {
         input: cacheStorage,
       }}
     >
-      <GenerationConfigPersistent>{props.children}</GenerationConfigPersistent>
+      <GenerationConfigPersistent>
+        <GenerationConfigRestoration>
+          {props.children}
+        </GenerationConfigRestoration>
+      </GenerationConfigPersistent>
     </GenerationConfigContext.Provider>
   )
 }

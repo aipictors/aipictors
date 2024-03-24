@@ -15,18 +15,14 @@ steps:
       #!/usr/bin/env bash
       sed -i 's/lefthook install/echo/g' package.json
     id: PostInstall
-  - name: gcr.io/k8s-skaffold/pack
+  - name: "gcr.io/cloud-builders/docker"
     args:
       - build
-      - >-
-        $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
-      - "--builder=gcr.io/buildpacks/builder:v1"
-      - "--network=cloudbuild"
-      - "--path=."
-      - "--env"
-      - SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN
-    id: Buildpack
-    entrypoint: pack
+      - --build-arg
+      - "SENTRY_AUTH_TOKEN=$_SENTRY_AUTH_TOKEN"
+      - -t
+      - $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+      - .
   - name: gcr.io/cloud-builders/docker
     args:
       - push
@@ -61,6 +57,7 @@ substitutions:
   _IS_PRODUCTION: "true"
   _TRIGGER_ID: "debug"
   _SERVICE_NAME: "aipictors"
+  _SENTRY_AUTH_TOKEN: ""
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed

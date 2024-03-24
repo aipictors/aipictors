@@ -1,6 +1,8 @@
 "use client"
 
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import {
   ResizableHandle,
@@ -8,7 +10,11 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { config } from "@/config"
-import { Suspense } from "react"
+import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { useSearchParams } from "next/navigation"
+import { Suspense, useContext, useEffect, useState } from "react"
+import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
