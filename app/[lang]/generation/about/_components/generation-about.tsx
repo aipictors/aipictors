@@ -97,6 +97,12 @@ export const GenerationAbout = () => {
           src="https://www.aipictors.com/wp-content/uploads/2024/03/generation-cover.webp"
         />
       </section>
+      <div className="flex justify-center gap-x-2 py-4">
+        <Link href="/generation/terms">利用規約</Link>
+        <Link href="/specified-commercial-transaction-act">
+          特定商取引法に基づく表記
+        </Link>
+      </div>
     </main>
   )
 }
