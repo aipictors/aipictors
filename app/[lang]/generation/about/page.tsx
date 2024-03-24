@@ -6,9 +6,7 @@ import type { Metadata } from "next"
  * @returns
  */
 const GenerationAboutPage = async () => {
-  return (
-    <GenerationAbout />
-  )
+  return <GenerationAbout />
 }
 
 export const metadata: Metadata = {

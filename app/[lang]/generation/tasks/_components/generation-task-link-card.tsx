@@ -1,4 +1,5 @@
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
 import { InProgressGenerationCard } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-card"
 import { PrivateImage } from "@/app/_components/private-image"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
@@ -26,6 +27,8 @@ type Props = {
  */
 export const GenerationTaskLinkCard = (props: Props) => {
   const context = useGenerationContext()
+
+  const data = useGenerationQuery()
 
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
@@ -60,8 +63,8 @@ export const GenerationTaskLinkCard = (props: Props) => {
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
-        initImageGenerationWaitCount={context.config.imageGenerationWaitCount}
-        imageGenerationWaitCount={context.config.imageGenerationWaitCount}
+        initImageGenerationWaitCount={data.viewer.imageGenerationWaitCount}
+        imageGenerationWaitCount={context.viewer.imageGenerationWaitCount}
       />
     )
   }
