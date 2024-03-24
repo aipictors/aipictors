@@ -1,41 +1,22 @@
 "use client"
 
-import { BetaHeader } from "@/app/[lang]/(main)/_components/beta-header"
-import { BetaNavigationList } from "@/app/[lang]/(main)/_components/beta-navigation-list"
+import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
+import { HomeRouteList } from "@/app/[lang]/(main)/_components/home-route-list"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
-import { AppDevelopmentPage } from "@/components/app/app-development-page"
-import { config } from "@/config"
 
 type Props = {
   children: React.ReactNode
 }
 
-const MainLayout = (props: Props) => {
-  if (!config.isDevelopmentMode) {
-    return <AppDevelopmentPage />
-  }
-
-  // return (
-  //   <>
-  //     <HomeHeader />
-  //     <AppColumnLayout>
-  //       <AppAside>
-  //         <HomeNavigationList />
-  //       </AppAside>
-  //       {props.children}
-  //     </AppColumnLayout>
-  //     <HomeFooter />
-  //   </>
-  // )
-
+export default function MainLayout(props: Props) {
   return (
     <>
-      <BetaHeader />
+      <HomeHeader />
       <AppColumnLayout>
         <AppAside>
-          <BetaNavigationList />
+          <HomeRouteList />
         </AppAside>
         {props.children}
       </AppColumnLayout>
@@ -43,5 +24,3 @@ const MainLayout = (props: Props) => {
     </>
   )
 }
-
-export default MainLayout

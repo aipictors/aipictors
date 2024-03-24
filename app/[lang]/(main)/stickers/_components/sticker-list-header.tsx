@@ -1,6 +1,6 @@
 "use client"
 
-import { AddStickerModal } from "@/app/[lang]/(beta)/stickers/_components/add-sticker-modal"
+import { AddStickerModal } from "@/app/[lang]/(main)/stickers/_components/add-sticker-modal"
 import { Button } from "@/components/ui/button"
 import { config } from "@/config"
 import { PlusIcon } from "lucide-react"

@@ -1,4 +1,5 @@
-import { StickerModal } from "@/app/[lang]/(beta)/stickers/@modal/(..)stickers/[sticker]/_components/sticker-modal"
+import { StickerArticle } from "@/app/[lang]/(main)/stickers/[sticker]/_components/sticker-article"
+import { AppPage } from "@/components/app/app-page"
 import type { Metadata } from "next"
 
 /**
@@ -6,7 +7,11 @@ import type { Metadata } from "next"
  * @returns
  */
 const StickerPage = async () => {
-  return <StickerModal />
+  return (
+    <AppPage>
+      <StickerArticle />
+    </AppPage>
+  )
 }
 
 export const metadata: Metadata = {

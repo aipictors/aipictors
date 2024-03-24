@@ -1,7 +1,7 @@
 "use client"
 
 import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { SensitiveNavigationList } from "@/app/[lang]/sensitive/_components/sensitive-navigation"
+import { SensitiveRouteList } from "@/app/[lang]/sensitive/_components/sensitive-route-list"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { Separator } from "@/components/ui/separator"
@@ -16,7 +16,7 @@ const SensitiveLayout = (props: Props) => {
       <HomeHeader />
       <div className="flex items-start space-x-0">
         <AppAside>
-          <SensitiveNavigationList />
+          <SensitiveRouteList />
         </AppAside>
         {props.children}
       </div>

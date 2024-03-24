@@ -11,9 +11,9 @@ import {
   Undo2Icon,
 } from "lucide-react"
 
-export const SensitiveNavigationList = () => {
+export const SensitiveRouteList = () => {
   return (
-    <div className="flex flex-col space-y-1">
+    <div className="space-y-1">
       <HomeNavigationButton href={"https://www.aipictors.com"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>

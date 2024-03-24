@@ -1,6 +1,6 @@
 "use client"
 
-import { BetaHeader } from "@/app/[lang]/(main)/_components/beta-header"
+import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
 import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppAside } from "@/components/app/app-aside"
@@ -25,7 +25,7 @@ const SettingsLayout = (props: Props) => {
 
   return (
     <>
-      <BetaHeader title={"設定"} />
+      <HomeHeader title={"設定"} />
       <AppColumnLayout>
         <AppAside>
           <SettingsRouteList />

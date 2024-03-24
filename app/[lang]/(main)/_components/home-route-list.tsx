@@ -13,10 +13,13 @@ import {
   BoxIcon,
   CameraIcon,
   FolderIcon,
+  GemIcon,
   HomeIcon,
   ImageIcon,
   LibraryBigIcon,
   LightbulbIcon,
+  MessageCircleIcon,
+  RocketIcon,
   SettingsIcon,
   SparklesIcon,
   StampIcon,
@@ -31,8 +34,8 @@ import {
   TbBrandYoutubeFilled,
 } from "react-icons/tb"
 
-export const HomeNavigationList = () => {
-  const appContext = useContext(AuthContext)
+export const HomeRouteList = () => {
+  const authContext = useContext(AuthContext)
 
   return (
     <div className="space-y-1">
@@ -57,12 +60,6 @@ export const HomeNavigationList = () => {
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={"https://www.aipictors.com/generate/"}
-        icon={SparklesIcon}
-      >
-        {"画像生成"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
         isDisabled={config.isReleaseMode}
         href={"/series"}
         icon={LibraryBigIcon}
@@ -76,44 +73,76 @@ export const HomeNavigationList = () => {
       >
         {"コレクション"}
       </HomeNavigationButton>
+      <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
+        {"開発予定"}
+      </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
       </div>
-      <HomeNavigationButton href={"/works/2d"} icon={ImageIcon}>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/works/2d"}
+        icon={ImageIcon}
+      >
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/2.5d"} icon={BookImageIcon}>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/works/2.5d"}
+        icon={BookImageIcon}
+      >
         {"セミリアル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/works/3d"} icon={CameraIcon}>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/works/3d"}
+        icon={CameraIcon}
+      >
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/models"} icon={BoxIcon}>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/models"}
+        icon={BoxIcon}
+      >
         {"モデル"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} icon={AlertTriangleIcon}>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/sensitive"}
+        icon={AlertTriangleIcon}
+      >
         {"センシティブ"}
       </HomeNavigationButton>
-      {appContext.isLoggedIn && (
+      {authContext.isNotLoading && (
         <div className={"py-2"}>
           <Separator />
         </div>
       )}
-      {appContext.isLoggedIn && (
-        <HomeNavigationButton href={"/accounts/login"} icon={UserIcon}>
+      {authContext.isLoggedIn && (
+        <HomeNavigationButton href={"/account/login"} icon={UserIcon}>
           {"アカウント"}
         </HomeNavigationButton>
       )}
-      {appContext.isLoggedIn && (
+      {authContext.isLoggedIn && (
+        <HomeNavigationButton href={"/support/chat"} icon={MessageCircleIcon}>
+          {"お問い合わせ"}
+        </HomeNavigationButton>
+      )}
+      <HomeNavigationButton href={"/plus"} icon={GemIcon}>
+        {"Aipictors+"}
+      </HomeNavigationButton>
+      {authContext.isLoggedIn && (
         <HomeNavigationButton
+          isDisabled={config.isReleaseMode}
           href={"/settings/restriction"}
           icon={SettingsIcon}
         >
           {"設定"}
         </HomeNavigationButton>
       )}
-      {appContext.isLoggedIn && <NavigationLogoutDialogButton />}
-      {appContext.isNotLoggedIn && <LoginNavigationButton />}
+      {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
+      {authContext.isNotLoggedIn && <LoginNavigationButton />}
       <div className="py-2">
         <Separator />
       </div>
