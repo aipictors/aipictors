@@ -1,28 +1,22 @@
 "use client"
 
 import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
+import { HomeRouteList } from "@/app/[lang]/(main)/_components/home-route-list"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
-import { AppDevelopmentPage } from "@/components/app/app-development-page"
-import { config } from "@/config"
 
 type Props = {
   children: React.ReactNode
 }
 
-const MainLayout = (props: Props) => {
-  if (!config.isDevelopmentMode) {
-    return <AppDevelopmentPage />
-  }
-
+export default function MainLayout(props: Props) {
   return (
     <>
       <HomeHeader />
       <AppColumnLayout>
         <AppAside>
-          <HomeNavigationList />
+          <HomeRouteList />
         </AppAside>
         {props.children}
       </AppColumnLayout>
@@ -30,5 +24,3 @@ const MainLayout = (props: Props) => {
     </>
   )
 }
-
-export default MainLayout

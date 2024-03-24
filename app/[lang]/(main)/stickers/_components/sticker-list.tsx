@@ -1,20 +1,20 @@
 "use client"
-
 import { StickerCard } from "@/app/[lang]/(main)/stickers/_components/sticker-card"
-import type { UserStickersQuery } from "@/graphql/__generated__/graphql"
-import Link from "next/link"
+import type { StickersQuery } from "@/graphql/__generated__/graphql"
 
 type Props = {
-  stickers: NonNullable<UserStickersQuery["user"]>["stickers"]
+  stickers: StickersQuery["stickers"]
 }
 
-export const UserStickerList = (props: Props) => {
+export const StickerList = (props: Props) => {
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 xl:grid-cols-6">
       {props.stickers.map((props) => (
-        <Link
+        <a
           key={props.id}
           href={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <StickerCard
             title={props.title}
@@ -22,7 +22,7 @@ export const UserStickerList = (props: Props) => {
             downloadsCount={props.downloadsCount}
             usesCount={props.usesCount}
           />
-        </Link>
+        </a>
       ))}
     </div>
   )

@@ -1,4 +1,4 @@
-import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
+import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
 import { GenerationConfigProvider } from "@/app/[lang]/generation/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/app/[lang]/generation/_components/generation-query-provider"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
@@ -30,7 +30,7 @@ export async function GenerationLayout(props: Props) {
 
   return (
     <>
-      <BetaHeader title="画像生成 β" />
+      <HomeHeader title="画像生成 β" />
       <GenerationQueryProvider
         promptCategories={promptCategoriesResp.data.promptCategories}
         imageModels={imageModelsResp.data.imageModels}

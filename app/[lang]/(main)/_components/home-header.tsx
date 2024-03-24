@@ -1,6 +1,6 @@
 "use client"
 
-import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
+import { HomeRouteList } from "@/app/[lang]/(main)/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/app/[lang]/(main)/_components/home-user-navigation-menu"
 import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
 import { LogoutDialogLegacy } from "@/app/[lang]/_components/logout-dialog-legacy"
@@ -11,14 +11,17 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { config } from "@/config"
-import { BellIcon, FolderIcon, MenuIcon, SearchIcon } from "lucide-react"
+import { BellIcon, MenuIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useContext, useEffect } from "react"
-import { toast } from "sonner"
+import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
-export const HomeHeader = () => {
+type Props = {
+  title?: string
+}
+
+export const HomeHeader = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const {
@@ -27,15 +30,9 @@ export const HomeHeader = () => {
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
 
-  useEffect(() => {
-    toast("こちらは開発中のページです。", {
-      description: "予期せぬ不具合が発生する可能性があります。",
-    })
-  })
-
   return (
     <AppHeader>
-      <div className="flex min-w-fit items-center gap-x-4 md:flex-1">
+      <div className="flex min-w-fit items-center gap-x-2 md:flex-1">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -48,7 +45,7 @@ export const HomeHeader = () => {
           </SheetTrigger>
           <SheetContent className="p-0" side={"left"}>
             <ScrollArea className="h-full p-4">
-              <HomeNavigationList />
+              <HomeRouteList />
             </ScrollArea>
           </SheetContent>
         </Sheet>
@@ -61,65 +58,52 @@ export const HomeHeader = () => {
             height={40}
           />
         </Link>
-        <div className="hidden w-full flex-1 md:block">
-          <Input placeholder={"作品を検索"} />
+        <div className="flex flex-grow flex-row items-center pl-2">
+          <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
+        {config.isDevelopmentMode && (
+          <div className="hidden w-full flex-1 md:block">
+            <Input placeholder={"作品を検索"} />
+          </div>
+        )}
       </div>
-      <div className="flex items-center gap-x-4">
-        <div className="flex gap-x-2">
-          <Button
-            className="md:hidden"
-            variant={"secondary"}
-            size={"icon"}
-            aria-label={"Search"}
-          >
-            <SearchIcon className="w-4" />
+      <div className="flex gap-x-2">
+        <Link href={"/generation"}>
+          <Button variant={"secondary"}>{"生成"}</Button>
+        </Link>
+        {config.isReleaseMode ? (
+          <Button variant={"secondary"} disabled>
+            {"投稿"}
           </Button>
-          {config.isReleaseMode ? (
-            <Button variant={"secondary"} disabled>
-              {"生成"}
-            </Button>
-          ) : (
-            <Link href={"/generation"}>
-              <Button variant={"secondary"}>{"生成"}</Button>
-            </Link>
-          )}
-          {config.isReleaseMode ? (
-            <Button variant={"secondary"} disabled>
-              {"投稿"}
-            </Button>
-          ) : (
-            <Link href={"/new/image"}>
-              <Button variant={"secondary"}>{"投稿"}</Button>
-            </Link>
-          )}
-          {config.isReleaseMode ? (
-            <Button variant={"secondary"} disabled size={"icon"}>
+        ) : (
+          <Link href={"/new/image"}>
+            <Button variant={"secondary"}>{"投稿"}</Button>
+          </Link>
+        )}
+        {/* {config.isReleaseMode ? (
+          <Button variant={"secondary"} disabled size={"icon"}>
+            <FolderIcon className="w-4" />
+          </Button>
+        ) : (
+          <Link href={"/viewer/albums"}>
+            <Button variant={"secondary"} size={"icon"}>
               <FolderIcon className="w-4" />
             </Button>
-          ) : (
-            <Link href={"/viewer/albums"}>
-              <Button variant={"secondary"} size={"icon"}>
-                <FolderIcon className="w-4" />
-              </Button>
-            </Link>
-          )}
-          {config.isDevelopmentMode && (
-            <Button
-              variant={"secondary"}
-              disabled
-              size={"icon"}
-              aria-label={"通知"}
-            >
-              <BellIcon className="w-4" />
-            </Button>
-          )}
-        </div>
-        {authContext.isLoggedIn && (
-          <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+          </Link>
+        )} */}
+        {authContext.isLoggedIn && config.isDevelopmentMode && (
+          <Button
+            variant={"secondary"}
+            disabled
+            size={"icon"}
+            aria-label={"通知"}
+          >
+            <BellIcon className="w-4" />
+          </Button>
         )}
-        {authContext.isNotLoggedIn && <LoginDialogButton />}
+        <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
       </div>
+      {authContext.isNotLoggedIn && <LoginDialogButton />}
       <LogoutDialogLegacy
         isOpen={isOpenLogoutDialog}
         onClose={onCloseLogoutDialog}

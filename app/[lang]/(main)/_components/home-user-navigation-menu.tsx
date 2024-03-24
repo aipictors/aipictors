@@ -20,11 +20,13 @@ import { config } from "@/config"
 import {
   GemIcon,
   LogOutIcon,
+  MessageCircleIcon,
   MoonIcon,
   SettingsIcon,
   SunIcon,
   UserCircleIcon,
   UserCogIcon,
+  UserIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -70,7 +72,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar>
+        <Avatar className="cursor-pointer">
           <AvatarImage src={authContext.avatarPhotoURL ?? undefined} />
           <AvatarFallback />
         </Avatar>
@@ -82,14 +84,19 @@ export const HomeUserNavigationMenu = (props: Props) => {
           label="マイページ"
         />
         <MenuItemLink
+          href="/account/login"
+          icon={<UserIcon className="mr-2 inline-block w-4" />}
+          label="アカウント"
+        />
+        <MenuItemLink
+          href="/support/chat"
+          icon={<MessageCircleIcon className="mr-2 inline-block w-4" />}
+          label="お問い合わせ"
+        />
+        <MenuItemLink
           href="/plus"
           icon={<GemIcon className="mr-2 inline-block w-4" />}
           label="Aipictors+"
-        />
-        <MenuItemLink
-          href="/account/login"
-          icon={<UserCogIcon className="mr-2 inline-block w-4" />}
-          label="アカウント"
         />
         {config.isDevelopmentMode && (
           <MenuItemLink
@@ -98,7 +105,6 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="設定"
           />
         )}
-
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             {getThemeIcon()}

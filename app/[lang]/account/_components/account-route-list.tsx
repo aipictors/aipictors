@@ -1,9 +1,17 @@
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LockKeyholeIcon, SmileIcon, UserIcon } from "lucide-react"
+import {
+  ArrowLeftIcon,
+  LockKeyholeIcon,
+  SmileIcon,
+  UserIcon,
+} from "lucide-react"
 
 export const AccountRouteList = () => {
   return (
-    <div className="gap-y-2">
+    <div className="space-y-1">
+      <HomeNavigationButton href={"/generation"} icon={ArrowLeftIcon}>
+        {"もどる"}
+      </HomeNavigationButton>
       <HomeNavigationButton href={"/account/login"} icon={SmileIcon}>
         {"ユーザID"}
       </HomeNavigationButton>
