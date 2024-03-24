@@ -49,7 +49,10 @@ export const HomeHeader = (props: Props) => {
             </ScrollArea>
           </SheetContent>
         </Sheet>
-        <Link className="flex items-center" href="https://www.aipictors.com">
+        <Link
+          className="hidden items-center md:flex"
+          href="https://www.aipictors.com"
+        >
           <Image
             src="/icon.svg"
             className="h-10 w-10 rounded-full"
@@ -58,7 +61,7 @@ export const HomeHeader = (props: Props) => {
             height={40}
           />
         </Link>
-        <div className="flex flex-grow flex-row items-center pl-2">
+        <div className="hidden flex-grow flex-row items-center pl-2 md:flex">
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
         {config.isDevelopmentMode && (

@@ -66,7 +66,10 @@ const GenerationPage = async () => {
 
 export const metadata: Metadata = {
   robots: { index: false },
-  title: "-",
+  title: "画像生成",
+  description:
+    "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 }
 
 export const revalidate = 60
