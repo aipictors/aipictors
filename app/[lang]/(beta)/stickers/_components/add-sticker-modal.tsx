@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -6,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 type Props = {
   isOpen: boolean
@@ -24,7 +26,7 @@ export const AddStickerModal = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"スタンプ公開"}</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col">
+        <div className="flex flex-col space-y-2">
           <p>{"非公開の作成済みスタンプ"}</p>
           <div className="flex">
             <img alt={""} className="h-9 w-9" src="gibbresh.png" />
@@ -33,24 +35,54 @@ export const AddStickerModal = (props: Props) => {
           <p>{"選択スタンプ"}</p>
           <img alt="" className="h-9 w-9" src="gibbresh.png" />
           <p>{"タイトル"}</p>
-          <input className="border-2 border-gray-300" placeholder="タイトル" />
+          <Input placeholder="タイトル" />
           <div className="flex flex-col">
-            <p>{"ジャンル"}</p>
+            <p className="py-2">{"ジャンル"}</p>
             <div className="flex space-x-4">
-              <input type="checkbox" className="text-blue-500" /> 人物
-              <input type="checkbox" className="text-blue-500" /> 動物
-              <input type="checkbox" className="text-blue-500" /> 機械
-              <input type="checkbox" className="text-blue-500" /> 背景
-              <input type="checkbox" className="text-blue-500" /> 物
+              <div className="items-center space-x-2">
+                <Checkbox id="terms" />
+                <span>{"人物"}</span>
+              </div>
+              <div className="items-center space-x-2">
+                <Checkbox id="terms" />
+                <span>{"動物"}</span>
+              </div>
+              <div className="items-center space-x-2">
+                <Checkbox id="terms" />
+                <span>{"機械"}</span>
+              </div>
+              <div className="items-center space-x-2">
+                <Checkbox id="terms" />
+                <span>{"背景"}</span>
+              </div>
+              <div className="items-center space-x-2">
+                <Checkbox id="terms" />
+                <span>{"物"}</span>
+              </div>
             </div>
           </div>
           <p>{"タグ"}</p>
-          <div className="flex">
-            <input type="checkbox" className="text-blue-500" /> 楽しい
-            <input type="checkbox" className="text-blue-500" /> 嬉しい
-            <input type="checkbox" className="text-blue-500" /> お祝い
-            <input type="checkbox" className="text-blue-500" /> 悲しい
-            <input type="checkbox" className="text-blue-500" /> その他
+          <div className="flex space-x-4">
+            <div className="items-center space-x-2">
+              <Checkbox id="terms" />
+              <span>{"人物"}</span>
+            </div>
+            <div className="items-center space-x-2">
+              <Checkbox id="terms" />
+              <span>{"動物"}</span>
+            </div>
+            <div className="items-center space-x-2">
+              <Checkbox id="terms" />
+              <span>{"機械"}</span>
+            </div>
+            <div className="items-center space-x-2">
+              <Checkbox id="terms" />
+              <span>{"背景"}</span>
+            </div>
+            <div className="items-center space-x-2">
+              <Checkbox id="terms" />
+              <span>{"物"}</span>
+            </div>
           </div>
         </div>
         <DialogFooter>
