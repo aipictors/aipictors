@@ -1,6 +1,6 @@
 "use client"
 
-import { SupportMessageList } from "@/app/[lang]/(beta)/support/chat/_components/support-message-list"
+import { SupportMessageList } from "@/app/[lang]/(main)/support/chat/_components/support-message-list"
 import { messageThreadMessagesQuery } from "@/graphql/queries/message/message-thread-messages"
 import { useSuspenseQuery } from "@apollo/client"
 import { startTransition } from "react"

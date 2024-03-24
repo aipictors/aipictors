@@ -1,9 +1,9 @@
 "use client"
 
-import { PassBenefitList } from "@/app/[lang]/(beta)/plus/_components/pass-benefit-list"
-import { PassImageGenerationBenefitList } from "@/app/[lang]/(beta)/plus/_components/pass-image-generation-benefit-list"
-import { PlusAbout } from "@/app/[lang]/(beta)/plus/_components/plus-about"
-import { toPassName } from "@/app/[lang]/(beta)/plus/_utils/to-pass-name"
+import { PassBenefitList } from "@/app/[lang]/(main)/plus/_components/pass-benefit-list"
+import { PassImageGenerationBenefitList } from "@/app/[lang]/(main)/plus/_components/pass-image-generation-benefit-list"
+import { PlusAbout } from "@/app/[lang]/(main)/plus/_components/plus-about"
+import { toPassName } from "@/app/[lang]/(main)/plus/_utils/to-pass-name"
 import { toDateText } from "@/app/_utils/to-date-text"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

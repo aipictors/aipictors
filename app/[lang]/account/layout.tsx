@@ -1,6 +1,6 @@
 "use client"
 
-import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
+import { BetaHeader } from "@/app/[lang]/(main)/_components/beta-header"
 import { AccountRouteList } from "@/app/[lang]/account/_components/account-route-list"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppAside } from "@/components/app/app-aside"

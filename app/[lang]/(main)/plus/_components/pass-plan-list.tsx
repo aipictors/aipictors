@@ -1,5 +1,5 @@
-import { PassPlanDescription } from "@/app/[lang]/(beta)/plus/_components/pass-plan-description"
-import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
+import { PassPlanDescription } from "@/app/[lang]/(main)/plus/_components/pass-plan-description"
+import { toPassFeatures } from "@/app/[lang]/(main)/plus/_utils/to-pass-features"
 import type { PassType } from "@/graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useSuspenseQuery } from "@apollo/client"

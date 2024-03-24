@@ -1,12 +1,18 @@
 import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
 import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
+import { AppDevelopmentPage } from "@/components/app/app-development-page"
 import { AppPage } from "@/components/app/app-page"
+import { config } from "@/config"
 import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/graphql/queries/work/works"
 import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 const HomePage = async () => {
+  if (!config.isDevelopmentMode) {
+    return <AppDevelopmentPage />
+  }
+
   const client = createClient()
 
   const worksResp = await client.query({

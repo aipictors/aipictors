@@ -1,7 +1,7 @@
 "use client"
 
-import { ChatMessageListContent } from "@/app/[lang]/(beta)/messages/[recipient]/_components/chat-message-list-content"
-import { MessageInput } from "@/app/[lang]/(beta)/support/chat/_components/message-input"
+import { ChatMessageListContent } from "@/app/[lang]/(main)/messages/[recipient]/_components/chat-message-list-content"
+import { MessageInput } from "@/app/[lang]/(main)/support/chat/_components/message-input"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { createMessageMutation } from "@/graphql/mutations/create-message"
 import { useMutation } from "@apollo/client"

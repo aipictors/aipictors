@@ -1,4 +1,4 @@
-import { toPassFeatures } from "@/app/[lang]/(beta)/plus/_utils/to-pass-features"
+import { toPassFeatures } from "@/app/[lang]/(main)/plus/_utils/to-pass-features"
 import type { PassType } from "@/graphql/__generated__/graphql"
 
 type Props = {

@@ -1,5 +1,5 @@
-import { RecipientMessage } from "@/app/[lang]/(beta)/support/chat/_components/recipient-message"
-import { SenderMessage } from "@/app/[lang]/(beta)/support/chat/_components/sender-message"
+import { RecipientMessage } from "@/app/[lang]/(main)/support/chat/_components/recipient-message"
+import { SenderMessage } from "@/app/[lang]/(main)/support/chat/_components/sender-message"
 import type { ViewerSupportMessagesQuery } from "@/graphql/__generated__/graphql"
 
 import { useEffect, useRef } from "react"

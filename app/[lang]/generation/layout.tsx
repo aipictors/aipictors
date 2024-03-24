@@ -1,4 +1,4 @@
-import { BetaHeader } from "@/app/[lang]/(beta)/_components/beta-header"
+import { BetaHeader } from "@/app/[lang]/(main)/_components/beta-header"
 import { GenerationConfigProvider } from "@/app/[lang]/generation/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/app/[lang]/generation/_components/generation-query-provider"
 import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"

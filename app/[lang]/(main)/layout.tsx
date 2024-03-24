@@ -1,7 +1,7 @@
 "use client"
 
-import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { HomeNavigationList } from "@/app/[lang]/(main)/_components/home-navigation-list"
+import { BetaHeader } from "@/app/[lang]/(main)/_components/beta-header"
+import { BetaNavigationList } from "@/app/[lang]/(main)/_components/beta-navigation-list"
 import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
@@ -17,12 +17,25 @@ const MainLayout = (props: Props) => {
     return <AppDevelopmentPage />
   }
 
+  // return (
+  //   <>
+  //     <HomeHeader />
+  //     <AppColumnLayout>
+  //       <AppAside>
+  //         <HomeNavigationList />
+  //       </AppAside>
+  //       {props.children}
+  //     </AppColumnLayout>
+  //     <HomeFooter />
+  //   </>
+  // )
+
   return (
     <>
-      <HomeHeader />
+      <BetaHeader />
       <AppColumnLayout>
         <AppAside>
-          <HomeNavigationList />
+          <BetaNavigationList />
         </AppAside>
         {props.children}
       </AppColumnLayout>

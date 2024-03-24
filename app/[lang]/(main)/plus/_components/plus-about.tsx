@@ -1,4 +1,4 @@
-import { PassPlanList } from "@/app/[lang]/(beta)/plus/_components/pass-plan-list"
+import { PassPlanList } from "@/app/[lang]/(main)/plus/_components/pass-plan-list"
 import { config } from "@/config"
 import type { PassType } from "@/graphql/__generated__/graphql"
 import { createPassCheckoutSessionMutation } from "@/graphql/mutations/create-pass-checkout-session"

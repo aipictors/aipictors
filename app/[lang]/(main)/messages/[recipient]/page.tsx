@@ -1,4 +1,4 @@
-import { ChatMessageView } from "@/app/[lang]/(beta)/messages/[recipient]/_components/chat-message-view"
+import { ChatMessageView } from "@/app/[lang]/(main)/messages/[recipient]/_components/chat-message-view"
 import type { Metadata } from "next"
 
 type Props = {
