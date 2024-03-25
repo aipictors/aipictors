@@ -10,7 +10,19 @@ const ContributorsPage = async () => {
 
 export const metadata: Metadata = {
   robots: { index: false },
-  title: "コントリビュータ一覧",
+  title: { absolute: "Aipictors Contributors" },
+  description: "Aipictorsのコントリビュータ一覧です",
+  openGraph: {
+    title: { absolute: "Aipictors Contributors" },
+    description: "Aipictorsのコントリビュータ一覧です",
+    images: {
+      url: "https://www.aipictors.com/wp-content/uploads/2024/03/60f40ea7-ab71-496e-9e88-cb16f655a230-1.webp",
+    },
+  },
+  twitter: {
+    title: { absolute: "和気あいAI2 - 愛知県AIイラスト展示即売会" },
+    description: "Aipictorsのコントリビュータ一覧です",
+  },
 }
 
 export const revalidate = 60

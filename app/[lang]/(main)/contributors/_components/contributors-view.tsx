@@ -3,11 +3,8 @@
 import { contributors } from "@/app/[lang]/(main)/contributors/_assets/contributors"
 import { ContributorCard } from "@/app/[lang]/(main)/contributors/_components/contributors-card"
 import type { Contributor } from "@/app/[lang]/(main)/contributors/_types/contributor"
-import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
 import { Button } from "@/components/ui/button"
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
 import { MousePointerClickIcon } from "lucide-react"
-import Link from "next/link"
 
 /**
  * コントリビュータ一覧
