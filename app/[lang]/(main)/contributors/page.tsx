@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: { absolute: "和気あいAI2 - 愛知県AIイラスト展示即売会" },
+    title: { absolute: "Aipictors Contributors" },
     description: "Aipictorsのコントリビュータ一覧です",
   },
 }
