@@ -21,6 +21,4 @@ export const metadata: Metadata = {
   title: { absolute: "プライバシー・ポリシー" },
 }
 
-export const revalidate = 240
-
 export default FlutterPrivacyPage

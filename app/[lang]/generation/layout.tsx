@@ -6,6 +6,8 @@ import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/lib/client"
 
+export const revalidate = 60
+
 type Props = {
   children: React.ReactNode
 }
@@ -43,7 +45,5 @@ export async function GenerationLayout(props: Props) {
     </>
   )
 }
-
-export const revalidate = 60
 
 export default GenerationLayout

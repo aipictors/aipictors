@@ -45,6 +45,4 @@ const UserSupportsPage = async (props: Props) => {
 //   title: "-",
 // }
 
-// export const revalidate = 60
-
 export default UserSupportsPage

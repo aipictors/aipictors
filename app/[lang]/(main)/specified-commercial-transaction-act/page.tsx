@@ -85,6 +85,4 @@ export const metadata: Metadata = {
   title: "特定商取引法に基づく表記",
 }
 
-export const revalidate = 60
-
 export default SctaPage

@@ -40,10 +40,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_VERSION: packageJSON.version,
   },
-  /**
-   * 32MB
-   */
-  cacheMaxMemorySize: 2 ** 20 * 32,
+  cacheMaxMemorySize: 0,
+  cacheHandler:
+    process.env.NODE_ENV === "production" ? "./cache-handler.mjs" : undefined,
 }
 
 export default withSentryConfig(

@@ -40,6 +40,4 @@ export const metadata: Metadata = {
     "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！",
 }
 
-export const revalidate = 60
-
 export default StickersPage

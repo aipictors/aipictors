@@ -36,6 +36,4 @@ export const metadata: Metadata = {
   title: "-",
 }
 
-export const revalidate = 60
-
 export default SensitiveWorks3dPage

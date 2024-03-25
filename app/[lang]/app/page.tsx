@@ -20,6 +20,4 @@ export const metadata: Metadata = {
   description: "Aipictorsのアプリをダウンロード",
 }
 
-export const revalidate = 3600
-
 export default FlutterAppPage

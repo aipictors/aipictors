@@ -156,6 +156,4 @@ export const metadata: Metadata = {
   },
 }
 
-export const revalidate = 3600
-
 export default EventWakiaiaiPage

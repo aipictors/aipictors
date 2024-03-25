@@ -15,6 +15,4 @@ export const generateMetadata = async (): Promise<Metadata> => {
   }
 }
 
-export const revalidate = 240
-
 export default SettingsPage

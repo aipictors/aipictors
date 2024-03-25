@@ -27,6 +27,4 @@ export const metadata: Metadata = {
   title: "プライバシーポリシー",
 }
 
-export const revalidate = 60
-
 export default PrivacyPage

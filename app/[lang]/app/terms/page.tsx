@@ -29,6 +29,4 @@ export const metadata: Metadata = {
   title: "利用規約",
 }
 
-export const revalidate = 60
-
 export default AppTermsPage

@@ -52,6 +52,4 @@ export const metadata: Metadata = {
   title: "本サイトについて",
 }
 
-export const revalidate = 60
-
 export default AboutPage

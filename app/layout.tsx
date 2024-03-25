@@ -11,6 +11,8 @@ import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
 import { notoSansFont } from "./_fonts/noto-sans-font"
 
+export const revalidate = 3600
+
 type Props = {
   children: React.ReactNode
 }
