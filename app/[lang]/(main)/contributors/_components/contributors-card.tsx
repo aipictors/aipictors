@@ -41,7 +41,7 @@ export const ContributorCard = (props: Props) => {
               <img
                 alt={props.user.name}
                 src={props.user.iconImageURL}
-                className="rounded shadow-xl md:h-24 md:h-full md:w-24 md:w-full"
+                className="h-24 w-24 rounded shadow-xl md:h-full md:w-full"
                 style={{ height: "100%", objectFit: "contain" }}
               />
             </a>
