@@ -13,7 +13,7 @@ export const contributors: Contributor[] = [
   },
   {
     name: "しぐれ煮",
-    message: "プロンプトン運営、アプリ、サイト全般",
+    message: "CTO、アプリ、サイト全般、プロンプトン運営",
     iconImageURL:
       "https://www.aipictors.com/wp-content/uploads/2023/12/RJC86K4vGXLxzrhWZFj9yQN3PiwMnD.webp",
     xId: null,
