@@ -90,10 +90,8 @@ export const GenerationTaskListActions = (props: Props) => {
         <div className="flex w-full items-center space-x-2">
           <Toggle
             title="履歴を複数選択してダウンロード、一括削除などを行えます"
-            className="w-16"
             onClick={props.onToggleEditMode}
             variant="outline"
-            size={"sm"}
           >
             {props.isEditMode ? "解除" : "選択"}
           </Toggle>
@@ -126,18 +124,16 @@ export const GenerationTaskListActions = (props: Props) => {
               onTogglePreviewMode={props.onTogglePreviewMode}
             />
           )}
-          {
-            <GenerationTaskActionDropdownMenu
-              thumbnailSize={props.thumbnailSize}
-              thumbnailType={props.thumbnailType}
-              onChange={props.setThumbnailSize}
-              taskContentPositionType={props.taskContentPositionType}
-              onChangeThumbnailType={props.onChangeThumbnailType}
-              onChangeTaskContentPositionType={
-                props.onChangeTaskContentPositionType
-              }
-            />
-          }
+          <GenerationTaskActionDropdownMenu
+            thumbnailSize={props.thumbnailSize}
+            thumbnailType={props.thumbnailType}
+            onChange={props.setThumbnailSize}
+            taskContentPositionType={props.taskContentPositionType}
+            onChangeThumbnailType={props.onChangeThumbnailType}
+            onChangeTaskContentPositionType={
+              props.onChangeTaskContentPositionType
+            }
+          />
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}
@@ -152,7 +148,6 @@ export const GenerationTaskListActions = (props: Props) => {
           <Toggle
             onClick={openFullHistory}
             variant={"outline"}
-            className="ml-auto w-16"
             title="履歴一覧の全画面モード切替"
           >
             {state === "HISTORY_LIST_FULL" ? (

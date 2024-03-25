@@ -147,7 +147,6 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 <ChevronLeft className="w-8" />
               </Button>
             )}
-
             {props.task.status !== "RESERVED" ? (
               <>
                 <ErrorBoundary fallback={generationTaskError}>
@@ -301,48 +300,52 @@ export function GenerationTaskSheetViewContent(props: Props) {
               </div>
             </>
           )}
-          <div className="mb-1 flex gap-x-2">
-            <div className="basis-1/3">
-              <p className="mb-1 font-semibold">{"Size"}</p>
+          <div className="flex gap-x-2">
+            <div className="basis-1/3 space-y-1">
+              <p className="font-bold">{"Size"}</p>
               <p>
                 {props.generationSize.width}x{props.generationSize.height}
               </p>
             </div>
-            <div className="basis-1/3">
-              <p className="mb-1 font-semibold">{"Model"}</p>
+            <div className="basis-1/3 space-y-1">
+              <p className="font-bold">{"Model"}</p>
               <p>{extractStringBeforeComma(props.task.model?.name)}</p>
             </div>
           </div>
           <div className="py-2">
             <Separator />
           </div>
-          <p className="mb-1 font-semibold">{"prompt"}</p>
-          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
-            {props.task.prompt}
-          </p>
-          <CopyButton text={props.task.prompt} />
+          <div className="space-y-2">
+            <p className="font-bold">{"prompt"}</p>
+            <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+              {props.task.prompt}
+            </p>
+            <CopyButton text={props.task.prompt} />
+          </div>
           <div className="py-2">
             <Separator />
           </div>
-          <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-          <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
-            {props.task.negativePrompt}
-          </p>
-          <CopyButton text={props.task.negativePrompt} />
+          <div className="space-y-2">
+            <p className="font-bold">{"NegativePrompt"}</p>
+            <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+              {props.task.negativePrompt}
+            </p>
+            <CopyButton text={props.task.negativePrompt} />
+          </div>
           <div className="py-2">
             <Separator />
           </div>
           <div className="mb-1 flex space-x-4">
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Scale"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"Scale"}</p>
               <p>{props.task.scale}</p>
             </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Scale"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"Scale"}</p>
               <p>{props.task.steps}</p>
             </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Sampler"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"Sampler"}</p>
               <p>{props.task.sampler}</p>
             </div>
           </div>
@@ -350,20 +353,20 @@ export function GenerationTaskSheetViewContent(props: Props) {
             <Separator />
           </div>
           <div className="flex space-x-4">
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"ClipSkip"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"ClipSkip"}</p>
               <p>{props.task.clipSkip}</p>
             </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Vae"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"Vae"}</p>
               <p>
                 {props.task.vae
                   ?.replace(".ckpt", "")
                   .replace(".safetensors", "") ?? ""}
               </p>
             </div>
-            <div className="w-full">
-              <p className="mb-1 font-semibold">{"Seed"}</p>
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"Seed"}</p>
               <p>{props.task.seed}</p>
             </div>
           </div>

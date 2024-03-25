@@ -25,7 +25,7 @@ export function GenerationTaskProtectedSelect(props: Props) {
       }}
     >
       <SelectTrigger
-        className="h-9 w-24"
+        className="w-24"
         title="履歴の保存期間を過ぎても保護扱い中の履歴を絞る"
       >
         <LockKeyholeIcon className="w-4" />

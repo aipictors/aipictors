@@ -34,23 +34,27 @@ export const GenerationConfigLoraModels = () => {
 
   return (
     <>
-      <div className="space-y-2">
-        {selectedModels.map((model) => (
-          <ConfigLoraModel
-            key={model.id}
-            imageURL={model.thumbnailImageURL ?? ""}
-            name={model.name}
-            description={model.description ?? ""}
-            value={currentModels.find((m) => m.name === model.name)?.value ?? 0}
-            setValue={(value) => {
-              context.updateLoraModel(model.name, value)
-            }}
-            onDelete={() => {
-              context.changeLoraModel(model.name)
-            }}
-          />
-        ))}
-      </div>
+      {0 < selectedModels.length && (
+        <div className="space-y-2">
+          {selectedModels.map((model) => (
+            <ConfigLoraModel
+              key={model.id}
+              imageURL={model.thumbnailImageURL ?? ""}
+              name={model.name}
+              description={model.description ?? ""}
+              value={
+                currentModels.find((m) => m.name === model.name)?.value ?? 0
+              }
+              setValue={(value) => {
+                context.updateLoraModel(model.name, value)
+              }}
+              onDelete={() => {
+                context.changeLoraModel(model.name)
+              }}
+            />
+          ))}
+        </div>
+      )}
       <LoraModelListDialogButton
         isOpen={isOpen}
         models={context.loraModels}

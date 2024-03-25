@@ -24,7 +24,7 @@ export function GenerationTaskRatingSelect(props: Props) {
         props.onChange(Number.parseInt(value))
       }}
     >
-      <SelectTrigger className="h-9 w-24" title="お気に入り度で絞る">
+      <SelectTrigger className="w-24" title="お気に入り度で絞る">
         <StarIcon className="w-4" />
         <SelectValue placeholder="-" />
       </SelectTrigger>
