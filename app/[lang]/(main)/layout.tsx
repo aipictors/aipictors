@@ -1,5 +1,3 @@
-"use client"
-
 import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
 import { HomeRouteList } from "@/app/[lang]/(main)/_components/home-route-list"
 import { HomeFooter } from "@/app/_components/home-footer"

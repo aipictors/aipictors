@@ -1,5 +1,3 @@
-"use client"
-
 import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
 import { SensitiveRouteList } from "@/app/[lang]/sensitive/_components/sensitive-route-list"
 import { HomeFooter } from "@/app/_components/home-footer"
