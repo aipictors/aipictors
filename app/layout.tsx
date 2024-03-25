@@ -5,7 +5,7 @@ import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
 import { config } from "@/config"
 import { cn } from "@/lib/utils"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
@@ -45,6 +45,13 @@ const RootLayout = (props: Props) => {
       </body>
     </html>
   )
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export const metadata: Metadata = {
