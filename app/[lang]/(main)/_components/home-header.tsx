@@ -74,15 +74,9 @@ export const HomeHeader = (props: Props) => {
         <Link href={"/generation"}>
           <Button variant={"secondary"}>{"生成"}</Button>
         </Link>
-        {config.isReleaseMode ? (
-          <Button variant={"secondary"} disabled>
-            {"投稿"}
-          </Button>
-        ) : (
-          <Link href={"/new/image"}>
-            <Button variant={"secondary"}>{"投稿"}</Button>
-          </Link>
-        )}
+        <Link href={"https://aipictors.com/post"}>
+          <Button variant={"secondary"}>{"投稿"}</Button>
+        </Link>
         {/* {config.isReleaseMode ? (
           <Button variant={"secondary"} disabled size={"icon"}>
             <FolderIcon className="w-4" />

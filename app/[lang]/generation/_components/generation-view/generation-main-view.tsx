@@ -79,7 +79,7 @@ export const GenerationMainView = (props: Props) => {
               {props.promptEditor}
             </div>
           </ResizablePanel>
-          <ResizableHandle className="mt-2 mb-2" />
+          <ResizableHandle withHandle className="mt-2 mb-2" />
           <ResizablePanel>
             <div className="h-full flex-1 overflow-hidden">
               {props.negativePromptEditor}
