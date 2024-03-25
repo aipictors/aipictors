@@ -32,12 +32,30 @@ export const contributors: Contributor[] = [
   },
   {
     name: "haruka(Rutei)",
-    message: "アナリティクス分析にコントリビュート頂きました。",
+    message: "アナリティクス分析などにコントリビュート頂きました。",
     iconImageURL:
       "https://www.aipictors.com/wp-content/uploads/2023/05/nQGdYD8vgMhKjirPZ6X25Va4A7eRxS.webp",
     xId: "haruka_68003558",
     aipictorsId: "haruka",
     homeUrl: null,
+  },
+  {
+    name: "zzz",
+    message: "サイト方針のご相談、公開モデルの搭載などさせて頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/01/yBRPZXQ4WTtpm7FU650dSaHAez2fkr.webp",
+    xId: "zzzAI19",
+    aipictorsId: "zzzai19@ymail.ne.jp",
+    homeUrl: "https://ai-drawing.net/",
+  },
+  {
+    name: "morisato",
+    message: "広報、ぴくたーちゃんLoRAの開発などにコントリビュート頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/03/3YJ5FxArmLXe70SEa6VbHCwiyp8cNk.webp",
+    xId: "swingwings",
+    aipictorsId: "swingwings",
+    homeUrl: "https://civitai.com/user/swingwings/models",
   },
   {
     name: "L4Ph",
@@ -46,6 +64,24 @@ export const contributors: Contributor[] = [
       "https://www.aipictors.com/wp-content/uploads/2024/03/noProfile.webp",
     xId: null,
     aipictorsId: "L4Ph",
+    homeUrl: null,
+  },
+  {
+    name: "syuribox",
+    message: "広報などにコントリビュート頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/01/zvQGcNU7FrVpqD1StneuTkEZ39My2P.webp",
+    xId: "syuribox",
+    aipictorsId: "syuribox",
+    homeUrl: "https://kakuyomu.jp/users/syuribox",
+  },
+  {
+    name: "ねこねこにゃんにゃん",
+    message: "サイト方針のご相談などさせて頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/01/i5FTRkr30J8sx7g2h9CY41KD6jbSVQ.webp",
+    xId: null,
+    aipictorsId: "@yYP7HoSnADQoYzx",
     homeUrl: null,
   },
   {
@@ -58,15 +94,6 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
-    name: "morisato",
-    message: "広報、ぴくたーちゃんLoRAの開発などにコントリビュート頂きました。",
-    iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/03/3YJ5FxArmLXe70SEa6VbHCwiyp8cNk.webp",
-    xId: "swingwings",
-    aipictorsId: "swingwings",
-    homeUrl: "https://civitai.com/user/swingwings/models",
-  },
-  {
     name: "Kakko",
     message: "イベント、イラスト本などの整備、フォローなど頂きました。",
     iconImageURL:
@@ -76,13 +103,31 @@ export const contributors: Contributor[] = [
     homeUrl: "https://prompton.io/kakowara",
   },
   {
-    name: "syuribox",
-    message: "広報などにコントリビュート頂きました。",
+    name: "erot",
+    message: "サイト方針のご相談などさせて頂きました。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/zvQGcNU7FrVpqD1StneuTkEZ39My2P.webp",
-    xId: "syuribox",
-    aipictorsId: "syuribox",
-    homeUrl: "https://kakuyomu.jp/users/syuribox",
+      "https://www.aipictors.com/wp-content/uploads/2023/06/G1TBu70SPK5AvedgtRs9FrhWLfQC3Z.webp",
+    xId: "erot_ai",
+    aipictorsId: "erot",
+    homeUrl: null,
+  },
+  {
+    name: "shirotaka",
+    message: "サイト方針のご相談などさせて頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/01/ZQGwRmj50LhA9CygerMd8pH6suz2Ev.webp",
+    xId: "WhiteRICEsub",
+    aipictorsId: "@WhiteRICEsub",
+    homeUrl: "https://lit.link/WhiteRICEsub",
+  },
+  {
+    name: "忙海AI",
+    message: "サイト方針のご相談などさせて頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/08/mY1MJBdaWAitVjfrneLwSH7RUGCsxX.webp",
+    xId: "AIdaisuki774",
+    aipictorsId: "@AIdaisuki774",
+    homeUrl: null,
   },
   {
     name: "thumbnailstorie",
