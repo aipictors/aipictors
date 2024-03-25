@@ -74,6 +74,16 @@ export const ContributorsView = () => {
               </Button>
             </a>
             <a
+              href="https://zenn.dev/p/aipics"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant={"outline"} className="m-4 font-bold text-lg">
+                Zenn
+                <MousePointerClickIcon className="ml-2" />
+              </Button>
+            </a>
+            <a
               href="https://discord.gg/aipictors"
               target="_blank"
               rel="noopener noreferrer"
