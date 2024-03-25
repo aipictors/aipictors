@@ -1,5 +1,6 @@
 "use client"
 
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
@@ -27,6 +28,8 @@ export const GenerationConfigRestoration = (props: Props) => {
   const ref = searchParams.get("ref")
 
   const promptText = searchParams.get("prompts")
+
+  const { send } = GenerationConfigContext.useActorRef()
 
   const { data } = useSuspenseQuery(
     imageGenerationTaskQuery,
@@ -73,6 +76,10 @@ export const GenerationConfigRestoration = (props: Props) => {
       toast("プロンプトの復元に失敗しました。")
     }
   }, [promptText])
+
+  useEffect(() => {
+    send({ type: "CLOSE_PREVIEW" })
+  }, [])
 
   return props.children
 }
