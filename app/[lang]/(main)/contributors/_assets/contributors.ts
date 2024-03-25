@@ -67,6 +67,15 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    name: "syuribox",
+    message: "広報などにコントリビュート頂きました。",
+    iconImageURL:
+      "https://www.aipictors.com/wp-content/uploads/2023/01/zvQGcNU7FrVpqD1StneuTkEZ39My2P.webp",
+    xId: "syuribox",
+    aipictorsId: "syuribox",
+    homeUrl: "https://kakuyomu.jp/users/syuribox",
+  },
+  {
     name: "ねこねこにゃんにゃん",
     message: "サイト方針のご相談などさせて頂きました。",
     iconImageURL:
@@ -92,15 +101,6 @@ export const contributors: Contributor[] = [
     xId: "kakowara365",
     aipictorsId: "kakowara365",
     homeUrl: "https://prompton.io/kakowara",
-  },
-  {
-    name: "syuribox",
-    message: "広報などにコントリビュート頂きました。",
-    iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/zvQGcNU7FrVpqD1StneuTkEZ39My2P.webp",
-    xId: "syuribox",
-    aipictorsId: "syuribox",
-    homeUrl: "https://kakuyomu.jp/users/syuribox",
   },
   {
     name: "erot",
