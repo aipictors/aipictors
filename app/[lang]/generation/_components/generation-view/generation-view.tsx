@@ -40,7 +40,7 @@ export const GenerationView = (props: Props) => {
    */
   if (!isDesktop) {
     return (
-      <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
+      <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
         <div className="flex flex-col gap-y-4">
           {props.header}
           {props.main}
@@ -52,7 +52,7 @@ export const GenerationView = (props: Props) => {
 
   if (state === "HISTORY_LIST_FULL") {
     return (
-      <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
+      <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="lg:min-w-80 xl:min-w-80">
             {props.aside}
@@ -63,7 +63,7 @@ export const GenerationView = (props: Props) => {
   }
 
   return (
-    <main className="flex flex-col gap-4 overflow-hidden pb-4 lg:h-main lg:flex-row">
+    <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel className="flex flex-col">
           <Suspense fallback={<AppLoadingPage />}>{props.header}</Suspense>
