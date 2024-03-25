@@ -89,6 +89,7 @@ export const GenerationTaskListActions = (props: Props) => {
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
         <div className="flex w-full items-center space-x-2">
           <Toggle
+            title="履歴を複数選択してダウンロード、一括削除などを行えます"
             className="w-16"
             onClick={props.onToggleEditMode}
             variant="outline"
@@ -152,6 +153,7 @@ export const GenerationTaskListActions = (props: Props) => {
             onClick={openFullHistory}
             variant={"outline"}
             className="ml-auto w-16"
+            title="履歴一覧の全画面モード切替"
           >
             {state === "HISTORY_LIST_FULL" ? (
               <MinimizeIcon className="w-4" />

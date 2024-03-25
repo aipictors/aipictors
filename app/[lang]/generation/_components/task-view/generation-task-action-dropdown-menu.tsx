@@ -76,7 +76,11 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"ghost"} size={"icon"}>
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          title="サムネイルサイズ変更など"
+        >
           <MoreHorizontalIcon className="w-4" />
         </Button>
       </DropdownMenuTrigger>

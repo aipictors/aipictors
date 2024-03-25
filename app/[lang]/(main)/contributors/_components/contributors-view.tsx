@@ -1,0 +1,101 @@
+"use client"
+
+import { contributors } from "@/app/[lang]/(main)/contributors/_assets/contributors"
+import { ContributorCard } from "@/app/[lang]/(main)/contributors/_components/contributors-card"
+import type { Contributor } from "@/app/[lang]/(main)/contributors/_types/contributor"
+import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
+import { Button } from "@/components/ui/button"
+import type { WorksQuery } from "@/graphql/__generated__/graphql"
+import { MousePointerClickIcon } from "lucide-react"
+import Link from "next/link"
+
+/**
+ * コントリビュータ一覧
+ */
+export const ContributorsView = () => {
+  return (
+    <>
+      <div className="space-y-2 py-4">
+        <div className="flex flex-col items-center md:flex-row">
+          <div className="flex flex-grow-3">
+            <div className="relative">
+              <img
+                alt={"コントリビュータ一覧ページトップ"}
+                src={
+                  "https://www.aipictors.com/wp-content/uploads/2024/03/60f40ea7-ab71-496e-9e88-cb16f655a230-1.webp"
+                }
+                className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
+              />
+              <a
+                className="absolute right-4 bottom-4"
+                href={"https://beta.aipictors.com"}
+                target={"_blank"}
+                rel={"noreferrer noopener"}
+              >
+                <Button className="rounded-full">
+                  <MousePointerClickIcon />
+                  <span className="ml-2">{"Aipictors"}</span>
+                </Button>
+              </a>
+            </div>
+          </div>
+          <div className="w-full flex-2 space-y-8 py-8 md:px-4">
+            <div className="space-y-4">
+              <h1 className={"font-bold text-4xl"}>{"コントリビュータ一覧"}</h1>
+              <p className={"font-bold text-md"}>{"Contributors"}</p>
+            </div>
+            <div className="flex flex-col">
+              <div>{"AipictorsのContributors一覧ページです！"}</div>
+              <div>{"AipictorsはOSSプロジェクトです！"}</div>
+              <div>
+                {"誰でも開発に参加して機能追加などを行うことができます"}
+              </div>
+              <div>
+                {
+                  "新しいAIコンテンツ創作、交流SNSへのご参加をお待ちしております"
+                }
+              </div>
+            </div>
+            <a
+              href="https://beta.aipictors.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant={"outline"} className="m-4 font-bold text-lg">
+                Aipictors（β版）
+                <MousePointerClickIcon className="ml-2" />
+              </Button>
+            </a>
+            <a
+              href="https://github.com/aipictors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant={"outline"} className="m-4 font-bold text-lg">
+                GitHub
+                <MousePointerClickIcon className="ml-2" />
+              </Button>
+            </a>
+            <a
+              href="https://discord.gg/aipictors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant={"outline"} className="m-4 font-bold text-lg">
+                Discordで開発に参加する
+                <MousePointerClickIcon className="ml-2" />
+              </Button>
+            </a>
+          </div>
+        </div>
+
+        <h2 className="py-4 font-bold text-2xl">{"コントリビュータ一覧"}</h2>
+        <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
+          {contributors.map((user: Contributor) => (
+            <ContributorCard user={user} />
+          ))}
+        </div>
+      </div>
+    </>
+  )
+}
