@@ -71,6 +71,4 @@ export const generateMetadata = async (): Promise<Metadata> => {
   }
 }
 
-export const revalidate = 0
-
 export default MilestonesPage

@@ -6,6 +6,8 @@ import { HomeFooter } from "@/app/_components/home-footer"
 import { AppAside } from "@/components/app/app-aside"
 import { AppColumnLayout } from "@/components/app/app-column-layout"
 
+export const revalidate = 60
+
 type Props = {
   children: React.ReactNode
 }

@@ -8,6 +8,8 @@ import { worksQuery } from "@/graphql/queries/work/works"
 import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
+export const revalidate = 60
+
 const HomePage = async () => {
   if (!config.isDevelopmentMode) {
     return <AppDevelopmentPage />
@@ -63,7 +65,5 @@ export const metadata: Metadata = {
   robots: { index: false },
   title: "-",
 }
-
-export const revalidate = 60
 
 export default HomePage

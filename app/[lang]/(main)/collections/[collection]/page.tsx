@@ -38,6 +38,4 @@ export const generateStaticParams = () => {
   return []
 }
 
-export const revalidate = 60
-
 export default CollectionPage

@@ -8,6 +8,8 @@ import { AppColumnLayout } from "@/components/app/app-column-layout"
 import type React from "react"
 import { useContext } from "react"
 
+export const revalidate = 60
+
 type Props = {
   children: React.ReactNode
 }

@@ -25,6 +25,7 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@hookform/resolvers": "^3.3.4",
     "@marsidev/react-turnstile": "^0.5.3",
+    "@neshca/cache-handler": "^1.0.7",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",

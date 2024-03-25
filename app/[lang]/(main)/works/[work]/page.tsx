@@ -8,6 +8,8 @@ import { createClient } from "@/lib/client"
 import type { Metadata, ResolvingMetadata } from "next"
 import { Suspense } from "react"
 
+export const revalidate = 10
+
 type Props = {
   params: { work: string }
 }
@@ -98,7 +100,5 @@ export async function generateMetadata(
 export const generateStaticParams = () => {
   return []
 }
-
-export const revalidate = 60
 
 export default WorkPage

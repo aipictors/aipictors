@@ -21,6 +21,4 @@ export const metadata: Metadata = {
   title: { absolute: "利用規約" },
 }
 
-export const revalidate = 240
-
 export default FlutterTermsPage

@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
 }
 
-export const revalidate = 60
+export const revalidate = 10
 
 const GenerationConfigView = dynamic(
   () => {

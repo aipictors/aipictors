@@ -16,6 +16,4 @@ export const metadata: Metadata = {
   title: { absolute: "特定商取引法に基づく表記" },
 }
 
-export const revalidate = 240
-
 export default FlutterSctaPage

@@ -18,6 +18,4 @@ export const metadata: Metadata = {
   title: "-",
 }
 
-export const revalidate = 0
-
 export default SettingRestrictionPage

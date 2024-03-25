@@ -4,6 +4,8 @@ import { AppPage } from "@/components/app/app-page"
 import { AppPageHeader } from "@/components/app/app-page-header"
 import type { Metadata } from "next"
 
+export const revalidate = 60
+
 /**
  * サブスク
  * @returns
@@ -35,7 +37,5 @@ export const generateMetadata = async (): Promise<Metadata> => {
     title: { absolute: "Aipictors+" },
   }
 }
-
-export const revalidate = 0
 
 export default PlusPage

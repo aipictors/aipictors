@@ -31,6 +31,4 @@ export const metadata: Metadata = {
   title: "お問い合わせ",
 }
 
-export const revalidate = 60
-
 export default PrivacyPage
