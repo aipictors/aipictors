@@ -58,7 +58,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
-    name: "moribato",
+    name: "morisato",
     message: "広報、ぴくたーちゃんLoRAの開発などにコントリビュート頂きました。",
     iconImageURL:
       "https://www.aipictors.com/wp-content/uploads/2023/03/3YJ5FxArmLXe70SEa6VbHCwiyp8cNk.webp",
