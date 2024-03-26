@@ -21,6 +21,7 @@ const Component = (props: Props) => {
 
   return (
     <img
+      style={{ userSelect: "none" }}
       className={props.className}
       alt={props.alt}
       draggable={false}
