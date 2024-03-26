@@ -369,35 +369,6 @@ export function GenerationSubmissionView(props: Props) {
           onCreateTask={onCreateTask}
           onSignTerms={onSignTerms}
         />
-        <div className="hidden 2xl:block lg:block md:block xl:block">
-          <div className="flex">
-            <GenerationEditorProgress
-              inProgress={inProgress}
-              maxTasksCount={availableImageGenerationMaxTasksCount}
-              normalPredictionGenerationSeconds={
-                queryData.engineStatus.normalPredictionGenerationSeconds ?? 0
-              }
-              normalTasksCount={queryData.engineStatus.normalTasksCount ?? 0}
-              passType={context.currentPass?.type ?? null}
-              remainingImageGenerationTasksCount={tasksCount}
-              standardPredictionGenerationSeconds={
-                queryData.engineStatus.standardPredictionGenerationSeconds ?? 0
-              }
-              standardTasksCount={
-                queryData.engineStatus.standardTasksCount ?? 0
-              }
-            />
-            {context.currentPass?.type !== "PREMIUM" && (
-              <div className="ml-auto">
-                <Link href="/plus">
-                  <div className="text-sm">
-                    {"高速生成、生成枚数、機能を増やす"}
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </AppFixedContent>
   )
