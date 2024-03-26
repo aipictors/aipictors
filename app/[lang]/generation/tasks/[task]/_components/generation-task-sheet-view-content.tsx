@@ -10,6 +10,7 @@ import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/t
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import type { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
 import { PrivateImage } from "@/app/_components/private-image"
+import SwipeArea from "@/app/_components/swipe-area"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import { Button } from "@/components/ui/button"
@@ -135,85 +136,96 @@ export function GenerationTaskSheetViewContent(props: Props) {
             "max-h-[88vh]": props.isScroll,
           })}
         >
-          <div className="relative bg-gray-100 dark:bg-gray-900">
-            {/* 前ボタン */}
-            {canPrevTask() && (
-              <Button
-                className="absolute top-[50%] left-8"
-                variant={"ghost"}
-                size={"icon"}
-                onClick={props.onPrevTask}
-              >
-                <ChevronLeft className="w-8" />
-              </Button>
-            )}
-            {props.task.status !== "RESERVED" ? (
-              <>
-                <ErrorBoundary fallback={generationTaskError}>
-                  <Suspense
-                    fallback={
-                      <GenerationTaskContentImagePlaceHolder
-                        className={"m-auto h-72 max-h-96 max-w-['50vw']"}
-                      />
-                    }
-                  >
-                    <GenerationImageDialogButton
-                      taskId={props.task.id}
-                      taskToken={props.task.token}
-                      children={
-                        <PrivateImage
-                          className={"m-auto h-72 max-h-96"}
-                          taskId={props.task.id}
-                          token={props.task.token as string}
-                          isThumbnail={
-                            context.config.taskListThumbnailType === "light"
-                          }
-                          alt={"-"}
+          <SwipeArea
+            onNext={() => {
+              props.onNextTask()
+            }}
+            onPrev={() => {
+              props.onPrevTask()
+            }}
+          >
+            <div className="relative bg-gray-100 dark:bg-gray-900">
+              {/* 前ボタン */}
+              {canPrevTask() && (
+                <Button
+                  className="absolute top-[50%] left-8"
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={props.onPrevTask}
+                >
+                  <ChevronLeft className="w-8" />
+                </Button>
+              )}
+              {props.task.status !== "RESERVED" ? (
+                <>
+                  <ErrorBoundary fallback={generationTaskError}>
+                    <Suspense
+                      fallback={
+                        <GenerationTaskContentImagePlaceHolder
+                          className={"m-auto h-72 max-h-96 max-w-['50vw']"}
                         />
                       }
-                    />
-                  </Suspense>
-                  {/* ダウンロード用（非表示） */}
-                  <Suspense
-                    fallback={
-                      <GenerationTaskContentImagePlaceHolder
-                        className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                    >
+                      <GenerationImageDialogButton
+                        taskId={props.task.id}
+                        taskToken={props.task.token}
+                        children={
+                          <PrivateImage
+                            className={"m-auto h-72 max-h-96"}
+                            taskId={props.task.id}
+                            token={props.task.token as string}
+                            isThumbnail={
+                              context.config.taskListThumbnailType === "light"
+                            }
+                            alt={"-"}
+                          />
+                        }
                       />
-                    }
-                  >
-                    <PrivateImage
-                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                      className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
-                      taskId={props.task.id}
-                      token={props.task.token as string}
-                      isThumbnail={false}
-                      alt={"-"}
+                    </Suspense>
+                    {/* ダウンロード用（非表示） */}
+                    <Suspense
+                      fallback={
+                        <GenerationTaskContentImagePlaceHolder
+                          className={
+                            "m-auto hidden h-72 max-h-96 max-w-['50vw']"
+                          }
+                        />
+                      }
+                    >
+                      <PrivateImage
+                        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                        className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
+                        taskId={props.task.id}
+                        token={props.task.token as string}
+                        isThumbnail={false}
+                        alt={"-"}
+                      />
+                    </Suspense>
+                  </ErrorBoundary>
+                </>
+              ) : (
+                <>
+                  <p className="text-center">{"予約生成中"}</p>
+                  <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
+                    <Skeleton
+                      className={"m-auto h-[400px] w-[400px] rounded-xl"}
                     />
-                  </Suspense>
-                </ErrorBoundary>
-              </>
-            ) : (
-              <>
-                <p className="text-center">{"予約生成中"}</p>
-                <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
-                  <Skeleton
-                    className={"m-auto h-[400px] w-[400px] rounded-xl"}
-                  />
-                </div>
-              </>
-            )}
-            {/* 次ボタン */}
-            {canNextTask() && (
-              <Button
-                className="absolute top-[50%] right-8"
-                variant={"ghost"}
-                size={"icon"}
-                onClick={props.onNextTask}
-              >
-                <ChevronRight className="w-8" />
-              </Button>
-            )}
-          </div>
+                  </div>
+                </>
+              )}
+              {/* 次ボタン */}
+              {canNextTask() && (
+                <Button
+                  className="absolute top-[50%] right-8"
+                  variant={"ghost"}
+                  size={"icon"}
+                  onClick={props.onNextTask}
+                >
+                  <ChevronRight className="w-8" />
+                </Button>
+              )}
+            </div>
+          </SwipeArea>
           {props.task.status !== "RESERVED" && (
             <>
               <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
