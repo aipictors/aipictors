@@ -46,7 +46,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
 
     if (props.href.startsWith("http")) {
       return (
-        <a
+        <Link
           className="block"
           href={props.href}
           target="_blank"
@@ -60,7 +60,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
             {props.icon && <props.icon className="mr-4 w-4" />}
             <span>{props.children}</span>
           </Button>
-        </a>
+        </Link>
       )
     }
 

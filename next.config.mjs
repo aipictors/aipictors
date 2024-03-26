@@ -1,19 +1,18 @@
 // @ts-check
-import { withSentryConfig } from "@sentry/nextjs"
+// import { withSentryConfig } from "@sentry/nextjs"
+import { boolean, number, string } from "zod";
 import packageJSON from "./package.json" assert { type: "json" }
+import million from "million/compiler";
 
-/**
- * @type {import('next').NextConfig}
- */
+/** @type {import('next').NextConfig} **/
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
-    // ppr: true, // Can only be enabled in canary
     scrollRestoration: true,
   },
   output: "standalone",
-  // @next/imageの設定 画像最適化なし
   images: {
     remotePatterns: [
       {
@@ -24,38 +23,29 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  // logging: {
-  //   fetches: {
-  //     fullUrl: true,
-  //   },
-  // },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.node$/,
-      loader: "node-loader",
-    })
-    return config
-  },
   productionBrowserSourceMaps: true,
   env: {
     NEXT_PUBLIC_VERSION: packageJSON.version,
   },
   cacheMaxMemorySize: 0,
-  cacheHandler:
-    process.env.NODE_ENV === "production" ? "./cache-handler.mjs" : undefined,
+  // cacheHandler: process.env.NODE_ENV === "production" ? "./cache-handler.mjs" : undefined,
 }
 
-export default withSentryConfig(
-  nextConfig,
-  {
-    silent: true,
-    org: "nocker",
-    project: "aipictors-web",
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    release: packageJSON.version,
-  },
-  {
-    tunnelRoute: "/monitoring",
-    hideSourceMaps: false,
-  },
-)
+// const sentryOptions = {
+//   silent: true,
+//   org: "nocker",
+//   project: "aipictors-web",
+//   authToken: process.env.SENTRY_AUTH_TOKEN,
+//   release: packageJSON.version
+// };
+// const sentryEnhancedConfig = withSentryConfig(nextConfig, sentryOptions, {
+//   tunnelRoute: "/monitoring",
+//   hideSourceMaps: false,
+// });
+
+const millionConfig = {
+  auto: { rsc: true },
+};
+
+// @ts-ignore
+export default million.next(nextConfig, millionConfig);
