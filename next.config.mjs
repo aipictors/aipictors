@@ -1,8 +1,8 @@
+import million from "million/compiler"
 // @ts-check
 // import { withSentryConfig } from "@sentry/nextjs"
-import { boolean, number, string } from "zod";
+import { boolean, number, string } from "zod"
 import packageJSON from "./package.json" assert { type: "json" }
-import million from "million/compiler";
 
 /** @type {import('next').NextConfig} **/
 
@@ -45,7 +45,7 @@ const nextConfig = {
 
 const millionConfig = {
   auto: { rsc: true },
-};
+}
 
 // @ts-ignore
-export default million.next(nextConfig, millionConfig);
+export default million.next(nextConfig, millionConfig)
