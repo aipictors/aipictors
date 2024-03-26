@@ -1,6 +1,8 @@
 "use client"
 
 import { config } from "@/config"
+import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
+import { useSuspenseQuery } from "@apollo/client"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
 import type React from "react"
@@ -13,7 +15,19 @@ type Props = {
   responsive?: string
 }
 
+/**
+ * Google広告
+ * @param props
+ * @returns
+ */
 export const GoogleAdsense = (props: Props) => {
+  const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
+
+  const currentPass = data.viewer?.currentPass
+
+  if (currentPass?.type === "PREMIUM" || currentPass?.type === "STANDARD")
+    return null
+
   const pathname = usePathname()
 
   useEffect(() => {

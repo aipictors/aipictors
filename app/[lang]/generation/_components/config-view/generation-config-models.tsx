@@ -5,6 +5,8 @@ import { GenerationModelListButton } from "@/app/[lang]/generation/_components/c
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { CheckIcon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -24,6 +26,10 @@ type Props = {
  */
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
+
+  const { theme, systemTheme } = useTheme()
+
+  const currentTheme = theme === "system" ? systemTheme : theme
 
   const currentModels = context.config.modelIds.map((modelId) => {
     return context.models.find((model) => {
@@ -80,19 +86,29 @@ export const GenerationConfigModels = (props: Props) => {
         <TabsContent value="normal">
           <div className="flex flex-col space-y-2">
             {currentModels.map((model) => (
-              <ConfigModelButton
-                key={model?.id}
-                imageURL={model?.thumbnailImageURL ?? ""}
-                name={trimString(model?.displayName ?? "")}
-                isSelected={model?.id === props.currentModelId}
-                onClick={() => {
-                  props.onSelectModelId(
-                    model!.id,
-                    model!.type,
-                    model?.prompts.join(",") ?? "",
-                  )
-                }}
-              />
+              <div className="relative">
+                <ConfigModelButton
+                  key={model?.id}
+                  imageURL={model?.thumbnailImageURL ?? ""}
+                  name={trimString(model?.displayName ?? "")}
+                  isSelected={model?.id === props.currentModelId}
+                  onClick={() => {
+                    props.onSelectModelId(
+                      model!.id,
+                      model!.type,
+                      model?.prompts.join(",") ?? "",
+                    )
+                  }}
+                />
+                {model?.id === props.currentModelId && (
+                  <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
+                    <CheckIcon
+                      className="p-1"
+                      color={currentTheme === "light" ? "white" : "black"}
+                    />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
           <div className="mt-4">
@@ -108,19 +124,29 @@ export const GenerationConfigModels = (props: Props) => {
         <TabsContent value="favorite">
           <div className="flex flex-col space-y-2">
             {favoritedModels.map((model) => (
-              <ConfigModelButton
-                key={model?.id}
-                imageURL={model?.thumbnailImageURL ?? ""}
-                name={trimString(model?.displayName ?? "")}
-                isSelected={model?.id === props.currentModelId}
-                onClick={() => {
-                  props.onSelectModelId(
-                    model!.id,
-                    model!.type,
-                    model?.prompts.join(",") ?? "",
-                  )
-                }}
-              />
+              <div className="relative">
+                <ConfigModelButton
+                  key={model?.id}
+                  imageURL={model?.thumbnailImageURL ?? ""}
+                  name={trimString(model?.displayName ?? "")}
+                  isSelected={model?.id === props.currentModelId}
+                  onClick={() => {
+                    props.onSelectModelId(
+                      model!.id,
+                      model!.type,
+                      model?.prompts.join(",") ?? "",
+                    )
+                  }}
+                />
+                {model?.id === props.currentModelId && (
+                  <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
+                    <CheckIcon
+                      className="p-1"
+                      color={currentTheme === "light" ? "white" : "black"}
+                    />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
           <div className="mt-4">
