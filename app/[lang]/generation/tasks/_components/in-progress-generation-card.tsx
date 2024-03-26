@@ -1,8 +1,10 @@
+import { GenerationQueryContext } from "@/app/[lang]/generation/_contexts/generation-query-context"
 import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
 import { InProgressGenerationProgressBar } from "@/app/[lang]/generation/tasks/_components/in-progress-generation-progress-bar"
 import { Card } from "@/components/ui/card"
 import { Loader2Icon } from "lucide-react"
-import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useContext, useEffect, useState } from "react"
 
 type Props = {
   onCancel?(): void
@@ -24,6 +26,8 @@ export const InProgressGenerationCard = (props: Props) => {
       setInitWaitCount(props.initImageGenerationWaitCount)
     }
   }, [])
+
+  const dataContext = useContext(GenerationQueryContext)
 
   // const waitSecondsLabel = () => {
   //   const waitSecondsOnOneTask = 15
@@ -57,6 +61,20 @@ export const InProgressGenerationCard = (props: Props) => {
                   待ち: {props.imageGenerationWaitCount}/{initWaitCount}
                 </p>
               )}
+              {dataContext.currentPass?.type !== "PREMIUM" &&
+                dataContext.currentPass?.type !== "STANDARD" && (
+                  <Link
+                    href="/plus"
+                    className="text-sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className="flex flex-col text-cyan-400 text-sm">
+                      <div>{"優先生成で"}</div>
+                      <div>{"速度向上する"}</div>
+                    </div>
+                  </Link>
+                )}
               {/* <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
                */}
               <InProgressGenerationProgressBar

@@ -12,12 +12,7 @@ type Props = {
 }
 
 const Component = (props: Props) => {
-  const { data } = useSuspenseQuery({
-    queryKey: [props.taskId, props.isThumbnail],
-    queryFn() {
-      return fetchImage(config.wordpressEndpoint.privateImage, props.token)
-    },
-  })
+  console.log(props.token)
 
   return (
     <img
@@ -25,7 +20,9 @@ const Component = (props: Props) => {
       className={props.className}
       alt={props.alt}
       draggable={false}
-      src={data}
+      src={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
+        props.token,
+      )}`}
     />
   )
 }

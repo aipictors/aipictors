@@ -8,6 +8,7 @@ export const fetchImage = async (imageURL: string, token: string) => {
   try {
     const res = await fetch(imageURL, {
       mode: "cors",
+      priority: "high",
       headers: {
         Authorization: `Bearer ${token}`,
       },
