@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile
+RUN bun install
 
 FROM base AS builder
 COPY . .
@@ -22,4 +22,4 @@ USER nextjs
 EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["bun", "run", "start"]

@@ -7,7 +7,7 @@
     "build": "graphql-codegen-esm --config codegen.ts && next build",
     "build:graphql": "graphql-codegen-esm --config codegen.ts",
     "gcp-build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "check": "tsc --noEmit",
     "refactor": "biome check --apply-unsafe ./app ./graphql && biome format ./app ./graphql --write",
     "storybook": "storybook dev -p 6006 --no-open",
