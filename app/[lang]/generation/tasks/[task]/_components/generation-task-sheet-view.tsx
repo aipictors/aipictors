@@ -1,6 +1,7 @@
 "use client"
 
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { createBase64FromImageURL } from "@/app/[lang]/generation/_utils/create-base64-from-image-url"
 import { GenerationTaskSheetViewContent } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -65,7 +66,7 @@ export const copyUrl = (taskId: string) => {
  * @param taskId
  * @returns
  */
-export const saveGenerationImage = (taskId: string) => {
+export const saveGenerationImage = async (taskId: string) => {
   const imageElement = document.querySelector(
     `.generation-image-${taskId}`,
   ) as HTMLImageElement
@@ -73,10 +74,11 @@ export const saveGenerationImage = (taskId: string) => {
     toast("しばらくしてからお試し下さい。")
     return
   }
-  const imageUrl = imageElement.src
+  const imageUrl = await createBase64FromImageURL(imageElement.src)
   const link = document.createElement("a")
   link.href = imageUrl
   link.download = `${taskId}.png`
+  link.target = "_blank"
   link.click()
 }
 

@@ -19,7 +19,7 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer
 import { worksQuery } from "@/graphql/queries/work/works"
 import { createClient } from "@/lib/client"
 import { cn } from "@/lib/utils"
-import { ApolloQueryResult, useMutation, useQuery } from "@apollo/client"
+import type { ApolloQueryResult } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense, startTransition, useEffect } from "react"
 import { toast } from "sonner"
