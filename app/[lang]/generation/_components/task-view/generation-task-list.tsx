@@ -110,8 +110,6 @@ export const GenerationTaskList = (props: Props) => {
 
   const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
 
-  console.log("imageGenerationTasks", imageGenerationTasks)
-
   /**
    * 非表示指定のタスクを除外
    */

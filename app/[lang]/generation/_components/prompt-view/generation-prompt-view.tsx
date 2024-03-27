@@ -60,9 +60,9 @@ export const GenerationPromptView = () => {
           </>
         }
       >
-        <div className="flex h-full flex-col gap-y-2 px-4 pb-4">
+        <div className="flex h-full flex-col gap-y-2 px-4 pb-1 md:pb-4">
           <Textarea
-            className="h-full min-h-40 resize-none font-mono"
+            className="h-full min-h-72 resize-none font-mono md:min-h-40"
             placeholder={"プロンプト"}
             value={context.config.promptText}
             onChange={(event) => {

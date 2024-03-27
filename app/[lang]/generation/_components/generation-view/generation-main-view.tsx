@@ -34,7 +34,7 @@ export const GenerationMainView = (props: Props) => {
    */
   if (!isDesktop) {
     return (
-      <div className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden lg:flex-row">
         <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
         <div className="flex flex-col gap-4 lg:min-w-64 xl:min-w-96 md:flex-row lg:flex-col">
           <div className="flex-1 overflow-hidden">{props.promptEditor}</div>

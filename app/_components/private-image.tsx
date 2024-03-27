@@ -1,6 +1,3 @@
-import { fetchImage } from "@/app/_utils/fetch-image-object-url"
-import { config } from "@/config"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { memo } from "react"
 
 type Props = {
@@ -12,8 +9,6 @@ type Props = {
 }
 
 const Component = (props: Props) => {
-  console.log(props.token)
-
   return (
     <img
       style={{ userSelect: "none" }}

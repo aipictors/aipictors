@@ -67,7 +67,7 @@ export const GenerationConfigRestoration = (props: Props) => {
   }, [data?.imageGenerationTask.id])
 
   useEffect(() => {
-    if (promptText !== "string") return
+    if (!promptText) return
     try {
       context.updatePrompt(promptText)
       toast("プロンプトを復元しました。", { position: "top-center" })

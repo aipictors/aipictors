@@ -40,8 +40,8 @@ export const GenerationView = (props: Props) => {
    */
   if (!isDesktop) {
     return (
-      <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
-        <div className="flex flex-col gap-y-4">
+      <main className="flex flex-col gap-2 overflow-hidden pb-4 md:h-main md:flex-row">
+        <div className="flex flex-col gap-y-2">
           {props.header}
           {props.main}
         </div>
