@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { SearchIcon } from "lucide-react"
 
 type Props = {
   imageURL: string
@@ -8,34 +9,45 @@ type Props = {
   isSelected: boolean
   isDisabled?: boolean
   onClick(): void
+  onSearchClick(): void
 }
 
 export const ConfigModelButton = (props: Props) => {
   return (
-    <Button
-      disabled={props.isDisabled}
-      variant={props.isSelected ? "default" : "secondary"}
-      className="h-auto w-full overflow-y-hidden p-2"
-      onClick={props.onClick}
-    >
-      <div className="flex w-full space-x-2">
-        <img
-          src={props.imageURL ?? ""}
-          alt={props.name}
-          className="w-full max-w-16 rounded object-cover"
-          draggable={false}
-        />
-        <div>
-          <p className="whitespace-pre-wrap break-all text-left font-bold text-sm">
-            {props.name}
-          </p>
-          {props.type && (
-            <Badge className="mt-4 grid w-16 text-xs opacity-50">
-              {props.type}
-            </Badge>
-          )}
+    <div className="relative">
+      <Button
+        disabled={props.isDisabled}
+        variant={props.isSelected ? "default" : "secondary"}
+        className="h-auto w-full overflow-y-hidden p-2"
+        onClick={props.onClick}
+      >
+        <div className="flex w-full space-x-2">
+          <img
+            src={props.imageURL ?? ""}
+            alt={props.name}
+            className="w-full max-w-16 rounded object-cover"
+            draggable={false}
+          />
+          <div>
+            <p className="whitespace-pre-wrap break-all text-left font-bold text-sm">
+              {props.name}
+            </p>
+            {props.type && (
+              <Badge className="mt-4 grid w-16 text-xs opacity-50">
+                {props.type}
+              </Badge>
+            )}
+          </div>
         </div>
-      </div>
-    </Button>
+      </Button>
+      <Button
+        disabled={props.isDisabled}
+        onClick={props.onSearchClick}
+        className="absolute top-1 right-1 h-8 w-8 rounded-full border"
+        size={"icon"}
+      >
+        <SearchIcon className="w-4" />
+      </Button>
+    </div>
   )
 }

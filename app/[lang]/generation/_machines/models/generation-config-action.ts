@@ -216,6 +216,19 @@ export class GenerationConfigAction {
    * @param id
    * @returns
    */
+  updateSearchWorksModelId(id: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      searchModelId: id,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * モデルIDを変更する
+   * @param id
+   * @returns
+   */
   updateModelIdAndPrompt(id: string, modelType: string, promptText: string) {
     const modelIds = produce(this.state.modelIds, (draft) => {
       const index = draft.findIndex((modelId) => {
@@ -314,6 +327,17 @@ export class GenerationConfigAction {
    * プレビュー表示するタスクを更新する
    */
   updatePreviewTask(value: string | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      previewTaskId: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * プレビュー表示する画像URLを更新する
+   */
+  updatePreviewImageURL(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       previewTaskId: value,

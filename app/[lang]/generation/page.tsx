@@ -11,6 +11,7 @@ import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/su
 import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-task-content-preview"
 import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/task-view/generation-task-details-view"
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view"
+import { GenerationWorkListModelView } from "@/app/[lang]/generation/_components/task-view/generation-works-from-model-view"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 
@@ -58,6 +59,7 @@ const GenerationPage = async () => {
           advertisement={<GenerationAdvertisementView />}
           taskList={<GenerationTaskListView />}
           taskDetails={<GenerationTaskDetailsView />}
+          workListFromModel={<GenerationWorkListModelView />}
         />
       }
     />

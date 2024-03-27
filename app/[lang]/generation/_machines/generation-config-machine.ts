@@ -50,6 +50,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
         OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
+        OPEN_SEARCH_WORKS_FROM_MODEL: "SEARCH_WORKS_FROM_MODEL",
       },
     },
 
@@ -103,47 +104,14 @@ export const generationConfigMachine = createMachine({
       },
     },
 
-    // HISTORY_LIST_FULL_VIEW: {
-    //   description: "履歴全画面かつ詳細表示",
+    SEARCH_WORKS_FROM_MODEL: {
+      description: "モデルから作品検索",
 
-    //   on: {
-    //     CLOSE_PREVIEW: "HISTORY_LIST_FULL",
-    //     OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
-    //     OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_LIST_FULL_VIEW",
-    //     OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_LIST_FULL_VIEW",
-    //     OPEN_HISTORY_PREVIEW: {
-    //       target: "HISTORY_LIST_FULL_VIEW_PREVIEW",
-    //       actions: assign((props) => {
-    //         return props.event.value
-    //       }),
-    //     },
-    //     UPDATE_CONFIG: {
-    //       actions: assign((props) => {
-    //         return props.event.value
-    //       }),
-    //     },
-    //   },
-    // },
+      on: {
+        CLOSE: "PROMPT_VIEW",
+      },
+    },
 
-    // HISTORY_LIST_FULL_VIEW_PREVIEW: {
-    //   description: "履歴全画面かつ詳細表示かつプレビュー表示",
-
-    //   on: {
-    //     CLOSE: "HISTORY_LIST_FULL_VIEW",
-    //     OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
-    //     OPEN_HISTORY_PREVIEW: {
-    //       target: "HISTORY_LIST_FULL_VIEW_PREVIEW",
-    //       actions: assign((props) => {
-    //         return props.event.value
-    //       }),
-    //     },
-    //     UPDATE_CONFIG: {
-    //       actions: assign((props) => {
-    //         return props.event.value
-    //       }),
-    //     },
-    //   },
-    // },
     MODELS_VIEW: {
       description: "モデル検索",
 

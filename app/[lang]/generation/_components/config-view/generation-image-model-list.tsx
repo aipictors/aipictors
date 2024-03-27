@@ -26,6 +26,7 @@ type Props = {
   isInitFavorited: boolean
   onChangeFavoritedModel(modelId: number, rating: number): void
   onSelect(id: string, type: string, prompt: string): void
+  onSearchClick(id: string): void
 }
 
 export const ImageModelsList = (props: Props) => {
@@ -230,6 +231,10 @@ export const ImageModelsList = (props: Props) => {
                             model.type,
                             model?.prompts.join(",") ?? "",
                           )
+                        }}
+                        onSearchClick={() => {
+                          if (isSelectorOpen) return
+                          props.onSearchClick(model.id)
                         }}
                       />
 

@@ -2,6 +2,7 @@ import { z } from "zod"
 
 const zProps = z.object({
   modelId: z.string(),
+  searchModelId: z.string(),
   modelIds: z.array(z.string()),
   promptText: z.string(),
   negativePromptText: z.string(),
@@ -23,6 +24,7 @@ const zProps = z.object({
   thumbnailSizeInPromptView: z.number(),
   thumbnailSizeInHistoryListFull: z.number(),
   taskListThumbnailType: z.string(),
+  previewImageURL: z.string(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -32,6 +34,8 @@ type Props = z.infer<typeof zProps>
  */
 export class GenerationConfigState implements Props {
   readonly modelId!: Props["modelId"]
+
+  readonly searchModelId!: Props["searchModelId"]
 
   readonly modelIds!: Props["modelIds"]
 
@@ -76,6 +80,8 @@ export class GenerationConfigState implements Props {
   readonly thumbnailSizeInHistoryListFull!: Props["thumbnailSizeInHistoryListFull"]
 
   readonly taskListThumbnailType!: Props["taskListThumbnailType"]
+
+  readonly previewImageURL!: Props["previewImageURL"]
 
   constructor(props: Props) {
     Object.assign(this, props)

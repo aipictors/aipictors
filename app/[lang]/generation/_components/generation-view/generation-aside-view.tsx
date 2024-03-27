@@ -17,6 +17,10 @@ type Props = {
    * タスクの詳細
    */
   taskDetails: React.ReactNode
+  /**
+   * モデルから作品検索
+   */
+  workListFromModel: React.ReactNode
 }
 
 /**
@@ -54,6 +58,10 @@ export const GenerationAsideView = (props: Props) => {
         {props.taskDetails}
       </>
     )
+  }
+
+  if (state === "SEARCH_WORKS_FROM_MODEL") {
+    return <>{props.workListFromModel}</>
   }
 
   return (

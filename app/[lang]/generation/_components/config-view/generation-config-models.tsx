@@ -2,6 +2,7 @@
 
 import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-view/config-model-button"
 import { GenerationModelListButton } from "@/app/[lang]/generation/_components/config-view/generation-model-list-button"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
@@ -17,6 +18,7 @@ type Props = {
    */
   currentModelIds: string[]
   onSelectModelId(id: string, type: string, prompt: string): void
+  onClickSearchModelWorks(id: string): void
 }
 
 /**
@@ -26,6 +28,8 @@ type Props = {
  */
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
+
+  const { send } = GenerationConfigContext.useActorRef()
 
   const { theme, systemTheme } = useTheme()
 
@@ -99,6 +103,9 @@ export const GenerationConfigModels = (props: Props) => {
                       model?.prompts.join(",") ?? "",
                     )
                   }}
+                  onSearchClick={() => {
+                    props.onClickSearchModelWorks(model!.id)
+                  }}
                 />
                 {model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
@@ -118,6 +125,7 @@ export const GenerationConfigModels = (props: Props) => {
               models={props.models}
               selectedModelId={props.currentModelId}
               onSelect={props.onSelectModelId}
+              onSearchClick={props.onClickSearchModelWorks}
             />
           </div>
         </TabsContent>
@@ -136,6 +144,9 @@ export const GenerationConfigModels = (props: Props) => {
                       model!.type,
                       model?.prompts.join(",") ?? "",
                     )
+                  }}
+                  onSearchClick={() => {
+                    props.onClickSearchModelWorks(model!.id)
                   }}
                 />
                 {model?.id === props.currentModelId && (
@@ -157,6 +168,7 @@ export const GenerationConfigModels = (props: Props) => {
               models={props.models}
               selectedModelId={props.currentModelId}
               onSelect={props.onSelectModelId}
+              onSearchClick={props.onClickSearchModelWorks}
             />{" "}
           </div>
         </TabsContent>

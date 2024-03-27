@@ -165,6 +165,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * 検索用モデルを変更する
+   * @param modelId
+   */
+  const updateSearchWorksModelId = (modelId: string) => {
+    const value = configAction.updateSearchWorksModelId(modelId).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * モデル、プロンプトを変更する
    * @param modelId
    */
@@ -215,6 +224,15 @@ export const useGenerationContext = () => {
    */
   const updatePreviewTaskId = (taskId: string | null) => {
     const value = configAction.updatePreviewTask(taskId).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * プレビュー表示の画像URL
+   * @param taskId タスクID
+   */
+  const updatePreviewImageURL = (url: string) => {
+    const value = configAction.updatePreviewImageURL(url).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -365,6 +383,8 @@ export const useGenerationContext = () => {
     changeTaskListThumbnailType,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
+    updateSearchWorksModelId,
+    updatePreviewImageURL,
     updatePrompt,
     updateNegativePrompt,
     updateSampler,

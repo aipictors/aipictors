@@ -24,6 +24,7 @@ type Props = {
   isInitFavorited: boolean
   label?: string
   onSelect(id: string, type: string, prompt: string): void
+  onSearchClick(id: string): void
 }
 
 /**
@@ -116,6 +117,7 @@ export const GenerationModelListButton = (props: Props) => {
           selectedModelId={props.selectedModelId}
           onSelect={onSelectModel}
           onChangeFavoritedModel={onChangeRatingModel}
+          onSearchClick={props.onSearchClick}
         />
       </DialogContent>
     </Dialog>

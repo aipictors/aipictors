@@ -14,6 +14,7 @@ import { GenerationConfigSize } from "@/app/[lang]/generation/_components/config
 import { GenerationConfigStep } from "@/app/[lang]/generation/_components/config-view/generation-config-step"
 import { GenerationConfigVae } from "@/app/[lang]/generation/_components/config-view/generation-config-vae"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/app/_contexts/auth-context"
 import {
@@ -42,6 +43,8 @@ import { useContext } from "react"
  */
 export default function GenerationConfigView() {
   const context = useGenerationContext()
+
+  const { send } = GenerationConfigContext.useActorRef()
 
   const authContext = useContext(AuthContext)
 
@@ -132,6 +135,10 @@ export default function GenerationConfigView() {
               } else {
                 context.updateModelId(id, type)
               }
+            }}
+            onClickSearchModelWorks={(id: string) => {
+              context.updateSearchWorksModelId(id)
+              send({ type: "OPEN_SEARCH_WORKS_FROM_MODEL" })
             }}
           />
           <Separator />

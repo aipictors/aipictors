@@ -490,13 +490,13 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-1 flex space-x-4">
+          <div className="mb-1 flex max-w-[100vw] space-x-4">
             <div className="w-full">
               <p className="mb-1 font-semibold">{"Scale"}</p>
               <p>{data.imageGenerationTask.scale}</p>
             </div>
             <div className="w-full">
-              <p className="mb-1 font-semibold">{"Scale"}</p>
+              <p className="mb-1 font-semibold">{"Steps"}</p>
               <p>{data.imageGenerationTask.steps}</p>
             </div>
             <div className="w-full">
@@ -507,7 +507,7 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-32 flex space-x-4">
+          <div className="mb-32 flex max-w-[100vw] space-x-4">
             <div className="w-full">
               <p className="mb-1 font-semibold">{"ClipSkip"}</p>
               <p>{data.imageGenerationTask.clipSkip}</p>
