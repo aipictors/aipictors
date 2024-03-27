@@ -39,7 +39,7 @@ export const HomeRouteList = () => {
 
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"https://www.aipictors.com"} icon={HomeIcon}>
+      <HomeNavigationButton href={"/"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
