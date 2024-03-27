@@ -1,11 +1,9 @@
-import million from "million/compiler"
+// import million from "million/compiler"
 // @ts-check
 // import { withSentryConfig } from "@sentry/nextjs"
-import { boolean, number, string } from "zod"
 import packageJSON from "./package.json" assert { type: "json" }
 
 /** @type {import('next').NextConfig} **/
-
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -28,7 +26,12 @@ const nextConfig = {
     NEXT_PUBLIC_VERSION: packageJSON.version,
   },
   cacheMaxMemorySize: 0,
-  // cacheHandler: process.env.NODE_ENV === "production" ? "./cache-handler.mjs" : undefined,
+  /**
+   * Vercel以外の環境ではこの設定が必要です
+   * https://nextjs.org/docs/app/api-reference/next-config-js/incrementalCacheHandlerPath
+   */
+  cacheHandler:
+    process.env.NODE_ENV === "production" ? "./cache-handler.mjs" : undefined,
 }
 
 // const sentryOptions = {
@@ -43,9 +46,11 @@ const nextConfig = {
 //   hideSourceMaps: false,
 // });
 
-const millionConfig = {
-  auto: { rsc: true },
-}
+// const millionConfig = {
+//   auto: { rsc: true },
+// }
 
 // @ts-ignore
-export default million.next(nextConfig, millionConfig)
+// export default million.next(nextConfig, millionConfig)
+
+export default nextConfig
