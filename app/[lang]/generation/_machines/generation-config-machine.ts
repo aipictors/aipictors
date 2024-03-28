@@ -109,6 +109,7 @@ export const generationConfigMachine = createMachine({
 
       on: {
         CLOSE: "PROMPT_VIEW",
+        CLOSE_PREVIEW: "PROMPT_VIEW",
       },
     },
 

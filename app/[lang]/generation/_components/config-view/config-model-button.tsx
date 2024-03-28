@@ -43,7 +43,7 @@ export const ConfigModelButton = (props: Props) => {
       <Button
         disabled={props.isDisabled}
         onClick={props.onSearchClick}
-        className="absolute top-1 right-1 h-8 w-8 rounded-full border"
+        className="absolute top-1 right-1 hidden h-8 w-8 rounded-full border md:flex"
         size={"icon"}
       >
         <SearchIcon className="w-4" />
