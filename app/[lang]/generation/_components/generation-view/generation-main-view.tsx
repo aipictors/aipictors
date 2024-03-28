@@ -15,6 +15,7 @@ type Props = {
   negativePromptEditor: React.ReactNode
   taskContentPreview: React.ReactNode
   taskDetails: React.ReactNode
+  workContentPreview: React.ReactNode
 }
 
 /**
@@ -44,6 +45,13 @@ export const GenerationMainView = (props: Props) => {
         </div>
       </div>
     )
+  }
+
+  /**
+   * 作品プレビューモード
+   */
+  if (state === "WORK_PREVIEW") {
+    return props.workContentPreview
   }
 
   /**

@@ -340,7 +340,7 @@ export class GenerationConfigAction {
   updatePreviewImageURL(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
-      previewTaskId: value,
+      previewImageURL: value,
     })
     return new GenerationConfigAction(state, this.props)
   }

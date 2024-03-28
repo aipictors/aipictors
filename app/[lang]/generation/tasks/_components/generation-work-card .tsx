@@ -1,7 +1,9 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationWorkLinkButton } from "@/app/[lang]/generation/tasks/_components/generation-work-link-button"
 import { GenerationWorkZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-work-zoom-up-button"
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
+import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { config } from "@/config"
 import type {
   WorkNode,
@@ -9,6 +11,7 @@ import type {
   WorksQuery,
 } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
+import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -36,24 +39,48 @@ export const GenerationWorkCard = (props: Props) => {
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
       onMouseEnter={() => {
         if (props.isPreviewByHover) {
-          context.updatePreviewTaskId(props.work.imageURL)
-          send({ type: "OPEN_HISTORY_PREVIEW" })
+          context.updatePreviewImageURL(props.work.largeThumbnailImageURL)
+          send({ type: "OPEN_WORK_PREVIEW" })
         }
         setIsHovered(true)
       }}
       onMouseLeave={() => {
-        context.updatePreviewTaskId(null)
-        send({ type: "CLOSE" })
+        if (props.isPreviewByHover) {
+          context.updatePreviewImageURL(null)
+          send({ type: "CLOSE" })
+        }
         setIsHovered(false)
       }}
     >
-      <SelectableCardButton
-        onClick={() => {}}
-        isSelected={false}
-        isDisabled={false}
+      <AppConfirmDialog
+        title={"確認"}
+        description={"選択した作品で復元しますか？"}
+        onNext={() => {
+          context.updateSettings(
+            context.config.modelId,
+            props.work.seed,
+            context.config.modelType,
+            props.work.sampler,
+            props.work.scale,
+            context.config.vae,
+            props.work.prompt,
+            props.work.negativePrompt,
+            -1,
+            context.config.sizeType,
+            context.config.clipSkip,
+          )
+          toast("設定を復元しました")
+        }}
+        onCancel={() => {}}
       >
-        <img src={props.work.largeThumbnailImageURL} alt={props.work.title} />
-      </SelectableCardButton>
+        <SelectableCardButton
+          onClick={() => {}}
+          isSelected={false}
+          isDisabled={true}
+        >
+          <img src={props.work.largeThumbnailImageURL} alt={props.work.title} />
+        </SelectableCardButton>
+      </AppConfirmDialog>
       {/* 拡大ボタン */}
       {isDesktop && isHovered && (
         <GenerationWorkZoomUpButton
@@ -61,6 +88,11 @@ export const GenerationWorkCard = (props: Props) => {
           setIsHovered={setIsHovered}
         />
       )}
+      {/* 作品リンクボタン */}
+      <GenerationWorkLinkButton
+        id={props.work.id}
+        setIsHovered={setIsHovered}
+      />
     </div>
   )
 }

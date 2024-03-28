@@ -23,7 +23,8 @@ export const GenerationTaskDetailsView = () => {
       tooltip={"履歴に関する操作が可能です"}
     >
       <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
-        {"閉じる（Escape）"}
+        {"閉じる"}
+        <span className="hidden md:inline-block">{"（Escape）"}</span>
       </Button>
 
       <GenerationTaskDetails />

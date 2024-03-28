@@ -1,33 +1,19 @@
 "use client"
 
-import { GenerationTaskListViewPlaceholder } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view-placeholder"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
-import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/generation-task-card"
 import { GenerationWorkCard } from "@/app/[lang]/generation/tasks/_components/generation-work-card "
-import { ResponsivePagination } from "@/app/_components/responsive-pagination"
-import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { config } from "@/config"
 import type { WorkNode, WorksQuery } from "@/graphql/__generated__/graphql"
-import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
-import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
 import { cn } from "@/lib/utils"
-import type { ApolloQueryResult } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense, startTransition, useEffect } from "react"
-import { toast } from "sonner"
+import { Suspense } from "react"
 
 type Props = {
   onCancel?(): void
   thumbnailSize: number
-  works: ApolloQueryResult<WorksQuery>
+  works: WorksQuery
+  isPreviewByHover: boolean
 }
 
 /**
@@ -35,19 +21,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const GenerationWorkList = async (props: Props) => {
-  const context = useGenerationContext()
-
-  const client = createClient()
-
-  const queryData = useGenerationQuery()
-
-  const isTimeout = useFocusTimeout()
-
-  const state = GenerationConfigContext.useSelector((snap) => {
-    return snap.value
-  })
-
+export const GenerationWorkList = (props: Props) => {
   return (
     <>
       <ScrollArea>
@@ -67,12 +41,15 @@ export const GenerationWorkList = async (props: Props) => {
             "grid-cols-10": props.thumbnailSize === 10,
           })}
         >
-          {props.works?.data.works.map(
+          {props.works?.works.map(
             (work: WorkNode) =>
               work && (
                 <ErrorBoundary key={work.id} fallback={ErrorResultCard}>
                   <Suspense fallback={<FallbackTaskCard />}>
-                    <GenerationWorkCard work={work} isPreviewByHover={false} />
+                    <GenerationWorkCard
+                      work={work}
+                      isPreviewByHover={props.isPreviewByHover}
+                    />
                   </Suspense>
                 </ErrorBoundary>
               ),

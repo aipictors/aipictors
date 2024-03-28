@@ -24,7 +24,7 @@ const zProps = z.object({
   thumbnailSizeInPromptView: z.number(),
   thumbnailSizeInHistoryListFull: z.number(),
   taskListThumbnailType: z.string(),
-  previewImageURL: z.string(),
+  previewImageURL: z.string().nullable(),
 })
 
 type Props = z.infer<typeof zProps>

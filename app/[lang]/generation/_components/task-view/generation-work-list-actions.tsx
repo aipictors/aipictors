@@ -22,6 +22,7 @@ import { useMediaQuery } from "usehooks-ts"
 type Props = {
   thumbnailSize: number
   setThumbnailSize(size: number): void
+  onTogglePreviewMode(): void
 }
 
 /**
@@ -30,10 +31,21 @@ type Props = {
  * @returns
  */
 export const GenerationTaskListActions = (props: Props) => {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
+
   return (
     <>
       {/* 操作一覧 */}
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
+        {isDesktop && state !== "HISTORY_LIST_FULL" && (
+          <GenerationTaskPreviewModeButton
+            onTogglePreviewMode={props.onTogglePreviewMode}
+          />
+        )}
         <GenerationWorkActionDropdownMenu
           onChange={props.setThumbnailSize}
           thumbnailSize={props.thumbnailSize}

@@ -50,7 +50,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
         OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
-        OPEN_SEARCH_WORKS_FROM_MODEL: "SEARCH_WORKS_FROM_MODEL",
+        OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
       },
     },
 
@@ -104,12 +104,44 @@ export const generationConfigMachine = createMachine({
       },
     },
 
-    SEARCH_WORKS_FROM_MODEL: {
+    WORKS_FROM_MODEL: {
       description: "モデルから作品検索",
 
       on: {
         CLOSE: "PROMPT_VIEW",
         CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
+        OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    WORK_PREVIEW: {
+      on: {
+        CLOSE: "WORKS_FROM_MODEL",
+        OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    WORK_LIST_FULL: {
+      description: "作品一覧全画面表示",
+
+      on: {
+        OPEN_FULL_HISTORY_LIST: "WORKS_FROM_MODEL",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
       },
     },
 

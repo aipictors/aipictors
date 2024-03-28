@@ -7,8 +7,10 @@ import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/t
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { worksQuery } from "@/graphql/queries/work/works"
 import { createClient } from "@/lib/client"
+import { useQuery } from "@apollo/client"
 import { useState } from "react"
 
 /**
@@ -16,7 +18,7 @@ import { useState } from "react"
  * @param props
  * @returns
  */
-export const GenerationWorkListModelView = async () => {
+export const GenerationWorkListModelView = () => {
   const { send } = GenerationConfigContext.useActorRef()
 
   const onCancel = () => {
@@ -33,15 +35,17 @@ export const GenerationWorkListModelView = async () => {
 
   const client = createClient()
 
-  const worksResp = await client.query({
-    query: worksQuery,
+  const [word, setWord] = useState("")
+
+  const { data: worksResp } = useQuery(worksQuery, {
     variables: {
+      limit: 32,
       offset: 0,
-      limit: 64,
       where: {
         isFeatured: true,
         hasGenerationPrompt: true,
         generationModelId: context.config.searchModelId,
+        search: word,
       },
     },
   })
@@ -50,7 +54,7 @@ export const GenerationWorkListModelView = async () => {
    * サムネイルサイズ
    */
   const thumbnailSize = () => {
-    if (state === "SEARCH_WORKS_FROM_MODEL") {
+    if (state === "WORKS_FROM_MODEL") {
       return context.config.thumbnailSizeInHistoryListFull
     }
     return context.config.thumbnailSizeInPromptView
@@ -69,7 +73,7 @@ export const GenerationWorkListModelView = async () => {
    * @returns
    */
   const updateThumbnailSize = (value: number) => {
-    if (state === "SEARCH_WORKS_FROM_MODEL") {
+    if (state === "WORKS_FROM_MODEL") {
       return context.updateThumbnailSizeInHistoryListFull(value)
     }
     return context.updateThumbnailSizeInPromptView(value)
@@ -81,16 +85,31 @@ export const GenerationWorkListModelView = async () => {
       tooltip={"モデルから作品検索して参考にすることが可能です。"}
     >
       <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
-        {"閉じる（Escape）"}
+        {"閉じる"}
+        <span className="hidden md:inline-block">{"（Escape）"}</span>
       </Button>
+      <Input
+        minLength={1}
+        maxLength={120}
+        required
+        type="text"
+        name="title"
+        placeholder="検索ワード"
+        className="mx-4 mb-2 max-w-96"
+        onChange={(event) => {
+          setWord(event.target.value)
+        }}
+      />
       <GenerationTaskListActions
         thumbnailSize={thumbnailSize()}
         setThumbnailSize={updateThumbnailSize}
+        onTogglePreviewMode={onTogglePreviewMode}
       />
       <GenerationWorkList
         works={worksResp}
         onCancel={onCancel}
         thumbnailSize={thumbnailSize()}
+        isPreviewByHover={isPreviewMode}
       />
     </GenerationViewCard>
   )

@@ -48,6 +48,12 @@ export const workQuery = gql(`
       }
       isLiked
       isInCollection
+      prompt
+      negativePrompt
+      seed
+      steps
+      sampler
+      scale
     }
   }
 `)
