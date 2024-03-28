@@ -1,6 +1,3 @@
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -15,17 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider"
-import { config } from "@/config"
-import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-tasks"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { useMutation } from "@apollo/client"
-import { Loader2, MoreHorizontalIcon } from "lucide-react"
-import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
+import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
+import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
   thumbnailSize: number
+  sortType: WorkOrderBy
   onChange(size: number): void
+  onChangeSortType(sortType: WorkOrderBy): void
 }
 
 /**
@@ -61,6 +55,35 @@ export function GenerationWorkActionDropdownMenu(props: Props) {
                 value={[props.thumbnailSize]}
                 onValueChange={(value) => props.onChange(value[0])}
               />
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{"ソート"}</DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuLabel>{"ソート順変更"}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuCheckboxItem
+                checked={props.sortType === "DATE_CREATED"}
+                onCheckedChange={props.onChangeSortType.bind(
+                  null,
+                  "DATE_CREATED",
+                )}
+              >
+                {"新着順"}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={props.sortType === "LIKES_COUNT"}
+                onCheckedChange={props.onChangeSortType.bind(
+                  null,
+                  "LIKES_COUNT",
+                )}
+              >
+                {"いいね順"}
+              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>

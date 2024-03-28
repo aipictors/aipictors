@@ -2,11 +2,12 @@
 
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { GenerationWorkList } from "@/app/[lang]/generation/_components/task-view/generation-work-list"
-import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/task-view/generation-work-list-actions"
+import { GenerationWorkListActions } from "@/app/[lang]/generation/_components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
 import { worksQuery } from "@/graphql/queries/work/works"
 import { useQuery } from "@apollo/client"
 import { useState } from "react"
@@ -19,19 +20,17 @@ import { useState } from "react"
 export const GenerationWorkListModelView = () => {
   const { send } = GenerationConfigContext.useActorRef()
 
-  const onCancel = () => {
-    send({ type: "CLOSE" })
-  }
-
   const context = useGenerationContext()
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
 
+  const [word, setWord] = useState("")
+
+  const [sortType, setSortType] = useState<WorkOrderBy>("LIKES_COUNT")
+
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
-
-  const [word, setWord] = useState("")
 
   const { data: worksResp } = useQuery(worksQuery, {
     variables: {
@@ -42,6 +41,7 @@ export const GenerationWorkListModelView = () => {
         hasGenerationPrompt: true,
         generationModelId: context.config.searchModelId,
         search: word,
+        orderBy: sortType,
       },
     },
   })
@@ -54,6 +54,13 @@ export const GenerationWorkListModelView = () => {
       return context.config.thumbnailSizeInHistoryListFull
     }
     return context.config.thumbnailSizeInPromptView
+  }
+
+  /**
+   * 一覧を閉じる
+   */
+  const onCancel = () => {
+    send({ type: "CLOSE" })
   }
 
   /**
@@ -97,10 +104,12 @@ export const GenerationWorkListModelView = () => {
             setWord(event.target.value)
           }}
         />
-        <GenerationTaskListActions
+        <GenerationWorkListActions
+          sortType={sortType}
           thumbnailSize={thumbnailSize()}
           setThumbnailSize={updateThumbnailSize}
           onTogglePreviewMode={onTogglePreviewMode}
+          onChangeSortType={setSortType}
         />
         <GenerationWorkList
           works={worksResp}
