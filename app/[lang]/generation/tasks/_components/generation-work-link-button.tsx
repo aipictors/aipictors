@@ -1,4 +1,3 @@
-import { GenerationWorkDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-work-dialog-button"
 import { ExternalLinkIcon } from "lucide-react"
 import Link from "next/link"
 

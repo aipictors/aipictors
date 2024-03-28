@@ -1,7 +1,6 @@
 "use client"
 
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
-import { GenerationWorkActionDropdownMenu } from "@/app/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
 import { GenerationWorkList } from "@/app/[lang]/generation/_components/task-view/generation-work-list"
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
@@ -9,7 +8,6 @@ import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generat
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
 import { useQuery } from "@apollo/client"
 import { useState } from "react"
 
@@ -32,8 +30,6 @@ export const GenerationWorkListModelView = () => {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
-
-  const client = createClient()
 
   const [word, setWord] = useState("")
 

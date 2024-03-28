@@ -5,11 +5,7 @@ import { GenerationWorkZoomUpButton } from "@/app/[lang]/generation/tasks/_compo
 import { SelectableCardButton } from "@/app/_components/selectable-card-button"
 import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
 import { config } from "@/config"
-import type {
-  WorkNode,
-  WorkQuery,
-  WorksQuery,
-} from "@/graphql/__generated__/graphql"
+import type { WorkQuery } from "@/graphql/__generated__/graphql"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -58,11 +54,11 @@ export const GenerationWorkCard = (props: Props) => {
         onNext={() => {
           context.updateSettings(
             context.config.modelId,
-            props.work.seed,
+            context.config.seed,
             context.config.modelType,
-            props.work.sampler,
-            props.work.scale,
-            context.config.vae,
+            props.work.sampler ?? context.config.sampler,
+            props.work.scale ?? context.config.scale,
+            context.config.vae ?? context.config.vae,
             props.work.prompt,
             props.work.negativePrompt,
             -1,
