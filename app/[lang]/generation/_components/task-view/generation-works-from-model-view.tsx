@@ -39,7 +39,7 @@ export const GenerationWorkListModelView = () => {
 
   const { data: worksResp } = useQuery(worksQuery, {
     variables: {
-      limit: 32,
+      limit: 64,
       offset: 0,
       where: {
         isFeatured: true,
