@@ -54,7 +54,7 @@ export const GenerationWorkCard = (props: Props) => {
         onNext={() => {
           context.updateSettings(
             context.config.modelId,
-            context.config.seed,
+            props.work.steps ?? context.config.steps,
             context.config.modelType,
             props.work.sampler ?? context.config.sampler,
             props.work.scale ?? context.config.scale,
