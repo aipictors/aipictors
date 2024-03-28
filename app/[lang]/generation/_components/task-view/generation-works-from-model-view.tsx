@@ -80,33 +80,35 @@ export const GenerationWorkListModelView = () => {
       title={"作品検索"}
       tooltip={"モデルから作品検索して参考にすることが可能です。"}
     >
-      <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
-        {"閉じる"}
-        <span className="hidden md:inline-block">{"（Escape）"}</span>
-      </Button>
-      <Input
-        minLength={1}
-        maxLength={120}
-        required
-        type="text"
-        name="title"
-        placeholder="検索ワード"
-        className="mx-4 mb-2 max-w-96"
-        onChange={(event) => {
-          setWord(event.target.value)
-        }}
-      />
-      <GenerationTaskListActions
-        thumbnailSize={thumbnailSize()}
-        setThumbnailSize={updateThumbnailSize}
-        onTogglePreviewMode={onTogglePreviewMode}
-      />
-      <GenerationWorkList
-        works={worksResp}
-        onCancel={onCancel}
-        thumbnailSize={thumbnailSize()}
-        isPreviewByHover={isPreviewMode}
-      />
+      <div id="generation-works-from-model-view">
+        <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
+          {"閉じる"}
+          <span className="hidden md:inline-block">{"（Escape）"}</span>
+        </Button>
+        <Input
+          minLength={1}
+          maxLength={120}
+          required
+          type="text"
+          name="title"
+          placeholder="検索ワード"
+          className="mx-4 mb-2 max-w-96"
+          onChange={(event) => {
+            setWord(event.target.value)
+          }}
+        />
+        <GenerationTaskListActions
+          thumbnailSize={thumbnailSize()}
+          setThumbnailSize={updateThumbnailSize}
+          onTogglePreviewMode={onTogglePreviewMode}
+        />
+        <GenerationWorkList
+          works={worksResp}
+          onCancel={onCancel}
+          thumbnailSize={thumbnailSize()}
+          isPreviewByHover={isPreviewMode}
+        />
+      </div>
     </GenerationViewCard>
   )
 }

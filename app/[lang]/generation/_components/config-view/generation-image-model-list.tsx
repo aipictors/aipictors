@@ -224,6 +224,7 @@ export const ImageModelsList = (props: Props) => {
                         isSelected={props?.selectedModelId === model.id}
                         type={model?.type ?? ""}
                         isDisabled={isSelectorOpen}
+                        isHideSearchButton={true}
                         onClick={() => {
                           if (model.type === null) return
                           props.onSelect(
