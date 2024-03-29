@@ -95,24 +95,6 @@ export const GenerationTaskListActions = (props: Props) => {
           >
             {props.isEditMode ? "解除" : "選択"}
           </Toggle>
-          {props.isEditMode && (
-            <GenerationTaskDeleteButton
-              disabled={isEmpty}
-              onDelete={onTrashTasks}
-            />
-          )}
-          {props.isEditMode && (
-            <GenerationImageDownloadButton
-              disabled={isEmpty}
-              selectedTaskIds={props.selectedTaskIds}
-            />
-          )}
-          {props.isEditMode && (
-            <GenerationImagePostButton
-              disabled={isEmpty}
-              selectedTaskIds={props.selectedTaskIds}
-            />
-          )}
           {!props.isEditMode && (
             <GenerationTaskRatingSelect onChange={props.onChangeRating} />
           )}
@@ -157,6 +139,26 @@ export const GenerationTaskListActions = (props: Props) => {
             )}
           </Toggle>
         )}
+      </div>
+      <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
+        {/* 削除 */}
+        <GenerationTaskDeleteButton
+          disabled={isEmpty}
+          onDelete={onTrashTasks}
+          title="複数選択して一括削除できます。"
+        />
+        {/* ダウンロード */}
+        <GenerationImageDownloadButton
+          disabled={isEmpty}
+          selectedTaskIds={props.selectedTaskIds}
+          title="複数選択して一括ダウンロードできます。"
+        />
+        {/* 投稿 */}
+        <GenerationImagePostButton
+          disabled={isEmpty}
+          selectedTaskIds={props.selectedTaskIds}
+          title="複数選択して一括投稿できます。"
+        />
       </div>
     </>
   )

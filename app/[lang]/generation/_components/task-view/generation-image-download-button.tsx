@@ -8,6 +8,7 @@ import { toast } from "sonner"
 type Props = {
   disabled: boolean
   selectedTaskIds: string[]
+  title?: string
 }
 
 /**
@@ -46,6 +47,7 @@ export function GenerationImageDownloadButton(props: Props) {
 
   return (
     <Button
+      title={props.title}
       disabled={props.disabled || isLoading}
       variant="ghost"
       size="icon"

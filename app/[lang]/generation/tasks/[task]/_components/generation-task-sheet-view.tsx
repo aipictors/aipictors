@@ -174,7 +174,7 @@ export function GenerationTaskSheetView(props: Props) {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  const onRestore = () => {
+  const onRestore = (isWithSeed: boolean) => {
     context.updateSettings(
       props.task.model.id,
       props.task.steps,
@@ -184,7 +184,7 @@ export function GenerationTaskSheetView(props: Props) {
       props.task.vae?.replace(".ckpt", "").replace(".safetensors", "") ?? "",
       props.task.prompt,
       props.task.negativePrompt,
-      props.task.seed,
+      isWithSeed ? props.task.seed : -1,
       props.task.sizeType,
       props.task.clipSkip,
     )
@@ -218,9 +218,9 @@ export function GenerationTaskSheetView(props: Props) {
     setIsProtected(props.task.isProtected ?? false)
   }, [])
 
-  const onReference = () => {
+  const onReference = (isWithSeed: boolean) => {
     if (!props.isReferenceLink && props.task.nanoid !== null) {
-      onRestore()
+      onRestore(isWithSeed)
     } else if (props.isReferenceLink && props.task.nanoid !== null) {
       window.location.href = `/generation/?ref=${props.task.nanoid ?? ""}`
     } else {

@@ -87,37 +87,40 @@ export const GenerationWorkListModelView = () => {
       title={"作品検索"}
       tooltip={"モデルから作品検索して参考にすることが可能です。"}
     >
-      <div id="generation-works-from-model-view">
-        <Button className="mx-4 my-2" variant={"secondary"} onClick={onCancel}>
-          {"閉じる"}
-          <span className="hidden md:inline-block">{"（Escape）"}</span>
-        </Button>
-        <Input
-          minLength={1}
-          maxLength={120}
-          required
-          type="text"
-          name="title"
-          placeholder="検索ワード"
-          className="mx-4 mb-2 max-w-96"
-          onChange={(event) => {
-            setWord(event.target.value)
-          }}
-        />
-        <GenerationWorkListActions
-          sortType={sortType}
-          thumbnailSize={thumbnailSize()}
-          setThumbnailSize={updateThumbnailSize}
-          onTogglePreviewMode={onTogglePreviewMode}
-          onChangeSortType={setSortType}
-        />
-        <GenerationWorkList
-          works={worksResp}
-          onCancel={onCancel}
-          thumbnailSize={thumbnailSize()}
-          isPreviewByHover={isPreviewMode}
-        />
-      </div>
+      <Button
+        id="generation-works-from-model-view"
+        className="mx-4 my-2"
+        variant={"secondary"}
+        onClick={onCancel}
+      >
+        {"閉じる"}
+        <span className="hidden md:inline-block">{"（Escape）"}</span>
+      </Button>
+      <Input
+        minLength={1}
+        maxLength={120}
+        required
+        type="text"
+        name="title"
+        placeholder="検索ワード"
+        className="mx-4 mb-2 max-w-96"
+        onChange={(event) => {
+          setWord(event.target.value)
+        }}
+      />
+      <GenerationWorkListActions
+        sortType={sortType}
+        thumbnailSize={thumbnailSize()}
+        setThumbnailSize={updateThumbnailSize}
+        onTogglePreviewMode={onTogglePreviewMode}
+        onChangeSortType={setSortType}
+      />
+      <GenerationWorkList
+        works={worksResp}
+        onCancel={onCancel}
+        thumbnailSize={thumbnailSize()}
+        isPreviewByHover={isPreviewMode}
+      />
     </GenerationViewCard>
   )
 }

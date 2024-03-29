@@ -4,6 +4,7 @@ import { FileUp } from "lucide-react"
 type Props = {
   disabled: boolean
   selectedTaskIds: string[]
+  title?: string
 }
 
 /**
@@ -22,6 +23,7 @@ export function GenerationImagePostButton(props: Props) {
 
   return (
     <Button
+      title={props.title}
       disabled={props.disabled}
       variant="ghost"
       size="icon"

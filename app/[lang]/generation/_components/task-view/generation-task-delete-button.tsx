@@ -5,6 +5,7 @@ import { Trash2Icon } from "lucide-react"
 type Props = {
   disabled: boolean
   onDelete(): void
+  title?: string
 }
 
 /**
@@ -20,7 +21,12 @@ export function GenerationTaskDeleteButton(props: Props) {
       onNext={props.onDelete}
       onCancel={() => {}}
     >
-      <Button disabled={props.disabled} variant={"ghost"} size={"icon"}>
+      <Button
+        title={props.title}
+        disabled={props.disabled}
+        variant={"ghost"}
+        size={"icon"}
+      >
         <Trash2Icon className="w-4" />
       </Button>
     </AppConfirmDialog>

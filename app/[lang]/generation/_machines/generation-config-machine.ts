@@ -61,6 +61,7 @@ export const generationConfigMachine = createMachine({
         CLOSE: "PROMPT_VIEW",
         OPEN_FULL_HISTORY_ON_MAIN_AND_HEADER: "HISTORY_VIEW_ON_MAIN_AND_HEADER",
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
+        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
       },
     },
 

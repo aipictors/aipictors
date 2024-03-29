@@ -6,6 +6,7 @@ import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-r
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationReferenceDialog } from "@/app/[lang]/generation/tasks/[task]/_components/generation-reference-dialog-button"
 import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
 import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import type { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
@@ -50,7 +51,7 @@ type Props = {
   isProtected: boolean
   GenerationParameters: GenerationParameters
   isProtectedLoading: boolean
-  onReference(): void
+  onReference(isSeedWith: boolean): void
   onPost(): void
   onDelete(): void
   onInPaint(): void
@@ -229,12 +230,21 @@ export function GenerationTaskSheetViewContent(props: Props) {
           {props.task.status !== "RESERVED" && (
             <>
               <div className="flex flex-wrap gap-x-2 gap-y-2 pt-2">
-                <GenerationMenuButton
-                  title={"同じ情報で生成する"}
-                  onClick={props.onReference}
-                  text={"復元"}
-                  icon={ArrowUpRightSquare}
-                />
+                <GenerationReferenceDialog
+                  onReference={() => {
+                    props.onReference(false)
+                  }}
+                  onReferenceWithSeed={() => {
+                    props.onReference(true)
+                  }}
+                >
+                  <GenerationMenuButton
+                    title={"同じ情報で生成する"}
+                    onClick={() => {}}
+                    text={"復元"}
+                    icon={ArrowUpRightSquare}
+                  />
+                </GenerationReferenceDialog>
                 <GenerationMenuButton
                   title={"投稿する"}
                   onClick={props.onPost}
