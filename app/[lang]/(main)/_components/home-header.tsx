@@ -98,7 +98,9 @@ export const HomeHeader = (props: Props) => {
             <BellIcon className="w-4" />
           </Button>
         )}
-        <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        {authContext.isLoggedIn && (
+          <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        )}
       </div>
       {authContext.isNotLoggedIn && <LoginDialogButton />}
       <LogoutDialogLegacy
