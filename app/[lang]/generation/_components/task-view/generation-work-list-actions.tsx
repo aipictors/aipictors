@@ -30,7 +30,7 @@ export const GenerationWorkListActions = (props: Props) => {
   return (
     <>
       {/* 操作一覧 */}
-      <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
+      <div className="flex items-center gap-x-2 px-2 pb-2 md:px-4 xl:px-4">
         {isDesktop && state !== "HISTORY_LIST_FULL" && (
           <GenerationTaskPreviewModeButton
             onTogglePreviewMode={props.onTogglePreviewMode}

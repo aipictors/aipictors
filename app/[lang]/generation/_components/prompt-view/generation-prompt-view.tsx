@@ -32,8 +32,8 @@ export const GenerationPromptView = () => {
   }
 
   const currentPrompts = categoryPrompts.filter((prompt) => {
-    const formattedTextParts = formattedPromptText.split(",")
-    return prompt.words.some((word) => formattedTextParts.includes(word))
+    console.log(prompt)
+    return context.config.promptText.indexOf(prompt.words.join(",")) !== -1
   })
 
   const selectedPromptIds = currentPrompts.map((prompt) => prompt.id)
