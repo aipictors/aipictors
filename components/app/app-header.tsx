@@ -11,7 +11,7 @@ export const AppHeader = (props: Props) => {
         <div
           className={cn(
             "container max-w-none",
-            "flex justify-between items-center w-full py-4 gap-x-4",
+            "flex w-full items-center justify-between gap-x-4 py-4",
           )}
         >
           {props.children}

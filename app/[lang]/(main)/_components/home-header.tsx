@@ -32,7 +32,7 @@ export const HomeHeader = (props: Props) => {
 
   return (
     <AppHeader>
-      <div className="flex min-w-fit items-center gap-x-2 md:flex-1">
+      <div className="flex min-w-fit items-center md:flex-1">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -64,13 +64,13 @@ export const HomeHeader = (props: Props) => {
         <div className="hidden flex-grow flex-row items-center pl-2 md:flex">
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
+      </div>
+      <div className="flex gap-x-2">
         {config.isDevelopmentMode && (
           <div className="hidden w-full flex-1 md:block">
             <Input placeholder={"作品を検索"} />
           </div>
         )}
-      </div>
-      <div className="flex gap-x-2">
         <Link href={"/generation"}>
           <Button variant={"secondary"}>{"生成"}</Button>
         </Link>
@@ -98,14 +98,16 @@ export const HomeHeader = (props: Props) => {
             <BellIcon className="w-4" />
           </Button>
         )}
-        <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        {authContext.isLoggedIn && (
+          <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+        )}
+        {authContext.isNotLoggedIn && <LoginDialogButton />}
+        <LogoutDialogLegacy
+          isOpen={isOpenLogoutDialog}
+          onClose={onCloseLogoutDialog}
+          onOpen={onOpenLogoutDialog}
+        />
       </div>
-      {authContext.isNotLoggedIn && <LoginDialogButton />}
-      <LogoutDialogLegacy
-        isOpen={isOpenLogoutDialog}
-        onClose={onCloseLogoutDialog}
-        onOpen={onOpenLogoutDialog}
-      />
     </AppHeader>
   )
 }
