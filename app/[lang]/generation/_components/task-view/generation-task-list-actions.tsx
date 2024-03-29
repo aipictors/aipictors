@@ -143,21 +143,24 @@ export const GenerationTaskListActions = (props: Props) => {
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
         {/* 削除 */}
         <GenerationTaskDeleteButton
-          disabled={isEmpty}
+          disabled={false}
           onDelete={onTrashTasks}
           title="複数選択して一括削除できます。"
+          isEnable={isEmpty}
         />
         {/* ダウンロード */}
         <GenerationImageDownloadButton
-          disabled={isEmpty}
+          disabled={false}
           selectedTaskIds={props.selectedTaskIds}
           title="複数選択して一括ダウンロードできます。"
+          isEnable={isEmpty}
         />
         {/* 投稿 */}
         <GenerationImagePostButton
-          disabled={isEmpty}
+          disabled={false}
           selectedTaskIds={props.selectedTaskIds}
           title="複数選択して一括投稿できます。"
+          isEnable={isEmpty}
         />
       </div>
     </>

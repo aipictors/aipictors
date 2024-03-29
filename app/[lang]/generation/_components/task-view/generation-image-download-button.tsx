@@ -9,6 +9,7 @@ type Props = {
   disabled: boolean
   selectedTaskIds: string[]
   title?: string
+  isEnable?: boolean
 }
 
 /**
@@ -45,7 +46,19 @@ export function GenerationImageDownloadButton(props: Props) {
    */
   const isLoading = status === "pending"
 
-  return (
+  return props.isEnable ? (
+    <Button
+      onClick={() => {
+        toast("対象の履歴を選択してください。")
+      }}
+      title={props.title}
+      disabled={props.disabled}
+      variant={"ghost"}
+      size={"icon"}
+    >
+      <ArrowDownToLine className="w-4" />
+    </Button>
+  ) : (
     <Button
       title={props.title}
       disabled={props.disabled || isLoading}

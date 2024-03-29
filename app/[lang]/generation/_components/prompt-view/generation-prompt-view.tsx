@@ -32,7 +32,6 @@ export const GenerationPromptView = () => {
   }
 
   const currentPrompts = categoryPrompts.filter((prompt) => {
-    console.log(prompt)
     return context.config.promptText.indexOf(prompt.words.join(",")) !== -1
   })
 
