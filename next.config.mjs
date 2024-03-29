@@ -1,6 +1,6 @@
 // import million from "million/compiler"
 // @ts-check
-// import { withSentryConfig } from "@sentry/nextjs"
+import { withSentryConfig } from "@sentry/nextjs"
 import packageJSON from "./package.json" assert { type: "json" }
 
 /** @type {import('next').NextConfig} **/
@@ -53,4 +53,18 @@ const nextConfig = {
 // @ts-ignore
 // export default million.next(nextConfig, millionConfig)
 
-export default nextConfig
+export default withSentryConfig(
+  nextConfig,
+  {
+    silent: true,
+    org: "nocker",
+    project: "aipictors-web",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    release: packageJSON.version,
+  },
+  {
+    tunnelRoute: "/monitoring",
+    hideSourceMaps: false,
+  },
+)
+
