@@ -59,7 +59,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
         ) : (
           <p className="mb-1 text-center font-semibold">{"生成中"}</p>
         )}
-        <Skeleton className="h-[400px] w-[400px] rounded-xl" />
+        <Skeleton className="m-auto h-[400px] w-[400px] rounded-xl" />
         <div className="my-4 flex justify-end gap-x-2">
           <GenerationMenuButton
             title={"同じ情報で生成する"}
@@ -84,6 +84,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
           <GenerationMenuButton
             title={"URLをコピーする"}
             onClick={() => {}}
+            disabled={true}
             icon={LinkIcon}
           />
           <GenerationMenuButton
