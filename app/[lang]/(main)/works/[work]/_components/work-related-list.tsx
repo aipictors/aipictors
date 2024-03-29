@@ -24,7 +24,7 @@ type WorkRelatedListProps = {
 
 export default function WorkRelatedList({ works }: WorkRelatedListProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-2">
       <p className="text-lg">関連作品</p>
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
