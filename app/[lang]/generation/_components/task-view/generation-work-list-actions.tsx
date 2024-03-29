@@ -3,7 +3,6 @@
 import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
 import { GenerationWorkActionDropdownMenu } from "@/app/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import type { WorkListSortType } from "@/app/[lang]/generation/_types/work-list-sortl-type"
 import { config } from "@/config"
 import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
 import { useMediaQuery } from "usehooks-ts"
@@ -13,7 +12,7 @@ type Props = {
   sortType: WorkOrderBy
   setThumbnailSize(size: number): void
   onTogglePreviewMode(): void
-  onChangeSortType(sortType: WorkListSortType): void
+  onChangeSortType(sortType: WorkOrderBy): void
 }
 
 /**
