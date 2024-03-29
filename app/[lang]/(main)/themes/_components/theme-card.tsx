@@ -10,7 +10,7 @@ export const ThemeCard = () => {
         src="https://bit.ly/dan-abramov"
         alt="Dan Abramov"
       />
-      <div className="flex h-full flex-col justify-between space-y-1 p-2">
+      <div className="flex flex-col justify-between space-y-1 p-2">
         <p className="font-bold text-sm">{"作品名"}</p>
         <div className="flex items-center space-x-2">
           <img

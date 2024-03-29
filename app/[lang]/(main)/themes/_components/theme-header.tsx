@@ -6,8 +6,8 @@ export const ThemeHeader = () => {
   return (
     <div className="space-y-4">
       <div className="space-y-4">
-        <div className="flex space-x-2">
-          <p className="text-sm">{"今日のお題「」"}</p>
+        <div className="flex items-center space-x-2">
+          <p className="text-sm">{`今日のお題:${"props.title"}`}</p>
           <Button size="sm">{"お題を見る"}</Button>
         </div>
         <p className="text-sm">{"新着順"}</p>

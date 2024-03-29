@@ -15,7 +15,9 @@ type Props = {
 }
 
 const WorkPage = async (props: Props) => {
+  console.log("WorkPage")
   const client = createClient()
+  console.log(props.params.work)
 
   const workResp = await client.query({
     query: workQuery,
@@ -23,6 +25,7 @@ const WorkPage = async (props: Props) => {
       id: props.params.work,
     },
   })
+  console.log(workResp.data.work)
 
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
