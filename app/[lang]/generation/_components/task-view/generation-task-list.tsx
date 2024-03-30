@@ -183,6 +183,8 @@ export const GenerationTaskList = (props: Props) => {
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
 
+  console.log(props.rating === 0 || props.rating === -1 ? 32 : 800)
+
   return (
     <>
       <ScrollArea>
@@ -230,7 +232,7 @@ export const GenerationTaskList = (props: Props) => {
       <div className="p-2 pb-64 md:pb-2">
         {props.protect !== 1 && (
           <ResponsivePagination
-            perPage={32}
+            perPage={props.rating === 0 || props.rating === -1 ? 32 : 800}
             maxCount={
               (props.protect === 0 || props.protect === -1) &&
               (props.rating === 0 || props.rating === -1)

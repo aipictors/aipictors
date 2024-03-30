@@ -51,7 +51,10 @@ export const GenerationTaskListView = () => {
     viewerImageGenerationTasksQuery,
     {
       variables: {
-        limit: protect !== 1 ? 32 : config.query.maxLimit,
+        limit:
+          protect !== 1 && (rating === 0 || rating === -1)
+            ? 32
+            : config.query.maxLimit,
         offset: page * 32,
         where: {
           ...(rating !== -1 && {
