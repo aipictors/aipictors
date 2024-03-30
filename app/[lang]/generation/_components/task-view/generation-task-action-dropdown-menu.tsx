@@ -29,6 +29,8 @@ type Props = {
   onChangeTaskContentPositionType(type: TaskContentPositionType): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
   onChange(size: number): void
+  onSelectAll(): void
+  onCancelAll(): void
 }
 
 /**
@@ -163,11 +165,25 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
         )}
         {isEnabledReservedGeneration() && (
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>{"一括削除"}</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>{"一括操作"}</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
                 <DropdownMenuLabel>{"項目"}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <Button
+                  onClick={props.onSelectAll}
+                  variant={"ghost"}
+                  className="w-full text-left"
+                >
+                  {"一括選択"}
+                </Button>
+                <Button
+                  onClick={props.onCancelAll}
+                  variant={"ghost"}
+                  className="w-full text-left"
+                >
+                  {"一括解除"}
+                </Button>
                 {!isDeletingReservedTasks ? (
                   <Button
                     onClick={onDeleteReservedTasks}

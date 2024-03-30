@@ -1,6 +1,5 @@
 "use client"
 
-import { GenerationTaskListViewPlaceholder } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view-placeholder"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
@@ -11,15 +10,11 @@ import { GenerationTaskCard } from "@/app/[lang]/generation/tasks/_components/ge
 import { ResponsivePagination } from "@/app/_components/responsive-pagination"
 import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { config } from "@/config"
-import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
-import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import type { ViewerImageGenerationTasksQuery } from "@/graphql/__generated__/graphql"
 import { cn } from "@/lib/utils"
-import { useMutation, useQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
-import { Suspense, startTransition, useEffect } from "react"
+import { Suspense } from "react"
 import { toast } from "sonner"
-import { useInterval } from "usehooks-ts"
 
 type Props = {
   rating: number
@@ -32,6 +27,8 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
+  tasks: ViewerImageGenerationTasksQuery
+  protectedTasks: ViewerImageGenerationTasksQuery
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
@@ -53,56 +50,9 @@ export const GenerationTaskList = (props: Props) => {
     return snap.value
   })
 
-  const {
-    data: tasks,
-    startPolling,
-    stopPolling,
-    loading: normalLoading,
-  } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit: props.protect !== 1 ? 32 : config.query.maxLimit,
-      offset: props.currentPage * 32,
-      where: {
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
-        ...(props.protect !== -1 && {
-          isProtected: props.protect === 1 ? true : false,
-        }),
-      },
-    },
-    fetchPolicy: "cache-first",
-  })
+  const tasks = props.tasks
 
-  const {
-    data: protectedTasks,
-    startPolling: protectStartPolling,
-    loading: protectedLoading,
-  } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit: config.query.maxLimit,
-      offset: 0,
-      where: {
-        isProtected: true,
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
-      },
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const hasActiveTasks =
-    queryData.viewer.inProgressImageGenerationTasksCount > 0 ||
-    queryData.viewer.inProgressImageGenerationReservedTasksCount > 0
-
-  useEffect(() => {
-    if (hasActiveTasks) {
-      startPolling(isTimeout ? 3000 : 2000)
-      return
-    }
-    startPolling(600000)
-  }, [hasActiveTasks, isTimeout])
+  const protectedTasks = props.protectedTasks
 
   if (tasks === undefined || protectedTasks === undefined) {
     return null
@@ -232,10 +182,6 @@ export const GenerationTaskList = (props: Props) => {
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
-
-  if (normalLoading) {
-    return <GenerationTaskListViewPlaceholder />
-  }
 
   return (
     <>

@@ -39,6 +39,8 @@ type Props = {
   setHidedTaskIds(selectedTaskIds: string[]): void
   onToggleEditMode(): void
   onTogglePreviewMode(): void
+  onSelectAll(): void
+  onCancelAll(): void
 }
 
 /**
@@ -115,6 +117,8 @@ export const GenerationTaskListActions = (props: Props) => {
             onChangeTaskContentPositionType={
               props.onChangeTaskContentPositionType
             }
+            onSelectAll={props.onSelectAll}
+            onCancelAll={props.onCancelAll}
           />
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect

@@ -5,9 +5,14 @@ import { GenerationTaskList } from "@/app/[lang]/generation/_components/task-vie
 import { GenerationTaskListActions } from "@/app/[lang]/generation/_components/task-view/generation-task-list-actions"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
-import { useState } from "react"
+import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
+import { config } from "@/config"
+import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
+import { useQuery } from "@apollo/client"
+import { useEffect, useState } from "react"
 
 /**
  * タスク関連
@@ -37,6 +42,55 @@ export const GenerationTaskListView = () => {
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
   const [page, setPage] = useState(0)
+
+  const queryData = useGenerationQuery()
+
+  const isTimeout = useFocusTimeout()
+
+  const { data: tasks, startPolling } = useQuery(
+    viewerImageGenerationTasksQuery,
+    {
+      variables: {
+        limit: protect !== 1 ? 32 : config.query.maxLimit,
+        offset: page * 32,
+        where: {
+          ...(rating !== -1 && {
+            rating: rating,
+          }),
+          ...(protect !== -1 && {
+            isProtected: protect === 1 ? true : false,
+          }),
+        },
+      },
+      fetchPolicy: "cache-first",
+    },
+  )
+
+  const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: config.query.maxLimit,
+      offset: 0,
+      where: {
+        isProtected: true,
+        ...(rating !== -1 && {
+          rating: rating,
+        }),
+      },
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  const hasActiveTasks =
+    queryData.viewer.inProgressImageGenerationTasksCount > 0 ||
+    queryData.viewer.inProgressImageGenerationReservedTasksCount > 0
+
+  useEffect(() => {
+    if (hasActiveTasks) {
+      startPolling(isTimeout ? 3000 : 2000)
+      return
+    }
+    startPolling(600000)
+  }, [hasActiveTasks, isTimeout])
 
   /**
    * レーティングを変更する
@@ -99,6 +153,25 @@ export const GenerationTaskListView = () => {
     return context.updateThumbnailSizeInPromptView(value)
   }
 
+  /**
+   * 全てのタスクを選択する
+   */
+  const onSelectAllTasks = () => {
+    setSelectedTaskIds(
+      tasks?.viewer?.imageGenerationTasks.map((task) => task.nanoid) ?? [],
+    )
+    if (!isEditMode) {
+      onToggleEditMode()
+    }
+  }
+
+  /**
+   * 全てのタスクをキャンセルする
+   */
+  const onCancelAllTasks = () => {
+    setSelectedTaskIds([])
+  }
+
   const changeThumbnailType = (value: TaskListThumbnailType) => {
     context.changeTaskListThumbnailType(value)
   }
@@ -132,6 +205,8 @@ export const GenerationTaskListView = () => {
         onTogglePreviewMode={onTogglePreviewMode}
         onChangeViewCount={() => {}}
         onChangeTaskContentPositionType={changeShowTaskPositionType}
+        onSelectAll={onSelectAllTasks}
+        onCancelAll={onCancelAllTasks}
       />
       {/* <Suspense fallback={<AppLoadingPage />}> */}
       <GenerationTaskList
@@ -142,11 +217,13 @@ export const GenerationTaskListView = () => {
         isEditMode={isEditMode}
         isPreviewMode={isPreviewMode}
         selectedTaskIds={selectedTaskIds}
-        thumbnailSize={thumbnailSize()}
+        tasks={tasks}
+        protectedTasks={protectedTasks}
         taskContentPositionType={showTaskPositionType}
         onCancel={undefined}
         setCurrentPage={setPage}
         setSelectedTaskIds={setSelectedTaskIds}
+        thumbnailSize={thumbnailSize()}
       />
       {/* </Suspense> */}
     </GenerationViewCard>
