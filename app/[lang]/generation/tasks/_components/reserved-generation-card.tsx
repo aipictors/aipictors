@@ -22,21 +22,7 @@ export const ReservedGenerationCard = (props: Props) => {
   const { send } = GenerationConfigContext.useActorRef()
 
   return (
-    <div
-      className="relative h-full w-full"
-      onMouseEnter={() => {
-        if (props.isPreviewByHover) {
-          context.updatePreviewTaskId(props.taskId)
-          send({ type: "OPEN_HISTORY_PREVIEW" })
-        }
-        props.setIsHovered(true)
-      }}
-      onMouseLeave={() => {
-        context.updatePreviewTaskId(null)
-        send({ type: "CLOSE" })
-        props.setIsHovered(false)
-      }}
-    >
+    <div className="relative h-full w-full">
       <GenerationTaskCancelButton
         onCancel={props.onCancel}
         isCanceling={props.isCanceling}
