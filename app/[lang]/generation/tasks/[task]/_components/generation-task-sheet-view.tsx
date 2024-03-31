@@ -153,10 +153,13 @@ export const postGenerationImage = async (
  * @returns
  */
 export function GenerationTaskSheetView(props: Props) {
-  const [mutation] = useMutation(updateRatingImageGenerationTaskMutation, {
-    refetchQueries: [viewerImageGenerationTasksQuery],
-    awaitRefetchQueries: true,
-  })
+  const [mutation, { loading: isRatingLoading }] = useMutation(
+    updateRatingImageGenerationTaskMutation,
+    {
+      refetchQueries: [viewerImageGenerationTasksQuery],
+      awaitRefetchQueries: true,
+    },
+  )
 
   const context = useGenerationContext()
 
@@ -216,7 +219,7 @@ export function GenerationTaskSheetView(props: Props) {
   useEffect(() => {
     setRating(props.task.rating ?? 0)
     setIsProtected(props.task.isProtected ?? false)
-  }, [])
+  }, [context.config.viewTaskId])
 
   const onReference = (isWithSeed: boolean) => {
     if (!props.isReferenceLink && props.task.nanoid !== null) {
@@ -376,6 +379,7 @@ export function GenerationTaskSheetView(props: Props) {
         isProtected={isProtected}
         GenerationParameters={GenerationParameters}
         isProtectedLoading={isProtectedLoading}
+        isRatingLoading={isRatingLoading}
         onReference={onReference}
         onPost={onPost}
         onDelete={onDelete}
@@ -406,6 +410,7 @@ export function GenerationTaskSheetView(props: Props) {
       isProtected={isProtected}
       GenerationParameters={GenerationParameters}
       isProtectedLoading={isProtectedLoading}
+      isRatingLoading={isRatingLoading}
       onReference={onReference}
       onPost={onPost}
       onDelete={onDelete}

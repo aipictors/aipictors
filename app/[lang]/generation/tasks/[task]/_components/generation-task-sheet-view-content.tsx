@@ -51,6 +51,7 @@ type Props = {
   isProtected: boolean
   GenerationParameters: GenerationParameters
   isProtectedLoading: boolean
+  isRatingLoading: boolean
   onReference(isSeedWith: boolean): void
   onPost(): void
   onDelete(): void
@@ -307,6 +308,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     props.setRating(value)
                     props.onChangeRating(props.task.nanoid ?? "", value)
                   }}
+                  isLoading={props.isRatingLoading}
                 />
                 <div className="ml-auto">
                   <GenerationMenuButton

@@ -47,8 +47,6 @@ export const GenerationTaskListView = () => {
     context.changePage(page)
   }
 
-  console.log("page", page)
-
   const queryData = useGenerationQuery()
 
   const isTimeout = useFocusTimeout()
