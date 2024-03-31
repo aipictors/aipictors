@@ -37,7 +37,6 @@ import {
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -183,9 +182,7 @@ export function GenerationTaskView(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const [deleteTask, { loading: isDeletedLoading }] = useMutation(
-    deleteImageGenerationTaskMutation,
-  )
+  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
 
   const [showInPaintDialog, setShowInPaintDialog] = useState(false)
 
@@ -273,21 +270,18 @@ export function GenerationTaskView(props: Props) {
     window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
-  const router = useRouter()
-
   /**
    * 削除
    */
   const onDelete = async () => {
-    deleteTask({
+    await deleteTask({
       variables: {
         input: {
           nanoid: props.taskId,
         },
       },
     })
-    router.push("/generation")
-    toast("削除しました")
+    refetch()
   }
 
   if (!data) {
@@ -437,8 +431,6 @@ export function GenerationTaskView(props: Props) {
                 title={"生成履歴を削除する"}
                 onClick={() => () => {}}
                 icon={Trash2}
-                isLoading={isDeletedLoading}
-                disabled={isDeletedLoading}
               />
             </AppConfirmDialog>
           </div>
