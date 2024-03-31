@@ -137,11 +137,77 @@ export const InpaintCanvas = (props: Props) => {
     })
   }
 
+  /**
+   * base64画像を二値化して、透明部分は黒色にする
+   * @param base64Image
+   * @returns
+   */
+  const binarizeImage = (base64Image: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      // ブラウザ環境でのみ実行
+      if (typeof window === "undefined") {
+        reject("この関数はブラウザでのみ使用可能です")
+        return
+      }
+
+      // 新しいImageオブジェクトを作成し、Base64画像を読み込む
+      const img = new Image()
+      img.src = base64Image
+
+      // 画像の読み込みが完了したら処理を行う
+      img.onload = () => {
+        // 新しいCanvas要素を作成
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext("2d")
+
+        if (!ctx) {
+          reject("Canvasコンテキストの取得に失敗しました")
+          return
+        }
+
+        // Canvasのサイズを画像と同じに設定
+        canvas.width = img.width
+        canvas.height = img.height
+
+        // 画像をCanvasに描画
+        ctx.drawImage(img, 0, 0)
+
+        // 画像データを取得
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const data = imageData.data
+
+        // 二値化と透明度の除去処理
+        for (let i = 0; i < data.length; i += 4) {
+          const brightness =
+            0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+          const threshold = 128 // 閾値
+          const color = brightness < threshold ? 0 : 255
+          data[i] = data[i + 1] = data[i + 2] = color
+          data[i + 3] = 255 // アルファ値を255に設定して不透明に
+        }
+        // Canvasに二値化した画像データを描画
+        ctx.putImageData(imageData, 0, 0)
+
+        // CanvasからBase64画像を取得
+        const binarizedBase64 = canvas.toDataURL()
+
+        // 二値化したBase64画像を返す
+        resolve(binarizedBase64)
+      }
+
+      img.onerror = () => {
+        reject("画像の読み込みに失敗しました")
+      }
+    })
+  }
+
   useEffect(() => {
     if (stageRef?.current && lines.length > 0) {
       const dataURL = stageRef.current.toDataURL()
       invertImageColors(dataURL).then((invertedBase64: string) => {
-        props.onChange(invertedBase64)
+        binarizeImage(invertedBase64).then((invertedBase64: string) => {
+          props.onChange(invertedBase64)
+        })
       })
     }
   }, [lines])
