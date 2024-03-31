@@ -52,7 +52,7 @@ export const GenerationWorkListModelView = () => {
    * サムネイルサイズ
    */
   const thumbnailSize = () => {
-    if (state === "WORKS_FROM_MODEL") {
+    if (state === "WORK_LIST_FULL") {
       return context.config.thumbnailSizeInHistoryListFull
     }
     return context.config.thumbnailSizeInPromptView
@@ -78,7 +78,7 @@ export const GenerationWorkListModelView = () => {
    * @returns
    */
   const updateThumbnailSize = (value: number) => {
-    if (state === "WORKS_FROM_MODEL") {
+    if (state === "WORK_LIST_FULL") {
       return context.updateThumbnailSizeInHistoryListFull(value)
     }
     return context.updateThumbnailSizeInPromptView(value)
