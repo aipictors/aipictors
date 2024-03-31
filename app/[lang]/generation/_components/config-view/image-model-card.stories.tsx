@@ -9,7 +9,7 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof ImageModelCard>
 
 export const 選択された状態: Story = {
   args: {
