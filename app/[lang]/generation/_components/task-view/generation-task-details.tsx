@@ -32,7 +32,7 @@ export const GenerationTaskDetails = () => {
 
   return (
     <>
-      <ScrollArea className="absolute pb-64 md:pb-0">
+      <ScrollArea className="absolute pb-64 md:pb-8">
         <Suspense fallback={<AppLoadingPage />}>
           {imageGenerationTask && (
             <GenerationTaskSheetView

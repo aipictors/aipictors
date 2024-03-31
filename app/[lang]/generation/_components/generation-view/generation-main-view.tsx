@@ -6,6 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import { Separator } from "@/components/ui/separator"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -41,6 +42,9 @@ export const GenerationMainView = (props: Props) => {
           <div className="flex-1 overflow-hidden">{props.promptEditor}</div>
           <div className="min-w-80 flex-1 overflow-hidden">
             {props.negativePromptEditor}
+          </div>
+          <div className="gap-y-4 px-4 pb-4">
+            <Separator />
           </div>
         </div>
       </div>
