@@ -4,6 +4,7 @@ import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/gener
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
+import type { StateValue } from "xstate"
 
 /**
  * サイドコンテンツ切替タブ
@@ -14,20 +15,25 @@ export function GenerationSideTabsView() {
 
   const { send } = GenerationConfigContext.useActorRef()
 
-  const [mode, setMode] = useState("history")
+  const state = GenerationConfigContext.useSelector((snap) => {
+    return snap.value
+  })
 
   return (
     <>
-      <Tabs value={mode} defaultValue={mode} className="mb-2">
+      <Tabs
+        value={state.toString()}
+        defaultValue={"PROMPT_VIEW"}
+        className="mb-2"
+      >
         <TabsList>
           <TabsTrigger
             onClick={() => {
               send({ type: "CLOSE" })
               context.updateSearchWorksModelId(null)
-              setMode("history")
             }}
             className="w-full"
-            value="history"
+            value="PROMPT_VIEW"
           >
             履歴
           </TabsTrigger>
@@ -35,10 +41,9 @@ export function GenerationSideTabsView() {
             onClick={() => {
               send({ type: "OPEN_WORKS_FROM_MODEL" })
               context.updateSearchWorksModelId(null)
-              setMode("search")
             }}
             className="w-full"
-            value="search"
+            value="WORKS_FROM_MODEL"
           >
             検索
           </TabsTrigger>
