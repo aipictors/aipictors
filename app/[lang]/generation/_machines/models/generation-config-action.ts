@@ -503,6 +503,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * タスク一覧のページを変更する
+   * @param page
+   * @returns
+   */
+  changePage(page: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      page: page,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * i2i用のDenoisingStrengthSizeを変更する
    * @param modelType SD1など
    * @returns

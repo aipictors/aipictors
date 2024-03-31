@@ -183,8 +183,6 @@ export const GenerationTaskList = (props: Props) => {
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
 
-  console.log(props.rating === 0 || props.rating === -1 ? 32 : 800)
-
   return (
     <>
       <ScrollArea>
@@ -240,7 +238,9 @@ export const GenerationTaskList = (props: Props) => {
                 : componentTasks.length
             }
             currentPage={props.currentPage}
-            onPageChange={props.setCurrentPage}
+            onPageChange={(page: number) => {
+              props.setCurrentPage(page)
+            }}
           />
         )}
       </div>

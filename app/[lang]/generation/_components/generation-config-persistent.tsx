@@ -14,7 +14,6 @@ export const GenerationConfigPersistent = (props: Props) => {
     const subscription = actor.subscribe(() => {
       const snapshot = actor.getPersistedSnapshot()
       localStorage.setItem("generation.state", JSON.stringify(snapshot))
-      console.log("saved", snapshot)
     })
     return () => {
       subscription.unsubscribe()

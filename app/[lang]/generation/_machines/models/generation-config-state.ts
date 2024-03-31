@@ -25,6 +25,7 @@ const zProps = z.object({
   thumbnailSizeInHistoryListFull: z.number(),
   taskListThumbnailType: z.string(),
   previewImageURL: z.string().nullable(),
+  page: z.number(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -82,6 +83,8 @@ export class GenerationConfigState implements Props {
   readonly taskListThumbnailType!: Props["taskListThumbnailType"]
 
   readonly previewImageURL!: Props["previewImageURL"]
+
+  readonly page!: Props["page"]
 
   constructor(props: Props) {
     Object.assign(this, props)

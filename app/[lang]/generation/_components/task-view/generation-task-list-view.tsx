@@ -41,7 +41,13 @@ export const GenerationTaskListView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const [page, setPage] = useState(0)
+  const page = context.config.page
+
+  const setPage = (page: number) => {
+    context.changePage(page)
+  }
+
+  console.log("page", page)
 
   const queryData = useGenerationQuery()
 

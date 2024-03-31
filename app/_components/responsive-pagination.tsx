@@ -30,6 +30,8 @@ export const ResponsivePagination = ({
   const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
+  const currentPageIndex = currentPage > pageCount ? pageCount : currentPage
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage <= pageCount) {
       onPageChange(newPage)
@@ -44,47 +46,46 @@ export const ResponsivePagination = ({
     <Pagination>
       <PaginationContent>
         {/* Prevボタン */}
-        {currentPage !== 0 && (
+        {currentPageIndex !== 0 && (
           <PaginationItem>
             <PaginationPrevious
               href="#"
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => handlePageChange(currentPageIndex - 1)}
             />
           </PaginationItem>
         )}
         {/* 前ページ */}
-        {currentPage > 0 && (
+        {currentPageIndex > 0 && (
           <PaginationItem>
             <PaginationLink
               href="#"
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => handlePageChange(currentPageIndex - 1)}
             >
-              {currentPage - 1 + 1}
+              {currentPageIndex - 1 + 1}
             </PaginationLink>
           </PaginationItem>
         )}
         {/* 現在のページ */}
         <PaginationItem>
           <PaginationLink href="#" isActive>
-            {currentPage + 1}
+            {currentPageIndex + 1}
           </PaginationLink>
         </PaginationItem>
         {/* 次のページ */}
-        {currentPage + 1 !== pageCount && (
+        {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
             <PaginationLink
               href="#"
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={() => handlePageChange(currentPageIndex + 1)}
             >
-              {currentPage + 1 + 1}
+              {currentPageIndex + 1 + 1}
             </PaginationLink>
           </PaginationItem>
         )}
-        {currentPage + 1 !== pageCount && pageCount > (isDesktop ? 5 : 3) && (
-          <PaginationEllipsis />
-        )}{" "}
+        {currentPageIndex + 1 !== pageCount &&
+          pageCount > (isDesktop ? 5 : 3) && <PaginationEllipsis />}{" "}
         {/* 末尾ページ */}
-        {currentPage + 1 !== pageCount && (
+        {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
             <PaginationLink
               href="#"
@@ -95,13 +96,13 @@ export const ResponsivePagination = ({
           </PaginationItem>
         )}
         {/* Nextボタン */}
-        {currentPage + 1 !== pageCount && (
+        {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
             <PaginationNext
               href="#"
               onClick={(e) => {
                 e.preventDefault()
-                handlePageChange(currentPage + 1)
+                handlePageChange(currentPageIndex + 1)
               }}
             />
           </PaginationItem>

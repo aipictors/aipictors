@@ -339,6 +339,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * タスク一覧のページ数を変更する
+   * @param
+   */
+  const changePage = (page: number) => {
+    const value = configAction.changePage(page).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * データリセット
    */
   const reset = () => {
@@ -381,6 +390,7 @@ export const useGenerationContext = () => {
     changeI2iDenoisingStrengthSize,
     changeUseRecommendedPrompt,
     changeTaskListThumbnailType,
+    changePage,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updateSearchWorksModelId,
