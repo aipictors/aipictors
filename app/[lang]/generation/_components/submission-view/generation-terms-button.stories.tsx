@@ -9,7 +9,7 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof GenerationTermsButton>
 
 const text = `生成機能では、以下の利用は禁止されております。
 

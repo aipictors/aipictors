@@ -9,7 +9,7 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof ConfigModelButton>
 
 export const 選択されていない: Story = {
   args: {

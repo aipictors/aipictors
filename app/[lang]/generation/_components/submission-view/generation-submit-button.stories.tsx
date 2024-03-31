@@ -9,7 +9,7 @@ const meta = {
 
 export default meta
 
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof GenerationSubmitButton>
 
 export const 通常: Story = {
   args: {
