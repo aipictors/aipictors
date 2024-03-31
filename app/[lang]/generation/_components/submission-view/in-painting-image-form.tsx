@@ -103,7 +103,7 @@ export const InPaintingImageForm = (props: Props) => {
         )
         return
       }
-      const srcFileName = `${createRandomString(30)}_inpaint_mask_src.png`
+      const srcFileName = `${createRandomString(30)}_img2img_src.png`
       const srcImageURL = await uploadImage(
         srcImageBase64,
         srcFileName,
@@ -115,7 +115,7 @@ export const InPaintingImageForm = (props: Props) => {
         )
         return
       }
-      const maskFileName = `${createRandomString(30)}_img2img_src.png`
+      const maskFileName = `${createRandomString(30)}_inpaint_mask_src.png`
       const maskImageURL = await uploadImage(
         maskImageBase64,
         maskFileName,
