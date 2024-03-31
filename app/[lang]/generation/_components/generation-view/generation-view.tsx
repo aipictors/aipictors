@@ -1,8 +1,6 @@
 "use client"
 
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { AuthContext } from "@/app/_contexts/auth-context"
 import { AppLoadingPage } from "@/components/app/app-loading-page"
 import {
   ResizableHandle,
@@ -10,17 +8,14 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { config } from "@/config"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
-import { useSearchParams } from "next/navigation"
-import { Suspense, useContext, useEffect, useState } from "react"
-import { toast } from "sonner"
+import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   header: React.ReactNode
   main: React.ReactNode
   aside: React.ReactNode
+  asideHeader: React.ReactNode
 }
 
 /**
@@ -45,7 +40,10 @@ export const GenerationView = (props: Props) => {
           {props.header}
           {props.main}
         </div>
-        <div className="flex-1 overflow-hidden">{props.aside}</div>
+        <div className="flex-1 overflow-hidden">
+          <div className="mx-2">{props.asideHeader}</div>
+          {props.aside}
+        </div>
       </main>
     )
   }
@@ -71,7 +69,10 @@ export const GenerationView = (props: Props) => {
         </ResizablePanel>
         <ResizableHandle withHandle className="mr-4 ml-4" />
         <ResizablePanel className="lg:min-w-80 xl:min-w-80">
-          <Suspense fallback={<AppLoadingPage />}>{props.aside}</Suspense>
+          <Suspense fallback={<AppLoadingPage />}>
+            {props.asideHeader}
+            {props.aside}
+          </Suspense>
         </ResizablePanel>
       </ResizablePanelGroup>
     </main>

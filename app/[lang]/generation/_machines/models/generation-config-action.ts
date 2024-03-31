@@ -216,7 +216,7 @@ export class GenerationConfigAction {
    * @param id
    * @returns
    */
-  updateSearchWorksModelId(id: string) {
+  updateSearchWorksModelId(id: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       searchModelId: id,

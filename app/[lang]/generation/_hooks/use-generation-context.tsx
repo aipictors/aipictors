@@ -168,7 +168,7 @@ export const useGenerationContext = () => {
    * 検索用モデルを変更する
    * @param modelId
    */
-  const updateSearchWorksModelId = (modelId: string) => {
+  const updateSearchWorksModelId = (modelId: string | null) => {
     const value = configAction.updateSearchWorksModelId(modelId).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

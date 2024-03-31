@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { GenerationAdvertisementView } from "@/app/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
+import { GenerationSideTabsView } from "@/app/[lang]/generation/_components/generation-side-tabs-view/generation-side-tabs-view"
 import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
 import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
@@ -56,6 +57,7 @@ const GenerationPage = async () => {
           workContentPreview={<GenerationWorkContentPreview />}
         />
       }
+      asideHeader={<GenerationSideTabsView />}
       aside={
         <GenerationAsideView
           advertisement={<GenerationAdvertisementView />}

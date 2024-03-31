@@ -3,6 +3,7 @@
 import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
 import { GenerationWorkActionDropdownMenu } from "@/app/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { Input } from "@/components/ui/input"
 import { config } from "@/config"
 import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
 import { useMediaQuery } from "usehooks-ts"
@@ -13,6 +14,7 @@ type Props = {
   setThumbnailSize(size: number): void
   onTogglePreviewMode(): void
   onChangeSortType(sortType: WorkOrderBy): void
+  onChangeWord(word: string): void
 }
 
 /**
@@ -31,6 +33,18 @@ export const GenerationWorkListActions = (props: Props) => {
     <>
       {/* 操作一覧 */}
       <div className="flex items-center gap-x-2 px-2 pb-2 md:px-4 xl:px-4">
+        <Input
+          minLength={1}
+          maxLength={120}
+          required
+          type="text"
+          name="title"
+          placeholder="検索ワード"
+          className="flex items-center gap-x-4 px-4 pb-2 md:px-4 xl:px-4"
+          onChange={(event) => {
+            props.onChangeWord(event.target.value)
+          }}
+        />
         {isDesktop && state !== "HISTORY_LIST_FULL" && (
           <GenerationTaskPreviewModeButton
             onTogglePreviewMode={props.onTogglePreviewMode}

@@ -28,8 +28,6 @@ export const GenerationWorkCard = (props: Props) => {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  console.log(props.work)
-
   return (
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"

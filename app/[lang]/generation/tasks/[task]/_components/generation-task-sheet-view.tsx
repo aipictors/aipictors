@@ -241,7 +241,9 @@ export function GenerationTaskSheetView(props: Props) {
     }`
   }
 
-  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+  const [deleteTask, { loading: isDeletedLoading }] = useMutation(
+    deleteImageGenerationTaskMutation,
+  )
 
   const onDelete = async () => {
     if (props.task.nanoid === null) {
@@ -255,6 +257,7 @@ export function GenerationTaskSheetView(props: Props) {
         },
       },
     })
+    toast("削除しました")
   }
 
   const [protectTask, { loading: isProtectedLoading }] = useMutation(
@@ -380,6 +383,7 @@ export function GenerationTaskSheetView(props: Props) {
         GenerationParameters={GenerationParameters}
         isProtectedLoading={isProtectedLoading}
         isRatingLoading={isRatingLoading}
+        isDeletedLoading={isDeletedLoading}
         onReference={onReference}
         onPost={onPost}
         onDelete={onDelete}
@@ -411,6 +415,7 @@ export function GenerationTaskSheetView(props: Props) {
       GenerationParameters={GenerationParameters}
       isProtectedLoading={isProtectedLoading}
       isRatingLoading={isRatingLoading}
+      isDeletedLoading={isDeletedLoading}
       onReference={onReference}
       onPost={onPost}
       onDelete={onDelete}

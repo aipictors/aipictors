@@ -52,6 +52,7 @@ type Props = {
   GenerationParameters: GenerationParameters
   isProtectedLoading: boolean
   isRatingLoading: boolean
+  isDeletedLoading: boolean
   onReference(isSeedWith: boolean): void
   onPost(): void
   onDelete(): void
@@ -295,6 +296,8 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     title={"生成履歴を削除する"}
                     onClick={() => () => {}}
                     icon={Trash2}
+                    isLoading={props.isDeletedLoading}
+                    disabled={props.isDeletedLoading}
                   />
                 </AppConfirmDialog>
               </div>

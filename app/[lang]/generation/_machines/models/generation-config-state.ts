@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const zProps = z.object({
   modelId: z.string(),
-  searchModelId: z.string(),
+  searchModelId: z.string().nullable(),
   modelIds: z.array(z.string()),
   promptText: z.string(),
   negativePromptText: z.string(),

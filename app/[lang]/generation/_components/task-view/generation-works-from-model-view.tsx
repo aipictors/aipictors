@@ -39,7 +39,9 @@ export const GenerationWorkListModelView = () => {
       where: {
         isFeatured: true,
         hasGenerationPrompt: true,
-        generationModelId: context.config.searchModelId,
+        ...(context.config.searchModelId && {
+          generationModelId: context.config.searchModelId,
+        }),
         search: word,
         orderBy: sortType,
       },
@@ -83,11 +85,8 @@ export const GenerationWorkListModelView = () => {
   }
 
   return (
-    <GenerationViewCard
-      title={"作品検索"}
-      tooltip={"モデルから作品検索して参考にすることが可能です。"}
-    >
-      <Button
+    <GenerationViewCard>
+      {/* <Button
         id="generation-works-from-model-view"
         className="mx-4 my-2"
         variant={"secondary"}
@@ -95,25 +94,14 @@ export const GenerationWorkListModelView = () => {
       >
         {"閉じる"}
         <span className="hidden md:inline-block">{"（Escape）"}</span>
-      </Button>
-      <Input
-        minLength={1}
-        maxLength={120}
-        required
-        type="text"
-        name="title"
-        placeholder="検索ワード"
-        className="mx-4 mb-2 max-w-96"
-        onChange={(event) => {
-          setWord(event.target.value)
-        }}
-      />
+      </Button> */}
       <GenerationWorkListActions
         sortType={sortType}
         thumbnailSize={thumbnailSize()}
         setThumbnailSize={updateThumbnailSize}
         onTogglePreviewMode={onTogglePreviewMode}
         onChangeSortType={setSortType}
+        onChangeWord={setWord}
       />
       <GenerationWorkList
         works={worksResp}

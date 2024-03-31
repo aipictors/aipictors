@@ -39,7 +39,7 @@ export const InPaintingSetting = (props: Props) => {
         </div>
         <div>
           <p>{"マスク方式："}</p>
-          <RadioGroup onChange={handleRadioChange} defaultValue="1">
+          <RadioGroup onChange={handleRadioChange} defaultValue="0">
             <div className="flex">
               <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="0" id="r1" />
