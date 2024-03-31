@@ -62,9 +62,9 @@ export const InPaintingImageForm = (props: Props) => {
 
   const [promptText, setPromptText] = useState("")
 
-  const [fillSize, setMaskType] = useState("")
+  const [fillSize, setMaskType] = useState("0")
 
-  const [denoisingStrengthSize, setDenoisingStrengthSize] = useState("")
+  const [denoisingStrengthSize, setDenoisingStrengthSize] = useState("0.5")
 
   const onChangePrompt = (value: string) => {
     setPromptText(value)
@@ -129,10 +129,10 @@ export const InPaintingImageForm = (props: Props) => {
             prompt: promptText,
             negativePrompt: "",
             sampler: props.configSampler,
-            seed: props.configSeed,
+            seed: -1,
             steps: props.configSteps,
             scale: props.configScale,
-            sizeType: props.configSizeType as ImageGenerationSizeType,
+            sizeType: "SD2_768_768",
             model: props.configModel,
             vae: props.configVae,
             clipSkip: props.configClipSkip,

@@ -17,7 +17,7 @@ export const InPaintingSetting = (props: Props) => {
     props.onChangeDenoisingStrengthSize(event.target.value)
   }
 
-  props.onChangeMaskType("1")
+  props.onChangeMaskType("0")
   props.onChangeDenoisingStrengthSize("0.5")
 
   return (
