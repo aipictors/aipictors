@@ -7,8 +7,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   maxCount: number // 最大個数
@@ -28,7 +26,6 @@ export const ResponsivePagination = ({
   onPageChange,
 }: Props) => {
   const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const currentPageIndex = currentPage > pageCount ? pageCount : currentPage
 
@@ -53,6 +50,17 @@ export const ResponsivePagination = ({
               onClick={() => handlePageChange(currentPageIndex - 1)}
             />
           </PaginationItem>
+        )}
+        {/* 先頭ページ */}
+        {currentPageIndex > 1 && pageCount > 2 && (
+          <>
+            <PaginationItem>
+              <PaginationLink href="#" onClick={() => handlePageChange(1)}>
+                {1}
+              </PaginationLink>
+            </PaginationItem>{" "}
+            <PaginationEllipsis />
+          </>
         )}
         {/* 前ページ */}
         {currentPageIndex > 0 && (
@@ -82,18 +90,19 @@ export const ResponsivePagination = ({
             </PaginationLink>
           </PaginationItem>
         )}
-        {currentPageIndex + 1 !== pageCount &&
-          pageCount > (isDesktop ? 5 : 3) && <PaginationEllipsis />}{" "}
         {/* 末尾ページ */}
         {currentPageIndex + 1 !== pageCount && (
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              onClick={() => handlePageChange(pageCount - 1)}
-            >
-              {pageCount}
-            </PaginationLink>
-          </PaginationItem>
+          <>
+            <PaginationEllipsis />{" "}
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageChange(pageCount - 1)}
+              >
+                {pageCount}
+              </PaginationLink>
+            </PaginationItem>
+          </>
         )}
         {/* Nextボタン */}
         {currentPageIndex + 1 !== pageCount && (

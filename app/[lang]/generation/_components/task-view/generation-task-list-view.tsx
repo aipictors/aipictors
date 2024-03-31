@@ -41,7 +41,7 @@ export const GenerationTaskListView = () => {
 
   const [hidedTaskIds, setHidedTaskIds] = useState<string[]>([])
 
-  const page = context.config.page
+  const page = context.config.page ?? 0
 
   const setPage = (page: number) => {
     context.changePage(page)
