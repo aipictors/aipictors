@@ -21,34 +21,65 @@ export function GenerationSideTabsView() {
 
   return (
     <>
-      <Tabs
-        value={state.toString()}
-        defaultValue={"PROMPT_VIEW"}
-        className="mb-2"
-      >
-        <TabsList>
-          <TabsTrigger
-            onClick={() => {
-              send({ type: "CLOSE" })
-              context.updateSearchWorksModelId(null)
-            }}
-            className="w-full"
-            value="PROMPT_VIEW"
-          >
-            履歴
-          </TabsTrigger>
-          <TabsTrigger
-            onClick={() => {
-              send({ type: "OPEN_WORKS_FROM_MODEL" })
-              context.updateSearchWorksModelId(null)
-            }}
-            className="w-full"
-            value="WORKS_FROM_MODEL"
-          >
-            検索
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
+        <Tabs
+          value={state.toString()}
+          defaultValue={"HISTORY_LIST_FULL"}
+          className="mb-2"
+        >
+          <TabsList>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "CHANGE_FULL_HISTORY_LIST" })
+                context.updateSearchWorksModelId(null)
+              }}
+              className="w-full"
+              value="HISTORY_LIST_FULL"
+            >
+              履歴
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "CHANGE_FULL_WORK_LIST" })
+                context.updateSearchWorksModelId(null)
+              }}
+              className="w-full"
+              value="WORK_LIST_FULL"
+            >
+              検索
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      ) : (
+        <Tabs
+          value={state.toString()}
+          defaultValue={"PROMPT_VIEW"}
+          className="mb-2"
+        >
+          <TabsList>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "CLOSE" })
+                context.updateSearchWorksModelId(null)
+              }}
+              className="w-full"
+              value="PROMPT_VIEW"
+            >
+              履歴
+            </TabsTrigger>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "OPEN_WORKS_FROM_MODEL" })
+                context.updateSearchWorksModelId(null)
+              }}
+              className="w-full"
+              value="WORKS_FROM_MODEL"
+            >
+              検索
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
     </>
   )
 }

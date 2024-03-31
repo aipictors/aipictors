@@ -100,6 +100,8 @@ export const generationConfigMachine = createMachine({
 
       on: {
         OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
+        CHANGE_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
+        CHANGE_FULL_WORK_LIST: "WORK_LIST_FULL",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -141,6 +143,9 @@ export const generationConfigMachine = createMachine({
 
       on: {
         OPEN_FULL_HISTORY_LIST: "WORKS_FROM_MODEL",
+        CHANGE_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
+        CHANGE_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_FULL_WORK_LIST: "WORKS_FROM_MODEL",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value

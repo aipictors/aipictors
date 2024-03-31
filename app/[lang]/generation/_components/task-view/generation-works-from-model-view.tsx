@@ -97,6 +97,7 @@ export const GenerationWorkListModelView = () => {
       </Button> */}
       <GenerationWorkListActions
         sortType={sortType}
+        showHistoryExpandButton={true}
         thumbnailSize={thumbnailSize()}
         setThumbnailSize={updateThumbnailSize}
         onTogglePreviewMode={onTogglePreviewMode}

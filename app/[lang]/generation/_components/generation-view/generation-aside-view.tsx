@@ -60,7 +60,11 @@ export const GenerationAsideView = (props: Props) => {
     )
   }
 
-  if (state === "WORKS_FROM_MODEL" || state === "WORK_PREVIEW") {
+  if (
+    state === "WORKS_FROM_MODEL" ||
+    state === "WORK_PREVIEW" ||
+    state === "WORK_LIST_FULL"
+  ) {
     return <>{props.workListFromModel}</>
   }
 
