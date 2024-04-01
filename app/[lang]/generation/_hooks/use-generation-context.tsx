@@ -312,6 +312,150 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * controlNetImageUrlを変更する
+   * @param value
+   */
+  const changeControlNetImageUrl = (item: string) => {
+    const value = configAction.changeControlNetImageUrl(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetMaskImageUrlを変更する
+   * @param value
+   */
+  const changeControlNetMaskImageUrl = (item: string) => {
+    const value = configAction.changeControlNetMaskImageUrl(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetControlModeを変更する
+   * @param value
+   */
+  const changeControlNetControlMode = (item: string) => {
+    const value = configAction.changeControlNetControlMode(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetEnabledを変更する
+   * @param value
+   */
+  const changeControlNetEnabled = (item: boolean) => {
+    const value = configAction.changeControlNetEnabled(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetGuidanceEndを変更する
+   * @param value
+   */
+  const changeControlNetGuidanceEnd = (item: number) => {
+    const value = configAction.changeControlNetGuidanceEnd(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetGuidanceStartを変更する
+   * @param value
+   */
+  const changeControlNetGuidanceStart = (item: number) => {
+    const value = configAction.changeControlNetGuidanceStart(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetPixelPerfectを変更する
+   * @param value
+   */
+  const changeControlNetPixelPerfect = (item: boolean) => {
+    const value = configAction.changeControlNetPixelPerfect(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetProcessorResを変更する
+   * @param value
+   */
+  const changeControlNetProcessorRes = (item: number) => {
+    const value = configAction.changeControlNetProcessorRes(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetResizeModeを変更する
+   * @param value
+   */
+  const changeControlNetResizeMode = (item: string) => {
+    const value = configAction.changeControlNetResizeMode(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetThresholdAを変更する
+   * @param value
+   */
+  const changeControlNetThresholdA = (item: number) => {
+    const value = configAction.changeControlNetThresholdA(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetThresholdBを変更する
+   * @param value
+   */
+  const changeControlNetThresholdB = (item: number) => {
+    const value = configAction.changeControlNetThresholdB(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetWeightを変更する
+   * @param value
+   */
+  const changeControlNetWeight = (item: number) => {
+    const value = configAction.changeControlNetWeight(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetModuleを変更する
+   * @param value
+   */
+  const changeControlNetModule = (item: string) => {
+    const value = configAction.changeControlNetModule(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetModelを変更する
+   * @param value
+   */
+  const changeControlNetModel = (item: string) => {
+    const value = configAction.changeControlNetModel(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetSaveDetectedMapを変更する
+   * @param value
+   */
+  const changeControlNetSaveDetectedMap = (item: boolean) => {
+    const value = configAction.changeControlNetSaveDetectedMap(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
+   * controlNetHrOptionを変更する
+   * @param value
+   */
+  const changeControlNetHrOption = (item: string) => {
+    const value = configAction.changeControlNetHrOption(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * LoRAモデルを追加する
    * @param modelName
    */
@@ -391,6 +535,22 @@ export const useGenerationContext = () => {
     changeUseRecommendedPrompt,
     changeTaskListThumbnailType,
     changePage,
+    changeControlNetImageUrl,
+    changeControlNetMaskImageUrl,
+    changeControlNetControlMode,
+    changeControlNetEnabled,
+    changeControlNetGuidanceEnd,
+    changeControlNetGuidanceStart,
+    changeControlNetPixelPerfect,
+    changeControlNetProcessorRes,
+    changeControlNetResizeMode,
+    changeControlNetThresholdA,
+    changeControlNetThresholdB,
+    changeControlNetWeight,
+    changeControlNetModule,
+    changeControlNetModel,
+    changeControlNetSaveDetectedMap,
+    changeControlNetHrOption,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updateSearchWorksModelId,

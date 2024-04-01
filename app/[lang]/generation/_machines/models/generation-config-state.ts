@@ -26,6 +26,22 @@ const zProps = z.object({
   taskListThumbnailType: z.string(),
   previewImageURL: z.string().nullable(),
   page: z.number().nullable(),
+  controlNetImageUrl: z.string(),
+  controlNetMaskImageUrl: z.string(),
+  controlNetControlMode: z.string(),
+  controlNetEnabled: z.boolean(),
+  controlNetGuidanceEnd: z.number(),
+  controlNetGuidanceStart: z.number(),
+  controlNetPixelPerfect: z.boolean(),
+  controlNetProcessorRes: z.number(),
+  controlNetResizeMode: z.string(),
+  controlNetThresholdA: z.number(),
+  controlNetThresholdB: z.number(),
+  controlNetWeight: z.number(),
+  controlNetModule: z.string(),
+  controlNetModel: z.string(),
+  controlNetSaveDetectedMap: z.boolean(),
+  controlNetHrOption: z.string(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -85,6 +101,38 @@ export class GenerationConfigState implements Props {
   readonly previewImageURL!: Props["previewImageURL"]
 
   readonly page!: Props["page"]
+
+  readonly controlNetImageUrl!: Props["controlNetImageUrl"]
+
+  readonly controlNetMaskImageUrl!: Props["controlNetMaskImageUrl"]
+
+  readonly controlNetControlMode!: Props["controlNetControlMode"]
+
+  readonly controlNetEnabled!: Props["controlNetEnabled"]
+
+  readonly controlNetGuidanceEnd!: Props["controlNetGuidanceEnd"]
+
+  readonly controlNetGuidanceStart!: Props["controlNetGuidanceStart"]
+
+  readonly controlNetPixelPerfect!: Props["controlNetPixelPerfect"]
+
+  readonly controlNetProcessorRes!: Props["controlNetProcessorRes"]
+
+  readonly controlNetResizeMode!: Props["controlNetResizeMode"]
+
+  readonly controlNetThresholdA!: Props["controlNetThresholdA"]
+
+  readonly controlNetThresholdB!: Props["controlNetThresholdB"]
+
+  readonly controlNetWeight!: Props["controlNetWeight"]
+
+  readonly controlNetModule!: Props["controlNetModule"]
+
+  readonly controlNetModel!: Props["controlNetModel"]
+
+  readonly controlNetSaveDetectedMap!: Props["controlNetSaveDetectedMap"]
+
+  readonly controlNetHrOption!: Props["controlNetHrOption"]
 
   constructor(props: Props) {
     Object.assign(this, props)

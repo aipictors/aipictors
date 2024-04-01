@@ -478,7 +478,7 @@ export class GenerationConfigAction {
 
   /**
    * i2i用の画像を変更する
-   * @param modelType SD1など
+   * @param i2iImageBase64
    * @returns
    */
   changeI2iImageBase64(i2iImageBase64: string) {
@@ -517,13 +517,221 @@ export class GenerationConfigAction {
 
   /**
    * i2i用のDenoisingStrengthSizeを変更する
-   * @param modelType SD1など
+   * @param value
    * @returns
    */
   changeI2iDenoisingStrengthSize(i2iDenoisingStrengthSize: number) {
     const state = new GenerationConfigState({
       ...this.state,
       i2iDenoisingStrengthSize: i2iDenoisingStrengthSize,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetImageUrlを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetImageUrl(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetImageUrl: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetMaskImageUrlを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetMaskImageUrl(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetMaskImageUrl: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetControlModeを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetControlMode(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetControlMode: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetEnabledを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetEnabled(value: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetEnabled: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetGuidanceEndを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetGuidanceEnd(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetGuidanceEnd: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetGuidanceStartを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetGuidanceStart(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetGuidanceStart: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetPixelPerfectを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetPixelPerfect(value: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetPixelPerfect: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetProcessorResを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetProcessorRes(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetProcessorRes: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetResizeModeを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetResizeMode(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetResizeMode: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetThresholdAを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetThresholdA(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetThresholdA: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetThresholdBを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetThresholdB(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetThresholdB: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetWeightを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetWeight(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetWeight: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetModuleを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetModule(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetModule: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetModelを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetModel(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetModel: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetSaveDetectedMapを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetSaveDetectedMap(value: boolean) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetSaveDetectedMap: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * controlNetHrOptionを変更する
+   * @param value
+   * @returns
+   */
+  changeControlNetHrOption(value: string) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      controlNetHrOption: value,
     })
     return new GenerationConfigAction(state, this.props)
   }

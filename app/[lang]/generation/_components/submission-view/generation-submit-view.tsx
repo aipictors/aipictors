@@ -121,28 +121,32 @@ export function GenerationSubmissionView(props: Props) {
    * タスクを作成ボタンを押したときのコールバック
    */
   const onCreateTask = async () => {
+    const isStandardOrPremium =
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM"
+
     /**
      * 生成種別
      */
-    const generationType = context.config.i2iImageBase64
-      ? "IMAGE_TO_IMAGE"
-      : "TEXT_TO_IMAGE"
+    const generationType =
+      context.config.i2iImageBase64 && isStandardOrPremium
+        ? "IMAGE_TO_IMAGE"
+        : "TEXT_TO_IMAGE"
 
-    if (
-      generationCount > 1 &&
-      context.currentPass?.type !== "STANDARD" &&
-      context.currentPass?.type !== "PREMIUM"
-    ) {
+    if (context.config.i2iImageBase64 && !isStandardOrPremium) {
+      toast(
+        "img2imgはSTANDARD以上のプランでご利用いただけます、txt2txtで生成します。",
+        { position: "top-center" },
+      )
+    }
+
+    if (generationCount > 1 && !isStandardOrPremium) {
       toast("STANDARD以上のプランで2枚以上を同時指定可能です。")
       return
     }
 
     // 生成中かつスタンダード、プレミアム以外ならサブスクに誘導
-    if (
-      inProgressImageGenerationTasksCount !== 0 &&
-      context.currentPass?.type !== "STANDARD" &&
-      context.currentPass?.type !== "PREMIUM"
-    ) {
+    if (inProgressImageGenerationTasksCount !== 0 && !isStandardOrPremium) {
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
