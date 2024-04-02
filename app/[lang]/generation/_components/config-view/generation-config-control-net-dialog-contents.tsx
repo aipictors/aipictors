@@ -74,6 +74,10 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
       props.setModel("control_v11p_sd15_scribble [d4ba51ff]")
       return
     }
+    if (module === "seg_ofade20k") {
+      props.setModel("control_v11p_sd15_seg [e1f51eb9]")
+      return
+    }
     if (module === "reference_only") {
       props.setModel(null)
       return
@@ -106,6 +110,9 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
     }
     if (props.module === "scribble_pidinet") {
       return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/scribble_pidinet.webp"
+    }
+    if (props.module === "seg_ofade20k") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/segmentation.webp"
     }
     if (props.module === "reference_only") {
       return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/reference_only.webp"
@@ -158,6 +165,9 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
             <SelectItem value="mlsd">{"mlsd(直線抽出)を元に生成"}</SelectItem>
             <SelectItem value="scribble_pidinet">
               {"Scribble(ラフ絵)を元に生成"}
+            </SelectItem>
+            <SelectItem value="seg_ofade20k">
+              {"Segmentation(入力画像を領域分け)を元に生成"}
             </SelectItem>
             <SelectItem value="reference_only">
               {"Reference Only(同じ絵柄を引き継いで生成)"}
