@@ -312,20 +312,20 @@ export const useGenerationContext = () => {
   }
 
   /**
-   * controlNetImageUrlを変更する
+   * controlNetImageBase64を変更する
    * @param value
    */
-  const changeControlNetImageUrl = (item: string) => {
-    const value = configAction.changeControlNetImageUrl(item).getState()
+  const changeControlNetImageBase64 = (item: string) => {
+    const value = configAction.changeControlNetImageBase64(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
   /**
-   * controlNetMaskImageUrlを変更する
+   * controlNetMaskImageBase64を変更する
    * @param value
    */
-  const changeControlNetMaskImageUrl = (item: string) => {
-    const value = configAction.changeControlNetMaskImageUrl(item).getState()
+  const changeControlNetMaskImageBase64 = (item: string) => {
+    const value = configAction.changeControlNetMaskImageBase64(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -428,6 +428,34 @@ export const useGenerationContext = () => {
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
+  const changeControlNetModuleAndModel = (
+    model: string | null,
+    module: string | null,
+  ) => {
+    const value = configAction
+      .changeControlNetModel(model)
+      .changeControlNetModule(module)
+      .getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  const changeControlNetModuleAndModelAndImage = (
+    model: string | null,
+    module: string | null,
+    image: string | null,
+    mask: string | null,
+    weight: number | null,
+  ) => {
+    const value = configAction
+      .changeControlNetModel(model)
+      .changeControlNetModule(module)
+      .changeControlNetImageBase64(image)
+      .changeControlNetMaskImageBase64(mask)
+      .changeControlNetWeight(weight)
+      .getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
   /**
    * controlNetModelを変更する
    * @param value
@@ -499,6 +527,14 @@ export const useGenerationContext = () => {
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
+  /**
+   * 初期化向けデータリセット（画面リロード時に実行する）
+   */
+  const resetForInit = () => {
+    const value = configAction.resetForInit().getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
   return {
     viewer: dataContext.viewer,
     engineStatus: dataContext.engineStatus,
@@ -525,6 +561,7 @@ export const useGenerationContext = () => {
     user: dataContext.user,
     currentPass: dataContext.currentPass,
     reset,
+    resetForInit,
     changeMode,
     updateSettings,
     updateModelId,
@@ -535,8 +572,8 @@ export const useGenerationContext = () => {
     changeUseRecommendedPrompt,
     changeTaskListThumbnailType,
     changePage,
-    changeControlNetImageUrl,
-    changeControlNetMaskImageUrl,
+    changeControlNetImageBase64,
+    changeControlNetMaskImageBase64,
     changeControlNetControlMode,
     changeControlNetEnabled,
     changeControlNetGuidanceEnd,
@@ -548,9 +585,11 @@ export const useGenerationContext = () => {
     changeControlNetThresholdB,
     changeControlNetWeight,
     changeControlNetModule,
+    changeControlNetModuleAndModel,
     changeControlNetModel,
     changeControlNetSaveDetectedMap,
     changeControlNetHrOption,
+    changeControlNetModuleAndModelAndImage,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updateSearchWorksModelId,

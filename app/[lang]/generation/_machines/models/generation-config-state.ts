@@ -26,22 +26,22 @@ const zProps = z.object({
   taskListThumbnailType: z.string(),
   previewImageURL: z.string().nullable(),
   page: z.number().nullable(),
-  controlNetImageUrl: z.string(),
-  controlNetMaskImageUrl: z.string(),
-  controlNetControlMode: z.string(),
-  controlNetEnabled: z.boolean(),
-  controlNetGuidanceEnd: z.number(),
-  controlNetGuidanceStart: z.number(),
-  controlNetPixelPerfect: z.boolean(),
-  controlNetProcessorRes: z.number(),
-  controlNetResizeMode: z.string(),
-  controlNetThresholdA: z.number(),
-  controlNetThresholdB: z.number(),
-  controlNetWeight: z.number(),
-  controlNetModule: z.string(),
-  controlNetModel: z.string(),
-  controlNetSaveDetectedMap: z.boolean(),
-  controlNetHrOption: z.string(),
+  controlNetImageBase64: z.string().nullable(),
+  controlNetMaskImageBase64: z.string().nullable(),
+  controlNetControlMode: z.string().nullable(),
+  controlNetEnabled: z.boolean().nullable(),
+  controlNetGuidanceEnd: z.number().nullable(),
+  controlNetGuidanceStart: z.number().nullable(),
+  controlNetPixelPerfect: z.boolean().nullable(),
+  controlNetProcessorRes: z.number().nullable(),
+  controlNetResizeMode: z.string().nullable(),
+  controlNetThresholdA: z.number().nullable(),
+  controlNetThresholdB: z.number().nullable(),
+  controlNetWeight: z.number().nullable(),
+  controlNetModule: z.string().nullable(),
+  controlNetModel: z.string().nullable(),
+  controlNetSaveDetectedMap: z.boolean().nullable(),
+  controlNetHrOption: z.string().nullable(),
 })
 
 type Props = z.infer<typeof zProps>
@@ -102,9 +102,9 @@ export class GenerationConfigState implements Props {
 
   readonly page!: Props["page"]
 
-  readonly controlNetImageUrl!: Props["controlNetImageUrl"]
+  readonly controlNetImageBase64!: Props["controlNetImageBase64"]
 
-  readonly controlNetMaskImageUrl!: Props["controlNetMaskImageUrl"]
+  readonly controlNetMaskImageBase64!: Props["controlNetMaskImageBase64"]
 
   readonly controlNetControlMode!: Props["controlNetControlMode"]
 

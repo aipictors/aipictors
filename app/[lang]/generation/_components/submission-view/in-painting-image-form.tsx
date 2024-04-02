@@ -1,6 +1,7 @@
 "use client"
 
 import { InPaintingSetting } from "@/app/[lang]/generation/_components/submission-view/in-painting-setting"
+import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/app/[lang]/generation/_utils/create-base64-from-image-url"
 import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
 import { fetchImage } from "@/app/_utils/fetch-image-object-url"
@@ -66,6 +67,8 @@ export const InPaintingImageForm = (props: Props) => {
 
   const [denoisingStrengthSize, setDenoisingStrengthSize] = useState("0.5")
 
+  const context = useGenerationContext()
+
   const onChangePrompt = (value: string) => {
     setPromptText(value)
   }
@@ -80,6 +83,26 @@ export const InPaintingImageForm = (props: Props) => {
 
   const onChangePaint = (imageBase64: string) => {
     setMaskImageBase64(imageBase64)
+  }
+
+  const getControlNetImageUrl = async (base64: string | null) => {
+    if (base64 === null) {
+      return null
+    }
+
+    const controlNetImageFileName = `${createRandomString(
+      30,
+    )}_control_net_image.png`
+
+    const controlNetImageUrl = await uploadImage(
+      base64,
+      controlNetImageFileName,
+      props.userNanoid,
+    )
+
+    if (controlNetImageUrl === "") return null
+
+    return controlNetImageUrl
   }
 
   const onCreateTask = async () => {
@@ -122,6 +145,11 @@ export const InPaintingImageForm = (props: Props) => {
         props.userNanoid,
       )
       if (maskImageURL === "") return
+
+      const controlNetImageUrl = await getControlNetImageUrl(
+        context.config.controlNetImageBase64,
+      )
+
       await createTask({
         variables: {
           input: {
@@ -141,6 +169,10 @@ export const InPaintingImageForm = (props: Props) => {
             t2tMaskImageUrl: maskImageURL,
             t2tDenoisingStrengthSize: denoisingStrengthSize,
             t2tInpaintingFillSize: fillSize,
+            controlNetImageUrl: controlNetImageUrl,
+            controlNetWeight: Number(context.config.controlNetWeight),
+            controlNetModel: context.config.controlNetModel,
+            controlNetModule: context.config.controlNetModule,
           },
         },
       })

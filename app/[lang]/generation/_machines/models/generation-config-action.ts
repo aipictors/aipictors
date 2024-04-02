@@ -47,6 +47,32 @@ export class GenerationConfigAction {
     )
   }
 
+  resetForInit() {
+    return new GenerationConfigAction(
+      new GenerationConfigState({
+        ...this.state,
+        i2iImageBase64: "",
+        controlNetImageBase64: null,
+        controlNetMaskImageBase64: null,
+        controlNetControlMode: null,
+        controlNetEnabled: null,
+        controlNetGuidanceEnd: null,
+        controlNetGuidanceStart: null,
+        controlNetPixelPerfect: null,
+        controlNetProcessorRes: null,
+        controlNetResizeMode: null,
+        controlNetThresholdA: null,
+        controlNetThresholdB: null,
+        controlNetWeight: null,
+        controlNetModule: null,
+        controlNetModel: null,
+        controlNetSaveDetectedMap: null,
+        controlNetHrOption: null,
+      }),
+      this.props,
+    )
+  }
+
   /**
    * プロンプトを変更する
    * @param text
@@ -529,27 +555,27 @@ export class GenerationConfigAction {
   }
 
   /**
-   * controlNetImageUrlを変更する
+   * controlNetImageBase64を変更する
    * @param value
    * @returns
    */
-  changeControlNetImageUrl(value: string) {
+  changeControlNetImageBase64(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
-      controlNetImageUrl: value,
+      controlNetImageBase64: value,
     })
     return new GenerationConfigAction(state, this.props)
   }
 
   /**
-   * controlNetMaskImageUrlを変更する
+   * controlNetMaskImageBase64を変更する
    * @param value
    * @returns
    */
-  changeControlNetMaskImageUrl(value: string) {
+  changeControlNetMaskImageBase64(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
-      controlNetMaskImageUrl: value,
+      controlNetMaskImageBase64: value,
     })
     return new GenerationConfigAction(state, this.props)
   }
@@ -559,7 +585,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetControlMode(value: string) {
+  changeControlNetControlMode(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetControlMode: value,
@@ -572,7 +598,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetEnabled(value: boolean) {
+  changeControlNetEnabled(value: boolean | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetEnabled: value,
@@ -585,7 +611,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetGuidanceEnd(value: number) {
+  changeControlNetGuidanceEnd(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetGuidanceEnd: value,
@@ -598,7 +624,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetGuidanceStart(value: number) {
+  changeControlNetGuidanceStart(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetGuidanceStart: value,
@@ -611,7 +637,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetPixelPerfect(value: boolean) {
+  changeControlNetPixelPerfect(value: boolean | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetPixelPerfect: value,
@@ -624,7 +650,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetProcessorRes(value: number) {
+  changeControlNetProcessorRes(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetProcessorRes: value,
@@ -637,7 +663,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetResizeMode(value: string) {
+  changeControlNetResizeMode(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetResizeMode: value,
@@ -650,7 +676,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetThresholdA(value: number) {
+  changeControlNetThresholdA(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetThresholdA: value,
@@ -663,7 +689,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetThresholdB(value: number) {
+  changeControlNetThresholdB(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetThresholdB: value,
@@ -676,7 +702,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetWeight(value: number) {
+  changeControlNetWeight(value: number | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetWeight: value,
@@ -689,7 +715,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetModule(value: string) {
+  changeControlNetModule(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetModule: value,
@@ -702,7 +728,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetModel(value: string) {
+  changeControlNetModel(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetModel: value,
@@ -715,7 +741,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetSaveDetectedMap(value: boolean) {
+  changeControlNetSaveDetectedMap(value: boolean | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetSaveDetectedMap: value,
@@ -728,7 +754,7 @@ export class GenerationConfigAction {
    * @param value
    * @returns
    */
-  changeControlNetHrOption(value: string) {
+  changeControlNetHrOption(value: string | null) {
     const state = new GenerationConfigState({
       ...this.state,
       controlNetHrOption: value,

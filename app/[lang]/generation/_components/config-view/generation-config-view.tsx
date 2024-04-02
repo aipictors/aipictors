@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationConfigClipSkip } from "@/app/[lang]/generation/_components/config-view/generation-config-clip-skip"
+import { GenerationConfigControlNet } from "@/app/[lang]/generation/_components/config-view/generation-config-control-net"
 import { GenerationConfigI2i } from "@/app/[lang]/generation/_components/config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "@/app/[lang]/generation/_components/config-view/generation-config-lora-models"
 import { GenerationConfigMemoButton } from "@/app/[lang]/generation/_components/config-view/generation-config-memo-button"
@@ -104,6 +105,11 @@ export default function GenerationConfigView() {
     context.updateFavoriteModelIds(favoritedModelIds)
   }, [favoritedModels])
 
+  useEffect(() => {
+    // 初期化
+    context.resetForInit()
+  }, [])
+
   return (
     <GenerationViewCard
       title={"モデル"}
@@ -151,6 +157,8 @@ export default function GenerationConfigView() {
           />
           <Separator />
           <GenerationConfigI2i />
+          <Separator />
+          <GenerationConfigControlNet />
           <Separator />
           <GenerationConfigSeed
             value={context.config.seed}

@@ -117,6 +117,31 @@ export function GenerationSubmissionView(props: Props) {
     return false
   }
 
+  const getControlNetImageUrl = async (base64: string | null) => {
+    if (base64 === null) {
+      return null
+    }
+
+    const userNanoid = context.user?.nanoid ?? null
+    if (userNanoid === null) {
+      return null
+    }
+
+    const controlNetImageFileName = `${createRandomString(
+      30,
+    )}_control_net_image.png`
+
+    const controlNetImageUrl = await uploadImage(
+      base64,
+      controlNetImageFileName,
+      userNanoid,
+    )
+
+    if (controlNetImageUrl === "") return null
+
+    return controlNetImageUrl
+  }
+
   /**
    * タスクを作成ボタンを押したときのコールバック
    */
@@ -134,10 +159,8 @@ export function GenerationSubmissionView(props: Props) {
         : "TEXT_TO_IMAGE"
 
     if (context.config.i2iImageBase64 && !isStandardOrPremium) {
-      toast(
-        "img2imgはSTANDARD以上のプランでご利用いただけます、txt2txtで生成します。",
-        { position: "top-center" },
-      )
+      toast("img2imgはSTANDARD以上のプランでご利用いただけます。")
+      return
     }
 
     if (generationCount > 1 && !isStandardOrPremium) {
@@ -157,6 +180,22 @@ export function GenerationSubmissionView(props: Props) {
       inProgressImageGenerationTasksCount + generationCount > maxTasksCount
     ) {
       toast("同時生成枚数の上限です。")
+      return
+    }
+
+    if (generationCount > 1 && context.config.controlNetImageBase64 !== null) {
+      toast("ControlNetを使用する場合は1枚ずつ生成下さい。")
+      return
+    }
+
+    if (
+      context.config.controlNetImageBase64 !== null &&
+      (context.config.controlNetWeight === null ||
+        context.config.controlNetModule === null)
+    ) {
+      toast(
+        "ControlNetの画像が設定されていますが、詳細設定が完了していません。画像を消すか、設定を完了して下さい。",
+      )
       return
     }
 
@@ -251,6 +290,10 @@ export function GenerationSubmissionView(props: Props) {
       }
     })
 
+    const controlNetImageUrl = await getControlNetImageUrl(
+      context.config.controlNetImageBase64,
+    )
+
     const nowGeneratingCount = inProgressImageGenerationTasksCount // 生成中枚数
     const promises = taskCounts.map((i) => {
       if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
@@ -273,6 +316,10 @@ export function GenerationSubmissionView(props: Props) {
               clipSkip: context.config.clipSkip,
               sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
+              controlNetImageUrl: controlNetImageUrl,
+              controlNetWeight: Number(context.config.controlNetWeight),
+              controlNetModel: context.config.controlNetModel,
+              controlNetModule: context.config.controlNetModule,
             },
           },
         })
@@ -295,6 +342,10 @@ export function GenerationSubmissionView(props: Props) {
               t2tImageUrl: i2iFileUrl,
               t2tDenoisingStrengthSize:
                 context.config.i2iDenoisingStrengthSize.toString(),
+              controlNetImageUrl: controlNetImageUrl,
+              controlNetWeight: Number(context.config.controlNetWeight),
+              controlNetModel: context.config.controlNetModel,
+              controlNetModule: context.config.controlNetModule,
             },
           },
         })
