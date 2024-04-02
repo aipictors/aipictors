@@ -32,5 +32,19 @@ export const imageGenerationTaskFieldsFragment = gql(`
     thumbnailToken
     nanoid
     estimatedSeconds
+    controlNetControlMode
+    controlNetEnabled
+    controlNetGuidanceEnd
+    controlNetGuidanceStart
+    controlNetPixelPerfect
+    controlNetProcessorRes
+    controlNetResizeMode
+    controlNetThresholdA
+    controlNetThresholdB
+    controlNetWeight
+    controlNetModule
+    controlNetModel
+    controlNetSaveDetectedMap
+    controlNetHrOption
   }
 `)

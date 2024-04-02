@@ -515,7 +515,7 @@ export function GenerationTaskView(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
-          <div className="mb-32 flex max-w-[100vw] space-x-4">
+          <div className="flex max-w-[100vw] space-x-4">
             <div className="w-full">
               <p className="mb-1 font-semibold">{"ClipSkip"}</p>
               <p>{data.imageGenerationTask.clipSkip}</p>
@@ -529,6 +529,30 @@ export function GenerationTaskView(props: Props) {
               <p>{data.imageGenerationTask.seed}</p>
             </div>
           </div>
+          {(data.imageGenerationTask.controlNetModule ||
+            data.imageGenerationTask.controlNetWeight) && (
+            <>
+              <div className="py-2">
+                <Separator />
+              </div>
+              <div className="flex space-x-4">
+                {data.imageGenerationTask.controlNetModule && (
+                  <div className="w-full space-y-1">
+                    <p className="font-bold">{"Module"}</p>
+                    <p>{data.imageGenerationTask.controlNetModule}</p>
+                  </div>
+                )}
+                {data.imageGenerationTask.controlNetWeight && (
+                  <div className="w-full space-y-1">
+                    <p className="font-bold">{"Weight"}</p>
+                    <p>{data.imageGenerationTask.controlNetWeight}</p>
+                  </div>
+                )}
+                <div className="w-full space-y-1" />
+              </div>
+            </>
+          )}
+          <div className="mb-32" />
         </div>
       </ScrollArea>
 

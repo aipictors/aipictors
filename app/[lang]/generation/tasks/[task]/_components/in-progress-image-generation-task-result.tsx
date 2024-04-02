@@ -168,6 +168,28 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             <p>{props.task.seed}</p>
           </div>
         </div>
+        {(props.task.controlNetModule || props.task.controlNetWeight) && (
+          <>
+            <div className="py-2">
+              <Separator />
+            </div>
+            <div className="flex space-x-4">
+              {props.task.controlNetModule && (
+                <div className="w-full space-y-1">
+                  <p className="font-bold">{"Module"}</p>
+                  <p>{props.task.controlNetModule}</p>
+                </div>
+              )}
+              {props.task.controlNetWeight && (
+                <div className="w-full space-y-1">
+                  <p className="font-bold">{"Weight"}</p>
+                  <p>{props.task.controlNetWeight}</p>
+                </div>
+              )}
+              <div className="w-full space-y-1" />
+            </div>
+          </>
+        )}
       </div>
     </>
   )

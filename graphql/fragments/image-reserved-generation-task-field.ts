@@ -27,5 +27,19 @@ export const imageGenerationReservedTaskFieldsFragment = gql(`
     t2tInpaintingFillSize
     token
     nanoid
+    controlNetControlMode
+    controlNetEnabled
+    controlNetGuidanceEnd
+    controlNetGuidanceStart
+    controlNetPixelPerfect
+    controlNetProcessorRes
+    controlNetResizeMode
+    controlNetThresholdA
+    controlNetThresholdB
+    controlNetWeight
+    controlNetModule
+    controlNetModel
+    controlNetSaveDetectedMap
+    controlNetHrOption
   }
 `)
