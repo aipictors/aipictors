@@ -21,6 +21,10 @@ type Props = {
    * モデルから作品検索
    */
   workListFromModel: React.ReactNode
+  /**
+   * コミュニケーション
+   */
+  communication: React.ReactNode
 }
 
 /**
@@ -66,6 +70,10 @@ export const GenerationAsideView = (props: Props) => {
     state === "WORK_LIST_FULL"
   ) {
     return <>{props.workListFromModel}</>
+  }
+
+  if (state === "COMMUNICATION") {
+    return <>{props.communication}</>
   }
 
   return (

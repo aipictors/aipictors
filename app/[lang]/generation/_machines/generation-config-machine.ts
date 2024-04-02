@@ -51,6 +51,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
         OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
       },
     },
 
@@ -63,6 +64,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_HISTORY_ON_ASIDE: "HISTORY_VIEW_ON_ASIDE",
         OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
       },
     },
 
@@ -73,6 +75,7 @@ export const generationConfigMachine = createMachine({
         CLOSE_PREVIEW: "PROMPT_VIEW",
         OPEN_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -87,6 +90,7 @@ export const generationConfigMachine = createMachine({
       on: {
         CLOSE_PREVIEW: "PROMPT_VIEW",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -102,6 +106,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_HISTORY_LIST: "PROMPT_VIEW",
         CHANGE_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
         CHANGE_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -118,6 +123,7 @@ export const generationConfigMachine = createMachine({
         CLOSE_PREVIEW: "PROMPT_VIEW",
         OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -130,6 +136,7 @@ export const generationConfigMachine = createMachine({
       on: {
         CLOSE: "WORKS_FROM_MODEL",
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -146,6 +153,21 @@ export const generationConfigMachine = createMachine({
         CHANGE_FULL_HISTORY_LIST: "HISTORY_LIST_FULL",
         CHANGE_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_FULL_WORK_LIST: "WORKS_FROM_MODEL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    COMMUNICATION: {
+      description: "コミュニケーション画面",
+
+      on: {
+        CLOSE: "PROMPT_VIEW",
+        OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value

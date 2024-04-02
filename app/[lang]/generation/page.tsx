@@ -9,6 +9,7 @@ import { GenerationView } from "@/app/[lang]/generation/_components/generation-v
 import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/negative-prompt-view/generation-negative-prompt-view"
 import { GenerationPromptView } from "@/app/[lang]/generation/_components/prompt-view/generation-prompt-view"
 import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/submission-view/generation-submit-view"
+import { GenerationCommunicationView } from "@/app/[lang]/generation/_components/task-view/generation-communication-view"
 import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-task-content-preview"
 import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/task-view/generation-task-details-view"
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view"
@@ -64,6 +65,7 @@ const GenerationPage = async () => {
           taskList={<GenerationTaskListView />}
           taskDetails={<GenerationTaskDetailsView />}
           workListFromModel={<GenerationWorkListModelView />}
+          communication={<GenerationCommunicationView />}
         />
       }
     />

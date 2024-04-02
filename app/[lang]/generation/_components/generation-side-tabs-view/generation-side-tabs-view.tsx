@@ -77,6 +77,16 @@ export function GenerationSideTabsView() {
             >
               検索
             </TabsTrigger>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "OPEN_COMMUNICATION" })
+                context.updateSearchWorksModelId(null)
+              }}
+              className="w-full"
+              value="COMMUNICATION"
+            >
+              ご要望など
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       )}
