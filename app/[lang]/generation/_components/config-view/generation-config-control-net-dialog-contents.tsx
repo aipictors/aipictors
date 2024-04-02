@@ -1,4 +1,3 @@
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
 import { Input } from "@/components/ui/input"
 import {
@@ -25,18 +24,17 @@ type Props = {
  * @returns
  */
 export const GenerationConfigControlNetDialogContents = (props: Props) => {
-  const context = useGenerationContext()
-
   const isShowWeight = () => {
     return (
-      props.module === "reference_only" ||
-      "dw_openpose_full" ||
+      props.module === "dw_openpose_full" ||
       "openpose_full" ||
       "openpose" ||
       "canny" ||
-      "softedge_hed" ||
-      "scribble" ||
-      "depth_anything"
+      "depth_midas" ||
+      "mlsd" ||
+      "softedge_pidinet" ||
+      "scribble_pidinet" ||
+      "reference_only"
     )
   }
 
@@ -55,19 +53,23 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
       return
     }
     if (module === "canny") {
-      props.setModel(null)
+      props.setModel("control_v11p_sd15_canny [d14c016b]")
       return
     }
-    if (module === "depth_anything") {
+    if (module === "depth_midas") {
       props.setModel("control_v11f1p_sd15_depth [cfd03158]")
       return
     }
-    if (module === "softedge_hed") {
+    if (module === "softedge_pidinet") {
       props.setModel(null)
       return
     }
     if (module === "mlsd") {
       props.setModel("control_v11p_sd15_mlsd [aca30ff0]")
+      return
+    }
+    if (module === "scribble_pidinet") {
+      props.setModel("control_v11p_sd15_scribble [d4ba51ff]")
       return
     }
     if (module === "reference_only") {
@@ -99,14 +101,14 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
               {"Openpose(全身を同じポーズで生成(棒人間))"}
             </SelectItem>
             <SelectItem value="canny">{"Canny(線画抽出)を元に生成"}</SelectItem>
-            <SelectItem value="depth_anything">
+            <SelectItem value="depth_midas">
               {"Depth(深度情報付き)を元に生成"}
             </SelectItem>
-            <SelectItem value="softedge_hed">
+            <SelectItem value="softedge_pidinet">
               {"Hed(輪郭抽出)を元に生成"}
             </SelectItem>
             <SelectItem value="mlsd">{"mlsd(直線抽出)を元に生成"}</SelectItem>
-            <SelectItem value="scribble">
+            <SelectItem value="scribble_pidinet">
               {"Scribble(ラフ絵)を元に生成"}
             </SelectItem>
             <SelectItem value="reference_only">
