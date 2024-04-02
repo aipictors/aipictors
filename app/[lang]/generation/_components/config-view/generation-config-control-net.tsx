@@ -46,6 +46,7 @@ export const GenerationConfigControlNet = () => {
   const onCrop = async (croppedImage: string) => {
     const base64 = await getBase64FromImageUrl(croppedImage)
     context.changeControlNetImageBase64(base64)
+    setTrue()
   }
 
   /**
