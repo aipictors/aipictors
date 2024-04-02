@@ -96,7 +96,7 @@ const CropImageField = (props: Props) => {
             type="file"
             accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
             onChange={onFileChange}
-            className="left- 0 absolute top-0 h-full w-full opacity-0"
+            className="left- 0 absolute top-0 h-full w-full cursor-pointer opacity-0"
           />
           <Button
             className="absolute top-2 right-2"
@@ -123,7 +123,7 @@ const CropImageField = (props: Props) => {
   return (
     <>
       <div className="relative">
-        <div className="cursor-pointer rounded-lg border p-4">
+        <div className="rounded-lg border p-4">
           <ArrowUpFromLineIcon className="m-auto h-4 w-4 opacity-80" />
           <div className="text-center text-sm opacity-80">画像アップロード</div>
         </div>
@@ -131,7 +131,7 @@ const CropImageField = (props: Props) => {
           type="file"
           accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
           onChange={onFileChange}
-          className="left- 0 absolute top-0 h-full w-full opacity-0"
+          className="left- 0 absolute top-0 h-full w-full cursor-pointer opacity-0"
         />
       </div>
       <ImageCropperModal
