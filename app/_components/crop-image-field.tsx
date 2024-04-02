@@ -98,7 +98,6 @@ const CropImageField = (props: Props) => {
             onChange={onFileChange}
             className="left- 0 absolute top-0 h-full w-full opacity-0"
           />
-
           <Button
             className="absolute top-2 right-2"
             size={"icon"}
@@ -125,8 +124,8 @@ const CropImageField = (props: Props) => {
     <>
       <div className="relative">
         <div className="cursor-pointer rounded-lg border p-4">
-          <ArrowUpFromLineIcon className="m-auto h-6 w-6" />
-          <div className="text-center text-sm">画像アップロード</div>
+          <ArrowUpFromLineIcon className="m-auto h-4 w-4 opacity-80" />
+          <div className="text-center text-sm opacity-80">画像アップロード</div>
         </div>
         <Input
           type="file"
