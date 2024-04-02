@@ -428,13 +428,15 @@ export const useGenerationContext = () => {
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
-  const changeControlNetModuleAndModel = (
+  const changeControlNetModuleAndModelAndWeight = (
     model: string | null,
     module: string | null,
+    weight: number | null,
   ) => {
     const value = configAction
       .changeControlNetModel(model)
       .changeControlNetModule(module)
+      .changeControlNetWeight(weight)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
@@ -585,7 +587,7 @@ export const useGenerationContext = () => {
     changeControlNetThresholdB,
     changeControlNetWeight,
     changeControlNetModule,
-    changeControlNetModuleAndModel,
+    changeControlNetModuleAndModelAndWeight,
     changeControlNetModel,
     changeControlNetSaveDetectedMap,
     changeControlNetHrOption,

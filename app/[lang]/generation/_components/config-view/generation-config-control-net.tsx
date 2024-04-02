@@ -32,6 +32,12 @@ export const GenerationConfigControlNet = () => {
 
   const [model, setModel] = useState("")
 
+  const [weight, setWeight] = useState(
+    context.config.controlNetWeight === null
+      ? 1
+      : context.config.controlNetWeight,
+  )
+
   /**
    * クロップ完了
    * @param croppedImage クロップした画像
@@ -55,7 +61,7 @@ export const GenerationConfigControlNet = () => {
     if (model === "" || module === "") {
       return
     }
-    context.changeControlNetModuleAndModel(model, module)
+    context.changeControlNetModuleAndModelAndWeight(model, module, weight)
   }
 
   return (
@@ -108,8 +114,10 @@ export const GenerationConfigControlNet = () => {
             </DialogHeader>
             <GenerationConfigControlNetDialogContents
               module={module}
+              weight={weight}
               setModule={setModule}
               setModel={setModel}
+              setWeight={setWeight}
             />
             <DialogFooter>
               <Button

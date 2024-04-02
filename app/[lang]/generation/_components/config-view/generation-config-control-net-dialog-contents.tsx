@@ -14,8 +14,10 @@ import { useEffect } from "react"
 
 type Props = {
   module: string
+  weight: number
   setModule: (module: string) => void
   setModel: (model: string) => void
+  setWeight: (weight: number) => void
 }
 
 /**
@@ -76,8 +78,7 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
   }
 
   useEffect(() => {
-    if (context.config.controlNetWeight !== null) return
-    context.changeControlNetWeight(1)
+    props.setWeight(1)
   }, [])
 
   return (
@@ -132,24 +133,23 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
               max={1.0}
               step={0.1}
               defaultValue={[1]}
-              value={[context.config.controlNetWeight]}
-              onValueChange={(value) =>
-                context.changeControlNetWeight(value[0])
-              }
+              value={[props.weight]}
+              onValueChange={(value) => props.setWeight(value[0])}
             />
             <Input
               type="number"
-              value={
-                context.config.controlNetWeight
-                  ? context.config.controlNetWeight.toFixed(1)
-                  : 1.0
-              }
+              value={props.weight ? props.weight.toFixed(1) : 1.0}
               className="w-20 font-bold"
               min={-1}
               max={1}
               disabled={false}
               onChange={(event) => {
-                context.changeControlNetWeight(Number(event.target.value))
+                if (
+                  Number(event.target.value) >= 0 &&
+                  Number(event.target.value) <= 1
+                ) {
+                  props.setWeight(Number(event.target.value))
+                }
               }}
             />
           </div>
