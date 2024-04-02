@@ -32,6 +32,8 @@ export const GenerationConfigControlNet = () => {
 
   const [model, setModel] = useState("")
 
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false)
+
   const [weight, setWeight] = useState(
     context.config.controlNetWeight === null
       ? 1
@@ -67,7 +69,9 @@ export const GenerationConfigControlNet = () => {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
-        <span className="text-nowrap font-bold">{"ControlNet"}</span>
+        <span className="text-nowrap font-bold">
+          {"ControlNet（SDXL以外）"}
+        </span>
         <CrossPlatformTooltip
           text={"参考画像からより厳密な画像生成ができます。"}
         />
@@ -115,9 +119,11 @@ export const GenerationConfigControlNet = () => {
             <GenerationConfigControlNetDialogContents
               module={module}
               weight={weight}
+              isSelectorOpen={isSelectorOpen}
               setModule={setModule}
               setModel={setModel}
               setWeight={setWeight}
+              setIsSelectorOpen={setIsSelectorOpen}
             />
             <DialogFooter>
               <Button
@@ -125,6 +131,7 @@ export const GenerationConfigControlNet = () => {
                 onClick={() => {
                   setFalse()
                 }}
+                disabled={isSelectorOpen}
               >
                 {"キャンセル"}
               </Button>
@@ -133,6 +140,8 @@ export const GenerationConfigControlNet = () => {
                   onSubmitControlNet()
                   setFalse()
                 }}
+                disabled={isSelectorOpen}
+                className="mb-4 md:mb-0"
               >
                 {"追加"}
               </Button>

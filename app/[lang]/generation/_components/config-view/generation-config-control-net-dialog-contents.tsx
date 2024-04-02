@@ -14,9 +14,11 @@ import { useEffect } from "react"
 type Props = {
   module: string
   weight: number
+  isSelectorOpen: boolean
   setModule: (module: string) => void
   setModel: (model: string) => void
   setWeight: (weight: number) => void
+  setIsSelectorOpen: (isSelectorOpen: boolean) => void
 }
 
 /**
@@ -79,13 +81,59 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
     props.setModel(null)
   }
 
+  // https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp
+  const getSampleImageUrl = () => {
+    if (props.module === "dw_openpose_full") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+    }
+    if (props.module === "openpose_full") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+    }
+    if (props.module === "openpose") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/openpose.webp"
+    }
+    if (props.module === "canny") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/canny.webp"
+    }
+    if (props.module === "depth_midas") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/depth_midas.webp"
+    }
+    if (props.module === "softedge_pidinet") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/softedge_pidinet.webp"
+    }
+    if (props.module === "mlsd") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/mlsd.webp"
+    }
+    if (props.module === "scribble_pidinet") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/scribble_pidinet.webp"
+    }
+    if (props.module === "reference_only") {
+      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/reference_only.webp"
+    }
+    return null
+  }
+
+  const sampleImageUrl = getSampleImageUrl()
+
   useEffect(() => {
     props.setWeight(1)
   }, [])
 
   return (
     <>
-      <Select value={props.module} onValueChange={onChangeModule}>
+      <Select
+        onOpenChange={() => {
+          if (props.isSelectorOpen) {
+            setTimeout(() => {
+              props.setIsSelectorOpen(!props.isSelectorOpen)
+            }, 100)
+          } else {
+            props.setIsSelectorOpen(!props.isSelectorOpen)
+          }
+        }}
+        value={props.module}
+        onValueChange={onChangeModule}
+      >
         <SelectTrigger>
           <SelectValue placeholder="選択してください" />
         </SelectTrigger>
@@ -155,6 +203,18 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
               }}
             />
           </div>
+
+          {sampleImageUrl !== null && (
+            <>
+              <div className="flex gap-x-2">
+                <div className="text-sm">{"サンプル"}</div>
+                <CrossPlatformTooltip
+                  text={"左：参考画像、中：抽出画像、右：生成画像"}
+                />
+              </div>
+              <img src={sampleImageUrl} className={"w-full"} alt={"-"} />
+            </>
+          )}
         </>
       )}
     </>

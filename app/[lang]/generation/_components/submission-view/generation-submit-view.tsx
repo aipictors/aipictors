@@ -189,6 +189,22 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (
+      context.config.modelType === "SDXL" &&
+      context.config.controlNetImageBase64 !== null
+    ) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルはControlNetを使用できません、ControlNetなしで生成します。",
+        )
+      } else {
+        toast(
+          "SDXLモデルはControlNetを使用できません、ControlNetなしで生成します。",
+          { position: "top-center" },
+        )
+      }
+    }
+
+    if (
       context.config.controlNetImageBase64 !== null &&
       (context.config.controlNetWeight === null ||
         context.config.controlNetModule === null)
