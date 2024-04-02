@@ -123,7 +123,7 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
           <div className="flex gap-x-2">
             <div className="text-sm">{"比重"}</div>
             <CrossPlatformTooltip
-              text={"どのくらい参考画像を反映するか、0.5あたりが推奨です。"}
+              text={"どのくらい参考画像を反映するかです。"}
             />
           </div>
 
