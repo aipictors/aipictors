@@ -2,7 +2,7 @@ import ImageCropperModal from "@/app/_components/modal-image-cropper"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { XIcon } from "lucide-react"
+import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
 import { useCallback, useState } from "react"
 
 type Props = {
@@ -86,17 +86,19 @@ const CropImageField = (props: Props) => {
   if (croppedImage && !props.isHidePreviewImage) {
     return (
       <>
-        <Input
-          type="file"
-          accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
-          onChange={onFileChange}
-        />
         <Card className="relative">
           <img
             className="m-auto max-h-48 max-w-64"
             alt={"croppedImage"}
             src={croppedImage}
           />
+          <Input
+            type="file"
+            accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+            onChange={onFileChange}
+            className="left- 0 absolute top-0 h-full w-full opacity-0"
+          />
+
           <Button
             className="absolute top-2 right-2"
             size={"icon"}
@@ -121,11 +123,18 @@ const CropImageField = (props: Props) => {
 
   return (
     <>
-      <Input
-        type="file"
-        accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
-        onChange={onFileChange}
-      />
+      <div className="relative">
+        <div className="cursor-pointer rounded-lg border p-4">
+          <ArrowUpFromLineIcon className="m-auto h-6 w-6" />
+          <div className="text-center text-sm">画像アップロード</div>
+        </div>
+        <Input
+          type="file"
+          accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+          onChange={onFileChange}
+          className="left- 0 absolute top-0 h-full w-full opacity-0"
+        />
+      </div>
       <ImageCropperModal
         src={image!}
         isOpen={isOpen}
