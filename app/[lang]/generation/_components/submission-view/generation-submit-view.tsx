@@ -317,7 +317,9 @@ export function GenerationSubmissionView(props: Props) {
               sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
               controlNetImageUrl: controlNetImageUrl,
-              controlNetWeight: Number(context.config.controlNetWeight),
+              controlNetWeight: context.config.controlNetWeight
+                ? Number(context.config.controlNetWeight)
+                : null,
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
             },
@@ -343,7 +345,9 @@ export function GenerationSubmissionView(props: Props) {
               t2tDenoisingStrengthSize:
                 context.config.i2iDenoisingStrengthSize.toString(),
               controlNetImageUrl: controlNetImageUrl,
-              controlNetWeight: Number(context.config.controlNetWeight),
+              controlNetWeight: context.config.controlNetWeight
+                ? Number(context.config.controlNetWeight)
+                : null,
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
             },
