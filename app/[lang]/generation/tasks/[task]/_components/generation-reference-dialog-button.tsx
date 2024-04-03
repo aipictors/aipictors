@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/dialog"
 
 type Props = {
+  children: React.ReactNode
+  isShowControlNetCaption: boolean
   onReference(): void
   onReferenceWithSeed(): void
-  children: React.ReactNode
 }
 
 /**
@@ -48,6 +49,13 @@ export function GenerationReferenceDialog(props: Props) {
               復元（Seed込み）
             </Button>
           </div>
+          {props.isShowControlNetCaption && (
+            <div className="mt-2">
+              <p className="text-gray-500 text-sm">
+                {"※ControlNetの設定は復元されません。"}
+              </p>
+            </div>
+          )}
           <DialogFooter>
             <DialogClose>
               <Button>{"閉じる"}</Button>

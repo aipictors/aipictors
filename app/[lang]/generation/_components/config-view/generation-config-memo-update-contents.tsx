@@ -153,6 +153,10 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
       seed,
       sizeType,
       clipSkip,
+      null,
+      null,
+      null,
+      null,
     )
 
     toast("設定を復元しました")

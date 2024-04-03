@@ -239,6 +239,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   onReferenceWithSeed={() => {
                     props.onReference(true)
                   }}
+                  isShowControlNetCaption={
+                    props.task.controlNetModule !== null &&
+                    props.task.controlNetModule !== ""
+                  }
                 >
                   <GenerationMenuButton
                     title={"同じ情報で生成する"}

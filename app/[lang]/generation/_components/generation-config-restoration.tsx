@@ -58,6 +58,10 @@ export const GenerationConfigRestoration = (props: Props) => {
         task.seed,
         task.sizeType,
         task.clipSkip,
+        null,
+        null,
+        null,
+        null,
       )
       toast("タスクを復元しました。", { position: "top-center" })
     } catch (error) {

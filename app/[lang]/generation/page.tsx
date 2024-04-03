@@ -1,20 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { GenerationAdvertisementView } from "@/app/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
-import { GenerationSideTabsView } from "@/app/[lang]/generation/_components/generation-side-tabs-view/generation-side-tabs-view"
-import { GenerationAsideView } from "@/app/[lang]/generation/_components/generation-view/generation-aside-view"
-import { GenerationHeaderView } from "@/app/[lang]/generation/_components/generation-view/generation-header-view"
-import { GenerationMainView } from "@/app/[lang]/generation/_components/generation-view/generation-main-view"
-import { GenerationView } from "@/app/[lang]/generation/_components/generation-view/generation-view"
-import { GenerationNegativePromptView } from "@/app/[lang]/generation/_components/negative-prompt-view/generation-negative-prompt-view"
-import { GenerationPromptView } from "@/app/[lang]/generation/_components/prompt-view/generation-prompt-view"
-import { GenerationSubmissionView } from "@/app/[lang]/generation/_components/submission-view/generation-submit-view"
-import { GenerationCommunicationView } from "@/app/[lang]/generation/_components/task-view/generation-communication-view"
-import { GenerationTaskContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-task-content-preview"
-import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/task-view/generation-task-details-view"
-import { GenerationTaskListView } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view"
-import { GenerationWorkContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-work-content-preview"
-import { GenerationWorkListModelView } from "@/app/[lang]/generation/_components/task-view/generation-works-from-model-view"
+import { GenerationForm } from "@/app/[lang]/generation/_components/generation-form"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 
@@ -31,45 +17,7 @@ const GenerationPage = async () => {
     "utf-8",
   )
 
-  /**
-   * 説明
-   */
-  // const descriptionMarkdownText = await readFile(
-  //   join(process.cwd(), "assets/image-generation-description.md"),
-  //   "utf-8",
-  // )
-
-  return (
-    <GenerationView
-      header={
-        <GenerationHeaderView
-          submission={
-            <GenerationSubmissionView termsText={termsMarkdownText} />
-          }
-        />
-      }
-      main={
-        <GenerationMainView
-          config={<GenerationConfigView />}
-          promptEditor={<GenerationPromptView />}
-          negativePromptEditor={<GenerationNegativePromptView />}
-          taskContentPreview={<GenerationTaskContentPreview />}
-          taskDetails={<GenerationTaskDetailsView />}
-          workContentPreview={<GenerationWorkContentPreview />}
-        />
-      }
-      asideHeader={<GenerationSideTabsView />}
-      aside={
-        <GenerationAsideView
-          advertisement={<GenerationAdvertisementView />}
-          taskList={<GenerationTaskListView />}
-          taskDetails={<GenerationTaskDetailsView />}
-          workListFromModel={<GenerationWorkListModelView />}
-          communication={<GenerationCommunicationView />}
-        />
-      }
-    />
-  )
+  return <GenerationForm termsMarkdownText={termsMarkdownText} />
 }
 
 export const metadata: Metadata = {

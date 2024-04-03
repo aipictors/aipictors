@@ -115,6 +115,10 @@ export const GenerationTaskList = (props: Props) => {
       task.seed,
       task.sizeType,
       task.clipSkip,
+      null,
+      null,
+      null,
+      null,
     )
     toast("設定を復元しました")
   }

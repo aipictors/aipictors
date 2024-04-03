@@ -59,6 +59,10 @@ export const useGenerationContext = () => {
     seed: number,
     sizeType: string,
     clipSkip: number,
+    controlNetImageBase64: string | null,
+    controlNetWeight: number | null,
+    controlNetModule: string | null,
+    controlNetModel: string | null,
   ) => {
     const value = configAction
       .updatePrompt(promptText)
@@ -71,6 +75,10 @@ export const useGenerationContext = () => {
       .updateClipSkip(clipSkip)
       .updateNegativePrompt(negativePromptText)
       .updateVae(vae)
+      .changeControlNetImageBase64(controlNetImageBase64)
+      .changeControlNetWeight(controlNetWeight)
+      .changeControlNetModule(controlNetModule)
+      .changeControlNetModel(controlNetModel)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

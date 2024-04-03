@@ -3,6 +3,7 @@ import { ScanSearch } from "lucide-react"
 
 type Props = {
   onTogglePreviewMode(): void
+  defaultChecked?: boolean
 }
 
 /**
@@ -15,6 +16,7 @@ export function GenerationTaskPreviewModeButton(props: Props) {
     <Toggle
       title="カーソルを当てたときに左画面にプレビュー表示する"
       onClick={props.onTogglePreviewMode}
+      defaultPressed={props.defaultChecked}
     >
       <ScanSearch className="w-4" />
     </Toggle>

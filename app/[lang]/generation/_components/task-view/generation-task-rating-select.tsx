@@ -10,6 +10,7 @@ import { StarIcon } from "lucide-react"
 
 type Props = {
   onChange(value: number): void
+  defaultValue?: number
 }
 
 /**
@@ -23,6 +24,7 @@ export function GenerationTaskRatingSelect(props: Props) {
       onValueChange={(value: string) => {
         props.onChange(Number.parseInt(value))
       }}
+      defaultValue={props.defaultValue?.toString()}
     >
       <SelectTrigger className="w-24" title="お気に入り度で絞る">
         <StarIcon className="w-4" />

@@ -77,7 +77,10 @@ export const GenerationConfigControlNet = () => {
         />
       </div>
       <CropImageField
-        isHidePreviewImage={context.config.controlNetImageBase64 === ""}
+        isHidePreviewImage={
+          context.config.controlNetImageBase64 === "" ||
+          context.config.controlNetImageBase64 === null
+        }
         cropWidth={size.width}
         cropHeight={size.height}
         onDeleteImage={onDeleteImage}

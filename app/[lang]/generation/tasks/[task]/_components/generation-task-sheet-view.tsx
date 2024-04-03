@@ -190,6 +190,10 @@ export function GenerationTaskSheetView(props: Props) {
       isWithSeed ? props.task.seed : -1,
       props.task.sizeType,
       props.task.clipSkip,
+      null,
+      null,
+      null,
+      null,
     )
     toast("設定を復元しました")
   }

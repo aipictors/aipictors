@@ -14,25 +14,28 @@ import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer
 import { useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
 
+type Props = {
+  rating: number
+  protect: number
+  isEditMode: boolean
+  isPreviewMode: boolean
+  setRating: (rating: number) => void
+  setProtect: (protect: number) => void
+  toggleEditMode: (value: boolean) => void
+  togglePreviewMode: (value: boolean) => void
+}
+
 /**
  * タスク関連
  * @param props
  * @returns
  */
-export const GenerationTaskListView = () => {
+export const GenerationTaskListView = (props: Props) => {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
-
-  const [rating, setRating] = useState(-1)
-
-  const [protect, setProtect] = useState(-1)
-
-  const [isEditMode, toggleEditMode] = useState(false)
-
-  const [isPreviewMode, togglePreviewMode] = useState(false)
 
   const [showTaskPositionType, changeShowTaskPositionType] =
     useState<TaskContentPositionType>("right")
@@ -56,16 +59,16 @@ export const GenerationTaskListView = () => {
     {
       variables: {
         limit:
-          protect !== 1 && (rating === 0 || rating === -1)
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
             ? 32
             : config.query.maxLimit,
         offset: page * 32,
         where: {
-          ...(rating !== -1 && {
-            rating: rating,
+          ...(props.rating !== -1 && {
+            rating: props.rating,
           }),
-          ...(protect !== -1 && {
-            isProtected: protect === 1 ? true : false,
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1 ? true : false,
           }),
         },
       },
@@ -79,8 +82,8 @@ export const GenerationTaskListView = () => {
       offset: 0,
       where: {
         isProtected: true,
-        ...(rating !== -1 && {
-          rating: rating,
+        ...(props.rating !== -1 && {
+          rating: props.rating,
         }),
       },
     },
@@ -104,7 +107,7 @@ export const GenerationTaskListView = () => {
    * @param rating レーティング
    */
   const onChangeRating = (rating: number) => {
-    setRating(rating)
+    props.setRating(rating)
 
     // ページングもリセットする
     setPage(0)
@@ -115,7 +118,7 @@ export const GenerationTaskListView = () => {
    * @param rating レーティング
    */
   const onChangeProtect = (protect: number) => {
-    setProtect(protect)
+    props.setProtect(protect)
 
     // ページングもリセットする
     setPage(0)
@@ -125,17 +128,17 @@ export const GenerationTaskListView = () => {
    * 編集モードを切り替える
    */
   const onToggleEditMode = () => {
-    if (isEditMode) {
+    if (props.isEditMode) {
       setSelectedTaskIds([])
     }
-    toggleEditMode((value) => !value)
+    props.toggleEditMode(!props.isEditMode)
   }
 
   /**
    * プレビューモードを切り替える
    */
   const onTogglePreviewMode = () => {
-    togglePreviewMode((value) => !value)
+    props.togglePreviewMode(!props.isPreviewMode)
   }
 
   /**
@@ -167,7 +170,7 @@ export const GenerationTaskListView = () => {
     setSelectedTaskIds(
       tasks?.viewer?.imageGenerationTasks.map((task) => task.nanoid) ?? [],
     )
-    if (!isEditMode) {
+    if (!props.isEditMode) {
       onToggleEditMode()
     }
   }
@@ -187,14 +190,16 @@ export const GenerationTaskListView = () => {
     <GenerationViewCard>
       <GenerationTaskListActions
         showHistoryExpandButton={true}
-        rating={rating}
+        rating={props.rating}
+        protect={props.protect}
         thumbnailSize={thumbnailSize()}
         thumbnailType={
           context.config.taskListThumbnailType as TaskListThumbnailType
         }
         selectedTaskIds={selectedTaskIds}
         hidedTaskIds={hidedTaskIds}
-        isEditMode={isEditMode}
+        previewMode={props.isPreviewMode}
+        isEditMode={props.isEditMode}
         taskContentPositionType={showTaskPositionType}
         onChangeThumbnailType={changeThumbnailType}
         onChangeRating={onChangeRating}
@@ -213,10 +218,10 @@ export const GenerationTaskListView = () => {
       <GenerationTaskList
         currentPage={page}
         hidedTaskIds={hidedTaskIds}
-        rating={rating}
-        protect={protect}
-        isEditMode={isEditMode}
-        isPreviewMode={isPreviewMode}
+        rating={props.rating}
+        protect={props.protect}
+        isEditMode={props.isEditMode}
+        isPreviewMode={props.isPreviewMode}
         selectedTaskIds={selectedTaskIds}
         tasks={tasks}
         protectedTasks={protectedTasks}

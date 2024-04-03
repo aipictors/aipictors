@@ -62,6 +62,10 @@ export const GenerationWorkCard = (props: Props) => {
             -1,
             context.config.sizeType,
             context.config.clipSkip,
+            null,
+            null,
+            null,
+            null,
           )
           toast("設定を復元しました")
         }}

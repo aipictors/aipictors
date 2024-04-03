@@ -20,6 +20,7 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   rating: number
+  protect: number
   thumbnailSize: number
   thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
@@ -27,6 +28,7 @@ type Props = {
   hidedTaskIds: string[]
   isEditMode: boolean
   showCountInput?: boolean
+  previewMode?: boolean
   showHistoryExpandButton?: boolean
   viewCount?: number
   onChangeRating(rating: number): void
@@ -98,14 +100,21 @@ export const GenerationTaskListActions = (props: Props) => {
             {props.isEditMode ? "解除" : "選択"}
           </Toggle>
           {!props.isEditMode && (
-            <GenerationTaskRatingSelect onChange={props.onChangeRating} />
+            <GenerationTaskRatingSelect
+              defaultValue={props.rating}
+              onChange={props.onChangeRating}
+            />
           )}
           {!props.isEditMode && (
-            <GenerationTaskProtectedSelect onChange={props.onChangeProtect} />
+            <GenerationTaskProtectedSelect
+              defaultValue={props.protect}
+              onChange={props.onChangeProtect}
+            />
           )}
           {isDesktop && state !== "HISTORY_LIST_FULL" && (
             <GenerationTaskPreviewModeButton
               onTogglePreviewMode={props.onTogglePreviewMode}
+              defaultChecked={props.previewMode}
             />
           )}
           <GenerationTaskActionDropdownMenu

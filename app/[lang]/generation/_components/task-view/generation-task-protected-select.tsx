@@ -10,6 +10,7 @@ import { LockKeyholeIcon } from "lucide-react"
 
 type Props = {
   onChange(value: number): void
+  defaultValue?: number
 }
 
 /**
@@ -23,6 +24,7 @@ export function GenerationTaskProtectedSelect(props: Props) {
       onValueChange={(value: string) => {
         props.onChange(Number.parseInt(value))
       }}
+      defaultValue={props.defaultValue?.toString()}
     >
       <SelectTrigger
         className="w-24"
