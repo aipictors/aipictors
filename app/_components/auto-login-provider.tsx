@@ -11,8 +11,6 @@ type Props = {
 }
 
 export const AutoLoginProvider = (props: Props) => {
-  const currentUser = getAuth().currentUser
-
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithWordPressTokenMutation,
   )
@@ -20,6 +18,9 @@ export const AutoLoginProvider = (props: Props) => {
   useEffect(() => {
     // 未ログイン
     if (typeof window === "undefined") return
+
+    const currentUser = getAuth().currentUser
+
     if (currentUser === null) {
       autoLogin()
     }
