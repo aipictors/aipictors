@@ -26,12 +26,36 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "ふしめろ",
+    types: ["SHOP", "EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fhushinomiya.png?alt=media&token=a8e6c6f2-49f1-42b3-962a-6040c6215393",
+    twitterId: "hushinomiya",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "晴レル屋",
     types: ["SHOP"],
     message: null,
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_KARA_Beee_160.png?alt=media&token=15ac947e-c5ac-443a-ba35-8ebd7224185a",
     twitterId: "KARA_Beee",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "碧燕工房",
+    types: ["SHOP"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fswallownavy.png?alt=media&token=8c5ca929-8de0-420e-a85e-ece65367a687",
+    twitterId: "swallownavy",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
@@ -68,6 +92,18 @@ export const eventUsers: EventUser[] = [
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_syuribox.png?alt=media&token=12785028-ea9a-455c-a10f-16dd80fd132d",
     twitterId: "syuribox",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "haga",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fhagamight.jpg?alt=media&token=ca3fda49-6b45-495c-b265-aa8c10ddcb6b",
+    twitterId: "hagamight",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
