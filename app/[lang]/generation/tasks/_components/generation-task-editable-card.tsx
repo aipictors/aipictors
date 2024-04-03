@@ -36,6 +36,7 @@ type Props = {
   isPreviewByHover?: boolean
   onClick?(): void
   onCancel?(): void
+  onDelete?(taskId: string): void
 }
 
 /**
@@ -100,8 +101,10 @@ export const GenerationTaskEditableCard = (props: Props) => {
           },
         },
       })
-      toast("削除しました。次回一覧更新時に反映されます。")
-      context.updateViewTask(null, context.config.viewTaskIds.filter((id) => id !== props.taskNanoid))
+      toast("削除しました。")
+      if (props.onDelete) {
+        props.onDelete(props.taskNanoid)
+      }
     } catch (e) {
       toast("削除に失敗しました。")
     }
@@ -229,11 +232,12 @@ export const GenerationTaskEditableCard = (props: Props) => {
         />
       )}
       {/* 削除ボタン */}
-      {isDesktop && (isHovered && props.isSelectDisabled) && (
+      {isDesktop && isHovered && props.isSelectDisabled && (
         <GenerationTaskDeleteButton
           onDeleteTask={onDeleteTask}
           isDeletedLoading={isDeletedLoading}
-          taskNanoid={props.taskNanoid} />
+          taskNanoid={props.taskNanoid}
+        />
       )}
       {/* 保護ボタン */}
       {isDesktop && (isHovered || isProtected) && (

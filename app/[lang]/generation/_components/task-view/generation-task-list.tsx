@@ -32,6 +32,7 @@ type Props = {
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
+  setHidedTaskIds: (hidedTaskIds: string[]) => void
 }
 
 /**
@@ -97,6 +98,10 @@ export const GenerationTaskList = (props: Props) => {
       !props.hidedTaskIds.includes(task.nanoid)
     )
   })
+
+  const onDelete = (taskId: string) => {
+    props.setHidedTaskIds([...props.hidedTaskIds, ...taskId.split(",")])
+  }
 
   const onRestore = (taskId: string) => {
     const task = tasks.viewer?.imageGenerationTasks.find(
@@ -224,6 +229,7 @@ export const GenerationTaskList = (props: Props) => {
                   onCancel={props.onCancel}
                   onRestore={onRestore}
                   onSelectTask={onSelectTask}
+                  onDelete={onDelete}
                 />
               </Suspense>
             </ErrorBoundary>

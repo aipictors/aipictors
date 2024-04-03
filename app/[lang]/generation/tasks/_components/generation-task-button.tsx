@@ -12,6 +12,7 @@ type Props = {
   isPreviewByHover: boolean
   onRestore?(taskId: string): void
   onCancel?(): void
+  onDelete?(taskId: string): void
 }
 
 /**
@@ -56,6 +57,7 @@ export function GenerationTaskButton(props: Props) {
           onClickTask()
         }}
         onCancel={props.onCancel}
+        onDelete={props.onDelete}
       />
     </>
   )

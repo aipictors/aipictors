@@ -19,6 +19,7 @@ type Props = {
   onCancel?(): void
   onRestore?(taskId: string): void
   onSelectTask(taskNanoid: string, status: string): void
+  onDelete?(taskId: string): void
 }
 
 /**
@@ -49,6 +50,7 @@ export const GenerationTaskCard = (props: Props) => {
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}
           isProtected={props.task.isProtected ?? false}
+          onDelete={props.onDelete}
         />
       )}
       {!props.isEditMode && (
@@ -65,6 +67,7 @@ export const GenerationTaskCard = (props: Props) => {
           onCancel={props.onCancel}
           onRestore={props.onRestore}
           onSelectTask={props.onSelectTask}
+          onDelete={props.onDelete}
         />
       )}
     </>

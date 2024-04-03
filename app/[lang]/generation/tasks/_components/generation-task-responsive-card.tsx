@@ -22,6 +22,7 @@ type Props = {
   onCancel?(): void
   onRestore?(taskId: string): void
   onSelectTask(taskNanoid: string, status: string): void
+  onDelete?(taskId: string): void
 }
 
 /**
@@ -69,6 +70,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
             taskContentPositionType={props.taskContentPositionType}
             onRestore={props.onRestore}
             onCancel={props.onCancel}
+            onDelete={props.onDelete}
           />
         )}
       </ErrorBoundary>

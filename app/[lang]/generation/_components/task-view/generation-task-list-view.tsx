@@ -228,6 +228,7 @@ export const GenerationTaskListView = (props: Props) => {
         taskContentPositionType={showTaskPositionType}
         onCancel={undefined}
         setCurrentPage={setPage}
+        setHidedTaskIds={setHidedTaskIds}
         setSelectedTaskIds={setSelectedTaskIds}
         thumbnailSize={thumbnailSize()}
       />
