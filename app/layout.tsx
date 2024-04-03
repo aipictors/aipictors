@@ -1,5 +1,6 @@
 import "@/app/globals.css"
 
+import { AutoLoginProvider } from "@/app/_components/auto-login-provider"
 import { ContextProviders } from "@/app/_components/context-providers"
 import { AppAnalytics } from "@/components/app/app-analytics"
 import { Toaster } from "@/components/ui/sonner"
@@ -38,11 +39,13 @@ const RootLayout = (props: Props) => {
       >
         <NextTopLoader shadow={false} height={2} />
         <ContextProviders>
-          {props.children}
-          <Toaster />
-          <Suspense fallback={null}>
-            <AppAnalytics />
-          </Suspense>
+          <AutoLoginProvider>
+            {props.children}
+            <Toaster />
+            <Suspense fallback={null}>
+              <AppAnalytics />
+            </Suspense>
+          </AutoLoginProvider>
         </ContextProviders>
       </body>
     </html>
