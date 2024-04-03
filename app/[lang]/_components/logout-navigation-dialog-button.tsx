@@ -29,7 +29,7 @@ export function NavigationLogoutDialogButton() {
     resetCookieLoginToken()
     toast("ログアウトしました。")
     const linkNode = document.createElement("a")
-    linkNode.href = config.wordpressEndpoint.logout
+    linkNode.href = config.wordpressLink.logout
     linkNode.click()
   }
 
