@@ -32,9 +32,7 @@ type Props = {
 export const GenerationTaskResponsiveCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  if (props.task.status === "RESERVED") {
-    console.log("GenerationTaskResponsiveCard", props.task.status)
-  }
+  console.log("props.isDialog", props.isDialog)
 
   return (
     <>
@@ -59,6 +57,8 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
             taskIds={props.taskIds}
             sizeType={props.sizeType}
             onRestore={props.onRestore}
+            onCancel={props.onCancel}
+            onDelete={props.onDelete}
           />
         )}
         {!props.isDialog && isDesktop && (

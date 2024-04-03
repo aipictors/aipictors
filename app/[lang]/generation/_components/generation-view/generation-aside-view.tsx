@@ -76,6 +76,10 @@ export const GenerationAsideView = (props: Props) => {
     return <>{props.communication}</>
   }
 
+  if (state === "HISTORY_LIST_FULL") {
+    return <>{props.taskList}</>
+  }
+
   return (
     <>
       {context.currentPass?.type !== "PREMIUM" && props.advertisement}

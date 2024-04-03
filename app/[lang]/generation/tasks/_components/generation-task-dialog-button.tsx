@@ -14,6 +14,7 @@ type Props = {
   sizeType: number
   onRestore?(taskId: string): void
   onCancel?(): void
+  onDelete?(taskId: string): void
 }
 
 /**
@@ -24,14 +25,6 @@ export function GenerationTaskDialogButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const context = useGenerationContext()
-
-  const imageGenerationTask = context.config.viewTaskId
-    ? useCachedImageGenerationTask(context.config.viewTaskId)
-    : props.task
-
-  if (imageGenerationTask === null) {
-    return null
-  }
 
   const onClickTask = () => {
     setTimeout(() => {
@@ -60,6 +53,7 @@ export function GenerationTaskDialogButton(props: Props) {
           isProtected={props.task.isProtected ?? false}
           onClick={onClickTask}
           onCancel={props.onCancel}
+          onDelete={props.onDelete}
         />
         <Dialog
           open={isOpen}
@@ -78,7 +72,7 @@ export function GenerationTaskDialogButton(props: Props) {
           <DialogContent className="flex flex-col gap-0 p-0">
             <GenerationTaskSheetView
               isScroll={true}
-              task={imageGenerationTask}
+              task={props.task}
               isReferenceLink={true}
             />
           </DialogContent>
