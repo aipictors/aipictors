@@ -1,11 +1,11 @@
-import { AccountLogoutForm } from "@/app/[lang]/account/logout/_components/account-logout-form"
+import { AutoLogoutForm } from "@/app/[lang]/(main)/logout/_components/auto-logout-form"
 import { AppPageCenter } from "@/components/app/app-page-center"
 import type { Metadata } from "next"
 
-const AccountLoginPage = async () => {
+const LogoutPage = async () => {
   return (
     <AppPageCenter>
-      <AccountLogoutForm />
+      <AutoLogoutForm />
     </AppPageCenter>
   )
 }
@@ -15,4 +15,4 @@ export const metadata: Metadata = {
   title: "-",
 }
 
-export default AccountLoginPage
+export default LogoutPage

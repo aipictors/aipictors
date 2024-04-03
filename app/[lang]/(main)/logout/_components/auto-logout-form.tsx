@@ -10,7 +10,7 @@ import { useContext, useEffect } from "react"
  * 自動ログアウトフォーム
  * @returns
  */
-export const AccountLogoutForm = () => {
+export const AutoLogoutForm = () => {
   const authContext = useContext(AuthContext)
 
   const handleLogout = async () => {
