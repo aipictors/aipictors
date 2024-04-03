@@ -41,7 +41,6 @@ export const AutoLoginProvider = (props: Props) => {
           return
         }
         await signInWithCustomToken(getAuth(), token)
-        toast("自動ログインしました。")
       })
     }
   }

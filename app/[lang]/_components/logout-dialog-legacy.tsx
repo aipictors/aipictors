@@ -1,5 +1,6 @@
 "use client"
 
+import { resetCookieLoginToken } from "@/app/_utils/reset-cookie-login-token"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,7 @@ export const LogoutDialogLegacy = (props: Props) => {
   const handleLogout = async () => {
     await signOut(getAuth())
     props.onClose()
+    resetCookieLoginToken()
     toast("ログアウトしました。")
   }
 

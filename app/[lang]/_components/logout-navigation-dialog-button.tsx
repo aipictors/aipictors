@@ -1,6 +1,7 @@
 "use client"
 
 import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { resetCookieLoginToken } from "@/app/_utils/reset-cookie-login-token"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +25,7 @@ import { toast } from "sonner"
 export function NavigationLogoutDialogButton() {
   const handleLogout = async () => {
     await signOut(getAuth())
+    resetCookieLoginToken()
     toast("ログアウトしました。")
   }
 
