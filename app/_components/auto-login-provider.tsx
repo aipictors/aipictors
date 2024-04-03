@@ -5,7 +5,6 @@ import { loginWithWordPressTokenMutation } from "@/graphql/mutations/login-with-
 import { useMutation } from "@apollo/client"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useEffect } from "react"
-import { toast } from "sonner"
 
 type Props = {
   children: React.ReactNode
@@ -20,6 +19,7 @@ export const AutoLoginProvider = (props: Props) => {
 
   useEffect(() => {
     // 未ログイン
+    if (typeof window === "undefined") return
     if (currentUser === null) {
       autoLogin()
     }
