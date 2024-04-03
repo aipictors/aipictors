@@ -235,6 +235,7 @@ export const config = {
     www4: "https://www4.aipictors.com/index.php",
     uploadPrivateImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
+    logout: "https://www.aipictors.com/logout",
   },
   /**
    * バージョン

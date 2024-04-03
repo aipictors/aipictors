@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { config } from "@/config"
 import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"
 import { toast } from "sonner"
@@ -27,6 +28,9 @@ export function NavigationLogoutDialogButton() {
     await signOut(getAuth())
     resetCookieLoginToken()
     toast("ログアウトしました。")
+    const linkNode = document.createElement("a")
+    linkNode.href = config.wordpressEndpoint.logout
+    linkNode.click()
   }
 
   return (
