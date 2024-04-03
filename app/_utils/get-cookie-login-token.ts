@@ -22,9 +22,6 @@ export const getCookieLoginToken = () => {
 
     return idToken
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message)
-    }
-    throw new Error("画像の取得に失敗しました")
+    return null
   }
 }

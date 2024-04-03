@@ -32,8 +32,6 @@ type Props = {
 export const GenerationTaskResponsiveCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  console.log("props.isDialog", props.isDialog)
-
   return (
     <>
       <ErrorBoundary key={props.task.id} fallback={ErrorResultCard}>

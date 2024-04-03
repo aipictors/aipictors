@@ -1,6 +1,7 @@
 "use client"
 
 import { AuthContextProvider } from "@/app/_components/auth-context-provider"
+import { AutoLoginProvider } from "@/app/_components/auto-login-provider"
 import { AppThemeProvider } from "@/components/app/app-theme-provider"
 import { config } from "@/config"
 import { createClient } from "@/lib/client"
@@ -24,7 +25,9 @@ export const ContextProviders = (props: Props) => {
     <AppThemeProvider>
       <AuthContextProvider>
         <QueryClientProvider client={queryClient}>
-          <ApolloProvider client={client}>{props.children}</ApolloProvider>
+          <ApolloProvider client={client}>
+            <AutoLoginProvider>{props.children}</AutoLoginProvider>
+          </ApolloProvider>
         </QueryClientProvider>
       </AuthContextProvider>
     </AppThemeProvider>

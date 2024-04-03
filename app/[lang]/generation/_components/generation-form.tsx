@@ -15,6 +15,8 @@ import { GenerationTaskDetailsView } from "@/app/[lang]/generation/_components/t
 import { GenerationTaskListView } from "@/app/[lang]/generation/_components/task-view/generation-task-list-view"
 import { GenerationWorkContentPreview } from "@/app/[lang]/generation/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/app/[lang]/generation/_components/task-view/generation-works-from-model-view"
+import { loginWithWordPressTokenMutation } from "@/graphql/mutations/login-with-wordpress-token"
+import { useMutation } from "@apollo/client"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { useState } from "react"
@@ -35,6 +37,10 @@ export const GenerationForm = (props: Props) => {
   const [isEditMode, toggleEditMode] = useState(false)
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
+
+  const [mutation, { loading: isLoading }] = useMutation(
+    loginWithWordPressTokenMutation,
+  )
 
   return (
     <GenerationView
