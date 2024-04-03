@@ -65,6 +65,11 @@ export const generationConfigMachine = createMachine({
         OPEN_WORK_PREVIEW: "WORK_PREVIEW",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
       },
     },
 

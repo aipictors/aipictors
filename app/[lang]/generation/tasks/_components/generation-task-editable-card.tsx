@@ -116,10 +116,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
   }
 
   if (props.task.status === "RESERVED") {
-    console.log("GenerationTaskEditableCard", props.task.status)
-  }
-
-  if (props.task.status === "RESERVED") {
     return (
       <ReservedGenerationCard
         onClick={props.onClick}
