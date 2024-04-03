@@ -1,6 +1,7 @@
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/app/[lang]/generation/_hooks/use-generation-query"
+import { GenerationTaskDeleteButton } from "@/app/[lang]/generation/tasks/_components/generation-task-delete-button"
 import { GenerationTaskProtectedButton } from "@/app/[lang]/generation/tasks/_components/generation-task-protected-button"
 import { GenerationTaskRatingButton } from "@/app/[lang]/generation/tasks/_components/generation-task-rating-button"
 import { GenerationTaskZoomUpButton } from "@/app/[lang]/generation/tasks/_components/generation-task-zoom-up-button"
@@ -13,6 +14,7 @@ import { config } from "@/config"
 import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
 import { cancelImageGenerationReservedTaskMutation } from "@/graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/graphql/mutations/cancel-image-generation-task"
+import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/graphql/queries/viewer/viewer-image-generation-tasks"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"
@@ -60,6 +62,10 @@ export const GenerationTaskEditableCard = (props: Props) => {
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =
     useMutation(cancelImageGenerationReservedTaskMutation)
 
+  const [deleteTask, { loading: isDeletedLoading }] = useMutation(
+    deleteImageGenerationTaskMutation,
+  )
+
   /**
    * 生成タスクをキャンセルする
    * @param taskNanoid
@@ -77,6 +83,27 @@ export const GenerationTaskEditableCard = (props: Props) => {
       if (error instanceof Error) {
         toast(error.message)
       }
+    }
+  }
+
+  const { send } = GenerationConfigContext.useActorRef()
+
+  /**
+   * 生成タスクを削除する
+   */
+  const onDeleteTask = async () => {
+    try {
+      await deleteTask({
+        variables: {
+          input: {
+            nanoid: props.taskNanoid,
+          },
+        },
+      })
+      toast("削除しました。次回一覧更新時に反映されます。")
+      context.updateViewTask(null, context.config.viewTaskIds.filter((id) => id !== props.taskNanoid))
+    } catch (e) {
+      toast("削除に失敗しました。")
     }
   }
 
@@ -143,8 +170,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
     )
   }
 
-  const { send } = GenerationConfigContext.useActorRef()
-
   return (
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
@@ -202,6 +227,13 @@ export const GenerationTaskEditableCard = (props: Props) => {
             setRating(newRating)
           }}
         />
+      )}
+      {/* 削除ボタン */}
+      {isDesktop && (isHovered && props.isSelectDisabled) && (
+        <GenerationTaskDeleteButton
+          onDeleteTask={onDeleteTask}
+          isDeletedLoading={isDeletedLoading}
+          taskNanoid={props.taskNanoid} />
       )}
       {/* 保護ボタン */}
       {isDesktop && (isHovered || isProtected) && (
