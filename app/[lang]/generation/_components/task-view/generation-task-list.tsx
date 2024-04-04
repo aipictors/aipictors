@@ -237,7 +237,7 @@ export const GenerationTaskList = (props: Props) => {
         </div>
         {/* </Suspense> */}
       </ScrollArea>
-      <div className="p-2 pb-64 md:pb-12">
+      <div className="p-2 pb-32 md:pb-4">
         {props.protect !== 1 && (
           <ResponsivePagination
             perPage={props.rating === 0 || props.rating === -1 ? 32 : 800}

@@ -1,7 +1,8 @@
 "use client"
 
-import { MessageInput } from "@/app/[lang]/(main)/support/chat/_components/message-input"
 import { SupportMessageList } from "@/app/[lang]/(main)/support/chat/_components/support-message-list"
+import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
+import { GenerationMessageInput } from "@/app/[lang]/generation/_components/task-view/generation-message-input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { createMessageMutation } from "@/graphql/mutations/create-message"
 import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
@@ -57,14 +58,14 @@ export const GenerationCommunicationView = () => {
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
   return (
-    <div className="sticky top-0 flex flex-col p-2 pb-16">
-      <ScrollArea className="h-[54vh] w-full md:h-[72vh] p-8">
+    <GenerationViewCard>
+      <ScrollArea className="relative flex flex-col overflow-y-auto p-4">
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={adminAvatarURL}
         />
       </ScrollArea>
-      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
-    </div>
+      <GenerationMessageInput onSubmit={onSubmit} isLoading={isLoading} />
+    </GenerationViewCard>
   )
 }

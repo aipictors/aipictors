@@ -22,11 +22,7 @@ export function GenerationSideTabsView() {
   return (
     <>
       {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
-        <Tabs
-          value={state.toString()}
-          defaultValue={"HISTORY_LIST_FULL"}
-          className="mb-2"
-        >
+        <Tabs value={state.toString()} defaultValue={"HISTORY_LIST_FULL"}>
           <TabsList>
             <TabsTrigger
               onClick={() => {
@@ -51,11 +47,7 @@ export function GenerationSideTabsView() {
           </TabsList>
         </Tabs>
       ) : (
-        <Tabs
-          value={state.toString()}
-          defaultValue={"PROMPT_VIEW"}
-          className="mb-2"
-        >
+        <Tabs value={state.toString()} defaultValue={"PROMPT_VIEW"}>
           <TabsList>
             <TabsTrigger
               onClick={() => {
