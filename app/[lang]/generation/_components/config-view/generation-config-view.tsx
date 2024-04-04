@@ -13,6 +13,7 @@ import { GenerationConfigScale } from "@/app/[lang]/generation/_components/confi
 import { GenerationConfigSeed } from "@/app/[lang]/generation/_components/config-view/generation-config-seed"
 import { GenerationConfigSize } from "@/app/[lang]/generation/_components/config-view/generation-config-size"
 import { GenerationConfigStep } from "@/app/[lang]/generation/_components/config-view/generation-config-step"
+import { GenerationConfigUpscale } from "@/app/[lang]/generation/_components/config-view/generation-config-upscale"
 import { GenerationConfigVae } from "@/app/[lang]/generation/_components/config-view/generation-config-vae"
 import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
 import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
@@ -150,6 +151,7 @@ export default function GenerationConfigView() {
           <Separator />
           <GenerationConfigLoraModels />
           <Separator />
+          <GenerationConfigUpscale />
           <GenerationConfigSize
             modelType={configModelType}
             value={context.config.sizeType}

@@ -338,6 +338,7 @@ export function GenerationSubmissionView(props: Props) {
                 : null,
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
+              upscaleSize: context.config.upscaleSize,
             },
           },
         })
@@ -366,6 +367,7 @@ export function GenerationSubmissionView(props: Props) {
                 : null,
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
+              upscaleSize: context.config.upscaleSize,
             },
           },
         })

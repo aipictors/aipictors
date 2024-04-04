@@ -516,6 +516,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * アップスケールサイズを変更する
+   * @param i2iImageBase64
+   * @returns
+   */
+  changeUpscaleSize(size: number | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      upscaleSize: size,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * タスク一覧の表示サムネイル種別（原画像もしくは軽量化画像）を変更する
    * @param type
    * @returns

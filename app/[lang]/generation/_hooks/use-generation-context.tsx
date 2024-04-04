@@ -503,6 +503,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * アップスケールサイズを変更する
+   * @param i2iImageBase64
+   */
+  const changeUpscaleSize = (size: number | null) => {
+    const value = configAction.changeUpscaleSize(size).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * i2i画像を変更する
    * @param i2iImageBase64
    */
@@ -577,6 +586,7 @@ export const useGenerationContext = () => {
     updateModelId,
     updateFavoriteModelIds,
     changeLoraModel: changeLoraConfig,
+    changeUpscaleSize,
     changeI2iImageBase64,
     changeI2iDenoisingStrengthSize,
     changeUseRecommendedPrompt,

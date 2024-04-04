@@ -16,6 +16,7 @@ const zProps = z.object({
   clipSkip: z.number(),
   favoriteModelIds: z.array(z.number()),
   isUseRecommendedPrompt: z.boolean(),
+  upscaleSize: z.number().nullable(),
   i2iImageBase64: z.string(),
   i2iDenoisingStrengthSize: z.number(),
   previewTaskId: z.string().nullable(),
@@ -81,6 +82,8 @@ export class GenerationConfigState implements Props {
   readonly isDisabled: boolean
 
   readonly isUseRecommendedPrompt!: Props["isUseRecommendedPrompt"]
+
+  readonly upscaleSize!: Props["upscaleSize"]
 
   readonly i2iImageBase64!: string
 
