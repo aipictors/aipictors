@@ -18,6 +18,14 @@ import Link from "next/link"
  * @returns
  */
 const MilestonesPage = async () => {
+  const convertDateFormat = (dateStr: string) => {
+    const dateObj = new Date(dateStr)
+    const year = dateObj.getFullYear()
+    const month = dateObj.getMonth() + 1
+    const day = dateObj.getDate()
+    return `${year}/${month}/${day}`
+  }
+
   const client = createClient()
 
   const resp = await client.query({
@@ -29,37 +37,180 @@ const MilestonesPage = async () => {
 
   const milestones = resp.data.milestones
 
+  const appResp = await client.query({
+    query: milestonesQuery,
+    variables: {
+      repository: "app",
+    },
+  })
+
+  const appMilestones = appResp.data.milestones
+
   return (
     <AppPage>
-      <h1 className="font-bold">{"開発予定"}</h1>
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="min-w-28">{"バージョン"}</TableHead>
-              <TableHead className="min-w-64">{"タイトル"}</TableHead>
-              <TableHead className="min-w-80">{"開発内容"}</TableHead>
-              <TableHead className="min-w-16">{"状態"}</TableHead>
-              <TableHead className="min-w-32">{"GitHub"}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {milestones.map((milestone) => (
-              <TableRow key={milestone.id}>
-                <TableCell className="font-bold">{milestone.version}</TableCell>
-                <TableCell>{milestone.title}</TableCell>
-                <TableCell>{milestone.description}</TableCell>
-                <TableCell>{milestone.isDone ? "完了" : "予定"}</TableCell>
-                <TableCell>
-                  <Link href={milestone.pageURL} target="_blank">
-                    {"GitHubで確認"}
-                  </Link>
-                </TableCell>
+      <div className="flex flex-col gap-y-4">
+        <h1 className="font-bold">{"開発予定"}</h1>
+        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+          <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
+            {"Web版"}
+          </div>
+          <img
+            className="border-2 border-gray-300"
+            alt=""
+            src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-web-back.webp"
+          />
+        </div>
+        <h2 className="font-bold text-sm">{"これから"}</h2>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-28">{"バージョン"}</TableHead>
+                <TableHead className="min-w-64">{"タイトル"}</TableHead>
+                <TableHead className="min-w-80">{"開発内容"}</TableHead>
+                <TableHead className="min-w-16">{"完了予定"}</TableHead>
+                <TableHead className="min-w-32">{"GitHub"}</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+            </TableHeader>
+            <TableBody>
+              {milestones.map(
+                (milestone) =>
+                  !milestone.isDone && (
+                    <TableRow key={milestone.id}>
+                      <TableCell className="font-bold">
+                        {milestone.version}
+                      </TableCell>
+                      <TableCell>{milestone.title}</TableCell>
+                      <TableCell>{milestone.description}</TableCell>
+                      <TableCell>
+                        {milestone.dueDate
+                          ? convertDateFormat(milestone.dueDate)
+                          : "未定"}
+                      </TableCell>
+                      <TableCell>
+                        <Link href={milestone.pageURL} target="_blank">
+                          {"GitHubで確認"}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ),
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+        <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-28">{"バージョン"}</TableHead>
+                <TableHead className="min-w-64">{"タイトル"}</TableHead>
+                <TableHead className="min-w-80">{"開発内容"}</TableHead>
+                <TableHead className="min-w-32">{"GitHub"}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {milestones.map(
+                (milestone) =>
+                  milestone.isDone && (
+                    <TableRow key={milestone.id}>
+                      <TableCell className="font-bold">
+                        {milestone.version}
+                      </TableCell>
+                      <TableCell>{milestone.title}</TableCell>
+                      <TableCell>{milestone.description}</TableCell>
+                      <TableCell>
+                        <Link href={milestone.pageURL} target="_blank">
+                          {"GitHubで確認"}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ),
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+          <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
+            {"アプリ版"}
+          </div>
+          <img
+            className="border-2 border-gray-300"
+            alt=""
+            src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-app-back.webp"
+          />
+        </div>
+        <h2 className="font-bold text-sm">{"これから"}</h2>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-28">{"バージョン"}</TableHead>
+                <TableHead className="min-w-64">{"タイトル"}</TableHead>
+                <TableHead className="min-w-80">{"開発内容"}</TableHead>
+                <TableHead className="min-w-16">{"完了予定"}</TableHead>
+                <TableHead className="min-w-32">{"GitHub"}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {appMilestones.map(
+                (milestone) =>
+                  !milestone.isDone && (
+                    <TableRow key={milestone.id}>
+                      <TableCell className="font-bold">
+                        {milestone.version}
+                      </TableCell>
+                      <TableCell>{milestone.title}</TableCell>
+                      <TableCell>{milestone.description}</TableCell>
+                      <TableCell>
+                        {milestone.dueDate
+                          ? convertDateFormat(milestone.dueDate)
+                          : "未定"}
+                      </TableCell>
+                      <TableCell>
+                        <Link href={milestone.pageURL} target="_blank">
+                          {"GitHubで確認"}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ),
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+        <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-28">{"バージョン"}</TableHead>
+                <TableHead className="min-w-64">{"タイトル"}</TableHead>
+                <TableHead className="min-w-80">{"開発内容"}</TableHead>
+                <TableHead className="min-w-32">{"GitHub"}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {appMilestones.map(
+                (milestone) =>
+                  milestone.isDone && (
+                    <TableRow key={milestone.id}>
+                      <TableCell className="font-bold">
+                        {milestone.version}
+                      </TableCell>
+                      <TableCell>{milestone.title}</TableCell>
+                      <TableCell>{milestone.description}</TableCell>
+                      <TableCell>
+                        <Link href={milestone.pageURL} target="_blank">
+                          {"GitHubで確認"}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ),
+              )}
+            </TableBody>
+          </Table>
+        </Card>
+      </div>
     </AppPage>
   )
 }

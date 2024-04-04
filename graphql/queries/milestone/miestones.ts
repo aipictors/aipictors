@@ -9,6 +9,7 @@ export const milestonesQuery = gql(`
       description
       pageURL
       isDone
+      dueDate
     }
   }
 `)
