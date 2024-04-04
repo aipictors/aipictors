@@ -1,5 +1,6 @@
 import { AppPage } from "@/components/app/app-page"
 import { Card } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -50,17 +51,17 @@ const MilestonesPage = async () => {
     <AppPage>
       <div className="flex flex-col gap-y-4">
         <h1 className="font-bold">{"開発予定"}</h1>
-        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-800">
           <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
             {"Web版"}
           </div>
           <img
-            className="border-2 border-gray-300"
+            className="h-full w-full object-cover"
             alt=""
             src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-web-back.webp"
           />
         </div>
-        <h2 className="font-bold text-sm">{"これから"}</h2>
+        <h2 className="font-bold text-sm">{"Web - これから"}</h2>
         <Card>
           <Table>
             <TableHeader>
@@ -98,7 +99,10 @@ const MilestonesPage = async () => {
             </TableBody>
           </Table>
         </Card>
-        <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+        <div className="py-2">
+          <Separator />
+        </div>
+        <h2 className="font-bold text-sm">{"Web - リリース済み"}</h2>
         <Card>
           <Table>
             <TableHeader>
@@ -130,17 +134,20 @@ const MilestonesPage = async () => {
             </TableBody>
           </Table>
         </Card>
-        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+        <div className="py-2">
+          <Separator />
+        </div>
+        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-800">
           <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
             {"アプリ版"}
           </div>
           <img
-            className="border-2 border-gray-300"
+            className="h-full w-full object-cover"
             alt=""
             src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-app-back.webp"
           />
         </div>
-        <h2 className="font-bold text-sm">{"これから"}</h2>
+        <h2 className="font-bold text-sm">{"アプリ - これから"}</h2>
         <Card>
           <Table>
             <TableHeader>
@@ -178,7 +185,10 @@ const MilestonesPage = async () => {
             </TableBody>
           </Table>
         </Card>
-        <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+        <div className="py-2">
+          <Separator />
+        </div>
+        <h2 className="font-bold text-sm">{"アプリ - リリース済み"}</h2>
         <Card>
           <Table>
             <TableHeader>
