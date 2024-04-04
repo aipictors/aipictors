@@ -31,7 +31,7 @@ export const GenerationMessageInput = (props: Props) => {
   }
 
   return (
-    <div className="sticky bottom-16 md:bottom-0 flex w-full items-end gap-x-4 p-4">
+    <div className="sticky bottom-16 flex w-full items-end gap-x-4 p-4 md:bottom-0">
       {selectedImages.map((image, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
