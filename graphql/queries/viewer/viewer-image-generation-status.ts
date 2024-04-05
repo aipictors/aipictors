@@ -14,6 +14,7 @@ export const viewerImageGenerationStatusQuery = gql(`
     viewer {
       remainingImageGenerationTasksCount
       inProgressImageGenerationTasksCount
+      inProgressImageGenerationTasksCost
       inProgressImageGenerationReservedTasksCount
       remainingImageGenerationTasksTotalCount
       availableImageGenerationMaxTasksCount

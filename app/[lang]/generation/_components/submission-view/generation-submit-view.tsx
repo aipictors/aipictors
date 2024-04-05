@@ -37,8 +37,6 @@ export function GenerationSubmissionView(props: Props) {
 
   const [generationCount, setGenerationCount] = useState(1)
 
-  const [reservedGenerationCount, setReservedGenerationCount] = useState(1)
-
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
@@ -310,7 +308,7 @@ export function GenerationSubmissionView(props: Props) {
       context.config.controlNetImageBase64,
     )
 
-    const nowGeneratingCount = inProgressImageGenerationTasksCount // 生成中枚数
+    const nowGeneratingCount = tasksCost // 生成中枚数
     const promises = taskCounts.map((i) => {
       if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
         // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
@@ -402,9 +400,9 @@ export function GenerationSubmissionView(props: Props) {
     queryData.viewer.availableImageGenerationMaxTasksCount ?? 30
 
   /**
-   * 生成済み枚数
+   * 生成済みコスト
    */
-  const tasksCount = queryData.viewer.remainingImageGenerationTasksCount ?? 0
+  const tasksCost = queryData.viewer.inProgressImageGenerationTasksCost ?? 0
 
   /**
    * 同時生成最大枚数
@@ -436,7 +434,7 @@ export function GenerationSubmissionView(props: Props) {
             inProgressImageGenerationReservedTasksCount
           }
           maxTasksCount={maxTasksCount}
-          tasksCount={tasksCount}
+          tasksCount={tasksCost}
           termsText={props.termsText}
           availableImageGenerationMaxTasksCount={
             availableImageGenerationMaxTasksCount

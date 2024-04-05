@@ -66,6 +66,7 @@ export const GenerationQueryProvider = (props: Props) => {
         viewer: status?.viewer ?? {
           remainingImageGenerationTasksCount: 0,
           inProgressImageGenerationTasksCount: 0,
+          inProgressImageGenerationTasksCost: 0,
           inProgressImageGenerationReservedTasksCount: 0,
           remainingImageGenerationTasksTotalCount: 0,
           availableImageGenerationMaxTasksCount: 0,
