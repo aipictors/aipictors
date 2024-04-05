@@ -107,9 +107,7 @@ const MilestonesPage = async () => {
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
-                  <h2 className="font-bold text-sm">
-                    {"アプリ - リリース済み"}
-                  </h2>
+                  <h2 className="font-bold text-sm">{"リリース済み"}</h2>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
                   <Card>
@@ -218,9 +216,7 @@ const MilestonesPage = async () => {
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
-                  <h2 className="font-bold text-sm">
-                    {"アプリ - リリース済み"}
-                  </h2>
+                  <h2 className="font-bold text-sm">{"リリース済み"}</h2>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
                   <Card>
