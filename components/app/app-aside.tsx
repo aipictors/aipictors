@@ -13,7 +13,7 @@ type Props = {
 export const AppAside = (props: Props) => {
   return (
     <div className="sticky top-header">
-      <ScrollArea className="-ml-3 hidden h-main w-48 min-w-48 overflow-y-auto pr-4 pb-4 md:block">
+      <ScrollArea className="-ml-3 hidden h-main w-48 min-w-48 overflow-y-auto pr-4 md:block">
         <nav className="pb-4">{props.children}</nav>
       </ScrollArea>
     </div>
