@@ -59,22 +59,11 @@ const MilestonesPage = async () => {
       <h1 className="font-bold">{"開発予定"}</h1>
       <Tabs defaultValue="web" className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2">
-          <TabsTrigger value="web">web</TabsTrigger>
-          <TabsTrigger value="app">app</TabsTrigger>
+          <TabsTrigger value="web">Web版</TabsTrigger>
+          <TabsTrigger value="app">App版</TabsTrigger>
         </TabsList>
         <TabsContent value="web" className="w-full">
           <div className="flex flex-col gap-y-4">
-            <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-800">
-              <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
-                {"Web版"}
-              </div>
-              <img
-                className="h-full w-full object-cover"
-                alt=""
-                src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-web-back.webp"
-              />
-            </div>
-            <h2 className="font-bold text-sm">{"Web - これから"}</h2>
             <Card>
               <Table>
                 <TableHeader>
@@ -170,17 +159,22 @@ const MilestonesPage = async () => {
         </TabsContent>
         <TabsContent value="app" className="w-full">
           <div className="flex flex-col gap-y-4">
-            <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-800">
-              <div className="absolute top-6 left-4 h-16 w-16 rounded-lg font-bold text-sm text-white">
-                {"アプリ版"}
-              </div>
-              <img
-                className="h-full w-full object-cover"
-                alt=""
-                src="https://www.aipictors.com/wp-content/themes/AISite/images/milestone-app-back.webp"
-              />
+            <div className="flex items-center justify-center space-x-8">
+              <Link href="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
+                <img
+                  src="/apple/download.svg"
+                  alt="download"
+                  className="h-12"
+                />
+              </Link>
+              <Link href="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
+                <img
+                  src="/google/download.png"
+                  alt="download"
+                  className="h-16"
+                />
+              </Link>
             </div>
-            <h2 className="font-bold text-sm">{"App - これから"}</h2>
             <Card>
               <Table>
                 <TableHeader>
