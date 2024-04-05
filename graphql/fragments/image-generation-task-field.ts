@@ -46,5 +46,6 @@ export const imageGenerationTaskFieldsFragment = gql(`
     controlNetModel
     controlNetSaveDetectedMap
     controlNetHrOption
+    upscaleSize
   }
 `)

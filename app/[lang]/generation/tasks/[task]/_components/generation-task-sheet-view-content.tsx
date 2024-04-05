@@ -76,17 +76,6 @@ type Props = {
 export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()
 
-  const imageListButton = () => {
-    if (!props.isDisplayImageListButton) return null
-    return (
-      <Link href="/generation/tasks">
-        <Button className="mt-16 mb-4 w-full p-4" variant={"secondary"}>
-          画像一覧
-        </Button>
-      </Link>
-    )
-  }
-
   /**
    * カンマ前までの文字列を取得
    * @param text
@@ -129,6 +118,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
     }
     return true
   }
+
+  const upscaleSize =
+    props.task.upscaleSize !== null || props.task.upscaleSize
+      ? props.task.upscaleSize
+      : 1
+  const width = props.generationSize.width * upscaleSize
+  const height = props.generationSize.height * upscaleSize
 
   return (
     <>
@@ -335,7 +331,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
             <div className="basis-1/3 space-y-1">
               <p className="font-bold">{"Size"}</p>
               <p>
-                {props.generationSize.width}x{props.generationSize.height}
+                {width}x{height}
               </p>
             </div>
             <div className="basis-1/3 space-y-1">

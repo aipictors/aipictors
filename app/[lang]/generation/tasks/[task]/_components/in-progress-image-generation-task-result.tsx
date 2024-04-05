@@ -51,6 +51,13 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
     return text.substring(0, commaIndex)
   }
 
+  const upscaleSize =
+    props.task.upscaleSize !== null || props.task.upscaleSize
+      ? props.task.upscaleSize
+      : 1
+  const width = generationSize.width * upscaleSize
+  const height = generationSize.height * upscaleSize
+
   return (
     <>
       <div className="mx-auto w-full max-w-fit p-4">
@@ -108,7 +115,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
           <div className="basis-1/3">
             <p className="mb-1 font-semibold">{"Size"}</p>
             <p>
-              {generationSize.width}x{generationSize.height}
+              {width}x{height}
             </p>
           </div>
           <div className="basis-1/3">

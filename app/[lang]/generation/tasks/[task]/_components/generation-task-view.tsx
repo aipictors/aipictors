@@ -281,6 +281,14 @@ export function GenerationTaskView(props: Props) {
     )
   }
 
+  const upscaleSize =
+    data.imageGenerationTask.upscaleSize !== null ||
+    data.imageGenerationTask.upscaleSize
+      ? data.imageGenerationTask.upscaleSize
+      : 1
+  const width = generationSize.width * upscaleSize
+  const height = generationSize.height * upscaleSize
+
   return (
     <>
       <ScrollArea
@@ -404,7 +412,7 @@ export function GenerationTaskView(props: Props) {
             <div className="basis-1/3">
               <p className="mb-1 font-semibold">{"Size"}</p>
               <p>
-                {generationSize.width}x{generationSize.height}
+                {width}x{height}
               </p>
             </div>
             <div className="basis-1/3">

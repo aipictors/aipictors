@@ -40,17 +40,17 @@ export const GenerationConfigSize = (props: Props) => {
             )}
             {props.modelType === "SD2" && (
               <SelectItem value={"SD2_768_768"}>
-                {"【正方形】768×768(upscale:1.5)"}
+                {"【正方形】768×768"}
               </SelectItem>
             )}
             {props.modelType === "SD2" && (
               <SelectItem value={"SD2_768_1200"}>
-                {"【縦長】768×1200(upscale:1.5)"}
+                {"【縦長】768×1200"}
               </SelectItem>
             )}
             {props.modelType === "SD2" && (
               <SelectItem value={"SD2_1200_768"}>
-                {"【横長】1200×768(upscale:1.5)"}
+                {"【横長】1200×768"}
               </SelectItem>
             )}
             {props.modelType === "SD1" && (

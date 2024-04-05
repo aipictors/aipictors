@@ -26,5 +26,6 @@ export const imageReservedGenerationTaskFieldsFragment = gql(`
     vae
     token
     nanoid
+    upscaleSize
   }
 `)
