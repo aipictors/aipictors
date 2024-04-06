@@ -1,4 +1,4 @@
-import RootLoading from "@/app/loading"
+import RootLoading from "@/loading"
 
 const Loading = () => {
   return <RootLoading />

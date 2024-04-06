@@ -1,9 +1,9 @@
 "use client"
 
-import { GenerationConfigPersistent } from "@/app/[lang]/generation/_components/generation-config-persistent"
-import { GenerationConfigRestoration } from "@/app/[lang]/generation/_components/generation-config-restoration"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
+import { GenerationConfigPersistent } from "@/[lang]/generation/_components/generation-config-persistent"
+import { GenerationConfigRestoration } from "@/[lang]/generation/_components/generation-config-restoration"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
 
 type Props = {

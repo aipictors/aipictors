@@ -1,7 +1,7 @@
-import ImageCropperModal from "@/app/_components/modal-image-cropper"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import ImageCropperModal from "@/_components/modal-image-cropper"
+import { Button } from "@/_components/ui/button"
+import { Card } from "@/_components/ui/card"
+import { Input } from "@/_components/ui/input"
 import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
 import { useCallback, useState } from "react"
 

@@ -1,4 +1,4 @@
-import { ContributorsView } from "@/app/[lang]/(main)/contributors/_components/contributors-view"
+import { ContributorsView } from "@/[lang]/(main)/contributors/_components/contributors-view"
 import type { Metadata } from "next"
 
 /**

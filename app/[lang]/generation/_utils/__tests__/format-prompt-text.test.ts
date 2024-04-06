@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { formatPromptText } from "@/app/[lang]/generation/_utils/format-prompt-text"
+import { formatPromptText } from "@/[lang]/generation/_utils/format-prompt-text"
 
 describe("formatPromptText", () => {
   test("should remove leading and trailing whitespace from each text segment", () => {

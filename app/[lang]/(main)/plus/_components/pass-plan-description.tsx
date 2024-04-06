@@ -1,13 +1,13 @@
-import { toMoneyNumberText } from "@/app/_utils/to-money-number-text"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+} from "@/_components/ui/card"
+import { cn } from "@/_lib/utils"
+import { toMoneyNumberText } from "@/_utils/to-money-number-text"
 
 type Props = {
   title: string

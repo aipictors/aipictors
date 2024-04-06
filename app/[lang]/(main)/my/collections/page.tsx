@@ -1,5 +1,5 @@
-import { ViewerCollectionList } from "@/app/[lang]/(main)/my/collections/_components/viewer-collection-list"
-import { AppPage } from "@/components/app/app-page"
+import { ViewerCollectionList } from "@/[lang]/(main)/my/collections/_components/viewer-collection-list"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 const MyCollectionsPage = async () => {

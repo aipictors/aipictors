@@ -1,13 +1,13 @@
 "use client"
 
-import { InPaintingImageForm } from "@/app/[lang]/generation/_components/submission-view/in-painting-image-form"
-import { Button } from "@/components/ui/button"
+import { InPaintingImageForm } from "@/[lang]/generation/_components/submission-view/in-painting-image-form"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
+} from "@/_components/ui/dialog"
 
 type Props = {
   isOpen: boolean

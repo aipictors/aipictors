@@ -1,4 +1,4 @@
-import { GenerationAbout } from "@/app/[lang]/generation/about/_components/generation-about"
+import { GenerationAbout } from "@/[lang]/generation/about/_components/generation-about"
 import type { Metadata } from "next"
 
 /**

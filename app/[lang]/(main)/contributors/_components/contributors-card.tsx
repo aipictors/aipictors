@@ -1,8 +1,8 @@
 "use client"
 
-import type { Contributor } from "@/app/[lang]/(main)/contributors/_types/contributor"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
+import { Button } from "@/_components/ui/button"
+import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { ExternalLinkIcon, HomeIcon, MousePointerClickIcon } from "lucide-react"

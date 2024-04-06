@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
+import { Button } from "@/_components/ui/button"
+import { Switch } from "@/_components/ui/switch"
 import { PlusIcon } from "lucide-react"
 
 export const UserPickUp = () => {

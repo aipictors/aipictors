@@ -2,13 +2,13 @@
 
 import CloudflareTurnstile, {
   type Status,
-} from "@/app/[lang]/_components/cloudflare-turnstile"
-import { SocialLoginButton } from "@/app/[lang]/_components/social-login-button"
-import { PasswordLoginForm } from "@/app/_components/password-login-form"
-import type { FormLogin } from "@/app/_types/form-login"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { loginWithPasswordMutation } from "@/graphql/mutations/login-with-password"
+} from "@/[lang]/_components/cloudflare-turnstile"
+import { SocialLoginButton } from "@/[lang]/_components/social-login-button"
+import { PasswordLoginForm } from "@/_components/password-login-form"
+import { Button } from "@/_components/ui/button"
+import { Separator } from "@/_components/ui/separator"
+import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
+import type { FormLogin } from "@/_types/form-login"
 import { useMutation } from "@apollo/client"
 import {
   GoogleAuthProvider,

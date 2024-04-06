@@ -1,7 +1,7 @@
-import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
-import { AppPage } from "@/components/app/app-page"
-import { dailyThemesQuery } from "@/graphql/queries/daily-theme/daily-themes"
-import { createClient } from "@/lib/client"
+import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
+import { AppPage } from "@/_components/app/app-page"
+import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 const SensitiveThemesPage = async () => {

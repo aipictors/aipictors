@@ -1,10 +1,10 @@
-import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { GenerationConfigProvider } from "@/app/[lang]/generation/_components/generation-config-provider"
-import { GenerationQueryProvider } from "@/app/[lang]/generation/_components/generation-query-provider"
-import { imageLoraModelsQuery } from "@/graphql/queries/image-model/image-lora-models"
-import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
-import { promptCategoriesQuery } from "@/graphql/queries/prompt-category/prompt-category"
-import { createClient } from "@/lib/client"
+import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
+import { GenerationConfigProvider } from "@/[lang]/generation/_components/generation-config-provider"
+import { GenerationQueryProvider } from "@/[lang]/generation/_components/generation-query-provider"
+import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
+import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
+import { createClient } from "@/_lib/client"
 
 export const revalidate = 60
 

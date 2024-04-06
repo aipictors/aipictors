@@ -1,15 +1,15 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+} from "@/_components/ui/dialog"
+import { Input } from "@/_components/ui/input"
+import { Separator } from "@/_components/ui/separator"
 import { CheckIcon } from "lucide-react"
 
 type Props = {

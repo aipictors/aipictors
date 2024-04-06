@@ -1,7 +1,6 @@
 "use client"
 
-import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { resetCookieLoginToken } from "@/app/_utils/reset-cookie-login-token"
+import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +11,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/_components/ui/alert-dialog"
+import { resetCookieLoginToken } from "@/_utils/reset-cookie-login-token"
 import { config } from "@/config"
 import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"

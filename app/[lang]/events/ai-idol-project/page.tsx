@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
+import { cn } from "@/_lib/utils"
 import type { Metadata } from "next"
 
 const EventAiIdolProjectPage = async () => {

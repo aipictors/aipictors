@@ -1,4 +1,4 @@
-import { SelectableCardButton } from "@/app/_components/selectable-card-button"
+import { SelectableCardButton } from "@/_components/selectable-card-button"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

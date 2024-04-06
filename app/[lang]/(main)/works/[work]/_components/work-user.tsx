@@ -1,7 +1,7 @@
-import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
-import { FollowButton } from "@/app/_components/button/follow-button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { PromptonRequestButton } from "@/[lang]/(main)/works/[work]/_components/prompton-request-button"
+import { FollowButton } from "@/_components/button/follow-button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
+import { Badge } from "@/_components/ui/badge"
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/_components/ui/card"
 
 type Props = {
   userName: string

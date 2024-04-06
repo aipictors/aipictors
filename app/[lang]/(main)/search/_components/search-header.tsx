@@ -1,9 +1,9 @@
 "use client"
 
-import { SearchConfigDialog } from "@/app/[lang]/(main)/search/_components/search-config-dialog"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { SearchConfigDialog } from "@/[lang]/(main)/search/_components/search-config-dialog"
+import { Button } from "@/_components/ui/button"
+import { Label } from "@/_components/ui/label"
+import { Switch } from "@/_components/ui/switch"
 import { useBoolean } from "usehooks-ts"
 
 export const SearchHeader = () => {

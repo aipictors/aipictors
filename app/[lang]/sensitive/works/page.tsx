@@ -1,4 +1,4 @@
-import { AppPlaceholder } from "@/components/app/app-placeholder"
+import { AppPlaceholder } from "@/_components/app/app-placeholder"
 import type { Metadata } from "next"
 
 const SensitiveWorksPage = async () => {

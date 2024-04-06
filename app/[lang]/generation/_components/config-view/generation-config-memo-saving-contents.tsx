@@ -1,20 +1,20 @@
 "use client"
 
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { parseGenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { parseGenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/_components/ui/select"
+import { Textarea } from "@/_components/ui/textarea"
+import { createImageGenerationMemoMutation } from "@/_graphql/mutations/create-image-generation-memo"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { createImageGenerationMemoMutation } from "@/graphql/mutations/create-image-generation-memo"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useMutation } from "@apollo/client"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"

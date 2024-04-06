@@ -1,9 +1,9 @@
 "use client"
 
-import { FolloweeListItem } from "@/app/[lang]/(main)/my/followees/_components/followee-list-item"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { Alert, AlertTitle } from "@/components/ui/alert"
-import { userFollowersQuery } from "@/graphql/queries/user/user-followers"
+import { FolloweeListItem } from "@/[lang]/(main)/my/followees/_components/followee-list-item"
+import { Alert, AlertTitle } from "@/_components/ui/alert"
+import { AuthContext } from "@/_contexts/auth-context"
+import { userFollowersQuery } from "@/_graphql/queries/user/user-followers"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { AlertCircleIcon } from "lucide-react"
 import { useContext } from "react"

@@ -1,5 +1,5 @@
-import { createImageFiles } from "@/app/[lang]/generation/_utils/create-image-files"
-import { downloadZipFile } from "@/app/[lang]/generation/_utils/download-zip-file"
+import { createImageFiles } from "@/[lang]/generation/_utils/create-image-files"
+import { downloadZipFile } from "@/[lang]/generation/_utils/download-zip-file"
 import { config } from "@/config"
 
 /**

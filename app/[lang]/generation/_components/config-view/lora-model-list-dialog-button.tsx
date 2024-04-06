@@ -1,7 +1,7 @@
 "use client"
 
-import { LoraImageModelList } from "@/app/[lang]/generation/_components/config-view/lora-image-model-list"
-import { Button } from "@/components/ui/button"
+import { LoraImageModelList } from "@/[lang]/generation/_components/config-view/lora-image-model-list"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import type { ImageLoraModelsQuery } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/dialog"
+import type { ImageLoraModelsQuery } from "@/_graphql/__generated__/graphql"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {

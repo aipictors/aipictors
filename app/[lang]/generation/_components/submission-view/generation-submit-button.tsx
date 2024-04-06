@@ -1,4 +1,4 @@
-import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
+import { GradientBorderButton } from "@/_components/button/gradient-border-button"
 import { Loader2Icon } from "lucide-react"
 import { useTheme } from "next-themes"
 

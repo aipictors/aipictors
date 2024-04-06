@@ -1,8 +1,8 @@
-import { StickerList } from "@/app/[lang]/(main)/stickers/_components/sticker-list"
-import { StickerListHeader } from "@/app/[lang]/(main)/stickers/_components/sticker-list-header"
-import { StickerSearchForm } from "@/app/[lang]/(main)/stickers/_components/sticker-search-form"
-import { stickersQuery } from "@/graphql/queries/sticker/stickers"
-import { createClient } from "@/lib/client"
+import { StickerList } from "@/[lang]/(main)/stickers/_components/sticker-list"
+import { StickerListHeader } from "@/[lang]/(main)/stickers/_components/sticker-list-header"
+import { StickerSearchForm } from "@/[lang]/(main)/stickers/_components/sticker-search-form"
+import { stickersQuery } from "@/_graphql/queries/sticker/stickers"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 /**

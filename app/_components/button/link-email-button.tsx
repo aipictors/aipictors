@@ -1,4 +1,4 @@
-import { Button, type ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps } from "@/_components/ui/button"
 import { MailIcon } from "lucide-react"
 
 type Props = ButtonProps

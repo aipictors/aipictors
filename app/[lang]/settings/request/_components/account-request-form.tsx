@@ -1,7 +1,7 @@
 "use client"
 
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Label } from "@/_components/ui/label"
+import { Switch } from "@/_components/ui/switch"
 
 export const SettingRequestForm = () => {
   return (

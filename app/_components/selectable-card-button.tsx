@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/_lib/utils"
 import { CheckIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 

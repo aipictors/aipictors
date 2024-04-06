@@ -1,8 +1,8 @@
-import { HomeHeader } from "@/app/[lang]/(main)/_components/home-header"
-import { SensitiveRouteList } from "@/app/[lang]/sensitive/_components/sensitive-route-list"
-import { HomeFooter } from "@/app/_components/home-footer"
-import { AppAside } from "@/components/app/app-aside"
-import { Separator } from "@/components/ui/separator"
+import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
+import { SensitiveRouteList } from "@/[lang]/sensitive/_components/sensitive-route-list"
+import { AppAside } from "@/_components/app/app-aside"
+import { HomeFooter } from "@/_components/home-footer"
+import { Separator } from "@/_components/ui/separator"
 
 export const revalidate = 60
 

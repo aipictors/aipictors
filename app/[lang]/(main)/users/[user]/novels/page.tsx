@@ -1,4 +1,4 @@
-import { UserNovelList } from "@/app/[lang]/(main)/users/[user]/novels/_components/user-novel-list"
+import { UserNovelList } from "@/[lang]/(main)/users/[user]/novels/_components/user-novel-list"
 import type { Metadata } from "next"
 
 const UserNovelsPage = async () => {

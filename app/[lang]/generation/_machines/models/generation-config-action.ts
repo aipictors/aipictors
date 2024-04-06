@@ -1,4 +1,4 @@
-import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
+import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
 import { produce } from "immer"
 

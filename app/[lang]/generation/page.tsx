@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { GenerationForm } from "@/app/[lang]/generation/_components/generation-form"
+import { GenerationForm } from "@/[lang]/generation/_components/generation-form"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 
@@ -47,7 +47,7 @@ export const revalidate = 10
 const GenerationConfigView = dynamic(
   () => {
     return import(
-      "@/app/[lang]/generation/_components/config-view/generation-config-view"
+      "@/[lang]/generation/_components/config-view/generation-config-view"
     )
   },
   { ssr: false },

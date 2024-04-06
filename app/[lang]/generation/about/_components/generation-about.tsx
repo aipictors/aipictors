@@ -1,12 +1,12 @@
 "use client"
 
-import { GlowingGradientBorderButton } from "@/app/_components/button/glowing-gradient-border-button"
+import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import { Separator } from "@/components/ui/separator"
+} from "@/_components/ui/carousel"
+import { Separator } from "@/_components/ui/separator"
 import Image from "next/image"
 import Link from "next/link"
 

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/_components/ui/button"
+import { Skeleton } from "@/_components/ui/skeleton"
 
 export const RelatedModelCard = () => {
   return (

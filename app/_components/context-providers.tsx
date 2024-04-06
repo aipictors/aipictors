@@ -1,9 +1,9 @@
 "use client"
 
-import { AuthContextProvider } from "@/app/_components/auth-context-provider"
-import { AppThemeProvider } from "@/components/app/app-theme-provider"
+import { AppThemeProvider } from "@/_components/app/app-theme-provider"
+import { AuthContextProvider } from "@/_components/auth-context-provider"
+import { createClient } from "@/_lib/client"
 import { config } from "@/config"
-import { createClient } from "@/lib/client"
 import { ApolloProvider } from "@apollo/client"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"

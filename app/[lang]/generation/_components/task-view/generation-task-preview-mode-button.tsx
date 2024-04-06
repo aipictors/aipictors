@@ -1,4 +1,4 @@
-import { Toggle } from "@/components/ui/toggle"
+import { Toggle } from "@/_components/ui/toggle"
 import { ScanSearch } from "lucide-react"
 
 type Props = {

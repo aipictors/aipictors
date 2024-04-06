@@ -1,15 +1,15 @@
 "use client"
 
-import { GenerationQueryContext } from "@/app/[lang]/generation/_contexts/generation-query-context"
-import { activeImageGeneration } from "@/app/[lang]/generation/_functions/active-image-generation"
-import { AuthContext } from "@/app/_contexts/auth-context"
+import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation-query-context"
+import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
+import { AuthContext } from "@/_contexts/auth-context"
 import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoriesQuery,
-} from "@/graphql/__generated__/graphql"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
-import { viewerImageGenerationStatusQuery } from "@/graphql/queries/viewer/viewer-image-generation-status"
+} from "@/_graphql/__generated__/graphql"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
 import { useQuery } from "@apollo/client"
 import { useContext, useEffect } from "react"
 

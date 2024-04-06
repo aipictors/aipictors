@@ -1,5 +1,5 @@
-import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 
 type Props = {
   userIconImageURL?: string

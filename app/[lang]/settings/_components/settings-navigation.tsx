@@ -1,7 +1,7 @@
 "use client"
 
-import { SettingsRouteList } from "@/app/[lang]/settings/_components/settings-route-list"
-import { useBreakpoint } from "@/app/_hooks/use-breakpoint"
+import { SettingsRouteList } from "@/[lang]/settings/_components/settings-route-list"
+import { useBreakpoint } from "@/_hooks/use-breakpoint"
 
 export const SettingsNavigation = () => {
   const breakpoint = useBreakpoint()

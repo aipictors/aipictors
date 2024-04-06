@@ -1,6 +1,6 @@
 "use client"
 
-import { ViewerCollectionListItem } from "@/app/[lang]/(main)/my/collections/_components/viewer-collection-list-item"
+import { ViewerCollectionListItem } from "@/[lang]/(main)/my/collections/_components/viewer-collection-list-item"
 
 export const ViewerCollectionList = () => {
   return (

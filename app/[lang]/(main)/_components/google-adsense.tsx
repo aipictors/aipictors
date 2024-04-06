@@ -1,7 +1,7 @@
 "use client"
 
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useSuspenseQuery } from "@apollo/client"
 import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"

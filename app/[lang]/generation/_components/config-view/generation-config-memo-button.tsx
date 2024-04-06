@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import { StickyNote } from "lucide-react"
 
 type Props = {

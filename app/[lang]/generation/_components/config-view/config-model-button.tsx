@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/_components/ui/badge"
+import { Button } from "@/_components/ui/button"
 import { config } from "@/config"
 import { SearchIcon } from "lucide-react"
 import Link from "next/link"

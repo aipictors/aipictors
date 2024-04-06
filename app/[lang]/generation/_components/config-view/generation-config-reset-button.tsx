@@ -1,5 +1,5 @@
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
+import { Button } from "@/_components/ui/button"
 import { RotateCcw } from "lucide-react"
 
 type Props = {

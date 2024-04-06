@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/_components/ui/pagination"
 
 type Props = {
   maxCount: number // 最大個数

@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationMemoItemContents } from "@/app/[lang]/generation/_components/config-view/generation-memo-item-contents"
-import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+import { GenerationMemoItemContents } from "@/[lang]/generation/_components/config-view/generation-memo-item-contents"
+import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   memo: ImageGenerationMemoNode

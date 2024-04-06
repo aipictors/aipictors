@@ -1,9 +1,9 @@
-import { ModelHeader } from "@/app/[lang]/(main)/models/[model]/_components/model-header"
-import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
-import { AppPage } from "@/components/app/app-page"
-import { imageModelQuery } from "@/graphql/queries/image-model/image-model"
-import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
+import { ModelHeader } from "@/[lang]/(main)/models/[model]/_components/model-header"
+import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
+import { AppPage } from "@/_components/app/app-page"
+import { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
+import { worksQuery } from "@/_graphql/queries/work/works"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 type Props = {

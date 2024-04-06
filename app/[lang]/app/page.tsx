@@ -1,5 +1,5 @@
-import { AppAboutHeader } from "@/app/[lang]/app/_components/app-about-header"
-import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
+import { AppAboutHeader } from "@/[lang]/app/_components/app-about-header"
+import { AppFooter } from "@/[lang]/app/_components/app-footer"
 import type { Metadata } from "next"
 
 const FlutterAppPage = async () => {

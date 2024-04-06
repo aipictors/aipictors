@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
 
 export const CollectionsHeader = () => {
   return (

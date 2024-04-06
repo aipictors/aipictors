@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/_lib/utils"
 import Link from "next/link"
 
 export const AppFooter = () => {

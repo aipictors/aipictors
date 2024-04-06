@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
 import { captureException } from "@sentry/nextjs"
 import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"

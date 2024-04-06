@@ -1,7 +1,7 @@
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskCancelButton } from "@/app/[lang]/generation/tasks/_components/generation-cancel-button"
-import { cn } from "@/lib/utils"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTaskCancelButton } from "@/[lang]/generation/tasks/_components/generation-cancel-button"
+import { cn } from "@/_lib/utils"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {

@@ -1,8 +1,8 @@
 "use client"
 
-import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { Textarea } from "@/components/ui/textarea"
+import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { Textarea } from "@/_components/ui/textarea"
 
 export const GenerationNegativePromptView = () => {
   const context = useGenerationContext()

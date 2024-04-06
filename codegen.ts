@@ -3,10 +3,10 @@ import type { CodegenConfig } from "@graphql-codegen/cli"
 const config: CodegenConfig = {
   overwrite: true,
   schema: "https://x-6ouzjmdzha-an.a.run.app/graphql",
-  documents: "graphql/(fragments|mutations|queries)**/*.ts",
+  documents: "app/_graphql/(fragments|mutations|queries)**/*.ts",
   ignoreNoDocuments: true,
   generates: {
-    "graphql/__generated__/": {
+    "app/_graphql/__generated__/": {
       preset: "client",
       presetConfig: {
         gqlTagName: "gql",

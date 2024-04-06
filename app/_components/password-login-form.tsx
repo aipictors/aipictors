@@ -1,8 +1,8 @@
 "use client"
 
-import type { FormLogin } from "@/app/_types/form-login"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
+import type { FormLogin } from "@/_types/form-login"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 

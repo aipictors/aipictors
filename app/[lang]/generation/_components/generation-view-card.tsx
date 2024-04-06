@@ -1,7 +1,7 @@
 "use client"
 
-import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
-import { Card } from "@/components/ui/card"
+import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
+import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
 

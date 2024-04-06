@@ -1,6 +1,6 @@
 "use client"
 
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/_components/ui/textarea"
 import { forwardRef } from "react"
 
 type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement>

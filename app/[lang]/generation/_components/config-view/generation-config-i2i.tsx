@@ -1,9 +1,9 @@
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { parseGenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import CropImageField from "@/app/_components/crop-image-field"
-import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
-import getBase64FromImageUrl from "@/app/_utils/get-base64-from-image-url"
-import { Slider } from "@/components/ui/slider"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { parseGenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
+import CropImageField from "@/_components/crop-image-field"
+import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
+import { Slider } from "@/_components/ui/slider"
+import getBase64FromImageUrl from "@/_utils/get-base64-from-image-url"
 
 /**
  * i2i向け画像設定

@@ -1,9 +1,9 @@
-import { ThemeHeader } from "@/app/[lang]/(main)/themes/_components/theme-header"
-import { ThemeList } from "@/app/[lang]/(main)/themes/_components/theme-list"
-import { AppPage } from "@/components/app/app-page"
-import { AppPageHeader } from "@/components/app/app-page-header"
-import { dailyThemesQuery } from "@/graphql/queries/daily-theme/daily-themes"
-import { createClient } from "@/lib/client"
+import { ThemeHeader } from "@/[lang]/(main)/themes/_components/theme-header"
+import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
+import { AppPage } from "@/_components/app/app-page"
+import { AppPageHeader } from "@/_components/app/app-page-header"
+import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 const ThemesPage = async () => {

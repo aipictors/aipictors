@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { Card } from "@/_components/ui/card"
 
 export const ThemeCard = () => {
   return (

@@ -1,6 +1,6 @@
 "use client"
 
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {

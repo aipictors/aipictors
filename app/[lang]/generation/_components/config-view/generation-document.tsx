@@ -1,6 +1,6 @@
 "use client"
 
-import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppMarkdown } from "@/_components/app/app-markdown"
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/table"
+import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   markdownText: string

@@ -1,12 +1,12 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { Separator } from "@/components/ui/separator"
+} from "@/_components/ui/resizable"
+import { Separator } from "@/_components/ui/separator"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
 

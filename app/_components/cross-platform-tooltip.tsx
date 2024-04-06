@@ -2,13 +2,13 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/_components/ui/popover"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/_components/ui/tooltip"
 import { config } from "@/config"
 import { HelpCircleIcon } from "lucide-react"
 import Link from "next/link"

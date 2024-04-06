@@ -1,4 +1,4 @@
-import type { EventUser } from "@/app/[lang]/events/_types/event-user"
+import type { EventUser } from "@/[lang]/events/_types/event-user"
 
 export const eventUsers: EventUser[] = [
   {

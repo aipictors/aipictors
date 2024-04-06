@@ -1,14 +1,14 @@
 "use client"
 
-import { PromptonRequestButton } from "@/app/[lang]/(main)/works/[work]/_components/prompton-request-button"
-import { WorkAction } from "@/app/[lang]/(main)/works/[work]/_components/work-action"
-import WorkArticleTags from "@/app/[lang]/(main)/works/[work]/_components/work-article-tags"
-import { WorkImageView } from "@/app/[lang]/(main)/works/[work]/_components/work-image-view"
-import { FollowButton } from "@/app/_components/button/follow-button"
-import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import type { WorkQuery } from "@/graphql/__generated__/graphql"
+import { PromptonRequestButton } from "@/[lang]/(main)/works/[work]/_components/prompton-request-button"
+import { WorkAction } from "@/[lang]/(main)/works/[work]/_components/work-action"
+import WorkArticleTags from "@/[lang]/(main)/works/[work]/_components/work-article-tags"
+import { WorkImageView } from "@/[lang]/(main)/works/[work]/_components/work-image-view"
+import { FollowButton } from "@/_components/button/follow-button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
+import { Button } from "@/_components/ui/button"
+import type { WorkQuery } from "@/_graphql/__generated__/graphql"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 import Link from "next/link"
 
 type Props = {

@@ -1,6 +1,6 @@
-import { NewAlbumImage } from "@/app/[lang]/(main)/new/album/_components/new-album-image"
-import { NewAlbumWorkList } from "@/app/[lang]/(main)/new/album/_components/new-album-work-list"
-import { AppPage } from "@/components/app/app-page"
+import { NewAlbumImage } from "@/[lang]/(main)/new/album/_components/new-album-image"
+import { NewAlbumWorkList } from "@/[lang]/(main)/new/album/_components/new-album-work-list"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 /**

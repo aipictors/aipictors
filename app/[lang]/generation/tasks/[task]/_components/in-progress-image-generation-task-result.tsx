@@ -1,18 +1,18 @@
 "use client"
 
-import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
-import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
+import { GenerationMenuButton } from "@/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/[lang]/generation/tasks/[task]/_types/generation-size"
+import { Separator } from "@/_components/ui/separator"
+import { Skeleton } from "@/_components/ui/skeleton"
+import { Textarea } from "@/_components/ui/textarea"
 import type {
   ImageGenerationTaskFieldsFragment,
   ImageGenerationTaskNode,
-} from "@/graphql/__generated__/graphql"
+} from "@/_graphql/__generated__/graphql"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,

@@ -1,8 +1,8 @@
 "use client"
 
-import { toDateTimeText } from "@/app/_utils/to-date-time-text"
-import { Card, CardContent } from "@/components/ui/card"
-import type { AlbumWorksQuery } from "@/graphql/__generated__/graphql"
+import { Card, CardContent } from "@/_components/ui/card"
+import type { AlbumWorksQuery } from "@/_graphql/__generated__/graphql"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { HeartIcon } from "lucide-react"
 
 type Props = {

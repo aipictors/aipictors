@@ -1,8 +1,8 @@
 "use client"
 
-import { PromptCategoryIcon } from "@/app/[lang]/generation/_components/prompt-view/prompt-category-icon"
-import { Button } from "@/components/ui/button"
-import type { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+import { PromptCategoryIcon } from "@/[lang]/generation/_components/prompt-view/prompt-category-icon"
+import { Button } from "@/_components/ui/button"
+import type { PromptCategoriesQuery } from "@/_graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {

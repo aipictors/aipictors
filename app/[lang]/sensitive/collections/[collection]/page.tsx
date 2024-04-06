@@ -1,8 +1,8 @@
-import { CollectionArticle } from "@/app/[lang]/(main)/collections/[collection]/_components/collection-article"
-import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
-import { AppPage } from "@/components/app/app-page"
-import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
+import { CollectionArticle } from "@/[lang]/(main)/collections/[collection]/_components/collection-article"
+import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
+import { AppPage } from "@/_components/app/app-page"
+import { worksQuery } from "@/_graphql/queries/work/works"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 const SensitiveCollectionPage = async () => {

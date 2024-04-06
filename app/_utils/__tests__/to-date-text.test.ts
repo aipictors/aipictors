@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { toDateText } from "@/app/_utils/to-date-text"
+import { toDateText } from "@/_utils/to-date-text"
 
 describe("toDateText", () => {
   test("1694951164", () => {

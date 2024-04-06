@@ -6,7 +6,7 @@ import type {
   PromptCategoriesQuery,
   ViewerCurrentPassQuery,
   ViewerImageGenerationStatusQuery,
-} from "@/graphql/__generated__/graphql"
+} from "@/_graphql/__generated__/graphql"
 import { createContext } from "react"
 
 type Context = {

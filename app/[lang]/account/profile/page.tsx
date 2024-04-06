@@ -1,5 +1,5 @@
-import { AccountProfileForm } from "@/app/[lang]/account/profile/_components/account-profile-form"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { AccountProfileForm } from "@/[lang]/account/profile/_components/account-profile-form"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const AccountProfilePage = async () => {

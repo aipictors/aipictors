@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppMarkdown } from "@/_components/app/app-markdown"
 import type { Metadata } from "next"
 
 const FlutterPrivacyPage = async () => {

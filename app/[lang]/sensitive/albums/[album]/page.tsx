@@ -1,10 +1,10 @@
-import { AlbumArticleHeader } from "@/app/[lang]/(main)/albums/[album]/_components/album-article-header"
-import { AlbumWorkDescription } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-description"
-import { AlbumWorkList } from "@/app/[lang]/(main)/albums/[album]/_components/album-work-list"
-import { AppPage } from "@/components/app/app-page"
-import { albumQuery } from "@/graphql/queries/album/album"
-import { albumWorksQuery } from "@/graphql/queries/album/album-works"
-import { createClient } from "@/lib/client"
+import { AlbumArticleHeader } from "@/[lang]/(main)/albums/[album]/_components/album-article-header"
+import { AlbumWorkDescription } from "@/[lang]/(main)/albums/[album]/_components/album-work-description"
+import { AlbumWorkList } from "@/[lang]/(main)/albums/[album]/_components/album-work-list"
+import { AppPage } from "@/_components/app/app-page"
+import { albumQuery } from "@/_graphql/queries/album/album"
+import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 type Props = {

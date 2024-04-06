@@ -1,9 +1,9 @@
 "use client"
 
-import { MessageInput } from "@/app/[lang]/(main)/support/chat/_components/message-input"
-import { SupportMessageList } from "@/app/[lang]/(main)/support/chat/_components/support-message-list"
-import { createMessageMutation } from "@/graphql/mutations/create-message"
-import { viewerSupportMessagesQuery } from "@/graphql/queries/viewer/viewer-support-messages"
+import { MessageInput } from "@/[lang]/(main)/support/chat/_components/message-input"
+import { SupportMessageList } from "@/[lang]/(main)/support/chat/_components/support-message-list"
+import { createMessageMutation } from "@/_graphql/mutations/create-message"
+import { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-support-messages"
 import { useMutation, useQuery } from "@apollo/client"
 import { startTransition } from "react"
 import { toast } from "sonner"

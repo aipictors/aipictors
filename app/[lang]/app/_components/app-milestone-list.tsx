@@ -1,6 +1,6 @@
 "use client"
 
-import { milestonesQuery } from "@/graphql/queries/milestone/miestones"
+import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { useSuspenseQuery } from "@apollo/client"
 
 export const AppMilestoneList = () => {

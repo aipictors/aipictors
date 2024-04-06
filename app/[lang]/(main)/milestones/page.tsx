@@ -1,12 +1,12 @@
-import { AppPage } from "@/components/app/app-page"
+import { AppPage } from "@/_components/app/app-page"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+} from "@/_components/ui/accordion"
+import { Card } from "@/_components/ui/card"
+import { Separator } from "@/_components/ui/separator"
 import {
   Table,
   TableBody,
@@ -14,10 +14,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { milestonesQuery } from "@/graphql/queries/milestone/miestones"
-import { createClient } from "@/lib/client"
+} from "@/_components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
+import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 import Link from "next/link"
 

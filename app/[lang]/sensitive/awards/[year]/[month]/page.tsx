@@ -1,5 +1,5 @@
-import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
-import { AppPage } from "@/components/app/app-page"
+import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 const SensitiveAwardsPage = async () => {

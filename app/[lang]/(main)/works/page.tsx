@@ -1,5 +1,5 @@
-import WorksPageLoading from "@/app/[lang]/(main)/works/loading"
-import { AppPlaceholder } from "@/components/app/app-placeholder"
+import WorksPageLoading from "@/[lang]/(main)/works/loading"
+import { AppPlaceholder } from "@/_components/app/app-placeholder"
 import type { Metadata } from "next"
 import { Suspense } from "react"
 

@@ -1,4 +1,4 @@
-import { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { useApolloClient } from "@apollo/client"
 
 export const useCachedImageGenerationTask = (id: string) => {

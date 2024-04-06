@@ -1,4 +1,4 @@
-import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
+import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import {
   ArrowLeftIcon,
   LockKeyholeIcon,

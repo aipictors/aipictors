@@ -1,4 +1,4 @@
-import { AppCanvas } from "@/app/[lang]/app/_components/app-canvas"
+import { AppCanvas } from "@/[lang]/app/_components/app-canvas"
 import Image from "next/image"
 import Link from "next/link"
 

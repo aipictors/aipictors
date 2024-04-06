@@ -1,11 +1,11 @@
-import { HomeTagList } from "@/app/[lang]/(main)/_components/home-tag-list"
-import { HomeWorkSection } from "@/app/[lang]/(main)/_components/home-work-section"
-import { AppDevelopmentPage } from "@/components/app/app-development-page"
-import { AppPage } from "@/components/app/app-page"
+import { HomeTagList } from "@/[lang]/(main)/_components/home-tag-list"
+import { HomeWorkSection } from "@/[lang]/(main)/_components/home-work-section"
+import { AppDevelopmentPage } from "@/_components/app/app-development-page"
+import { AppPage } from "@/_components/app/app-page"
+import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
+import { worksQuery } from "@/_graphql/queries/work/works"
+import { createClient } from "@/_lib/client"
 import { config } from "@/config"
-import { hotTagsQuery } from "@/graphql/queries/tag/hot-tags"
-import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
 import type { Metadata } from "next"
 
 export const revalidate = 60

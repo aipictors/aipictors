@@ -1,6 +1,6 @@
-import { NoteCard } from "@/app/[lang]/(main)/notes/_components/note-card"
+import { NoteCard } from "@/[lang]/(main)/notes/_components/note-card"
 
-import { AppPage } from "@/components/app/app-page"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 /**

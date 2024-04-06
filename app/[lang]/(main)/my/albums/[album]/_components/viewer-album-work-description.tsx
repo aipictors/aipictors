@@ -1,9 +1,9 @@
 "use client"
 
-import { DescriptionSettingDialog } from "@/app/[lang]/(main)/my/albums/[album]/_components/description-setting-dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { DescriptionSettingDialog } from "@/[lang]/(main)/my/albums/[album]/_components/description-setting-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
+import { Button } from "@/_components/ui/button"
+import { Card, CardContent } from "@/_components/ui/card"
 import { SettingsIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

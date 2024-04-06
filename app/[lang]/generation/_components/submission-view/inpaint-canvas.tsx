@@ -1,5 +1,5 @@
-import { usePainter } from "@/app/[lang]/generation/_hooks/use-painter"
-import { Button } from "@/components/ui/button"
+import { usePainter } from "@/[lang]/generation/_hooks/use-painter"
+import { Button } from "@/_components/ui/button"
 import {
   Select,
   SelectContent,
@@ -7,9 +7,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Slider } from "@/components/ui/slider"
+} from "@/_components/ui/select"
+import { Skeleton } from "@/_components/ui/skeleton"
+import { Slider } from "@/_components/ui/slider"
 import type Konva from "konva"
 import { useEffect, useRef, useState } from "react"
 import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"

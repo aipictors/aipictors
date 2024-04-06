@@ -1,6 +1,6 @@
 "use client"
-import { StickerCard } from "@/app/[lang]/(main)/stickers/_components/sticker-card"
-import type { StickersQuery } from "@/graphql/__generated__/graphql"
+import { StickerCard } from "@/[lang]/(main)/stickers/_components/sticker-card"
+import type { StickersQuery } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   stickers: StickersQuery["stickers"]

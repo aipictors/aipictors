@@ -1,7 +1,6 @@
 "use client"
 
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +14,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/_components/ui/dropdown-menu"
+import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import {
   GemIcon,

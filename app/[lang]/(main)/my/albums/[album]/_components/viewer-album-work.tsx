@@ -1,8 +1,8 @@
 "use client"
 
-import { AlbumWorkDeleteDialog } from "@/app/[lang]/(main)/my/albums/[album]/_components/album-work-delete-dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { AlbumWorkDeleteDialog } from "@/[lang]/(main)/my/albums/[album]/_components/album-work-delete-dialog"
+import { Button } from "@/_components/ui/button"
+import { Card, CardContent } from "@/_components/ui/card"
 import { Trash2Icon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

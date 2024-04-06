@@ -1,20 +1,20 @@
-import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-view/config-model-button"
-import { ImageModelCard } from "@/app/[lang]/generation/_components/config-view/image-model-card"
-import { toCategoryName } from "@/app/[lang]/generation/_utils/to-category-name"
-import { removeDuplicates } from "@/app/_utils/remove-duplicates"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
+import { ImageModelCard } from "@/[lang]/generation/_components/config-view/image-model-card"
+import { toCategoryName } from "@/[lang]/generation/_utils/to-category-name"
+import { Badge } from "@/_components/ui/badge"
+import { Button } from "@/_components/ui/button"
+import { ScrollArea } from "@/_components/ui/scroll-area"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/_components/ui/select"
+import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import { cn } from "@/_lib/utils"
+import { removeDuplicates } from "@/_utils/remove-duplicates"
 import { config } from "@/config"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
-import { cn } from "@/lib/utils"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"

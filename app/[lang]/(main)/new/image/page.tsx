@@ -1,4 +1,4 @@
-import NewImageForm from "@/app/[lang]/(main)/new/image/_components/new-image-form"
+import NewImageForm from "@/[lang]/(main)/new/image/_components/new-image-form"
 import type { Metadata } from "next"
 
 const NewImagePage = () => {

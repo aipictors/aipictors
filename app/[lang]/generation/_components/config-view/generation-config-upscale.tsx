@@ -1,8 +1,8 @@
 "use client"
 
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { CrossPlatformTooltip } from "@/app/_components/cross-platform-tooltip"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
+import { Checkbox } from "@/_components/ui/checkbox"
 
 export const GenerationConfigUpscale = () => {
   const context = useGenerationContext()

@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Button } from "@/_components/ui/button"
+import { Card } from "@/_components/ui/card"
 import { Trash2Icon } from "lucide-react"
 
 export const ViewerAlbum = () => {

@@ -1,8 +1,8 @@
-import UserProfile from "@/app/[lang]/(main)/users/[user]/_components/user-profile"
-import { UserTabs } from "@/app/[lang]/(main)/users/[user]/_components/user-tabs"
-import { AppPage } from "@/components/app/app-page"
-import { userQuery } from "@/graphql/queries/user/user"
-import { createClient } from "@/lib/client"
+import UserProfile from "@/[lang]/(main)/users/[user]/_components/user-profile"
+import { UserTabs } from "@/[lang]/(main)/users/[user]/_components/user-tabs"
+import { AppPage } from "@/_components/app/app-page"
+import { userQuery } from "@/_graphql/queries/user/user"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 

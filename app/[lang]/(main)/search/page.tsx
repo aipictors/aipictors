@@ -1,10 +1,10 @@
-import { RelatedModelList } from "@/app/[lang]/(main)/search/_components/related-model-list"
-import { RelatedTagList } from "@/app/[lang]/(main)/search/_components/related-tag-list"
-import { SearchHeader } from "@/app/[lang]/(main)/search/_components/search-header"
-import { WorkList } from "@/app/[lang]/(main)/works/_components/work-list"
-import { AppPage } from "@/components/app/app-page"
-import { worksQuery } from "@/graphql/queries/work/works"
-import { createClient } from "@/lib/client"
+import { RelatedModelList } from "@/[lang]/(main)/search/_components/related-model-list"
+import { RelatedTagList } from "@/[lang]/(main)/search/_components/related-tag-list"
+import { SearchHeader } from "@/[lang]/(main)/search/_components/search-header"
+import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
+import { AppPage } from "@/_components/app/app-page"
+import { worksQuery } from "@/_graphql/queries/work/works"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 const SearchPage = async () => {

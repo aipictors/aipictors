@@ -1,9 +1,9 @@
 "use client"
 
-import { GenerationViewCard } from "@/app/[lang]/generation/_components/generation-view-card"
-import { GenerationTaskDetails } from "@/app/[lang]/generation/_components/task-view/generation-task-details"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { Button } from "@/components/ui/button"
+import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
+import { GenerationTaskDetails } from "@/[lang]/generation/_components/task-view/generation-task-details"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { Button } from "@/_components/ui/button"
 
 /**
  * 生成履歴詳細

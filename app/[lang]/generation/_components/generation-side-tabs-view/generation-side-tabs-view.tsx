@@ -1,8 +1,8 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { useState } from "react"
 import type { StateValue } from "xstate"
 

@@ -1,4 +1,4 @@
-import { ViewerFolloweeList } from "@/app/[lang]/(main)/my/followees/_components/viewer-followee-list"
+import { ViewerFolloweeList } from "@/[lang]/(main)/my/followees/_components/viewer-followee-list"
 import type { Metadata } from "next"
 
 const MyFolloweesPage = async () => {

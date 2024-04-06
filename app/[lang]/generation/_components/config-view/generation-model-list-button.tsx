@@ -1,9 +1,9 @@
 "use client"
 
-import { ImageModelsList } from "@/app/[lang]/generation/_components/config-view/generation-image-model-list"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ImageModelsList } from "@/[lang]/generation/_components/config-view/generation-image-model-list"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { Button } from "@/_components/ui/button"
+import { Checkbox } from "@/_components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -11,9 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
-import { updateRatingImageGenerationModelMutation } from "@/graphql/mutations/update-rating-image-generation-model"
+} from "@/_components/ui/dialog"
+import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
 import { useMutation } from "@apollo/client"
 import { useBoolean } from "usehooks-ts"
 

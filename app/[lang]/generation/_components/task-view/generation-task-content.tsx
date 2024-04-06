@@ -1,15 +1,15 @@
 "use client"
 
-import { generationTaskError } from "@/app/[lang]/generation/_components/task-view/generation-task-error"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
-import { AuthContext } from "@/app/_contexts/auth-context"
+import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
+import { AuthContext } from "@/_contexts/auth-context"
 import type {
   ImageGenerationSizeType,
   ImageGenerationStatus,
   ImageGenerationType,
-} from "@/graphql/__generated__/graphql"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
+} from "@/_graphql/__generated__/graphql"
+import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { useContext } from "react"

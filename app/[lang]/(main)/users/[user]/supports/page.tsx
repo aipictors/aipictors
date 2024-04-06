@@ -1,6 +1,6 @@
-import { UserSupport } from "@/app/[lang]/(main)/users/[user]/supports/_components/user-support"
-import { userQuery } from "@/graphql/queries/user/user"
-import { createClient } from "@/lib/client"
+import { UserSupport } from "@/[lang]/(main)/users/[user]/supports/_components/user-support"
+import { userQuery } from "@/_graphql/queries/user/user"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 

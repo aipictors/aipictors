@@ -1,4 +1,4 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 
 const PlusLoading = () => {
   return <AppLoadingPage />
