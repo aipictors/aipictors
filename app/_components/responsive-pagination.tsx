@@ -46,7 +46,7 @@ export const ResponsivePagination = ({
         {currentPageIndex !== 0 && (
           <PaginationItem>
             <PaginationPrevious
-              href="#"
+              to="#"
               onClick={() => handlePageChange(currentPageIndex - 1)}
             />
           </PaginationItem>
@@ -55,7 +55,7 @@ export const ResponsivePagination = ({
         {currentPageIndex > 1 && pageCount > 2 && (
           <>
             <PaginationItem>
-              <PaginationLink href="#" onClick={() => handlePageChange(1)}>
+              <PaginationLink to="#" onClick={() => handlePageChange(1)}>
                 {1}
               </PaginationLink>
             </PaginationItem>{" "}
@@ -66,7 +66,7 @@ export const ResponsivePagination = ({
         {currentPageIndex > 0 && (
           <PaginationItem>
             <PaginationLink
-              href="#"
+              to="#"
               onClick={() => handlePageChange(currentPageIndex - 1)}
             >
               {currentPageIndex - 1 + 1}
@@ -75,7 +75,7 @@ export const ResponsivePagination = ({
         )}
         {/* 現在のページ */}
         <PaginationItem>
-          <PaginationLink href="#" isActive>
+          <PaginationLink to="#" isActive>
             {currentPageIndex + 1}
           </PaginationLink>
         </PaginationItem>
@@ -83,7 +83,7 @@ export const ResponsivePagination = ({
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
             <PaginationLink
-              href="#"
+              to="#"
               onClick={() => handlePageChange(currentPageIndex + 1)}
             >
               {currentPageIndex + 1 + 1}
@@ -96,7 +96,7 @@ export const ResponsivePagination = ({
             <PaginationEllipsis />{" "}
             <PaginationItem>
               <PaginationLink
-                href="#"
+                to="#"
                 onClick={() => handlePageChange(pageCount - 1)}
               >
                 {pageCount}
@@ -108,7 +108,7 @@ export const ResponsivePagination = ({
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
             <PaginationNext
-              href="#"
+              to="#"
               onClick={(e) => {
                 e.preventDefault()
                 handlePageChange(currentPageIndex + 1)

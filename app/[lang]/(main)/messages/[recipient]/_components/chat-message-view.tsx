@@ -4,7 +4,7 @@ import { ChatMessageListContent } from "@/[lang]/(main)/messages/[recipient]/_co
 import { MessageInput } from "@/[lang]/(main)/support/chat/_components/message-input"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { createMessageMutation } from "@/_graphql/mutations/create-message"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { Suspense } from "react"
 import { toast } from "sonner"
 

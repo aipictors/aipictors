@@ -2,7 +2,7 @@ import { PassPlanList } from "@/[lang]/(main)/plus/_components/pass-plan-list"
 import type { PassType } from "@/_graphql/__generated__/graphql"
 import { createPassCheckoutSessionMutation } from "@/_graphql/mutations/create-pass-checkout-session"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { toast } from "sonner"
 

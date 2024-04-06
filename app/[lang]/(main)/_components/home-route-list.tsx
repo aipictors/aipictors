@@ -6,6 +6,7 @@ import { NavigationLogoutDialogButton } from "@/[lang]/_components/logout-naviga
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import {
   AlertTriangleIcon,
   AwardIcon,
@@ -24,7 +25,6 @@ import {
   StampIcon,
   UserIcon,
 } from "lucide-react"
-import Link from "next/link"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -173,16 +173,16 @@ export const HomeRouteList = () => {
         <Separator />
       </div>
       <div className="flex flex-col space-y-2 pl-3">
-        <Link href={"/about"} className={"text-xs"}>
+        <Link to={"/about"} className={"text-xs"}>
           {"このサイトについて"}
         </Link>
-        <Link href={"/about/us"} className={"text-xs"}>
+        <Link to={"/about/us"} className={"text-xs"}>
           {"運営会社"}
         </Link>
-        <Link href={"/terms"} className={"text-xs"}>
+        <Link to={"/terms"} className={"text-xs"}>
           {"利用規約"}
         </Link>
-        <Link href={"/privacy"} className={"text-xs"}>
+        <Link to={"/privacy"} className={"text-xs"}>
           {"プライバシーポリシー"}
         </Link>
         <Link

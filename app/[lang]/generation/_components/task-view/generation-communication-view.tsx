@@ -6,7 +6,7 @@ import { GenerationMessageInput } from "@/[lang]/generation/_components/task-vie
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { createMessageMutation } from "@/_graphql/mutations/create-message"
 import { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-support-messages"
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client/index.js"
 import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"

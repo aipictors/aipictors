@@ -10,7 +10,7 @@ import type {
   ImageGenerationType,
 } from "@/_graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
 import { ErrorBoundary } from "@sentry/react"
 import { useContext } from "react"
 

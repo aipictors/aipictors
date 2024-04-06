@@ -14,7 +14,7 @@ import type { TaskListThumbnailType } from "@/[lang]/generation/_types/task-list
 import { Toggle } from "@/_components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
 

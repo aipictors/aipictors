@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -51,7 +51,7 @@ export const WorkArticle = (props: Props) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Avatar>
-            <Link href={`/users/${props.work.user.login}`}>
+            <Link to={`/users/${props.work.user.login}`}>
               <AvatarImage src={props.work.user.iconImage?.downloadURL} />
               <AvatarFallback />
             </Link>

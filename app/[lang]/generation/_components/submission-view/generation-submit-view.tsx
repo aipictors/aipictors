@@ -15,7 +15,7 @@ import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-imag
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"

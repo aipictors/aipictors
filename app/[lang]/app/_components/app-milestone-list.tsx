@@ -1,7 +1,7 @@
 "use client"
 
 import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
-import { useSuspenseQuery } from "@apollo/client"
+import { useSuspenseQuery } from "@apollo/client/index.js"
 
 export const AppMilestoneList = () => {
   const { data: milestones } = useSuspenseQuery(milestonesQuery, {

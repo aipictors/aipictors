@@ -5,8 +5,8 @@ import { PrivateImage } from "@/_components/private-image"
 import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
-import { useSuspenseQuery } from "@apollo/client"
-import { skipToken } from "@apollo/client"
+import { useSuspenseQuery } from "@apollo/client/index.js"
+import { skipToken } from "@apollo/client/index.js"
 import { useContext } from "react"
 
 /**

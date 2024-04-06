@@ -1,5 +1,4 @@
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
@@ -13,15 +12,12 @@ export default function HomeWorkAlbum({
 }: HomeWorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
-      <Link href={`/works/${workId}`}>
-        <Image
-          fill
+      <Link to={`/works/${workId}`}>
+        <img
           src={photo.src}
-          placeholder={"blurDataURL" in photo ? "blur" : undefined}
-          {...{
-            alt: "",
-            className: "rounded",
-          }}
+          placeholder={"blurDataURL" in photo ? "blur" : ""}
+          alt={""}
+          className={"rounded"}
         />
       </Link>
     </div>

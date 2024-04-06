@@ -4,7 +4,7 @@ import { MutedUser } from "@/[lang]/settings/muted/users/_components/muted-user"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteUserMutation } from "@/_graphql/mutations/mute-user"
 import { viewerMutedUsersQuery } from "@/_graphql/queries/viewer/viewer-muted-users"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index.js"
 import { useContext } from "react"
 
 export const MutedUserList = () => {

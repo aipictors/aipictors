@@ -1,5 +1,5 @@
 import { config } from "@/config"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
 type Props = {
@@ -19,7 +19,7 @@ export const AppBreadcrumb = (props: Props) => {
         {props.breadcrumb.itemListElement.map((item, index) => (
           <>
             <Link
-              href={
+              to={
                 item.item === config.siteURL
                   ? "/"
                   : item.item.replace(config.siteURL, "")

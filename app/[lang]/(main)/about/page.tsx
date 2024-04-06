@@ -1,6 +1,6 @@
 import { AppPage } from "@/_components/app/app-page"
+import { Link } from "@remix-run/react"
 import type { Metadata } from "next"
-import Link from "next/link"
 
 /**
  * サイトについて
@@ -21,25 +21,25 @@ const AboutPage = async () => {
           hello@aipictors.com からお願い致します。
         </p>
         <h2 className="py-2 font-bold text-md">お問い合わせ先</h2>
-        <Link href="/contact">こちら</Link>
+        <Link to="/contact">こちら</Link>
         <h2 className="py-2 font-bold text-md">プライバシーポリシー</h2>
-        <Link href="/privacy">個人情報の利用目的などについて</Link>
+        <Link to="/privacy">個人情報の利用目的などについて</Link>
         <h2 className="py-2 font-bold text-md">利用規約</h2>
         <p>
           {"サービスのご利用にあたっては"}
-          <Link href="/terms">こちら</Link>
+          <Link to="/terms">こちら</Link>
           {"をご参照ください"}
         </p>
         <h2 className="py-2 font-bold text-md">ガイドライン</h2>
         <p>
           {"機能の使い方は"}
-          <Link href="/guideline">こちら</Link>
+          <Link to="/guideline">こちら</Link>
           {"をご参照ください"}
         </p>
         <h2 className="py-2 font-bold text-md">ロゴ</h2>
         <p>
           {"当サービスのロゴをご利用の方は"}
-          <Link href="https://www.aipictors.com/presskit/">こちら</Link>
+          <Link to="https://www.aipictors.com/presskit/">こちら</Link>
           {"をご参照ください"}
         </p>
       </div>

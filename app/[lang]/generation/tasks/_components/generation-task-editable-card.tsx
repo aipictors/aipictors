@@ -15,7 +15,7 @@ import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"

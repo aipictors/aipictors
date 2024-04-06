@@ -5,8 +5,8 @@ import { PrivateImage } from "@/_components/private-image"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
-import { useMutation } from "@apollo/client"
-import Link from "next/link"
+import { useMutation } from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import { toast } from "sonner"
 
 type Props = {
@@ -81,7 +81,7 @@ export const GenerationTaskLinkCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        <Link href={`/generation/tasks/${props.taskNanoid}`}>
+        <Link to={`/generation/tasks/${props.taskNanoid}`}>
           <PrivateImage
             className={`generation-image-${props.taskNanoid}`}
             taskId={props.taskId}

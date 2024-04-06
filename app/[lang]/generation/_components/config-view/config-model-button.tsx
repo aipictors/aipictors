@@ -1,8 +1,8 @@
 import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import { SearchIcon } from "lucide-react"
-import Link from "next/link"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -57,7 +57,7 @@ export const ConfigModelButton = (props: Props) => {
             <SearchIcon className="w-4" />
           </Button>
         ) : (
-          <Link href={"#generation-works-from-model-view"}>
+          <Link to={"#generation-works-from-model-view"}>
             <Button
               disabled={props.isDisabled}
               onClick={props.onSearchClick}

@@ -1,6 +1,6 @@
 import { AppCanvas } from "@/[lang]/app/_components/app-canvas"
+import { Link } from "@remix-run/react"
 import Image from "next/image"
-import Link from "next/link"
 
 export const AppAboutHeader = () => {
   return (
@@ -31,10 +31,10 @@ export const AppAboutHeader = () => {
           </div>
         </div>
         <div className="flex items-center justify-center space-x-8">
-          <Link href="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
+          <Link to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
             <img src="/apple/download.svg" alt="download" className="h-12" />
           </Link>
-          <Link href="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
+          <Link to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
             <img src="/google/download.png" alt="download" className="h-16" />
           </Link>
         </div>

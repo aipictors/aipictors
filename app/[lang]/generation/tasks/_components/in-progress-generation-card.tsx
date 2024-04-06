@@ -2,8 +2,8 @@ import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation
 import { GenerationTaskCancelButton } from "@/[lang]/generation/tasks/_components/generation-cancel-button"
 import { InProgressGenerationProgressBar } from "@/[lang]/generation/tasks/_components/in-progress-generation-progress-bar"
 import { Card } from "@/_components/ui/card"
+import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
-import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
@@ -64,7 +64,7 @@ export const InProgressGenerationCard = (props: Props) => {
               {dataContext.currentPass?.type !== "PREMIUM" &&
                 dataContext.currentPass?.type !== "STANDARD" && (
                   <Link
-                    href="/plus"
+                    to="/plus"
                     className="text-sm"
                     target="_blank"
                     rel="noopener noreferrer"

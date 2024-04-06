@@ -11,7 +11,7 @@ import { createCustomerPortalSessionMutation } from "@/_graphql/mutations/create
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { cn } from "@/_lib/utils"
 import { toDateText } from "@/_utils/to-date-text"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index.js"
 import { toast } from "sonner"
 
 export const PlusForm = () => {

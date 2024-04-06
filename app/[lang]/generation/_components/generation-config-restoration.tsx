@@ -4,7 +4,7 @@ import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generatio
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
-import { skipToken, useSuspenseQuery } from "@apollo/client"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
 import { useSearchParams } from "next/navigation"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"

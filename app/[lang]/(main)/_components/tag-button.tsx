@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   name: string
@@ -7,7 +7,7 @@ type Props = {
 
 export const TagButton = (props: Props) => {
   return (
-    <Link href={`/tags/${props.name}`}>
+    <Link to={`/tags/${props.name}`}>
       <Button variant={"link"}>#{props.name}</Button>
     </Link>
   )

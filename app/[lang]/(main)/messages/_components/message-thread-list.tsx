@@ -5,8 +5,8 @@ import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { viewerMessageThreadsQuery } from "@/_graphql/queries/viewer/viewer-message-threads"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import { useSuspenseQuery } from "@apollo/client"
-import Link from "next/link"
+import { useSuspenseQuery } from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
 
@@ -37,7 +37,7 @@ export const MessageThreadList = () => {
             <Link
               key={messageThread.id}
               className="block"
-              href={`/messages/${messageThread.id}`}
+              to={`/messages/${messageThread.id}`}
             >
               <Button
                 className="flex h-auto flex-col gap-y-2 overflow-hidden p-4"

@@ -17,7 +17,7 @@ import { deleteImageGenerationMemoMutation } from "@/_graphql/mutations/delete-i
 import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-image-generation-memo"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { Loader2, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"

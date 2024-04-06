@@ -8,7 +8,8 @@ import { Card } from "@/_components/ui/card"
 import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import {
   GoogleAuthProvider,
   TwitterAuthProvider,
@@ -16,7 +17,6 @@ import {
   signInWithCustomToken,
   signInWithPopup,
 } from "firebase/auth"
-import Link from "next/link"
 import { toast } from "sonner"
 
 /**
@@ -100,7 +100,7 @@ export const LoginPage = () => {
               <Link
                 className="w-full"
                 target="_blank"
-                href={"https://www.aipictors.com/login/"}
+                to={"https://www.aipictors.com/login/"}
               >
                 <Button className="w-full" variant={"secondary"}>
                   {"アカウント作成"}

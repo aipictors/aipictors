@@ -15,7 +15,7 @@ import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations
 import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"

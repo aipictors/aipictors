@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 export const PlusNoteList = () => {
   return (
@@ -58,7 +58,7 @@ export const PlusNoteList = () => {
         {
           "本プランに関し、規約違反に反する行為又は該当する恐れのある行為が確認された場合は特典を停止することがあります。AIイラスト生成で規約違反が発覚した場合はAIイラスト生成機能の停止となる場合がございます。詳細は当サービスの規約（"
         }
-        <Link href={"https://www.aipictors.com/terms"}>
+        <Link to={"https://www.aipictors.com/terms"}>
           {"https://www.aipictors.com/terms"}
         </Link>
         {"）をご確認下さい。"}

@@ -16,7 +16,7 @@ import { GenerationTaskListView } from "@/[lang]/generation/_components/task-vie
 import { GenerationWorkContentPreview } from "@/[lang]/generation/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/[lang]/generation/_components/task-view/generation-works-from-model-view"
 import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import { useState } from "react"

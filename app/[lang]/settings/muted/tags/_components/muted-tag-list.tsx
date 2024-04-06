@@ -5,7 +5,11 @@ import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
 import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
-import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
+import {
+  ApolloError,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/index.js"
 import { useContext, useState } from "react"
 
 export const MutedTagList = () => {

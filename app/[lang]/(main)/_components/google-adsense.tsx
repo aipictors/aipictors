@@ -2,7 +2,7 @@
 
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { useSuspenseQuery } from "@apollo/client"
+import { useSuspenseQuery } from "@apollo/client/index.js"
 import { usePathname } from "next/navigation"
 import type React from "react"
 import { useEffect } from "react"
@@ -49,7 +49,7 @@ export const GoogleAdsense = (props: Props) => {
           ...props.style,
           display: "block",
         }}
-        data-adtest={process.env.NODE_ENV === "production" ? "off" : "on"}
+        data-adtest={import.meta.env.NODE_ENV === "production" ? "off" : "on"}
         data-ad-client={config.googleAdsense.client}
         data-ad-slot={props.slot}
         data-ad-format={props.format}

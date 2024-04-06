@@ -11,7 +11,7 @@ import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-i
 import { fetchImage } from "@/_utils/fetch-image-object-url"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import dynamic from "next/dynamic"
 import { useState } from "react"

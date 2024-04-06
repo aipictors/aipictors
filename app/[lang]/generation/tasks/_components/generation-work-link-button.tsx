@@ -1,5 +1,5 @@
+import { Link } from "@remix-run/react"
 import { ExternalLinkIcon } from "lucide-react"
-import Link from "next/link"
 
 type Props = {
   id: string
@@ -14,7 +14,7 @@ export const GenerationWorkLinkButton = (props: Props) => {
   return (
     <Link
       className="absolute bottom-2 left-2 rounded-full hover:opacity-80"
-      href={`https://www.aipictors.com/works/${props.id}`}
+      to={`https://www.aipictors.com/works/${props.id}`}
       target="_blank"
       rel="noopener noreferrer"
     >

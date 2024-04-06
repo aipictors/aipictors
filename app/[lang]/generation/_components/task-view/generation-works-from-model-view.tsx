@@ -7,7 +7,7 @@ import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generatio
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { worksQuery } from "@/_graphql/queries/work/works"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/index.js"
 import { useState } from "react"
 
 /**

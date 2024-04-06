@@ -12,7 +12,7 @@ export const AppAnalytics = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-    if (process.env.NODE_ENV === "development") return
+    if (import.meta.env.NODE_ENV === "development") return
     if (getApps().length === 0) return
     logEvent(getAnalytics(), "page_view", {
       page_path: pathname,

@@ -1,8 +1,8 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import { FrownIcon } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 
 /**
  * サブスクの決済をキャンセルした場合のページ
@@ -28,7 +28,7 @@ const PlusCancelPage = async () => {
           </div>
         </div>
         <div className="flex justify-center">
-          <Link href="/plus" replace>
+          <Link to="/plus" replace>
             <Button>{"Plusに戻る"}</Button>
           </Link>
         </div>

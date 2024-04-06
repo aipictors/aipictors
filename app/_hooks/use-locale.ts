@@ -1,9 +1,9 @@
-import { usePathname } from "next/navigation"
+import { useLocation } from "@remix-run/react"
 
 export const useLocale = () => {
-  const pathname = usePathname()
+  const location = useLocation()
 
-  if (pathname.startsWith("/en")) {
+  if (location.pathname.startsWith("/en")) {
     return "en"
   }
 

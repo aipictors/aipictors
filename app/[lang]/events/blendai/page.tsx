@@ -2,9 +2,9 @@ import { ImageGenerationReferenceCard } from "@/[lang]/_components/image-generat
 import { EventImage } from "@/[lang]/events/blendai/_components/event-image"
 import { eventUsers } from "@/[lang]/events/wakiaiai/_assets/event-users"
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 
 const BlendAiPage = async () => {
   const length = Math.floor(eventUsers.length / 3)
@@ -63,7 +63,7 @@ const BlendAiPage = async () => {
         </div>
         <Link
           className="text-sm"
-          href="https://www.aipictors.com/events/blendai/"
+          to="https://www.aipictors.com/events/blendai/"
         >
           イベント特設ページはこちら
         </Link>

@@ -7,8 +7,8 @@ import {
   CarouselItem,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
+import { Link } from "@remix-run/react"
 import Image from "next/image"
-import Link from "next/link"
 
 /**
  * 画像生成についての説明
@@ -31,7 +31,7 @@ export const GenerationAbout = () => {
           <h2>{"1日30枚無料！"}</h2>
         </div>
       </div>
-      <Link href={"/generation"} className={"m-auto mt-8 mb-8 block w-64"}>
+      <Link to={"/generation"} className={"m-auto mt-8 mb-8 block w-64"}>
         <GlowingGradientBorderButton
           onClick={() => {}}
           className={"m-auto mb-8 block w-64"}
@@ -99,8 +99,8 @@ export const GenerationAbout = () => {
         />
       </section>
       <div className="flex justify-center gap-x-2 py-4">
-        <Link href="/generation/terms">利用規約</Link>
-        <Link href="/specified-commercial-transaction-act">
+        <Link to="/generation/terms">利用規約</Link>
+        <Link to="/specified-commercial-transaction-act">
           特定商取引法に基づく表記
         </Link>
       </div>

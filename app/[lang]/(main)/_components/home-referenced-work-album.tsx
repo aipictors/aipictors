@@ -1,5 +1,5 @@
+import { Link } from "@remix-run/react"
 import Image from "next/image"
-import Link from "next/link"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
@@ -13,7 +13,7 @@ export default function HomeReferencedWorkAlbum({
 }: HomeWorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
-      <Link href={`/generation?reference=${workId}`}>
+      <Link to={`/generation?reference=${workId}`}>
         <Image
           fill
           src={photo.src}

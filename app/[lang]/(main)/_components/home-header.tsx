@@ -11,9 +11,9 @@ import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import { BellIcon, MenuIcon } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -71,10 +71,10 @@ export const HomeHeader = (props: Props) => {
             <Input placeholder={"作品を検索"} />
           </div>
         )}
-        <Link href={"/generation"}>
+        <Link to={"/generation"}>
           <Button variant={"secondary"}>{"生成"}</Button>
         </Link>
-        <Link href={"https://aipictors.com/post"}>
+        <Link to={"https://aipictors.com/post"}>
           <Button variant={"secondary"}>{"投稿"}</Button>
         </Link>
         {/* {config.isReleaseMode ? (

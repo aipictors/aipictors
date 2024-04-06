@@ -18,8 +18,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { createClient } from "@/_lib/client"
+import { Link } from "@remix-run/react"
 import type { Metadata } from "next"
-import Link from "next/link"
 
 /**
  * マイルストーン
@@ -91,7 +91,7 @@ const MilestonesPage = async () => {
                               : "未定"}
                           </TableCell>
                           <TableCell>
-                            <Link href={milestone.pageURL} target="_blank">
+                            <Link to={milestone.pageURL} target="_blank">
                               {"GitHubで確認"}
                             </Link>
                           </TableCell>
@@ -137,10 +137,7 @@ const MilestonesPage = async () => {
                                 <TableCell>{milestone.title}</TableCell>
                                 <TableCell>{milestone.description}</TableCell>
                                 <TableCell>
-                                  <Link
-                                    href={milestone.pageURL}
-                                    target="_blank"
-                                  >
+                                  <Link to={milestone.pageURL} target="_blank">
                                     {"GitHubで確認"}
                                   </Link>
                                 </TableCell>
@@ -158,14 +155,14 @@ const MilestonesPage = async () => {
         <TabsContent value="app" className="w-full">
           <div className="flex flex-col gap-y-4">
             <div className="flex items-center justify-start space-x-8">
-              <Link href="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
+              <Link to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
                 <img
                   src="/apple/download.svg"
                   alt="download"
                   className="h-12"
                 />
               </Link>
-              <Link href="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
+              <Link to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
                 <img
                   src="/google/download.png"
                   alt="download"
@@ -200,7 +197,7 @@ const MilestonesPage = async () => {
                               : "未定"}
                           </TableCell>
                           <TableCell>
-                            <Link href={milestone.pageURL} target="_blank">
+                            <Link to={milestone.pageURL} target="_blank">
                               {"GitHubで確認"}
                             </Link>
                           </TableCell>
@@ -246,10 +243,7 @@ const MilestonesPage = async () => {
                                 <TableCell>{milestone.title}</TableCell>
                                 <TableCell>{milestone.description}</TableCell>
                                 <TableCell>
-                                  <Link
-                                    href={milestone.pageURL}
-                                    target="_blank"
-                                  >
+                                  <Link to={milestone.pageURL} target="_blank">
                                     {"GitHubで確認"}
                                   </Link>
                                 </TableCell>

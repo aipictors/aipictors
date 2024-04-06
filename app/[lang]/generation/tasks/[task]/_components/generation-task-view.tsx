@@ -25,7 +25,12 @@ import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/up
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
-import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
+import {
+  skipToken,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -35,7 +40,6 @@ import {
   PenIcon,
   Trash2,
 } from "lucide-react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
@@ -502,7 +506,7 @@ export function GenerationTaskView(props: Props) {
         <AppFixedContent position="bottom">
           <div className="flex">
             <Link
-              href="/generation"
+              to="/generation"
               className={cn(
                 `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
               )}

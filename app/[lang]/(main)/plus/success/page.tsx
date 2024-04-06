@@ -1,8 +1,8 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import { ThumbsUpIcon } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 
 /**
  * サブスクの決済を完了した場合のページ
@@ -27,7 +27,7 @@ const PlusSuccessPage = async () => {
             </p>
           </div>
           <div className="flex justify-center">
-            <Link href="/plus" replace>
+            <Link to="/plus" replace>
               <Button>{"Plusに戻る"}</Button>
             </Link>
           </div>

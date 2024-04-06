@@ -32,7 +32,7 @@ import { viewerCurrentImageGenerationMemosQuery } from "@/_graphql/queries/viewe
 import { viewerFavoritedImageGenerationModelsQuery } from "@/_graphql/queries/viewer/viewer-favorited-image-generation-models"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/index.js"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
 

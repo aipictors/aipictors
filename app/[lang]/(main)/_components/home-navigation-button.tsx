@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import type { LucideIcon } from "lucide-react"
-import Link from "next/link"
 import { forwardRef } from "react"
 import type { IconType } from "react-icons"
 
@@ -48,7 +48,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
       return (
         <Link
           className="block"
-          href={props.href}
+          to={props.href}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -65,7 +65,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
     }
 
     return (
-      <Link className="block" href={props.href}>
+      <Link className="block" to={props.href}>
         <Button
           variant={"ghost"}
           className="w-full justify-start"

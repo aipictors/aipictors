@@ -3,7 +3,7 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { UpdateAccountPasswordDocument } from "@/_graphql/__generated__/graphql"
-import { ApolloError, useMutation } from "@apollo/client"
+import { ApolloError, useMutation } from "@apollo/client/index.js"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
