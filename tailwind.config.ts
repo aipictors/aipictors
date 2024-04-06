@@ -4,7 +4,7 @@ import { fontFamily } from "tailwindcss/defaultTheme"
 const config = {
   plugins: [require("tailwindcss-animate")],
   darkMode: ["class"],
-  content: ["./components/**/*.tsx", "./app/**/*.tsx"],
+  content: ["app/**/*.tsx"],
   theme: {
     /**
      * shadcn/ui
@@ -87,7 +87,7 @@ const config = {
        * 追加: カスタムフォントに使用
        */
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["Noto Sans JP", ...fontFamily.sans],
       },
       height: {
         /**

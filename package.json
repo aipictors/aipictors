@@ -3,6 +3,9 @@
   "version": "1.1.0",
   "private": true,
   "scripts": {
+    "_build": "remix vite:build",
+    "_deploy": "npm run build && wrangler pages deploy ./build/client",
+    "_dev": "remix vite:dev",
     "dev": "graphql-codegen-esm --config codegen.ts && next dev --turbo",
     "build": "graphql-codegen-esm --config codegen.ts && next build",
     "build:graphql": "graphql-codegen-esm --config codegen.ts",
@@ -18,7 +21,23 @@
     "init:vscode": "bun run scripts/install-vscode-extensions.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.9",
+    "vite": "^5.1.0",
+    "vite-tsconfig-paths": "^4.2.1",
+    "@cloudflare/workers-types": "^4.20240405.0",
+    "typescript": "5.4.4",
+    "@types/bun": "^1.0.12",
+    "@types/lodash": "^4.17.0",
+    "@types/node": "20.12.4",
+    "@types/react": "18.2.74",
+    "@types/react-dom": "18.2.24",
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/client-preset": "4.2.5",
+    "@remix-run/cloudflare": "^2.8.1",
+    "@remix-run/cloudflare-pages": "^2.8.1",
+    "@remix-run/react": "^2.8.1",
+    "isbot": "^4.1.0",
+    "miniflare": "^3.20231030.4",
+    "@apollo/client/index.js": "^3.9.9",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
@@ -112,9 +131,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "wrangler": "^3.24.0",
+    "@remix-run/dev": "^2.8.1",
     "@biomejs/biome": "^1.6.4",
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "4.2.5",
     "@sentry/cli": "^2.31.0",
     "@storybook/addon-essentials": "^8.0.5",
     "@storybook/addon-interactions": "^8.0.5",
@@ -125,15 +144,11 @@
     "@storybook/nextjs": "^8.0.5",
     "@storybook/react": "^8.0.5",
     "@storybook/test": "^8.0.5",
-    "@types/bun": "^1.0.12",
-    "@types/lodash": "^4.17.0",
-    "@types/node": "20.12.4",
-    "@types/react": "18.2.74",
-    "@types/react-dom": "18.2.24",
     "lefthook": "^1.6.7",
-    "storybook": "^8.0.5",
-    "typescript": "5.4.4"
+    "storybook": "^8.0.5"
   },
+  "sideEffects": false,
+  "type": "module",
   "engine": {
     "node": "21.5.0"
   }
