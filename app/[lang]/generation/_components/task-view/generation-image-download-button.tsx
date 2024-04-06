@@ -49,7 +49,7 @@ export function GenerationImageDownloadButton(props: Props) {
   return props.isEnable ? (
     <Button
       onClick={() => {
-        toast("対象の履歴を選択してください。")
+        toast("ダウンロード対象の履歴を選択してください。")
       }}
       title={props.title}
       disabled={props.disabled}
