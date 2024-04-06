@@ -1,6 +1,5 @@
 import { Button } from "@/_components/ui/button"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { captureException } from "@sentry/nextjs"
 import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 import type { ReactElement } from "react"
 import { toast } from "sonner"
@@ -25,7 +24,7 @@ export const SocialLoginButton = (props: Props) => {
     try {
       await signInWithPopup(getAuth(), props.provider)
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       if (error instanceof Error) {
         toast("アカウントが見つかりませんでした")
       }

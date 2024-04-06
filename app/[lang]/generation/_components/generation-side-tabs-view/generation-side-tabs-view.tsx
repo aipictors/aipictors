@@ -2,9 +2,7 @@
 
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { useState } from "react"
-import type { StateValue } from "xstate"
+import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 
 /**
  * サイドコンテンツ切替タブ

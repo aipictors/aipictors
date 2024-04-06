@@ -1,11 +1,6 @@
 "use client"
-
-import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { PrivateImage } from "@/_components/private-image"
 import { Card } from "@/_components/ui/card"
-import { AuthContext } from "@/_contexts/auth-context"
-import { useContext } from "react"
 
 /**
  * 作品プレビュー内容

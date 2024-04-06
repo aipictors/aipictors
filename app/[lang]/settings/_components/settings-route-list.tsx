@@ -9,7 +9,6 @@ import {
   ImageIcon,
   MedalIcon,
   SettingsIcon,
-  SkipBackIcon,
   UserXIcon,
 } from "lucide-react"
 

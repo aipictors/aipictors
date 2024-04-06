@@ -5,7 +5,6 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
-import { captureException } from "@sentry/nextjs"
 import { useSearchParams } from "next/navigation"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"
@@ -65,7 +64,7 @@ export const GenerationConfigRestoration = (props: Props) => {
       )
       toast("タスクを復元しました。", { position: "top-center" })
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       toast("タスクの復元に失敗しました。")
     }
   }, [data?.imageGenerationTask.id])
@@ -76,7 +75,7 @@ export const GenerationConfigRestoration = (props: Props) => {
       context.updatePrompt(promptText)
       toast("プロンプトを復元しました。", { position: "top-center" })
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       toast("プロンプトの復元に失敗しました。")
     }
   }, [promptText])

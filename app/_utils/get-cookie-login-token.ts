@@ -1,5 +1,3 @@
-import type { ParsedToken } from "firebase/auth"
-
 /**
  * Cookieからログイン情報を取得する
  * @returns

@@ -5,8 +5,6 @@ import { GenerationWorkList } from "@/[lang]/generation/_components/task-view/ge
 import { GenerationWorkListActions } from "@/[lang]/generation/_components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { Button } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
 import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { useQuery } from "@apollo/client"

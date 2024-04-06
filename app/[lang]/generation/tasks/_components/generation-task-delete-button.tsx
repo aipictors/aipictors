@@ -1,10 +1,6 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { Button } from "@/_components/ui/button"
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { cn } from "@/_lib/utils"
-import { useMutation } from "@apollo/client"
-import { Loader2, Loader2Icon, XIcon } from "lucide-react"
-import { toast } from "sonner"
+import { Loader2Icon, XIcon } from "lucide-react"
 
 type Props = {
   taskNanoid: string

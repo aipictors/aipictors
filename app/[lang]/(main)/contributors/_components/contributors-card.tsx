@@ -3,11 +3,8 @@
 import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
-import { config } from "@/config"
-import { getAnalytics, logEvent } from "firebase/analytics"
-import { ExternalLinkIcon, HomeIcon, MousePointerClickIcon } from "lucide-react"
+import { HomeIcon } from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 import { TbBrandXFilled } from "react-icons/tb"
 
 type Props = {

@@ -11,7 +11,7 @@ import type {
 } from "@/_graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client"
-import { ErrorBoundary } from "@sentry/nextjs"
+import { ErrorBoundary } from "@sentry/react"
 import { useContext } from "react"
 
 /**

@@ -98,13 +98,13 @@ export const GenerationConfigModels = (props: Props) => {
                   isSelected={model?.id === props.currentModelId}
                   onClick={() => {
                     props.onSelectModelId(
-                      model!.id,
-                      model!.type,
+                      model?.id,
+                      model?.type,
                       model?.prompts.join(",") ?? "",
                     )
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(model!.id)
+                    props.onClickSearchModelWorks(model?.id)
                   }}
                 />
                 {model?.id === props.currentModelId && (
@@ -140,13 +140,13 @@ export const GenerationConfigModels = (props: Props) => {
                   isSelected={model?.id === props.currentModelId}
                   onClick={() => {
                     props.onSelectModelId(
-                      model!.id,
-                      model!.type,
+                      model?.id,
+                      model?.type,
                       model?.prompts.join(",") ?? "",
                     )
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(model!.id)
+                    props.onClickSearchModelWorks(model?.id)
                   }}
                 />
                 {model?.id === props.currentModelId && (

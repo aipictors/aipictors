@@ -1,8 +1,6 @@
 import { TagReferencedWorkSection } from "@/[lang]/generation/tags/[tag]/_components/tag-referenced-work-section"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import type { Metadata } from "next"
-import { useRouter } from "next/router"
 
 type Props = {
   params: { tag: string }

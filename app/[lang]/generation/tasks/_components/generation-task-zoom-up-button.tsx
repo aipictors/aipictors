@@ -1,5 +1,4 @@
 import { GenerationImageDialogButton } from "@/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
-import { cn } from "@/_lib/utils"
 import { ZoomIn } from "lucide-react"
 
 type Props = {

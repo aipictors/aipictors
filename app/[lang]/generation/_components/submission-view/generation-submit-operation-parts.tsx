@@ -19,9 +19,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { AuthContext } from "@/_contexts/auth-context"

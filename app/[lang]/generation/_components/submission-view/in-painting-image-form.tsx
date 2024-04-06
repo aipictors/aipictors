@@ -7,7 +7,6 @@ import { createRandomString } from "@/[lang]/generation/_utils/create-random-str
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { Separator } from "@/_components/ui/separator"
-import type { ImageGenerationSizeType } from "@/_graphql/__generated__/graphql"
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { fetchImage } from "@/_utils/fetch-image-object-url"
 import { uploadImage } from "@/_utils/upload-image"

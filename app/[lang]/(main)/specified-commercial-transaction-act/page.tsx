@@ -1,9 +1,7 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { AppFooter } from "@/[lang]/app/_components/app-footer"
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import { AppPage } from "@/_components/app/app-page"
-import { AppPageCenter } from "@/_components/app/app-page-center"
 import {
   Table,
   TableBody,

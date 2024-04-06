@@ -14,7 +14,6 @@ import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
-import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { config } from "@/config"
 import { useMutation } from "@apollo/client"
 import { useState } from "react"

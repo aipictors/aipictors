@@ -1,6 +1,4 @@
 "use client"
-
-import { GenerationEditorProgress } from "@/[lang]/generation/_components/submission-view/generation-status-progress"
 import { GenerationSubmitOperationParts } from "@/[lang]/generation/_components/submission-view/generation-submit-operation-parts"
 import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
@@ -15,12 +13,10 @@ import { createImageGenerationTaskReservedMutation } from "@/_graphql/mutations/
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-image-generation-terms"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
-import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
-import { useMutation, useQuery } from "@apollo/client"
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useMutation } from "@apollo/client"
+import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 

@@ -1,5 +1,3 @@
-import { captureException } from "@sentry/nextjs"
-
 export const uploadFile = async (file: File): Promise<string> => {
   const formData = new FormData()
 
@@ -19,7 +17,7 @@ export const uploadFile = async (file: File): Promise<string> => {
     }
     throw new Error()
   } catch (error) {
-    captureException(error)
+    // captureException(error)
     throw new Error()
   }
 }

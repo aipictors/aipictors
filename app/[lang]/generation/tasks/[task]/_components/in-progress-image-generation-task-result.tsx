@@ -8,11 +8,7 @@ import {
 } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
-import { Textarea } from "@/_components/ui/textarea"
-import type {
-  ImageGenerationTaskFieldsFragment,
-  ImageGenerationTaskNode,
-} from "@/_graphql/__generated__/graphql"
+import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,

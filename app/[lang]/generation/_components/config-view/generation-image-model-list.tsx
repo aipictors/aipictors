@@ -1,7 +1,6 @@
 import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
 import { ImageModelCard } from "@/[lang]/generation/_components/config-view/image-model-card"
 import { toCategoryName } from "@/[lang]/generation/_utils/to-category-name"
-import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import {

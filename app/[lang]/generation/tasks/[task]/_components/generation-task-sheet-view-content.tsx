@@ -11,17 +11,15 @@ import { GenerationTaskContentImagePlaceHolder } from "@/[lang]/generation/tasks
 import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import type { GenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { PrivateImage } from "@/_components/private-image"
 import SwipeArea from "@/_components/swipe-area"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
-import { Textarea } from "@/_components/ui/textarea"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
-import { ErrorBoundary } from "@sentry/nextjs"
+import { ErrorBoundary } from "@sentry/react"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -35,7 +33,6 @@ import {
   PenIcon,
   Trash2,
 } from "lucide-react"
-import Link from "next/link"
 import { Suspense } from "react"
 import { CopyButton } from "./copy-button"
 

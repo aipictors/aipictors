@@ -2,7 +2,6 @@
 
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
-import { setUser } from "@sentry/nextjs"
 import {
   getAnalytics,
   logEvent,
@@ -60,13 +59,13 @@ export const AuthContextProvider = (props: Props) => {
         method: user.providerId,
       })
       getIdTokenResult(user, true).then((result) => {
-        setUser({
-          id: user.uid,
-          username: user.uid,
-          email: user.email ?? undefined,
-          display_name: user.displayName,
-          provider_id: user.providerId,
-        })
+        // setUser({
+        //   id: user.uid,
+        //   username: user.uid,
+        //   email: user.email ?? undefined,
+        //   display_name: user.displayName,
+        //   provider_id: user.providerId,
+        // })
         setUserProperties(getAnalytics(), {
           display_name: user.displayName,
           provider_id: user.providerId,

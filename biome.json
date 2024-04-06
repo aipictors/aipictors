@@ -23,9 +23,6 @@
         "useExhaustiveDependencies": "off",
         "noUnusedImports": "off"
       },
-      "complexity": {
-        "noStaticOnlyClass": "off"
-      },
       "style": {
         "noNonNullAssertion": "off"
       },

@@ -6,7 +6,7 @@ import { GenerationTaskLinkCard } from "@/[lang]/generation/tasks/_components/ge
 import { ReservedGenerationLinkCard } from "@/[lang]/generation/tasks/_components/reserved-generation-link-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
-import { ErrorBoundary } from "@sentry/nextjs"
+import { ErrorBoundary } from "@sentry/react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {

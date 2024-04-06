@@ -6,7 +6,7 @@ import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/genera
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
-import { ErrorBoundary } from "@sentry/nextjs"
+import { ErrorBoundary } from "@sentry/react"
 import { Suspense } from "react"
 
 type Props = {

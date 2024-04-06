@@ -1,4 +1,3 @@
-import { captureException } from "@sentry/nextjs"
 import { format } from "date-fns"
 import { zipSync } from "fflate"
 
@@ -43,7 +42,7 @@ export const downloadZipFile = async (files: FileObject[]): Promise<void> => {
     URL.revokeObjectURL(linkNode.href)
   } catch (error) {
     console.error(error)
-    captureException(error)
+    // captureException(error)
     throw new Error("Zipファイルのダウンロードに失敗しました。")
   }
 }

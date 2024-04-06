@@ -1,5 +1,4 @@
 import { toLocalHref } from "@/_lib/app/utils/to-local-href"
-import { captureException } from "@sentry/nextjs"
 
 export const toLocalHrefFactory = (locale: string) => {
   return (hashes: `/${string}` | TemplateStringsArray, ...values: string[]) => {
@@ -9,7 +8,7 @@ export const toLocalHrefFactory = (locale: string) => {
     for (const value of values) {
       if (typeof value === "undefined" || value === "") {
         console.error("パスから空の値が検出された")
-        captureException("パスから空の値が検出された")
+        // captureException("パスから空の値が検出された")
       }
     }
     const text = values

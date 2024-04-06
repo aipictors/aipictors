@@ -1,5 +1,4 @@
 import { Button } from "@/_components/ui/button"
-import { Card } from "@/_components/ui/card"
 import { FrownIcon } from "lucide-react"
 import { useCallback } from "react"
 

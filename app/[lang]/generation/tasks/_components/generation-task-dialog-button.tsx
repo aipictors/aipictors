@@ -1,11 +1,10 @@
-import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-result-card"
 import { GenerationTaskEditableCard } from "@/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
-import { ErrorBoundary } from "@sentry/nextjs"
+import { ErrorBoundary } from "@sentry/react"
 import { useState } from "react"
 
 type Props = {

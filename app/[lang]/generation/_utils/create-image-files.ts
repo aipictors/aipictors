@@ -1,5 +1,3 @@
-import { captureException } from "@sentry/nextjs"
-
 interface FileObject {
   name: string
   data: Uint8Array
@@ -49,7 +47,7 @@ export async function createImageFiles(props: Props) {
     return files
   } catch (error) {
     console.error(error)
-    captureException(error)
+    // captureException(error)
     if (error instanceof Error) {
       throw error
     }

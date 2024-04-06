@@ -25,7 +25,6 @@ import {
   SettingsIcon,
   SunIcon,
   UserCircleIcon,
-  UserCogIcon,
   UserIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"

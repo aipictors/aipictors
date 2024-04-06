@@ -3,7 +3,6 @@
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useSuspenseQuery } from "@apollo/client"
-import { captureException } from "@sentry/nextjs"
 import { usePathname } from "next/navigation"
 import type React from "react"
 import { useEffect } from "react"
@@ -38,7 +37,7 @@ export const GoogleAdsense = (props: Props) => {
       }
       window.adsbygoogle.push({})
     } catch (error) {
-      captureException(error)
+      // captureException(error)
     }
   }, [pathname])
 

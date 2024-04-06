@@ -1,5 +1,4 @@
 import { config } from "@/config"
-import { captureException } from "@sentry/nextjs"
 
 /**
  * 画像アップロード
@@ -33,7 +32,7 @@ export const uploadImage = async (
     }
     throw new Error()
   } catch (error) {
-    captureException(error)
+    // captureException(error)
     throw new Error()
   }
 }

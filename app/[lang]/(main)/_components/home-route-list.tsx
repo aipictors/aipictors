@@ -21,7 +21,6 @@ import {
   MessageCircleIcon,
   RocketIcon,
   SettingsIcon,
-  SparklesIcon,
   StampIcon,
   UserIcon,
 } from "lucide-react"

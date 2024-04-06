@@ -9,7 +9,6 @@ import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
 import { useMutation } from "@apollo/client"
-import { captureException } from "@sentry/nextjs"
 import {
   GoogleAuthProvider,
   TwitterAuthProvider,
@@ -47,7 +46,7 @@ export const LoginPage = () => {
       await signInWithCustomToken(getAuth(), token)
       toast("ログインしました。")
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       if (error instanceof Error) {
         toast(error.message)
       }
@@ -58,7 +57,7 @@ export const LoginPage = () => {
     try {
       await signInWithPopup(getAuth(), new GoogleAuthProvider())
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       if (error instanceof Error) {
         toast("アカウントが見つかりませんでした")
       }
@@ -69,7 +68,7 @@ export const LoginPage = () => {
     try {
       await signInWithPopup(getAuth(), new TwitterAuthProvider())
     } catch (error) {
-      captureException(error)
+      // captureException(error)
       if (error instanceof Error) {
         toast("アカウントが見つかりませんでした")
       }
