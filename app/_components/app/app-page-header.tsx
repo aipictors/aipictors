@@ -15,8 +15,8 @@ export const AppPageHeader = (props: Props) => {
     <div className={cn("space-y-1", props.className)}>
       {props.breadcrumb && <AppBreadcrumb breadcrumb={props.breadcrumb} />}
       {props.title && (
-        <div className="flex justify-between items-center">
-          <h1 className="font-bold text-2xl min-h-9">{props.title}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="min-h-9 font-bold text-2xl">{props.title}</h1>
           {props.action}
         </div>
       )}

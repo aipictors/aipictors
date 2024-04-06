@@ -7,12 +7,12 @@ import Link from "next/link"
  */
 export function AppNotFoundPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-9xl font-bold">404</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center">
+      <h1 className="font-bold text-9xl">404</h1>
       <p className="mt-4 text-xl">
         おっと! お探しのページは存在しないようです。
       </p>
-      <Button className="mt-8 px-8 py-2 rounded-md">
+      <Button className="mt-8 rounded-md px-8 py-2">
         <Link href="https://www.aipictors.com">ホームに戻る</Link>
       </Button>
     </div>

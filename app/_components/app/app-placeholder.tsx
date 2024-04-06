@@ -9,7 +9,7 @@ type Props = {
  */
 export const AppPlaceholder = (props: Props) => {
   return (
-    <div className="p-4 h-calc(100vh - 72px) w-full flex justify-center items-center">
+    <div className="- 72px) flex h-calc(100vh w-full items-center justify-center p-4">
       <div>
         <p>{props.children ?? "Placeholder"}</p>
       </div>

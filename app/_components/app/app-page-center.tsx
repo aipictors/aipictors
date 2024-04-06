@@ -12,11 +12,11 @@ type Props = {
  */
 export const AppPageCenter = (props: Props) => {
   return (
-    <main className="flex justify-center w-full">
+    <main className="flex w-full justify-center">
       <div
         className={cn(
-          "justify-center items-start mx-auto overflow-x-hidden w-full max-w-screen-sm",
-          "pb-16 pt-2 md:pt-0",
+          "mx-auto w-full max-w-screen-sm items-start justify-center overflow-x-hidden",
+          "pt-2 pb-16 md:pt-0",
           "space-y-4 md:space-y-8",
           props.className,
         )}

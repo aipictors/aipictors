@@ -20,7 +20,7 @@ export const AppPage = (props: Props) => {
   return (
     <main
       className={cn(
-        "w-full mx-auto pb-8 pt-2 md:pt-0",
+        "mx-auto w-full pt-2 pb-8 md:pt-0",
         "space-y-8 md:space-y-8",
         "overflow-hidden",
         props.className,

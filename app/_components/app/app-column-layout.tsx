@@ -12,7 +12,7 @@ export const AppColumnLayout = (props: Props) => {
       className={cn(
         "container",
         "flex items-start",
-        "space-x-0 gap-x-4 relative",
+        "relative gap-x-4 space-x-0",
         { "max-w-none": props.isFullWidth },
       )}
     >
