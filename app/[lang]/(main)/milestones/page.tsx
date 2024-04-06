@@ -157,7 +157,7 @@ const MilestonesPage = async () => {
         </TabsContent>
         <TabsContent value="app" className="w-full">
           <div className="flex flex-col gap-y-4">
-            <div className="flex items-center justify-center space-x-8">
+            <div className="flex items-center justify-start space-x-8">
               <Link href="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
                 <img
                   src="/apple/download.svg"
