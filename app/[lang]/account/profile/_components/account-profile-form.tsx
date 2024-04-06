@@ -1,8 +1,8 @@
 "use client"
 
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Avatar } from "@/_components/ui/avatar"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
 import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 

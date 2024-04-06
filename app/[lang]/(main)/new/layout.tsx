@@ -1,8 +1,8 @@
 "use client"
 
-import { LoginPage } from "@/app/_components/page/login-page"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { LoginPage } from "@/_components/page/login-page"
+import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 
 type Props = {

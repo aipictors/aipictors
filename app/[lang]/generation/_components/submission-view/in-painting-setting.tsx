@@ -1,6 +1,6 @@
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Slider } from "@/components/ui/slider"
+import { Label } from "@/_components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
+import { Slider } from "@/_components/ui/slider"
 
 type Props = {
   onChangeMaskType(value: string): void

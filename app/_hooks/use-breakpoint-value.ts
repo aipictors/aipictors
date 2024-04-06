@@ -1,4 +1,4 @@
-import { getBreakpoint } from "@/app/_utils/get-breakpoints"
+import { getBreakpoint } from "@/_utils/get-breakpoints"
 import { throttle } from "lodash"
 import { useEffect, useState } from "react"
 

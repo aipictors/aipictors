@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
+} from "@/_components/ui/dialog"
 import { useRouter } from "next/navigation"
 
 export const StickerModal = () => {

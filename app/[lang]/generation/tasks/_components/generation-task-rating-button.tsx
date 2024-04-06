@@ -1,5 +1,5 @@
-import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
-import { cn } from "@/lib/utils"
+import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { cn } from "@/_lib/utils"
 import { useMutation } from "@apollo/client"
 import { StarIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"

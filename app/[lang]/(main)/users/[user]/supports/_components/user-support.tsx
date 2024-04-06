@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import type { UserQuery } from "@/graphql/__generated__/graphql"
+import { Button } from "@/_components/ui/button"
+import type { UserQuery } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   user: NonNullable<UserQuery["user"]>

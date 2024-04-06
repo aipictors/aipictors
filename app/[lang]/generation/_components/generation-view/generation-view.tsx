@@ -1,12 +1,12 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
+} from "@/_components/ui/resizable"
 import { config } from "@/config"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"

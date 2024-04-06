@@ -1,5 +1,5 @@
-import { toElapsedTimeText } from "@/app/_utils/to-elapsed-time-text"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/_components/ui/card"
+import { toElapsedTimeText } from "@/_utils/to-elapsed-time-text"
 
 type Props = {
   text: string

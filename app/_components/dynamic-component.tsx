@@ -6,7 +6,7 @@ type Props = {
 
 export const DynamicComponent = dynamic(
   () => {
-    return import("@/app/_components/client-side-component")
+    return import("@/_components/client-side-component")
   },
   { ssr: false },
 )

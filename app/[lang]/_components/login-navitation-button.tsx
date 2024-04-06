@@ -1,7 +1,7 @@
 "use client"
 
-import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginDialogContent } from "@/app/[lang]/_components/login-dialog-content"
+import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
+import { LoginDialogContent } from "@/[lang]/_components/login-dialog-content"
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/_components/ui/dialog"
 import { LogInIcon } from "lucide-react"
 
 /**

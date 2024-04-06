@@ -1,14 +1,14 @@
 "use client"
 
-import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
-import { Button } from "@/components/ui/button"
+import HomeWorkAlbum from "@/[lang]/(main)/_components/home-work-album"
+import { Button } from "@/_components/ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/tooltip"
+import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
 import PhotoAlbum from "react-photo-album"
 

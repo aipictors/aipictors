@@ -1,9 +1,9 @@
 "use client"
 
-import { ThemeListItem } from "@/app/[lang]/(main)/themes/_components/theme-list-item"
-import { createCalendarCells } from "@/app/[lang]/(main)/themes/_utils/create-calendar-cells"
-import { Button } from "@/components/ui/button"
-import type { DailyThemesQuery } from "@/graphql/__generated__/graphql"
+import { ThemeListItem } from "@/[lang]/(main)/themes/_components/theme-list-item"
+import { createCalendarCells } from "@/[lang]/(main)/themes/_utils/create-calendar-cells"
+import { Button } from "@/_components/ui/button"
+import type { DailyThemesQuery } from "@/_graphql/__generated__/graphql"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 

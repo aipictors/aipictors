@@ -1,5 +1,5 @@
-import { MutedUserList } from "@/app/[lang]/settings/muted/users/_components/muted-user-list"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { MutedUserList } from "@/[lang]/settings/muted/users/_components/muted-user-list"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const SettingMutedUsersPage = async () => {

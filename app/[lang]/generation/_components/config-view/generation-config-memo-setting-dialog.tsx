@@ -1,15 +1,15 @@
 "use client"
 
-import { GenerationConfigMemoList } from "@/app/[lang]/generation/_components/config-view/generation-config-memo-list"
-import { GenerationConfigMemoOperationParts } from "@/app/[lang]/generation/_components/config-view/generation-config-memo-operation-parts"
-import { Button } from "@/components/ui/button"
+import { GenerationConfigMemoList } from "@/[lang]/generation/_components/config-view/generation-config-memo-list"
+import { GenerationConfigMemoOperationParts } from "@/[lang]/generation/_components/config-view/generation-config-memo-operation-parts"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/dialog"
+import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   isOpen: boolean

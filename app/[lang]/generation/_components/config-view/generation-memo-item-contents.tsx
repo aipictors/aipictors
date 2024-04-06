@@ -1,15 +1,15 @@
 "use client"
 
-import { GenerationConfigMemoUpdateContent } from "@/app/[lang]/generation/_components/config-view/generation-config-memo-update-contents"
-import { Button } from "@/components/ui/button"
+import { GenerationConfigMemoUpdateContent } from "@/[lang]/generation/_components/config-view/generation-config-memo-update-contents"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/dialog"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {

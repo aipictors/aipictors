@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
-import { AppMarkdown } from "@/components/app/app-markdown"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { AppFooter } from "@/[lang]/app/_components/app-footer"
+import { AppMarkdown } from "@/_components/app/app-markdown"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const AppTermsPage = async () => {

@@ -1,4 +1,4 @@
-import type { Contributor } from "@/app/[lang]/(main)/contributors/_types/contributor"
+import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
 
 export const contributors: Contributor[] = [
   {

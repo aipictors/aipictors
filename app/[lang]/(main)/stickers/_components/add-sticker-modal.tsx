@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/_components/ui/button"
+import { Checkbox } from "@/_components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+} from "@/_components/ui/dialog"
+import { Input } from "@/_components/ui/input"
 
 type Props = {
   isOpen: boolean

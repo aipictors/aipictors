@@ -1,7 +1,7 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent } from "@/_components/ui/card"
+import { Skeleton } from "@/_components/ui/skeleton"
 
 export const SelectableWorkCard = () => {
   return (

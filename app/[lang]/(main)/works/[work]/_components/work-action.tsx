@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import { FolderIcon, HeartIcon } from "lucide-react"
 import MenuPopover from "./work-action-menu"
 import { SharePopover } from "./work-action-share"

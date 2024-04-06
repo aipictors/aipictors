@@ -1,7 +1,7 @@
-import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
-import { GenerationTaskEditableCard } from "@/app/[lang]/generation/tasks/_components/generation-task-editable-card"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
+import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
+import { GenerationTaskEditableCard } from "@/[lang]/generation/tasks/_components/generation-task-editable-card"
+import { Sheet, SheetContent } from "@/_components/ui/sheet"
+import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {

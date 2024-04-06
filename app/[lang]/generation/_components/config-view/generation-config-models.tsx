@@ -1,11 +1,11 @@
 "use client"
 
-import { ConfigModelButton } from "@/app/[lang]/generation/_components/config-view/config-model-button"
-import { GenerationModelListButton } from "@/app/[lang]/generation/_components/config-view/generation-model-list-button"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { ImageModelsQuery } from "@/graphql/__generated__/graphql"
+import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
+import { GenerationModelListButton } from "@/[lang]/generation/_components/config-view/generation-model-list-button"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
+import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { CheckIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 

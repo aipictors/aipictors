@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Button } from "@/_components/ui/button"
+import { cn } from "@/_lib/utils"
 import { Loader2Icon, StarIcon } from "lucide-react"
 import { useCallback, useEffect } from "react"
 

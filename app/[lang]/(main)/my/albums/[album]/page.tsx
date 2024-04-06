@@ -1,5 +1,5 @@
-import { MyAlbum } from "@/app/[lang]/(main)/my/albums/[album]/_components/viewer-album-article"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { MyAlbum } from "@/[lang]/(main)/my/albums/[album]/_components/viewer-album-article"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const MyAlbumPage = async () => {

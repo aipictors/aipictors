@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 
 type Props = {
   isLoading: boolean

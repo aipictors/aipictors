@@ -1,20 +1,20 @@
 "use client"
 
-import { PromptCategoryIcon } from "@/app/[lang]/generation/_components/prompt-view/prompt-category-icon"
+import { PromptCategoryIcon } from "@/[lang]/generation/_components/prompt-view/prompt-category-icon"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button"
+} from "@/_components/ui/accordion"
+import { Button } from "@/_components/ui/button"
 import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import type { PromptCategoriesQuery } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/dialog"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import type { PromptCategoriesQuery } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   selectedPromptIds: string[]

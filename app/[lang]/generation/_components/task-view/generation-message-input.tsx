@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/_components/ui/button"
+import { Textarea } from "@/_components/ui/textarea"
 import { Send } from "lucide-react"
 import { useState } from "react"
 import { IoIosCloseCircle } from "react-icons/io"

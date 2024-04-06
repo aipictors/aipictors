@@ -1,6 +1,6 @@
 "use client"
 
-import { AuthContext } from "@/app/_contexts/auth-context"
+import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { setUser } from "@sentry/nextjs"
 import {

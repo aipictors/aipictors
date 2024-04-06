@@ -1,7 +1,7 @@
 "use client"
 
-import HomeWorkAlbum from "@/app/[lang]/(main)/_components/home-work-album"
-import type { WorksQuery } from "@/graphql/__generated__/graphql"
+import HomeWorkAlbum from "@/[lang]/(main)/_components/home-work-album"
+import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {

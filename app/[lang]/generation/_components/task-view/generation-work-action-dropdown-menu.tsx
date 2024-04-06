@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,9 +10,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Slider } from "@/components/ui/slider"
-import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
+} from "@/_components/ui/dropdown-menu"
+import { Slider } from "@/_components/ui/slider"
+import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {

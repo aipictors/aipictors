@@ -1,6 +1,6 @@
-import { AppPage } from "@/components/app/app-page"
-import { DailyThemesDocument as dailyThemesQuery } from "@/graphql/__generated__/graphql"
-import { createClient } from "@/lib/client"
+import { AppPage } from "@/_components/app/app-page"
+import { DailyThemesDocument as dailyThemesQuery } from "@/_graphql/__generated__/graphql"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 type Props = {

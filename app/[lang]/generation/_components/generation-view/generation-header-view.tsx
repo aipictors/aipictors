@@ -1,6 +1,6 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 
 type Props = {
   submission: React.ReactNode

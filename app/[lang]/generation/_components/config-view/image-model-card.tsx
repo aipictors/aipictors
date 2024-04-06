@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/_components/ui/badge"
 
 type Props = {
   displayName: string | null

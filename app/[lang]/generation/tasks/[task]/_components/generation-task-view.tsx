@@ -1,31 +1,31 @@
 "use client"
 
-import { InPaintingDialog } from "@/app/[lang]/generation/_components/submission-view/in-painting-dialog"
-import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
-import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
-import { InProgressImageGenerationTaskResult } from "@/app/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
-import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
+import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationMenuButton } from "@/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationTaskContentImagePlaceHolder } from "@/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
+import { InProgressImageGenerationTaskResult } from "@/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
+import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { PrivateImage } from "@/app/_components/private-image"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { AppFixedContent } from "@/components/app/app-fixed-content"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/[lang]/generation/tasks/[task]/_types/generation-size"
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
+import { AppFixedContent } from "@/_components/app/app-fixed-content"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { PrivateImage } from "@/_components/private-image"
+import { Button } from "@/_components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/_components/ui/dialog"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import { Separator } from "@/_components/ui/separator"
+import { Textarea } from "@/_components/ui/textarea"
+import { AuthContext } from "@/_contexts/auth-context"
+import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
+import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
+import { cn } from "@/_lib/utils"
 import { config } from "@/config"
-import { deleteImageGenerationTaskMutation } from "@/graphql/mutations/delete-image-generation-task"
-import { updateRatingImageGenerationTaskMutation } from "@/graphql/mutations/update-rating-image-generation-task"
-import { imageGenerationTaskQuery } from "@/graphql/queries/image-generation/image-generation-task"
-import { cn } from "@/lib/utils"
 import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
 import {
   ArrowDownToLine,
@@ -500,23 +500,20 @@ export function GenerationTaskView(props: Props) {
       </ScrollArea>
 
       {!isDesktop && (
-        <AppFixedContent
-          position="bottom"
-          children={
-            <div className="flex">
-              <Link
-                href="/generation"
-                className={cn(
-                  `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
-                )}
-              >
-                <Button className="w-full" variant={"secondary"}>
-                  詳細を閉じる
-                </Button>
-              </Link>
-            </div>
-          }
-        />
+        <AppFixedContent position="bottom">
+          <div className="flex">
+            <Link
+              href="/generation"
+              className={cn(
+                `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
+              )}
+            >
+              <Button className="w-full" variant={"secondary"}>
+                詳細を閉じる
+              </Button>
+            </Link>
+          </div>
+        </AppFixedContent>
       )}
 
       {data.imageGenerationTask.token && (

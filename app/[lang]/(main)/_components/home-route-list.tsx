@@ -1,10 +1,10 @@
 "use client"
 
-import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { LoginNavigationButton } from "@/app/[lang]/_components/login-navitation-button"
-import { NavigationLogoutDialogButton } from "@/app/[lang]/_components/logout-navigation-dialog-button"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { Separator } from "@/components/ui/separator"
+import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
+import { LoginNavigationButton } from "@/[lang]/_components/login-navitation-button"
+import { NavigationLogoutDialogButton } from "@/[lang]/_components/logout-navigation-dialog-button"
+import { Separator } from "@/_components/ui/separator"
+import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import {
   AlertTriangleIcon,

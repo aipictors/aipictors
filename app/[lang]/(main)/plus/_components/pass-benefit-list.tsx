@@ -1,4 +1,4 @@
-import type { PassType } from "@/graphql/__generated__/graphql"
+import type { PassType } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   passType: PassType

@@ -1,7 +1,7 @@
 "use client"
 
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { resetCookieLoginToken } from "@/app/_utils/reset-cookie-login-token"
+import { AuthContext } from "@/_contexts/auth-context"
+import { resetCookieLoginToken } from "@/_utils/reset-cookie-login-token"
 import { config } from "@/config"
 import { getAuth, signOut } from "firebase/auth"
 import { useContext, useEffect } from "react"

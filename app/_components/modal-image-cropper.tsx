@@ -1,7 +1,7 @@
-import getCroppedImage from "@/app/_utils/get-cropped-image"
-import getResizedImg from "@/app/_utils/get-resized-image"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Button } from "@/_components/ui/button"
+import { Dialog, DialogContent } from "@/_components/ui/dialog"
+import getCroppedImage from "@/_utils/get-cropped-image"
+import getResizedImg from "@/_utils/get-resized-image"
 import { useState } from "react"
 import Cropper, { type Area } from "react-easy-crop"
 

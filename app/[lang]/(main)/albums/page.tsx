@@ -1,5 +1,5 @@
-import { AlbumCard } from "@/app/[lang]/(main)/albums/_components/album-card"
-import { AppPage } from "@/components/app/app-page"
+import { AlbumCard } from "@/[lang]/(main)/albums/_components/album-card"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 /**

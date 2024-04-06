@@ -1,12 +1,12 @@
 "use client"
 
-import ReportDialog from "@/app/[lang]/(main)/works/[work]/_components/report-dialog"
-import { Button } from "@/components/ui/button"
+import ReportDialog from "@/[lang]/(main)/works/[work]/_components/report-dialog"
+import { Button } from "@/_components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/_components/ui/popover"
 import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
 /**

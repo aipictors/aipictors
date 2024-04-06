@@ -1,12 +1,12 @@
 "use client"
 
-import { GenerationTaskPreviewModeButton } from "@/app/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
-import { GenerationWorkActionDropdownMenu } from "@/app/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { Input } from "@/components/ui/input"
-import { Toggle } from "@/components/ui/toggle"
+import { GenerationTaskPreviewModeButton } from "@/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
+import { GenerationWorkActionDropdownMenu } from "@/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { Input } from "@/_components/ui/input"
+import { Toggle } from "@/_components/ui/toggle"
+import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
-import type { WorkOrderBy } from "@/graphql/__generated__/graphql"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
 

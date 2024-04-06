@@ -1,4 +1,4 @@
-import { GenerationWorkDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-work-dialog-button"
+import { GenerationWorkDialogButton } from "@/[lang]/generation/tasks/[task]/_components/generation-work-dialog-button"
 import { ZoomIn } from "lucide-react"
 
 type Props = {
@@ -12,20 +12,16 @@ type Props = {
  */
 export const GenerationWorkZoomUpButton = (props: Props) => {
   return (
-    <GenerationWorkDialogButton
-      isAbsolute={true}
-      imageUrl={props.imageUrl}
-      children={
-        <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
-          <div
-            onMouseEnter={() => {
-              props.setIsHovered(true)
-            }}
-          >
-            <ZoomIn color="black" />
-          </div>
+    <GenerationWorkDialogButton isAbsolute={true} imageUrl={props.imageUrl}>
+      <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
+        <div
+          onMouseEnter={() => {
+            props.setIsHovered(true)
+          }}
+        >
+          <ZoomIn color="black" />
         </div>
-      }
-    />
+      </div>
+    </GenerationWorkDialogButton>
   )
 }

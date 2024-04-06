@@ -1,6 +1,6 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/_components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
 import { useTheme } from "next-themes"
 

@@ -4,7 +4,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
+} from "@/_components/ui/carousel"
 import type React from "react"
 
 type WorkImageThumbnailCarouselProps = {

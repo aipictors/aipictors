@@ -1,4 +1,4 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { AspectRatio } from "@/_components/ui/aspect-ratio"
 import Image from "next/image"
 
 type Props = {

@@ -1,7 +1,7 @@
 "use client"
 
-import { FollowButton } from "@/app/_components/button/follow-button"
-import { Avatar } from "@/components/ui/avatar"
+import { FollowButton } from "@/_components/button/follow-button"
+import { Avatar } from "@/_components/ui/avatar"
 import { FlagIcon } from "lucide-react"
 
 export const CollectionHeader = () => {

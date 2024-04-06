@@ -1,8 +1,8 @@
 "use client"
 
-import { PlusAbout } from "@/app/[lang]/(main)/plus/_components/plus-about"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { PlusAbout } from "@/[lang]/(main)/plus/_components/plus-about"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { ScrollArea } from "@/_components/ui/scroll-area"
 import Link from "next/link"
 import { Suspense } from "react"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { SelectableWorkCard } from "@/app/[lang]/(main)/new/album/_components/selectable-work-card"
+import { SelectableWorkCard } from "@/[lang]/(main)/new/album/_components/selectable-work-card"
 
 export const NewAlbumWorkList = () => {
   return (

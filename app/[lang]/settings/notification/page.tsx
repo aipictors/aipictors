@@ -1,7 +1,7 @@
-import { SettingFcmForm } from "@/app/[lang]/settings/notification/_components/setting-fcm-form"
-import { SettingNotificationForm } from "@/app/[lang]/settings/notification/_components/setting-notification-form"
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { Separator } from "@/components/ui/separator"
+import { SettingFcmForm } from "@/[lang]/settings/notification/_components/setting-fcm-form"
+import { SettingNotificationForm } from "@/[lang]/settings/notification/_components/setting-notification-form"
+import { AppPageCenter } from "@/_components/app/app-page-center"
+import { Separator } from "@/_components/ui/separator"
 import type { Metadata } from "next"
 
 const SettingNotificationPage = async () => {

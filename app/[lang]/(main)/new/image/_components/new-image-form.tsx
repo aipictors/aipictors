@@ -1,9 +1,9 @@
 "use client"
 
-import { AutoResizeTextarea } from "@/app/_components/auto-resize-textarea"
-import { uploadFile } from "@/app/_utils/upload-file"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
+import { uploadFile } from "@/_utils/upload-file"
 
 import {
   DndContext,

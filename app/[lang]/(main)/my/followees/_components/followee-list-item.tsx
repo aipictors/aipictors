@@ -1,5 +1,5 @@
-import { Avatar } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar } from "@/_components/ui/avatar"
+import { Button } from "@/_components/ui/button"
 import { AvatarImage } from "@radix-ui/react-avatar"
 
 type Props = {

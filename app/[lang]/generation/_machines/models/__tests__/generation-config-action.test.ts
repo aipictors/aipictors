@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
-import { GenerationConfigAction } from "@/app/[lang]/generation/_machines/models/generation-config-action"
-import { GenerationConfigState } from "@/app/[lang]/generation/_machines/models/generation-config-state"
+import { GenerationConfigAction } from "@/[lang]/generation/_machines/models/generation-config-action"
+import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 
 const config = new GenerationConfigState({
   modelId: "",

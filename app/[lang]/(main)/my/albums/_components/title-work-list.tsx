@@ -1,6 +1,6 @@
 "use client"
 
-import { TitleWorkCard } from "@/app/[lang]/(main)/my/albums/_components/title-work-card"
+import { TitleWorkCard } from "@/[lang]/(main)/my/albums/_components/title-work-card"
 
 export const TitleWorkList = () => {
   return (

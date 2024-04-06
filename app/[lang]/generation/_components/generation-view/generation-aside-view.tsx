@@ -1,7 +1,7 @@
 "use client"
 
-import { GenerationConfigContext } from "@/app/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
+import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { useCallback, useEffect } from "react"
 
 type Props = {

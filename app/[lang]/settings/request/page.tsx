@@ -1,5 +1,5 @@
-import { SettingRequestForm } from "@/app/[lang]/settings/request/_components/account-request-form"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { SettingRequestForm } from "@/[lang]/settings/request/_components/account-request-form"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const SettingRequestPage = async () => {

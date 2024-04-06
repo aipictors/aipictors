@@ -1,4 +1,4 @@
-import { UserNoteList } from "@/app/[lang]/(main)/users/[user]/notes/_components/user-note-list"
+import { UserNoteList } from "@/[lang]/(main)/users/[user]/notes/_components/user-note-list"
 import type { Metadata } from "next"
 
 const UserNotesPage = async () => {

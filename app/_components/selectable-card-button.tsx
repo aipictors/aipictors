@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/_lib/utils"
 import { CheckIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -54,7 +54,7 @@ export function SelectableCardButton(props: Props) {
           className={cn(
             "absolute top-2 right-2 rounded-full border-2 bg-black dark:bg-white",
             {
-              "opacity-50 border-solid border-2 border-black":
+              "border-2 border-black border-solid opacity-50":
                 !props.isSelected,
             },
           )}

@@ -1,9 +1,9 @@
 "use client"
 
-import { FollowButton } from "@/app/_components/button/follow-button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import type { AlbumQuery } from "@/graphql/__generated__/graphql"
+import { FollowButton } from "@/_components/button/follow-button"
+import { Avatar, AvatarFallback } from "@/_components/ui/avatar"
+import { Card, CardContent } from "@/_components/ui/card"
+import type { AlbumQuery } from "@/_graphql/__generated__/graphql"
 import { AvatarImage } from "@radix-ui/react-avatar"
 
 type Props = {

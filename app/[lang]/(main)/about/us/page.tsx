@@ -1,4 +1,4 @@
-import { AppPage } from "@/components/app/app-page"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 /**

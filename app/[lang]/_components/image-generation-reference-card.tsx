@@ -1,4 +1,4 @@
-import { Card, CardHeader } from "@/components/ui/card"
+import { Card, CardHeader } from "@/_components/ui/card"
 import Link from "next/link"
 
 type Props = {

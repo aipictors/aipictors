@@ -1,22 +1,22 @@
 "use client"
 
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/_components/ui/select"
+import { Textarea } from "@/_components/ui/textarea"
+import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
+import { deleteImageGenerationMemoMutation } from "@/_graphql/mutations/delete-image-generation-memo"
+import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-image-generation-memo"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import type { ImageGenerationMemoNode } from "@/graphql/__generated__/graphql"
-import { deleteImageGenerationMemoMutation } from "@/graphql/mutations/delete-image-generation-memo"
-import { updateImageGenerationMemoMutation } from "@/graphql/mutations/update-image-generation-memo"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useMutation } from "@apollo/client"
 import { Loader2, Trash2Icon } from "lucide-react"
 import { useState } from "react"

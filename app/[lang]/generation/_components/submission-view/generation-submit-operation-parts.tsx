@@ -1,14 +1,13 @@
 "use client"
 
-import { LoginDialogButton } from "@/app/[lang]/_components/login-dialog-button"
-import { GenerationReserveCountInput } from "@/app/[lang]/generation/_components/submission-view/generation-reserve-count-input"
-import { GenerationSubmitButton } from "@/app/[lang]/generation/_components/submission-view/generation-submit-button"
-import { GenerationTermsButton } from "@/app/[lang]/generation/_components/submission-view/generation-terms-button"
-import { SubscriptionDialogContent } from "@/app/[lang]/generation/_components/submission-view/subscription-dialog-content"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GradientBorderButton } from "@/app/_components/button/gradient-border-button"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { Button } from "@/components/ui/button"
+import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"
+import { GenerationReserveCountInput } from "@/[lang]/generation/_components/submission-view/generation-reserve-count-input"
+import { GenerationSubmitButton } from "@/[lang]/generation/_components/submission-view/generation-submit-button"
+import { GenerationTermsButton } from "@/[lang]/generation/_components/submission-view/generation-terms-button"
+import { SubscriptionDialogContent } from "@/[lang]/generation/_components/submission-view/subscription-dialog-content"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GradientBorderButton } from "@/_components/button/gradient-border-button"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/_components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/_components/ui/dropdown-menu"
+import { AuthContext } from "@/_contexts/auth-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 
@@ -167,20 +167,17 @@ export function GenerationSubmitOperationParts(props: Props) {
               <GradientBorderButton
                 onClick={() => {}}
                 className="w-full text-balance"
-                children={
-                  <>
-                    <div className="flex items-center">
-                      {"生成"}
-                      {(authContext.isLoading ||
-                        (authContext.isLoggedIn && context.user === null)) && (
-                        <span className="ml-2 animate-spin">
-                          <Loader2Icon />
-                        </span>
-                      )}
-                    </div>
-                  </>
-                }
-              />
+              >
+                <div className="flex items-center">
+                  {"生成"}
+                  {(authContext.isLoading ||
+                    (authContext.isLoggedIn && context.user === null)) && (
+                    <span className="ml-2 animate-spin">
+                      <Loader2Icon />
+                    </span>
+                  )}
+                </div>
+              </GradientBorderButton>
             }
           />
         )}
@@ -197,8 +194,9 @@ export function GenerationSubmitOperationParts(props: Props) {
                   disabled={props.isCreatingTask}
                   onClick={() => {}}
                   className="w-full text-balance"
-                  children={props.isCreatingTask ? "処理中.." : "生成"}
-                />
+                >
+                  {props.isCreatingTask ? "処理中.." : "生成"}
+                </GradientBorderButton>
               }
             />
           )}

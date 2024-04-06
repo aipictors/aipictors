@@ -1,8 +1,8 @@
 "use client"
 
-import WorkCard from "@/app/[lang]/(main)/works/_components/work-card"
-import { Switch } from "@/components/ui/switch"
-import type { UserAlbumsQuery } from "@/graphql/__generated__/graphql"
+import WorkCard from "@/[lang]/(main)/works/_components/work-card"
+import { Switch } from "@/_components/ui/switch"
+import type { UserAlbumsQuery } from "@/_graphql/__generated__/graphql"
 import Link from "next/link"
 
 type Props = {

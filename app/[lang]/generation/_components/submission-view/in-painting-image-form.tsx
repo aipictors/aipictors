@@ -1,17 +1,17 @@
 "use client"
 
-import { InPaintingSetting } from "@/app/[lang]/generation/_components/submission-view/in-painting-setting"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { createBase64FromImageURL } from "@/app/[lang]/generation/_utils/create-base64-from-image-url"
-import { createRandomString } from "@/app/[lang]/generation/_utils/create-random-string"
-import { fetchImage } from "@/app/_utils/fetch-image-object-url"
-import { uploadImage } from "@/app/_utils/upload-image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+import { InPaintingSetting } from "@/[lang]/generation/_components/submission-view/in-painting-setting"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
+import { createRandomString } from "@/[lang]/generation/_utils/create-random-string"
+import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
+import { Separator } from "@/_components/ui/separator"
+import type { ImageGenerationSizeType } from "@/_graphql/__generated__/graphql"
+import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
+import { fetchImage } from "@/_utils/fetch-image-object-url"
+import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
-import type { ImageGenerationSizeType } from "@/graphql/__generated__/graphql"
-import { createImageGenerationTaskMutation } from "@/graphql/mutations/create-image-generation-task"
 import { useMutation } from "@apollo/client"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import dynamic from "next/dynamic"
@@ -233,7 +233,7 @@ export const InPaintingImageForm = (props: Props) => {
 const InPaintingEditImage = dynamic(
   () => {
     return import(
-      "@/app/[lang]/generation/_components/submission-view/in-painting-edit-image"
+      "@/[lang]/generation/_components/submission-view/in-painting-edit-image"
     )
   },
   { ssr: false },

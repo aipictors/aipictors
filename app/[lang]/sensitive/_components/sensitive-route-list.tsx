@@ -1,7 +1,7 @@
 "use client"
 
-import { HomeNavigationButton } from "@/app/[lang]/(main)/_components/home-navigation-button"
-import { Separator } from "@/components/ui/separator"
+import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
+import { Separator } from "@/_components/ui/separator"
 import {
   AwardIcon,
   FolderIcon,

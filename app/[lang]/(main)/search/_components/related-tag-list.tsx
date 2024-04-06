@@ -1,6 +1,6 @@
 "use client"
 
-import { TagCard } from "@/app/[lang]/(main)/tags/_components/tag-card"
+import { TagCard } from "@/[lang]/(main)/tags/_components/tag-card"
 
 export const RelatedTagList = () => {
   return (

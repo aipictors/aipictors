@@ -1,6 +1,6 @@
 "use client"
 
-import { TableCell, TableRow } from "@/components/ui/table"
+import { TableCell, TableRow } from "@/_components/ui/table"
 
 export const ViewerWorkTableItem = () => {
   return (

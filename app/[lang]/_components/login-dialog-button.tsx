@@ -1,7 +1,7 @@
 "use client"
 
-import { LoginDialogContent } from "@/app/[lang]/_components/login-dialog-content"
-import { Button } from "@/components/ui/button"
+import { LoginDialogContent } from "@/[lang]/_components/login-dialog-content"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
+} from "@/_components/ui/dialog"
+import { cn } from "@/_lib/utils"
 import { LoaderIcon } from "lucide-react"
 
 type Props = {

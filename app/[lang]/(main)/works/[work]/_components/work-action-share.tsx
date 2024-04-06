@@ -1,11 +1,11 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/_components/ui/popover"
 import { Files, Share2 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import CopyWorkUrlButton from "./work-action-copy-url"

@@ -1,8 +1,8 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { AppMarkdown } from "@/components/app/app-markdown"
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { Button } from "@/components/ui/button"
+import { AppMarkdown } from "@/_components/app/app-markdown"
+import { AppPageCenter } from "@/_components/app/app-page-center"
+import { Button } from "@/_components/ui/button"
 import type { Metadata } from "next"
 import Link from "next/link"
 

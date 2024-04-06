@@ -1,5 +1,5 @@
-import { useFocusTimeout } from "@/app/_hooks/use-focus-timeout"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/_components/ui/badge"
+import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { useEffect, useState } from "react"
 
 type Props = {

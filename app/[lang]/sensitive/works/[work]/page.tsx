@@ -1,10 +1,10 @@
-import { WorkArticle } from "@/app/[lang]/(main)/works/[work]/_components/work-article"
-import { WorkCommentList } from "@/app/[lang]/(main)/works/[work]/_components/work-comment-list"
-import WorkRelatedList from "@/app/[lang]/(main)/works/[work]/_components/work-related-list"
-import { ArticlePage } from "@/app/_components/page/article-page"
-import { workQuery } from "@/graphql/queries/work/work"
-import { workCommentsQuery } from "@/graphql/queries/work/work-comments"
-import { createClient } from "@/lib/client"
+import { WorkArticle } from "@/[lang]/(main)/works/[work]/_components/work-article"
+import { WorkCommentList } from "@/[lang]/(main)/works/[work]/_components/work-comment-list"
+import WorkRelatedList from "@/[lang]/(main)/works/[work]/_components/work-related-list"
+import { ArticlePage } from "@/_components/page/article-page"
+import { workQuery } from "@/_graphql/queries/work/work"
+import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 type Props = {

@@ -1,9 +1,9 @@
 "use client"
 
-import { contributors } from "@/app/[lang]/(main)/contributors/_assets/contributors"
-import { ContributorCard } from "@/app/[lang]/(main)/contributors/_components/contributors-card"
-import type { Contributor } from "@/app/[lang]/(main)/contributors/_types/contributor"
-import { Button } from "@/components/ui/button"
+import { contributors } from "@/[lang]/(main)/contributors/_assets/contributors"
+import { ContributorCard } from "@/[lang]/(main)/contributors/_components/contributors-card"
+import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
+import { Button } from "@/_components/ui/button"
 import { MousePointerClickIcon } from "lucide-react"
 
 /**

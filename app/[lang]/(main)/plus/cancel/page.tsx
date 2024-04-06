@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { Button } from "@/components/ui/button"
+import { AppPageCenter } from "@/_components/app/app-page-center"
+import { Button } from "@/_components/ui/button"
 import { FrownIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"

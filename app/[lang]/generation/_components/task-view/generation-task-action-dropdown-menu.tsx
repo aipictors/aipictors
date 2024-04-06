@@ -1,7 +1,7 @@
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import type { TaskContentPositionType } from "@/app/[lang]/generation/_types/task-content-position-type"
-import type { TaskListThumbnailType } from "@/app/[lang]/generation/_types/task-list-thumbnail-type"
-import { Button } from "@/components/ui/button"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import type { TaskContentPositionType } from "@/[lang]/generation/_types/task-content-position-type"
+import type { TaskListThumbnailType } from "@/[lang]/generation/_types/task-list-thumbnail-type"
+import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,11 +13,11 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Slider } from "@/components/ui/slider"
+} from "@/_components/ui/dropdown-menu"
+import { Slider } from "@/_components/ui/slider"
+import { deleteReservedImageGenerationTasksMutation } from "@/_graphql/mutations/delete-image-generation-reserved-tasks"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { deleteReservedImageGenerationTasksMutation } from "@/graphql/mutations/delete-image-generation-reserved-tasks"
-import { viewerCurrentPassQuery } from "@/graphql/queries/viewer/viewer-current-pass"
 import { useMutation } from "@apollo/client"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"

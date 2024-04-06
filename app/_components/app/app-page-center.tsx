@@ -1,0 +1,28 @@
+import { cn } from "@/_lib/utils"
+
+type Props = {
+  children: React.ReactNode
+  className?: string
+}
+
+/**
+ * デフォルトのページのレイアウト
+ * @param props
+ * @returns
+ */
+export const AppPageCenter = (props: Props) => {
+  return (
+    <main className="flex w-full justify-center">
+      <div
+        className={cn(
+          "mx-auto w-full max-w-screen-sm items-start justify-center overflow-x-hidden",
+          "pt-2 pb-16 md:pt-0",
+          "space-y-4 md:space-y-8",
+          props.className,
+        )}
+      >
+        {props.children}
+      </div>
+    </main>
+  )
+}

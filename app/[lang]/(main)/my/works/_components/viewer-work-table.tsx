@@ -1,13 +1,13 @@
 "use client"
 
-import { ViewerWorkTableItem } from "@/app/[lang]/(main)/my/works/_components/viewer-work-table-item"
+import { ViewerWorkTableItem } from "@/[lang]/(main)/my/works/_components/viewer-work-table-item"
 import {
   Table,
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/_components/ui/table"
 
 export const ViewerWorkTable = () => {
   return (

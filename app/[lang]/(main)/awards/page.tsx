@@ -1,8 +1,8 @@
-import { RankingHeader } from "@/app/[lang]/(main)/awards/_components/ranking-header"
-import { RankingWorkList } from "@/app/[lang]/(main)/awards/_components/ranking-work-list"
-import { AppPage } from "@/components/app/app-page"
-import { workAwardsQuery } from "@/graphql/queries/award/work-awards"
-import { createClient } from "@/lib/client"
+import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
+import { RankingWorkList } from "@/[lang]/(main)/awards/_components/ranking-work-list"
+import { AppPage } from "@/_components/app/app-page"
+import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 /**

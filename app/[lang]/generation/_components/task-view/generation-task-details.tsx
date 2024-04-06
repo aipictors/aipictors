@@ -1,16 +1,16 @@
 "use client"
 
-import { useCachedImageGenerationTask } from "@/app/[lang]/generation/_hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskSheetView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import { AuthContext } from "@/_contexts/auth-context"
 import type {
   ImageGenerationSizeType,
   ImageGenerationStatus,
   ImageGenerationType,
-} from "@/graphql/__generated__/graphql"
+} from "@/_graphql/__generated__/graphql"
 import { Suspense, useContext } from "react"
 
 /**

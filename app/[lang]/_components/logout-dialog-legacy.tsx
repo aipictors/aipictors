@@ -1,6 +1,5 @@
 "use client"
 
-import { resetCookieLoginToken } from "@/app/_utils/reset-cookie-login-token"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +9,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/_components/ui/alert-dialog"
+import { resetCookieLoginToken } from "@/_utils/reset-cookie-login-token"
 import { config } from "@/config"
 import { getAuth, signOut } from "firebase/auth"
 import { toast } from "sonner"

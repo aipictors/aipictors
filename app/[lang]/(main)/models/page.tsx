@@ -1,8 +1,8 @@
-import { GoogleAdsense } from "@/app/[lang]/(main)/_components/google-adsense"
-import { ImageModelList } from "@/app/[lang]/(main)/models/_components/image-model-list"
-import { ArticlePage } from "@/app/_components/page/article-page"
-import { imageModelsQuery } from "@/graphql/queries/image-model/image-models"
-import { createClient } from "@/lib/client"
+import { GoogleAdsense } from "@/[lang]/(main)/_components/google-adsense"
+import { ImageModelList } from "@/[lang]/(main)/models/_components/image-model-list"
+import { ArticlePage } from "@/_components/page/article-page"
+import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import { createClient } from "@/_lib/client"
 import type { Metadata } from "next"
 
 /**

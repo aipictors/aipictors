@@ -1,4 +1,4 @@
-import { GenerationTaskView } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-view"
+import { GenerationTaskView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-view"
 import type { Metadata } from "next"
 
 type Props = {

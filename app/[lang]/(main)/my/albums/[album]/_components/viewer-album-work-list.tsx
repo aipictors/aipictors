@@ -1,6 +1,6 @@
 "use client"
 
-import { ViewerAlbumWork } from "@/app/[lang]/(main)/my/albums/[album]/_components/viewer-album-work"
+import { ViewerAlbumWork } from "@/[lang]/(main)/my/albums/[album]/_components/viewer-album-work"
 
 export const ViewerAlbumWorkList = () => {
   return <ViewerAlbumWork />

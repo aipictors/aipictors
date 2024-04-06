@@ -1,11 +1,11 @@
 "use client"
 
-import { ErrorResultCard } from "@/app/[lang]/generation/tasks/_components/error-result-card"
-import { FallbackTaskCard } from "@/app/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationWorkCard } from "@/app/[lang]/generation/tasks/_components/generation-work-card "
-import { ScrollArea } from "@/components/ui/scroll-area"
-import type { WorkNode, WorksQuery } from "@/graphql/__generated__/graphql"
-import { cn } from "@/lib/utils"
+import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-result-card"
+import { FallbackTaskCard } from "@/[lang]/generation/tasks/_components/fallback-task-card"
+import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/generation-work-card "
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
+import { cn } from "@/_lib/utils"
 import { ErrorBoundary } from "@sentry/nextjs"
 import { Suspense } from "react"
 

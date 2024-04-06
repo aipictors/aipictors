@@ -1,4 +1,4 @@
-import { AppFooter } from "@/app/[lang]/app/_components/app-footer"
+import { AppFooter } from "@/[lang]/app/_components/app-footer"
 import type { Metadata } from "next"
 
 const AppSupportPage = async () => {

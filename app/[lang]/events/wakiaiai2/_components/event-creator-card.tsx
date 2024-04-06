@@ -1,9 +1,9 @@
 "use client"
 
-import type { EventUser } from "@/app/[lang]/events/_types/event-user"
-import { EventUserTag } from "@/app/[lang]/events/wakiaiai/_components/event-user-tag"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import type { EventUser } from "@/[lang]/events/_types/event-user"
+import { EventUserTag } from "@/[lang]/events/wakiaiai/_components/event-user-tag"
+import { Button } from "@/_components/ui/button"
+import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { ExternalLinkIcon, MousePointerClickIcon } from "lucide-react"

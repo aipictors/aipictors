@@ -1,6 +1,6 @@
 "use client"
 
-import { InpaintCanvas } from "@/app/[lang]/generation/_components/submission-view/inpaint-canvas"
+import { InpaintCanvas } from "@/[lang]/generation/_components/submission-view/inpaint-canvas"
 
 type Props = {
   imageUrl: string

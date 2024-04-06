@@ -1,14 +1,14 @@
 "use client"
 
-import { GenerationConfigMemoSavingContent } from "@/app/[lang]/generation/_components/config-view/generation-config-memo-saving-contents"
-import { Button } from "@/components/ui/button"
+import { GenerationConfigMemoSavingContent } from "@/[lang]/generation/_components/config-view/generation-config-memo-saving-contents"
+import { Button } from "@/_components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@/_components/ui/dialog"
+import { ScrollArea } from "@/_components/ui/scroll-area"
 import { useState } from "react"
 
 type Props = {

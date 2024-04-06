@@ -1,10 +1,10 @@
 "use client"
 
-import { MutedTag } from "@/app/[lang]/settings/muted/tags/_components/muted-tag"
-import { AuthContext } from "@/app/_contexts/auth-context"
-import { Button } from "@/components/ui/button"
-import { muteTagMutation } from "@/graphql/mutations/mute-tag"
-import { viewerMutedTagsQuery } from "@/graphql/queries/viewer/viewer-muted-tags"
+import { MutedTag } from "@/[lang]/settings/muted/tags/_components/muted-tag"
+import { Button } from "@/_components/ui/button"
+import { AuthContext } from "@/_contexts/auth-context"
+import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
+import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
 import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
 import { useContext, useState } from "react"
 

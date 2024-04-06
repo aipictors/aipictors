@@ -1,5 +1,5 @@
-import { AutoLogoutForm } from "@/app/[lang]/(main)/logout/_components/auto-logout-form"
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { AutoLogoutForm } from "@/[lang]/(main)/logout/_components/auto-logout-form"
+import { AppPageCenter } from "@/_components/app/app-page-center"
 import type { Metadata } from "next"
 
 const LogoutPage = async () => {

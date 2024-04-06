@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Test
         run: time bun test
-  
+
   quality:
     runs-on: ubuntu-latest
     steps:
@@ -38,4 +38,4 @@ jobs:
         with:
           version: latest
       - name: Run Biome
-        run: biome ci app graphql
+        run: biome ci app

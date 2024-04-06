@@ -1,26 +1,26 @@
 "use client"
 
-import { InPaintingDialog } from "@/app/[lang]/generation/_components/submission-view/in-painting-dialog"
-import { generationTaskError } from "@/app/[lang]/generation/_components/task-view/generation-task-error"
-import { StarRating } from "@/app/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/app/[lang]/generation/_hooks/use-generation-context"
-import { GenerationImageDialogButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
-import { GenerationMenuButton } from "@/app/[lang]/generation/tasks/[task]/_components/generation-menu-button"
-import { GenerationReferenceDialog } from "@/app/[lang]/generation/tasks/[task]/_components/generation-reference-dialog-button"
-import { GenerationTaskContentImagePlaceHolder } from "@/app/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
-import type { GenerationParameters } from "@/app/[lang]/generation/tasks/[task]/_types/generation-parameters"
-import type { GenerationSize } from "@/app/[lang]/generation/tasks/[task]/_types/generation-size"
-import { PrivateImage } from "@/app/_components/private-image"
-import SwipeArea from "@/app/_components/swipe-area"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
-import type { ImageGenerationTaskFieldsFragment } from "@/graphql/__generated__/graphql"
-import { cn } from "@/lib/utils"
+import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
+import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
+import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
+import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationImageDialogButton } from "@/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
+import { GenerationMenuButton } from "@/[lang]/generation/tasks/[task]/_components/generation-menu-button"
+import { GenerationReferenceDialog } from "@/[lang]/generation/tasks/[task]/_components/generation-reference-dialog-button"
+import { GenerationTaskContentImagePlaceHolder } from "@/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
+import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
+import type { GenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { PrivateImage } from "@/_components/private-image"
+import SwipeArea from "@/_components/swipe-area"
+import { Button } from "@/_components/ui/button"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import { Separator } from "@/_components/ui/separator"
+import { Skeleton } from "@/_components/ui/skeleton"
+import { Textarea } from "@/_components/ui/textarea"
+import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import { cn } from "@/_lib/utils"
 import { ErrorBoundary } from "@sentry/nextjs"
 import {
   ArrowDownToLine,
@@ -128,10 +128,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   return (
     <>
-      <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
+      <ScrollArea className={cn({ "mx-auto w-full": props.isListFullSize })}>
         <div
           className={cn("p-4", {
-            "w-full mx-auto": props.isListFullSize,
+            "mx-auto w-full": props.isListFullSize,
             "max-h-[88vh]": props.isScroll,
           })}
         >
@@ -168,18 +168,17 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       <GenerationImageDialogButton
                         taskId={props.task.id}
                         taskToken={props.task.token}
-                        children={
-                          <PrivateImage
-                            className={"m-auto h-72 max-h-96"}
-                            taskId={props.task.id}
-                            token={props.task.token as string}
-                            isThumbnail={
-                              context.config.taskListThumbnailType === "light"
-                            }
-                            alt={"-"}
-                          />
-                        }
-                      />
+                      >
+                        <PrivateImage
+                          className={"m-auto h-72 max-h-96"}
+                          taskId={props.task.id}
+                          token={props.task.token as string}
+                          isThumbnail={
+                            context.config.taskListThumbnailType === "light"
+                          }
+                          alt={"-"}
+                        />
+                      </GenerationImageDialogButton>
                     </Suspense>
                     {/* ダウンロード用（非表示） */}
                     <Suspense

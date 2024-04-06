@@ -1,6 +1,6 @@
 "use client"
 
-import RootLoading from "@/app/loading"
+import RootLoading from "@/loading"
 
 const MessagesLoading = () => {
   return <RootLoading />

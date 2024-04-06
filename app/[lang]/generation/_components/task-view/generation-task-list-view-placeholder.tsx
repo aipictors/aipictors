@@ -1,6 +1,6 @@
 "use client"
 
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/_components/ui/skeleton"
 
 /**
  * タスク一覧のプレースホルダー

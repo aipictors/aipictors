@@ -1,5 +1,5 @@
-import { NovelCard } from "@/app/[lang]/(main)/novels/_components/novel-card"
-import { AppPage } from "@/components/app/app-page"
+import { NovelCard } from "@/[lang]/(main)/novels/_components/novel-card"
+import { AppPage } from "@/_components/app/app-page"
 import type { Metadata } from "next"
 
 /**
