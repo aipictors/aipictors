@@ -20,11 +20,26 @@ const GenerationPage = async () => {
   return <GenerationForm termsMarkdownText={termsMarkdownText} />
 }
 
+const siteName = "無料AIイラスト生成 - スマホ対応"
+const description =
+  "無料で画像生成することができます。1日無料30枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
 export const metadata: Metadata = {
-  robots: { index: false },
-  title: "画像生成",
-  description:
-    "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
+  title: siteName,
+  description,
+  openGraph: {
+    title: siteName,
+    description,
+    siteName,
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description,
+    site: "@aipictors",
+    creator: "@aipictors",
+  },
 }
 
 export const revalidate = 10
