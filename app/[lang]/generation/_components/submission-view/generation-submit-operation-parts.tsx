@@ -73,12 +73,6 @@ export function getSubmitButtonLabel(
  * @returns
  */
 export function GenerationSubmitOperationParts(props: Props) {
-  console.log(
-    "availableImageGenerationMaxTasksCount",
-    props.availableImageGenerationMaxTasksCount,
-  )
-  console.log("tasksCount", props.tasksCount)
-
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)

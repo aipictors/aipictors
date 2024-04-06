@@ -95,7 +95,6 @@ export const GenerationModelListButton = (props: Props) => {
           <Checkbox
             onCheckedChange={(value: boolean) => {
               context.changeUseRecommendedPrompt(value)
-              console.log(context.config.isUseRecommendedPrompt)
             }}
             checked={context.config.isUseRecommendedPrompt}
             id="use-recommended-prompt"

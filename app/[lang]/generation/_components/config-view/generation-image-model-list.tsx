@@ -245,7 +245,6 @@ export const ImageModelsList = (props: Props) => {
                         size={"icon"}
                         variant="ghost"
                         onClick={() => {
-                          console.log("test")
                           props.onChangeFavoritedModel(
                             Number(model.id),
                             isFavorited(Number(model.id)) ? 0 : 1,

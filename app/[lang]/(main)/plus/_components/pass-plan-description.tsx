@@ -22,7 +22,6 @@ type Props = {
 }
 
 export const PassPlanDescription = (props: Props) => {
-  console.log(props.isCurrent)
   return (
     <Card className={cn("h-full", props.isPrimary && "border-blue-500")}>
       <CardHeader className="space-y-2">

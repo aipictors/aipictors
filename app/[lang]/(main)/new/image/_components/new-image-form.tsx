@@ -104,7 +104,6 @@ const NewImageForm = () => {
     onDropRejected: (fileRejections) => {
       setIsHovered(false)
 
-      console.log("onDropRejected")
       // biome-ignore lint/complexity/noForEach: <explanation>
       fileRejections.forEach((file) => {
         // biome-ignore lint/complexity/noForEach: <explanation>
@@ -128,7 +127,6 @@ const NewImageForm = () => {
    * biome-ignore lint: TODO: 修正
    */
   const handleDragEnd = (event: any) => {
-    console.log("Drag ended:", event)
     const { active, over } = event
     if (active.id !== over.id) {
       const reorderedImages = arrayMove(selectedImages, active.id, over.id)
@@ -178,7 +176,6 @@ const NewImageForm = () => {
         .files as FileList
       try {
         const url = await uploadFile(selectedFiles[0])
-        console.log(url)
       } catch (error) {
         // エラーハンドリング
         console.error("アップロードエラー:", error)

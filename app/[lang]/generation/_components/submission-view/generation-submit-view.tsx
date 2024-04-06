@@ -429,15 +429,6 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
 
-  console.log(
-    "inProgressImageGenerationTasksCost",
-    inProgressImageGenerationTasksCost,
-  )
-  console.log(
-    "remainingImageGenerationTasksCount",
-    remainingImageGenerationTasksCount,
-  )
-
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
