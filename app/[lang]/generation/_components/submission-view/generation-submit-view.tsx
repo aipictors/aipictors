@@ -59,6 +59,13 @@ export function GenerationSubmissionView(props: Props) {
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
+      onError(error) {
+        if (isDesktop) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
+      },
     },
   )
 
