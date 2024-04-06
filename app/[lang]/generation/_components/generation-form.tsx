@@ -1,6 +1,7 @@
 "use client"
 
 import { GenerationAdvertisementView } from "@/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
+import { GenerationConfigView } from "@/[lang]/generation/_components/config-view/generation-config-view"
 import { GenerationSideTabsView } from "@/[lang]/generation/_components/generation-side-tabs-view/generation-side-tabs-view"
 import { GenerationAsideView } from "@/[lang]/generation/_components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "@/[lang]/generation/_components/generation-view/generation-header-view"
@@ -18,7 +19,6 @@ import { GenerationWorkListModelView } from "@/[lang]/generation/_components/tas
 import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { useMutation } from "@apollo/client/index.js"
 import type { Metadata } from "next"
-import dynamic from "next/dynamic"
 import { useState } from "react"
 
 type Props = {
@@ -92,14 +92,3 @@ export const metadata: Metadata = {
   description:
     "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
 }
-
-export const revalidate = 10
-
-const GenerationConfigView = dynamic(
-  () => {
-    return import(
-      "@/[lang]/generation/_components/config-view/generation-config-view"
-    )
-  },
-  { ssr: false },
-)

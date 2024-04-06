@@ -2,6 +2,8 @@ import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
 import { cn } from "@/_lib/utils"
+import styles from "@/globals.css?url"
+import type { LinksFunction } from "@remix-run/cloudflare"
 import {
   Links,
   Meta,
@@ -11,6 +13,25 @@ import {
 } from "@remix-run/react"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
+
+export const links: LinksFunction = () => {
+  return [
+    { rel: "stylesheet", href: styles },
+    {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com",
+    },
+    {
+      href: "https://fonts.googleapis.com/css2?family=family=Noto+Sans+JP:wght@100..900&display=swap",
+      rel: "stylesheet",
+    },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "anonymous",
+    },
+  ]
+}
 
 export default function Root() {
   return (

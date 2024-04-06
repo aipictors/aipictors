@@ -13,7 +13,6 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { Link } from "@remix-run/react"
 import { BellIcon, MenuIcon } from "lucide-react"
-import Image from "next/image"
 import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -51,9 +50,9 @@ export const HomeHeader = (props: Props) => {
         </Sheet>
         <Link
           className="hidden items-center md:flex"
-          href="https://www.aipictors.com"
+          to="https://www.aipictors.com"
         >
-          <Image
+          <img
             src="/icon.svg"
             className="h-10 w-10 rounded-full"
             alt="Avatar"

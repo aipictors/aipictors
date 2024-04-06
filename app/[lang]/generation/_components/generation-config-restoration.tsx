@@ -5,7 +5,7 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "@remix-run/react"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -22,7 +22,7 @@ export const GenerationConfigRestoration = (props: Props) => {
 
   const context = useGenerationContext()
 
-  const searchParams = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("ref")
 

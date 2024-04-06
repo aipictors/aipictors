@@ -43,7 +43,7 @@ import { useContext } from "react"
  * @param props
  * @returns
  */
-export default function GenerationConfigView() {
+export function GenerationConfigView() {
   const context = useGenerationContext()
 
   const { send } = GenerationConfigContext.useActorRef()
