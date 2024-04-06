@@ -25,7 +25,7 @@ export const WorkAction = (props: Props) => {
             <span>{props.workLikesCount}</span>
           </div>
         </Button>
-        <Button aria-label={"フォルダに追加"} size={"icon"}>
+        <Button aria-label={"フォルダに追加"} size={"icon"} variant="secondary">
           <FolderIcon />
         </Button>
         <SharePopover title={props.title} />

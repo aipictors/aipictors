@@ -21,7 +21,7 @@ export const SharePopover = (props: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size={"icon"}>
+        <Button size={"icon"} variant="secondary">
           <Share2 />
         </Button>
       </PopoverTrigger>

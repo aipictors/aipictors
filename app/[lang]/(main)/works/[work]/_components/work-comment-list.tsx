@@ -25,7 +25,7 @@ export const WorkCommentList = (props: Props) => {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 pt-2">
         <p>{"コメント"}</p>
         <div className="flex w-full items-center space-x-2">
           <Avatar>
@@ -33,10 +33,12 @@ export const WorkCommentList = (props: Props) => {
             <AvatarFallback />
           </Avatar>
           <Input type="text" placeholder="コメントする" />
-          <Button size={"icon"} onClick={onOpen}>
-            <StampIcon />
-          </Button>
-          <Button>{"投稿"}</Button>
+          <div>
+            <Button size={"icon"} onClick={onOpen}>
+              <StampIcon />
+            </Button>
+          </div>
+          <Button>{"送信"}</Button>
         </div>
         <div className="space-y-8">
           {props.work.comments.map((comment) => (
