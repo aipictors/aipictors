@@ -73,6 +73,12 @@ export function getSubmitButtonLabel(
  * @returns
  */
 export function GenerationSubmitOperationParts(props: Props) {
+  console.log(
+    "availableImageGenerationMaxTasksCount",
+    props.availableImageGenerationMaxTasksCount,
+  )
+  console.log("tasksCount", props.tasksCount)
+
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)
@@ -227,7 +233,9 @@ export function GenerationSubmitOperationParts(props: Props) {
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
-          props.tasksCount < props.availableImageGenerationMaxTasksCount - 1 &&
+          props.tasksCount <
+            props.availableImageGenerationMaxTasksCount -
+              (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
@@ -251,7 +259,9 @@ export function GenerationSubmitOperationParts(props: Props) {
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
-          props.tasksCount >= props.availableImageGenerationMaxTasksCount - 1 &&
+          props.tasksCount >=
+            props.availableImageGenerationMaxTasksCount -
+              (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>

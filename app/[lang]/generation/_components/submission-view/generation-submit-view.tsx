@@ -308,7 +308,7 @@ export function GenerationSubmissionView(props: Props) {
       context.config.controlNetImageBase64,
     )
 
-    const nowGeneratingCount = tasksCost // 生成中枚数
+    const nowGeneratingCount = inProgressImageGenerationTasksCost // 生成中枚数
     const promises = taskCounts.map((i) => {
       if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
         // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
@@ -400,9 +400,16 @@ export function GenerationSubmissionView(props: Props) {
     queryData.viewer.availableImageGenerationMaxTasksCount ?? 30
 
   /**
+   * 生成中コスト
+   */
+  const inProgressImageGenerationTasksCost =
+    queryData.viewer.inProgressImageGenerationTasksCost ?? 0
+
+  /**
    * 生成済みコスト
    */
-  const tasksCost = queryData.viewer.inProgressImageGenerationTasksCost ?? 0
+  const remainingImageGenerationTasksCount =
+    queryData.viewer.remainingImageGenerationTasksCount
 
   /**
    * 同時生成最大枚数
@@ -422,6 +429,15 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
 
+  console.log(
+    "inProgressImageGenerationTasksCost",
+    inProgressImageGenerationTasksCost,
+  )
+  console.log(
+    "remainingImageGenerationTasksCount",
+    remainingImageGenerationTasksCount,
+  )
+
   return (
     <AppFixedContent position="bottom">
       <div className="space-y-2">
@@ -434,7 +450,10 @@ export function GenerationSubmissionView(props: Props) {
             inProgressImageGenerationReservedTasksCount
           }
           maxTasksCount={maxTasksCount}
-          tasksCount={tasksCost}
+          tasksCount={
+            inProgressImageGenerationTasksCost +
+            remainingImageGenerationTasksCount
+          }
           termsText={props.termsText}
           availableImageGenerationMaxTasksCount={
             availableImageGenerationMaxTasksCount
