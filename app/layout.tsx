@@ -60,7 +60,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.aipictors.com/"),
+  metadataBase: new URL("https://beta.aipictors.com/"),
   title: {
     template: config.metadata.titleTemplateJA,
     default: config.metadata.titleJA,
