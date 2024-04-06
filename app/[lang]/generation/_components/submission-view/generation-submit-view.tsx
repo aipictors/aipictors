@@ -44,6 +44,13 @@ export function GenerationSubmissionView(props: Props) {
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
+      onError(error) {
+        if (isDesktop) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
+      },
     },
   )
 
@@ -371,13 +378,13 @@ export function GenerationSubmissionView(props: Props) {
         })
       }
     })
-    await Promise.all(promises)
     // タスクの作成後も呼び出す必要がある
     if (isDesktop) {
-      toast("タスクを作成しました")
+      toast("タスク作成をリクエストしました")
     } else {
-      toast("タスクを作成しました", { position: "top-center" })
+      toast("タスク作成をリクエストしました", { position: "top-center" })
     }
+    await Promise.all(promises)
     if (typeof context.user?.nanoid !== "string") {
       toast("画面更新して再度お試し下さい。")
       return
