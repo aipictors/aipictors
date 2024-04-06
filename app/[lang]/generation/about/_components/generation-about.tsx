@@ -35,8 +35,9 @@ export const GenerationAbout = () => {
         <GlowingGradientBorderButton
           onClick={() => {}}
           className={"m-auto mb-8 block w-64"}
-          children={"無料生成してみる！"}
-        />
+        >
+          {"無料生成してみる！"}
+        </GlowingGradientBorderButton>
       </Link>
       <Separator />
       <section className="p-2">

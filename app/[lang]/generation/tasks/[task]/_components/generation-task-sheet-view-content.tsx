@@ -128,10 +128,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   return (
     <>
-      <ScrollArea className={cn({ "w-full mx-auto": props.isListFullSize })}>
+      <ScrollArea className={cn({ "mx-auto w-full": props.isListFullSize })}>
         <div
           className={cn("p-4", {
-            "w-full mx-auto": props.isListFullSize,
+            "mx-auto w-full": props.isListFullSize,
             "max-h-[88vh]": props.isScroll,
           })}
         >
@@ -168,18 +168,17 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       <GenerationImageDialogButton
                         taskId={props.task.id}
                         taskToken={props.task.token}
-                        children={
-                          <PrivateImage
-                            className={"m-auto h-72 max-h-96"}
-                            taskId={props.task.id}
-                            token={props.task.token as string}
-                            isThumbnail={
-                              context.config.taskListThumbnailType === "light"
-                            }
-                            alt={"-"}
-                          />
-                        }
-                      />
+                      >
+                        <PrivateImage
+                          className={"m-auto h-72 max-h-96"}
+                          taskId={props.task.id}
+                          token={props.task.token as string}
+                          isThumbnail={
+                            context.config.taskListThumbnailType === "light"
+                          }
+                          alt={"-"}
+                        />
+                      </GenerationImageDialogButton>
                     </Suspense>
                     {/* ダウンロード用（非表示） */}
                     <Suspense

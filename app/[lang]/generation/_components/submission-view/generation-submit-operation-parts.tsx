@@ -167,20 +167,17 @@ export function GenerationSubmitOperationParts(props: Props) {
               <GradientBorderButton
                 onClick={() => {}}
                 className="w-full text-balance"
-                children={
-                  <>
-                    <div className="flex items-center">
-                      {"生成"}
-                      {(authContext.isLoading ||
-                        (authContext.isLoggedIn && context.user === null)) && (
-                        <span className="ml-2 animate-spin">
-                          <Loader2Icon />
-                        </span>
-                      )}
-                    </div>
-                  </>
-                }
-              />
+              >
+                <div className="flex items-center">
+                  {"生成"}
+                  {(authContext.isLoading ||
+                    (authContext.isLoggedIn && context.user === null)) && (
+                    <span className="ml-2 animate-spin">
+                      <Loader2Icon />
+                    </span>
+                  )}
+                </div>
+              </GradientBorderButton>
             }
           />
         )}
@@ -197,8 +194,9 @@ export function GenerationSubmitOperationParts(props: Props) {
                   disabled={props.isCreatingTask}
                   onClick={() => {}}
                   className="w-full text-balance"
-                  children={props.isCreatingTask ? "処理中.." : "生成"}
-                />
+                >
+                  {props.isCreatingTask ? "処理中.." : "生成"}
+                </GradientBorderButton>
               }
             />
           )}

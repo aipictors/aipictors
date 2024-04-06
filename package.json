@@ -9,7 +9,7 @@
     "gcp-build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
     "start": "node .next/standalone/server.js",
     "check": "tsc --noEmit",
-    "refactor": "biome check --apply-unsafe ./app ./graphql && biome format ./app ./graphql --write",
+    "refactor": "biome check --apply-unsafe app",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "postinstall": "lefthook install",
@@ -111,7 +111,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.3",
+    "@biomejs/biome": "^1.6.4",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "4.2.5",
     "@sentry/cli": "^2.31.0",

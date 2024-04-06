@@ -19,17 +19,16 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
       isAbsolute={true}
       taskId={props.taskId}
       taskToken={props.token}
-      children={
-        <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
-          <div
-            onMouseEnter={() => {
-              props.setIsHovered(true)
-            }}
-          >
-            <ZoomIn color="black" />
-          </div>
+    >
+      <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
+        <div
+          onMouseEnter={() => {
+            props.setIsHovered(true)
+          }}
+        >
+          <ZoomIn color="black" />
         </div>
-      }
-    />
+      </div>
+    </GenerationImageDialogButton>
   )
 }

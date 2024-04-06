@@ -500,23 +500,20 @@ export function GenerationTaskView(props: Props) {
       </ScrollArea>
 
       {!isDesktop && (
-        <AppFixedContent
-          position="bottom"
-          children={
-            <div className="flex">
-              <Link
-                href="/generation"
-                className={cn(
-                  `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
-                )}
-              >
-                <Button className="w-full" variant={"secondary"}>
-                  詳細を閉じる
-                </Button>
-              </Link>
-            </div>
-          }
-        />
+        <AppFixedContent position="bottom">
+          <div className="flex">
+            <Link
+              href="/generation"
+              className={cn(
+                `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
+              )}
+            >
+              <Button className="w-full" variant={"secondary"}>
+                詳細を閉じる
+              </Button>
+            </Link>
+          </div>
+        </AppFixedContent>
       )}
 
       {data.imageGenerationTask.token && (
