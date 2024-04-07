@@ -364,7 +364,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               <p>{props.task.scale}</p>
             </div>
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Scale"}</p>
+              <p className="font-bold">{"Steps"}</p>
               <p>{props.task.steps}</p>
             </div>
             <div className="w-full space-y-1">

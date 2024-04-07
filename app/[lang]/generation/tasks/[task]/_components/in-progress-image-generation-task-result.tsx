@@ -144,7 +144,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             <p>{props.task.scale}</p>
           </div>
           <div className="w-full">
-            <p className="mb-1 font-semibold">{"Scale"}</p>
+            <p className="mb-1 font-semibold">{"Steps"}</p>
             <p>{props.task.steps}</p>
           </div>
           <div className="w-full">
