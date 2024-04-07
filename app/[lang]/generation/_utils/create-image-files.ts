@@ -13,6 +13,11 @@ type Props = {
    * @param id
    */
   toSelector(id: string): string
+  /**
+   * data属性名
+   * @param id
+   */
+  dataName?: string
 }
 
 /**
@@ -31,10 +36,20 @@ export async function createImageFiles(props: Props) {
         throw new Error(`Image element not found for taskId: ${imageId}`)
       }
 
-      const response = await fetch(imageElement.src)
+      const response = await fetch(
+        props.dataName
+          ? imageElement.dataset[props.dataName!]!
+          : imageElement.src,
+      )
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${imageElement.src}`)
+        throw new Error(
+          `Failed to fetch image: ${
+            props.dataName
+              ? imageElement.dataset[props.dataName!]!
+              : imageElement.src
+          }`,
+        )
       }
 
       const blob = await response.blob()

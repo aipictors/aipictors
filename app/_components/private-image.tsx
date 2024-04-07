@@ -6,6 +6,7 @@ type Props = {
   alt: string
   token: string
   isThumbnail?: boolean
+  originalToken?: string
 }
 
 const Component = (props: Props) => {
@@ -17,6 +18,9 @@ const Component = (props: Props) => {
       draggable={false}
       src={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
         props.token,
+      )}`}
+      data-original={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
+        props.originalToken,
       )}`}
     />
   )

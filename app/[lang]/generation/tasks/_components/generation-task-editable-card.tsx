@@ -197,6 +197,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
           <PrivateImage
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`m-auto generation-image-${props.taskNanoid}`}
+            originalToken={props.token}
             taskId={props.taskId}
             token={
               context.config.taskListThumbnailType === "light"

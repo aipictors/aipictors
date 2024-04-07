@@ -860,7 +860,7 @@ export class GenerationConfigAction {
       return "negativeXL_D"
     }
 
-    return "EasyNegative"
+    return negativePromptText
   }
 
   /**

@@ -10,7 +10,10 @@ import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
+import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
+import { createClient } from "@/_lib/client"
 import { config } from "@/config"
+import { useQuery } from "@apollo/client"
 import { BellIcon, MenuIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -29,6 +32,16 @@ export const HomeHeader = (props: Props) => {
     setTrue: onOpenLogoutDialog,
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
+
+  const { data: notifications } = useQuery(viewerNotificationsQuery, {
+    variables: {
+      offset: 0,
+      limit: 40,
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  console.log(notifications)
 
   return (
     <AppHeader>
@@ -89,12 +102,7 @@ export const HomeHeader = (props: Props) => {
           </Link>
         )} */}
         {authContext.isLoggedIn && config.isDevelopmentMode && (
-          <Button
-            variant={"secondary"}
-            disabled
-            size={"icon"}
-            aria-label={"通知"}
-          >
+          <Button variant={"secondary"} size={"icon"} aria-label={"通知"}>
             <BellIcon className="w-4" />
           </Button>
         )}
