@@ -2,6 +2,8 @@
 
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
+import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
+import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
 import { GenerationTaskSheetViewContent } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -74,12 +76,10 @@ export const saveGenerationImage = async (taskId: string) => {
     toast("しばらくしてからお試し下さい。")
     return
   }
-  const imageUrl = await createBase64FromImageURL(imageElement.src)
-  const link = document.createElement("a")
-  link.href = imageUrl
-  link.download = `${taskId}.png`
-  link.target = "_blank"
-  link.click()
+  if (imageElement.src !== undefined && imageElement.src !== "") {
+    const image = await createImageFileFromUrl({url: imageElement.src})
+    downloadImageFile(image)
+  }
 }
 
 /**

@@ -3,6 +3,8 @@
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
+import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
 import { GenerationMenuButton } from "@/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import { GenerationTaskContentImagePlaceHolder } from "@/[lang]/generation/tasks/[task]/_components/generation-task-content-image-place-holder"
 import { InProgressImageGenerationTaskResult } from "@/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
@@ -88,7 +90,7 @@ export const copyUrl = (taskId: string) => {
  * @param taskId
  * @returns
  */
-export const saveGenerationImage = (taskId: string) => {
+export const saveGenerationImage = async (taskId: string) => {
   const imageElement = document.querySelector(
     `.generation-image-${taskId}`,
   ) as HTMLImageElement
@@ -96,11 +98,10 @@ export const saveGenerationImage = (taskId: string) => {
     toast("しばらくしてからお試し下さい。")
     return
   }
-  const imageUrl = imageElement.src
-  const link = document.createElement("a")
-  link.href = imageUrl
-  link.download = `${taskId}.png`
-  link.click()
+  if (imageElement.src !== undefined && imageElement.src !== "") {
+    const image = await createImageFileFromUrl({ url: imageElement.src })
+    downloadImageFile(image)
+  }
 }
 
 /**
