@@ -10,10 +10,24 @@ import { Textarea } from "@/_components/ui/textarea"
 import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
+/**
+ * Format prompt text
+ * @param text
+ * @returns
+ */
+export const formatPromptTextForKeyWord = (text: string) => {
+  return text
+    .split(",")
+    .filter((t) => t.length !== 0)
+    .join(",")
+}
+
 export const GenerationPromptView = () => {
   const context = useGenerationContext()
 
-  const formattedPromptText = formatPromptText(context.config.promptText)
+  const formattedPromptText = formatPromptTextForKeyWord(
+    context.config.promptText,
+  )
 
   const categoryPrompts = context.promptCategories.flatMap((category) => {
     return category.prompts
@@ -27,7 +41,7 @@ export const GenerationPromptView = () => {
     const draftPromptText = formattedPromptText.includes(promptText)
       ? formattedPromptText.replaceAll(promptText, "")
       : [formattedPromptText, promptText].join(",")
-    const draftFormattedPromptText = formatPromptText(draftPromptText)
+    const draftFormattedPromptText = formatPromptTextForKeyWord(draftPromptText)
     context.updatePrompt(draftFormattedPromptText)
   }
 
