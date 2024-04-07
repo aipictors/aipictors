@@ -11,6 +11,7 @@ import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
+import type { LikedWorkNotificationNode } from "@/_graphql/__generated__/graphql"
 import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
@@ -33,16 +34,6 @@ export const HomeHeader = (props: Props) => {
     setTrue: onOpenLogoutDialog,
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
-
-  const { data: notifications } = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 40,
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  console.log(notifications)
 
   return (
     <AppHeader>
@@ -102,9 +93,9 @@ export const HomeHeader = (props: Props) => {
             </Button>
           </Link>
         )} */}
-        {authContext.isLoggedIn && config.isDevelopmentMode && (
+        {/*authContext.isLoggedIn && config.isDevelopmentMode && (
           <HomeNotificationsMenu />
-        )}
+        )*/}
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         )}

@@ -1,5 +1,6 @@
 "use client"
 
+import { HeaderNotificationItem } from "@/[lang]/(main)/_components/notification/header-notification-item"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import {
@@ -16,9 +17,21 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
+import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
+import type {
+  FollowNotificationNode,
+  LikedWorkNotificationNode,
+  NotificationType,
+  ViewerNotificationsQuery,
+  WorkAwardNotificationNode,
+  WorkCommentNotificationNode,
+  WorkCommentReplyNotificationNode,
+} from "@/_graphql/__generated__/graphql"
+import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
 import { config } from "@/config"
+import { useQuery } from "@apollo/client"
 import {
   BellIcon,
   GemIcon,
@@ -32,27 +45,37 @@ import {
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
-import { useContext, useState } from "react"
+import { useState } from "react"
 
 /**
  * ヘッダーのお知らせメニュー
- * @param props
  * @returns
  */
 export const HomeNotificationsMenu = () => {
-  const tabValues = ["favorite", "comment", "follow", "ranking", "app"]
-
-  const tabLabel = [
-    "お気に入り",
-    "コメント",
-    "フォロー",
-    "ランキング",
-    "お知らせ",
+  const tabValues = [
+    "LIKED_WORK",
+    "WORK_COMMENT",
+    "WORK_AWARD",
+    "COMMENT_REPLY",
+    "FOLLOW",
   ]
+
+  const tabLabel = ["いいね", "コメント", "ランキング", "返信", "フォロー"]
 
   const defaultTab = tabValues[0]
 
-  const [activeTab, setActiveTab] = useState(defaultTab) // 初期値を設定
+  const [activeTab, setActiveTab] = useState(defaultTab)
+
+  const { data: notifications } = useQuery(viewerNotificationsQuery, {
+    variables: {
+      offset: 0,
+      limit: 40,
+      where: {
+        type: activeTab as NotificationType,
+      },
+    },
+    fetchPolicy: "cache-first",
+  })
 
   // TabTriggerがクリックされたときにactiveTabを更新
   const handleTabClick = (value: string) => {
@@ -82,7 +105,27 @@ export const HomeNotificationsMenu = () => {
               ))}
             </TabsList>
           </div>
-          <TabsContent value={activeTab}>{activeTab}</TabsContent>
+          {notifications?.viewer && (
+            <TabsContent className="max-w-40" value={activeTab}>
+              <div className="flex h-64 w-full flex-col">
+                <ScrollArea className="w-full">
+                  {/*いいねの通知*/}
+                  {activeTab === "LIKED_WORK" &&
+                    notifications.viewer.notifications.map((notification) => {
+                      const likedWorkNotification =
+                        notification as LikedWorkNotificationNode
+                      return (
+                        <HeaderNotificationItem
+                          key={likedWorkNotification.id}
+                          text={likedWorkNotification.work.title}
+                          link={`/notification/${likedWorkNotification.id}`}
+                        />
+                      )
+                    })}
+                </ScrollArea>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -2,13 +2,19 @@ import { Button } from "@/_components/ui/button"
 import Link from "next/link"
 
 type Props = {
-  name: string
+  text: string
+  link: string
 }
 
-export const TagButton = (props: Props) => {
+/**
+ * ヘッダーの通知アイテム
+ * @param props
+ * @returns
+ */
+export const HeaderNotificationItem = (props: Props) => {
   return (
-    <Link href={`/tags/${props.name}`}>
-      <Button variant={"link"}>#{props.name}</Button>
+    <Link href={`${props.link}`}>
+      <Button variant={"link"}>#{props.text}</Button>
     </Link>
   )
 }
