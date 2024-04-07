@@ -110,6 +110,30 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "七瀬葵",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Faoinanase07.png?alt=media&token=631e4768-34cf-41a6-8df4-d95f384e9a28",
+    twitterId: "aoinanase07",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "lion sey(セイ)",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Flion_sey.png?alt=media&token=2b589fbe-6b22-41de-a618-b0ab6a61a587",
+    twitterId: "lion_sey",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "Aipictors",
     types: ["EXHIBIT"],
     message: null,

@@ -47,16 +47,6 @@ const EventWakiaiaiPage = async () => {
               "東海地方唯一の、生成AIを利用したイラストの展示やグッズ等の展示・即売会、第二回"
             }
           </p>
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSdgK3cGQz7T1CrGpHz1Y7IVNmylA5zT66j6sDbJ9E-LuUA63w/viewform?usp=sf_link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant={"outline"} className="m-4 font-bold text-lg">
-              出展/展示参加募集3/20〆切
-              <MousePointerClickIcon className="ml-2" />
-            </Button>
-          </a>
         </div>
       </div>
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
