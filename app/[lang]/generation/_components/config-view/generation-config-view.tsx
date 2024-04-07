@@ -143,8 +143,8 @@ export default function GenerationConfigView() {
                 context.updateModelId(id, type)
               }
             }}
-            onClickSearchModelWorks={(id: string) => {
-              context.updateSearchWorksModelId(id)
+            onClickSearchModelWorks={(id: string, name: string) => {
+              context.updateSearchWorksModelIdAndName(id, name)
               send({ type: "OPEN_WORKS_FROM_MODEL" })
             }}
           />

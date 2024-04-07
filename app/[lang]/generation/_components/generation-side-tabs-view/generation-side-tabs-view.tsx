@@ -25,7 +25,7 @@ export function GenerationSideTabsView() {
             <TabsTrigger
               onClick={() => {
                 send({ type: "CHANGE_FULL_HISTORY_LIST" })
-                context.updateSearchWorksModelId(null)
+                context.updateSearchWorksModelIdAndName(null, null)
               }}
               className="w-full"
               value="HISTORY_LIST_FULL"
@@ -35,7 +35,7 @@ export function GenerationSideTabsView() {
             <TabsTrigger
               onClick={() => {
                 send({ type: "CHANGE_FULL_WORK_LIST" })
-                context.updateSearchWorksModelId(null)
+                context.updateSearchWorksModelIdAndName(null, null)
               }}
               className="w-full"
               value="WORK_LIST_FULL"
@@ -50,7 +50,6 @@ export function GenerationSideTabsView() {
             <TabsTrigger
               onClick={() => {
                 send({ type: "CLOSE" })
-                context.updateSearchWorksModelId(null)
               }}
               className="w-full"
               value="PROMPT_VIEW"
@@ -60,7 +59,6 @@ export function GenerationSideTabsView() {
             <TabsTrigger
               onClick={() => {
                 send({ type: "OPEN_WORKS_FROM_MODEL" })
-                context.updateSearchWorksModelId(null)
               }}
               className="w-full"
               value="WORKS_FROM_MODEL"
@@ -70,7 +68,6 @@ export function GenerationSideTabsView() {
             <TabsTrigger
               onClick={() => {
                 send({ type: "OPEN_COMMUNICATION" })
-                context.updateSearchWorksModelId(null)
               }}
               className="w-full"
               value="COMMUNICATION"

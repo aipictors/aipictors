@@ -1,5 +1,6 @@
 "use client"
 
+import { HomeNotificationsMenu } from "@/[lang]/(main)/_components/home-notifications-menu"
 import { HomeRouteList } from "@/[lang]/(main)/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/[lang]/(main)/_components/home-user-navigation-menu"
 import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"
@@ -102,9 +103,7 @@ export const HomeHeader = (props: Props) => {
           </Link>
         )} */}
         {authContext.isLoggedIn && config.isDevelopmentMode && (
-          <Button variant={"secondary"} size={"icon"} aria-label={"通知"}>
-            <BellIcon className="w-4" />
-          </Button>
+          <HomeNotificationsMenu />
         )}
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />

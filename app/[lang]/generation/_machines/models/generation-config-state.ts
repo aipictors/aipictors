@@ -3,6 +3,7 @@ import { z } from "zod"
 const zProps = z.object({
   modelId: z.string(),
   searchModelId: z.string().nullable(),
+  searchModelName: z.string().nullable(),
   modelIds: z.array(z.string()),
   promptText: z.string(),
   negativePromptText: z.string(),
@@ -136,6 +137,8 @@ export class GenerationConfigState implements Props {
   readonly controlNetSaveDetectedMap!: Props["controlNetSaveDetectedMap"]
 
   readonly controlNetHrOption!: Props["controlNetHrOption"]
+
+  readonly searchModelName!: Props["searchModelName"]
 
   constructor(props: Props) {
     Object.assign(this, props)
