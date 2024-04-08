@@ -1,8 +1,8 @@
 import "zenn-content-css"
 
 import { cn } from "@/_lib/utils"
+import { marked } from "marked"
 import type React from "react"
-import markdownToHtml from "zenn-markdown-html"
 
 type Props = {
   className?: string
@@ -14,7 +14,7 @@ export const AppMarkdown = (props: Props) => {
     return <>{props.children}</>
   }
 
-  const html = markdownToHtml(props.children, {})
+  const html = marked(props.children, {})
 
   return (
     <div

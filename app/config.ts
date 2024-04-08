@@ -254,9 +254,9 @@ export const config = {
   /**
    * ローカル環境である
    */
-  isDevelopmentMode: import.meta.env.NODE_ENV === "development",
+  isDevelopmentMode: import.meta.env.MODE === "development",
   /**
    * 本番環境である
    */
-  isReleaseMode: import.meta.env.NODE_ENV !== "development",
+  isReleaseMode: import.meta.env.MODE !== "development",
 }
