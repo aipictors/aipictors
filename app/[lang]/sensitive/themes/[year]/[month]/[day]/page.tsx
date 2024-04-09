@@ -11,7 +11,7 @@ type Props = {
   }
 }
 
-const SensitiveThemePage = async (props: Props) => {
+const SensitiveDayThemePage = async (props: Props) => {
   const client = createClient()
 
   const dailyThemesResp = await client.query({
@@ -47,4 +47,4 @@ export const generateStaticParams = () => {
   return []
 }
 
-export default SensitiveThemePage
+export default SensitiveDayThemePage

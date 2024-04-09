@@ -1,7 +1,7 @@
 import { AppPlaceholder } from "@/_components/app/app-placeholder"
 import type { Metadata } from "next"
 
-const RankingPage = async () => {
+const SensitivePage = async () => {
   return <AppPlaceholder>{"センシティブ"}</AppPlaceholder>
 }
 
@@ -12,4 +12,4 @@ export const metadata: Metadata = {
 
 export const revalidate = 60
 
-export default RankingPage
+export default SensitivePage
