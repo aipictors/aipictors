@@ -2,11 +2,7 @@ import { UserCollectionList } from "@/[lang]/(main)/users/[user]/collections/_co
 import type { Metadata } from "next"
 
 const UserCollectionsPage = async () => {
-  return (
-    <>
-      <UserCollectionList />
-    </>
-  )
+  return <UserCollectionList />
 }
 
 export const metadata: Metadata = {

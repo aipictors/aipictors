@@ -2,11 +2,7 @@ import { UserNovelList } from "@/[lang]/(main)/users/[user]/novels/_components/u
 import type { Metadata } from "next"
 
 const UserNovelsPage = async () => {
-  return (
-    <>
-      <UserNovelList />
-    </>
-  )
+  return <UserNovelList />
 }
 
 export const metadata: Metadata = {

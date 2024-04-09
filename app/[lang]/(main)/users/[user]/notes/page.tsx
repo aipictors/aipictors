@@ -2,11 +2,7 @@ import { UserNoteList } from "@/[lang]/(main)/users/[user]/notes/_components/use
 import type { Metadata } from "next"
 
 const UserNotesPage = async () => {
-  return (
-    <>
-      <UserNoteList />
-    </>
-  )
+  return <UserNoteList />
 }
 
 export const metadata: Metadata = {
