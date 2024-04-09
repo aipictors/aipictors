@@ -14,6 +14,7 @@ export async function loader() {
 
 export default function Terms() {
   const data = useLoaderData<typeof loader>()
+
   return (
     <>
       <AppPageCenter>
