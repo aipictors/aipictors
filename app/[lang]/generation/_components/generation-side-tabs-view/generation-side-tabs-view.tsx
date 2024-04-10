@@ -63,7 +63,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="WORKS_FROM_MODEL"
             >
-              検索
+              作品例検索
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
