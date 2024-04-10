@@ -227,6 +227,41 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (
+      context.config.upscaleSize === 2 &&
+      context.config.modelType === "SDXL"
+    ) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
+
+    if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルとi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルとi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
+
+    if (
       context.config.controlNetImageBase64 !== null &&
       (context.config.controlNetWeight === null ||
         context.config.controlNetModule === null)
