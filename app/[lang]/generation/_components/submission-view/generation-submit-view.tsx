@@ -210,6 +210,22 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
+    if (context.config.modelType === "SDXL" && context.config.i2iImageBase64) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
+
     if (
       context.config.controlNetImageBase64 !== null &&
       (context.config.controlNetWeight === null ||
