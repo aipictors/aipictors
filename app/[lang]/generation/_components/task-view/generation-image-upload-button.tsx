@@ -30,9 +30,12 @@ export function GenerationImagePostButton(props: Props) {
       title={props.title}
       disabled={props.disabled}
       variant={"ghost"}
-      size={"icon"}
+      className={"w-12"}
     >
-      <FileUp className="w-4" />
+      <div className="mx-2 flex items-center">
+        <FileUp className="w-4" />
+        投稿
+      </div>
     </Button>
   ) : (
     <Button
@@ -41,8 +44,12 @@ export function GenerationImagePostButton(props: Props) {
       variant="ghost"
       size="icon"
       onClick={onClick}
+      className={"w-12"}
     >
-      <FileUp className="w-4" />
+      <div className="mx-2 flex items-center">
+        <FileUp className="w-4" />
+        投稿
+      </div>
     </Button>
   )
 }
