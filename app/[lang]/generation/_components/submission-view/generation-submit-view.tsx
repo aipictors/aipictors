@@ -248,12 +248,12 @@ export function GenerationSubmissionView(props: Props) {
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
       if (isDesktop) {
         toast(
-          "SDXLモデルとi2iの組み合わせは現在一時停止しております、申し訳ございません",
+          "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
         )
         return
       }
       toast(
-        "SDXLモデルとi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
         {
           position: "top-center",
         },
