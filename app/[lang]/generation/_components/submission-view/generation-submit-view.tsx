@@ -158,6 +158,11 @@ export function GenerationSubmissionView(props: Props) {
       context.currentPass?.type === "STANDARD" ||
       context.currentPass?.type === "PREMIUM"
 
+    const isLiteOrStandardOrPremium =
+      context.currentPass?.type === "LITE" ||
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM"
+
     /**
      * 生成種別
      */
@@ -166,8 +171,8 @@ export function GenerationSubmissionView(props: Props) {
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
-    if (context.config.i2iImageBase64 && !isStandardOrPremium) {
-      toast("img2imgはSTANDARD以上のプランでご利用いただけます。")
+    if (context.config.i2iImageBase64 && !isLiteOrStandardOrPremium) {
+      toast("img2imgはLITE以上のプランでご利用いただけます。")
       return
     }
 
