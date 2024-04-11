@@ -62,6 +62,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "ホミー",
+    types: ["SHOP"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fxiukuchuan30329.jpg?alt=media&token=fe0007a3-d2be-4b59-b274-83ffe66fd317",
+    twitterId: "xiukuchuan30329",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "Wood.Pecker",
     types: ["EXHIBIT"],
     message: null,
@@ -128,6 +140,18 @@ export const eventUsers: EventUser[] = [
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Flion_sey.png?alt=media&token=2b589fbe-6b22-41de-a618-b0ab6a61a587",
     twitterId: "lion_sey",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "さつき＠AIお絵描き(うさぎ好き)",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fmasukarasulove.gif?alt=media&token=d25ff6ce-b206-4bf9-a9dc-d2dd0e85a5cd",
+    twitterId: "masukarasulove",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
