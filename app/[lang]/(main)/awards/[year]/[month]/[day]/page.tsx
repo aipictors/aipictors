@@ -1,10 +1,9 @@
-import type { Metadata } from "next"
-
 import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
 import { RankingWorkList } from "@/[lang]/(main)/awards/_components/ranking-work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
+import type { Metadata } from "next"
 
 type Props = {
   params: {

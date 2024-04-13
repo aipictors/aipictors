@@ -26,23 +26,24 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
   return {
-    worksResp,
+    works: worksResp.data.works,
     tag: props.params.tag,
   }
 }
 
 export default function GenerationTag() {
+  const params = useParams()
+
+  if (params.tag === undefined) {
+    throw new Error()
+  }
+
   const data = useLoaderData<typeof loader>()
 
-  if (data.worksResp === undefined) {
-    return null
-  }
-  const params = useParams()
-  console.log(params)
   return (
     <TagReferencedWorkSection
-      works={data.worksResp.data.works}
-      title={decodeURIComponent(data.tag)}
+      works={data.works}
+      title={decodeURIComponent(params.tag)}
     />
   )
 }

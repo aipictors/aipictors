@@ -3,7 +3,9 @@ import { RankingWorkList } from "@/[lang]/(main)/awards/_components/ranking-work
 import { AppPage } from "@/_components/app/app-page"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { useParams } from "@remix-run/react"
 
 /**
  * ランキングの履歴
@@ -34,17 +36,31 @@ export async function loader() {
     year,
     month,
     day,
-    workAwardsResp,
+    workAwards: workAwardsResp,
   }
 }
 
 export default function Awards() {
+  const params = useParams()
+
+  if (params.year === undefined) {
+    return null
+  }
+
+  if (params.month === undefined) {
+    return null
+  }
+
+  if (params.day === undefined) {
+    return null
+  }
+
   const data = useLoaderData<typeof loader>()
 
   return (
     <AppPage>
       <RankingHeader year={data.year} month={data.month} day={data.day} />
-      <RankingWorkList awards={data.workAwardsResp.data.workAwards} />
+      <RankingWorkList awards={data.workAwards.data.workAwards} />
     </AppPage>
   )
 }
