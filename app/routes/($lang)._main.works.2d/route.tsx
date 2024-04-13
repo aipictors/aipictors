@@ -37,8 +37,8 @@ export default function Works2d() {
 
   return (
     <AppPage>
-      <HomeTagList hotTags={data.hotTagsResp.data.hotTags} />
-      <HomeWorkList works={data.worksResp.data.works} />
+      <HomeTagList hotTags={data.hotTags} />
+      <HomeWorkList works={data.works} />
     </AppPage>
   )
 }

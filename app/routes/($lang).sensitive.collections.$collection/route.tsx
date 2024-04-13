@@ -27,7 +27,7 @@ export default function SensitiveCollection() {
   return (
     <AppPage>
       <CollectionArticle />
-      <WorkList works={data.worksResp.data.works ?? []} />
+      <WorkList works={data.works ?? []} />
     </AppPage>
   )
 }

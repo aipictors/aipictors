@@ -4,7 +4,6 @@ import { AppPage } from "@/_components/app/app-page"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
 
 /**
  * ランキングの履歴

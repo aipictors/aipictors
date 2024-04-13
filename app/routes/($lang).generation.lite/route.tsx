@@ -24,7 +24,7 @@ export default function GenerationLite() {
 
   return (
     <GenerationEditorLite
-      promptCategories={promptCategoryQuery.data.promptCategories}
+      promptCategories={promptCategoryQuery.promptCategories}
     />
   )
 }

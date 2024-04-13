@@ -8,7 +8,6 @@ import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
-import React from "react"
 
 export const meta: MetaFunction = () => {
   return [

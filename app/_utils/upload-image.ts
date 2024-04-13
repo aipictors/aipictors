@@ -27,7 +27,7 @@ export const uploadImage = async (
       body: formData,
     })
     if (response.ok) {
-      const responseData = await response.json()
+      const responseData = (await response.json()) as any
       return responseData.url
     }
     throw new Error()

@@ -17,7 +17,7 @@ export async function loader() {
     },
   })
   return {
-    stickersResp,
+    stickers: stickersResp.data.stickers,
   }
 }
 
@@ -30,7 +30,7 @@ export default function Stickers() {
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
         <h2 className="font-bold text-lg">{"新着"}</h2>
-        <StickerList stickers={stickersResp.data.stickers} />
+        <StickerList stickers={data.stickers} />
       </section>
     </main>
   )
