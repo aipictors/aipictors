@@ -16,7 +16,6 @@ export default function FlutterLayout() {
     if (colorScheme === "light") {
       setTheme("light")
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
