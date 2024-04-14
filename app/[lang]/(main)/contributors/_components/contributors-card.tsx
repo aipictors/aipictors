@@ -2,7 +2,6 @@ import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributo
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import { HomeIcon } from "lucide-react"
-import Image from "next/image"
 import { TbBrandXFilled } from "react-icons/tb"
 
 type Props = {
@@ -79,7 +78,7 @@ export const ContributorCard = (props: Props) => {
                     rel="noopener noreferrer"
                   >
                     <Button variant={"outline"}>
-                      <Image
+                      <img
                         src="/icon.svg"
                         cmr-2
                         className="ro-full h-4 w-4"

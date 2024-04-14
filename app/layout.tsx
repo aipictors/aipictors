@@ -10,7 +10,6 @@ import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import NextTopLoader from "nextjs-toploader"
 import { Suspense } from "react"
-import { notoSansFont } from "./_fonts/noto-sans-font"
 
 export const revalidate = 3600
 
@@ -31,12 +30,7 @@ const RootLayout = (props: Props) => {
           />
         )}
       </head>
-      <body
-        className={cn(
-          "no-margin min-h-screen font-sans antialiased",
-          notoSansFont.variable,
-        )}
-      >
+      <body className={cn("no-margin min-h-screen font-sans antialiased")}>
         <NextTopLoader shadow={false} height={2} />
         <ContextProviders>
           <AutoLoginProvider>

@@ -12,7 +12,7 @@ type Props = {
  * @param props
  * @returns
  */
-export default function InPaintingEditImage(props: Props) {
+export function InPaintingEditImage(props: Props) {
   return (
     <>
       <InpaintCanvas

@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable"
 import type { SetStateAction } from "react"
 import { useState } from "react"
-import * as reactDropzone from "react-dropzone"
+import { useDropzone } from "react-dropzone-esm"
 
 const NewImageForm = () => {
   // 画像の状態を保持するための型
@@ -44,7 +44,7 @@ const NewImageForm = () => {
 
   const maxSize = 32 * 1024 * 1024
 
-  const { getRootProps, getInputProps } = reactDropzone.useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     minSize: 1,
     maxSize: maxSize,
     accept: {

@@ -28,7 +28,7 @@ import {
   useMutation,
   useSuspenseQuery,
 } from "@apollo/client/index.js"
-import { Link } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -38,7 +38,6 @@ import {
   PenIcon,
   Trash2,
 } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -209,7 +208,7 @@ export function GenerationTaskView(props: Props) {
     window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
-  const router = useRouter()
+  const navigate = useNavigate()
 
   /**
    * 削除
@@ -222,7 +221,7 @@ export function GenerationTaskView(props: Props) {
         },
       },
     })
-    router.push("/generation")
+    navigate("/generation")
     toast("削除しました")
   }
 

@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { usePathname } from "next/navigation"
+import { useLocation } from "@remix-run/react"
 import { useState } from "react"
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 }
 
 export const UserTabs = (props: Props) => {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
 
   const tabValues = [
     "画像",

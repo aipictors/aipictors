@@ -1,3 +1,4 @@
+import { InPaintingEditImage } from "@/[lang]/generation/_components/submission-view/in-painting-edit-image"
 import { InPaintingSetting } from "@/[lang]/generation/_components/submission-view/in-painting-setting"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
@@ -11,7 +12,6 @@ import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
 import { useMutation } from "@apollo/client/index.js"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import dynamic from "next/dynamic"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -226,12 +226,3 @@ export const InPaintingImageForm = (props: Props) => {
     </>
   )
 }
-
-const InPaintingEditImage = dynamic(
-  () => {
-    return import(
-      "@/[lang]/generation/_components/submission-view/in-painting-edit-image"
-    )
-  },
-  { ssr: false },
-)

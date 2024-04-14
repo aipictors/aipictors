@@ -1,12 +1,12 @@
+import { useLocation, useSearchParams } from "@remix-run/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
-import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
 export const AppAnalytics = () => {
-  const pathname = usePathname()
+  const { pathname } = useLocation()
 
-  const searchParams = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     if (typeof window === "undefined") return

@@ -9,7 +9,6 @@ import {
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
 import { Link } from "@remix-run/react"
-import Image from "next/image"
 
 type Work = {
   id: string
@@ -34,7 +33,7 @@ export default function WorkRelatedList({ works }: WorkRelatedListProps) {
               className="basis-1/4 lg:basis-1/6 md:basis-1/5"
             >
               <Link to={`/works/${work.id}`}>
-                <Image
+                <img
                   key={work.id}
                   className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32"
                   alt=""

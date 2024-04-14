@@ -1,5 +1,4 @@
 import { AspectRatio } from "@/_components/ui/aspect-ratio"
-import Image from "next/image"
 
 type Props = {
   headerImageUrl?: string
@@ -9,10 +8,9 @@ export const UserProfileHeader = (props: Props) => {
   return (
     <AspectRatio ratio={1500 / 500}>
       {props.headerImageUrl ? (
-        <Image
+        <img
           alt=""
           src={props.headerImageUrl}
-          fill
           className="w-full object-cover"
         />
       ) : (

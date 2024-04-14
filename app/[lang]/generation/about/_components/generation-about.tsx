@@ -6,7 +6,6 @@ import {
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
 import { Link } from "@remix-run/react"
-import Image from "next/image"
 
 /**
  * 画像生成についての説明
@@ -46,39 +45,31 @@ export const GenerationAbout = () => {
           <Carousel className="m-auto">
             <CarouselContent>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-0.webp"
                   alt="参考画像1"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-1.webp"
                   alt="参考画像2"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-2.webp"
                   alt="参考画像3"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-3.webp"
                   alt="参考画像4"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
             </CarouselContent>

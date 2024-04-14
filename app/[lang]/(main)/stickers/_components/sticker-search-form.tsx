@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "@remix-run/react"
 import { useState } from "react"
 
 type Props = {
@@ -15,11 +15,11 @@ type Props = {
 export const StickerSearchForm = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const handleSearch = () => {
     if (searchTerm) {
-      router.push(`/stickers/search/${encodeURIComponent(searchTerm)}`)
+      navigate(`/stickers/search/${encodeURIComponent(searchTerm)}`)
       return
     }
   }

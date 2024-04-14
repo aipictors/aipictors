@@ -6,10 +6,7 @@
     "build": "graphql-codegen-esm --config codegen.ts && remix vite:build",
     "deploy": "wrangler pages deploy ./build/client",
     "dev": "remix vite:dev",
-    "_dev": "graphql-codegen-esm --config codegen.ts && next dev --turbo",
-    "_build": "graphql-codegen-esm --config codegen.ts && next build",
     "build:graphql": "graphql-codegen-esm --config codegen.ts",
-    "gcp-build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && next build",
     "start": "node .next/standalone/server.js",
     "check": "tsc --noEmit",
     "refactor": "biome check --apply-unsafe app",
@@ -108,6 +105,7 @@
     "react-day-picker": "^8.10.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-dropzone-esm": "^15.0.1",
     "react-easy-crop": "^5.0.6",
     "react-hook-form": "^7.51.2",
     "react-icons": "^5.0.1",
@@ -148,9 +146,5 @@
     "lefthook": "^1.6.7",
     "storybook": "^8.0.5"
   },
-  "sideEffects": false,
-  "type": "module",
-  "engine": {
-    "node": "21.5.0"
-  }
+  "type": "module"
 }
