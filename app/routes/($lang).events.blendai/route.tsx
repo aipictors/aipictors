@@ -1,13 +1,11 @@
 import { ImageGenerationReferenceCard } from "@/[lang]/_components/image-generation-reference-card"
 import { EventImage } from "@/[lang]/events/blendai/_components/event-image"
-import { eventUsers } from "@/[lang]/events/wakiaiai/_assets/event-users"
 import { Button } from "@/_components/ui/button"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 export default function BlendAi() {
-  const length = Math.floor(eventUsers.length / 3)
-
   return (
     <div className="space-y-2 py-4">
       <div className="flex flex-col items-center md:flex-row">
@@ -80,4 +78,37 @@ export default function BlendAi() {
       </div>
     </div>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "BlendAI×Aipictors企画 - デルタもん生成企画" },
+    { description: "BlendAIとAipictorsの企画ページです。" },
+    {
+      property: "og:title",
+      content: "BlendAI×Aipictors企画 - デルタもん生成企画",
+    },
+    {
+      property: "og:description",
+      content: "BlendAIとAipictorsの企画ページです。",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2024/03/blendai_aipictors.webp",
+    },
+    {
+      name: "twitter:title",
+      content: "BlendAI×Aipictors企画 - デルタもん生成企画",
+    },
+    {
+      name: "twitter:description",
+      content: "BlendAIとAipictorsの企画ページです。",
+    },
+    {
+      name: "twitter:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2024/03/blendai_aipictors.webp",
+    },
+  ]
 }

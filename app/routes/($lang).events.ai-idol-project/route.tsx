@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { cn } from "@/_lib/utils"
-import type { Metadata } from "next"
+import type { MetaFunction } from "@remix-run/cloudflare"
 
-const EventAiIdolProjectPage = async () => {
+export default function EventAiIdolProject() {
   return (
     <div className="space-y-2 py-4">
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
@@ -43,23 +43,35 @@ const EventAiIdolProjectPage = async () => {
   )
 }
 
-export const metadata: Metadata = {
-  title: { absolute: "Ai Idol Project - Aipictors" },
-  description:
-    "Ai Idol Project（アイプロ）のご紹介、Aipictorsとの連携特設ページ",
-  openGraph: {
-    title: { absolute: "Ai Idol Project - Aipictors" },
-    description:
-      "Ai Idol Project（アイプロ）のご紹介、生成機能との連携特設ページです。",
-    images: {
-      url: "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Ai Idol Project - Aipictors" },
+    {
+      description:
+        "Ai Idol Project（アイプロ）のご紹介、Aipictorsとの連携特設ページ",
     },
-  },
-  twitter: {
-    title: { absolute: "Ai Idol Project - Aipictors" },
-    description:
-      "Ai Idol Project（アイプロ）のご紹介、Aipictorsとの連携特設ページ",
-  },
+    {
+      property: "og:title",
+      content: "Ai Idol Project - Aipictors",
+    },
+    {
+      property: "og:description",
+      content:
+        "Ai Idol Project（アイプロ）のご紹介、生成機能との連携特設ページです。",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+    },
+    {
+      name: "twitter:title",
+      content: "Ai Idol Project - Aipictors",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "Ai Idol Project（アイプロ）のご紹介、Aipictorsとの連携特設ページ",
+    },
+  ]
 }
-
-export default EventAiIdolProjectPage

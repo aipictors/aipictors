@@ -4,10 +4,10 @@ import { EventImage } from "@/[lang]/events/wakiaiai/_components/event-image"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { cn } from "@/_lib/utils"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { MousePointerClickIcon } from "lucide-react"
-import type { Metadata } from "next"
 
-const EventWakiaiaiPage = async () => {
+export default function EventWakiaiai() {
   const length = Math.floor(eventUsers.length / 3)
 
   const aUsers = eventUsers.filter((_, index) => {
@@ -159,23 +159,35 @@ const EventWakiaiaiPage = async () => {
   )
 }
 
-export const metadata: Metadata = {
-  title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
-  description:
-    "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
-  openGraph: {
-    title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
-    description:
-      "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
-    images: {
-      url: "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+export const meta: MetaFunction = () => {
+  return [
+    { title: "和気あいAI - 愛知県AIイラスト展示即売会" },
+    {
+      description:
+        "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
     },
-  },
-  twitter: {
-    title: { absolute: "和気あいAI - 愛知県AIイラスト展示即売会" },
-    description:
-      "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
-  },
+    {
+      property: "og:title",
+      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+    },
+    {
+      property: "og:description",
+      content:
+        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+    },
+    {
+      name: "twitter:title",
+      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+    },
+  ]
 }
-
-export default EventWakiaiaiPage

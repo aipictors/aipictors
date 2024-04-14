@@ -4,6 +4,7 @@ import { EventImage } from "@/[lang]/events/wakiaiai2/_components/event-image"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { cn } from "@/_lib/utils"
+import type { MetaFunction } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 export default function EventWakiaiai2() {
@@ -134,4 +135,37 @@ export default function EventWakiaiai2() {
       </footer>
     </div>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "和気あいAI2 - 愛知県AIイラスト展示即売会" },
+    {
+      description:
+        "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
+    },
+    {
+      property: "og:title",
+      content: "和気あいAI2 - 愛知県AIイラスト展示即売会",
+    },
+    {
+      property: "og:description",
+      content:
+        "2024年4月13日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第二回！",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+    },
+    {
+      name: "twitter:title",
+      content: "和気あいAI2 - 愛知県AIイラスト展示即売会",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "2024年4月13日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第二回！",
+    },
+  ]
 }
