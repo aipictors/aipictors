@@ -1,5 +1,3 @@
-"use client"
-
 import { CollectionHeader } from "./collection-header"
 
 export const CollectionArticle = () => {

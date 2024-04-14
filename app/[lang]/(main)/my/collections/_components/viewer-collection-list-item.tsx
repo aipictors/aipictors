@@ -1,5 +1,3 @@
-"use client"
-
 export const ViewerCollectionListItem = () => {
   return (
     <div className="flex flex-col">

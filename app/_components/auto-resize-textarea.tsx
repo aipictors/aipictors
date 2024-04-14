@@ -1,5 +1,3 @@
-"use client"
-
 import { Textarea } from "@/_components/ui/textarea"
 import { forwardRef } from "react"
 

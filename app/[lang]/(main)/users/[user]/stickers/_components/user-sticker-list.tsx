@@ -1,5 +1,3 @@
-"use client"
-
 import { StickerCard } from "@/[lang]/(main)/stickers/_components/sticker-card"
 import type { UserStickersQuery } from "@/_graphql/__generated__/graphql"
 import { Link } from "@remix-run/react"

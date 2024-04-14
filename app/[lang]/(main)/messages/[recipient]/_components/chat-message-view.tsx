@@ -1,5 +1,3 @@
-"use client"
-
 import { ChatMessageListContent } from "@/[lang]/(main)/messages/[recipient]/_components/chat-message-list-content"
 import { MessageInput } from "@/[lang]/(main)/support/chat/_components/message-input"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"

@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationTaskPreviewModeButton } from "@/[lang]/generation/_components/task-view/generation-task-preview-mode-button"
 import { GenerationWorkActionDropdownMenu } from "@/[lang]/generation/_components/task-view/generation-work-action-dropdown-menu"
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"

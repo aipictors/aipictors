@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
 import { GenerationWorkList } from "@/[lang]/generation/_components/task-view/generation-work-list"
 import { GenerationWorkListActions } from "@/[lang]/generation/_components/task-view/generation-work-list-actions"

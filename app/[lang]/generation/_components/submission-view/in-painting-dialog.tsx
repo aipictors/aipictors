@@ -1,5 +1,3 @@
-"use client"
-
 import { InPaintingImageForm } from "@/[lang]/generation/_components/submission-view/in-painting-image-form"
 import { Button } from "@/_components/ui/button"
 import {

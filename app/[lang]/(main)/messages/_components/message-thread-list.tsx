@@ -1,5 +1,3 @@
-"use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"

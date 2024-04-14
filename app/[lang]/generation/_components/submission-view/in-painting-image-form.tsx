@@ -1,5 +1,3 @@
-"use client"
-
 import { InPaintingSetting } from "@/[lang]/generation/_components/submission-view/in-painting-setting"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"

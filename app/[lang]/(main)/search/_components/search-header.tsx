@@ -1,5 +1,3 @@
-"use client"
-
 import { SearchConfigDialog } from "@/[lang]/(main)/search/_components/search-config-dialog"
 import { Button } from "@/_components/ui/button"
 import { Label } from "@/_components/ui/label"

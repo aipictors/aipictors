@@ -1,5 +1,3 @@
-"use client"
-
 import { ViewerCollectionListItem } from "@/[lang]/(main)/my/collections/_components/viewer-collection-list-item"
 
 export const ViewerCollectionList = () => {

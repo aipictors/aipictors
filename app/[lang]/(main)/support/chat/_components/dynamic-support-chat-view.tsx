@@ -1,5 +1,3 @@
-"use client"
-
 import { MessageInput } from "@/[lang]/(main)/support/chat/_components/message-input"
 import { SupportMessageList } from "@/[lang]/(main)/support/chat/_components/support-message-list"
 import { createMessageMutation } from "@/_graphql/mutations/create-message"

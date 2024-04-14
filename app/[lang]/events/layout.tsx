@@ -1,5 +1,3 @@
-"use client"
-
 import { useTheme } from "next-themes"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"

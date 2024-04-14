@@ -1,5 +1,3 @@
-"use client"
-
 import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"
 import { GenerationReserveCountInput } from "@/[lang]/generation/_components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/[lang]/generation/_components/submission-view/generation-submit-button"

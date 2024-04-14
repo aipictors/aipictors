@@ -1,5 +1,3 @@
-"use client"
-
 import { ThemeListItem } from "@/[lang]/(main)/themes/_components/theme-list-item"
 import { createCalendarCells } from "@/[lang]/(main)/themes/_utils/create-calendar-cells"
 import { Button } from "@/_components/ui/button"

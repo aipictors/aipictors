@@ -1,5 +1,3 @@
-"use client"
-
 import { ConfigLoraModel } from "@/[lang]/generation/_components/config-view/config-lora-model"
 import { LoraModelListDialogButton } from "@/[lang]/generation/_components/config-view/lora-model-list-dialog-button"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"

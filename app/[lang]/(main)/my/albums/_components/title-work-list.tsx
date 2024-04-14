@@ -1,5 +1,3 @@
-"use client"
-
 import { TitleWorkCard } from "@/[lang]/(main)/my/albums/_components/title-work-card"
 
 export const TitleWorkList = () => {

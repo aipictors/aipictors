@@ -1,5 +1,3 @@
-"use client"
-
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"

@@ -1,5 +1,3 @@
-"use client"
-
 import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { useSuspenseQuery } from "@apollo/client/index.js"
 

@@ -1,5 +1,3 @@
-"use client"
-
 import { MutedUser } from "@/[lang]/settings/muted/users/_components/muted-user"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteUserMutation } from "@/_graphql/mutations/mute-user"

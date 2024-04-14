@@ -1,5 +1,3 @@
-"use client"
-
 import { contributors } from "@/[lang]/(main)/contributors/_assets/contributors"
 import { ContributorCard } from "@/[lang]/(main)/contributors/_components/contributors-card"
 import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"

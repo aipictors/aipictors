@@ -1,5 +1,3 @@
-"use client"
-
 import { InpaintCanvas } from "@/[lang]/generation/_components/submission-view/inpaint-canvas"
 
 type Props = {

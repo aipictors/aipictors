@@ -1,5 +1,3 @@
-"use client"
-
 import { AppThemeProvider } from "@/_components/app/app-theme-provider"
 import { AuthContextProvider } from "@/_components/auth-context-provider"
 import { createClient } from "@/_lib/client"

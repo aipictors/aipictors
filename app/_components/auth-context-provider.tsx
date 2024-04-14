@@ -1,5 +1,3 @@
-"use client"
-
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import {

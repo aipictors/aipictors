@@ -1,5 +1,3 @@
-"use client"
-
 import { SettingsRouteList } from "@/[lang]/settings/_components/settings-route-list"
 import { useBreakpoint } from "@/_hooks/use-breakpoint"
 

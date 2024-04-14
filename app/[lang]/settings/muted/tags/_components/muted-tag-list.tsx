@@ -1,5 +1,3 @@
-"use client"
-
 import { MutedTag } from "@/[lang]/settings/muted/tags/_components/muted-tag"
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"

@@ -1,5 +1,3 @@
-"use client"
-
 import { WorkImageThumbnailCarousel } from "@/[lang]/(main)/works/[work]/_components/work-image-thumbnail-carousel"
 import type React from "react"
 import { useState } from "react"

@@ -1,5 +1,3 @@
-"use client"
-
 import { StampDialog } from "@/[lang]/(main)/works/[work]/_components/stamp-dialog"
 import { WorkComment } from "@/[lang]/(main)/works/[work]/_components/work-comment"
 import { WorkCommentResponse } from "@/[lang]/(main)/works/[work]/_components/work-comment-response"

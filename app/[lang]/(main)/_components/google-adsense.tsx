@@ -1,5 +1,3 @@
-"use client"
-
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useSuspenseQuery } from "@apollo/client/index.js"

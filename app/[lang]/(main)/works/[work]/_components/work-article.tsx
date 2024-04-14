@@ -1,5 +1,3 @@
-"use client"
-
 import { PromptonRequestButton } from "@/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { WorkAction } from "@/[lang]/(main)/works/[work]/_components/work-action"
 import WorkArticleTags from "@/[lang]/(main)/works/[work]/_components/work-article-tags"

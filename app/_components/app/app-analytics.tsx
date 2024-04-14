@@ -1,5 +1,3 @@
-"use client"
-
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
 import { usePathname, useSearchParams } from "next/navigation"

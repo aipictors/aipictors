@@ -1,5 +1,3 @@
-"use client"
-
 import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-result-card"
 import { FallbackTaskCard } from "@/[lang]/generation/tasks/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/generation-work-card "

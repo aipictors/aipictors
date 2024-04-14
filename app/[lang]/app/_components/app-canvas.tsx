@@ -1,5 +1,3 @@
-"use client"
-
 import { runAnimation } from "@/[lang]/app/_utils/run-animation"
 import { useEffect, useRef } from "react"
 

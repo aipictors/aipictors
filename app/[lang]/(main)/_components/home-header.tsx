@@ -1,5 +1,3 @@
-"use client"
-
 import { HomeRouteList } from "@/[lang]/(main)/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/[lang]/(main)/_components/home-user-navigation-menu"
 import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"

@@ -1,5 +1,3 @@
-"use client"
-
 import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback } from "@/_components/ui/avatar"
 import { Card, CardContent } from "@/_components/ui/card"

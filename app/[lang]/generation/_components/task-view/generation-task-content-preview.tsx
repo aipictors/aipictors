@@ -1,5 +1,3 @@
-"use client"
-
 import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { PrivateImage } from "@/_components/private-image"

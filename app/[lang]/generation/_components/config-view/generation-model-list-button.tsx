@@ -1,5 +1,3 @@
-"use client"
-
 import { ImageModelsList } from "@/[lang]/generation/_components/config-view/generation-image-model-list"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/_components/ui/button"

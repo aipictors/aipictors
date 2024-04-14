@@ -1,5 +1,3 @@
-"use client"
-
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { PrivateImage } from "@/_components/private-image"
 import { Card } from "@/_components/ui/card"

@@ -1,5 +1,3 @@
-"use client"
-
 export const GuidelineArticle = () => {
   return (
     <div className="flex flex-col">

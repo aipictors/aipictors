@@ -1,5 +1,3 @@
-"use client"
-
 import { AppCanvas } from "@/[lang]/app/_components/app-canvas"
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { PasswordLoginForm } from "@/_components/password-login-form"

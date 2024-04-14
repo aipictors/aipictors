@@ -1,5 +1,3 @@
-"use client"
-
 import { Card, CardContent } from "@/_components/ui/card"
 import { Skeleton } from "@/_components/ui/skeleton"
 

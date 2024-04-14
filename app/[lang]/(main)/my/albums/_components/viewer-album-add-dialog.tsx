@@ -1,5 +1,3 @@
-"use client"
-
 import { TitleWorkList } from "@/[lang]/(main)/my/albums/_components/title-work-list"
 import { Button } from "@/_components/ui/button"
 import {

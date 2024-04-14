@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/_lib/utils"
 import { Link } from "@remix-run/react"
 

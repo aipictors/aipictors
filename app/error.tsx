@@ -1,5 +1,3 @@
-"use client"
-
 type Props = {
   error: Error
   reset(): void

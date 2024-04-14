@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigClipSkip } from "@/[lang]/generation/_components/config-view/generation-config-clip-skip"
 import { GenerationConfigControlNet } from "@/[lang]/generation/_components/config-view/generation-config-control-net"
 import { GenerationConfigI2i } from "@/[lang]/generation/_components/config-view/generation-config-i2i"
