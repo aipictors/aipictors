@@ -2,15 +2,13 @@ import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
 import { SettingsRouteList } from "@/[lang]/settings/_components/settings-route-list"
 import { AppAside } from "@/_components/app/app-aside"
 import { AppColumnLayout } from "@/_components/app/app-column-layout"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
-import type React from "react"
+import RootLoading from "@/loading"
+import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
-type Props = {
-  children: React.ReactNode
-}
-
-const SettingsLayout = (props: Props) => {
+export default function SettingsLayout() {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {
@@ -28,10 +26,12 @@ const SettingsLayout = (props: Props) => {
         <AppAside>
           <SettingsRouteList />
         </AppAside>
-        {props.children}
+        <Outlet />
       </AppColumnLayout>
     </>
   )
 }
 
-export default SettingsLayout
+export function HydrateFallback() {
+  return <RootLoading />
+}

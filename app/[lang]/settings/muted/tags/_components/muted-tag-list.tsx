@@ -1,5 +1,6 @@
 import { MutedTag } from "@/[lang]/settings/muted/tags/_components/muted-tag"
 import { Button } from "@/_components/ui/button"
+import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
 import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
@@ -58,8 +59,8 @@ export const MutedTagList = () => {
       <div className="space-y-4">
         <div className="flex items-start space-x-4">
           <div className="flex-1">
-            <input
-              className="rounded-full p-2"
+            <Input
+              className="w-full rounded-full"
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -69,10 +70,7 @@ export const MutedTagList = () => {
               <p className="text-xs">{`${count}/12`}</p>
             </div>
           </div>
-          <Button
-            className="rounded-full bg-primary p-4 text-white"
-            onClick={handleMute}
-          >
+          <Button className="rounded-full" onClick={handleMute}>
             {"変更を保存"}
           </Button>
         </div>
