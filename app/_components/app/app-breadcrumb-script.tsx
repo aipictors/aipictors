@@ -1,5 +1,3 @@
-"use client"
-
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
 type Props = {

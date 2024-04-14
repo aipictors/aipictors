@@ -1,5 +1,3 @@
-"use client"
-
 import { MessageThreadList } from "@/[lang]/(main)/messages/_components/message-thread-list"
 import MessagesLoading from "@/[lang]/(main)/messages/loading"
 import { LoginPage } from "@/_components/page/login-page"

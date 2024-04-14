@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import { config } from "@/config"
 import { getMessaging, getToken } from "firebase/messaging"

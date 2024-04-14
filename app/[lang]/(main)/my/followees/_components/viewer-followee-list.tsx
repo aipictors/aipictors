@@ -1,5 +1,3 @@
-"use client"
-
 import { FolloweeListItem } from "@/[lang]/(main)/my/followees/_components/followee-list-item"
 import { Alert, AlertTitle } from "@/_components/ui/alert"
 import { AuthContext } from "@/_contexts/auth-context"

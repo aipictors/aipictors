@@ -1,5 +1,3 @@
-"use client"
-
 import { Switch } from "@/_components/ui/switch"
 import type { ImageModelQuery } from "@/_graphql/__generated__/graphql"
 

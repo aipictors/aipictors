@@ -1,5 +1,3 @@
-"use client"
-
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { Button } from "@/_components/ui/button"

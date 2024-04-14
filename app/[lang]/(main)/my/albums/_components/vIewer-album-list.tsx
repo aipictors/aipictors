@@ -1,5 +1,3 @@
-"use client"
-
 import { ViewerAlbum } from "@/[lang]/(main)/my/albums/_components/viewer-album"
 
 export const ViewerAlbumList = () => {

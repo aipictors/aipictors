@@ -1,5 +1,3 @@
-"use client"
-
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { parseGenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { Button } from "@/_components/ui/button"

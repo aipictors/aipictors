@@ -1,5 +1,3 @@
-"use client"
-
 import { Label } from "@/_components/ui/label"
 import { Switch } from "@/_components/ui/switch"
 

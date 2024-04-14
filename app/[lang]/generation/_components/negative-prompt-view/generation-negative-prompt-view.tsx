@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Textarea } from "@/_components/ui/textarea"

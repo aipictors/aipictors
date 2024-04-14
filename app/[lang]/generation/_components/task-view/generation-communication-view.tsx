@@ -1,5 +1,3 @@
-"use client"
-
 import { SupportMessageList } from "@/[lang]/(main)/support/chat/_components/support-message-list"
 import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
 import { GenerationMessageInput } from "@/[lang]/generation/_components/task-view/generation-message-input"

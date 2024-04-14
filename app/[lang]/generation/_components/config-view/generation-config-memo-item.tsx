@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationMemoItemContents } from "@/[lang]/generation/_components/config-view/generation-memo-item-contents"
 import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 

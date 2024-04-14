@@ -1,5 +1,3 @@
-"use client"
-
 import { AlbumWork } from "@/[lang]/(main)/albums/[album]/_components/album-work"
 import type { AlbumWorksQuery } from "@/_graphql/__generated__/graphql"
 

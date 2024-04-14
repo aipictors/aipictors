@@ -1,5 +1,3 @@
-"use client"
-
 import { PencilIcon, PlusIcon, ShareIcon } from "lucide-react"
 
 export const ViewerAlbumArticleHeader = () => {

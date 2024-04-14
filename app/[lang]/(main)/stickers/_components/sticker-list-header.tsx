@@ -1,5 +1,3 @@
-"use client"
-
 import { AddStickerModal } from "@/[lang]/(main)/stickers/_components/add-sticker-modal"
 import { Button } from "@/_components/ui/button"
 import { config } from "@/config"

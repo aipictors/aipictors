@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigPersistent } from "@/[lang]/generation/_components/generation-config-persistent"
 import { GenerationConfigRestoration } from "@/[lang]/generation/_components/generation-config-restoration"
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"

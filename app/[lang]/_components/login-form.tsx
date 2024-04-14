@@ -1,5 +1,3 @@
-"use client"
-
 import { SocialLoginButton } from "@/[lang]/_components/social-login-button"
 import { PasswordLoginForm } from "@/_components/password-login-form"
 import { Button } from "@/_components/ui/button"

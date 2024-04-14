@@ -1,5 +1,3 @@
-"use client"
-
 import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"

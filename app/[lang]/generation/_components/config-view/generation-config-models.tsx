@@ -1,5 +1,3 @@
-"use client"
-
 import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
 import { GenerationModelListButton } from "@/[lang]/generation/_components/config-view/generation-model-list-button"
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"

@@ -1,5 +1,3 @@
-"use client"
-
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"

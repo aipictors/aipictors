@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationAdvertisementView } from "@/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "@/[lang]/generation/_components/config-view/generation-config-view"
 import { GenerationSideTabsView } from "@/[lang]/generation/_components/generation-side-tabs-view/generation-side-tabs-view"

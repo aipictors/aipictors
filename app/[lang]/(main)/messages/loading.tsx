@@ -1,5 +1,3 @@
-"use client"
-
 import RootLoading from "@/loading"
 
 const MessagesLoading = () => {

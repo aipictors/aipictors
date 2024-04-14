@@ -1,5 +1,3 @@
-"use client"
-
 import HomeWorkAlbum from "@/[lang]/(main)/_components/home-work-album"
 import { Button } from "@/_components/ui/button"
 import {

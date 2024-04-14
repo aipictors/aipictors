@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationImageDownloadButton } from "@/[lang]/generation/_components/task-view/generation-image-download-button"
 import { GenerationImagePostButton } from "@/[lang]/generation/_components/task-view/generation-image-upload-button"
 import { GenerationTaskActionDropdownMenu } from "@/[lang]/generation/_components/task-view/generation-task-action-dropdown-menu"

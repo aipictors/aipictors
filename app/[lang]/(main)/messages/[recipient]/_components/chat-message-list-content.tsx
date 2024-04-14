@@ -1,5 +1,3 @@
-"use client"
-
 import { SupportMessageList } from "@/[lang]/(main)/support/chat/_components/support-message-list"
 import { messageThreadMessagesQuery } from "@/_graphql/queries/message/message-thread-messages"
 import { useSuspenseQuery } from "@apollo/client/index.js"

@@ -1,5 +1,3 @@
-"use client"
-
 import CloudflareTurnstile, {
   type Status,
 } from "@/[lang]/_components/cloudflare-turnstile"

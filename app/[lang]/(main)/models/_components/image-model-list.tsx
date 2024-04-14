@@ -1,5 +1,3 @@
-"use client"
-
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { Link } from "@remix-run/react"
 

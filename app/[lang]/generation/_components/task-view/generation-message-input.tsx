@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import { Textarea } from "@/_components/ui/textarea"
 import { Send } from "lucide-react"

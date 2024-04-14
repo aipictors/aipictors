@@ -1,5 +1,3 @@
-"use client"
-
 import WorkCard from "@/[lang]/(main)/works/_components/work-card"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { Link } from "@remix-run/react"

@@ -1,5 +1,3 @@
-"use client"
-
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { LoginPage } from "@/_components/page/login-page"
 import { AuthContext } from "@/_contexts/auth-context"

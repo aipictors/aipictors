@@ -1,5 +1,3 @@
-"use client"
-
 import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
 import {
   Carousel,

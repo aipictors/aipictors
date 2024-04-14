@@ -1,5 +1,3 @@
-"use client"
-
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
 import { GenerationTaskSheetViewContent } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"

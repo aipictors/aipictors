@@ -1,5 +1,3 @@
-"use client"
-
 import { PromptCategoryIcon } from "@/[lang]/generation/_components/prompt-view/prompt-category-icon"
 import {
   Accordion,

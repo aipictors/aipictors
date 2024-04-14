@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
 import { PromptCategoriesDialogContent } from "@/[lang]/generation/_components/prompt-view/prompt-categories-dialog-content"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"

@@ -1,5 +1,3 @@
-"use client"
-
 import { Card, CardHeader } from "@/_components/ui/card"
 
 export const AlbumCard = () => {

@@ -1,5 +1,3 @@
-"use client"
-
 import { PlusAbout } from "@/[lang]/(main)/plus/_components/plus-about"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"

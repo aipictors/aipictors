@@ -1,5 +1,3 @@
-"use client"
-
 import { AccountRouteList } from "@/[lang]/account/_components/account-route-list"
 import { useBreakpoint } from "@/_hooks/use-breakpoint"
 

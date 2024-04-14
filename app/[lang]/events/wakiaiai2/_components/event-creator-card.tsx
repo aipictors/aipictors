@@ -1,5 +1,3 @@
-"use client"
-
 import type { EventUser } from "@/[lang]/events/_types/event-user"
 import { EventUserTag } from "@/[lang]/events/wakiaiai/_components/event-user-tag"
 import { Button } from "@/_components/ui/button"

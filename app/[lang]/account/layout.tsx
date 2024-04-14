@@ -1,5 +1,3 @@
-"use client"
-
 import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
 import { AccountRouteList } from "@/[lang]/account/_components/account-route-list"
 import { AppAside } from "@/_components/app/app-aside"

@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import { type HTMLProps, forwardRef } from "react"
 import { RiTwitterXLine } from "react-icons/ri"

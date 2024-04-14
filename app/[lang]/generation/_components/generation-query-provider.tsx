@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
 import { AuthContext } from "@/_contexts/auth-context"

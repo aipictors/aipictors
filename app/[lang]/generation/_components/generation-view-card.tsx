@@ -1,5 +1,3 @@
-"use client"
-
 import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
 import { Card } from "@/_components/ui/card"
 import { config } from "@/config"

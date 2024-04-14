@@ -1,5 +1,3 @@
-"use client"
-
 import { PassBenefitList } from "@/[lang]/(main)/plus/_components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "@/[lang]/(main)/plus/_components/pass-image-generation-benefit-list"
 import { PlusAbout } from "@/[lang]/(main)/plus/_components/plus-about"

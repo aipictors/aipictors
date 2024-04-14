@@ -1,5 +1,3 @@
-"use client"
-
 import ReportDialog from "@/[lang]/(main)/works/[work]/_components/report-dialog"
 import { Button } from "@/_components/ui/button"
 import {

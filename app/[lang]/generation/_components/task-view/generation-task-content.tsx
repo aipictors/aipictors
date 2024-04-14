@@ -1,5 +1,3 @@
-"use client"
-
 import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"

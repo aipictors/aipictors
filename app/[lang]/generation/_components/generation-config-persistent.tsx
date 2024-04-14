@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { useEffect } from "react"
 

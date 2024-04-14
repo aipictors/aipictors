@@ -1,5 +1,3 @@
-"use client"
-
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { GenerationMenuButton } from "@/[lang]/generation/tasks/[task]/_components/generation-menu-button"
 import {
