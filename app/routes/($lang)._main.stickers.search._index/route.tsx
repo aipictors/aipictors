@@ -1,5 +1,4 @@
-import type { Metadata } from "next"
-import { redirect } from "next/navigation"
+import { redirect } from "@remix-run/cloudflare"
 
 /**
  * スタンプの検索画面
