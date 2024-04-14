@@ -1,6 +1,5 @@
 import { AppCanvas } from "@/[lang]/app/_components/app-canvas"
 import { Link } from "@remix-run/react"
-import Image from "next/image"
 
 export const AppAboutHeader = () => {
   return (
@@ -9,13 +8,7 @@ export const AppAboutHeader = () => {
         <AppCanvas />
       </div>
       <div className="relative flex justify-center py-16">
-        <Image
-          src="/icon.svg"
-          alt="icon"
-          className="w-16"
-          width={64}
-          height={64}
-        />
+        <img src="/icon.svg" alt="icon" className="w-64" />
       </div>
       <div className="space-y-8">
         <div className="flex justify-center">
