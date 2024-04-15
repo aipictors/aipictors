@@ -19,6 +19,7 @@ export async function downloadGeneratedImageFiles(imageIds: string[]) {
     toSelector(id) {
       return `.generation-image-${id}`
     },
+    dataName: "original",
   })
 
   // 画像を圧縮してダウンロードする

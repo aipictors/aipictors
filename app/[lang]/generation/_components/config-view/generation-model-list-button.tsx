@@ -22,7 +22,7 @@ type Props = {
   isInitFavorited: boolean
   label?: string
   onSelect(id: string, type: string, prompt: string): void
-  onSearchClick(id: string): void
+  onSearchClick(id: string, name: string): void
 }
 
 /**

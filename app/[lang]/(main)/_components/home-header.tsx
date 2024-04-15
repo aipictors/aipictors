@@ -1,3 +1,6 @@
+"use client"
+
+import { HomeNotificationsMenu } from "@/[lang]/(main)/_components/home-notifications-menu"
 import { HomeRouteList } from "@/[lang]/(main)/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/[lang]/(main)/_components/home-user-navigation-menu"
 import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"
@@ -8,7 +11,11 @@ import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
+import type { LikedWorkNotificationNode } from "@/_graphql/__generated__/graphql"
+import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
+import { createClient } from "@/_lib/client"
 import { config } from "@/config"
+import { useQuery } from "@apollo/client"
 import { Link } from "@remix-run/react"
 import { BellIcon, MenuIcon } from "lucide-react"
 import { useContext } from "react"
@@ -85,16 +92,9 @@ export const HomeHeader = (props: Props) => {
             </Button>
           </Link>
         )} */}
-        {authContext.isLoggedIn && config.isDevelopmentMode && (
-          <Button
-            variant={"secondary"}
-            disabled
-            size={"icon"}
-            aria-label={"通知"}
-          >
-            <BellIcon className="w-4" />
-          </Button>
-        )}
+        {/*authContext.isLoggedIn && config.isDevelopmentMode && (
+          <HomeNotificationsMenu />
+        )*/}
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         )}

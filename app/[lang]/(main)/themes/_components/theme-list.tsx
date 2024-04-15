@@ -50,7 +50,7 @@ export const ThemeList = (props: Props) => {
       <div className="flex justify-center">
         <p className="text-lg">{"お題一覧"}</p>
       </div>
-      <div className="flex justify-center space-x-4">
+      <div className="flex items-center justify-center space-x-4">
         <Button aria-label="previous month" onClick={onPreviousMonth}>
           <ChevronLeftIcon className="text-lg" />
         </Button>

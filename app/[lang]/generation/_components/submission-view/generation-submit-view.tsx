@@ -158,6 +158,11 @@ export function GenerationSubmissionView(props: Props) {
       context.currentPass?.type === "STANDARD" ||
       context.currentPass?.type === "PREMIUM"
 
+    const isLiteOrStandardOrPremium =
+      context.currentPass?.type === "LITE" ||
+      context.currentPass?.type === "STANDARD" ||
+      context.currentPass?.type === "PREMIUM"
+
     /**
      * 生成種別
      */
@@ -166,8 +171,8 @@ export function GenerationSubmissionView(props: Props) {
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
-    if (context.config.i2iImageBase64 && !isStandardOrPremium) {
-      toast("img2imgはSTANDARD以上のプランでご利用いただけます。")
+    if (context.config.i2iImageBase64 && !isLiteOrStandardOrPremium) {
+      toast("img2imgはLITE以上のプランでご利用いただけます。")
       return
     }
 
@@ -201,15 +206,64 @@ export function GenerationSubmissionView(props: Props) {
       context.config.controlNetImageBase64 !== null
     ) {
       if (isDesktop) {
-        toast(
-          "SDXLモデルはControlNetを使用できません、ControlNetなしで生成します。",
-        )
-      } else {
-        toast(
-          "SDXLモデルはControlNetを使用できません、ControlNetなしで生成します。",
-          { position: "top-center" },
-        )
+        toast("SDXLモデルはControlNetを使用できません。")
+        return
       }
+      toast("SDXLモデルはControlNetを使用できません。", {
+        position: "top-center",
+      })
+      return
+    }
+
+    if (context.config.modelType === "SDXL" && context.config.i2iImageBase64) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
+
+    if (
+      context.config.upscaleSize === 2 &&
+      context.config.modelType === "SDXL"
+    ) {
+      if (isDesktop) {
+        toast(
+          "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
+
+    if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
+      if (isDesktop) {
+        toast(
+          "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
     }
 
     if (

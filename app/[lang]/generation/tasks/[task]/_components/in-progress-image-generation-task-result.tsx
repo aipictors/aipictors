@@ -66,7 +66,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             title={"同じ情報で生成する"}
             onClick={() => {}}
             disabled={true}
-            text={"復元"}
+            text={"再利用"}
             icon={ArrowUpRightSquare}
           />
           <GenerationMenuButton
@@ -142,7 +142,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             <p>{props.task.scale}</p>
           </div>
           <div className="w-full">
-            <p className="mb-1 font-semibold">{"Scale"}</p>
+            <p className="mb-1 font-semibold">{"Steps"}</p>
             <p>{props.task.steps}</p>
           </div>
           <div className="w-full">

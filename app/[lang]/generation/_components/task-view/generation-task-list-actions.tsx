@@ -9,11 +9,13 @@ import { GenerationTaskRatingSelect } from "@/[lang]/generation/_components/task
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/[lang]/generation/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/[lang]/generation/_types/task-list-thumbnail-type"
+import { Button } from "@/_components/ui/button"
 import { Toggle } from "@/_components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { config } from "@/config"
 import { useMutation } from "@apollo/client/index.js"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
+import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -50,6 +52,8 @@ type Props = {
  */
 export const GenerationTaskListActions = (props: Props) => {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+
+  const [isAllSelected, setIsAllSelected] = useState(false)
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
@@ -97,6 +101,22 @@ export const GenerationTaskListActions = (props: Props) => {
           >
             {props.isEditMode ? "解除" : "選択"}
           </Toggle>
+          {props.isEditMode && (
+            <Button
+              title="一括選択、解除できます"
+              onClick={() => {
+                setIsAllSelected(!isAllSelected)
+                if (isAllSelected) {
+                  props.onCancelAll()
+                } else {
+                  props.onSelectAll()
+                }
+              }}
+              variant="outline"
+            >
+              {isAllSelected ? "一括解除" : "一括選択"}
+            </Button>
+          )}
           {!props.isEditMode && (
             <GenerationTaskRatingSelect
               defaultValue={props.rating}

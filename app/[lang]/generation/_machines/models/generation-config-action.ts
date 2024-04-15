@@ -238,7 +238,7 @@ export class GenerationConfigAction {
   }
 
   /**
-   * モデルIDを変更する
+   * 作品検索用のモデルIDを変更する
    * @param id
    * @returns
    */
@@ -246,6 +246,19 @@ export class GenerationConfigAction {
     const state = new GenerationConfigState({
       ...this.state,
       searchModelId: id,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
+   * 作品検索時に検索中に表示するモデル名を変更する
+   * @param id
+   * @returns
+   */
+  updateSearchWorksModelNme(name: string | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      searchModelName: name,
     })
     return new GenerationConfigAction(state, this.props)
   }
@@ -860,7 +873,7 @@ export class GenerationConfigAction {
       return "negativeXL_D"
     }
 
-    return "EasyNegative"
+    return negativePromptText
   }
 
   /**

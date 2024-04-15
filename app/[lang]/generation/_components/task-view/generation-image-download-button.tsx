@@ -31,13 +31,6 @@ export function GenerationImageDownloadButton(props: Props) {
   })
 
   const onClick = async () => {
-    if (context.config.taskListThumbnailType !== "original") {
-      toast(
-        "高画質モードでサムネイル表示している場合のみダウンロードできます。",
-      )
-      return
-    }
-
     await mutateAsync(props.selectedTaskIds)
   }
 

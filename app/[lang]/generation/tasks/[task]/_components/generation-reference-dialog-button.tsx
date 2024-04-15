@@ -36,14 +36,14 @@ export function GenerationReferenceDialog(props: Props) {
               variant={"secondary"}
               size={"sm"}
             >
-              復元
+              再利用
             </Button>
             <Button
               onClick={props.onReferenceWithSeed}
               variant={"secondary"}
               size={"sm"}
             >
-              復元（Seed込み）
+              再利用（Seed込み）
             </Button>
           </div>
           {props.isShowControlNetCaption && (

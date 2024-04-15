@@ -1,5 +1,10 @@
+"use client"
+
+import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
+import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
+import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
 import { GenerationTaskSheetViewContent } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/[lang]/generation/tasks/[task]/_components/in-progress-image-generation-task-result"
 import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
@@ -61,23 +66,16 @@ export const copyUrl = (taskId: string) => {
 
 /**
  * 生成履歴の画像を保存する
- * @param taskId
+ * @param token
  * @returns
  */
-export const saveGenerationImage = async (taskId: string) => {
-  const imageElement = document.querySelector(
-    `.generation-image-${taskId}`,
-  ) as HTMLImageElement
-  if (!imageElement) {
-    toast("しばらくしてからお試し下さい。")
-    return
-  }
-  const imageUrl = await createBase64FromImageURL(imageElement.src)
-  const link = document.createElement("a")
-  link.href = imageUrl
-  link.download = `${taskId}.png`
-  link.target = "_blank"
-  link.click()
+export const saveGenerationImage = async (token: string) => {
+  const image = await createImageFileFromUrl({
+    url: `https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
+      token,
+    )}`,
+  })
+  downloadImageFile(image)
 }
 
 /**
@@ -101,10 +99,6 @@ export function GenerationTaskSheetView(props: Props) {
   const [isProtected, setIsProtected] = useState(
     props.task.isProtected ?? false,
   )
-
-  const viewTaskId = context.config.viewTaskId
-
-  const viewTaskIds = context.config.viewTaskIds
 
   const [showInPaintDialog, setShowInPaintDialog] = useState(false)
 
@@ -152,11 +146,6 @@ export function GenerationTaskSheetView(props: Props) {
       }
     }
   }
-
-  useEffect(() => {
-    setRating(props.task.rating ?? 0)
-    setIsProtected(props.task.isProtected ?? false)
-  }, [context.config.viewTaskId])
 
   const onReference = (isWithSeed: boolean) => {
     if (!props.isReferenceLink && props.task.nanoid !== null) {
@@ -222,8 +211,8 @@ export function GenerationTaskSheetView(props: Props) {
    * @returns
    */
   const onNextTask = () => {
-    const nowTask = viewTaskId
-    const taskIds = viewTaskIds
+    const nowTask = context.config.viewTaskId
+    const taskIds = context.config.viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
     if (!taskIds.length || taskIds.length === index + 1) {
@@ -238,8 +227,8 @@ export function GenerationTaskSheetView(props: Props) {
    * @returns
    */
   const onPrevTask = () => {
-    const nowTask = viewTaskId
-    const taskIds = viewTaskIds
+    const nowTask = context.config.viewTaskId
+    const taskIds = context.config.viewTaskIds
     if (nowTask === null || taskIds === null) return
     const index = taskIds.indexOf(nowTask)
     if (!taskIds.length || index === 0) {
@@ -305,10 +294,20 @@ export function GenerationTaskSheetView(props: Props) {
   const userNanoid = context.user?.nanoid ?? null
   if (userNanoid === null) return
 
+  const imageGenerationTask =
+    props.task.id !== context.config.viewTaskId
+      ? useCachedImageGenerationTask(context.config.viewTaskId)
+      : props.task
+
+  useEffect(() => {
+    setRating(imageGenerationTask.rating ?? 0)
+    setIsProtected(imageGenerationTask.isProtected ?? false)
+  }, [context.config.viewTaskId])
+
   if (isDesktop) {
     return (
       <GenerationTaskSheetViewContent
-        task={props.task}
+        task={imageGenerationTask}
         isScroll={props.isScroll ?? false}
         isDisplayImageListButton={false}
         isListFullSize={true}
@@ -340,7 +339,7 @@ export function GenerationTaskSheetView(props: Props) {
 
   return (
     <GenerationTaskSheetViewContent
-      task={props.task}
+      task={imageGenerationTask}
       isScroll={props.isScroll ?? false}
       isDisplayImageListButton={true}
       isListFullSize={false}

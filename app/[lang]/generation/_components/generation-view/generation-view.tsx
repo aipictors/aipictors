@@ -62,7 +62,7 @@ export const GenerationView = (props: Props) => {
   return (
     <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel className="flex flex-col">
+        <ResizablePanel className="flex flex-col" defaultSize={64}>
           <Suspense fallback={<AppLoadingPage />}>{props.header}</Suspense>
           <Suspense fallback={<AppLoadingPage />}>{props.main}</Suspense>
         </ResizablePanel>

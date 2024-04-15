@@ -176,8 +176,14 @@ export const useGenerationContext = () => {
    * 検索用モデルを変更する
    * @param modelId
    */
-  const updateSearchWorksModelId = (modelId: string | null) => {
-    const value = configAction.updateSearchWorksModelId(modelId).getState()
+  const updateSearchWorksModelIdAndName = (
+    modelId: string | null,
+    modelName: string | null,
+  ) => {
+    const value = configAction
+      .updateSearchWorksModelId(modelId)
+      .updateSearchWorksModelNme(modelName)
+      .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
@@ -612,7 +618,7 @@ export const useGenerationContext = () => {
     changeControlNetModuleAndModelAndImage,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
-    updateSearchWorksModelId,
+    updateSearchWorksModelIdAndName: updateSearchWorksModelIdAndName,
     updatePreviewImageURL,
     updatePrompt,
     updateNegativePrompt,

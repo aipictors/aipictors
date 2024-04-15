@@ -16,7 +16,7 @@ type Props = {
    */
   currentModelIds: string[]
   onSelectModelId(id: string, type: string, prompt: string): void
-  onClickSearchModelWorks(id: string): void
+  onClickSearchModelWorks(id: string, name: string): void
 }
 
 /**
@@ -102,7 +102,10 @@ export const GenerationConfigModels = (props: Props) => {
                     )
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(model?.id)
+                    props.onClickSearchModelWorks(
+                      model?.id,
+                      model?.displayName ?? "",
+                    )
                   }}
                 />
                 {model?.id === props.currentModelId && (
@@ -144,7 +147,10 @@ export const GenerationConfigModels = (props: Props) => {
                     )
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(model?.id)
+                    props.onClickSearchModelWorks(
+                      model?.id,
+                      model?.displayName ?? "",
+                    )
                   }}
                 />
                 {model?.id === props.currentModelId && (
