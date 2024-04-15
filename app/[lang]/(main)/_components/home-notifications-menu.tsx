@@ -66,6 +66,7 @@ export const HomeNotificationsMenu = () => {
 
   const [activeTab, setActiveTab] = useState(defaultTab)
 
+  /* 
   const { data: notifications } = useQuery(viewerNotificationsQuery, {
     variables: {
       offset: 0,
@@ -76,6 +77,7 @@ export const HomeNotificationsMenu = () => {
     },
     fetchPolicy: "cache-first",
   })
+  */
 
   // TabTriggerがクリックされたときにactiveTabを更新
   const handleTabClick = (value: string) => {
@@ -105,11 +107,10 @@ export const HomeNotificationsMenu = () => {
               ))}
             </TabsList>
           </div>
-          {notifications?.viewer && (
+          {/* notifications?.viewer && (
             <TabsContent className="max-w-40" value={activeTab}>
               <div className="flex h-64 w-full flex-col">
                 <ScrollArea className="w-full">
-                  {/*いいねの通知*/}
                   {activeTab === "LIKED_WORK" &&
                     notifications.viewer.notifications.map((notification) => {
                       const likedWorkNotification =
@@ -125,7 +126,7 @@ export const HomeNotificationsMenu = () => {
                 </ScrollArea>
               </div>
             </TabsContent>
-          )}
+          ) */}
         </Tabs>
       </DropdownMenuContent>
     </DropdownMenu>
