@@ -1,5 +1,6 @@
 import { GenerationForm } from "@/[lang]/generation/_components/generation-form"
 import text from "@/_assets/terms.md?raw"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import type { Metadata } from "next"
 
 /**
@@ -8,6 +9,10 @@ import type { Metadata } from "next"
  */
 export default function GenerationPage() {
   return <GenerationForm termsMarkdownText={text} />
+}
+
+export function HydrateFallback() {
+  return <AppLoadingPage />
 }
 
 const siteName = "無料AIイラスト生成 - スマホ対応"
