@@ -239,7 +239,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   <GenerationMenuButton
                     title={"同じ情報で生成する"}
                     onClick={() => {}}
-                    text={"復元"}
+                    text={"再利用"}
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
@@ -269,7 +269,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 )}
                 <GenerationMenuButton
                   title={"画像を保存する"}
-                  onClick={() => props.saveGenerationImage(props.task.id)}
+                  onClick={() => props.saveGenerationImage(props.task.token)}
                   icon={ArrowDownToLine}
                 />
                 <GenerationMenuButton

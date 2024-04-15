@@ -68,7 +68,7 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             title={"同じ情報で生成する"}
             onClick={() => {}}
             disabled={true}
-            text={"復元"}
+            text={"再利用"}
             icon={ArrowUpRightSquare}
           />
           <GenerationMenuButton

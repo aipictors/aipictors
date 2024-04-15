@@ -344,7 +344,7 @@ export function GenerationTaskView(props: Props) {
             <GenerationMenuButton
               title={"同じ情報で生成する"}
               onClick={onReference}
-              text={"復元"}
+              text={"再利用"}
               icon={ArrowUpRightSquare}
             />
             <GenerationMenuButton

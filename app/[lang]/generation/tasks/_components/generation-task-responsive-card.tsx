@@ -39,14 +39,13 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
           <ReservedGenerationLinkCard taskNanoid={props.task.nanoid ?? ""} />
         )}
         {!isDesktop && props.task.status !== "RESERVED" && (
-          <GenerationTaskLinkCard
-            taskId={props.task.id}
-            taskNanoid={props.task.nanoid}
-            token={props.task.token}
-            thumbnailToken={props.task.thumbnailToken}
-            isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
-            estimatedSeconds={props.task.estimatedSeconds ?? 0}
-            isSelectDisabled={true}
+          <GenerationTaskDialogButton
+            task={props.task}
+            taskIds={props.taskIds}
+            sizeType={props.sizeType}
+            onRestore={props.onRestore}
+            onCancel={props.onCancel}
+            onDelete={props.onDelete}
           />
         )}
         {props.isDialog && isDesktop && (
