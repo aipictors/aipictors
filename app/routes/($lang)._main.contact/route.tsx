@@ -1,8 +1,5 @@
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
 import { AppPageCenter } from "@/_components/app/app-page-center"
-import { Link, useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
+import { Link } from "@remix-run/react"
 
 export default function Contact() {
   return (

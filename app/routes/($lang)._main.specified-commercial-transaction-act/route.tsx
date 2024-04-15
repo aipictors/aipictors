@@ -1,5 +1,5 @@
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
+import text from "@/_assets/specified-commercial-transaction-act.md?raw"
+
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import { AppPage } from "@/_components/app/app-page"
 import {
@@ -14,11 +14,6 @@ import {
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader() {
-  const text = await readFile(
-    join(process.cwd(), "assets/specified-commercial-transaction-act.md"),
-    "utf-8",
-  )
-
   const company = [
     {
       title: "商号",
