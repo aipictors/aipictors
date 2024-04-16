@@ -4,7 +4,7 @@ import getCroppedImage from "@/_utils/get-cropped-image"
 import getResizedImg from "@/_utils/get-resized-image"
 import { useState } from "react"
 import type { Area } from "react-easy-crop"
-import Cropper from "react-easy-crop"
+// import Cropper from "react-easy-crop"
 
 type Props = {
   src: string
@@ -62,7 +62,7 @@ const ImageCropperModal = (props: Props) => {
       <DialogContent>
         <div className="">
           <div className="mb-2 h-[72vh] w-[80vw]">
-            <Cropper
+            {/* <Cropper
               classes={{
                 containerClassName: `mb-16 mt-1 ${props.cropContainerClassName}`,
               }}
@@ -75,7 +75,7 @@ const ImageCropperModal = (props: Props) => {
               onZoomChange={setZoom}
               showGrid={false}
               objectFit="contain"
-            />
+            /> */}
           </div>
           <div className="absolute bottom-4 left-4 flex items-center">
             <div className="flex items-center">
