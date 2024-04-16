@@ -45,7 +45,7 @@ jobs:
         with:
           version: latest
       - name: Run Biome
-        run: biome ci app
+        run: biome ci app --reporter=github
   typecheck:
     runs-on: ubuntu-latest
     needs: setup
