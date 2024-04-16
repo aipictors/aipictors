@@ -10,7 +10,7 @@ import {
 } from "@/_components/ui/select"
 import { Skeleton } from "@/_components/ui/skeleton"
 import { Slider } from "@/_components/ui/slider"
-import type Konva from "konva"
+import type { Stage as KonvaStage } from "konva/lib/Stage"
 import { useEffect, useRef, useState } from "react"
 import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"
 import useImage from "use-image"
@@ -41,7 +41,7 @@ export type DrawingCanvasProps = {
 }
 
 export const InpaintCanvas = (props: Props) => {
-  const stageRef = useRef<Konva.Stage>(null)
+  const stageRef = useRef<KonvaStage>(null)
 
   const [image] = useImage(props.imageUrl)
   const {
