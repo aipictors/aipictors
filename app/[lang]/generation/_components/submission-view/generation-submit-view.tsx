@@ -450,14 +450,6 @@ export function GenerationSubmissionView(props: Props) {
   }
 
   /**
-   * 画像生成中
-   * 生成のキャンセルが可能
-   */
-  const inProgress =
-    queryData.viewer.inProgressImageGenerationTasksCount !== undefined &&
-    queryData.viewer.inProgressImageGenerationTasksCount !== 0
-
-  /**
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =

@@ -7,9 +7,9 @@ type Props = {
   remainingImageGenerationTasksCount: number
   inProgress: boolean
   isOnlyStatusForSubscriberDisplay?: boolean // 生成機の状態についてサブスクユーザの場合一般と優先どちらも表示するかどうか
-  normalPredictionGenerationSeconds: number
+  normalPredictionGenerationWait: number
   normalTasksCount: number
-  standardPredictionGenerationSeconds: number
+  standardPredictionGenerationWait: number
   standardTasksCount: number
   passType: string | null
 }
@@ -88,8 +88,8 @@ export function GenerationEditorProgress(props: Props) {
   //     return 0
   //   }
   //   const waitSeconds = isPriorityAccount()
-  //     ? props.standardPredictionGenerationSeconds
-  //     : props.normalPredictionGenerationSeconds
+  //     ? props.standardPredictionGenerationWait
+  //     : props.normalPredictionGenerationWait
   //   if (!waitSeconds) return 0
   //   const remainingSeconds = waitSeconds - elapsedGenerationTime
   //   if (remainingSeconds < 0) {

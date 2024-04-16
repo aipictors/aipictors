@@ -28,8 +28,8 @@ export const GenerationQueryContext = createContext<Context>({
   engineStatus: {
     normalTasksCount: 0,
     standardTasksCount: 0,
-    normalPredictionGenerationSeconds: 0,
-    standardPredictionGenerationSeconds: 0,
+    normalPredictionGenerationWait: 0,
+    standardPredictionGenerationWait: 0,
   },
   viewer: {
     remainingImageGenerationTasksCount: 0,
