@@ -34,6 +34,10 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function GenerationTag() {
   const params = useParams()
 
+  if (params.works === undefined) {
+    throw new Error()
+  }
+
   if (params.tag === undefined) {
     throw new Error()
   }
