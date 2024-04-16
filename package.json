@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "graphql-codegen-esm --config codegen.ts && remix vite:build",
-    "deploy": "wrangler pages deploy ./build/client",
+    "deploy": "wrangler pages deploy",
     "dev": "remix vite:dev",
     "build:graphql": "graphql-codegen-esm --config codegen.ts",
     "start": "node .next/standalone/server.js",
@@ -87,6 +87,7 @@
     "nextjs-toploader": "^1.6.11",
     "node-loader": "^2.0.0",
     "nsfwjs": "^4.1.0",
+    "path-to-regexp": "^6.2.2",
     "postcss": "^8.4.38",
     "predev": "^1.0.12",
     "react": "18.2.0",
@@ -115,8 +116,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.4",
+    "@cloudflare/workers-types": "^4.20240405.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "4.2.5",
+    "@remix-run/cloudflare-pages": "^2.8.1",
+    "@remix-run/dev": "^2.8.1",
     "@sentry/cli": "^2.31.0",
     "@storybook/addon-essentials": "^8.0.5",
     "@storybook/addon-interactions": "^8.0.5",
@@ -133,8 +137,12 @@
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "lefthook": "^1.6.7",
+    "miniflare": "^3.20240405.1",
     "storybook": "^8.0.5",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "vite": "^5.2.9",
+    "vite-tsconfig-paths": "^4.3.2",
+    "wrangler": "^3.50.0"
   },
   "type": "module"
 }
