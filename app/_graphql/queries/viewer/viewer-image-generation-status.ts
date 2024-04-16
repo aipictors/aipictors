@@ -8,8 +8,8 @@ export const viewerImageGenerationStatusQuery = gql(`
     imageGenerationEngineStatus {
       normalTasksCount
       standardTasksCount
-      normalPredictionGenerationSeconds
-      standardPredictionGenerationSeconds
+      normalPredictionGenerationWait
+      standardPredictionGenerationWait
     }
     viewer {
       remainingImageGenerationTasksCount

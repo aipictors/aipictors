@@ -2,14 +2,15 @@ import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation
 import { GenerationTaskCancelButton } from "@/[lang]/generation/tasks/_components/generation-cancel-button"
 import { InProgressGenerationProgressBar } from "@/[lang]/generation/tasks/_components/in-progress-generation-progress-bar"
 import { Card } from "@/_components/ui/card"
-import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
+import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
   onCancel?(): void
   isCreatingTasks?: boolean
   isCanceling?: boolean
+  inProgressNormalCount: number
   initImageGenerationWaitCount: number
   imageGenerationWaitCount: number
 }
@@ -21,13 +22,22 @@ type Props = {
 export const InProgressGenerationCard = (props: Props) => {
   const [initWaitCount, setInitWaitCount] = useState(-1)
 
+  const [initNormalWaitCount, setInitNormalWaitCount] = useState(-1)
+
   useEffect(() => {
     if (initWaitCount === -1) {
       setInitWaitCount(props.initImageGenerationWaitCount)
     }
+    if (initNormalWaitCount === -1) {
+      setInitNormalWaitCount(props.inProgressNormalCount)
+    }
   }, [])
 
   const dataContext = useContext(GenerationQueryContext)
+
+  const isStandardOrPremium =
+    dataContext.currentPass?.type === "STANDARD" ||
+    dataContext.currentPass?.type === "PREMIUM"
 
   // const waitSecondsLabel = () => {
   //   const waitSecondsOnOneTask = 15
@@ -61,20 +71,24 @@ export const InProgressGenerationCard = (props: Props) => {
                   待ち: {props.imageGenerationWaitCount}/{initWaitCount}
                 </p>
               )}
-              {dataContext.currentPass?.type !== "PREMIUM" &&
-                dataContext.currentPass?.type !== "STANDARD" && (
-                  <Link
-                    to="/plus"
-                    className="text-sm"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="flex flex-col text-cyan-400 text-sm">
-                      <div>{"優先生成で"}</div>
-                      <div>{"速度向上する"}</div>
-                    </div>
-                  </Link>
-                )}
+              {!isStandardOrPremium && (
+                <Link
+                  href="/plus"
+                  className="text-sm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex flex-col text-cyan-400 text-sm">
+                    <div>{"優先生成で"}</div>
+                    <div>{"速度向上する"}</div>
+                  </div>
+                </Link>
+              )}
+              {isStandardOrPremium && initNormalWaitCount !== 0 && (
+                <div className="flex flex-col text-cyan-400 text-sm">
+                  <div>{`優先生成：${initNormalWaitCount}人をスキップ`}</div>
+                </div>
+              )}
               {/* <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
                */}
               <InProgressGenerationProgressBar

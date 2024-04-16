@@ -58,8 +58,8 @@ export const GenerationQueryProvider = (props: Props) => {
         engineStatus: status?.imageGenerationEngineStatus ?? {
           normalTasksCount: 0,
           standardTasksCount: 0,
-          normalPredictionGenerationSeconds: 0,
-          standardPredictionGenerationSeconds: 0,
+          normalPredictionGenerationWait: 0,
+          standardPredictionGenerationWait: 0,
         },
         viewer: status?.viewer ?? {
           remainingImageGenerationTasksCount: 0,

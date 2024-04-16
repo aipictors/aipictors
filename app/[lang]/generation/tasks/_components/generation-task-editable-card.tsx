@@ -166,6 +166,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
         isCanceling={isCanceling}
+        inProgressNormalCount={data.engineStatus.normalPredictionGenerationWait}
         initImageGenerationWaitCount={data.viewer.imageGenerationWaitCount}
         imageGenerationWaitCount={data.viewer.imageGenerationWaitCount}
       />
