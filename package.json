@@ -5,7 +5,7 @@
   "scripts": {
     "build": "graphql-codegen-esm --config codegen.ts && remix vite:build",
     "deploy": "wrangler pages deploy ./build/client",
-    "dev": "remix vite:dev",
+    "dev": "graphql-codegen-esm --config codegen.ts && remix vite:dev",
     "build:graphql": "graphql-codegen-esm --config codegen.ts",
     "start": "node .next/standalone/server.js",
     "check": "tsc --noEmit",
