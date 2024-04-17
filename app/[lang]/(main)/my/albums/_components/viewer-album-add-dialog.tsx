@@ -44,7 +44,7 @@ export const ViewerAlbumAddDialog = (props: Props) => {
               <Input placeholder="シリーズ名" />
               <p>{"リンク名（英数字のみ）"}</p>
               <Input placeholder="リンク名" />
-              <p className="text-xs">{`https://aipictors.com/albums?user=36604&id=${""}`}</p>
+              <p className="text-xs">{`https://aipictors.com/series?user=36604&id=${""}`}</p>
               <p>{"説明"}</p>
               <Textarea placeholder="説明" />
             </div>
