@@ -1,4 +1,4 @@
-import text from "assets/privacy-policy.md?raw"
+import text from "@/_assets/privacy-policy.md?raw"
 
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import { AppPageCenter } from "@/_components/app/app-page-center"

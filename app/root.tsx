@@ -58,14 +58,14 @@ export function ErrorBoundary() {
 export default function Root() {
   if (typeof window !== "undefined") {
     init({
-      dsn: process.env.VITE_SENTRY_DSN!,
-      environment: process.env.VITE_SENTRY_ENVIRONMENT!,
+      dsn: import.meta.env.VITE_SENTRY_DSN!,
+      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT!,
       tracesSampleRate: 0.001,
     })
   }
 
   return (
-    <html lang={"ja"}>
+    <html lang={"ja"} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
