@@ -15,6 +15,7 @@ export default function HomeWorkAlbum({
       <Link to={`/works/${workId}`}>
         <img
           src={photo.src}
+          // @ts-ignore
           placeholder={"blurDataURL" in photo ? "blur" : ""}
           alt={""}
           className={"rounded"}
