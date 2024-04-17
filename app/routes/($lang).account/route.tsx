@@ -7,6 +7,10 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
+export function HydrateFallback() {
+  return <AppLoadingPage />
+}
+
 export default function SettingsLayout() {
   const authContext = useContext(AuthContext)
 
@@ -29,8 +33,4 @@ export default function SettingsLayout() {
       </AppColumnLayout>
     </>
   )
-}
-
-export function HydrateFallback() {
-  return <AppLoadingPage />
 }

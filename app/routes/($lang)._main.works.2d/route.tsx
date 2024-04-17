@@ -23,6 +23,7 @@ export async function loader() {
     query: hotTagsQuery,
     variables: {},
   })
+
   return {
     works: worksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,

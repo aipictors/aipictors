@@ -2,6 +2,7 @@ import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
 import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -29,9 +30,8 @@ export async function loader(props: LoaderFunctionArgs) {
       where: { year: year, month: month },
     },
   })
+
   return {
-    year,
-    month,
     dailyThemes: dailyThemesResp.data.dailyThemes,
   }
 }
@@ -44,22 +44,22 @@ export default function MonthThemes() {
   const params = useParams()
 
   if (params.year === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   if (params.month === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
+  const year = Number.parseInt(params.year)
+
+  const month = Number.parseInt(params.month)
+
   return (
     <AppPage>
-      <ThemeList
-        year={data.year}
-        month={data.month}
-        dailyThemes={data.dailyThemes}
-      />
+      <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
     </AppPage>
   )
 }

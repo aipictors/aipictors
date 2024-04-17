@@ -5,6 +5,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { albumQuery } from "@/_graphql/queries/album/album"
 import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -31,9 +32,18 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 16,
     },
   })
+
+  if (albumResp.data.album === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  if (albumWorksResp.data.album === null) {
+    throw new Response(null, { status: 404 })
+  }
+
   return {
-    albumResp: albumResp.data,
-    albumWorksResp: albumWorksResp.data,
+    album: albumResp.data.album,
+    albumWorks: albumWorksResp.data.album.works,
   }
 }
 
@@ -45,7 +55,7 @@ export default function albums() {
   const params = useParams()
 
   if (params.album === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
@@ -54,10 +64,10 @@ export default function albums() {
     <AppPage>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader album={data.albumResp} />
-          <AlbumWorkList albumWorks={data.albumWorksResp} />
+          <AlbumArticleHeader album={data.album} />
+          <AlbumWorkList albumWorks={data.albumWorks} />
         </div>
-        <AlbumWorkDescription album={data.albumResp} />
+        <AlbumWorkDescription album={data.album} />
       </article>
     </AppPage>
   )

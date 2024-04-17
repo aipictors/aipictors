@@ -3,13 +3,10 @@ import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 
-/**
- * コレクションの詳細
- * @returns
- */
 export async function loader() {
   const client = createClient()
 
@@ -26,11 +23,14 @@ export async function loader() {
   }
 }
 
+/**
+ * コレクションの詳細
+ */
 export default function Collections() {
   const params = useParams()
 
   if (params.collection === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

@@ -4,9 +4,12 @@ import { AppAside } from "@/_components/app/app-aside"
 import { AppColumnLayout } from "@/_components/app/app-column-layout"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
-import RootLoading from "@/loading"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
+
+export function HydrateFallback() {
+  return <AppLoadingPage />
+}
 
 export default function SettingsLayout() {
   const authContext = useContext(AuthContext)
@@ -30,8 +33,4 @@ export default function SettingsLayout() {
       </AppColumnLayout>
     </>
   )
-}
-
-export function HydrateFallback() {
-  return <RootLoading />
 }

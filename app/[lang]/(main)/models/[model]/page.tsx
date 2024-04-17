@@ -38,7 +38,7 @@ const ModelPage = async (props: Props) => {
 
   return (
     <AppPage>
-      <ModelHeader imageModelQuery={resp.data} />
+      <ModelHeader imageModel={resp.data} />
       <WorkList works={worksResp.data.works ?? []} />
     </AppPage>
   )

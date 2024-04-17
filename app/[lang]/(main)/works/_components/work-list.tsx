@@ -3,7 +3,7 @@ import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { Link } from "@remix-run/react"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]>
+  works: WorksQuery["works"]
 }
 
 /**

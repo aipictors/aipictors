@@ -4,6 +4,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -30,9 +31,10 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {},
     },
   })
+
   return {
-    resp: resp.data,
-    worksResp: worksResp.data,
+    imageModel: resp.data.imageModel,
+    works: worksResp.data.works,
   }
 }
 
@@ -45,15 +47,15 @@ export default function Model() {
   const params = useParams()
 
   if (params.model === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   return (
     <AppPage>
-      <ModelHeader imageModelQuery={data.resp} />
-      <WorkList works={data.worksResp.works ?? []} />
+      <ModelHeader imageModel={data.imageModel} />
+      <WorkList works={data.works} />
     </AppPage>
   )
 }

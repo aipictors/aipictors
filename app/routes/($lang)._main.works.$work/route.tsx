@@ -5,10 +5,10 @@ import WorkPageLoading from "@/[lang]/(main)/works/[work]/loading"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata, ResolvingMetadata } from "next"
 import { Suspense } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -42,7 +42,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     work: workResp.data.work,
-    workComments: workCommentsResp.data.work,
+    workComments: workCommentsResp.data.work.comments,
   }
 }
 
@@ -50,14 +50,10 @@ export default function Work() {
   const params = useParams()
 
   if (params.work === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
-
-  if (data === null) {
-    throw new Error()
-  }
 
   return (
     <div className="w-full p-4">
@@ -67,7 +63,7 @@ export default function Work() {
             <WorkArticle work={data?.work} />
           </Suspense>
           <WorkRelatedList works={data.work.user.works} />
-          <WorkCommentList work={data.workComments} />
+          <WorkCommentList comments={data.workComments} />
         </div>
       </div>
       {/* <div className="w-full lg:max-w-xs pl-4 invisible lg:visible items-start">

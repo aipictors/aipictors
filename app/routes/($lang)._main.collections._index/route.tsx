@@ -3,7 +3,6 @@ import { AppPage } from "@/_components/app/app-page"
 
 /**
  * コレクションの一覧
- * @returns
  */
 export default function Collections() {
   return (

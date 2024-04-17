@@ -1,6 +1,7 @@
 import { UserSupport } from "@/[lang]/(main)/users/[user]/supports/_components/user-support"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -21,16 +22,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const metadata: Metadata = {
-    robots: { index: false },
-    title: "-",
-  }
-
-  const revalidate = 60
-
   if (userResp.data.user === null) {
     return notFound
   }
+
   return {
     user: userResp.data.user,
   }
@@ -40,18 +35,16 @@ export default function UserSupports() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserSupport
-        user={data.user}
-        userIconImageURL={data.user.iconImage?.downloadURL ?? null}
-        userName={data.user.name}
-      />
-    </>
+    <UserSupport
+      user={data.user}
+      userIconImageURL={data.user.iconImage?.downloadURL ?? null}
+      userName={data.user.name}
+    />
   )
 }

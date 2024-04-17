@@ -1,6 +1,7 @@
 import { UserAlbumList } from "@/[lang]/(main)/users/[user]/albums/_components/user-album-list"
 import { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -22,16 +23,12 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  // metadataをコンポーネント内で定義
-  const metadata: Metadata = {
-    robots: { index: false },
-    title: "-",
+  if (albumsResp.data.user === null) {
+    throw new Response(null, { status: 404 })
   }
 
-  // revalidateをコンポーネント内で定義
-  const revalidate = 60
   return {
-    albums: albumsResp.data.user?.albums ?? [],
+    albums: albumsResp.data.user.albums,
   }
 }
 
@@ -39,7 +36,7 @@ export default function UserAlbums() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new Error()
+    throw new ClientParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
