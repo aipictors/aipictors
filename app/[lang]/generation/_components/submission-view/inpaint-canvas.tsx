@@ -12,7 +12,7 @@ import { Skeleton } from "@/_components/ui/skeleton"
 import { Slider } from "@/_components/ui/slider"
 import type { Stage as KonvaStage } from "konva/lib/Stage"
 import { useEffect, useRef, useState } from "react"
-// import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"
+import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"
 import useImage from "use-image"
 
 export type PainterMode = {
@@ -252,7 +252,7 @@ export const InpaintCanvas = (props: Props) => {
             <Skeleton className="h-[120px] w-[240px] rounded-xl" />
           )}
 
-          {/* <Stage
+          <Stage
             className="absolute"
             width={imageSize.width}
             height={imageSize.height}
@@ -289,7 +289,7 @@ export const InpaintCanvas = (props: Props) => {
                 />
               ))}
             </Layer>
-          </Stage> */}
+          </Stage>
         </div>
       </div>
     </>
