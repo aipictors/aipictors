@@ -1,5 +1,5 @@
 import { getBreakpoint } from "@/_utils/get-breakpoints"
-import * as lodash from "lodash"
+import { throttle } from "lodash-es"
 import { useEffect, useState } from "react"
 
 type Props<T> = {
@@ -18,7 +18,7 @@ export const useBreakpointValue = <T>(props: Props<T>) => {
   useEffect(() => {
     if (typeof window === "undefined") return
     setBreakpoint(getBreakpoint(window.innerWidth))
-    const calcInnerWidth = lodash.throttle(() => {
+    const calcInnerWidth = throttle(() => {
       setBreakpoint(getBreakpoint(window.innerWidth))
     }, 128)
     window.addEventListener("resize", calcInnerWidth)
