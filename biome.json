@@ -10,7 +10,6 @@
     "ignore": [
       "**/*.{yml,yaml,mdx,md,svg,ico}",
       "**/__generated__/**",
-      ".next/**",
       "node_modules/**",
       "public/**",
       "storybook-static/**"

@@ -4,6 +4,6 @@ export default {
       name: "default",
       url: "https://graphql-6ouzjmdzha-an.a.run.app",
     },
-    includes: ["graphql/**/*.ts"],
+    includes: ["app/_graphql/**/*.ts"],
   },
 }
