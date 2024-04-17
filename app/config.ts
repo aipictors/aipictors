@@ -131,6 +131,7 @@ export const config = {
       "clearvae_v23",
       "sdxl_vae",
       "vae-ft-mse-840000-ema-pruned",
+      "None",
     ],
     clipSkipValues: 2,
     sizeValues: [
