@@ -210,7 +210,7 @@ export const GenerationTaskList = (props: Props) => {
           })}
         >
           {componentTasks.map((task) => (
-            <ErrorBoundary key={task.id} fallback={ErrorResultCard}>
+            <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
               <Suspense fallback={<FallbackTaskCard />}>
                 <GenerationTaskCard
                   task={task}

@@ -32,6 +32,7 @@ import type {
 import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
 import { config } from "@/config"
 import { useQuery } from "@apollo/client"
+import { Link } from "@remix-run/react"
 import {
   BellIcon,
   GemIcon,
@@ -44,7 +45,6 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
-import Link from "next/link"
 import { useState } from "react"
 
 /**
@@ -66,7 +66,7 @@ export const HomeNotificationsMenu = () => {
 
   const [activeTab, setActiveTab] = useState(defaultTab)
 
-  /* 
+  /*
   const { data: notifications } = useQuery(viewerNotificationsQuery, {
     variables: {
       offset: 0,

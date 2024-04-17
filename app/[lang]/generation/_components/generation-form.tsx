@@ -51,7 +51,7 @@ export const GenerationForm = (props: Props) => {
       }
       main={
         <GenerationMainView
-          config={null}
+          config={<GenerationConfigView />}
           promptEditor={<GenerationPromptView />}
           negativePromptEditor={<GenerationNegativePromptView />}
           taskContentPreview={<GenerationTaskContentPreview />}
@@ -61,26 +61,24 @@ export const GenerationForm = (props: Props) => {
       }
       asideHeader={<GenerationSideTabsView />}
       aside={
-        null
-        // <GenerationAsideView
-        //   advertisement={<GenerationAdvertisementView />}
-        //   taskList={
-        //     null
-        //     // <GenerationTaskListView
-        //     //   rating={rating}
-        //     //   protect={protect}
-        //     //   isEditMode={isEditMode}
-        //     //   isPreviewMode={isPreviewMode}
-        //     //   setRating={setRating}
-        //     //   setProtect={setProtect}
-        //     //   toggleEditMode={toggleEditMode}
-        //     //   togglePreviewMode={togglePreviewMode}
-        //     // />
-        //   }
-        //   taskDetails={<GenerationTaskDetailsView />}
-        //   workListFromModel={<GenerationWorkListModelView />}
-        //   communication={<GenerationCommunicationView />}
-        // />
+        <GenerationAsideView
+          advertisement={<GenerationAdvertisementView />}
+          taskList={
+            <GenerationTaskListView
+              rating={rating}
+              protect={protect}
+              isEditMode={isEditMode}
+              isPreviewMode={isPreviewMode}
+              setRating={setRating}
+              setProtect={setProtect}
+              toggleEditMode={toggleEditMode}
+              togglePreviewMode={togglePreviewMode}
+            />
+          }
+          taskDetails={<GenerationTaskDetailsView />}
+          workListFromModel={<GenerationWorkListModelView />}
+          communication={<GenerationCommunicationView />}
+        />
       }
     />
   )

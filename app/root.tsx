@@ -1,3 +1,5 @@
+import styles from "@/tailwind.css?url"
+
 import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
@@ -13,7 +15,6 @@ import {
 } from "@remix-run/react"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
-import styles from "./tailwind.css"
 
 export const links: LinksFunction = () => {
   return [
