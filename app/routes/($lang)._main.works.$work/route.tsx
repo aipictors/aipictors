@@ -53,10 +53,6 @@ export default function Work() {
     throw new Error()
   }
 
-  if (params.workComments === undefined) {
-    throw new Error()
-  }
-
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {

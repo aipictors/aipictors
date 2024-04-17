@@ -38,7 +38,7 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function UserAlbums() {
   const params = useParams()
 
-  if (params.albums === undefined) {
+  if (params.user === undefined) {
     throw new Error()
   }
 

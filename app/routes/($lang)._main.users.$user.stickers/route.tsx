@@ -29,7 +29,7 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function UserStickers() {
   const params = useParams()
 
-  if (params.stickers === undefined) {
+  if (params.user === undefined) {
     throw new Error()
   }
 

@@ -44,11 +44,7 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Model() {
   const params = useParams()
 
-  if (params.resp === undefined) {
-    throw new Error()
-  }
-
-  if (params.worksResp === undefined) {
+  if (params.model === undefined) {
     throw new Error()
   }
 

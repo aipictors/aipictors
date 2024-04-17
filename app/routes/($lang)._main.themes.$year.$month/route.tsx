@@ -51,10 +51,6 @@ export default function MonthThemes() {
     throw new Error()
   }
 
-  if (params.dailyThemes === undefined) {
-    throw new Error()
-  }
-
   const data = useLoaderData<typeof loader>()
 
   return (

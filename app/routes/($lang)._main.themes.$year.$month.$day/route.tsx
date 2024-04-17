@@ -46,7 +46,15 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Theme() {
   const params = useParams()
 
-  if (params.dailyTheme === undefined) {
+  if (params.year === undefined) {
+    throw new Error()
+  }
+
+  if (params.month === undefined) {
+    throw new Error()
+  }
+
+  if (params.day === undefined) {
     throw new Error()
   }
 

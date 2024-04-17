@@ -4,7 +4,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
+import { useParams } from "@remix-run/react"
 
 /**
  * コレクションの詳細
@@ -27,6 +27,12 @@ export async function loader() {
 }
 
 export default function Collections() {
+  const params = useParams()
+
+  if (params.collection === undefined) {
+    throw new Error()
+  }
+
   const data = useLoaderData<typeof loader>()
 
   return (

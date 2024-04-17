@@ -40,14 +40,6 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Stickers() {
   const params = useParams()
 
-  if (params.stickers === undefined) {
-    throw new Error()
-  }
-
-  if (params.isEmpty === undefined) {
-    throw new Error()
-  }
-
   if (params.search === undefined) {
     throw new Error()
   }
