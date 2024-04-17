@@ -390,7 +390,7 @@ export function GenerationSubmissionView(props: Props) {
               seed: seeds[i],
               steps: context.config.steps,
               scale: context.config.scale,
-              sampler: "DPM++ 2M Karras",
+              sampler: context.config.sampler,
               clipSkip: context.config.clipSkip,
               sizeType: context.config.sizeType as ImageGenerationSizeType,
               type: "TEXT_TO_IMAGE",
