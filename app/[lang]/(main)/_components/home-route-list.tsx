@@ -58,7 +58,7 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
-        href={"/series"}
+        href={"/albums"}
         icon={LibraryBigIcon}
       >
         {"シリーズ"}
