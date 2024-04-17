@@ -13,7 +13,7 @@ import {
 } from "@remix-run/react"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
-import styles from "./tailwind.css"
+import styles from "./tailwind.css?url"
 
 export const links: LinksFunction = () => {
   return [

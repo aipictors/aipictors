@@ -15,6 +15,7 @@ export default function HomeReferencedWorkAlbum({
       <Link to={`/generation?reference=${workId}`}>
         <img
           src={photo.src}
+          // @ts-ignore
           placeholder={"blurDataURL" in photo ? "blur" : undefined}
           alt={""}
           className={"rounded"}
