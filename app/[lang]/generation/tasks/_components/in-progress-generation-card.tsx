@@ -10,6 +10,7 @@ type Props = {
   onCancel?(): void
   isCreatingTasks?: boolean
   isCanceling?: boolean
+  inProgressNormalCount: number
   initImageGenerationWaitCount: number
   imageGenerationWaitCount: number
 }
@@ -21,13 +22,22 @@ type Props = {
 export const InProgressGenerationCard = (props: Props) => {
   const [initWaitCount, setInitWaitCount] = useState(-1)
 
+  const [initNormalWaitCount, setInitNormalWaitCount] = useState(-1)
+
   useEffect(() => {
     if (initWaitCount === -1) {
       setInitWaitCount(props.initImageGenerationWaitCount)
     }
+    if (initNormalWaitCount === -1) {
+      setInitNormalWaitCount(props.inProgressNormalCount)
+    }
   }, [])
 
   const dataContext = useContext(GenerationQueryContext)
+
+  const isStandardOrPremium =
+    dataContext.currentPass?.type === "STANDARD" ||
+    dataContext.currentPass?.type === "PREMIUM"
 
   // const waitSecondsLabel = () => {
   //   const waitSecondsOnOneTask = 15
@@ -61,20 +71,24 @@ export const InProgressGenerationCard = (props: Props) => {
                   待ち: {props.imageGenerationWaitCount}/{initWaitCount}
                 </p>
               )}
-              {dataContext.currentPass?.type !== "PREMIUM" &&
-                dataContext.currentPass?.type !== "STANDARD" && (
-                  <Link
-                    to="/plus"
-                    className="text-sm"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="flex flex-col text-cyan-400 text-sm">
-                      <div>{"優先生成で"}</div>
-                      <div>{"速度向上する"}</div>
-                    </div>
-                  </Link>
-                )}
+              {!isStandardOrPremium && (
+                <Link
+                  to="/plus"
+                  className="text-sm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex flex-col text-cyan-400 text-sm">
+                    <div>{"優先生成で"}</div>
+                    <div>{"速度向上する"}</div>
+                  </div>
+                </Link>
+              )}
+              {isStandardOrPremium && initNormalWaitCount !== 0 && (
+                <div className="flex flex-col text-cyan-400 text-sm">
+                  <div>{`優先生成：${initNormalWaitCount}人をスキップ`}</div>
+                </div>
+              )}
               {/* <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
                */}
               <InProgressGenerationProgressBar

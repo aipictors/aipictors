@@ -4,8 +4,8 @@ import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/genera
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
-import { ErrorBoundary } from "@sentry/react"
 import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 
 type Props = {
   onCancel?(): void
@@ -42,7 +42,7 @@ export const GenerationWorkList = (props: Props) => {
           {props.works?.works.map(
             (work: WorkNode) =>
               work && (
-                <ErrorBoundary key={work.id} fallback={ErrorResultCard}>
+                <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
                   <Suspense fallback={<FallbackTaskCard />}>
                     <GenerationWorkCard
                       work={work}

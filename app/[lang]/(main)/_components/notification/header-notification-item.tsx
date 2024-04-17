@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   text: string
@@ -13,7 +13,7 @@ type Props = {
  */
 export const HeaderNotificationItem = (props: Props) => {
   return (
-    <Link href={`${props.link}`}>
+    <Link to={`${props.link}`}>
       <Button variant={"link"}>#{props.text}</Button>
     </Link>
   )

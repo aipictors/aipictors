@@ -4,8 +4,8 @@ import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-res
 import { GenerationTaskEditableCard } from "@/[lang]/generation/tasks/_components/generation-task-editable-card"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
-import { ErrorBoundary } from "@sentry/react"
 import { useState } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
@@ -37,7 +37,7 @@ export function GenerationTaskDialogButton(props: Props) {
 
   return (
     <>
-      <ErrorBoundary key={props.task.id} fallback={ErrorResultCard}>
+      <ErrorBoundary key={props.task.id} fallback={<ErrorResultCard />}>
         <GenerationTaskEditableCard
           taskNanoid={props.task.nanoid}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
