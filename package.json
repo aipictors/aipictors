@@ -58,6 +58,7 @@
     "@remix-run/cloudflare": "^2.8.1",
     "@remix-run/css-bundle": "^2.8.1",
     "@remix-run/react": "^2.8.1",
+    "@sentry/browser": "^7.110.1",
     "@sentry/nextjs": "^7.109.0",
     "@sentry/react": "^7.109.0",
     "@tanstack/react-query": "^5.28.9",

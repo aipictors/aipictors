@@ -18,6 +18,7 @@ import {
   isRouteErrorResponse,
   useRouteError,
 } from "@remix-run/react"
+import { init } from "@sentry/browser"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
 
@@ -44,6 +45,14 @@ export function ErrorBoundary() {
 }
 
 export default function Root() {
+  if (typeof window !== "undefined") {
+    init({
+      dsn: process.env.VITE_SENTRY_DSN!,
+      environment: process.env.VITE_SENTRY_ENVIRONMENT!,
+      tracesSampleRate: 0.001,
+    })
+  }
+
   return (
     <html lang={"ja"}>
       <head>
