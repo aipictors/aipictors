@@ -87,7 +87,7 @@ export const InProgressGenerationCard = (props: Props) => {
               )}
               {isStandardOrPremium && initNormalWaitCount !== 0 && (
                 <div className="flex flex-col text-sky-600 text-sm dark:text-cyan-400">
-                  <div>{`優先生成：${initNormalWaitCount}人をスキップ`}</div>
+                  <div>{`優先生成：${initNormalWaitCount}人をスキップしました`}</div>
                 </div>
               )}
               {/* <span className="ta-c m-auto text-sm">{`予想時間: ${waitSecondsLabel()}`}</span>
