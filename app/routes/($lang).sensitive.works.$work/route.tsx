@@ -1,6 +1,6 @@
 import { WorkArticle } from "@/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/[lang]/(main)/works/[work]/_components/work-comment-list"
-import WorkRelatedList from "@/[lang]/(main)/works/[work]/_components/work-related-list"
+import { WorkRelatedList } from "@/[lang]/(main)/works/[work]/_components/work-related-list"
 import { ArticlePage } from "@/_components/page/article-page"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
