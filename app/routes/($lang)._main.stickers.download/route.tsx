@@ -1,5 +1,4 @@
 import { AppPage } from "@/_components/app/app-page"
-import type { Metadata } from "next"
 
 /**
  * ダウンロードしたスタンプの一覧

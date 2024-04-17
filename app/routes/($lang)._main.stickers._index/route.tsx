@@ -3,7 +3,18 @@ import { StickerListHeader } from "@/[lang]/(main)/stickers/_components/sticker-
 import { StickerSearchForm } from "@/[lang]/(main)/stickers/_components/sticker-search-form"
 import { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { createClient } from "@/_lib/client"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "AIイラストスタンプ広場" },
+    {
+      description:
+        "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！",
+    },
+  ]
+}
 
 export async function loader() {
   const client = createClient()
@@ -21,7 +32,7 @@ export async function loader() {
   }
 }
 
-export default function Stickers() {
+export default function StickersPage() {
   const data = useLoaderData<typeof loader>()
 
   return (

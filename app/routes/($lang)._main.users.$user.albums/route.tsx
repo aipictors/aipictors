@@ -1,11 +1,10 @@
 import { UserAlbumList } from "@/[lang]/(main)/users/[user]/albums/_components/user-album-list"
 import { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -36,7 +35,7 @@ export default function UserAlbums() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

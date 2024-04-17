@@ -1,5 +1,10 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
+
+export const meta: MetaFunction = () => {
+  return [{ title: "お問い合わせ" }]
+}
 
 export default function Contact() {
   return (

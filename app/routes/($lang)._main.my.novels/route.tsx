@@ -1,3 +1,3 @@
-export default function MyNovels() {
+export default function MyNovelsPage() {
   return null
 }

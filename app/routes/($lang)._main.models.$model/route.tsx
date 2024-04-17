@@ -4,7 +4,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -43,11 +43,11 @@ export async function loader(props: LoaderFunctionArgs) {
  * @param props
  * @returns
  */
-export default function Model() {
+export default function ModelPage() {
   const params = useParams()
 
   if (params.model === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

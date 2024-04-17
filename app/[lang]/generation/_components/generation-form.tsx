@@ -16,7 +16,6 @@ import { GenerationWorkContentPreview } from "@/[lang]/generation/_components/ta
 import { GenerationWorkListModelView } from "@/[lang]/generation/_components/task-view/generation-works-from-model-view"
 import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { useMutation } from "@apollo/client/index.js"
-import type { Metadata } from "next"
 import { useState } from "react"
 
 type Props = {
@@ -82,11 +81,4 @@ export const GenerationForm = (props: Props) => {
       }
     />
   )
-}
-
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "画像生成",
-  description:
-    "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
 }

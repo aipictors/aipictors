@@ -2,7 +2,7 @@ import { UserWorkListActions } from "@/[lang]/(main)/users/[user]/_components/us
 import { UserStickerList } from "@/[lang]/(main)/users/[user]/stickers/_components/user-sticker-list"
 import { userStickersQuery } from "@/_graphql/queries/user/user-stickers"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -36,7 +36,7 @@ export default function UserStickers() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

@@ -1,6 +1,6 @@
 import { NovelArticle } from "@/[lang]/(main)/novels/[novel]/_components/novel-article"
 import { AppPage } from "@/_components/app/app-page"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import { useParams } from "@remix-run/react"
 
 /**
@@ -10,7 +10,7 @@ export default function Novels() {
   const params = useParams()
 
   if (params.novel === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   return (

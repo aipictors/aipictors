@@ -3,7 +3,7 @@ import { StickerListHeader } from "@/[lang]/(main)/stickers/_components/sticker-
 import { StickerSearchForm } from "@/[lang]/(main)/stickers/_components/sticker-search-form"
 import { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -42,7 +42,7 @@ export default function Stickers() {
   const params = useParams()
 
   if (params.search === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

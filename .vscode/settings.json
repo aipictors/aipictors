@@ -54,7 +54,9 @@
     "next-env.d.ts": true,
     "package-lock.json": true,
     "pnpm-lock.yaml": true,
-    "bun.lockb": true
+    "bun.lockb": true,
+    "build": true,
+    ".wrangler": true
   },
   "search.exclude": {
     "*.lock": true,

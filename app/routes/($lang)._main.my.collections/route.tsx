@@ -3,7 +3,7 @@ import text from "assets/privacy-policy.md?raw"
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import { AppPageCenter } from "@/_components/app/app-page-center"
 
-export default function MyCollections() {
+export default function MyCollectionsPage() {
   return (
     <>
       <AppPageCenter>

@@ -2,7 +2,7 @@ import { TagWorkSection } from "@/[lang]/(main)/tags/_components/tag-work-sectio
 import { AppPage } from "@/_components/app/app-page"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -33,7 +33,7 @@ export default function TagComment() {
   const params = useParams()
 
   if (params.tag === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

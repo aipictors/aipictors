@@ -1,5 +1,9 @@
 import { AppPage } from "@/_components/app/app-page"
-import type { Metadata } from "next"
+import type { MetaFunction } from "@remix-run/cloudflare"
+
+export const meta: MetaFunction = () => {
+  return [{ title: "運営会社について" }]
+}
 
 /**
  * 組織について

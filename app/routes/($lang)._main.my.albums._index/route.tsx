@@ -1,7 +1,7 @@
 import { ViewerAlbumHeader } from "@/[lang]/(main)/my/albums/_components/viewer-album-header"
 import { AppPage } from "@/_components/app/app-page"
 
-export default function MyFollowersPage() {
+export default function MyAlbumsPage() {
   return (
     <AppPage>
       <ViewerAlbumHeader />

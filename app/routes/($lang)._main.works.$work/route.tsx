@@ -1,11 +1,11 @@
 import { WorkArticle } from "@/[lang]/(main)/works/[work]/_components/work-article"
 import { WorkCommentList } from "@/[lang]/(main)/works/[work]/_components/work-comment-list"
-import WorkRelatedList from "@/[lang]/(main)/works/[work]/_components/work-related-list"
-import WorkPageLoading from "@/[lang]/(main)/works/[work]/loading"
+import { WorkRelatedList } from "@/[lang]/(main)/works/[work]/_components/work-related-list"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -50,7 +50,7 @@ export default function Work() {
   const params = useParams()
 
   if (params.work === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
@@ -59,7 +59,7 @@ export default function Work() {
     <div className="w-full p-4">
       <div className="flex flex-col items-center justify-center">
         <div className="mx-auto w-full max-w-screen-lg">
-          <Suspense fallback={<WorkPageLoading />}>
+          <Suspense fallback={<AppLoadingPage />}>
             <WorkArticle work={data?.work} />
           </Suspense>
           <WorkRelatedList works={data.work.user.works} />

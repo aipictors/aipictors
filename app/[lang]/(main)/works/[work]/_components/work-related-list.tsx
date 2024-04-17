@@ -17,17 +17,17 @@ type Work = {
   largeThumbnailImageWidth: number
 }
 
-type WorkRelatedListProps = {
+type Props = {
   works: Work[]
 }
 
-export default function WorkRelatedList({ works }: WorkRelatedListProps) {
+export function WorkRelatedList(props: Props) {
   return (
     <div className="space-y-4 pt-2">
       <p className="text-lg">関連作品</p>
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
-          {works.map((work) => (
+          {props.works.map((work) => (
             <CarouselItem
               key={work.id}
               className="basis-1/4 lg:basis-1/6 md:basis-1/5"

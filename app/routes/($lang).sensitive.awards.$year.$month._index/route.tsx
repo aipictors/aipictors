@@ -1,6 +1,6 @@
 import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
 import { AppPage } from "@/_components/app/app-page"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import { useParams } from "@remix-run/react"
 
 export default function SensitiveMonthAward() {
@@ -11,7 +11,7 @@ export default function SensitiveMonthAward() {
     params.month === undefined ||
     params.day === undefined
   ) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const year = Number.parseInt(params.year)

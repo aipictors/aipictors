@@ -1,6 +1,6 @@
 import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
 import { AppPage } from "@/_components/app/app-page"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -33,11 +33,11 @@ export default function MonthAwards() {
   const params = useParams()
 
   if (params.year === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   if (params.month === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

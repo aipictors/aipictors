@@ -5,7 +5,6 @@ import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
 
 export async function loader() {
   const client = createClient()

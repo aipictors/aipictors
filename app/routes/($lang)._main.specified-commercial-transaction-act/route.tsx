@@ -11,7 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/_components/ui/table"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+
+export const meta: MetaFunction = () => {
+  return [{ title: "特定商取引法に基づく表記" }]
+}
 
 export async function loader() {
   const company = [

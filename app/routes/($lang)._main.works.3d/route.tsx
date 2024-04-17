@@ -5,7 +5,6 @@ import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
 
 export async function loader() {
   const client = createClient()
@@ -25,8 +24,8 @@ export async function loader() {
   })
 
   return {
-    worksResp,
-    hotTagsResp,
+    works: worksResp.data.works,
+    hotTags: hotTagsResp.data.hotTags,
   }
 }
 /**
@@ -37,8 +36,8 @@ export default function Works3d() {
 
   return (
     <AppPage>
-      <HomeTagList hotTags={data.hotTagsResp.data.hotTags} />
-      <HomeWorkList works={data.worksResp.data.works} />
+      <HomeTagList hotTags={data.hotTags} />
+      <HomeWorkList works={data.works} />
     </AppPage>
   )
 }

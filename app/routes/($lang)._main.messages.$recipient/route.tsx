@@ -1,5 +1,5 @@
 import { ChatMessageView } from "@/[lang]/(main)/messages/[recipient]/_components/chat-message-view"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import { useParams } from "@remix-run/react"
 
 /**
@@ -9,7 +9,7 @@ export default function RecipientMessages() {
   const params = useParams()
 
   if (params.recipient === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   return <ChatMessageView recipientId={params.recipient} />

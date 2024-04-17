@@ -5,7 +5,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { albumQuery } from "@/_graphql/queries/album/album"
 import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -47,11 +47,11 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 }
 
-export default function MyAlbum() {
+export default function MyAlbumPage() {
   const params = useParams()
 
   if (params.album === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

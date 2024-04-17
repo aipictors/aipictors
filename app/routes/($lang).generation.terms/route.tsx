@@ -1,4 +1,4 @@
-import termsMarkdownText from "@/_assets/flutter/privacy.md?raw"
+import termsMarkdownText from "@/_assets/image-generation-terms.md?raw"
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { Button } from "@/_components/ui/button"

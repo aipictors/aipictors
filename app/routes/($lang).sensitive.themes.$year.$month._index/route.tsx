@@ -2,7 +2,7 @@ import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
 import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 
@@ -37,7 +37,7 @@ export default function SensitiveMonthThemesPage() {
   const params = useParams()
 
   if (params.year === undefined || params.month === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const year = Number.parseInt(params.year)

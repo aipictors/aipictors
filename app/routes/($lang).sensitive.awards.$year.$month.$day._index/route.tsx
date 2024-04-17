@@ -3,7 +3,7 @@ import { RankingWorkList } from "@/[lang]/(main)/awards/_components/ranking-work
 import { AppPage } from "@/_components/app/app-page"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 
@@ -52,7 +52,7 @@ export default function SensitiveAwardsPage() {
     params.month === undefined ||
     params.day === undefined
   ) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const year = Number.parseInt(params.year)

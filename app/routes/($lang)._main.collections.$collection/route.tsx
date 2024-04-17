@@ -3,7 +3,7 @@ import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import { ClientParamsError } from "@/errors/client-params-error"
+import { ParamsError } from "@/errors/params-error"
 import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 
@@ -30,7 +30,7 @@ export default function Collections() {
   const params = useParams()
 
   if (params.collection === undefined) {
-    throw new ClientParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

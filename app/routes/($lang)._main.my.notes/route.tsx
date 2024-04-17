@@ -1,3 +1,3 @@
-export default function MyNotes() {
+export default function MyNotesPage() {
   return null
 }

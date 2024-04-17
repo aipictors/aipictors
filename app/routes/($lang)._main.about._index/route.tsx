@@ -1,6 +1,10 @@
 import { AppPage } from "@/_components/app/app-page"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
-import type { Metadata } from "next"
+
+export const meta: MetaFunction = () => {
+  return [{ title: "本サイトについて" }]
+}
 
 /**
  * サイトについて
@@ -39,7 +43,7 @@ export default function About() {
         <h2 className="py-2 font-bold text-md">ロゴ</h2>
         <p>
           {"当サービスのロゴをご利用の方は"}
-          <Link to="https://www.aipictors.com/presskit/">こちら</Link>
+          <a href="https://www.aipictors.com/presskit/">こちら</a>
           {"をご参照ください"}
         </p>
       </div>

@@ -2,7 +2,6 @@ import { AppPageCenter } from "@/_components/app/app-page-center"
 import { Button } from "@/_components/ui/button"
 import { Link } from "@remix-run/react"
 import { ThumbsUpIcon } from "lucide-react"
-import type { Metadata } from "next"
 
 /**
  * サブスクの決済を完了した場合のページ

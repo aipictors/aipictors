@@ -2,7 +2,6 @@ import { PlusForm } from "@/[lang]/(main)/plus/_components/plus-form"
 import { PlusNoteList } from "@/[lang]/(main)/plus/_components/plus-note-list"
 import { AppPage } from "@/_components/app/app-page"
 import { AppPageHeader } from "@/_components/app/app-page-header"
-import type { Metadata } from "next"
 
 /**
  * サブスク

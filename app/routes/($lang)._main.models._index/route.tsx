@@ -4,7 +4,6 @@ import { ArticlePage } from "@/_components/page/article-page"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { createClient } from "@/_lib/client"
 import { useLoaderData } from "@remix-run/react"
-import type { Metadata } from "next"
 
 /**
  * モデルの一覧
@@ -17,17 +16,18 @@ export async function loader() {
     query: imageModelsQuery,
     variables: {},
   })
+
   return {
-    resp,
+    imageModels: resp.data.imageModels,
   }
 }
 
-export default function Models() {
+export default function ModelsPage() {
   const data = useLoaderData<typeof loader>()
 
   return (
     <ArticlePage>
-      <ImageModelList imageModels={data.resp.data.imageModels} />
+      <ImageModelList imageModels={data.imageModels} />
       <GoogleAdsense slot={"5201832236"} format={"auto"} responsive={"true"} />
     </ArticlePage>
   )
