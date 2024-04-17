@@ -51,34 +51,38 @@ export const GenerationForm = (props: Props) => {
       }
       main={
         <GenerationMainView
-          config={<GenerationConfigView />}
+          config={null}
           promptEditor={<GenerationPromptView />}
           negativePromptEditor={<GenerationNegativePromptView />}
           taskContentPreview={<GenerationTaskContentPreview />}
-          taskDetails={<GenerationTaskDetailsView />}
+          taskDetails={null}
+          // TODO: ↓ エラー
+          // taskDetails={<GenerationTaskDetailsView />}
           workContentPreview={<GenerationWorkContentPreview />}
         />
       }
       asideHeader={<GenerationSideTabsView />}
       aside={
-        <GenerationAsideView
-          advertisement={<GenerationAdvertisementView />}
-          taskList={
-            <GenerationTaskListView
-              rating={rating}
-              protect={protect}
-              isEditMode={isEditMode}
-              isPreviewMode={isPreviewMode}
-              setRating={setRating}
-              setProtect={setProtect}
-              toggleEditMode={toggleEditMode}
-              togglePreviewMode={togglePreviewMode}
-            />
-          }
-          taskDetails={<GenerationTaskDetailsView />}
-          workListFromModel={<GenerationWorkListModelView />}
-          communication={<GenerationCommunicationView />}
-        />
+        null
+        // <GenerationAsideView
+        //   advertisement={<GenerationAdvertisementView />}
+        //   taskList={
+        //     null
+        //     // <GenerationTaskListView
+        //     //   rating={rating}
+        //     //   protect={protect}
+        //     //   isEditMode={isEditMode}
+        //     //   isPreviewMode={isPreviewMode}
+        //     //   setRating={setRating}
+        //     //   setProtect={setProtect}
+        //     //   toggleEditMode={toggleEditMode}
+        //     //   togglePreviewMode={togglePreviewMode}
+        //     // />
+        //   }
+        //   taskDetails={<GenerationTaskDetailsView />}
+        //   workListFromModel={<GenerationWorkListModelView />}
+        //   communication={<GenerationCommunicationView />}
+        // />
       }
     />
   )
