@@ -7,10 +7,6 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 
-/**
- * ランキングの履歴
- * @returns
- */
 export async function loader() {
   const client = createClient()
 
@@ -32,6 +28,7 @@ export async function loader() {
       },
     },
   })
+
   return {
     year,
     month,
@@ -40,21 +37,11 @@ export async function loader() {
   }
 }
 
+/**
+ * ランキングの履歴
+ * @returns
+ */
 export default function Awards() {
-  const params = useParams()
-
-  if (params.year === undefined) {
-    return null
-  }
-
-  if (params.month === undefined) {
-    return null
-  }
-
-  if (params.day === undefined) {
-    return null
-  }
-
   const data = useLoaderData<typeof loader>()
 
   return (

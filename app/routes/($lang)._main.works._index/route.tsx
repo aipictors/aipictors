@@ -1,4 +1,4 @@
-import WorksPageLoading from "@/[lang]/(main)/works/loading"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppPlaceholder } from "@/_components/app/app-placeholder"
 import { Suspense } from "react"
 
@@ -7,7 +7,7 @@ import { Suspense } from "react"
  */
 export default function Works() {
   return (
-    <Suspense fallback={<WorksPageLoading />}>
+    <Suspense fallback={<AppLoadingPage />}>
       <AppPlaceholder>{"作品の一覧"}</AppPlaceholder>
     </Suspense>
   )

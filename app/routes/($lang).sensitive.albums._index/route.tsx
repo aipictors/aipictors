@@ -1,51 +1,12 @@
-import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
+import { AlbumCard } from "@/[lang]/(main)/albums/_components/album-card"
 import { AppPage } from "@/_components/app/app-page"
-import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
-import { createClient } from "@/_lib/client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
-
-export const loader = async (props: LoaderFunctionArgs) => {
-  if (props.params.year === undefined || props.params.month === undefined) {
-    throw new Response(null, { status: 404 })
-  }
-
-  const client = createClient()
-
-  const year = Number.parseInt(props.params.year)
-
-  const month = Number.parseInt(props.params.month)
-
-  const dailyThemesResp = await client.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 31,
-      where: { year: year, month: month },
-    },
-  })
-
-  return {
-    dailyThemes: dailyThemesResp.data.dailyThemes,
-  }
-}
 
 export default function SensitiveAlbumsPage() {
-  const data = useLoaderData<typeof loader>()
-
-  const params = useParams<"year" | "month">()
-
-  if (params.year === undefined || params.month === undefined) {
-    throw new Error("Invalid params")
-  }
-
-  const year = Number.parseInt(params.year)
-
-  const month = Number.parseInt(params.month)
-
   return (
     <AppPage>
-      <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
+      <div className="flex flex-col">
+        <AlbumCard />
+      </div>
     </AppPage>
   )
 }
