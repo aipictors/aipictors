@@ -1,6 +1,6 @@
 import { StickerArticle } from "@/[lang]/(main)/stickers/[sticker]/_components/sticker-article"
 import { AppPage } from "@/_components/app/app-page"
-import { ParamsError } from "@/errors/params-error"
+import { ParamsError } from "@/_errors/params-error"
 import { useParams } from "@remix-run/react"
 
 /**

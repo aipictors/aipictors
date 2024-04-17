@@ -1,9 +1,9 @@
 import UserProfile from "@/[lang]/(main)/users/[user]/_components/user-profile"
 import { UserTabs } from "@/[lang]/(main)/users/[user]/_components/user-tabs"
 import { AppPage } from "@/_components/app/app-page"
+import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
-import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 

@@ -1,5 +1,5 @@
 import { ChatMessageView } from "@/[lang]/(main)/messages/[recipient]/_components/chat-message-view"
-import { ParamsError } from "@/errors/params-error"
+import { ParamsError } from "@/_errors/params-error"
 import { useParams } from "@remix-run/react"
 
 /**

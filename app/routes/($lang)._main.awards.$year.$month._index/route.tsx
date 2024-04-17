@@ -1,6 +1,6 @@
 import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
 import { AppPage } from "@/_components/app/app-page"
-import { ParamsError } from "@/errors/params-error"
+import { ParamsError } from "@/_errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

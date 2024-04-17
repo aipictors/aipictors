@@ -1,7 +1,7 @@
 import { UserSupport } from "@/[lang]/(main)/users/[user]/supports/_components/user-support"
+import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
-import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -21,7 +21,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   if (userResp.data.user === null) {
-    return new Response(null, { status: 404 })
+    throw new Response(null, { status: 404 })
   }
 
   return {

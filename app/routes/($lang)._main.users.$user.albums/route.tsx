@@ -1,7 +1,7 @@
 import { UserAlbumList } from "@/[lang]/(main)/users/[user]/albums/_components/user-album-list"
+import { ParamsError } from "@/_errors/params-error"
 import { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
 import { createClient } from "@/_lib/client"
-import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

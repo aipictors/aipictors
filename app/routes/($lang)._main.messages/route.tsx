@@ -1,5 +1,4 @@
 import { MessageThreadList } from "@/[lang]/(main)/messages/_components/message-thread-list"
-import MessagesLoading from "@/[lang]/(main)/messages/loading"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { LoginPage } from "@/_components/page/login-page"
 import { AuthContext } from "@/_contexts/auth-context"

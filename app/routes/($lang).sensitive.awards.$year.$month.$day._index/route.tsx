@@ -1,9 +1,9 @@
 import { RankingHeader } from "@/[lang]/(main)/awards/_components/ranking-header"
 import { RankingWorkList } from "@/[lang]/(main)/awards/_components/ranking-work-list"
 import { AppPage } from "@/_components/app/app-page"
+import { ParamsError } from "@/_errors/params-error"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
-import { ParamsError } from "@/errors/params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 
