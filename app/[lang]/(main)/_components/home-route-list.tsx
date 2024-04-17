@@ -184,8 +184,8 @@ export const HomeRouteList = () => {
           {"プライバシーポリシー"}
         </Link>
         <Link
-          href={"/specified-commercial-transaction-act"}
           className={"text-xs"}
+          to={"/specified-commercial-transaction-act"}
         >
           {"特定商取引法に基づく表記"}
         </Link>
