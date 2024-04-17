@@ -7,7 +7,11 @@ import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
-import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LinksFunction,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { cssBundleHref } from "@remix-run/css-bundle"
 import {
   Links,
@@ -21,6 +25,13 @@ import {
 import { init } from "@sentry/browser"
 import { Suspense } from "react"
 import { Toaster } from "sonner"
+
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control":
+      "max-age=960, s-maxage=3600, stale-while-revalidate=345600, stale-if-error=345600",
+  }
+}
 
 export const links: LinksFunction = () => {
   return [
