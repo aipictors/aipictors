@@ -4,9 +4,9 @@ import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import type { Metadata } from "next"
+import { useLoaderData } from "@remix-run/react"
 
-const SensitiveWorks3dPage = async () => {
+export async function loader() {
   const client = createClient()
 
   const worksResp = await client.query({
@@ -23,17 +23,19 @@ const SensitiveWorks3dPage = async () => {
     variables: {},
   })
 
+  return {
+    works: worksResp.data.works,
+    hotTags: hotTagsResp.data.hotTags,
+  }
+}
+
+export default function SensitiveWorks25d() {
+  const data = useLoaderData<typeof loader>()
+
   return (
     <AppPage>
-      <HomeTagList hotTags={hotTagsResp.data.hotTags} />
-      <HomeWorkList works={worksResp.data.works} />
+      <HomeTagList hotTags={data.hotTags} />
+      <HomeWorkList works={data.works} />
     </AppPage>
   )
 }
-
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "-",
-}
-
-export default SensitiveWorks3dPage

@@ -50,10 +50,10 @@ export default function MyAlbum() {
     <AppPage>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader albumQuery={data.albumResp} />
-          <AlbumWorkList albumWorksQuery={data.albumWorksResp} />
+          <AlbumArticleHeader album={data.albumResp} />
+          <AlbumWorkList albumWorks={data.albumWorksResp} />
         </div>
-        <AlbumWorkDescription albumQuery={data.albumResp} />
+        <AlbumWorkDescription album={data.albumResp} />
       </article>
     </AppPage>
   )

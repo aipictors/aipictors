@@ -2,12 +2,13 @@ import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
 import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
+import { ClientParamsError } from "@/errors/client-params-error"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 
 export const loader = async (props: LoaderFunctionArgs) => {
   if (props.params.year === undefined || props.params.month === undefined) {
-    throw new Response(null, { status: 404 })
+    throw new Response("Invalid date", { status: 400 })
   }
 
   const client = createClient()
@@ -30,13 +31,13 @@ export const loader = async (props: LoaderFunctionArgs) => {
   }
 }
 
-export default function SensitiveAlbumsPage() {
+export default function SensitiveMonthThemesPage() {
   const data = useLoaderData<typeof loader>()
 
-  const params = useParams<"year" | "month">()
+  const params = useParams()
 
   if (params.year === undefined || params.month === undefined) {
-    throw new Error("Invalid params")
+    throw new ClientParamsError()
   }
 
   const year = Number.parseInt(params.year)
