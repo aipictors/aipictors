@@ -14,10 +14,10 @@ jobs:
       - name: 🔨 Bunを有効にする
         uses: oven-sh/setup-bun@v1
       - name: 🔨 インストール
-        run: bun install
-      - name: 💪 Build GraphQL
+        run: bun install --ignore-scripts
+      - name: 💪 ビルド GraphQL
         run: bunx graphql-codegen -c codegen.ts
-      - name: 💪 ビルド
+      - name: 💪 ビルド Remix
         run: bunx remix vite:build
       - name: 🚀 デプロイ
         id: cloudflare-wrangler
