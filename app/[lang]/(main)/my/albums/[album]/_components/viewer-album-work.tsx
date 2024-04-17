@@ -1,5 +1,3 @@
-"use client"
-
 import { AlbumWorkDeleteDialog } from "@/[lang]/(main)/my/albums/[album]/_components/album-work-delete-dialog"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent } from "@/_components/ui/card"

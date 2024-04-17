@@ -1,5 +1,3 @@
-"use client"
-
 import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import { Separator } from "@/_components/ui/separator"
 import {

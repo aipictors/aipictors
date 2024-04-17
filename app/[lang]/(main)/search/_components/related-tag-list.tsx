@@ -1,5 +1,3 @@
-"use client"
-
 import { TagCard } from "@/[lang]/(main)/tags/_components/tag-card"
 
 export const RelatedTagList = () => {

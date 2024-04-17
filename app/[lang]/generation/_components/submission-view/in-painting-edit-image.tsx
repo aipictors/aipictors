@@ -1,5 +1,3 @@
-"use client"
-
 import { InpaintCanvas } from "@/[lang]/generation/_components/submission-view/inpaint-canvas"
 
 type Props = {
@@ -14,7 +12,7 @@ type Props = {
  * @param props
  * @returns
  */
-export default function InPaintingEditImage(props: Props) {
+export function InPaintingEditImage(props: Props) {
   return (
     <>
       <InpaintCanvas

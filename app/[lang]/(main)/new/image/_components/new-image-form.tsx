@@ -1,5 +1,3 @@
-"use client"
-
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
@@ -20,7 +18,7 @@ import {
 } from "@dnd-kit/sortable"
 import type { SetStateAction } from "react"
 import { useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { useDropzone } from "react-dropzone-esm"
 
 const NewImageForm = () => {
   // 画像の状態を保持するための型

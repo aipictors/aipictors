@@ -1,5 +1,3 @@
-"use client"
-
 import { ViewerAlbumList } from "@/[lang]/(main)/my/albums/_components/vIewer-album-list"
 import { ViewerAlbumAddDialog } from "@/[lang]/(main)/my/albums/_components/viewer-album-add-dialog"
 import { Button } from "@/_components/ui/button"

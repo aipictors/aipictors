@@ -1,6 +1,5 @@
-"use client"
-
 import { GenerationAdvertisementView } from "@/[lang]/generation/_components/advertisement-view/generation-advertisement-view"
+import { GenerationConfigView } from "@/[lang]/generation/_components/config-view/generation-config-view"
 import { GenerationSideTabsView } from "@/[lang]/generation/_components/generation-side-tabs-view/generation-side-tabs-view"
 import { GenerationAsideView } from "@/[lang]/generation/_components/generation-view/generation-aside-view"
 import { GenerationHeaderView } from "@/[lang]/generation/_components/generation-view/generation-header-view"
@@ -16,9 +15,7 @@ import { GenerationTaskListView } from "@/[lang]/generation/_components/task-vie
 import { GenerationWorkContentPreview } from "@/[lang]/generation/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/[lang]/generation/_components/task-view/generation-works-from-model-view"
 import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
-import { useMutation } from "@apollo/client"
-import type { Metadata } from "next"
-import dynamic from "next/dynamic"
+import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 
 type Props = {
@@ -85,21 +82,3 @@ export const GenerationForm = (props: Props) => {
     />
   )
 }
-
-export const metadata: Metadata = {
-  robots: { index: false },
-  title: "画像生成",
-  description:
-    "簡単に高品質なAI画像生成を行うことができます、1日無料30枚でたくさん生成できます",
-}
-
-export const revalidate = 10
-
-const GenerationConfigView = dynamic(
-  () => {
-    return import(
-      "@/[lang]/generation/_components/config-view/generation-config-view"
-    )
-  },
-  { ssr: false },
-)

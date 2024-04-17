@@ -1,5 +1,5 @@
 import { Card } from "@/_components/ui/card"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   prompts: string
@@ -16,7 +16,7 @@ export const ImageGenerationReferenceCard = (props: Props) => {
   return (
     <Link
       className="bg-gray-100 dark:bg-gray-900"
-      href={`/generation?prompts=${encodeURIComponent(props.prompts)}`}
+      to={`/generation?prompts=${encodeURIComponent(props.prompts)}`}
     >
       <div className="rounded-md bg-gray-100 p-4 dark:bg-gray-900">
         <div className="relative m-auto max-w-64">

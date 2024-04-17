@@ -4,7 +4,7 @@ import * as React from "react"
 import { type ButtonProps, buttonVariants } from "@/_components/ui/button"
 import { cn } from "@/_lib/utils"
 
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav

@@ -11,7 +11,7 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  work: WorkQuery["work"]
+  work: any //NonNullable<WorkQuery["work"]>
   isPreviewByHover: boolean
 }
 

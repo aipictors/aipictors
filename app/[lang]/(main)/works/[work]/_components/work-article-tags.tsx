@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 import type React from "react"
 
 type WorkArticleTagProps = {
@@ -10,7 +10,7 @@ const WorkArticleTags: React.FC<WorkArticleTagProps> = ({ tagNames }) => {
   return (
     <div className="flex flex-row flex-wrap">
       {tagNames.map((tagName) => (
-        <Link href={`/tags/${tagName}`}>
+        <Link to={`/tags/${tagName}`}>
           <Button key={tagName} variant={"link"}>{`#${tagName}`}</Button>
         </Link>
       ))}

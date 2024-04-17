@@ -1,11 +1,13 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { updateAccountLoginMutation } from "@/_graphql/mutations/update-account-login"
 import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
-import { ApolloError, useMutation, useSuspenseQuery } from "@apollo/client"
+import {
+  ApolloError,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/index.js"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 

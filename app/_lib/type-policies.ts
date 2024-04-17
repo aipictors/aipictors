@@ -1,4 +1,4 @@
-import type { TypePolicies } from "@apollo/client"
+import type { TypePolicies } from "@apollo/client/index.js"
 
 export const typePolicies: TypePolicies = {
   Query: {

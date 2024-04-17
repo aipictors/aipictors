@@ -1,11 +1,10 @@
-"use client"
-
 import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import { LoginNavigationButton } from "@/[lang]/_components/login-navitation-button"
 import { NavigationLogoutDialogButton } from "@/[lang]/_components/logout-navigation-dialog-button"
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import {
   AlertTriangleIcon,
   AwardIcon,
@@ -24,7 +23,6 @@ import {
   StampIcon,
   UserIcon,
 } from "lucide-react"
-import Link from "next/link"
 import { useContext } from "react"
 import {
   TbBrandDiscordFilled,
@@ -60,7 +58,7 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
-        href={"/series"}
+        href={"/albums"}
         icon={LibraryBigIcon}
       >
         {"シリーズ"}
@@ -173,21 +171,21 @@ export const HomeRouteList = () => {
         <Separator />
       </div>
       <div className="flex flex-col space-y-2 pl-3">
-        <Link href={"/about"} className={"text-xs"}>
+        <Link to={"/about"} className={"text-xs"}>
           {"このサイトについて"}
         </Link>
-        <Link href={"/about/us"} className={"text-xs"}>
+        <Link to={"/about/us"} className={"text-xs"}>
           {"運営会社"}
         </Link>
-        <Link href={"/terms"} className={"text-xs"}>
+        <Link to={"/terms"} className={"text-xs"}>
           {"利用規約"}
         </Link>
-        <Link href={"/privacy"} className={"text-xs"}>
+        <Link to={"/privacy"} className={"text-xs"}>
           {"プライバシーポリシー"}
         </Link>
         <Link
-          href={"/specified-commercial-transaction-act"}
           className={"text-xs"}
+          to={"/specified-commercial-transaction-act"}
         >
           {"特定商取引法に基づく表記"}
         </Link>

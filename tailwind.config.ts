@@ -1,10 +1,10 @@
 import type { Config } from "tailwindcss"
 import { fontFamily } from "tailwindcss/defaultTheme"
 
-const config = {
+export default {
   plugins: [require("tailwindcss-animate")],
   darkMode: ["class"],
-  content: ["./components/**/*.tsx", "./app/**/*.tsx"],
+  content: ["app/**/*.tsx"],
   theme: {
     /**
      * shadcn/ui
@@ -87,7 +87,7 @@ const config = {
        * 追加: カスタムフォントに使用
        */
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["M PLUS 1 Variable", ...fontFamily.sans],
       },
       height: {
         /**
@@ -114,5 +114,3 @@ const config = {
     },
   },
 } satisfies Config
-
-export default config

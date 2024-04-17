@@ -1,5 +1,3 @@
-"use client"
-
 import { Checkbox } from "@/_components/ui/checkbox"
 
 export const SettingInterfaceForm = () => {

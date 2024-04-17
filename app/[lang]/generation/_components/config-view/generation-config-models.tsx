@@ -1,5 +1,3 @@
-"use client"
-
 import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
 import { GenerationModelListButton } from "@/[lang]/generation/_components/config-view/generation-model-list-button"
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
@@ -90,7 +88,7 @@ export const GenerationConfigModels = (props: Props) => {
         <TabsContent value="normal">
           <div className="flex flex-col space-y-2">
             {currentModels.map((model) => (
-              <div className="relative">
+              <div className="relative" key={model?.id}>
                 <ConfigModelButton
                   key={model?.id}
                   imageURL={model?.thumbnailImageURL ?? ""}

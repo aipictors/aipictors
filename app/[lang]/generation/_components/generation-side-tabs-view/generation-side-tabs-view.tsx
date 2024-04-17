@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"

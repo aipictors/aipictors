@@ -1,5 +1,3 @@
-"use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import {
   DropdownMenu,
@@ -17,6 +15,7 @@ import {
 } from "@/_components/ui/dropdown-menu"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import {
   GemIcon,
   LogOutIcon,
@@ -28,7 +27,6 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
-import Link from "next/link"
 import { useContext } from "react"
 
 type Props = {
@@ -42,7 +40,7 @@ type MenuItemLinkProps = {
 }
 
 const MenuItemLink = ({ href, icon, label }: MenuItemLinkProps) => (
-  <Link href={href}>
+  <Link to={href}>
     <DropdownMenuItem>
       {icon}
       <span>{label}</span>

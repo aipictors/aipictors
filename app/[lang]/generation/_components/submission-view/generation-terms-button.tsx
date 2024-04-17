@@ -1,5 +1,3 @@
-"use client"
-
 import { AppMarkdown } from "@/_components/app/app-markdown"
 import {
   AlertDialog,

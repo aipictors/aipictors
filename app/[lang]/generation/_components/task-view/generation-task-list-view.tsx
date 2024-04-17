@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
 import { GenerationTaskList } from "@/[lang]/generation/_components/task-view/generation-task-list"
 import { GenerationTaskListActions } from "@/[lang]/generation/_components/task-view/generation-task-list-actions"
@@ -11,7 +9,7 @@ import type { TaskListThumbnailType } from "@/[lang]/generation/_types/task-list
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { config } from "@/config"
-import { useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client/index.js"
 import { useEffect, useState } from "react"
 
 type Props = {

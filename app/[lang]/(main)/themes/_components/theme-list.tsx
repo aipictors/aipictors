@@ -1,11 +1,9 @@
-"use client"
-
 import { ThemeListItem } from "@/[lang]/(main)/themes/_components/theme-list-item"
 import { createCalendarCells } from "@/[lang]/(main)/themes/_utils/create-calendar-cells"
 import { Button } from "@/_components/ui/button"
 import type { DailyThemesQuery } from "@/_graphql/__generated__/graphql"
+import { useNavigate } from "@remix-run/react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 type Props = {
   year: number
@@ -14,7 +12,7 @@ type Props = {
 }
 
 export const ThemeList = (props: Props) => {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const cells = createCalendarCells(2023, 9)
 
@@ -32,19 +30,19 @@ export const ThemeList = (props: Props) => {
   const onPreviousMonth = () => {
     const previousMonth = props.month - 1
     if (previousMonth < 1) {
-      router.push(`/themes/${props.year - 1}/${12}`)
+      navigate(`/themes/${props.year - 1}/${12}`)
       return
     }
-    router.push(`/themes/${props.year}/${previousMonth}`)
+    navigate(`/themes/${props.year}/${previousMonth}`)
   }
 
   const onNextMonth = () => {
     const nextMonth = props.month + 1
     if (nextMonth > 12) {
-      router.push(`/themes/${props.year + 1}/${1}`)
+      navigate(`/themes/${props.year + 1}/${1}`)
       return
     }
-    router.push(`/themes/${props.year}/${nextMonth}`)
+    navigate(`/themes/${props.year}/${nextMonth}`)
   }
 
   return (

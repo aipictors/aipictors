@@ -44,4 +44,4 @@ pre-commit:
 pre-push:
   commands:
     tsc:
-      run: 
+      run:

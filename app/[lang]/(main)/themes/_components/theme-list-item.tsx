@@ -1,6 +1,5 @@
 import { Button } from "@/_components/ui/button"
-
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   year: number
@@ -15,11 +14,8 @@ export const ThemeListItem = (props: Props) => {
   }
 
   return (
-    <Link
-      href={`/themes/${props.year}/${props.month}/${props.day}`}
-      className="p-1"
-    >
-      <Button className="space-x-2">
+    <Link to={`/themes/${props.year}/${props.month}/${props.day}`}>
+      <Button>
         <span className="block w-auto text-sm">{props.day}</span>
         <span className="block w-auto overflow-hidden truncate whitespace-pre-wrap text-sm">
           {props.title}

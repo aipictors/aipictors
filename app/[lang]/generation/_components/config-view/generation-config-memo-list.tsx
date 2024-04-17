@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigMemoItem } from "@/[lang]/generation/_components/config-view/generation-config-memo-item"
 import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"

@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 /**
  * v0 by Vercel.
@@ -11,7 +11,7 @@ export function AppDevelopmentPage() {
       <h1 className="font-bold text-9xl">503</h1>
       <p className="mt-4 text-xl">{"このページは開発中です。"}</p>
       <Button className="mt-8 rounded-md px-8 py-2">
-        <Link href="https://www.aipictors.com">ホームに戻る</Link>
+        <Link to="https://www.aipictors.com">ホームに戻る</Link>
       </Button>
     </div>
   )

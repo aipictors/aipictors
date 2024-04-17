@@ -1,5 +1,3 @@
-"use client"
-
 import { Card } from "@/_components/ui/card"
 
 type Props = {

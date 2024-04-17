@@ -1,5 +1,3 @@
-"use client"
-
 import CloudflareTurnstile, {
   type Status,
 } from "@/[lang]/_components/cloudflare-turnstile"
@@ -9,14 +7,14 @@ import { Button } from "@/_components/ui/button"
 import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import {
   GoogleAuthProvider,
   TwitterAuthProvider,
   getAuth,
   signInWithCustomToken,
 } from "firebase/auth"
-import Link from "next/link"
 import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
@@ -106,7 +104,7 @@ export function LoginDialogContent() {
         <Link
           className="w-full"
           target="_blank"
-          href={"https://www.aipictors.com/login/"}
+          to={"https://www.aipictors.com/login/"}
         >
           <Button className="w-full" variant={"secondary"} disabled={isLoading}>
             {"アカウント作成"}

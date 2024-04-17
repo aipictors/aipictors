@@ -10,8 +10,8 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import { HelpCircleIcon } from "lucide-react"
-import Link from "next/link"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -38,11 +38,11 @@ export const CrossPlatformTooltip = (props: Props) => {
             <TooltipContent className="whitespace-pre-wrap font-size-md">
               {props.text}
               {props.detailLink && !props.isTargetBlank && (
-                <Link href={props.detailLink}>{"(詳細)"}</Link>
+                <Link to={props.detailLink}>{"(詳細)"}</Link>
               )}
               {props.detailLink && props.isTargetBlank === true && (
                 <Link
-                  href={props.detailLink}
+                  to={props.detailLink}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -59,9 +59,7 @@ export const CrossPlatformTooltip = (props: Props) => {
           </PopoverTrigger>
           <PopoverContent className="whitespace-pre-wrap font-size-md">
             {props.text}
-            {props.detailLink && (
-              <Link href={props.detailLink}>{"(詳細)"}</Link>
-            )}
+            {props.detailLink && <Link to={props.detailLink}>{"(詳細)"}</Link>}
           </PopoverContent>
         </Popover>
       )}

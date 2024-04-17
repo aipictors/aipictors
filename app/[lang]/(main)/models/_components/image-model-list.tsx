@@ -1,7 +1,5 @@
-"use client"
-
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   imageModels: ImageModelsQuery["imageModels"]
@@ -15,7 +13,7 @@ export const ImageModelList = (props: Props) => {
         <div className="grid-cols-1fr grid-cols-4">
           {props.imageModels.map((imageModel) => (
             <div key={imageModel.id} className="overflow-hidden">
-              <Link href={`/models/${imageModel.id}`}>
+              <Link to={`/models/${imageModel.id}`}>
                 <img
                   src={imageModel.thumbnailImageURL ?? ""}
                   alt={imageModel.displayName}

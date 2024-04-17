@@ -16,7 +16,7 @@ export default function CloudflareTurnstile(props: Props) {
 
   // 環境に基づいて siteKey を選択
   const siteKey =
-    process.env.NODE_ENV !== "production"
+    import.meta.env.NODE_ENV !== "production"
       ? "0x4AAAAAAASZh-Asxvcva-cB"
       : "2x00000000000000000000AB" // テスト用キー: https://developers.cloudflare.com/turnstile/reference/testing/
 

@@ -1,8 +1,6 @@
-"use client"
-
 import { StickerCard } from "@/[lang]/(main)/stickers/_components/sticker-card"
 import type { UserStickersQuery } from "@/_graphql/__generated__/graphql"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   stickers: NonNullable<UserStickersQuery["user"]>["stickers"]
@@ -14,7 +12,7 @@ export const UserStickerList = (props: Props) => {
       {props.stickers.map((props) => (
         <Link
           key={props.id}
-          href={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          to={`https://www.aipictors.com/stamp/?id=${props.id}`}
         >
           <StickerCard
             title={props.title}

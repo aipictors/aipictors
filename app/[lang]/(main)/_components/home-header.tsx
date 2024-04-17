@@ -16,9 +16,8 @@ import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notif
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import { useQuery } from "@apollo/client"
+import { Link } from "@remix-run/react"
 import { BellIcon, MenuIcon } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
 import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -56,9 +55,9 @@ export const HomeHeader = (props: Props) => {
         </Sheet>
         <Link
           className="hidden items-center md:flex"
-          href="https://www.aipictors.com"
+          to="https://www.aipictors.com"
         >
-          <Image
+          <img
             src="/icon.svg"
             className="h-10 w-10 rounded-full"
             alt="Avatar"
@@ -76,10 +75,10 @@ export const HomeHeader = (props: Props) => {
             <Input placeholder={"作品を検索"} />
           </div>
         )}
-        <Link href={"/generation"}>
+        <Link to={"/generation"}>
           <Button variant={"secondary"}>{"生成"}</Button>
         </Link>
-        <Link href={"https://aipictors.com/post"}>
+        <Link to={"https://aipictors.com/post"}>
           <Button variant={"secondary"}>{"投稿"}</Button>
         </Link>
         {/* {config.isReleaseMode ? (

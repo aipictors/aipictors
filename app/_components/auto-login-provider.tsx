@@ -1,8 +1,6 @@
-"use client"
-
 import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { getCookieLoginToken } from "@/_utils/get-cookie-login-token"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useEffect } from "react"
 

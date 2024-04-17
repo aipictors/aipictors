@@ -1,5 +1,3 @@
-"use client"
-
 import { PassBenefitList } from "@/[lang]/(main)/plus/_components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "@/[lang]/(main)/plus/_components/pass-image-generation-benefit-list"
 import { PlusAbout } from "@/[lang]/(main)/plus/_components/plus-about"
@@ -11,7 +9,7 @@ import { createCustomerPortalSessionMutation } from "@/_graphql/mutations/create
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { cn } from "@/_lib/utils"
 import { toDateText } from "@/_utils/to-date-text"
-import { useMutation, useSuspenseQuery } from "@apollo/client"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index.js"
 import { toast } from "sonner"
 
 export const PlusForm = () => {

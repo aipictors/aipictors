@@ -1,5 +1,3 @@
-"use client"
-
 import { AuthContext } from "@/_contexts/auth-context"
 import { resetCookieLoginToken } from "@/_utils/reset-cookie-login-token"
 import { config } from "@/config"

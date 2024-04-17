@@ -1,5 +1,4 @@
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -26,7 +25,7 @@ export const SmallSquareThumbnail = (props: Props) => {
     //   }
     //   alt=""
     // />
-    <Image
+    <img
       className="h-20 w-20 object-cover"
       src={
         props.work.smallThumbnailImageURL
@@ -49,9 +48,7 @@ export const SmallSquareThumbnail = (props: Props) => {
       style={{}}
     >
       {props.linkToWork ? (
-        <Link href={props.isFocus ? "" : `/works/${props.work.id}`}>
-          {image}
-        </Link>
+        <Link to={props.isFocus ? "" : `/works/${props.work.id}`}>{image}</Link>
       ) : (
         <>{image}</>
       )}

@@ -1,5 +1,4 @@
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 /**
  * 広告
@@ -7,8 +6,8 @@ import Link from "next/link"
  */
 export function GenerationAdvertisementView() {
   return (
-    <Link href="/plus" className="mb-4 block sm:hidden">
-      <Image
+    <Link to="/plus" className="mb-4 block sm:hidden">
+      <img
         className="mb-4 w-full rounded-md border"
         src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/aipictors-plus-sp-banner.webp"
         alt="Aipictors+"

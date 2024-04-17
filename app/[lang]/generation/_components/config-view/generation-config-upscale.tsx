@@ -1,5 +1,3 @@
-"use client"
-
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
 import { Checkbox } from "@/_components/ui/checkbox"

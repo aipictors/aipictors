@@ -5,13 +5,13 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/_components/ui/dialog"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "@remix-run/react"
 
 export const StickerModal = () => {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const onClose = () => {
-    router.back()
+    navigate(-1)
   }
 
   return (

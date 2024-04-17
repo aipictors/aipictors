@@ -1,9 +1,9 @@
 import { GenerationTaskCancelButton } from "@/[lang]/generation/tasks/_components/generation-cancel-button"
 import { Card } from "@/_components/ui/card"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
+import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
-import Link from "next/link"
 import { toast } from "sonner"
 
 type Props = {
@@ -44,7 +44,7 @@ export const ReservedGenerationLinkCard = (props: Props) => {
         />
         <Link
           className="h-full w-full"
-          href={`/generation/tasks/${props.taskNanoid}`}
+          to={`/generation/tasks/${props.taskNanoid}`}
         >
           <div className="relative flex">
             <div className="m-auto flex flex-col gap-y-2 p-4">

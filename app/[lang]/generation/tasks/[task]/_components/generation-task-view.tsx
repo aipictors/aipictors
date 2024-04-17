@@ -1,5 +1,3 @@
-"use client"
-
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
@@ -27,7 +25,12 @@ import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/up
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
-import { skipToken, useMutation, useSuspenseQuery } from "@apollo/client"
+import {
+  skipToken,
+  useMutation,
+  useSuspenseQuery,
+} from "@apollo/client/index.js"
+import { Link, useNavigate } from "@remix-run/react"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -37,8 +40,6 @@ import {
   PenIcon,
   Trash2,
 } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -208,7 +209,7 @@ export function GenerationTaskView(props: Props) {
     window.location.href = `https://www.aipictors.com/post?generation=${props.taskId}`
   }
 
-  const router = useRouter()
+  const navigate = useNavigate()
 
   /**
    * 削除
@@ -221,7 +222,7 @@ export function GenerationTaskView(props: Props) {
         },
       },
     })
-    router.push("/generation")
+    navigate("/generation")
     toast("削除しました")
   }
 
@@ -503,7 +504,7 @@ export function GenerationTaskView(props: Props) {
         <AppFixedContent position="bottom">
           <div className="flex">
             <Link
-              href="/generation"
+              to="/generation"
               className={cn(
                 `w-full flex-1${config.isDevelopmentMode && "mr-2"}`,
               )}

@@ -1,5 +1,3 @@
-"use client"
-
 import { LoraImageModelList } from "@/[lang]/generation/_components/config-view/lora-image-model-list"
 import { Button } from "@/_components/ui/button"
 import {

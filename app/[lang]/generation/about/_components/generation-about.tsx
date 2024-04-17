@@ -1,5 +1,3 @@
-"use client"
-
 import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
 import {
   Carousel,
@@ -7,8 +5,7 @@ import {
   CarouselItem,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 /**
  * 画像生成についての説明
@@ -31,7 +28,7 @@ export const GenerationAbout = () => {
           <h2>{"1日30枚無料！"}</h2>
         </div>
       </div>
-      <Link href={"/generation"} className={"m-auto mt-8 mb-8 block w-64"}>
+      <Link to={"/generation"} className={"m-auto mt-8 mb-8 block w-64"}>
         <GlowingGradientBorderButton
           onClick={() => {}}
           className={"m-auto mb-8 block w-64"}
@@ -48,39 +45,31 @@ export const GenerationAbout = () => {
           <Carousel className="m-auto">
             <CarouselContent>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-0.webp"
                   alt="参考画像1"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-1.webp"
                   alt="参考画像2"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-2.webp"
                   alt="参考画像3"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
               <CarouselItem className="basis-1/3">
-                <Image
+                <img
                   src="https://www.aipictors.com/wp-content/uploads/2024/03/image-generation-sample-3.webp"
                   alt="参考画像4"
                   className="rounded-md"
-                  width={640}
-                  height={640}
                 />
               </CarouselItem>
             </CarouselContent>
@@ -99,8 +88,8 @@ export const GenerationAbout = () => {
         />
       </section>
       <div className="flex justify-center gap-x-2 py-4">
-        <Link href="/generation/terms">利用規約</Link>
-        <Link href="/specified-commercial-transaction-act">
+        <Link to="/generation/terms">利用規約</Link>
+        <Link to="/specified-commercial-transaction-act">
           特定商取引法に基づく表記
         </Link>
       </div>

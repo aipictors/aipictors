@@ -1,6 +1,6 @@
 import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
 import { cn } from "@/_lib/utils"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"

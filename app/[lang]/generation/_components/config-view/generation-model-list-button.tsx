@@ -1,5 +1,3 @@
-"use client"
-
 import { ImageModelsList } from "@/[lang]/generation/_components/config-view/generation-image-model-list"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/_components/ui/button"
@@ -14,7 +12,7 @@ import {
 } from "@/_components/ui/dialog"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {

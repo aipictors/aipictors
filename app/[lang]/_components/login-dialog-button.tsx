@@ -1,5 +1,3 @@
-"use client"
-
 import { LoginDialogContent } from "@/[lang]/_components/login-dialog-content"
 import { Button } from "@/_components/ui/button"
 import {

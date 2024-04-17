@@ -1,12 +1,10 @@
-"use client"
-
 import { Card, CardContent } from "@/_components/ui/card"
 import type { AlbumWorksQuery } from "@/_graphql/__generated__/graphql"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { HeartIcon } from "lucide-react"
 
 type Props = {
-  albumWorksQuery: AlbumWorksQuery
+  albumWorks: NonNullable<AlbumWorksQuery["album"]>["works"]
   title: string
   thumbnailImageUrl: string
   likesCount: number

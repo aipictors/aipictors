@@ -1,13 +1,11 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/_components/ui/popover"
+import { useLocation } from "@remix-run/react"
 import { Files, Share2 } from "lucide-react"
-import { usePathname } from "next/navigation"
 import CopyWorkUrlButton from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
 
@@ -16,7 +14,9 @@ type Props = {
 }
 
 export const SharePopover = (props: Props) => {
-  const currentUrl = `${process.env.NEXT_PUBLIC_APP_URL}${usePathname()}`
+  const { pathname } = useLocation()
+
+  const currentUrl = `${import.meta.env.VITE_APP_URL}${pathname}`
 
   return (
     <Popover>

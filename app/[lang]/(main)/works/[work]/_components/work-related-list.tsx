@@ -8,8 +8,7 @@ import {
   CarouselItem,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
-import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Work = {
   id: string
@@ -18,23 +17,23 @@ type Work = {
   largeThumbnailImageWidth: number
 }
 
-type WorkRelatedListProps = {
+type Props = {
   works: Work[]
 }
 
-export default function WorkRelatedList({ works }: WorkRelatedListProps) {
+export function WorkRelatedList(props: Props) {
   return (
     <div className="space-y-4 pt-2">
       <p className="text-lg">関連作品</p>
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
-          {works.map((work) => (
+          {props.works.map((work) => (
             <CarouselItem
               key={work.id}
               className="basis-1/4 lg:basis-1/6 md:basis-1/5"
             >
-              <Link href={`/works/${work.id}`}>
-                <Image
+              <Link to={`/works/${work.id}`}>
+                <img
                   key={work.id}
                   className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32"
                   alt=""

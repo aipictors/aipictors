@@ -1,5 +1,3 @@
-"use client"
-
 import { GenerationConfigMemoUpdateContent } from "@/[lang]/generation/_components/config-view/generation-config-memo-update-contents"
 import { Button } from "@/_components/ui/button"
 import {

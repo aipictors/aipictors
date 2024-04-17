@@ -6,7 +6,7 @@ import { GenerationTaskLinkCard } from "@/[lang]/generation/tasks/_components/ge
 import { ReservedGenerationLinkCard } from "@/[lang]/generation/tasks/_components/reserved-generation-link-card"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
-import { ErrorBoundary } from "@sentry/react"
+import { ErrorBoundary } from "react-error-boundary"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -34,7 +34,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
 
   return (
     <>
-      <ErrorBoundary key={props.task.id} fallback={ErrorResultCard}>
+      <ErrorBoundary key={props.task.id} fallback={<ErrorResultCard />}>
         {!isDesktop && props.task.status === "RESERVED" && (
           <ReservedGenerationLinkCard taskNanoid={props.task.nanoid ?? ""} />
         )}

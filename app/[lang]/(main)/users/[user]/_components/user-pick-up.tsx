@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import { Switch } from "@/_components/ui/switch"
 import { PlusIcon } from "lucide-react"

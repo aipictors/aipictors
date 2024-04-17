@@ -1,9 +1,7 @@
-"use client"
-
 import WorkCard from "@/[lang]/(main)/works/_components/work-card"
 import { Switch } from "@/_components/ui/switch"
 import type { UserWorksQuery } from "@/_graphql/__generated__/graphql"
-import Link from "next/link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   works: NonNullable<UserWorksQuery["user"]>["works"]
@@ -18,7 +16,7 @@ export const UserWorkList = (props: Props) => {
       </div>
       <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
         {props.works.map((work) => (
-          <Link key={work.id} href={`/works/${work.id}`}>
+          <Link key={work.id} to={`/works/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}
               imageWidth={work.largeThumbnailImageWidth}

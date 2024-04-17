@@ -1,6 +1,6 @@
 import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { cn } from "@/_lib/utils"
-import { useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client/index.js"
 import { StarIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"

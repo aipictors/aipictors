@@ -1,10 +1,8 @@
-"use client"
-
 import { AppThemeProvider } from "@/_components/app/app-theme-provider"
 import { AuthContextProvider } from "@/_components/auth-context-provider"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
-import { ApolloProvider } from "@apollo/client"
+import { ApolloProvider } from "@apollo/client/index.js"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"

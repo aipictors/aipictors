@@ -1,5 +1,3 @@
-"use client"
-
 import { DescriptionSettingDialog } from "@/[lang]/(main)/my/albums/[album]/_components/description-setting-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"

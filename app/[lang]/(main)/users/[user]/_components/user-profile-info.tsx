@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "react-icons/ri"

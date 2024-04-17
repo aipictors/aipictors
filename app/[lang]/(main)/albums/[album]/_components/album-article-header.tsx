@@ -1,21 +1,19 @@
-"use client"
-
 import type { AlbumQuery } from "@/_graphql/__generated__/graphql"
 import { ShareIcon } from "lucide-react"
 
 type Props = {
-  albumQuery: AlbumQuery
+  album: NonNullable<AlbumQuery["album"]>
 }
 
 export const AlbumArticleHeader = (props: Props) => {
   return (
     <div className="flex flex-col">
       <img
-        src={props.albumQuery.album?.thumbnailImage?.downloadURL!}
-        alt={props.albumQuery.album?.title!}
+        src={props.album.thumbnailImage?.downloadURL!}
+        alt={props.album.title!}
       />
       <div className="flex">
-        <p>{props.albumQuery.album?.title}</p>
+        <p>{props.album.title}</p>
         <ShareIcon>{"Twitterでシェア"}</ShareIcon>
       </div>
     </div>

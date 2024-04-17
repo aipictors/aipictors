@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/_components/ui/button"
 import type { UserQuery } from "@/_graphql/__generated__/graphql"
 

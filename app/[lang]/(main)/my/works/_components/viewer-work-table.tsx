@@ -1,5 +1,3 @@
-"use client"
-
 import { ViewerWorkTableItem } from "@/[lang]/(main)/my/works/_components/viewer-work-table-item"
 import {
   Table,
