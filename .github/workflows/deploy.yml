@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 👩‍💻 チェックアウト
+        uses: actions/checkout@v4
+      - name: 🔨 Bunを有効にする
+        uses: oven-sh/setup-bun@v1
+      - name: 🔨 インストール
+        run: bun install
+      - name: 💪 Build GraphQL
+        run: bunx graphql-codegen -c codegen.ts
+      - name: 💪 ビルド
+        run: bunx remix vite:build
+      - name: 🚀 デプロイ
+        id: cloudflare-wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          packageManager: bun
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy ./build/client --project-name=aipictors
