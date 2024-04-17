@@ -22,9 +22,10 @@ export async function loader() {
     query: hotTagsQuery,
     variables: {},
   })
+
   return {
-    worksResp,
-    hotTagsResp,
+    works: worksResp.data.works,
+    hotTags: hotTagsResp.data.hotTags,
   }
 }
 
@@ -33,8 +34,8 @@ export default function SensitiveWorks2d() {
 
   return (
     <AppPage>
-      <HomeTagList hotTags={data.hotTagsResp.data.hotTags} />
-      <HomeWorkList works={data.worksResp.data.works} />
+      <HomeTagList hotTags={data.hotTags} />
+      <HomeWorkList works={data.works} />
     </AppPage>
   )
 }

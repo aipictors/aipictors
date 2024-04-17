@@ -11,7 +11,7 @@ import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  work: NonNullable<WorkCommentsQuery["work"]>
+  comments: NonNullable<WorkCommentsQuery["work"]>["comments"]
 }
 
 /**
@@ -39,7 +39,7 @@ export const WorkCommentList = (props: Props) => {
           <Button>{"送信"}</Button>
         </div>
         <div className="space-y-8">
-          {props.work.comments.map((comment) => (
+          {props.comments.map((comment) => (
             <div key={comment.id} className="space-y-8">
               <WorkComment
                 createdAt={comment.createdAt}

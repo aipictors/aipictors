@@ -40,10 +40,10 @@ const AlbumPage = async (props: Props) => {
     <AppPage>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader albumQuery={albumResp.data} />
-          <AlbumWorkList albumWorksQuery={albumWorksResp.data} />
+          <AlbumArticleHeader album={albumResp.data} />
+          <AlbumWorkList albumWorks={albumWorksResp.data} />
         </div>
-        <AlbumWorkDescription albumQuery={albumResp.data} />
+        <AlbumWorkDescription album={albumResp.data} />
       </article>
     </AppPage>
   )
