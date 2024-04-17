@@ -1,4 +1,4 @@
-import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
+import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AuthContext } from "@/_contexts/auth-context"
@@ -9,8 +9,8 @@ import type {
 } from "@/_graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
-import { ErrorBoundary } from "@sentry/react"
 import { useContext } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 
 /**
  * タスク詳細内容
@@ -45,7 +45,7 @@ export const GenerationTaskContent = () => {
 
   return (
     <>
-      <ErrorBoundary fallback={generationTaskError}>
+      <ErrorBoundary fallback={<GenerationTaskError />}>
         <GenerationTaskSheetView
           task={{
             ...imageGenerationTask,

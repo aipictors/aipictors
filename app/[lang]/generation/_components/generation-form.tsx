@@ -55,9 +55,7 @@ export const GenerationForm = (props: Props) => {
           promptEditor={<GenerationPromptView />}
           negativePromptEditor={<GenerationNegativePromptView />}
           taskContentPreview={<GenerationTaskContentPreview />}
-          taskDetails={null}
-          // TODO: ↓ エラー
-          // taskDetails={<GenerationTaskDetailsView />}
+          taskDetails={<GenerationTaskDetailsView />}
           workContentPreview={<GenerationWorkContentPreview />}
         />
       }

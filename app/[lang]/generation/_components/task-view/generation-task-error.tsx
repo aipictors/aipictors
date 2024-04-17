@@ -6,7 +6,7 @@ import { useCallback } from "react"
  * エラーになった履歴
  * @returns
  */
-export const generationTaskError = () => {
+export const GenerationTaskError = () => {
   const reloadPage = useCallback(() => {
     window.location.reload()
   }, [])

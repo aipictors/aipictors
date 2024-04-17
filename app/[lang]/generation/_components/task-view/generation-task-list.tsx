@@ -10,8 +10,8 @@ import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { ViewerImageGenerationTasksQuery } from "@/_graphql/__generated__/graphql"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/utils"
-import { ErrorBoundary } from "@sentry/react"
 import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
 
 type Props = {

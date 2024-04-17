@@ -1,5 +1,5 @@
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
-import { generationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
+import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GenerationImageDialogButton } from "@/[lang]/generation/tasks/[task]/_components/generation-image-dialog-button"
@@ -17,7 +17,6 @@ import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
-import { ErrorBoundary } from "@sentry/react"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -32,6 +31,7 @@ import {
   Trash2,
 } from "lucide-react"
 import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 import { CopyButton } from "./copy-button"
 
 type Props = {
@@ -152,7 +152,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               )}
               {props.task.status !== "RESERVED" ? (
                 <>
-                  <ErrorBoundary fallback={generationTaskError}>
+                  <ErrorBoundary fallback={<GenerationTaskError />}>
                     <Suspense
                       fallback={
                         <GenerationTaskContentImagePlaceHolder
