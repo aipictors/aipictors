@@ -1,6 +1,6 @@
-import { PlusAbout } from "@/[lang]/(main)/plus/_components/plus-about"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import { PlusAbout } from "@/routes/($lang)._main.plus._index/_components/plus-about"
 import { Link } from "@remix-run/react"
 import { Suspense } from "react"
 

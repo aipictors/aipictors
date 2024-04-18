@@ -1,4 +1,4 @@
-import { RelatedModelCard } from "@/[lang]/(main)/search/_components/related-model-card"
+import { RelatedModelCard } from "@/routes/($lang)._main.search/_components/related-model-card"
 
 export const RelatedModelList = () => {
   return (

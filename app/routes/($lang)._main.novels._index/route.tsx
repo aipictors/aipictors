@@ -1,5 +1,5 @@
-import { NovelCard } from "@/[lang]/(main)/novels/_components/novel-card"
 import { AppPage } from "@/_components/app/app-page"
+import { NovelCard } from "@/routes/($lang)._main.novels._index/_components/novel-card"
 
 /**
  * 小説の一覧
