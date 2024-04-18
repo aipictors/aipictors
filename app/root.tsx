@@ -61,6 +61,7 @@ export default function Root() {
       dsn: import.meta.env.VITE_SENTRY_DSN!,
       environment: import.meta.env.VITE_SENTRY_ENVIRONMENT!,
       tracesSampleRate: 0.001,
+      enabled: import.meta.env.PROD,
     })
   }
 
