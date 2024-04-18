@@ -5,6 +5,7 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
 import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
+import { Toaster } from "@/_components/ui/sonner"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
 import type {
@@ -24,7 +25,6 @@ import {
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { Suspense } from "react"
-import { Toaster } from "sonner"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -69,23 +69,6 @@ export default function Root() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin={""}
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
-        {import.meta.env.NODE_ENV === "production" && (
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2116548824296763"
-            crossOrigin="anonymous"
-          />
-        )}
         <Meta />
         <Links />
       </head>

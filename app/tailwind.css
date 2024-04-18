@@ -1,4 +1,4 @@
-@import '@fontsource-variable/m-plus-1';
+@import "@fontsource-variable/noto-sans";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
