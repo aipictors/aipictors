@@ -1,8 +1,9 @@
 import type { Config } from "tailwindcss"
+import animatePlugin from "tailwindcss-animate"
 import { fontFamily } from "tailwindcss/defaultTheme"
 
 export default {
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animatePlugin],
   darkMode: ["class"],
   content: ["app/**/*.tsx"],
   theme: {
