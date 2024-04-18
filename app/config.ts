@@ -116,7 +116,6 @@ export const config = {
       "DPM2",
       "DPM2 a",
       "DPM++ 2S a",
-      "DPM++ 2M",
       "LMS Karras",
       "DPM2 a Karras",
       "DPM++ 2S a Karras",
