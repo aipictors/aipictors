@@ -44,8 +44,8 @@ import {
   UserCircleIcon,
   UserIcon,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { useState } from "react"
+import { useTheme } from "remix-themes"
 
 /**
  * ヘッダーのお知らせメニュー

@@ -1,9 +1,9 @@
 import { Outlet, useSearchParams } from "@remix-run/react"
-import { useTheme } from "next-themes"
 import { useEffect } from "react"
+import { Theme, useTheme } from "remix-themes"
 
 export default function EventsLayout() {
-  const { setTheme } = useTheme()
+  const [, setTheme] = useTheme()
 
   const [searchParams] = useSearchParams()
 
@@ -11,10 +11,10 @@ export default function EventsLayout() {
 
   useEffect(() => {
     if (colorScheme === "dark") {
-      setTheme("dark")
+      setTheme(Theme.DARK)
     }
     if (colorScheme === "light") {
-      setTheme("light")
+      setTheme(Theme.LIGHT)
     }
   }, [])
 
