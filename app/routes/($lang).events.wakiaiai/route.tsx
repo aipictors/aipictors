@@ -1,9 +1,9 @@
 import { eventUsers } from "@/[lang]/events/wakiaiai/_assets/event-users"
-import { EventCreatorCard } from "@/[lang]/events/wakiaiai/_components/event-creator-card"
-import { EventImage } from "@/[lang]/events/wakiaiai/_components/event-image"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { cn } from "@/_lib/utils"
+import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai/_components/event-creator-card"
+import { EventImage } from "@/routes/($lang).events.wakiaiai/_components/event-image"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { MousePointerClickIcon } from "lucide-react"
 

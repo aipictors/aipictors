@@ -1,6 +1,6 @@
 import { ImageGenerationReferenceCard } from "@/[lang]/_components/image-generation-reference-card"
-import { EventImage } from "@/[lang]/events/blendai/_components/event-image"
 import { Button } from "@/_components/ui/button"
+import { EventImage } from "@/routes/($lang).events.blendai/_components/event-image"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"

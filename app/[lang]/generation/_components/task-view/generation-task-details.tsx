@@ -1,6 +1,5 @@
 import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
@@ -9,6 +8,7 @@ import type {
   ImageGenerationStatus,
   ImageGenerationType,
 } from "@/_graphql/__generated__/graphql"
+import { GenerationTaskSheetView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view"
 import { Suspense, useContext } from "react"
 
 /**

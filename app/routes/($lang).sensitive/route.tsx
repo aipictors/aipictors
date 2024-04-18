@@ -1,9 +1,9 @@
 import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
-import { SensitiveRouteList } from "@/[lang]/sensitive/_components/sensitive-route-list"
 import { AppAside } from "@/_components/app/app-aside"
 import { AppColumnLayout } from "@/_components/app/app-column-layout"
 import { HomeFooter } from "@/_components/home-footer"
 import { Separator } from "@/_components/ui/separator"
+import { SensitiveRouteList } from "@/routes/($lang).sensitive/_components/sensitive-route-list"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
 

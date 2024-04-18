@@ -1,5 +1,5 @@
-import { SettingRequestForm } from "@/[lang]/settings/request/_components/account-request-form"
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import { SettingRequestForm } from "@/routes/($lang).settings.request/_components/setting-request-form"
 
 export default function SettingRequest() {
   return (

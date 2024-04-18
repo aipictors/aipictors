@@ -1,5 +1,5 @@
-import { SettingInterfaceForm } from "@/[lang]/settings/interface/_components/setting-interface-form"
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import { SettingInterfaceForm } from "@/routes/($lang).settings.interface/_components/setting-interface-form"
 
 export default function SettingInterface() {
   return (

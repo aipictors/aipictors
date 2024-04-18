@@ -1,6 +1,5 @@
 import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { GenerationTaskSheetView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-sheet-view"
 import { AuthContext } from "@/_contexts/auth-context"
 import type {
   ImageGenerationSizeType,
@@ -8,6 +7,7 @@ import type {
   ImageGenerationType,
 } from "@/_graphql/__generated__/graphql"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
+import { GenerationTaskSheetView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
 import { useContext } from "react"
 import { ErrorBoundary } from "react-error-boundary"

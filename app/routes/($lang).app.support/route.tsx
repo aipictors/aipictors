@@ -1,4 +1,4 @@
-import { AppFooter } from "@/[lang]/app/_components/app-footer"
+import { AppFooter } from "@/routes/($lang).app._index/_components/app-footer"
 
 export default function AppSupport() {
   return (

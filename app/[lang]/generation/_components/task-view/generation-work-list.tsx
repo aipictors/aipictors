@@ -1,9 +1,9 @@
-import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-result-card"
-import { FallbackTaskCard } from "@/[lang]/generation/tasks/_components/fallback-task-card"
-import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/generation-work-card "
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
+import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
+import { FallbackTaskCard } from "@/routes/($lang).generation.tasks.$task/_components/fallback-task-card"
+import { GenerationWorkCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-work-card "
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
