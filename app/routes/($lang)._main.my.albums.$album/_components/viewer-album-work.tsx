@@ -1,6 +1,6 @@
-import { AlbumWorkDeleteDialog } from "@/[lang]/(main)/my/albums/[album]/_components/album-work-delete-dialog"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent } from "@/_components/ui/card"
+import { AlbumWorkDeleteDialog } from "@/routes/($lang)._main.my.albums.$album/_components/album-work-delete-dialog"
 import { Trash2Icon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

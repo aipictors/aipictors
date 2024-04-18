@@ -1,4 +1,4 @@
-import { SelectableWorkCard } from "@/[lang]/(main)/new/album/_components/selectable-work-card"
+import { SelectableWorkCard } from "@/routes/($lang)._main.new.album/_components/selectable-work-card"
 
 export const NewAlbumWorkList = () => {
   return (

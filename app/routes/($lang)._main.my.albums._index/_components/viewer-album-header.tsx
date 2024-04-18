@@ -1,6 +1,6 @@
-import { ViewerAlbumList } from "@/[lang]/(main)/my/albums/_components/vIewer-album-list"
-import { ViewerAlbumAddDialog } from "@/[lang]/(main)/my/albums/_components/viewer-album-add-dialog"
 import { Button } from "@/_components/ui/button"
+import { ViewerAlbumList } from "@/routes/($lang)._main.my.albums._index/_components/vIewer-album-list"
+import { ViewerAlbumAddDialog } from "@/routes/($lang)._main.my.albums._index/_components/viewer-album-add-dialog"
 import { PlusIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

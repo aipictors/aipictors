@@ -1,4 +1,3 @@
-import { TitleWorkList } from "@/[lang]/(main)/my/albums/_components/title-work-list"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,
@@ -10,6 +9,7 @@ import { Input } from "@/_components/ui/input"
 import { Label } from "@/_components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { Textarea } from "@/_components/ui/textarea"
+import { TitleWorkList } from "@/routes/($lang)._main.my.albums._index/_components/title-work-list"
 
 type Props = {
   isOpen: boolean

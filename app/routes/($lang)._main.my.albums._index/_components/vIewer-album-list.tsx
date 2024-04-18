@@ -1,4 +1,4 @@
-import { ViewerAlbum } from "@/[lang]/(main)/my/albums/_components/viewer-album"
+import { ViewerAlbum } from "@/routes/($lang)._main.my.albums._index/_components/viewer-album"
 
 export const ViewerAlbumList = () => {
   return (

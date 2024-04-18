@@ -1,7 +1,7 @@
-import { FolloweeListItem } from "@/[lang]/(main)/my/followees/_components/followee-list-item"
 import { Alert, AlertTitle } from "@/_components/ui/alert"
 import { AuthContext } from "@/_contexts/auth-context"
 import { userFollowersQuery } from "@/_graphql/queries/user/user-followers"
+import { FolloweeListItem } from "@/routes/($lang)._main.my.followees/_components/followee-list-item"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
 import { AlertCircleIcon } from "lucide-react"
 import { useContext } from "react"

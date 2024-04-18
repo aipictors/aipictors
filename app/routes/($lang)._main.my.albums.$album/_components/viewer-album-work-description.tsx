@@ -1,7 +1,7 @@
-import { DescriptionSettingDialog } from "@/[lang]/(main)/my/albums/[album]/_components/description-setting-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent } from "@/_components/ui/card"
+import { DescriptionSettingDialog } from "@/routes/($lang)._main.my.albums.$album/_components/description-setting-dialog"
 import { SettingsIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

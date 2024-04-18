@@ -1,4 +1,4 @@
-import { ViewerCollectionListItem } from "@/[lang]/(main)/my/collections/_components/viewer-collection-list-item"
+import { ViewerCollectionListItem } from "@/routes/($lang)._main.my.collections/_components/viewer-collection-list-item"
 
 export const ViewerCollectionList = () => {
   return (

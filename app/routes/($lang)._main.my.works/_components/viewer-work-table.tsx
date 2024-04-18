@@ -1,4 +1,3 @@
-import { ViewerWorkTableItem } from "@/[lang]/(main)/my/works/_components/viewer-work-table-item"
 import {
   Table,
   TableBody,
@@ -6,6 +5,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/_components/ui/table"
+import { ViewerWorkTableItem } from "@/routes/($lang)._main.my.works/_components/viewer-work-table-item"
 
 export const ViewerWorkTable = () => {
   return (
