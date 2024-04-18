@@ -107,7 +107,7 @@ export const config = {
     defaultNegativePromptValue: "EasyNegative, bad_prompt_version2, badhandv4",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
-    defaultSamplerValue: "DPM++ 2M",
+    defaultSamplerValue: "DPM++ 2M Karras",
     defaultClipSkipValue: 2,
     samplerValues: [
       "Euler a",
