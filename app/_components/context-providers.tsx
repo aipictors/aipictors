@@ -1,4 +1,3 @@
-import { AppThemeProvider } from "@/_components/app/app-theme-provider"
 import { AuthContextProvider } from "@/_components/auth-context-provider"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
@@ -19,13 +18,11 @@ const queryClient = new QueryClient()
 
 export const ContextProviders = (props: Props) => {
   return (
-    <AppThemeProvider>
-      <AuthContextProvider>
-        <QueryClientProvider client={queryClient}>
-          <ApolloProvider client={client}>{props.children}</ApolloProvider>
-        </QueryClientProvider>
-      </AuthContextProvider>
-    </AppThemeProvider>
+    <AuthContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <ApolloProvider client={client}>{props.children}</ApolloProvider>
+      </QueryClientProvider>
+    </AuthContextProvider>
   )
 }
 

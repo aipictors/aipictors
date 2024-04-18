@@ -11,6 +11,7 @@ import { config } from "@/config"
 import type {
   HeadersFunction,
   LinksFunction,
+  LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { cssBundleHref } from "@remix-run/css-bundle"
@@ -21,10 +22,14 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
+import clsx from "clsx"
 import { Suspense } from "react"
+import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes"
+import { themeSessionResolver } from "./sessions.server"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -55,7 +60,25 @@ export function ErrorBoundary() {
   }
 }
 
-export default function Root() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { getTheme } = await themeSessionResolver(request)
+  return {
+    theme: getTheme(),
+  }
+}
+
+export default function AppWithProviders() {
+  const data = useLoaderData<typeof loader>()
+  return (
+    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+      <App />
+    </ThemeProvider>
+  )
+}
+
+export function App() {
+  const data = useLoaderData<typeof loader>()
+  const [theme] = useTheme()
   if (typeof window !== "undefined") {
     init({
       dsn: import.meta.env.VITE_SENTRY_DSN!,
@@ -65,11 +88,12 @@ export default function Root() {
   }
 
   return (
-    <html lang={"ja"} suppressHydrationWarning>
+    <html lang={"ja"} suppressHydrationWarning className={clsx(theme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
       <body className={cn("no-margin min-h-screen font-sans antialiased")}>

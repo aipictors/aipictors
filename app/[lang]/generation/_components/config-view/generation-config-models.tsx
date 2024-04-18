@@ -5,7 +5,7 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { CheckIcon } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useTheme } from "remix-themes"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
