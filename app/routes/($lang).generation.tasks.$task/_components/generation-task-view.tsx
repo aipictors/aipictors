@@ -3,11 +3,6 @@ import { StarRating } from "@/[lang]/generation/_components/task-view/star-ratin
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
-import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
-import {
-  type GenerationSize,
-  parseGenerationSize,
-} from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
@@ -25,6 +20,11 @@ import { config } from "@/config"
 import { GenerationMenuButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-menu-button"
 import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
 import { InProgressImageGenerationTaskResult } from "@/routes/($lang).generation.tasks.$task/_components/in-progress-image-generation-task-result"
+import type { GenerationParameters } from "@/routes/($lang).generation.tasks.$task/_types/generation-parameters"
+import {
+  type GenerationSize,
+  parseGenerationSize,
+} from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
 import {
   skipToken,
   useMutation,

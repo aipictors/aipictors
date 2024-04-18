@@ -5,11 +5,6 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
 import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
-import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
-import {
-  type GenerationSize,
-  parseGenerationSize,
-} from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
@@ -18,6 +13,11 @@ import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewe
 import { config } from "@/config"
 import { GenerationTaskSheetViewContent } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view-content"
 import { InProgressImageGenerationTaskResult } from "@/routes/($lang).generation.tasks.$task/_components/in-progress-image-generation-task-result"
+import type { GenerationParameters } from "@/routes/($lang).generation.tasks.$task/_types/generation-parameters"
+import {
+  type GenerationSize,
+  parseGenerationSize,
+} from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
 import { useMutation } from "@apollo/client/index.js"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"

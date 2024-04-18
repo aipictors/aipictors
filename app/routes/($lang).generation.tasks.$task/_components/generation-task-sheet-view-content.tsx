@@ -2,8 +2,6 @@ import { InPaintingDialog } from "@/[lang]/generation/_components/submission-vie
 import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import type { GenerationParameters } from "@/[lang]/generation/tasks/[task]/_types/generation-parameters"
-import type { GenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { PrivateImage } from "@/_components/private-image"
 import SwipeArea from "@/_components/swipe-area"
@@ -17,6 +15,8 @@ import { GenerationImageDialogButton } from "@/routes/($lang).generation.tasks.$
 import { GenerationMenuButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-menu-button"
 import { GenerationReferenceDialog } from "@/routes/($lang).generation.tasks.$task/_components/generation-reference-dialog-button"
 import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
+import type { GenerationParameters } from "@/routes/($lang).generation.tasks.$task/_types/generation-parameters"
+import type { GenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,

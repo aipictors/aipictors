@@ -1,5 +1,4 @@
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { parseGenerationSize } from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import {
@@ -13,6 +12,7 @@ import { Textarea } from "@/_components/ui/textarea"
 import { createImageGenerationMemoMutation } from "@/_graphql/mutations/create-image-generation-memo"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
+import { parseGenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
 import { useMutation } from "@apollo/client/index.js"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"

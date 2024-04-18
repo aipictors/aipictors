@@ -1,12 +1,12 @@
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
-import {
-  type GenerationSize,
-  parseGenerationSize,
-} from "@/[lang]/generation/tasks/[task]/_types/generation-size"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { GenerationMenuButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-menu-button"
+import {
+  type GenerationSize,
+  parseGenerationSize,
+} from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
