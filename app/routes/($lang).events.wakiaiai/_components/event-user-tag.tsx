@@ -1,4 +1,4 @@
-import type { EventUserType } from "@/[lang]/events/_types/event-user-type"
+import type { EventUserType } from "@/routes/($lang).events/_types/event-user-type"
 import { FlameIcon, ImageIcon, ShoppingBagIcon } from "lucide-react"
 
 type Props = {

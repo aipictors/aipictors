@@ -1,5 +1,5 @@
-import { toPassFeatures } from "@/[lang]/(main)/plus/_utils/to-pass-features"
 import type { PassType } from "@/_graphql/__generated__/graphql"
+import { toPassFeatures } from "@/routes/($lang)._main.plus._index/_utils/to-pass-features"
 
 type Props = {
   passType: PassType

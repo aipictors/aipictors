@@ -1,5 +1,5 @@
-import { fragmentShaderCode } from "@/[lang]/app/_utils/fragment-shader-code"
-import { vertexShaderCode } from "@/[lang]/app/_utils/vertex-shader-code"
+import { fragmentShaderCode } from "@/routes/($lang).app._index/_utils/fragment-shader-code"
+import { vertexShaderCode } from "@/routes/($lang).app._index/_utils/vertex-shader-code"
 
 export const runAnimation = (canvas: HTMLCanvasElement) => {
   const context = canvas.getContext("webgl", {

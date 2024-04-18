@@ -1,4 +1,3 @@
-import { toPassName } from "@/[lang]/(main)/plus/_utils/to-pass-name"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { Separator } from "@/_components/ui/separator"
@@ -9,6 +8,7 @@ import { toDateText } from "@/_utils/to-date-text"
 import { PassBenefitList } from "@/routes/($lang)._main.plus._index/_components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "@/routes/($lang)._main.plus._index/_components/pass-image-generation-benefit-list"
 import { PlusAbout } from "@/routes/($lang)._main.plus._index/_components/plus-about"
+import { toPassName } from "@/routes/($lang)._main.plus._index/_utils/to-pass-name"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index.js"
 import { toast } from "sonner"
 

@@ -1,6 +1,6 @@
-import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
+import type { Contributor } from "@/routes/($lang)._main.contributors/_types/contributor"
 import { HomeIcon } from "lucide-react"
 import { TbBrandXFilled } from "react-icons/tb"
 
