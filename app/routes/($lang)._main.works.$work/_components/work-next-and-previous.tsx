@@ -1,5 +1,4 @@
 "use client"
-import { SmallSquareThumbnail } from "@/[lang]/(main)/works/[work]/_components/small-square-thumbnail"
 import {
   Tooltip,
   TooltipContent,
@@ -7,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { WorkQuery } from "@/_graphql/__generated__/graphql"
+import { SmallSquareThumbnail } from "@/routes/($lang)._main.works.$work/_components/small-square-thumbnail"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {

@@ -1,10 +1,10 @@
-import { WorkList } from "@/[lang]/(main)/works/_components/work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { RelatedModelList } from "@/routes/($lang)._main.search/_components/related-model-list"
 import { RelatedTagList } from "@/routes/($lang)._main.search/_components/related-tag-list"
 import { SearchHeader } from "@/routes/($lang)._main.search/_components/search-header"
+import { WorkList } from "@/routes/($lang)._main.works._index/_components/work-list"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader() {

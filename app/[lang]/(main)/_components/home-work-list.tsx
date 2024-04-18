@@ -1,5 +1,5 @@
-import WorkCard from "@/[lang]/(main)/works/_components/work-card"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import WorkCard from "@/routes/($lang)._main.works._index/_components/work-card"
 import { Link } from "@remix-run/react"
 
 type Props = {

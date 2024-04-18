@@ -1,6 +1,6 @@
-import { UserProfileAvatar } from "@/[lang]/(main)/users/[user]/_components/user-profile-avatar"
 import { FollowButton } from "@/_components/button/follow-button"
 import type { UserQuery } from "@/_graphql/__generated__/graphql"
+import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
 import UserProfileInfo from "./user-profile-info"
 
 type UserProfileProps = {

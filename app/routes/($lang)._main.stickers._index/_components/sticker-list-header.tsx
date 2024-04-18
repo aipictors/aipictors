@@ -1,6 +1,6 @@
-import { AddStickerModal } from "@/[lang]/(main)/stickers/_components/add-sticker-modal"
 import { Button } from "@/_components/ui/button"
 import { config } from "@/config"
+import { AddStickerModal } from "@/routes/($lang)._main.stickers._index/_components/add-sticker-modal"
 import { PlusIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

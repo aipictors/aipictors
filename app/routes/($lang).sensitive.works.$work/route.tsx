@@ -1,10 +1,10 @@
-import { WorkArticle } from "@/[lang]/(main)/works/[work]/_components/work-article"
-import { WorkCommentList } from "@/[lang]/(main)/works/[work]/_components/work-comment-list"
-import { WorkRelatedList } from "@/[lang]/(main)/works/[work]/_components/work-related-list"
 import { ArticlePage } from "@/_components/page/article-page"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
+import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
+import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
+import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 

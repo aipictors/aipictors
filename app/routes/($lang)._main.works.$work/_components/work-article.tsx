@@ -1,12 +1,12 @@
-import { PromptonRequestButton } from "@/[lang]/(main)/works/[work]/_components/prompton-request-button"
-import { WorkAction } from "@/[lang]/(main)/works/[work]/_components/work-action"
-import WorkArticleTags from "@/[lang]/(main)/works/[work]/_components/work-article-tags"
-import { WorkImageView } from "@/[lang]/(main)/works/[work]/_components/work-image-view"
 import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
+import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
+import { WorkAction } from "@/routes/($lang)._main.works.$work/_components/work-action"
+import WorkArticleTags from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
+import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
 import { Link } from "@remix-run/react"
 
 type Props = {

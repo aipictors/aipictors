@@ -1,4 +1,3 @@
-import { PromptonRequestButton } from "@/[lang]/(main)/works/[work]/_components/prompton-request-button"
 import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Badge } from "@/_components/ui/badge"
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_components/ui/card"
+import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
 
 type Props = {
   userName: string

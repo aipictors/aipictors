@@ -1,18 +1,20 @@
-import { StickerCard } from "@/[lang]/(main)/stickers/_components/sticker-card"
-import type { UserStickersQuery } from "@/_graphql/__generated__/graphql"
-import { Link } from "@remix-run/react"
+"use client"
+import type { StickersQuery } from "@/_graphql/__generated__/graphql"
+import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
 
 type Props = {
-  stickers: NonNullable<UserStickersQuery["user"]>["stickers"]
+  stickers: StickersQuery["stickers"]
 }
 
-export const UserStickerList = (props: Props) => {
+export const StickerList = (props: Props) => {
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 xl:grid-cols-6">
       {props.stickers.map((props) => (
-        <Link
+        <a
           key={props.id}
-          to={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          href={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
           <StickerCard
             title={props.title}
@@ -20,7 +22,7 @@ export const UserStickerList = (props: Props) => {
             downloadsCount={props.downloadsCount}
             usesCount={props.usesCount}
           />
-        </Link>
+        </a>
       ))}
     </div>
   )

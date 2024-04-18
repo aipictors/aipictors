@@ -1,8 +1,8 @@
-import { StickerList } from "@/[lang]/(main)/stickers/_components/sticker-list"
-import { StickerListHeader } from "@/[lang]/(main)/stickers/_components/sticker-list-header"
-import { StickerSearchForm } from "@/[lang]/(main)/stickers/_components/sticker-search-form"
 import { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { createClient } from "@/_lib/client"
+import { StickerList } from "@/routes/($lang)._main.stickers._index/_components/sticker-list"
+import { StickerListHeader } from "@/routes/($lang)._main.stickers._index/_components/sticker-list-header"
+import { StickerSearchForm } from "@/routes/($lang)._main.stickers._index/_components/sticker-search-form"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 

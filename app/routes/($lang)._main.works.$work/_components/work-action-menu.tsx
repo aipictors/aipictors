@@ -1,10 +1,10 @@
-import ReportDialog from "@/[lang]/(main)/works/[work]/_components/report-dialog"
 import { Button } from "@/_components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/_components/ui/popover"
+import ReportDialog from "@/routes/($lang)._main.works.$work/_components/report-dialog"
 import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
 /**

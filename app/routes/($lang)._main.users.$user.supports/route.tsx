@@ -1,7 +1,7 @@
-import { UserSupport } from "@/[lang]/(main)/users/[user]/supports/_components/user-support"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
+import { UserSupport } from "@/routes/($lang)._main.users.$user.supports/_components/user-support"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

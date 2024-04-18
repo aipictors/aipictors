@@ -1,4 +1,4 @@
-import { TagCard } from "@/[lang]/(main)/tags/_components/tag-card"
+import { TagCard } from "@/routes/($lang)._main.tags._index/_components/tag-card"
 
 export const RelatedTagList = () => {
   return (
