@@ -1,4 +1,4 @@
-import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
+import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import {
   ArrowLeftIcon,
   LockKeyholeIcon,

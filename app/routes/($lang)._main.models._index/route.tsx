@@ -1,7 +1,7 @@
-import { GoogleAdsense } from "@/[lang]/(main)/_components/google-adsense"
 import { ArticlePage } from "@/_components/page/article-page"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { createClient } from "@/_lib/client"
+import { GoogleAdsense } from "@/routes/($lang)._main._index/_components/google-adsense"
 import { ImageModelList } from "@/routes/($lang)._main.models._index/_components/image-model-list"
 import { useLoaderData } from "@remix-run/react"
 

@@ -1,4 +1,4 @@
-import { ImageGenerationReferenceCard } from "@/[lang]/_components/image-generation-reference-card"
+import { ImageGenerationReferenceCard } from "@/_components/image-generation-reference-card"
 import { Button } from "@/_components/ui/button"
 import { EventImage } from "@/routes/($lang).events.blendai/_components/event-image"
 import type { MetaFunction } from "@remix-run/cloudflare"

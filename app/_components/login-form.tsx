@@ -1,8 +1,5 @@
-import CloudflareTurnstile, {
-  type Status,
-} from "@/[lang]/_components/cloudflare-turnstile"
-import { SocialLoginButton } from "@/[lang]/_components/social-login-button"
 import { PasswordLoginForm } from "@/_components/password-login-form"
+import { SocialLoginButton } from "@/_components/social-login-button"
 import { Button } from "@/_components/ui/button"
 import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
@@ -15,29 +12,24 @@ import {
   getAuth,
   signInWithCustomToken,
 } from "firebase/auth"
-import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
 import { toast } from "sonner"
+
+type Props = {
+  children: React.ReactNode
+}
 
 /**
  * ログイン
  * @param props
  * @returns
  */
-export function LoginDialogContent() {
+export const LoginDialog = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
 
-  // Add this line to manage Turnstile status
-  const [turnstileStatus, setTurnstileStatus] = useState<Status | null>(null)
-
   const onLogin = async (form: FormLogin) => {
-    // if (turnstileStatus !== "solved") {
-    //   toast("CAPTCHAを解決してください。")
-    //   return
-    // }
-
     try {
       const result = await mutation({
         variables: {
@@ -62,24 +54,18 @@ export function LoginDialogContent() {
   }
 
   return (
-    <>
+    <div>
       <div className="my-2 space-y-2">
         <p className="text-sm">{"SNSアカウントでログイン"}</p>
         <div className="flex flex-col gap-2 md:flex-row">
           <SocialLoginButton
-            disabled={
-              isLoading
-              // || turnstileStatus !== "solved"
-            }
+            disabled={isLoading}
             provider={new GoogleAuthProvider()}
             buttonText="Googleでログイン"
             icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
           />
           <SocialLoginButton
-            disabled={
-              isLoading
-              // || turnstileStatus !== "solved"
-            }
+            disabled={isLoading}
             provider={new TwitterAuthProvider()}
             buttonText="𝕏(Twitter)でログイン"
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
@@ -89,15 +75,8 @@ export function LoginDialogContent() {
       <Separator />
       <div className="my-2 w-full space-y-2">
         <p className="text-sm">{"またはアカウント情報でログイン"}</p>
-        <PasswordLoginForm
-          onSubmit={onLogin}
-          isLoading={
-            isLoading
-            // || turnstileStatus !== "solved"
-          }
-        />
+        <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
-      <CloudflareTurnstile onStatusChange={setTurnstileStatus} />
       <Separator />
       <div className={"flex w-full flex-col gap-y-2"}>
         <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
@@ -111,6 +90,6 @@ export function LoginDialogContent() {
           </Button>
         </Link>
       </div>
-    </>
+    </div>
   )
 }

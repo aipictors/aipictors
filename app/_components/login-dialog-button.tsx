@@ -1,4 +1,4 @@
-import { LoginDialogContent } from "@/[lang]/_components/login-dialog-content"
+import { LoginDialogContent } from "@/_components/login-dialog-content"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,

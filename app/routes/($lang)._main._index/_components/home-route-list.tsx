@@ -1,9 +1,9 @@
-import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
-import { LoginNavigationButton } from "@/[lang]/_components/login-navitation-button"
-import { NavigationLogoutDialogButton } from "@/[lang]/_components/logout-navigation-dialog-button"
+import { LoginNavigationButton } from "@/_components/login-navitation-button"
+import { NavigationLogoutDialogButton } from "@/_components/logout-navigation-dialog-button"
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import { Link } from "@remix-run/react"
 import {
   AlertTriangleIcon,

@@ -1,4 +1,3 @@
-import HomeWorkAlbum from "@/[lang]/(main)/_components/home-work-album"
 import { Button } from "@/_components/ui/button"
 import {
   Tooltip,
@@ -7,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import HomeWorkAlbum from "@/routes/($lang)._main._index/_components/home-work-album"
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
 import PhotoAlbum from "react-photo-album"
 

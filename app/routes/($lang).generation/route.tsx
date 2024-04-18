@@ -1,4 +1,3 @@
-import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
 import { GenerationConfigProvider } from "@/[lang]/generation/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/[lang]/generation/_components/generation-query-provider"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
@@ -7,6 +6,7 @@ import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
+import { HomeHeader } from "@/routes/($lang)._main._index/_components/home-header"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 

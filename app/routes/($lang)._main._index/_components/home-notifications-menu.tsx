@@ -1,6 +1,5 @@
 "use client"
 
-import { HeaderNotificationItem } from "@/[lang]/(main)/_components/notification/header-notification-item"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import {
@@ -31,6 +30,7 @@ import type {
 } from "@/_graphql/__generated__/graphql"
 import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
 import { config } from "@/config"
+import { HeaderNotificationItem } from "@/routes/($lang)._main._index/_components/notification/header-notification-item"
 import { useQuery } from "@apollo/client"
 import { Link } from "@remix-run/react"
 import {

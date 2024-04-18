@@ -1,4 +1,3 @@
-import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +11,7 @@ import {
 } from "@/_components/ui/alert-dialog"
 import { resetCookieLoginToken } from "@/_utils/reset-cookie-login-token"
 import { config } from "@/config"
+import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"
 import { toast } from "sonner"

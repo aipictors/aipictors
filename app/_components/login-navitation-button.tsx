@@ -1,5 +1,4 @@
-import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
-import { LoginDialogContent } from "@/[lang]/_components/login-dialog-content"
+import { LoginDialogContent } from "@/_components/login-dialog-content"
 import {
   Dialog,
   DialogContent,
@@ -8,6 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
+import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import { LogInIcon } from "lucide-react"
 
 /**

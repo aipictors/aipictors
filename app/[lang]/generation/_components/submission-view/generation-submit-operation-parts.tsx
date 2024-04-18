@@ -1,10 +1,10 @@
-import { LoginDialogButton } from "@/[lang]/_components/login-dialog-button"
 import { GenerationReserveCountInput } from "@/[lang]/generation/_components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/[lang]/generation/_components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/[lang]/generation/_components/submission-view/generation-terms-button"
 import { SubscriptionDialogContent } from "@/[lang]/generation/_components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GradientBorderButton } from "@/_components/button/gradient-border-button"
+import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,

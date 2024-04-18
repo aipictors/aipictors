@@ -1,11 +1,11 @@
 "use client"
-import { TagButton } from "@/[lang]/(main)/_components/tag-button"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
 import type { HotTagsQuery } from "@/_graphql/__generated__/graphql"
+import { TagButton } from "@/routes/($lang)._main._index/_components/tag-button"
 import Autoplay from "embla-carousel-autoplay"
 import React from "react"
 

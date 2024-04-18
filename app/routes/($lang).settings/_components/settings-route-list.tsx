@@ -1,5 +1,5 @@
-import { HomeNavigationButton } from "@/[lang]/(main)/_components/home-navigation-button"
 import { config } from "@/config"
+import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import {
   ArrowLeftIcon,
   BellIcon,
