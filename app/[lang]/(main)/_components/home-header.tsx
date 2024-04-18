@@ -16,8 +16,8 @@ import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notif
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import { useQuery } from "@apollo/client"
-import { Link } from "@remix-run/react"
-import { BellIcon, MenuIcon } from "lucide-react"
+import { Link, useNavigation } from "@remix-run/react"
+import { BellIcon, Loader2Icon, MenuIcon } from "lucide-react"
 import { useContext } from "react"
 import { useBoolean } from "usehooks-ts"
 
@@ -26,6 +26,8 @@ type Props = {
 }
 
 export const HomeHeader = (props: Props) => {
+  const navigation = useNavigation()
+
   const authContext = useContext(AuthContext)
 
   const {
@@ -57,15 +59,22 @@ export const HomeHeader = (props: Props) => {
           className="hidden items-center md:flex"
           to="https://www.aipictors.com"
         >
-          <img
-            src="/icon.svg"
-            className="h-10 w-10 rounded-full"
-            alt="Avatar"
-            width={40}
-            height={40}
-          />
+          {navigation.state === "loading" && (
+            <div className="flex h-10 w-10 items-center justify-center">
+              <Loader2Icon className={"h-8 w-8 animate-spin"} />
+            </div>
+          )}
+          {navigation.state !== "loading" && (
+            <img
+              src="/icon.svg"
+              className="h-10 w-10 rounded-full"
+              alt="Avatar"
+              width={40}
+              height={40}
+            />
+          )}
         </Link>
-        <div className="hidden flex-grow flex-row items-center pl-2 md:flex">
+        <div className="hidden flex-grow flex-row items-center pl-4 md:flex">
           <span className="font-bold">{props.title ?? "Beta"}</span>
         </div>
       </div>
