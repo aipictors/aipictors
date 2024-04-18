@@ -1,5 +1,5 @@
-import { RankingCard } from "@/[lang]/(main)/awards/_components/ranking-card"
 import type { WorkAwardsQuery } from "@/_graphql/__generated__/graphql"
+import { RankingCard } from "@/routes/($lang)._main.awards._index/_components/ranking-card"
 
 type Props = {
   awards: NonNullable<WorkAwardsQuery["workAwards"]>

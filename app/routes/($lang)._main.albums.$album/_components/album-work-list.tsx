@@ -1,5 +1,5 @@
-import { AlbumWork } from "@/[lang]/(main)/albums/[album]/_components/album-work"
 import type { AlbumWorksQuery } from "@/_graphql/__generated__/graphql"
+import { AlbumWork } from "@/routes/($lang)._main.albums.$album/_components/album-work"
 
 type Props = {
   albumWorks: NonNullable<AlbumWorksQuery["album"]>["works"]

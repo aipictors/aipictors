@@ -1,7 +1,7 @@
 import { contributors } from "@/[lang]/(main)/contributors/_assets/contributors"
-import { ContributorCard } from "@/[lang]/(main)/contributors/_components/contributors-card"
 import type { Contributor } from "@/[lang]/(main)/contributors/_types/contributor"
 import { Button } from "@/_components/ui/button"
+import { ContributorCard } from "@/routes/($lang)._main.contributors/_components/contributors-card"
 import { MousePointerClickIcon } from "lucide-react"
 
 /**
