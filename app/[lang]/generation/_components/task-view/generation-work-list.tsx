@@ -2,12 +2,14 @@ import { ErrorResultCard } from "@/[lang]/generation/tasks/_components/error-res
 import { FallbackTaskCard } from "@/[lang]/generation/tasks/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/[lang]/generation/tasks/_components/generation-work-card "
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import { Skeleton } from "@/_components/ui/skeleton"
 import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
 type Props = {
+  loading: boolean
   onCancel?(): void
   thumbnailSize: number
   works: WorksQuery
@@ -39,6 +41,12 @@ export const GenerationWorkList = (props: Props) => {
             "grid-cols-10": props.thumbnailSize === 10,
           })}
         >
+          {props.loading ? (
+            <>
+              <Skeleton className="h-40 w-32" />
+            </>
+          ) : null}
+
           {props.works?.works.map(
             (work: WorkNode) =>
               work && (
