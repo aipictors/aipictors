@@ -74,7 +74,7 @@
     "firebase": "^10.10.0",
     "graphql": "^16.8.1",
     "immer": "^10.0.4",
-    "isbot": "^4",
+    "isbot": "^5",
     "konva": "^9.3.6",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.368.0",
