@@ -170,9 +170,8 @@ export const ImageModelsList = (props: Props) => {
               {isDesktop && (
                 <div className="grid grid-cols-4 gap-2 2xl:grid-cols-8 lg:grid-cols-5 md:grid-cols-4 xl:grid-cols-6">
                   {item.models.map((model) => (
-                    <div className="relative">
+                    <div className="relative" key={model.id}>
                       <ImageModelCard
-                        key={model.id}
                         displayName={model.displayName}
                         thumbnailImageURL={model.thumbnailImageURL}
                         type={model.type}
@@ -215,9 +214,8 @@ export const ImageModelsList = (props: Props) => {
               {!isDesktop && (
                 <div className="">
                   {item.models.map((model) => (
-                    <div className="relative mt-2">
+                    <div className="relative mt-2" key={model?.id}>
                       <ConfigModelButton
-                        key={model?.id}
                         imageURL={model?.thumbnailImageURL ?? ""}
                         name={model?.displayName ?? ""}
                         isSelected={props?.selectedModelId === model.id}

@@ -29,6 +29,7 @@ export const SupportMessageList = (props: Props) => {
       ref={containerRef}
     >
       {messages.map((message) =>
+        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
         message.isViewer ? (
           <SenderMessage
             key={message.id}

@@ -82,6 +82,7 @@ export default function Milestone() {
                 <TableBody>
                   {data.milestones.map(
                     (milestone) =>
+                      // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                       !milestone.isDone && (
                         <TableRow key={milestone.id}>
                           <TableCell className="font-bold">
@@ -133,6 +134,7 @@ export default function Milestone() {
                       <TableBody>
                         {data.milestones.map(
                           (milestone) =>
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                             milestone.isDone && (
                               <TableRow key={milestone.id}>
                                 <TableCell className="font-bold">
@@ -188,6 +190,7 @@ export default function Milestone() {
                 <TableBody>
                   {data.appMilestones.map(
                     (milestone) =>
+                      // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                       !milestone.isDone && (
                         <TableRow key={milestone.id}>
                           <TableCell className="font-bold">
@@ -239,6 +242,7 @@ export default function Milestone() {
                       <TableBody>
                         {data.appMilestones.map(
                           (milestone) =>
+                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
                             milestone.isDone && (
                               <TableRow key={milestone.id}>
                                 <TableCell className="font-bold">

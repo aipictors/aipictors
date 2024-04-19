@@ -3,17 +3,15 @@ import { useEffect } from "react"
 import { Theme, useTheme } from "remix-themes"
 
 export default function EventsLayout() {
-  const [, setTheme] = useTheme()
+  const [theme, setTheme] = useTheme()
 
   const [searchParams] = useSearchParams()
 
-  const colorScheme = searchParams.get("prefers-color-scheme")
-
   useEffect(() => {
-    if (colorScheme === "dark") {
+    if (theme === "dark") {
       setTheme(Theme.DARK)
     }
-    if (colorScheme === "light") {
+    if (theme === "light") {
       setTheme(Theme.LIGHT)
     }
   }, [])

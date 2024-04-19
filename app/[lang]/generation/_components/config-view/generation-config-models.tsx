@@ -28,10 +28,7 @@ export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
 
   const { send } = GenerationConfigContext.useActorRef()
-
-  const { theme, systemTheme } = useTheme()
-
-  const currentTheme = theme === "system" ? systemTheme : theme
+  const [theme] = useTheme()
 
   const currentModels = context.config.modelIds.map((modelId) => {
     return context.models.find((model) => {
@@ -90,7 +87,6 @@ export const GenerationConfigModels = (props: Props) => {
             {currentModels.map((model) => (
               <div className="relative" key={model?.id}>
                 <ConfigModelButton
-                  key={model?.id}
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
@@ -112,7 +108,7 @@ export const GenerationConfigModels = (props: Props) => {
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
                     <CheckIcon
                       className="p-1"
-                      color={currentTheme === "light" ? "white" : "black"}
+                      color={theme === "light" ? "white" : "black"}
                     />
                   </div>
                 )}
@@ -133,9 +129,8 @@ export const GenerationConfigModels = (props: Props) => {
         <TabsContent value="favorite">
           <div className="flex flex-col space-y-2">
             {favoritedModels.map((model) => (
-              <div className="relative">
+              <div className="relative" key={model?.id}>
                 <ConfigModelButton
-                  key={model?.id}
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
@@ -157,7 +152,7 @@ export const GenerationConfigModels = (props: Props) => {
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
                     <CheckIcon
                       className="p-1"
-                      color={currentTheme === "light" ? "white" : "black"}
+                      color={theme === "light" ? "white" : "black"}
                     />
                   </div>
                 )}

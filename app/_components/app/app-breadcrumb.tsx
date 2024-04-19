@@ -16,20 +16,18 @@ export const AppBreadcrumb = (props: Props) => {
   return (
     <div className="overflow-x-auto">
       <nav className="flex space-x-2">
-        {props.breadcrumb.itemListElement.map((item, index) => (
-          <>
-            <Link
-              to={
-                item.item === config.siteURL
-                  ? "/"
-                  : item.item.replace(config.siteURL, "")
-              }
-              className="hover:underline"
-            >
-              {item.name}
-            </Link>
-            {index === length - 1 ? null : <span className="mx-2">{"/"}</span>}
-          </>
+        {props.breadcrumb.itemListElement.map((item) => (
+          <Link
+            key={item.item}
+            to={
+              item.item === config.siteURL
+                ? "/"
+                : item.item.replace(config.siteURL, "")
+            }
+            className="hover:underline"
+          >
+            {item.name}
+          </Link>
         ))}
       </nav>
     </div>
