@@ -1,4 +1,4 @@
-@import "@fontsource-variable/noto-sans-jp";
+@import "@fontsource-variable/noto-sans-jp/wght.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

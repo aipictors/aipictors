@@ -14,7 +14,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { cssBundleHref } from "@remix-run/css-bundle"
 import {
   Links,
   Meta,
@@ -39,10 +38,7 @@ export const headers: HeadersFunction = () => {
 }
 
 export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: styles },
-    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-  ]
+  return [{ rel: "stylesheet", href: styles }]
 }
 
 export const meta: MetaFunction = () => {
