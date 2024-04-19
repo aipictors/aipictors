@@ -79,6 +79,7 @@
     "lucide-react": "^0.368.0",
     "marked": "^12.0.1",
     "million": "^3.0.6",
+    "next-themes": "^0.3.0",
     "node-loader": "^2.0.0",
     "nsfwjs": "^4.1.0",
     "postcss": "^8.4.38",
