@@ -5,7 +5,6 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { CheckIcon } from "lucide-react"
-import { useTheme } from "next-themes"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -26,10 +25,6 @@ type Props = {
  */
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
-
-  const { send } = GenerationConfigContext.useActorRef()
-
-  const { theme } = useTheme()
 
   const currentModels = context.config.modelIds.map((modelId) => {
     return context.models.find((model) => {
@@ -107,10 +102,7 @@ export const GenerationConfigModels = (props: Props) => {
                 />
                 {model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon
-                      className="p-1"
-                      color={theme === "light" ? "white" : "black"}
-                    />
+                    <CheckIcon className="p-1 text-white dark:text-black" />
                   </div>
                 )}
               </div>
@@ -151,10 +143,7 @@ export const GenerationConfigModels = (props: Props) => {
                 />
                 {model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon
-                      className="p-1"
-                      color={theme === "light" ? "white" : "black"}
-                    />
+                    <CheckIcon className={"p-1 text-white dark:text-black"} />
                   </div>
                 )}
               </div>
