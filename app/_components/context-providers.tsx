@@ -1,4 +1,5 @@
 import { AuthContextProvider } from "@/_components/auth-context-provider"
+import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import { ApolloProvider } from "@apollo/client/index.js"
@@ -18,11 +19,13 @@ const queryClient = new QueryClient()
 
 export const ContextProviders = (props: Props) => {
   return (
-    <AuthContextProvider>
-      <QueryClientProvider client={queryClient}>
-        <ApolloProvider client={client}>{props.children}</ApolloProvider>
-      </QueryClientProvider>
-    </AuthContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <ApolloProvider client={client}>
+        <AuthContextProvider>
+          <AutoLoginProvider>{props.children}</AutoLoginProvider>
+        </AuthContextProvider>
+      </ApolloProvider>
+    </QueryClientProvider>
   )
 }
 

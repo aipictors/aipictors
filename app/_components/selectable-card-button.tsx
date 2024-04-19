@@ -1,7 +1,7 @@
 import { cn } from "@/_lib/utils"
 // import Theme from "@/routes/($lang)._main.themes.$year.$month.$day._index/route"
 import { CheckIcon } from "lucide-react"
-import { Theme, useTheme } from "remix-themes"
+import { useTheme } from "next-themes"
 
 type Props = {
   /**
@@ -25,6 +25,8 @@ type Props = {
  * @returns
  */
 export function SelectableCardButton(props: Props) {
+  const { theme } = useTheme()
+
   return (
     <button
       type={"button"}
@@ -59,7 +61,7 @@ export function SelectableCardButton(props: Props) {
           {props.isSelected ? (
             <CheckIcon
               className="p-1"
-              color={Theme.LIGHT ? "white" : "black"}
+              color={theme === "light" ? "white" : "black"}
             />
           ) : (
             <CheckIcon className="p-1 opacity-0" />

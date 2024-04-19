@@ -1,5 +1,6 @@
 import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import type {
   ImageLoraModelsQuery,
@@ -40,6 +41,7 @@ export const GenerationQueryProvider = (props: Props) => {
     activeImageGeneration({ nanoid: userNanoid })
   }, [userNanoid])
 
+  // TODO: route.tsxでauthContext.isLoadingを使用したので不要
   useEffect(() => {
     if (authContext.isLoading) return
     if (authContext.isNotLoggedIn) return

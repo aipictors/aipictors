@@ -27,7 +27,7 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { Theme, useTheme } from "remix-themes"
+import { useTheme } from "next-themes"
 
 type Props = {
   onLogout(): void
@@ -55,7 +55,8 @@ const MenuItemLink = ({ href, icon, label }: MenuItemLinkProps) => (
  */
 export const HomeUserNavigationMenu = (props: Props) => {
   const authContext = useContext(AuthContext)
-  const [theme, setTheme] = useTheme()
+
+  const { theme, setTheme } = useTheme()
 
   const getThemeIcon = () => {
     return theme === "dark" ? (

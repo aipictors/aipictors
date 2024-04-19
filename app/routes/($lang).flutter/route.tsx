@@ -1,9 +1,9 @@
 import { Outlet, useSearchParams } from "@remix-run/react"
+import { useTheme } from "next-themes"
 import { useEffect } from "react"
-import { Theme, useTheme } from "remix-themes"
 
 export default function FlutterLayout() {
-  const [, setTheme] = useTheme()
+  const { setTheme } = useTheme()
 
   const [searchParams] = useSearchParams()
 
@@ -11,10 +11,10 @@ export default function FlutterLayout() {
 
   useEffect(() => {
     if (colorScheme === "dark") {
-      setTheme(Theme.DARK)
+      setTheme("dark")
     }
     if (colorScheme === "light") {
-      setTheme(Theme.LIGHT)
+      setTheme("light")
     }
   }, [])
 
