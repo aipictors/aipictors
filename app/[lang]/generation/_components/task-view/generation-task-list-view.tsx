@@ -66,7 +66,7 @@ export const GenerationTaskListView = (props: Props) => {
             rating: props.rating,
           }),
           ...(props.protect !== -1 && {
-            isProtected: props.protect === 1 ? true : false,
+            isProtected: props.protect === 1,
           }),
         },
       },

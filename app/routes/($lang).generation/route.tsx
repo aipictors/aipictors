@@ -2,6 +2,7 @@ import { HomeHeader } from "@/[lang]/(main)/_components/home-header"
 import { GenerationConfigProvider } from "@/[lang]/generation/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/[lang]/generation/_components/generation-query-provider"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { AuthContext } from "@/_contexts/auth-context"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
@@ -9,6 +10,7 @@ import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
+import { useContext } from "react"
 
 export const meta: MetaFunction = () => {
   const siteName = "無料AIイラスト生成 - スマホ対応"
@@ -74,6 +76,12 @@ export function HydrateFallback() {
 
 export default function GenerationLayout() {
   const data = useLoaderData<typeof loader>()
+
+  const authContext = useContext(AuthContext)
+
+  if (authContext.isLoading) {
+    return <AppLoadingPage />
+  }
 
   return (
     <>

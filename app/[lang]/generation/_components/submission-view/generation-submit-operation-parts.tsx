@@ -212,7 +212,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 props.availableImageGenerationMaxTasksCount - props.tasksCount
               }
               buttonActionCaption={getSubmitButtonLabel(
-                context.config.i2iImageBase64 ? true : false,
+                !!context.config.i2iImageBase64,
                 context.config.promptText,
                 context.config.seed,
               )}
@@ -238,7 +238,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 props.availableImageGenerationMaxTasksCount - props.tasksCount
               }
               buttonActionCaption={getSubmitButtonLabel(
-                context.config.i2iImageBase64 ? true : false,
+                !!context.config.i2iImageBase64,
                 context.config.promptText,
                 context.config.seed,
               )}
@@ -267,7 +267,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     props.tasksCount
                   }
                   buttonActionCaption={getSubmitButtonLabel(
-                    context.config.i2iImageBase64 ? true : false,
+                    !!context.config.i2iImageBase64,
                     context.config.promptText,
                     context.config.seed,
                   )}

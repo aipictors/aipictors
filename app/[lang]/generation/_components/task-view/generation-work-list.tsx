@@ -49,6 +49,7 @@ export const GenerationWorkList = (props: Props) => {
 
           {props.works?.works.map(
             (work: WorkNode) =>
+              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
               work && (
                 <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
                   <Suspense fallback={<FallbackTaskCard />}>

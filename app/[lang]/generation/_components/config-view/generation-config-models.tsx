@@ -5,7 +5,6 @@ import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { CheckIcon } from "lucide-react"
-import { useTheme } from "remix-themes"
 
 type Props = {
   models: ImageModelsQuery["imageModels"]
@@ -26,12 +25,6 @@ type Props = {
  */
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
-
-  const { send } = GenerationConfigContext.useActorRef()
-
-  const { theme, systemTheme } = useTheme()
-
-  const currentTheme = theme === "system" ? systemTheme : theme
 
   const currentModels = context.config.modelIds.map((modelId) => {
     return context.models.find((model) => {
@@ -90,7 +83,6 @@ export const GenerationConfigModels = (props: Props) => {
             {currentModels.map((model) => (
               <div className="relative" key={model?.id}>
                 <ConfigModelButton
-                  key={model?.id}
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
@@ -110,10 +102,7 @@ export const GenerationConfigModels = (props: Props) => {
                 />
                 {model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon
-                      className="p-1"
-                      color={currentTheme === "light" ? "white" : "black"}
-                    />
+                    <CheckIcon className="p-1 text-white dark:text-black" />
                   </div>
                 )}
               </div>
@@ -133,9 +122,8 @@ export const GenerationConfigModels = (props: Props) => {
         <TabsContent value="favorite">
           <div className="flex flex-col space-y-2">
             {favoritedModels.map((model) => (
-              <div className="relative">
+              <div className="relative" key={model?.id}>
                 <ConfigModelButton
-                  key={model?.id}
                   imageURL={model?.thumbnailImageURL ?? ""}
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
@@ -155,10 +143,7 @@ export const GenerationConfigModels = (props: Props) => {
                 />
                 {model?.id === props.currentModelId && (
                   <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon
-                      className="p-1"
-                      color={currentTheme === "light" ? "white" : "black"}
-                    />
+                    <CheckIcon className={"p-1 text-white dark:text-black"} />
                   </div>
                 )}
               </div>

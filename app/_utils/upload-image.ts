@@ -27,6 +27,7 @@ export const uploadImage = async (
       body: formData,
     })
     if (response.ok) {
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const responseData = (await response.json()) as any
       return responseData.url
     }

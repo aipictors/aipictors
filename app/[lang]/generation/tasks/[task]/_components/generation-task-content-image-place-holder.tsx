@@ -1,6 +1,5 @@
 import { Skeleton } from "@/_components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
-import { Theme, useTheme } from "remix-themes"
 
 type Props = {
   className?: string
@@ -18,8 +17,9 @@ export function GenerationTaskContentImagePlaceHolder(props: Props) {
       className={`${props.className} relative`}
     >
       <Loader2Icon
-        color={Theme.LIGHT ? "black" : "white"}
-        className={"dark:black absolute top-[50%] left-[48%] w-8 animate-spin"}
+        className={
+          "dark:black absolute top-[50%] left-[48%] w-8 animate-spin text-black dark:text-white"
+        }
       />
     </Skeleton>
   )

@@ -1,6 +1,5 @@
 import { GradientBorderButton } from "@/_components/button/gradient-border-button"
 import { Loader2Icon } from "lucide-react"
-import { Theme } from "remix-themes"
 
 type Props = {
   isLoading: boolean
@@ -28,8 +27,9 @@ export function GenerationSubmitButton(props: Props) {
           : `${props.buttonActionCaption}(${props.generatingCount}/${maxGeneratingCount})`}
         {props.generatingCount > 0 && (
           <Loader2Icon
-            color={Theme.LIGHT ? "white" : "black"}
-            className={"dark:black ml-2 w-4 animate-spin"}
+            className={
+              "dark:black ml-2 w-4 animate-spin text-white dark:text-black"
+            }
           />
         )}
       </div>

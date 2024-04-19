@@ -91,7 +91,7 @@ export const GenerationTaskList = (props: Props) => {
    */
   const currentProtectedTasks = imageGenerationProtectedTasks.filter((task) => {
     return (
-      task.isProtected === (props.protect === 1 ? true : false) &&
+      task.isProtected === (props.protect === 1) &&
       task.nanoid &&
       !props.hidedTaskIds.includes(task.nanoid)
     )

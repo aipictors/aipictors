@@ -40,6 +40,9 @@
     "indentStyle": "space",
     "lineEnding": "lf"
   },
+  "organizeImports": {
+    "enabled": false
+  },
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded"
