@@ -55,10 +55,10 @@ const MenuItemLink = ({ href, icon, label }: MenuItemLinkProps) => (
  */
 export const HomeUserNavigationMenu = (props: Props) => {
   const authContext = useContext(AuthContext)
-  const [, setTheme] = useTheme()
+  const [theme, setTheme] = useTheme()
 
   const getThemeIcon = () => {
-    return Theme.DARK ? (
+    return theme === "dark" ? (
       <MoonIcon className="mr-2 inline-block w-4" />
     ) : (
       <SunIcon className="mr-2 inline-block w-4" />
@@ -110,13 +110,20 @@ export const HomeUserNavigationMenu = (props: Props) => {
             <DropdownMenuSubContent>
               <DropdownMenuLabel>{"テーマ変更"}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>デバイスのモードを使用する</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme(Theme.LIGHT)}>
-                ライト
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme(Theme.DARK)}>
-                ダーク
-              </DropdownMenuItem>
+              <DropdownMenuRadioGroup
+                value={theme}
+                onValueChange={(newTheme) => setTheme(newTheme)}
+              >
+                <DropdownMenuRadioItem value="system">
+                  デバイスのモードを使用する
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="light">
+                  ライト
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="dark">
+                  ダーク
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>

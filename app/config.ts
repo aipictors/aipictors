@@ -244,6 +244,12 @@ export const config = {
     top: "https://www.aipictors.com",
   },
   /**
+   * 汎用APIエンドポイント
+   */
+  internalApiEndpoint: {
+    promptsCheck: "https://internal.api.aipictors.com/prompts/check/index.php",
+  },
+  /**
    * バージョン
    */
   version: import.meta.env.VITE_VERSION!,

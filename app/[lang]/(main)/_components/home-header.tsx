@@ -101,9 +101,9 @@ export const HomeHeader = (props: Props) => {
             </Button>
           </Link>
         )} */}
-        {/*authContext.isLoggedIn && config.isDevelopmentMode && (
+        {authContext.isLoggedIn && config.isDevelopmentMode && (
           <HomeNotificationsMenu />
-        )*/}
+        )}
         {authContext.isLoggedIn && (
           <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
         )}
