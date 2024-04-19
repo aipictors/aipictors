@@ -88,7 +88,7 @@ export default {
        * 追加: カスタムフォントに使用
        */
       fontFamily: {
-        sans: ['"Noto Sans JP"', ...fontFamily.sans],
+        sans: ['"Noto Sans JP Variable"', ...fontFamily.sans],
       },
       height: {
         /**
