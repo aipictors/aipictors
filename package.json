@@ -76,7 +76,7 @@
     "isbot": "^5",
     "konva": "^9.3.6",
     "lodash-es": "^4.17.21",
-    "lucide-react": "^0.368.0",
+    "lucide-react": "^0.372.0",
     "marked": "^12.0.1",
     "million": "^3.0.6",
     "next-themes": "^0.3.0",
