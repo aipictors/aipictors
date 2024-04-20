@@ -6,7 +6,6 @@ import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { config } from "@/config"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { GenerationTaskDeleteButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-delete-button"
@@ -19,6 +18,7 @@ import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 
 type Props = {
   taskId: string
