@@ -33,7 +33,7 @@ import { Toaster } from "@/_components/app/app-sonner"
 export const headers: HeadersFunction = () => {
   return {
     "Cache-Control":
-      "max-age=960, s-maxage=3600, stale-while-revalidate=345600, stale-if-error=345600",
+      "max-age=120, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000",
   }
 }
 
