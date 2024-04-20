@@ -8,12 +8,14 @@ on:
     secrets:
       envPAT:
         required: true
+        
   push:
     branches:
       - main
     paths:
       - "app/**/*"
       - "graphql/**/*"
+
   pull_request:
     branches:
       - main
@@ -27,15 +29,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
 
+      - name: install deps
+        run: bun i --ignore-scripts
+
       - name: cache node modules
         id: cache-node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/save@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
-
-      - name: install dependencies
-        run: bun i --ignore-scripts
 
   test:
     runs-on: ubuntu-latest
@@ -46,7 +48,7 @@ jobs:
 
       - name: cache node modules
         id: cache-node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
@@ -62,7 +64,7 @@ jobs:
     needs: setup
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout/restore@v4
 
       - name: Setup Biome
         uses: biomejs/setup-biome@v1
@@ -81,7 +83,7 @@ jobs:
 
       - name: cache node modules
         id: cache-node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}

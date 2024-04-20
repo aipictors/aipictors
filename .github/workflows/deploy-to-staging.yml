@@ -18,7 +18,7 @@ jobs:
 
       - name: cache node modules
         id: cache-node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
@@ -28,7 +28,7 @@ jobs:
 
       - name: build
         run: bun run build
-        
+
       - name: deploy(staging)
         id: cloudflare-wrangler
         uses: cloudflare/wrangler-action@v3
