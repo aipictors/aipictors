@@ -57,7 +57,7 @@ export const GenerationWorkCard = (props: Props) => {
             context.config.modelType,
             props.work.sampler ?? context.config.sampler,
             props.work.scale ?? context.config.scale,
-            context.config.vae ?? context.config.vae,
+            props.work.vae ?? context.config.vae,
             props.work.prompt,
             props.work.negativePrompt,
             -1,

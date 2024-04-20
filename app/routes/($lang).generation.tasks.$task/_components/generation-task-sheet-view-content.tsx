@@ -265,11 +265,16 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     icon={LinkIcon}
                   />
                 )}
-                <GenerationMenuButton
-                  title={"画像を保存する"}
-                  onClick={() => props.saveGenerationImage(props.task.token)}
-                  icon={ArrowDownToLine}
-                />
+                {props.task && props.task.token !== null && (
+                  <GenerationMenuButton
+                    title={"画像を保存する"}
+                    onClick={() =>
+                      props.task.token &&
+                      props.saveGenerationImage(props.task.token)
+                    }
+                    icon={ArrowDownToLine}
+                  />
+                )}
                 <GenerationMenuButton
                   title={"保護する"}
                   onClick={() => props.toggleProtectedImage(props.task.id)}

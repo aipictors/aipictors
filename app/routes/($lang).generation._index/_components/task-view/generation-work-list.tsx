@@ -12,7 +12,7 @@ type Props = {
   loading: boolean
   onCancel?(): void
   thumbnailSize: number
-  works: WorksQuery
+  works: WorksQuery | undefined
   isPreviewByHover: boolean
 }
 
@@ -22,6 +22,10 @@ type Props = {
  * @returns
  */
 export const GenerationWorkList = (props: Props) => {
+  if (props.works === undefined && !props.loading) {
+    return null
+  }
+
   return (
     <>
       <ScrollArea>
@@ -47,20 +51,21 @@ export const GenerationWorkList = (props: Props) => {
             </>
           ) : null}
 
-          {props.works?.works.map(
-            (work: WorkNode) =>
-              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-              work && (
-                <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
-                  <Suspense fallback={<FallbackTaskCard />}>
-                    <GenerationWorkCard
-                      work={work}
-                      isPreviewByHover={props.isPreviewByHover}
-                    />
-                  </Suspense>
-                </ErrorBoundary>
-              ),
-          )}
+          {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
+          {props.works !== undefined &&
+            props.works?.works.map(
+              (work: WorkNode) =>
+                work && (
+                  <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
+                    <Suspense fallback={<FallbackTaskCard />}>
+                      <GenerationWorkCard
+                        work={work}
+                        isPreviewByHover={props.isPreviewByHover}
+                      />
+                    </Suspense>
+                  </ErrorBoundary>
+                ),
+            )}
         </div>
         {/* </Suspense> */}
       </ScrollArea>

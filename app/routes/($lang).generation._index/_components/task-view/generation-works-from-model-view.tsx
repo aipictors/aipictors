@@ -34,7 +34,6 @@ export const GenerationWorkListModelView = () => {
       offset: 0,
       where: {
         isFeatured: true,
-        hasGenerationPrompt: true,
         ...(context.config.searchModelId && {
           generationModelId: context.config.searchModelId,
         }),

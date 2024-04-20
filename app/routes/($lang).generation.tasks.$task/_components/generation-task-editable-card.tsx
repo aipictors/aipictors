@@ -92,6 +92,11 @@ export const GenerationTaskEditableCard = (props: Props) => {
    * 生成タスクを削除する
    */
   const onDeleteTask = async () => {
+    if (props.taskNanoid === null) {
+      toast("削除に失敗しました。")
+      return
+    }
+
     try {
       await deleteTask({
         variables: {
