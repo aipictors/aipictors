@@ -8,6 +8,7 @@ export function SettingFcmForm() {
       vapidKey: config.fcm.vapidKey,
     })
     alert(token)
+    console.log(token)
   }
 
   return <Button onClick={onClick}>{"FCMトークンを取得する"}</Button>
