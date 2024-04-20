@@ -3,14 +3,12 @@ import styles from "@/tailwind.css?url"
 import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
-import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
 import { cn } from "@/_lib/utils"
 import { config } from "@/config"
 import type {
   HeadersFunction,
   LinksFunction,
-  LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
 import {
@@ -20,14 +18,11 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
-  useLoaderData,
   useRouteError,
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
-import clsx from "clsx"
 import { ThemeProvider } from "next-themes"
 import { Suspense } from "react"
-import { themeSessionResolver } from "./sessions.server"
 import { Toaster } from "@/_components/app/app-sonner"
 
 export const headers: HeadersFunction = () => {
@@ -86,10 +81,13 @@ type Props = Readonly<{
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
 export function Layout(props: Props) {
-  if (typeof window !== "undefined") {
+  if (
+    typeof window !== "undefined" &&
+    typeof import.meta.env.VITE_SENTRY_DSN === "string"
+  ) {
     init({
-      dsn: import.meta.env.VITE_SENTRY_DSN!,
-      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT!,
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
       tracesSampleRate: 0.001,
       enabled: import.meta.env.PROD,
     })

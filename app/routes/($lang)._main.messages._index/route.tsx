@@ -3,7 +3,7 @@ import { LoginPage } from "@/_components/page/login-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import { MessageThreadList } from "@/routes/($lang)._main.messages._index/_components/message-thread-list"
 import { Outlet } from "@remix-run/react"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 /**
  * メッセージの一覧

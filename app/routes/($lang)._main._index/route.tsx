@@ -1,6 +1,5 @@
 import { AppDevelopmentPage } from "@/_components/app/app-development-page"
 import { AppPage } from "@/_components/app/app-page"
-import { Button } from "@/_components/ui/button"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
@@ -9,7 +8,6 @@ import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
-import { toast } from "sonner"
 
 export const meta: MetaFunction = () => {
   return [
@@ -74,7 +72,7 @@ export default function Index() {
           key={section.title}
           title={section.title}
           tooltip={section.tooltip}
-          works={data.works!}
+          works={data.works}
         />
       ))}
     </AppPage>
