@@ -1,7 +1,6 @@
 "use client"
 
-import { useCachedImageGenerationTask } from "@/[lang]/generation/_hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/[lang]/generation/_utils/create-base64-from-image-url"
 import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
@@ -22,6 +21,7 @@ import { useMutation } from "@apollo/client/index.js"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
+import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment

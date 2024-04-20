@@ -1,5 +1,5 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { useGenerationQuery } from "@/[lang]/generation/_hooks/use-generation-query"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { PrivateImage } from "@/_components/private-image"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"

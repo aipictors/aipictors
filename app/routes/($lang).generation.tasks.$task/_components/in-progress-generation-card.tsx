@@ -1,5 +1,5 @@
-import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation-query-context"
 import { Card } from "@/_components/ui/card"
+import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { GenerationTaskCancelButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-cancel-button"
 import { InProgressGenerationProgressBar } from "@/routes/($lang).generation.tasks.$task/_components/in-progress-generation-progress-bar"
 import { Link } from "@remix-run/react"

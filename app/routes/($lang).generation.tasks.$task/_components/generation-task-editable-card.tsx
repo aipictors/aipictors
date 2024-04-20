@@ -1,6 +1,5 @@
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { useGenerationQuery } from "@/[lang]/generation/_hooks/use-generation-query"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+
 import { PrivateImage } from "@/_components/private-image"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
@@ -19,6 +18,8 @@ import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
+import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 
 type Props = {
   taskId: string

@@ -1,4 +1,4 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { Dialog, DialogContent, DialogTrigger } from "@/_components/ui/dialog"
 import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
 import { Suspense } from "react"

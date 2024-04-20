@@ -1,6 +1,6 @@
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"

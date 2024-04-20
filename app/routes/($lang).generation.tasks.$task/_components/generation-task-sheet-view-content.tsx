@@ -1,7 +1,7 @@
 import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
 import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
 import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { PrivateImage } from "@/_components/private-image"
 import SwipeArea from "@/_components/swipe-area"
