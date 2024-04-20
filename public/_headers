@@ -1,2 +1,2 @@
 /*
-  Cache-Control: max-age=3600, s-maxage=3600, stale-while-revalidate=345600, stale-if-error=345600
+  Cache-Control: max-age=2592000, s-maxage=2592000, stale-while-revalidate=2592000, stale-if-error=2592000
