@@ -1,4 +1,3 @@
-import { usePainter } from "@/[lang]/generation/_hooks/use-painter"
 import { Button } from "@/_components/ui/button"
 import {
   Select,
@@ -10,6 +9,7 @@ import {
 } from "@/_components/ui/select"
 import { Skeleton } from "@/_components/ui/skeleton"
 import { Slider } from "@/_components/ui/slider"
+import { usePainter } from "@/routes/($lang).generation._index/_hooks/use-painter"
 import type { Stage as KonvaStage } from "konva/lib/Stage"
 import { useEffect, useRef, useState } from "react"
 import { Image as KonvaImage, Layer, Line, Stage } from "react-konva"
