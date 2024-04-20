@@ -27,7 +27,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
 
-      - name: install dpendencies
+      - name: install dependencies
         run: bun i --ignore-scripts
 
   test:
