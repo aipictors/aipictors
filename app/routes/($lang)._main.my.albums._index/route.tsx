@@ -1,5 +1,5 @@
-import { ViewerAlbumHeader } from "@/[lang]/(main)/my/albums/_components/viewer-album-header"
 import { AppPage } from "@/_components/app/app-page"
+import { ViewerAlbumHeader } from "@/routes/($lang)._main.my.albums._index/_components/viewer-album-header"
 
 export default function MyAlbumsPage() {
   return (

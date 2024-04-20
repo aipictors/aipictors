@@ -1,5 +1,5 @@
-import { AccountNavigation } from "@/[lang]/account/_components/account-navigation"
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import { AccountNavigation } from "@/routes/($lang).account._index/_components/account-navigation"
 
 /**
  * アカウント

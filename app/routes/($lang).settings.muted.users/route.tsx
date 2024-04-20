@@ -1,5 +1,5 @@
-import { MutedUserList } from "@/[lang]/settings/muted/users/_components/muted-user-list"
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import { MutedUserList } from "@/routes/($lang).settings.muted.users/_components/muted-user-list"
 
 export default function SettingMutedUsers() {
   return (

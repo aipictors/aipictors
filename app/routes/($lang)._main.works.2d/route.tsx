@@ -1,9 +1,9 @@
-import { HomeTagList } from "@/[lang]/(main)/_components/home-tag-list"
-import { HomeWorkList } from "@/[lang]/(main)/_components/home-work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
+import { HomeWorkList } from "@/routes/($lang)._main._index/_components/home-work-list"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader() {
