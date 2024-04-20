@@ -14,28 +14,70 @@ on:
       - "app/**/*"
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: oven-sh/setup-bun@v1
-      - run: time bun i
+
+      - name: cache node modules
+        id: cache-node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
+
+      - name: install dpendencies
+        run: bun i --ignore-scripts
+
+  test:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - name: cache node modules
+        id: cache-node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
 
       - name: Lint
-        run: bunx oxlint@latest --nextjs-plugin
+        run: bunx oxlint@latest --jsx-a11y-plugin --react-perf-plugin
 
       - name: Run Test
-        run: time bun test
+        run: bun test
 
   quality:
     runs-on: ubuntu-latest
+    needs: setup
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Biome
         uses: biomejs/setup-biome@v1
         with:
           version: latest
+
       - name: Run Biome
         run: biome ci app
+
+  typecheck:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - name: cache node modules
+        id: cache-node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
+
+      - name: Typecheck
+        run: bun run check
