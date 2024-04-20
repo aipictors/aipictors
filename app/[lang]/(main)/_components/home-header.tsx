@@ -61,7 +61,7 @@ export const HomeHeader = (props: Props) => {
         >
           {navigation.state === "loading" && (
             <div className="flex h-10 w-10 items-center justify-center">
-              <Loader2Icon className={"h-8 w-8 animate-spin"} />
+              <Loader2Icon className={"h-10 w-10 animate-spin"} />
             </div>
           )}
           {navigation.state !== "loading" && (
