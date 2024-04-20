@@ -1,4 +1,3 @@
-import { AppCanvas } from "@/[lang]/app/_components/app-canvas"
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { PasswordLoginForm } from "@/_components/password-login-form"
 import { Button } from "@/_components/ui/button"
@@ -6,6 +5,7 @@ import { Card } from "@/_components/ui/card"
 import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
+import { AppCanvas } from "@/routes/($lang).app._index/_components/app-canvas"
 import { useMutation } from "@apollo/client/index.js"
 import { Link } from "@remix-run/react"
 import {

@@ -1,6 +1,6 @@
-import { GenerationTaskView } from "@/[lang]/generation/tasks/[task]/_components/generation-task-view"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ParamsError } from "@/_errors/params-error"
+import { GenerationTaskView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-view"
 import { useParams } from "@remix-run/react"
 
 export function HydrateFallback() {

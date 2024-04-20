@@ -1,9 +1,9 @@
-import { ThemeHeader } from "@/[lang]/(main)/themes/_components/theme-header"
-import { ThemeList } from "@/[lang]/(main)/themes/_components/theme-list"
 import { AppPage } from "@/_components/app/app-page"
 import { AppPageHeader } from "@/_components/app/app-page-header"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
+import { ThemeHeader } from "@/routes/($lang)._main.themes._index/_components/theme-header"
+import { ThemeList } from "@/routes/($lang)._main.themes._index/_components/theme-list"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader() {

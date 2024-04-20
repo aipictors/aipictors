@@ -1,6 +1,6 @@
-import { NewAlbumImage } from "@/[lang]/(main)/new/album/_components/new-album-image"
-import { NewAlbumWorkList } from "@/[lang]/(main)/new/album/_components/new-album-work-list"
 import { AppPage } from "@/_components/app/app-page"
+import { NewAlbumImage } from "@/routes/($lang)._main.new.album/_components/new-album-image"
+import { NewAlbumWorkList } from "@/routes/($lang)._main.new.album/_components/new-album-work-list"
 
 export default function NewAlbum() {
   return (

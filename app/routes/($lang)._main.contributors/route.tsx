@@ -1,4 +1,4 @@
-import { ContributorsView } from "@/[lang]/(main)/contributors/_components/contributors-view"
+import { ContributorsView } from "@/routes/($lang)._main.contributors/_components/contributors-view"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 export const meta: MetaFunction = () => {

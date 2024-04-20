@@ -1,10 +1,10 @@
-import { AlbumArticleHeader } from "@/[lang]/(main)/albums/[album]/_components/album-article-header"
-import { AlbumWorkDescription } from "@/[lang]/(main)/albums/[album]/_components/album-work-description"
-import { AlbumWorkList } from "@/[lang]/(main)/albums/[album]/_components/album-work-list"
 import { AppPage } from "@/_components/app/app-page"
 import { albumQuery } from "@/_graphql/queries/album/album"
 import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
 import { createClient } from "@/_lib/client"
+import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_components/album-article-header"
+import { AlbumWorkDescription } from "@/routes/($lang)._main.albums.$album/_components/album-work-description"
+import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/album-work-list"
 import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 

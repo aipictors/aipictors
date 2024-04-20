@@ -1,6 +1,6 @@
-import { GenerationEditorLite } from "@/[lang]/generation/lite/_components/generation-editor-lite"
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
+import { GenerationEditorLite } from "@/routes/($lang).generation.lite/_components/generation-editor-lite"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader() {

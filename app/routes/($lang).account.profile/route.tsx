@@ -1,5 +1,5 @@
-import { AccountProfileForm } from "@/[lang]/account/profile/_components/account-profile-form"
 import { AppPageCenter } from "@/_components/app/app-page-center"
+import { AccountProfileForm } from "@/routes/($lang).account.profile/_components/account-profile-form"
 
 export default function AccountProfile() {
   return (

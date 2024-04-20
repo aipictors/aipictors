@@ -1,7 +1,7 @@
-import { TagReferencedWorkSection } from "@/[lang]/generation/tags/[tag]/_components/tag-referenced-work-section"
 import { ParamsError } from "@/_errors/params-error"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { TagReferencedWorkSection } from "@/routes/($lang).generation.tags.$tag/_components/tag-referenced-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

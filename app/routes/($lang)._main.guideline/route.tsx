@@ -1,5 +1,5 @@
-import { GuidelineArticle } from "@/[lang]/(main)/guideline/_components/guideline-article"
 import { AppPage } from "@/_components/app/app-page"
+import { GuidelineArticle } from "@/routes/($lang)._main.guideline/_components/guideline-article"
 
 /**
  * ガイドライン
