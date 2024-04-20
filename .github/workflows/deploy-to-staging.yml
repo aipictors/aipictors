@@ -13,15 +13,23 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - name: 👩‍💻 チェックアウト
-        uses: actions/checkout@v4
-      - name: 🔨 Bunを有効にする
-        uses: oven-sh/setup-bun@v1
-      - name: 🔨 インストール
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - name: cache node modules
+        id: cache-node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
+
+      - name: install deps
         run: bun install --ignore-scripts
-      - name: 💪 ビルド
+
+      - name: build
         run: bun run build
-      - name: 🚀 デプロイ
+        
+      - name: deploy(staging)
         id: cloudflare-wrangler
         uses: cloudflare/wrangler-action@v3
         with:
