@@ -3,7 +3,6 @@ import styles from "@/tailwind.css?url"
 import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
-import { Toaster } from "@/_components/app/app-sonner"
 import { AutoLoginProvider } from "@/_components/auto-login-provider"
 import { ContextProviders } from "@/_components/context-providers"
 import { cn } from "@/_lib/utils"
@@ -14,7 +13,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { cssBundleHref } from "@remix-run/css-bundle"
 import {
   Links,
   Meta,
@@ -27,9 +25,10 @@ import {
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import clsx from "clsx"
+import { ThemeProvider } from "next-themes"
 import { Suspense } from "react"
-import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from "remix-themes"
 import { themeSessionResolver } from "./sessions.server"
+import { Toaster } from "@/_components/app/app-sonner"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -39,10 +38,7 @@ export const headers: HeadersFunction = () => {
 }
 
 export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: styles },
-    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-  ]
+  return [{ rel: "stylesheet", href: styles }]
 }
 
 export const meta: MetaFunction = () => {
@@ -58,27 +54,38 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error) && error.status === 404) {
     return <AppNotFoundPage />
   }
+
+  return <AppNotFoundPage />
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { getTheme } = await themeSessionResolver(request)
-  return {
-    theme: getTheme(),
-  }
-}
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   const { getTheme } = await themeSessionResolver(request)
 
-export default function AppWithProviders() {
-  const data = useLoaderData<typeof loader>()
-  return (
-    <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
-      <App />
-    </ThemeProvider>
-  )
-}
+//   return {
+//     theme: getTheme(),
+//   }
+// }
 
-export function App() {
-  const data = useLoaderData<typeof loader>()
-  const [theme] = useTheme()
+/**
+ * remix-themeで使用する
+ */
+// export default function AppWithProviders() {
+//   const data = useLoaderData<typeof loader>()
+//   return (
+//     <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
+//       <App />
+//     </ThemeProvider>
+//   )
+// }
+
+type Props = Readonly<{
+  children: React.ReactNode
+}>
+
+/**
+ * https://remix.run/docs/en/main/file-conventions/root#layout-export
+ */
+export function Layout(props: Props) {
   if (typeof window !== "undefined") {
     init({
       dsn: import.meta.env.VITE_SENTRY_DSN!,
@@ -89,29 +96,48 @@ export function App() {
   }
 
   return (
-    <html lang={"ja"} suppressHydrationWarning className={clsx(theme)}>
+    <html
+      lang={"ja"}
+      suppressHydrationWarning
+      // className={clsx(theme)}
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} /> */}
         <Meta />
-        <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
         <Links />
       </head>
       <body className={cn("no-margin min-h-screen font-sans antialiased")}>
-        <ContextProviders>
-          <AutoLoginProvider>
-            <Suspense fallback={<AppLoadingPage />}>
-              <Outlet />
-            </Suspense>
-            <Toaster />
-            <Suspense fallback={null}>
-              <AppAnalytics />
-            </Suspense>
-          </AutoLoginProvider>
-        </ContextProviders>
+        <ThemeProvider
+          attribute={"class"}
+          defaultTheme={"system"}
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ContextProviders>
+            <Suspense fallback={<AppLoadingPage />}>{props.children}</Suspense>
+          </ContextProviders>
+        </ThemeProvider>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
+  )
+}
+
+export default function App() {
+  // const data = useLoaderData<typeof loader>()
+
+  // const [theme] = useTheme()
+
+  return (
+    <>
+      <Outlet />
+      <Suspense fallback={null}>
+        <AppAnalytics />
+      </Suspense>
+    </>
   )
 }

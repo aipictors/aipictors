@@ -17,6 +17,7 @@ export const AppBreadcrumb = (props: Props) => {
     <div className="overflow-x-auto">
       <nav className="flex space-x-2">
         {props.breadcrumb.itemListElement.map((item, index) => (
+          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
           <>
             <Link
               to={

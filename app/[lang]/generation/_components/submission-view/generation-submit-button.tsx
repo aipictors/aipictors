@@ -1,6 +1,5 @@
 import { GradientBorderButton } from "@/_components/button/gradient-border-button"
 import { Loader2Icon } from "lucide-react"
-import { Theme } from "remix-themes"
 
 type Props = {
   isLoading: boolean
@@ -12,6 +11,9 @@ type Props = {
 }
 
 export function GenerationSubmitButton(props: Props) {
+  const maxGeneratingCount =
+    props.maxGeneratingCount <= 0 ? 0 : props.maxGeneratingCount
+
   return (
     <GradientBorderButton
       onClick={props.onClick}
@@ -22,11 +24,12 @@ export function GenerationSubmitButton(props: Props) {
       <div className="flex items-center">
         {props.isLoading
           ? "処理中.."
-          : `${props.buttonActionCaption}(${props.generatingCount}/${props.maxGeneratingCount})`}
+          : `${props.buttonActionCaption}(${props.generatingCount}/${maxGeneratingCount})`}
         {props.generatingCount > 0 && (
           <Loader2Icon
-            color={Theme.LIGHT ? "white" : "black"}
-            className={"dark:black ml-2 w-4 animate-spin"}
+            className={
+              "dark:black ml-2 w-4 animate-spin text-white dark:text-black"
+            }
           />
         )}
       </div>

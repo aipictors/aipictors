@@ -107,7 +107,7 @@ export const config = {
     defaultNegativePromptValue: "EasyNegative, bad_prompt_version2, badhandv4",
     defaultScaleValue: 7,
     defaultStepsValue: 20,
-    defaultSamplerValue: "DPM++ 2M",
+    defaultSamplerValue: "DPM++ 2M Karras",
     defaultClipSkipValue: 2,
     samplerValues: [
       "Euler a",
@@ -116,7 +116,6 @@ export const config = {
       "DPM2",
       "DPM2 a",
       "DPM++ 2S a",
-      "DPM++ 2M",
       "LMS Karras",
       "DPM2 a Karras",
       "DPM++ 2S a Karras",
@@ -243,6 +242,12 @@ export const config = {
   wordpressLink: {
     logout: "https://www.aipictors.com/logout",
     top: "https://www.aipictors.com",
+  },
+  /**
+   * 汎用APIエンドポイント
+   */
+  internalApiEndpoint: {
+    promptsCheck: "https://internal.api.aipictors.com/prompts/check/index.php",
   },
   /**
    * バージョン

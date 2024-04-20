@@ -28,7 +28,7 @@ export const GenerationWorkListModelView = () => {
     return snap.value
   })
 
-  const { data: worksResp } = useQuery(worksQuery, {
+  const { data: worksResp, loading } = useQuery(worksQuery, {
     variables: {
       limit: 64,
       offset: 0,
@@ -101,6 +101,7 @@ export const GenerationWorkListModelView = () => {
         onChangeWord={setWord}
       />
       <GenerationWorkList
+        loading={loading}
         works={worksResp}
         onCancel={onCancel}
         thumbnailSize={thumbnailSize()}

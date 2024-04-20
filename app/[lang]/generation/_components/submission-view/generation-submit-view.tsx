@@ -3,6 +3,7 @@ import { GenerationSubmitOperationParts } from "@/[lang]/generation/_components/
 import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
 import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/[lang]/generation/_hooks/use-generation-query"
+import { checkNgPrompts } from "@/[lang]/generation/_utils/check-ng-prompts"
 import { createRandomString } from "@/[lang]/generation/_utils/create-random-string"
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import type {
@@ -277,20 +278,44 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
+    const userId = context.user?.id ?? null
+    if (userId === null) {
+      return null
+    }
+
+    const userNanoid = context.user?.nanoid ?? null
+    if (userNanoid === null) {
+      return null
+    }
+
+    const model = context.models.find((model) => {
+      return model.id === context.config.modelId
+    })
+    if (typeof model === "undefined") {
+      toast("モデルが見つかりません、再度モデルを選択しなおしてください。")
+      return
+    }
+
+    const ng = await checkNgPrompts(
+      context.config.promptText,
+      context.config.negativePromptText,
+      model.name,
+      userId,
+    )
+    if (ng.hit_words.length > 0) {
+      toast(`プロンプトにNGワードが含まれています: ${ng.hit_words}`)
+      return
+    }
+    if (ng.hit_negative_words.length > 0) {
+      toast(
+        `ネガティブプロンプトにNGワードが含まれています: ${ng.hit_negative_words}`,
+      )
+      return
+    }
+
     // 生成リクエストしたい回数分生成リクエストを行う
     // もし通常の連続生成を超過したら予約生成に切り替える
     try {
-      const model = context.models.find((model) => {
-        return model.id === context.config.modelId
-      })
-      if (typeof model === "undefined") return
-
-      const userNanoid = context.user?.nanoid ?? null
-      if (userNanoid === null) {
-        toast("画面更新して再度お試し下さい。")
-        return
-      }
-
       if (
         checkSameBeforeRequestAndToast(model.name, generationType, "") === true
       ) {

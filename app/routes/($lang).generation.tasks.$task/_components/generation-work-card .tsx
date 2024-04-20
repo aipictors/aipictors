@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   work: any //NonNullable<WorkQuery["work"]>
   isPreviewByHover: boolean
 }

@@ -10,8 +10,8 @@ const WorkArticleTags: React.FC<WorkArticleTagProps> = ({ tagNames }) => {
   return (
     <div className="flex flex-row flex-wrap">
       {tagNames.map((tagName) => (
-        <Link to={`/tags/${tagName}`}>
-          <Button key={tagName} variant={"link"}>{`#${tagName}`}</Button>
+        <Link to={`/tags/${tagName}`} key={tagName}>
+          <Button variant={"link"}>{`#${tagName}`}</Button>
         </Link>
       ))}
     </div>

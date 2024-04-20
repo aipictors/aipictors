@@ -45,7 +45,6 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useState } from "react"
-import { useTheme } from "remix-themes"
 
 /**
  * ヘッダーのお知らせメニュー
