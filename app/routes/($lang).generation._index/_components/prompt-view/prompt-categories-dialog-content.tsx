@@ -1,4 +1,3 @@
-import { PromptCategoryIcon } from "@/[lang]/generation/_components/prompt-view/prompt-category-icon"
 import {
   Accordion,
   AccordionContent,
@@ -13,6 +12,7 @@ import {
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { PromptCategoriesQuery } from "@/_graphql/__generated__/graphql"
+import { PromptCategoryIcon } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-category-icon"
 
 type Props = {
   selectedPromptIds: string[]

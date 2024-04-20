@@ -1,8 +1,3 @@
-import { GenerationReserveCountInput } from "@/[lang]/generation/_components/submission-view/generation-reserve-count-input"
-import { GenerationSubmitButton } from "@/[lang]/generation/_components/submission-view/generation-submit-button"
-import { GenerationTermsButton } from "@/[lang]/generation/_components/submission-view/generation-terms-button"
-import { SubscriptionDialogContent } from "@/[lang]/generation/_components/submission-view/subscription-dialog-content"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { GradientBorderButton } from "@/_components/button/gradient-border-button"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { Button } from "@/_components/ui/button"
@@ -20,6 +15,11 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { AuthContext } from "@/_contexts/auth-context"
+import { GenerationReserveCountInput } from "@/routes/($lang).generation._index/_components/submission-view/generation-reserve-count-input"
+import { GenerationSubmitButton } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-button"
+import { GenerationTermsButton } from "@/routes/($lang).generation._index/_components/submission-view/generation-terms-button"
+import { SubscriptionDialogContent } from "@/routes/($lang).generation._index/_components/submission-view/subscription-dialog-content"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 

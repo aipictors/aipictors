@@ -1,7 +1,3 @@
-import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
-import { GenerationTaskError } from "@/[lang]/generation/_components/task-view/generation-task-error"
-import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { PrivateImage } from "@/_components/private-image"
 import SwipeArea from "@/_components/swipe-area"
@@ -33,6 +29,10 @@ import {
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { CopyButton } from "./copy-button"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { GenerationTaskError } from "@/routes/($lang).generation._index/_components/task-view/generation-task-error"
+import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
+import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment

@@ -1,6 +1,6 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
 import { Checkbox } from "@/_components/ui/checkbox"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 
 export const GenerationConfigUpscale = () => {
   const context = useGenerationContext()

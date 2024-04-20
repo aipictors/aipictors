@@ -1,7 +1,7 @@
-import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
-import { GenerationTaskDetails } from "@/[lang]/generation/_components/task-view/generation-task-details"
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { Button } from "@/_components/ui/button"
+import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
+import { GenerationTaskDetails } from "@/routes/($lang).generation._index/_components/task-view/generation-task-details"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 
 /**
  * 生成履歴詳細

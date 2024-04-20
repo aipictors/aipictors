@@ -1,4 +1,4 @@
-import { InpaintCanvas } from "@/[lang]/generation/_components/submission-view/inpaint-canvas"
+import { InpaintCanvas } from "@/routes/($lang).generation._index/_components/submission-view/inpaint-canvas"
 
 type Props = {
   imageUrl: string

@@ -1,5 +1,5 @@
-import InPaintingEditImage from "@/[lang]/generation/_components/submission-view/in-painting-edit-image"
 import type { Meta, StoryObj } from "@storybook/react"
+import InPaintingEditImage from "build/server/assets/in-painting-edit-image-MV4P0fOs"
 
 const meta = {
   title: "画像生成/in-painting-edit-image",

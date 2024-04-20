@@ -1,4 +1,4 @@
-import { InPaintingSetting } from "@/[lang]/generation/_components/submission-view/in-painting-setting"
+import { InPaintingSetting } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-setting"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

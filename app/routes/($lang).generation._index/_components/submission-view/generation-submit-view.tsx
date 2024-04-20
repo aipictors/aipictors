@@ -1,10 +1,5 @@
 "use client"
-import { GenerationSubmitOperationParts } from "@/[lang]/generation/_components/submission-view/generation-submit-operation-parts"
-import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { useGenerationQuery } from "@/[lang]/generation/_hooks/use-generation-query"
-import { checkNgPrompts } from "@/[lang]/generation/_utils/check-ng-prompts"
-import { createRandomString } from "@/[lang]/generation/_utils/create-random-string"
+
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import type {
   ImageGenerationSizeType,
@@ -16,6 +11,12 @@ import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-imag
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
+import { GenerationSubmitOperationParts } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-operation-parts"
+import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
+import { checkNgPrompts } from "@/routes/($lang).generation._index/_utils/check-ng-prompts"
+import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"

@@ -1,7 +1,7 @@
-import { GenerationConfigMemoItem } from "@/[lang]/generation/_components/config-view/generation-config-memo-item"
 import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
+import { GenerationConfigMemoItem } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-item"
 import { useEffect, useState } from "react"
 
 type Props = {

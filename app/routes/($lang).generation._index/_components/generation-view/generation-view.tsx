@@ -1,4 +1,3 @@
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import {
   ResizableHandle,
@@ -6,6 +5,7 @@ import {
   ResizablePanelGroup,
 } from "@/_components/ui/resizable"
 import { config } from "@/config"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 

@@ -1,9 +1,8 @@
-import { ConfigModelButton } from "@/[lang]/generation/_components/config-view/config-model-button"
-import { GenerationModelListButton } from "@/[lang]/generation/_components/config-view/generation-model-list-button"
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
+import { GenerationModelListButton } from "@/routes/($lang).generation._index/_components/config-view/generation-model-list-button"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { CheckIcon } from "lucide-react"
 
 type Props = {

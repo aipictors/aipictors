@@ -1,5 +1,5 @@
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useCallback, useEffect } from "react"
 
 type Props = {

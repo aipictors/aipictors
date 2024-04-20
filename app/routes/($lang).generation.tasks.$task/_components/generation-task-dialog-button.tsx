@@ -1,6 +1,6 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
 import { GenerationTaskSheetView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view"

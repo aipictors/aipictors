@@ -1,8 +1,8 @@
-import { GenerationConfigPersistent } from "@/[lang]/generation/_components/generation-config-persistent"
-import { GenerationConfigRestoration } from "@/[lang]/generation/_components/generation-config-restoration"
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
-import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
+import { GenerationConfigPersistent } from "@/routes/($lang).generation._index/_components/generation-config-persistent"
+import { GenerationConfigRestoration } from "@/routes/($lang).generation._index/_components/generation-config-restoration"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
+import { GenerationConfigState } from "@/routes/($lang).generation._index/_machines/models/generation-config-state"
 
 type Props = {
   children: React.ReactNode

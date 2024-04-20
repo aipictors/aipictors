@@ -1,4 +1,4 @@
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useEffect } from "react"
 
 type Props = {

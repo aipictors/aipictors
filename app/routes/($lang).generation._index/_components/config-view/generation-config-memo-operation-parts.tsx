@@ -1,4 +1,3 @@
-import { GenerationConfigMemoSavingContent } from "@/[lang]/generation/_components/config-view/generation-config-memo-saving-contents"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,
@@ -7,6 +6,7 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import { GenerationConfigMemoSavingContent } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-saving-contents"
 import { useState } from "react"
 
 type Props = {

@@ -1,5 +1,3 @@
-import { ImageModelsList } from "@/[lang]/generation/_components/config-view/generation-image-model-list"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Button } from "@/_components/ui/button"
 import { Checkbox } from "@/_components/ui/checkbox"
 import {
@@ -12,6 +10,8 @@ import {
 } from "@/_components/ui/dialog"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
+import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index.js"
 import { useBoolean } from "usehooks-ts"
 

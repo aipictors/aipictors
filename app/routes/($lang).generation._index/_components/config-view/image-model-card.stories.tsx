@@ -1,4 +1,4 @@
-import { ImageModelCard } from "@/[lang]/generation/_components/config-view/image-model-card"
+import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

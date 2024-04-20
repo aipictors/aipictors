@@ -1,4 +1,3 @@
-import { ImageModelCard } from "@/[lang]/generation/_components/config-view/image-model-card"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import {
   Select,
@@ -7,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_components/ui/select"
+import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
 import { useMemo, useState } from "react"
 
 type Model = {

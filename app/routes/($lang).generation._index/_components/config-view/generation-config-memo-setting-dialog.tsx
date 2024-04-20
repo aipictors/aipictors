@@ -1,5 +1,3 @@
-import { GenerationConfigMemoList } from "@/[lang]/generation/_components/config-view/generation-config-memo-list"
-import { GenerationConfigMemoOperationParts } from "@/[lang]/generation/_components/config-view/generation-config-memo-operation-parts"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,
@@ -8,6 +6,8 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
+import { GenerationConfigMemoList } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-list"
+import { GenerationConfigMemoOperationParts } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-operation-parts"
 
 type Props = {
   isOpen: boolean

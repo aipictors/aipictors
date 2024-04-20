@@ -1,6 +1,6 @@
+import { GenerationConfigAction } from "@/routes/($lang).generation._index/_machines/models/generation-config-action"
+import { GenerationConfigState } from "@/routes/($lang).generation._index/_machines/models/generation-config-state"
 import { describe, expect, test } from "bun:test"
-import { GenerationConfigAction } from "@/[lang]/generation/_machines/models/generation-config-action"
-import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 
 const config = new GenerationConfigState({
   modelId: "",

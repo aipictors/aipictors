@@ -1,4 +1,3 @@
-import { GenerationConfigContext } from "@/[lang]/generation/_contexts/generation-config-context"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -6,6 +5,7 @@ import {
 } from "@/_components/ui/resizable"
 import { Separator } from "@/_components/ui/separator"
 import { config } from "@/config"
+import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {

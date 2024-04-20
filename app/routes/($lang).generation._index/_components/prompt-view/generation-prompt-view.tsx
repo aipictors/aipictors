@@ -1,10 +1,9 @@
-import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
-import { PromptCategoriesDialogContent } from "@/[lang]/generation/_components/prompt-view/prompt-categories-dialog-content"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { formatPromptText } from "@/[lang]/generation/_utils/format-prompt-text"
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogTrigger } from "@/_components/ui/dialog"
 import { Textarea } from "@/_components/ui/textarea"
+import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
+import { PromptCategoriesDialogContent } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-categories-dialog-content"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 

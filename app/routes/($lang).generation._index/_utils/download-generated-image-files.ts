@@ -1,6 +1,6 @@
-import { createImageFiles } from "@/[lang]/generation/_utils/create-image-files"
-import { downloadZipFile } from "@/[lang]/generation/_utils/download-zip-file"
 import { config } from "@/config"
+import { createImageFiles } from "@/routes/($lang).generation._index/_utils/create-image-files"
+import { downloadZipFile } from "@/routes/($lang).generation._index/_utils/download-zip-file"
 
 /**
  * 画像ファイルをZip形式でダウンロードする

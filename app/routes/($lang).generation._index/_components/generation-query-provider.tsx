@@ -1,5 +1,3 @@
-import { GenerationQueryContext } from "@/[lang]/generation/_contexts/generation-query-context"
-import { activeImageGeneration } from "@/[lang]/generation/_functions/active-image-generation"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import type {
@@ -9,6 +7,8 @@ import type {
 } from "@/_graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
+import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
 import { useQuery } from "@apollo/client/index.js"
 import { useContext, useEffect } from "react"
 

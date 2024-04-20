@@ -1,6 +1,7 @@
 "use client"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+
 import { Card } from "@/_components/ui/card"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 
 /**
  * 作品プレビュー内容

@@ -1,6 +1,3 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import type { TaskContentPositionType } from "@/[lang]/generation/_types/task-content-position-type"
-import type { TaskListThumbnailType } from "@/[lang]/generation/_types/task-list-thumbnail-type"
 import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
@@ -18,6 +15,9 @@ import { Slider } from "@/_components/ui/slider"
 import { deleteReservedImageGenerationTasksMutation } from "@/_graphql/mutations/delete-image-generation-reserved-tasks"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
+import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index.js"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"

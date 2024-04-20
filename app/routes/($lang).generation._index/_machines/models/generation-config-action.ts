@@ -1,5 +1,5 @@
-import { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
 import { config } from "@/config"
+import { GenerationConfigState } from "@/routes/($lang).generation._index/_machines/models/generation-config-state"
 import { produce } from "immer"
 
 type Props = {

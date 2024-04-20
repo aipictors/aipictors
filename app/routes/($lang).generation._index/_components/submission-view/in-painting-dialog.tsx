@@ -1,4 +1,3 @@
-import { InPaintingImageForm } from "@/[lang]/generation/_components/submission-view/in-painting-image-form"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,
@@ -6,6 +5,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/_components/ui/dialog"
+import { InPaintingImageForm } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-image-form"
 
 type Props = {
   isOpen: boolean

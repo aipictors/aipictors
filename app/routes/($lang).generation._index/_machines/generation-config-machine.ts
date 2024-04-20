@@ -1,4 +1,4 @@
-import type { GenerationConfigState } from "@/[lang]/generation/_machines/models/generation-config-state"
+import type { GenerationConfigState } from "@/routes/($lang).generation._index/_machines/models/generation-config-state"
 import { assign, createMachine } from "xstate"
 
 /**

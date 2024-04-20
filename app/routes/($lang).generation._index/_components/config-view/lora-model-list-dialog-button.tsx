@@ -1,4 +1,3 @@
-import { LoraImageModelList } from "@/[lang]/generation/_components/config-view/lora-image-model-list"
 import { Button } from "@/_components/ui/button"
 import {
   Dialog,
@@ -10,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/_components/ui/dialog"
 import type { ImageLoraModelsQuery } from "@/_graphql/__generated__/graphql"
+import { LoraImageModelList } from "@/routes/($lang).generation._index/_components/config-view/lora-image-model-list"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {

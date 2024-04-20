@@ -1,6 +1,6 @@
-import { ConfigLoraModel } from "@/[lang]/generation/_components/config-view/config-lora-model"
-import { LoraModelListDialogButton } from "@/[lang]/generation/_components/config-view/lora-model-list-dialog-button"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
+import { ConfigLoraModel } from "@/routes/($lang).generation._index/_components/config-view/config-lora-model"
+import { LoraModelListDialogButton } from "@/routes/($lang).generation._index/_components/config-view/lora-model-list-dialog-button"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useBoolean } from "usehooks-ts"
 
 export const GenerationConfigLoraModels = () => {

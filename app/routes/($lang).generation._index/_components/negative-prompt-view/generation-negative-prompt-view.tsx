@@ -1,6 +1,6 @@
-import { GenerationViewCard } from "@/[lang]/generation/_components/generation-view-card"
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
 import { Textarea } from "@/_components/ui/textarea"
+import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 
 export const GenerationNegativePromptView = () => {
   const context = useGenerationContext()

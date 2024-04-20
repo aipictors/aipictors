@@ -1,6 +1,6 @@
-import { useGenerationContext } from "@/[lang]/generation/_hooks/use-generation-context"
-import { downloadGeneratedImageFiles } from "@/[lang]/generation/_utils/download-generated-image-files"
 import { Button } from "@/_components/ui/button"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { downloadGeneratedImageFiles } from "@/routes/($lang).generation._index/_utils/download-generated-image-files"
 import { useMutation } from "@tanstack/react-query"
 import { ArrowDownToLine, Loader2 } from "lucide-react"
 import { toast } from "sonner"
