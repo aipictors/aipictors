@@ -1,4 +1,3 @@
-import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
@@ -16,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react"
 import { CopyButton } from "./copy-button"
+import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment | undefined

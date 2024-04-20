@@ -1,8 +1,3 @@
-import { InPaintingDialog } from "@/[lang]/generation/_components/submission-view/in-painting-dialog"
-import { StarRating } from "@/[lang]/generation/_components/task-view/star-rating"
-import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { createImageFileFromUrl } from "@/[lang]/generation/_utils/create-image-file-from-url"
-import { downloadImageFile } from "@/[lang]/generation/_utils/download-image-file"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
@@ -44,6 +39,11 @@ import { Suspense, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { CopyButton } from "./copy-button"
+import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
+import { downloadImageFile } from "@/routes/($lang).generation._index/_utils/download-image-file"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
+import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 
 type Props = {
   taskId: string

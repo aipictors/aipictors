@@ -1,7 +1,7 @@
+import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
-import { GenerationConfigAction } from "@/[lang]/generation/_machines/models/generation-config-action"
-import { config } from "@/config"
+import { GenerationConfigAction } from "@/routes/($lang).generation._index/_machines/models/generation-config-action"
 import { useContext } from "react"
 
 export const useGenerationContext = () => {

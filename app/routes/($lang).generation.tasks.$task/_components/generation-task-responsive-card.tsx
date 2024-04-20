@@ -1,6 +1,6 @@
-import type { TaskContentPositionType } from "@/[lang]/generation/_types/task-content-position-type"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
+import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
 import { GenerationTaskButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-button"
 import { GenerationTaskDialogButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-dialog-button"

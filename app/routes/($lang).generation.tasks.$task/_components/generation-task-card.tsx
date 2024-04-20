@@ -1,5 +1,5 @@
-import type { TaskContentPositionType } from "@/[lang]/generation/_types/task-content-position-type"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-responsive-card"
 
