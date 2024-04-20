@@ -1,6 +1,5 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
-import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
@@ -57,7 +56,7 @@ export const GenerationWorkCard = (props: Props) => {
             context.config.modelType,
             props.work.sampler ?? context.config.sampler,
             props.work.scale ?? context.config.scale,
-            context.config.vae ?? context.config.vae,
+            props.work.vae ?? context.config.vae,
             props.work.prompt,
             props.work.negativePrompt,
             -1,

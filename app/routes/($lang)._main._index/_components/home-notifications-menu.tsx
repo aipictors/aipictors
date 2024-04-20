@@ -1,49 +1,12 @@
 "use client"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
-import { ScrollArea } from "@/_components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { AuthContext } from "@/_contexts/auth-context"
-import type {
-  FollowNotificationNode,
-  LikedWorkNotificationNode,
-  NotificationType,
-  ViewerNotificationsQuery,
-  WorkAwardNotificationNode,
-  WorkCommentNotificationNode,
-  WorkCommentReplyNotificationNode,
-} from "@/_graphql/__generated__/graphql"
-import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
-import { config } from "@/config"
-import { HeaderNotificationItem } from "@/routes/($lang)._main._index/_components/notification/header-notification-item"
-import { useQuery } from "@apollo/client"
-import { Link } from "@remix-run/react"
-import {
-  BellIcon,
-  GemIcon,
-  LogOutIcon,
-  MessageCircleIcon,
-  MoonIcon,
-  SettingsIcon,
-  SunIcon,
-  UserCircleIcon,
-  UserIcon,
-} from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
+import { BellIcon } from "lucide-react"
 import { useState } from "react"
 
 /**

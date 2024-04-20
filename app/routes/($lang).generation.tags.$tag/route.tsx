@@ -20,7 +20,6 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 32,
       where: {
         tagNames: [decodeURIComponent(props.params.tag)],
-        hasGenerationPrompt: true,
         isFeatured: true,
         hasPrompt: true,
       },

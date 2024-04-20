@@ -4,7 +4,6 @@ import type { TaskContentPositionType } from "@/routes/($lang).generation._index
 import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
 import { GenerationTaskButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-button"
 import { GenerationTaskDialogButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-dialog-button"
-import { GenerationTaskLinkCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-link-card"
 import { ReservedGenerationLinkCard } from "@/routes/($lang).generation.tasks.$task/_components/reserved-generation-link-card"
 import { ErrorBoundary } from "react-error-boundary"
 import { useMediaQuery } from "usehooks-ts"

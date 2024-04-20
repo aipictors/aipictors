@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { zipSync } from "fflate"
 
 interface FileObject {
   name: string

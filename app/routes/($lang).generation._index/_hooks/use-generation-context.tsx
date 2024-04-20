@@ -245,7 +245,7 @@ export const useGenerationContext = () => {
    * プレビュー表示の画像URL
    * @param taskId タスクID
    */
-  const updatePreviewImageURL = (url: string) => {
+  const updatePreviewImageURL = (url: string | null) => {
     const value = configAction.updatePreviewImageURL(url).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
