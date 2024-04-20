@@ -83,6 +83,10 @@ const CropImageField = (props: Props) => {
     props.onDeleteImage()
   }
 
+  if (image === undefined) {
+    return null
+  }
+
   if (croppedImage && !props.isHidePreviewImage) {
     return (
       <>
@@ -108,7 +112,7 @@ const CropImageField = (props: Props) => {
           </Button>
         </Card>
         <ImageCropperModal
-          src={image!}
+          src={image}
           isOpen={isOpen}
           cropContainerClassName={cropperClassName}
           cropWidth={props.cropWidth}
@@ -135,7 +139,7 @@ const CropImageField = (props: Props) => {
         />
       </div>
       <ImageCropperModal
-        src={image!}
+        src={image}
         isOpen={isOpen}
         cropContainerClassName={cropperClassName}
         cropWidth={props.cropWidth}

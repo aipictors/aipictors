@@ -6,24 +6,14 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": true,
-    "ignore": [
-      "**/*.{yml,yaml,mdx,md,svg,ico}",
-      "**/__generated__/**",
-      "node_modules/**",
-      "public/**",
-      "storybook-static/**"
-    ]
+    "ignore": ["**/__generated__/**", "storybook-static/**"]
   },
   "linter": {
     "rules": {
       "recommended": true,
       "correctness": {
         "useExhaustiveDependencies": "off",
-        "noUnusedImports": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off"
+        "noUnusedImports": "error"
       },
       "nursery": {
         "useSortedClasses": {

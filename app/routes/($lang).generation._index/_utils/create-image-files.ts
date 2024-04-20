@@ -36,20 +36,18 @@ export async function createImageFiles(props: Props) {
         throw new Error(`Image element not found for taskId: ${imageId}`)
       }
 
-      const response = await fetch(
-        props.dataName
-          ? imageElement.dataset[props.dataName!]!
-          : imageElement.src,
-      )
+      const dataName = props.dataName
+        ? imageElement.dataset[props.dataName]
+        : imageElement.src
+
+      if (typeof dataName === "undefined") {
+        throw new Error("dataName is undefined")
+      }
+
+      const response = await fetch(dataName)
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch image: ${
-            props.dataName
-              ? imageElement.dataset[props.dataName!]!
-              : imageElement.src
-          }`,
-        )
+        throw new Error(`Failed to fetch image: ${dataName}`)
       }
 
       const blob = await response.blob()

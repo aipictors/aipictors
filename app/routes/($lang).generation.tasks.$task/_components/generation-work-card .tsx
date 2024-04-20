@@ -1,6 +1,5 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
-import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
