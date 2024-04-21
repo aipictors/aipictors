@@ -240,9 +240,8 @@ export const GenerationTaskEditableCard = (props: Props) => {
       {/* 削除ボタン */}
       {isDesktop && isHovered && props.isSelectDisabled && (
         <GenerationTaskDeleteButton
-          onDeleteTask={onDeleteTask}
+          onDelete={onDeleteTask}
           isDeletedLoading={isDeletedLoading}
-          taskNanoid={props.taskNanoid}
         />
       )}
       {/* 保護ボタン */}

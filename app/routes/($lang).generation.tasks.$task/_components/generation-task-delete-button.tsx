@@ -3,8 +3,7 @@ import { cn } from "@/_lib/utils"
 import { Loader2Icon, XIcon } from "lucide-react"
 
 type Props = {
-  taskNanoid: string
-  onDeleteTask(): void
+  onDelete(): void
   isDeletedLoading: boolean
 }
 
@@ -29,7 +28,7 @@ export const GenerationTaskDeleteButton = (props: Props) => {
           <AppConfirmDialog
             title={"確認"}
             description={"本当に削除しますか？"}
-            onNext={props.onDeleteTask}
+            onNext={props.onDelete}
             onCancel={() => {}}
           >
             <XIcon color="black" className={"fill-white"} />

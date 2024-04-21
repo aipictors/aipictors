@@ -47,11 +47,13 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
 
   if (workImageURL) {
     return (
-      <img
-        className="h-auto w-auto rounded object-contain xl:h-screen"
-        alt=""
-        src={workImageURL}
-      />
+      <div className="relative bg-gray-100 dark:bg-gray-900">
+        <img
+          className="m-auto h-auto w-auto rounded object-contain xl:h-[80vh]"
+          alt=""
+          src={workImageURL}
+        />
+      </div>
     )
   }
 

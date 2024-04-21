@@ -12,7 +12,7 @@ import { GenerationTaskRatingSelect } from "@/routes/($lang).generation._index/_
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
-import { GenerationTaskDeleteButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-delete-button"
+import { GenerationTasksDeleteButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-tasks-delete-button"
 import { useMutation } from "@apollo/client/index.js"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useState } from "react"
@@ -59,8 +59,11 @@ export const GenerationTaskListActions = (props: Props) => {
     return snap.value
   })
 
+  const [isDeletedLoading, setIsDeletedLoading] = useState(false)
+
   const onTrashTasks = async () => {
     try {
+      setIsDeletedLoading(true)
       const promises = props.selectedTaskIds.map((taskId) =>
         deleteTask({
           variables: {
@@ -72,6 +75,7 @@ export const GenerationTaskListActions = (props: Props) => {
         }),
       )
       await Promise.all(promises)
+      setIsDeletedLoading(false)
       props.setHidedTaskIds([...props.hidedTaskIds, ...props.selectedTaskIds])
       props.setSelectedTaskIds([])
     } catch (error) {
@@ -173,9 +177,10 @@ export const GenerationTaskListActions = (props: Props) => {
       </div>
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
         {/* 削除 */}
-        <GenerationTaskDeleteButton
+        <GenerationTasksDeleteButton
           disabled={false}
           onDelete={onTrashTasks}
+          isDeletedLoading={isDeletedLoading}
           title="複数選択して一括削除できます。"
           isEnable={isEmpty}
         />

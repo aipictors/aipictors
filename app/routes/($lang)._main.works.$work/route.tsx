@@ -5,7 +5,9 @@ import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
 import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
+import WorkNextAndPrevious from "@/routes/($lang)._main.works.$work/_components/work-next-and-previous"
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
+import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -56,7 +58,7 @@ export default function Work() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <div className="w-full p-4">
+    <div className="flex w-full p-4">
       <div className="flex flex-col items-center justify-center">
         <div className="mx-auto w-full max-w-screen-lg">
           <Suspense fallback={<AppLoadingPage />}>
@@ -66,17 +68,17 @@ export default function Work() {
           <WorkCommentList comments={data.workComments} />
         </div>
       </div>
-      {/* <div className="w-full lg:max-w-xs pl-4 invisible lg:visible items-start">
+      <div className="invisible w-full items-start pl-4 lg:visible lg:max-w-xs">
         <WorkUser
-          userName={workResp.data.work.user.name}
-          userIconImageURL={workResp.data.work.user.iconImage?.downloadURL}
-          userFollowersCount={workResp.data.work.user.followersCount}
-          userBiography={workResp.data.work.user.biography}
-          userPromptonId={workResp.data.work.user.promptonUser?.id}
-          userWorksCount={workResp.data.work.user.worksCount}
+          userName={data.work.user.name}
+          userIconImageURL={data.work.user.iconImage?.downloadURL}
+          userFollowersCount={data.work.user.followersCount}
+          userBiography={data.work.user.biography}
+          userPromptonId={data.work.user.promptonUser?.id}
+          userWorksCount={data.work.user.worksCount}
         />
-        <WorkNextAndPrevious work={workResp.data.work} />
-      </div> */}
+        <WorkNextAndPrevious work={data.work} />
+      </div>
     </div>
   )
 }

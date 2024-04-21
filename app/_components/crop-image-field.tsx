@@ -83,10 +83,6 @@ const CropImageField = (props: Props) => {
     props.onDeleteImage()
   }
 
-  if (image === undefined) {
-    return null
-  }
-
   if (croppedImage && !props.isHidePreviewImage) {
     return (
       <>
@@ -111,15 +107,17 @@ const CropImageField = (props: Props) => {
             <XIcon className="h-6 w-6" />
           </Button>
         </Card>
-        <ImageCropperModal
-          src={image}
-          isOpen={isOpen}
-          cropContainerClassName={cropperClassName}
-          cropWidth={props.cropWidth}
-          cropHeight={props.cropHeight}
-          onCrop={onCrop}
-          onClose={onClose}
-        />
+        {image && (
+          <ImageCropperModal
+            src={image}
+            isOpen={isOpen}
+            cropContainerClassName={cropperClassName}
+            cropWidth={props.cropWidth}
+            cropHeight={props.cropHeight}
+            onCrop={onCrop}
+            onClose={onClose}
+          />
+        )}
       </>
     )
   }
@@ -138,15 +136,17 @@ const CropImageField = (props: Props) => {
           className="left- 0 absolute top-0 h-full w-full cursor-pointer opacity-0"
         />
       </div>
-      <ImageCropperModal
-        src={image}
-        isOpen={isOpen}
-        cropContainerClassName={cropperClassName}
-        cropWidth={props.cropWidth}
-        cropHeight={props.cropHeight}
-        onCrop={onCrop}
-        onClose={onClose}
-      />
+      {image && (
+        <ImageCropperModal
+          src={image}
+          isOpen={isOpen}
+          cropContainerClassName={cropperClassName}
+          cropWidth={props.cropWidth}
+          cropHeight={props.cropHeight}
+          onCrop={onCrop}
+          onClose={onClose}
+        />
+      )}
     </>
   )
 }

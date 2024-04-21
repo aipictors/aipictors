@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/_components/ui/popover"
 import { useLocation } from "@remix-run/react"
-import { Files, Share2 } from "lucide-react"
+import { Share2 } from "lucide-react"
 import CopyWorkUrlButton from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
 
@@ -37,14 +37,14 @@ export const SharePopover = (props: Props) => {
               url={`${currentUrl}\n`}
               hashtags={["Aipictors", "AIIllust"]}
             />
-            <Button
+            {/* <Button
               disabled
               className="flex items-center gap-2"
               variant="outline"
             >
               <Files />
               イラストをコピー
-            </Button>
+            </Button> */}
           </div>
         </div>
       </PopoverContent>
