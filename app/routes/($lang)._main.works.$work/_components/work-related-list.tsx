@@ -23,19 +23,18 @@ type Props = {
 
 export function WorkRelatedList(props: Props) {
   return (
-    <div className="space-y-4 pt-2">
-      <p className="text-lg">関連作品</p>
+    <div className="max-w-[80vw] space-y-4 pt-2">
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
           {props.works.map((work) => (
             <CarouselItem
               key={work.id}
-              className="basis-1/4 lg:basis-1/6 md:basis-1/5"
+              className="mr-2 basis-1/3 rounded bg-gray-100 lg:basis-1/4 md:basis-1/4 sm:basis-1/3 dark:bg-gray-900"
             >
               <Link to={`/works/${work.id}`}>
                 <img
                   key={work.id}
-                  className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32"
+                  className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32" // object-cover を object-contain に変更
                   alt=""
                   src={work.largeThumbnailImageURL}
                   height={work.largeThumbnailImageHeight}

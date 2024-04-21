@@ -47,7 +47,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
 
   if (workImageURL) {
     return (
-      <div className="relative bg-gray-100 dark:bg-gray-900">
+      <div className="relative m-0 bg-gray-100 dark:bg-gray-900">
         <img
           className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
           alt=""

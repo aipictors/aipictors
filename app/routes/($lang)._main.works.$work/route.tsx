@@ -58,7 +58,7 @@ export default function Work() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <div className="flex w-full p-4">
+    <div className="flex w-full overflow-hidden p-4">
       <div className="flex flex-col items-center justify-center">
         <div className="mx-auto w-full max-w-screen-lg">
           <Suspense fallback={<AppLoadingPage />}>
@@ -80,16 +80,18 @@ export default function Work() {
           </div>
         </div>
       </div>
-      <div className="hidden w-full items-start pl-4 lg:block lg:max-w-xs">
-        <WorkUser
-          userId={data.work.user.id}
-          userName={data.work.user.name}
-          userIconImageURL={data.work.user.iconImage?.downloadURL}
-          userFollowersCount={data.work.user.followersCount}
-          userBiography={data.work.user.biography}
-          userPromptonId={data.work.user.promptonUser?.id}
-          userWorksCount={data.work.user.worksCount}
-        />
+      <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
+        <div className="mt-2 md:mt-0">
+          <WorkUser
+            userId={data.work.user.id}
+            userName={data.work.user.name}
+            userIconImageURL={data.work.user.iconImage?.downloadURL}
+            userFollowersCount={data.work.user.followersCount}
+            userBiography={data.work.user.biography}
+            userPromptonId={data.work.user.promptonUser?.id}
+            userWorksCount={data.work.user.worksCount}
+          />
+        </div>
         <WorkNextAndPrevious work={data.work} />
       </div>
     </div>

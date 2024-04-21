@@ -42,7 +42,7 @@ export const SmallSquareThumbnail = (props: Props) => {
     <div
       className={
         props.isFocus
-          ? "mr-2 h-20 w-20 overflow-hidden rounded-lg border-2 border-primary border-solid opacity-75"
+          ? "mr-2 h-20 w-20 overflow-hidden rounded-lg opacity-30"
           : "mr-2 h-20 w-20 overflow-hidden rounded-lg transition-all hover:opacity-75"
       }
       style={{}}

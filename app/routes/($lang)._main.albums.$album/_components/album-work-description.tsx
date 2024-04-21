@@ -7,6 +7,7 @@ import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
+
 type Props = {
   album: NonNullable<AlbumQuery["album"]>
 }

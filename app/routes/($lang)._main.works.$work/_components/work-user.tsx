@@ -65,7 +65,7 @@ export const WorkUser = (props: Props) => {
             <p className="text-sm opacity-50">{"フォロワー"}</p>
           </div>
           {props.userPromptonId && (
-            <PromptonRequestTextButton className="flex-1" />
+            <PromptonRequestTextButton promptonId={props.userPromptonId} />
           )}
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />

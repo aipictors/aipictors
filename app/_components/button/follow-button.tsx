@@ -87,23 +87,24 @@ export const FollowButton = (props: Props) => {
     <button
       type="button"
       onClick={onUnFollow}
-      disabled={isFollowing}
-      className={`h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80${
+      disabled={isUnFollowing}
+      // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      className={`h-9 rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500${
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         " "
-      }${isUnFollowing ? "opacity-50" : ""}`}
+      }${isUnFollowing ? "opacity-20" : "hover:opacity-30"}`}
     >
-      {"フォロー済み"}
+      {"フォロー中"}
     </button>
   ) : (
     <button
       type="button"
       onClick={onFollow}
       disabled={isFollowing}
-      className={`h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80${
+      className={`h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500${
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         " "
-      }${isUnFollowing ? "opacity-50" : ""}`}
+      }${isFollowing ? "opacity-20" : "hover:opacity-80"}`}
     >
       {"フォローする"}
     </button>
