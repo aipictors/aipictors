@@ -55,6 +55,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /**
+         * custom color
+         */
+        "clear-bright-blue": "#1fa3fb",
       },
       /**
        * shadcn/ui

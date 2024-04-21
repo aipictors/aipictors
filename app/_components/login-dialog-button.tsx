@@ -16,6 +16,8 @@ type Props = {
   isWidthFull?: boolean
   triggerChildren?: React.ReactNode
   isLoading?: boolean
+  description?: string
+  imageUrl?: string
 }
 
 /**
@@ -47,7 +49,8 @@ export function LoginDialogButton(props: Props) {
         <DialogHeader>
           <DialogTitle>{"ログイン"}</DialogTitle>
           <DialogDescription>
-            {"ここから先はログインが必要みたい。"}
+            {props.imageUrl && <img alt="補足" src={props.imageUrl} />}
+            {props.description || "ここから先はログインが必要みたい。"}
           </DialogDescription>
         </DialogHeader>
         <LoginDialogContent />

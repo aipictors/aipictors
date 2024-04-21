@@ -49,7 +49,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
     return (
       <div className="relative bg-gray-100 dark:bg-gray-900">
         <img
-          className="m-auto h-auto w-auto rounded object-contain xl:h-[80vh]"
+          className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
           alt=""
           src={workImageURL}
         />

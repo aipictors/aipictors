@@ -20,5 +20,7 @@ export const userFieldsFragment = gql(`
       id
       downloadURL
     }
+    isFollower
+    isFollowee
   }
 `)

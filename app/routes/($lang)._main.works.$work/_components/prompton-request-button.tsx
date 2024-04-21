@@ -1,4 +1,5 @@
 import { Button, type ButtonProps } from "@/_components/ui/button"
+import { GiftIcon } from "lucide-react"
 
 type Props = ButtonProps
 
@@ -7,8 +8,8 @@ type Props = ButtonProps
  */
 export const PromptonRequestButton = (props: Props) => {
   return (
-    <Button size={"sm"} variant={"secondary"} {...props}>
-      {"支援"}
+    <Button size={"icon"} variant={"secondary"} {...props}>
+      <GiftIcon className="w-4" />
     </Button>
   )
 }

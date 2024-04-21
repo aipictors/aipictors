@@ -5,6 +5,7 @@ export const workQuery = gql(`
     work(id: $id) {
       id
       title
+      rating
       description
       imageURL
       largeThumbnailImageURL
@@ -46,14 +47,27 @@ export const workQuery = gql(`
         smallThumbnailImageWidth
         smallThumbnailImageHeight
       }
+      model
+      modelHash
+      isTagEditable
       isLiked
       isInCollection
+      isPromotion
       prompt
       negativePrompt
       seed
       steps
       sampler
       scale
+      strength
+      otherGenerationParams
+      pngInfo
+      style
+      updatedAt
+      dailyRanking
+      weeklyRanking
+      monthlyRanking
+      relatedUrl
     }
   }
 `)

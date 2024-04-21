@@ -66,10 +66,23 @@ export default function Work() {
           </Suspense>
           <WorkRelatedList works={data.work.user.works} />
           <WorkCommentList comments={data.workComments} />
+
+          <div className="block lg:hidden">
+            <WorkUser
+              userId={data.work.user.id}
+              userName={data.work.user.name}
+              userIconImageURL={data.work.user.iconImage?.downloadURL}
+              userFollowersCount={data.work.user.followersCount}
+              userBiography={data.work.user.biography}
+              userPromptonId={data.work.user.promptonUser?.id}
+              userWorksCount={data.work.user.worksCount}
+            />
+          </div>
         </div>
       </div>
-      <div className="invisible w-full items-start pl-4 lg:visible lg:max-w-xs">
+      <div className="hidden w-full items-start pl-4 lg:block lg:max-w-xs">
         <WorkUser
+          userId={data.work.user.id}
           userName={data.work.user.name}
           userIconImageURL={data.work.user.iconImage?.downloadURL}
           userFollowersCount={data.work.user.followersCount}

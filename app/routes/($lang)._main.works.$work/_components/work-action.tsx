@@ -1,7 +1,8 @@
 import { Button } from "@/_components/ui/button"
-import { FolderIcon, HeartIcon } from "lucide-react"
+import { FolderIcon } from "lucide-react"
 import MenuPopover from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
+import { LikeButton } from "@/_components/like-button"
 
 type Props = {
   title?: string
@@ -16,13 +17,7 @@ export const WorkAction = (props: Props) => {
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
-        <Button disabled>
-          <HeartIcon className="mr-2" />
-          <div className={"flex space-x-2"}>
-            <span>{"いいね"}</span>
-            <span>{props.workLikesCount}</span>
-          </div>
-        </Button>
+        <LikeButton size={40} text={`いいね ${props.workLikesCount}`} />
         <Button aria-label={"フォルダに追加"} size={"icon"} variant="secondary">
           <FolderIcon />
         </Button>
