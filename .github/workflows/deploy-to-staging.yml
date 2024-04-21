@@ -37,3 +37,11 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: pages deploy ./build/client --project-name=aipictors
+      
+      - uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Deployment URL: ${{ steps.cloudflare-wrangler.outputs.deployment-url }}
+          comment_tag: execution
+
+
