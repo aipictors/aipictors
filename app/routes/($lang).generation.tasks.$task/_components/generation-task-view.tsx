@@ -348,12 +348,20 @@ export function GenerationTaskView(props: Props) {
               text={"再利用"}
               icon={ArrowUpRightSquare}
             />
-            <GenerationMenuButton
+            <AppConfirmDialog
               title={"投稿する"}
-              onClick={onPost}
-              text={"投稿"}
-              icon={FileUp}
-            />
+              description={"投稿サイトAipictorsに作品を投稿しますか？"}
+              onNext={onPost}
+              onCancel={() => {}}
+              cookieKey={"generation_post"}
+            >
+              <GenerationMenuButton
+                title={"投稿する"}
+                onClick={() => {}}
+                text={"投稿"}
+                icon={FileUp}
+              />
+            </AppConfirmDialog>
             <GenerationMenuButton
               title={"生成情報をコピーする"}
               onClick={() => copyGeneration(GenerationParameters)}

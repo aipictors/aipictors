@@ -27,10 +27,11 @@ export function GenerationTaskProtectedSelect(props: Props) {
       defaultValue={props.defaultValue?.toString()}
     >
       <SelectTrigger
-        className="w-24"
+        className="w-32"
         title="履歴の保存期間を過ぎても保護扱い中の履歴を絞る"
       >
         <LockKeyholeIcon className="w-4" />
+        {"永久保管"}
         <SelectValue placeholder="-" />
       </SelectTrigger>
       <SelectContent>

@@ -156,7 +156,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     <Suspense
                       fallback={
                         <GenerationTaskContentImagePlaceHolder
-                          className={"m-auto h-72 max-h-96 max-w-['50vw']"}
+                          className={"m-auto max-h-96 max-w-['50vw']"}
                         />
                       }
                     >
@@ -165,7 +165,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         taskToken={props.task.token}
                       >
                         <PrivateImage
-                          className={"m-auto h-72 max-h-96"}
+                          className={"m-auto max-h-96"}
                           taskId={props.task.id}
                           token={props.task.token as string}
                           isThumbnail={
@@ -241,12 +241,20 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
-                <GenerationMenuButton
+                <AppConfirmDialog
                   title={"投稿する"}
-                  onClick={props.onPost}
-                  text={"投稿"}
-                  icon={FileUp}
-                />
+                  description={"投稿サイトAipictorsに作品を投稿しますか？"}
+                  onNext={props.onPost}
+                  onCancel={() => {}}
+                  cookieKey={"generation_post"}
+                >
+                  <GenerationMenuButton
+                    title={"投稿する"}
+                    onClick={() => {}}
+                    text={"投稿"}
+                    icon={FileUp}
+                  />
+                </AppConfirmDialog>
                 <GenerationMenuButton
                   title={"生成情報をコピーする"}
                   onClick={() =>
