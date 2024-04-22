@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.8.0/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_WDct2KrvMkMjgL2hT9CHgflrCdqt8tA",
@@ -8,18 +8,9 @@ const firebaseConfig = {
   storageBucket: "kwkjsui8ghyt93ai5feb.appspot.com",
   messagingSenderId: "698114764060",
   appId: "1:698114764060:web:2aae9f80fee27394b49ed9",
-  measurementId: "G-CEP0HMY1WH"
+  measurementId: "G-CEP0HMY1WH",
 }
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: './icon.png',
-  }
-  self.registration.showNotification(notificationTitle, notificationOptions);
-})
+const messaging = firebase.getMessaging(firebaseApp)

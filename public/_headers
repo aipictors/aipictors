@@ -1,2 +1,10 @@
 /*
   Cache-Control: max-age=2592000, s-maxage=2592000, stale-while-revalidate=2592000, stale-if-error=2592000
+/firebase-messaging-sw.js
+  Cache-Control: max-age=3600, s-maxage=3600
+/favicon.ico
+  Cache-Control: max-age=3600, s-maxage=3600
+/icon.png
+  Cache-Control: max-age=3600, s-maxage=3600
+/manifest.json
+  Cache-Control: max-age=3600, s-maxage=3600
