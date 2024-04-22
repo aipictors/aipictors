@@ -34,7 +34,7 @@ export function GenerationImageDialogButton(props: Props) {
         <Suspense
           fallback={
             <GenerationTaskContentImagePlaceHolder
-              className={"m-auto h-72 max-h-96 w-72 max-w-['50vw']"}
+              className={"m-auto max-h-96 w-72 max-w-['50vw']"}
             />
           }
         >

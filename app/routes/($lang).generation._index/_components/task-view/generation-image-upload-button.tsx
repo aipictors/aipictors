@@ -1,3 +1,4 @@
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { Button } from "@/_components/ui/button"
 import { FileUp } from "lucide-react"
 import { toast } from "sonner"
@@ -38,18 +39,26 @@ export function GenerationImagePostButton(props: Props) {
       </div>
     </Button>
   ) : (
-    <Button
-      title={props.title}
-      disabled={props.disabled}
-      variant="ghost"
-      size="icon"
-      onClick={onClick}
-      className={"w-12"}
+    <AppConfirmDialog
+      title={"投稿する"}
+      description={"投稿サイトAipictorsに作品を投稿しますか？"}
+      onNext={onClick}
+      onCancel={() => {}}
+      cookieKey={"generation_post"}
     >
-      <div className="mx-2 flex items-center">
-        <FileUp className="w-4" />
-        投稿
-      </div>
-    </Button>
+      <Button
+        title={props.title}
+        disabled={props.disabled}
+        variant="ghost"
+        size="icon"
+        onClick={() => {}}
+        className={"w-12"}
+      >
+        <div className="mx-2 flex items-center">
+          <FileUp className="w-4" />
+          投稿
+        </div>
+      </Button>
+    </AppConfirmDialog>
   )
 }

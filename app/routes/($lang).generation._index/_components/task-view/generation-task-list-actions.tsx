@@ -139,18 +139,6 @@ export const GenerationTaskListActions = (props: Props) => {
               defaultChecked={props.previewMode}
             />
           )}
-          <GenerationTaskActionDropdownMenu
-            thumbnailSize={props.thumbnailSize}
-            thumbnailType={props.thumbnailType}
-            onChange={props.setThumbnailSize}
-            taskContentPositionType={props.taskContentPositionType}
-            onChangeThumbnailType={props.onChangeThumbnailType}
-            onChangeTaskContentPositionType={
-              props.onChangeTaskContentPositionType
-            }
-            onSelectAll={props.onSelectAll}
-            onCancelAll={props.onCancelAll}
-          />
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
               value={props.viewCount}
@@ -175,7 +163,7 @@ export const GenerationTaskListActions = (props: Props) => {
           </Toggle>
         )}
       </div>
-      <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
+      <div className="flex items-center space-x-2 px-2 pb-2 md:px-4 xl:px-4">
         {/* 削除 */}
         <GenerationTasksDeleteButton
           disabled={false}
@@ -197,6 +185,18 @@ export const GenerationTaskListActions = (props: Props) => {
           selectedTaskIds={props.selectedTaskIds}
           title="複数選択して一括投稿できます。"
           isEnable={isEmpty}
+        />
+        <GenerationTaskActionDropdownMenu
+          thumbnailSize={props.thumbnailSize}
+          thumbnailType={props.thumbnailType}
+          onChange={props.setThumbnailSize}
+          taskContentPositionType={props.taskContentPositionType}
+          onChangeThumbnailType={props.onChangeThumbnailType}
+          onChangeTaskContentPositionType={
+            props.onChangeTaskContentPositionType
+          }
+          onSelectAll={props.onSelectAll}
+          onCancelAll={props.onCancelAll}
         />
       </div>
     </>
