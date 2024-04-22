@@ -1,7 +1,5 @@
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js")
-importScripts(
-  "https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js",
-)
+importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js")
 
 firebase.initializeApp({
   apiKey: "AIzaSyC_WDct2KrvMkMjgL2hT9CHgflrCdqt8tA",
@@ -13,4 +11,4 @@ firebase.initializeApp({
   measurementId: "G-CEP0HMY1WH",
 })
 
-const messaging = firebase.getMessaging()
+const messaging = firebase.messaging()
