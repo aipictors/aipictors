@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
         
       - name: install deps
-        run: bun install --ignore-scripts
+        run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
 
       - name: build
         run: bun run build

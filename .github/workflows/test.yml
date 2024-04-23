@@ -33,7 +33,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
 
       - name: Install deps
-        run: bun install --ignore-scripts --frozen-lockfile
+        run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
       
       - name: Build GraphQL Code
         run: bun graphql-codegen-esm --config codegen.ts
@@ -72,7 +72,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
 
       - name: Install deps
-        run: bun install --ignore-scripts --frozen-lockfile
+        run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
 
       - name: Build GraphQL Code
         run: bun graphql-codegen-esm --config codegen.ts
