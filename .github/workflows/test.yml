@@ -1,13 +1,6 @@
 name: Unit Tests & Code Quality
 on:
   workflow_call:
-    inputs:
-      config-path:
-        required: true
-        type: string
-    secrets:
-      envPAT:
-        required: true
         
   push:
     branches:

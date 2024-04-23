@@ -6,7 +6,7 @@
     </a>
 </div>
 <p align="center">
-    <a href="https://nextjs.org/">Next.js (App Router)</a> / <a href="https://ui.shadcn.com/">shadcn/ui</a> / <a href="https://graphql.org/">GraphQL</a>などで構成されたAipictorsの新しいWebサイト
+    <a href="https://remix.run//">Remix</a> / <a href="https://ui.shadcn.com/">shadcn/ui</a> / <a href="https://graphql.org/">GraphQL</a>などで構成されたAipictorsの新しいWebサイト
 </p>
 
 # ⚙️ 環境構築
@@ -23,8 +23,9 @@ curl -fsSL https://bun.sh/install | bash
 Windows の場合はこちら。
 
 ```powershell
-# 動作の確認はしていますが、基本的にはWSL2を推奨します。
 powershell -c "irm bun.sh/install.ps1|iex"
+# or
+winget search --id  Oven-sh.Bun
 ```
 
 ### 2. エディタを整備する
