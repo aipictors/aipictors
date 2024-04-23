@@ -6,6 +6,7 @@ import { useMutation } from "@apollo/client/index.js"
 import { Loader2Icon } from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "@/routes/($lang)._main.works.$work/_components/work-comment-input"
+import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
 
 type Props = {
   userId: string
@@ -13,9 +14,14 @@ type Props = {
   userIconImageURL?: string
   userName?: string
   text?: string
-  stickerImageURL?: string
   createdAt: number
   commentId: string
+  /* コメントで使われてるスタンプ情報 */
+  stickerImageURL?: string
+  stickerTitle?: string
+  stickerId?: string
+  stickerAccessType?: string
+  isStickerDownloadable?: boolean
   onDeleteComment: () => void
   onReplyCompleted: (
     id: string,
@@ -96,9 +102,17 @@ export const WorkComment = (props: Props) => {
                 <button onClick={() => setOpenReplyInput(!openReplyInput)}>
                   <p className="cursor-pointer text-xs">{"返信"}</p>
                 </button>
-                {props.stickerImageURL && (
-                  <p className="cursor-pointer text-xs">{"ダウンロード"}</p>
-                )}
+                {props.stickerImageURL &&
+                  props.stickerAccessType === "PUBLIC" && (
+                    <StickerInfoDialog
+                      isDownloaded={props.isStickerDownloadable ?? false}
+                      stickerId={props.stickerId ?? ""}
+                      title={props.stickerTitle ?? ""}
+                      imageUrl={props.stickerImageURL}
+                    >
+                      <p className="cursor-pointer text-xs">{"ダウンロード"}</p>
+                    </StickerInfoDialog>
+                  )}
               </>
             )}
           </div>

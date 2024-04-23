@@ -170,6 +170,7 @@ export const WorkCommentList = (props: Props) => {
 
     if (inputComment === "") {
       toast("コメントを入力してください")
+      return
     }
 
     sendComment(inputComment, "-1", "", props.workId)
@@ -265,6 +266,10 @@ export const WorkCommentList = (props: Props) => {
                 isMine={comment.user?.id === appContext.userId}
                 createdAt={comment.createdAt}
                 stickerImageURL={comment.sticker?.image?.downloadURL}
+                stickerTitle={comment.sticker?.title}
+                stickerId={comment.sticker?.id}
+                stickerAccessType={comment.sticker?.accessType}
+                isStickerDownloadable={comment.sticker?.isDownloaded}
                 text={comment.text}
                 userIconImageURL={comment.user?.iconImage?.downloadURL}
                 userName={comment.user?.name}
@@ -312,6 +317,10 @@ export const WorkCommentList = (props: Props) => {
                       isMine={reply.user?.id === appContext.userId}
                       createdAt={reply.createdAt}
                       stickerImageURL={reply.sticker?.image?.downloadURL}
+                      stickerTitle={reply.sticker?.title}
+                      stickerId={reply.sticker?.id}
+                      stickerAccessType={comment.sticker?.accessType}
+                      isStickerDownloadable={reply.sticker?.isDownloaded}
                       text={reply.text}
                       userIconImageURL={reply.user?.iconImage?.downloadURL}
                       userName={reply.user?.name}

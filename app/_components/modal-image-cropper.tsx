@@ -12,6 +12,7 @@ type Props = {
   cropWidth: number
   cropHeight: number
   cropContainerClassName?: string
+  fileExtension?: string
   onCrop: (croppedImage: string) => void
   onClose: () => void
 }
@@ -47,11 +48,16 @@ const ImageCropperModal = (props: Props) => {
    * 切り抜き処理
    */
   const onSubmit = async () => {
-    const croppedImage = await getCroppedImage(props.src, croppedAreaPixels)
+    const croppedImage = await getCroppedImage(
+      props.src,
+      croppedAreaPixels,
+      props.fileExtension,
+    )
     const resizedImage = await getResizedImg(
       croppedImage,
       props.cropWidth,
       props.cropHeight,
+      props.fileExtension,
     )
     props.onCrop(resizedImage)
     props.onClose()

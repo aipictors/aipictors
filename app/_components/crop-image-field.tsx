@@ -9,6 +9,7 @@ type Props = {
   isHidePreviewImage: boolean
   cropWidth: number
   cropHeight: number
+  fileExtension?: string
   onDeleteImage: () => void
   onCrop: (croppedImage: string) => void
 }
@@ -114,6 +115,7 @@ const CropImageField = (props: Props) => {
             cropContainerClassName={cropperClassName}
             cropWidth={props.cropWidth}
             cropHeight={props.cropHeight}
+            fileExtension={props.fileExtension}
             onCrop={onCrop}
             onClose={onClose}
           />
@@ -143,6 +145,7 @@ const CropImageField = (props: Props) => {
           cropContainerClassName={cropperClassName}
           cropWidth={props.cropWidth}
           cropHeight={props.cropHeight}
+          fileExtension={props.fileExtension}
           onCrop={onCrop}
           onClose={onClose}
         />

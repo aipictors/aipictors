@@ -73,6 +73,7 @@ export const ReplyCommentInput = (props: Props) => {
 
     if (inputComment === "") {
       toast("コメントを入力してください")
+      return
     }
 
     sendComment(inputComment, props.targetCommentId)

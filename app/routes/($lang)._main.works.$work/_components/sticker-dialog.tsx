@@ -5,10 +5,10 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-stickers"
 import { config } from "@/config"
 import { useQuery } from "@apollo/client/index.js"
-import { PlusIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { StickerButton } from "@/routes/($lang)._main.works.$work/_components/sticker-button"
+import { AddStickerButton } from "@/_components/add-sticker-button"
 
 type Props = {
   isOpen: boolean
@@ -63,14 +63,14 @@ export const StickerDialog = (props: Props) => {
               className="w-full"
               value="RELATED"
             >
-              最近使用
+              最近の使用
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
         <ScrollArea className="w-full">
           {type === "CREATED" && (
-            <div className="m-auto grid max-h-[64vh] max-w-[80vw] grid-cols-3 gap-2 2xl:grid-cols-8 md:grid-cols-4 xl:grid-cols-6">
+            <div className="m-auto flex max-h-[64vh] max-w-[80vw] flex-wrap items-center">
               {stickers?.viewer?.userStickers?.map((sticker) => (
                 <StickerButton
                   key={sticker.id}
@@ -82,13 +82,11 @@ export const StickerDialog = (props: Props) => {
                   }}
                 />
               ))}
-              <Button size={"icon"} variant={"secondary"}>
-                <PlusIcon />
-              </Button>
+              <AddStickerButton />
             </div>
           )}
           {type === "RELATED" && (
-            <div className="m-auto grid max-h-[64vh] max-w-[80vw] grid-cols-3 gap-2 2xl:grid-cols-8 md:grid-cols-4 xl:grid-cols-6">
+            <div className="m-auto flex max-h-[64vh] max-w-[80vw] flex-wrap items-center">
               {relatedStickers?.viewer?.userStickers?.map((sticker) => (
                 <StickerButton
                   key={sticker.id}
@@ -99,9 +97,7 @@ export const StickerDialog = (props: Props) => {
                   }}
                 />
               ))}
-              <Button size={"icon"} variant={"secondary"}>
-                <PlusIcon />
-              </Button>
+              <AddStickerButton />
             </div>
           )}
         </ScrollArea>

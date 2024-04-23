@@ -14,6 +14,12 @@ export const commentFieldsFragment = gql(`
         id
         downloadURL
       }
+      title
+      isDownloaded
+      likesCount
+      usesCount
+      downloadsCount
+      accessType
     }
   }
 `)

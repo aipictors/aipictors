@@ -15,7 +15,7 @@ export const StickerButton = (props: Props) => {
 
   return (
     <button
-      className="box-border rounded border-2 border-transparent transition duration-500 hover:border-2 hover:border-clear-bright-blue"
+      className="box-border rounded border-2 border-transparent p-1 transition duration-500 hover:border-2 hover:border-clear-bright-blue"
       key={props.key}
       type={"button"}
       onClick={props.onClick}
