@@ -27,7 +27,7 @@ jobs:
         id: cache-node_modules
         uses: actions/cache/restore@v4
         with:
-          path: node_modules
+          path: ~/.bun/install/cache
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
         
       - name: install deps
