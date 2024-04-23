@@ -65,7 +65,7 @@ export default function Work() {
             <WorkArticle work={data?.work} />
           </Suspense>
           <WorkRelatedList works={data.work.user.works} />
-          <WorkCommentList comments={data.workComments} />
+          <WorkCommentList workId={data.work.id} comments={data.workComments} />
 
           <div className="block lg:hidden">
             <WorkUser

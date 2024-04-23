@@ -53,7 +53,7 @@ export default function SensitiveWorkPage() {
   return (
     <ArticlePage>
       <WorkArticle work={data.work} />
-      <WorkCommentList comments={data.workComments} />
+      <WorkCommentList workId={data.work.id} comments={data.workComments} />
       <WorkRelatedList works={data.work.user.works} />
     </ArticlePage>
   )
