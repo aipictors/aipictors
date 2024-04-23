@@ -14,10 +14,7 @@ export const stickerQuery = gql(`
           downloadURL
         }
       }
-      image {
-        id
-        downloadURL
-      }
+      imageUrl
       downloadsCount
       likesCount
       usesCount

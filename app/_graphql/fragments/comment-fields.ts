@@ -10,10 +10,7 @@ export const commentFieldsFragment = gql(`
     }
     sticker {
       id
-      image {
-        id
-        downloadURL
-      }
+      imageUrl
       title
       isDownloaded
       likesCount

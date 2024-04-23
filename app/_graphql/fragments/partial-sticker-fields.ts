@@ -4,10 +4,7 @@ export const partialStickerFieldsFragment = gql(`
   fragment PartialStickerFields on StickerNode {
     id
     title
-    image {
-      id
-      downloadURL
-    }
+    imageUrl
     downloadsCount
     usesCount
     likesCount

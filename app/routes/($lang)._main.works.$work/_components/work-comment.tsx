@@ -74,7 +74,15 @@ export const WorkComment = (props: Props) => {
               {props.text}
             </p>
           )}
-          {props.stickerImageURL && (
+          {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
+            <a
+              className="block w-20"
+              href={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+            >
+              <img className="w-20 py-2" alt="" src={props.stickerImageURL} />
+            </a>
+          )}
+          {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img className="w-20 py-2" alt="" src={props.stickerImageURL} />
           )}
           <div className="flex space-x-2">

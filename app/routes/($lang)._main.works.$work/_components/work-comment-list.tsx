@@ -265,7 +265,7 @@ export const WorkCommentList = (props: Props) => {
                 userId={comment.user?.id ?? ""}
                 isMine={comment.user?.id === appContext.userId}
                 createdAt={comment.createdAt}
-                stickerImageURL={comment.sticker?.image?.downloadURL}
+                stickerImageURL={comment.sticker?.imageUrl ?? ""}
                 stickerTitle={comment.sticker?.title}
                 stickerId={comment.sticker?.id}
                 stickerAccessType={comment.sticker?.accessType}
@@ -316,7 +316,7 @@ export const WorkCommentList = (props: Props) => {
                       userId={reply.user?.id ?? ""}
                       isMine={reply.user?.id === appContext.userId}
                       createdAt={reply.createdAt}
-                      stickerImageURL={reply.sticker?.image?.downloadURL}
+                      stickerImageURL={reply.sticker?.imageUrl ?? ""}
                       stickerTitle={reply.sticker?.title}
                       stickerId={reply.sticker?.id}
                       stickerAccessType={comment.sticker?.accessType}

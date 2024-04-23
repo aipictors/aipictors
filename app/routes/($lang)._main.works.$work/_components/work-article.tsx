@@ -17,8 +17,6 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkArticle = (props: Props) => {
-  console.log(props.work.isLiked)
-
   return (
     <article className="flex flex-col">
       <img

@@ -74,15 +74,19 @@ export const StickerDialog = (props: Props) => {
               {stickers?.viewer?.userStickers?.map((sticker) => (
                 <StickerButton
                   key={sticker.id}
-                  imageUrl={sticker.image?.downloadURL}
+                  imageUrl={sticker.imageUrl ?? ""}
                   title={sticker.title}
                   onClick={() => {
-                    props.onSend(sticker.id, sticker.image?.downloadURL ?? "")
+                    props.onSend(sticker.id, sticker.imageUrl ?? "")
                     props.onClose()
                   }}
                 />
               ))}
-              <AddStickerButton />
+              <AddStickerButton
+                onAddedSicker={() => {
+                  refetch()
+                }}
+              />
             </div>
           )}
           {type === "RELATED" && (
@@ -90,14 +94,18 @@ export const StickerDialog = (props: Props) => {
               {relatedStickers?.viewer?.userStickers?.map((sticker) => (
                 <StickerButton
                   key={sticker.id}
-                  imageUrl={sticker.image?.downloadURL}
+                  imageUrl={sticker.imageUrl ?? ""}
                   title={sticker.title}
                   onClick={() => {
-                    props.onSend(sticker.id, sticker.image?.downloadURL ?? "")
+                    props.onSend(sticker.id, sticker.imageUrl ?? "")
                   }}
                 />
               ))}
-              <AddStickerButton />
+              <AddStickerButton
+                onAddedSicker={() => {
+                  refetch()
+                }}
+              />
             </div>
           )}
         </ScrollArea>
