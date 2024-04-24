@@ -7,10 +7,14 @@ import {
 import ReportDialog from "@/routes/($lang)._main.works.$work/_components/report-dialog"
 import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
+type Props = {
+  onDownload: () => void
+}
+
 /**
  * 作品への報告、画像ダウンロードのメニュー
  */
-export default function MenuPopover() {
+export default function MenuPopover(props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -21,7 +25,11 @@ export default function MenuPopover() {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Button className="flex items-center gap-2" variant="outline">
+            <Button
+              onClick={props.onDownload}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
               <DownloadIcon />
               ダウンロード
             </Button>

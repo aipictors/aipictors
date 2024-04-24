@@ -5,7 +5,7 @@ export default function SettingRestriction() {
   return (
     <AppPageCenter>
       <div className="w-full space-y-8">
-        <p className="font-bold text-2xl">{"非表示対象"}</p>
+        <p className="font-bold text-2xl">{"表示するコンテンツ"}</p>
         <SettingRestrictionForm />
       </div>
     </AppPageCenter>

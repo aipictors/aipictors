@@ -3,6 +3,8 @@ import { FolderIcon } from "lucide-react"
 import MenuPopover from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 import { LikeButton } from "@/_components/like-button"
+import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
+import { downloadImageFile } from "@/routes/($lang).generation._index/_utils/download-image-file"
 
 type Props = {
   title?: string
@@ -17,6 +19,15 @@ type Props = {
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
 export const WorkAction = (props: Props) => {
+  const onDownload = async () => {
+    if (props.imageUrl) {
+      const image = await createImageFileFromUrl({
+        url: props.imageUrl,
+      })
+      downloadImageFile(image)
+    }
+  }
+
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
@@ -32,7 +43,7 @@ export const WorkAction = (props: Props) => {
           <FolderIcon />
         </Button>
         <SharePopover title={props.title} />
-        <MenuPopover />
+        <MenuPopover onDownload={onDownload} />
       </div>
     </div>
   )

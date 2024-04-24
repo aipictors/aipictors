@@ -63,7 +63,11 @@ export const WorkArticle = (props: Props) => {
           {props.work.dailyTheme && (
             <div className="flex items-center">
               <span className="text-sm">{"参加お題:"}</span>
-              <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
+              <a
+                href={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+              >
+                <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
+              </a>
             </div>
           )}
           <WorkArticleTags tagNames={props.work.tagNames} />

@@ -4,5 +4,6 @@ export const userSettingFieldsFragment = gql(`
   fragment UserSettingFields on UserSettingNode {
     userId
     favoritedImageGenerationModelIds
+    preferenceRating
   }
 `)
