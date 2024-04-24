@@ -34,7 +34,7 @@ jobs:
         run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
 
       - name: build
-        run: bun run build
+        run: bun graphql-codegen-esm --config codegen.ts && bun remix vite:build
 
       - name: deploy(prod)
         id: cloudflare-wrangler
