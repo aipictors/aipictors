@@ -12,5 +12,10 @@ export const partialWorkFieldsFragment = gql(`
     largeThumbnailImageWidth
     prompt
     negativePrompt
+    user {
+      id
+      name
+      iconUrl
+    }
   }
 `)

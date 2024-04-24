@@ -18,6 +18,8 @@ type LikeButtonProps = {
   targetId?: string
   targetWorkId: string
   targetWorkOwnerUserId: string
+  isBackgroundNone?: boolean
+  strokeWidth?: number
 }
 
 export const LikeButton = ({
@@ -28,6 +30,8 @@ export const LikeButton = ({
   onClick,
   targetWorkId,
   targetWorkOwnerUserId,
+  isBackgroundNone,
+  strokeWidth = 1,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)
 
@@ -141,10 +145,15 @@ export const LikeButton = ({
 
   return (
     <button
+      // biome-ignore lint/nursery/useSortedClasses: This rule is ignored because the class order is significant for proper styling.
+      // If props.isBackgroundNone is true, set no background color.
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`relative flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80 ${
-        isCreateLoading || isDeleteLoading ? "opacity-50" : ""
-      }`}
+      className={`relative flex items-center justify-center rounded-md ${
+        isBackgroundNone
+          ? ""
+          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
       style={{
         width: text ? "auto" : `${size}px`,
         height: `${size}px`,
@@ -170,11 +179,14 @@ export const LikeButton = ({
           className={cn(
             isLiked
               ? "fill-pink-400 text-pink-400"
-              : "fill-transparent text-black dark:text-white",
+              : isBackgroundNone
+                ? "fill-white text-black dark:text-white"
+                : "fill-transparent text-black dark:text-white",
             clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
           )}
           size={Math.floor(size / 2)}
-          strokeWidth={1}
+          strokeWidth={strokeWidth}
+          stroke={isBackgroundNone ? "black" : "currentColor"}
         />
       </div>
       {text && (

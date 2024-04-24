@@ -5,7 +5,6 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
 import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
 import { MutedTag } from "@/routes/($lang).settings.muted.tags/_components/muted-tag"
-import { MutedTagInput } from "@/routes/($lang).settings.muted.tags/_components/muted-tag-input"
 import {
   ApolloError,
   useMutation,
@@ -74,7 +73,6 @@ export const MutedTagList = () => {
 
   return (
     <>
-      <MutedTagInput tags={tags ? tags : []} setTags={setTags} />
       <div className="space-y-4">
         <div className="flex items-start space-x-4">
           <div className="flex-1">
@@ -84,13 +82,14 @@ export const MutedTagList = () => {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="タグ"
+              maxLength={40}
             />
             <div className="flex justify-end">
-              <p className="text-xs">{`${count}/12`}</p>
+              <p className="text-xs">{`${count}/40`}</p>
             </div>
           </div>
           <Button className="rounded-full" onClick={handleMute}>
-            {"変更を保存"}
+            {"タグを追加"}
           </Button>
         </div>
       </div>
@@ -101,11 +100,14 @@ export const MutedTagList = () => {
       )}
       <div>
         {data?.viewer?.mutedTags.map((mutedTag) => (
-          <MutedTag
-            key={mutedTag.id}
-            name={mutedTag.name}
-            onClick={() => handleUnmute(mutedTag.name)}
-          />
+          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          <div className="pt-1 pb-1">
+            <MutedTag
+              key={mutedTag.id}
+              name={mutedTag.name}
+              onClick={() => handleUnmute(mutedTag.name)}
+            />
+          </div>
         ))}
       </div>
     </>

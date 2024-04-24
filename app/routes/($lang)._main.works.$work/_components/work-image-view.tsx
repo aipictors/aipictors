@@ -1,5 +1,4 @@
 import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.works.$work/_components/work-image-thumbnail-carousel"
-import { PhotoView } from "react-photo-view"
 import { useEffect, useState } from "react"
 import { ImagesPreview } from "@/_components/images-preview"
 
@@ -50,14 +49,13 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
 
   if (workImageURL) {
     return (
-      <div className="relative m-0 bg-gray-100 dark:bg-gray-900">
-        <PhotoView src={workImageURL}>
-          <img
-            className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
-            alt=""
-            src={workImageURL}
-          />
-        </PhotoView>
+      <div className="relative m-0 bg-gray-100 dark:bg-zinc-950">
+        <ImagesPreview
+          initIndex={0}
+          imageClassName="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
+          thumbnailUrl={workImageURL}
+          imageURLs={[workImageURL]}
+        />
       </div>
     )
   }

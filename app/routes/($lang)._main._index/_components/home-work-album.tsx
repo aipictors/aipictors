@@ -1,14 +1,17 @@
+import { LikeButton } from "@/_components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
   workId: string
+  workOwnerUserId: string
 }
 
 export default function HomeWorkAlbum({
   photo,
   wrapperStyle,
-  workId, // workId を引数として受け取る
+  workId,
+  workOwnerUserId,
 }: HomeWorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
@@ -21,6 +24,16 @@ export default function HomeWorkAlbum({
           className={"rounded"}
         />
       </Link>
+      <div className="absolute right-1 bottom-1">
+        <LikeButton
+          size={56}
+          targetWorkId={workId}
+          targetWorkOwnerUserId={workOwnerUserId}
+          defaultLikedCount={0}
+          isBackgroundNone={true}
+          strokeWidth={2}
+        />
+      </div>
     </div>
   )
 }

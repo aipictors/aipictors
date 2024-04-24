@@ -12,15 +12,6 @@ export const SettingInterfaceForm = () => {
         </label>
         <Checkbox id="terms" />
       </div>
-      <div className="flex justify-between">
-        <label
-          htmlFor="2"
-          className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          {"ポップアップ（作品ダイアログ）を表示"}
-        </label>
-        <Checkbox id="terms" />
-      </div>
     </div>
   )
 }

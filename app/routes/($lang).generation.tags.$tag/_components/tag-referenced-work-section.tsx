@@ -14,6 +14,7 @@ export const TagReferencedWorkSection = (props: Props) => {
     width: work.largeThumbnailImageWidth,
     height: work.largeThumbnailImageHeight,
     workId: work.id, // 各作品のID
+    workOwnerUserId: work.user.id,
   }))
 
   return (
@@ -29,7 +30,11 @@ export const TagReferencedWorkSection = (props: Props) => {
         photos={photos}
         renderPhoto={(photoProps) => (
           // @ts-ignore 後で考える
-          <HomeWorkAlbum {...photoProps} workId={photoProps.photo.workId} />
+          <HomeWorkAlbum
+            {...photoProps}
+            workId={photoProps.photo.workId}
+            workOwnerUserId={photoProps.photo.workOwnerUserId}
+          />
         )}
         defaultContainerWidth={1200}
         sizes={{

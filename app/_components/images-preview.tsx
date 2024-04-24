@@ -4,6 +4,7 @@ type Props = {
   imageURLs: string[]
   thumbnailUrl: string
   initIndex: number
+  imageClassName?: string
 }
 
 /**
@@ -47,7 +48,11 @@ export const ImagesPreview = (props: Props) => {
         <PhotoView key={index} src={image}>
           {index < 1 ? (
             <img
-              className="h-full w-auto rounded bg-card object-contain xl:h-screen"
+              className={
+                props.imageClassName
+                  ? props.imageClassName
+                  : "h-full w-auto rounded bg-card object-contain xl:h-screen"
+              }
               alt="selected-image"
               src={props.thumbnailUrl}
             />
