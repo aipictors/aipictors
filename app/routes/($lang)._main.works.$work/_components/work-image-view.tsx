@@ -1,6 +1,7 @@
 import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.works.$work/_components/work-image-thumbnail-carousel"
-import type React from "react"
-import { useState } from "react"
+import { PhotoView } from "react-photo-view"
+import { useEffect, useState } from "react"
+import { ImagesPreview } from "@/_components/images-preview"
 
 type Props = {
   workImageURL?: string
@@ -11,30 +12,32 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   const allImageURLs = workImageURL
     ? [workImageURL, ...subWorkImageURLs]
     : subWorkImageURLs
+
   const shouldRenderCarousel = allImageURLs.length > 1
 
   const [selectedImage, setSelectedImage] = useState<string>(allImageURLs[0])
 
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+
   // 画像選択関数
   const handleSelectImage = (imageURL: string) => {
     setSelectedImage(imageURL)
+    setSelectedImageIndex(allImageURLs.indexOf(imageURL))
   }
 
-  // キーボードイベントハンドラー
-  const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSelectImage(imageURL)
-    }
-  }
+  useEffect(() => {
+    setSelectedImage(allImageURLs[0])
+    setSelectedImageIndex(0)
+  }, [workImageURL])
 
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
       <div>
-        <img
-          className="h-full w-auto rounded bg-card object-contain xl:h-screen"
-          alt="Selected work"
-          src={selectedImage}
+        <ImagesPreview
+          initIndex={selectedImageIndex}
+          thumbnailUrl={selectedImage}
+          imageURLs={allImageURLs}
         />
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
@@ -48,11 +51,13 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   if (workImageURL) {
     return (
       <div className="relative m-0 bg-gray-100 dark:bg-gray-900">
-        <img
-          className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
-          alt=""
-          src={workImageURL}
-        />
+        <PhotoView src={workImageURL}>
+          <img
+            className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
+            alt=""
+            src={workImageURL}
+          />
+        </PhotoView>
       </div>
     )
   }
