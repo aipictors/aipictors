@@ -52,7 +52,7 @@ export const LikeButton = ({
           >
             <div
               className={cn(
-                "like-base-64 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+                "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
               )}
               style={{
                 width: `${size}px`,
@@ -155,7 +155,7 @@ export const LikeButton = ({
     >
       <div
         className={cn(
-          "like-base-64 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+          "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
         )}
         style={{
           width: `${size}px`,

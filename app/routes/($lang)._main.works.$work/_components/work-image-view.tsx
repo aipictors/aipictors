@@ -1,4 +1,5 @@
 import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.works.$work/_components/work-image-thumbnail-carousel"
+import { PhotoView } from "react-photo-view"
 import type React from "react"
 import { useState } from "react"
 
@@ -31,11 +32,19 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   if (shouldRenderCarousel) {
     return (
       <div>
-        <img
-          className="h-full w-auto rounded bg-card object-contain xl:h-screen"
-          alt="Selected work"
-          src={selectedImage}
-        />
+        {allImageURLs.map((selectedImage, index) => (
+          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+          <PhotoView key={index} src={selectedImage}>
+            {index < 1 ? (
+              <img
+                className="h-full w-auto rounded bg-card object-contain xl:h-screen"
+                alt=""
+                src={selectedImage}
+              />
+            ) : undefined}
+          </PhotoView>
+        ))}
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
           selectedImage={selectedImage}
@@ -48,11 +57,13 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   if (workImageURL) {
     return (
       <div className="relative m-0 bg-gray-100 dark:bg-gray-900">
-        <img
-          className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
-          alt=""
-          src={workImageURL}
-        />
+        <PhotoView src={workImageURL}>
+          <img
+            className="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
+            alt=""
+            src={workImageURL}
+          />
+        </PhotoView>
       </div>
     )
   }

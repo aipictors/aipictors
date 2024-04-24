@@ -19,11 +19,14 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
+  useNavigation,
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
 import { Suspense } from "react"
 import { Toaster } from "@/_components/app/app-sonner"
+import { PhotoProvider } from "react-photo-view"
+import "react-photo-view/dist/react-photo-view.css"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -81,6 +84,8 @@ type Props = Readonly<{
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
 export function Layout(props: Props) {
+  const navigation = useNavigation()
+
   if (
     typeof window !== "undefined" &&
     typeof import.meta.env.VITE_SENTRY_DSN === "string"
@@ -94,15 +99,10 @@ export function Layout(props: Props) {
   }
 
   return (
-    <html
-      lang={"ja"}
-      suppressHydrationWarning
-      // className={clsx(theme)}
-    >
+    <html lang={"ja"} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* <PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} /> */}
         <Meta />
         <Links />
       </head>
@@ -114,7 +114,11 @@ export function Layout(props: Props) {
           disableTransitionOnChange
         >
           <ContextProviders>
-            <Suspense fallback={<AppLoadingPage />}>{props.children}</Suspense>
+            <PhotoProvider maskOpacity={0.7}>
+              <Suspense fallback={<AppLoadingPage />}>
+                {props.children}
+              </Suspense>
+            </PhotoProvider>
           </ContextProviders>
         </ThemeProvider>
         <Toaster />
@@ -126,10 +130,6 @@ export function Layout(props: Props) {
 }
 
 export default function App() {
-  // const data = useLoaderData<typeof loader>()
-
-  // const [theme] = useTheme()
-
   return (
     <>
       <Outlet />
