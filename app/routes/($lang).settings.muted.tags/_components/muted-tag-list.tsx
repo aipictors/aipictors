@@ -1,15 +1,17 @@
+import type { Tag } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
 import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
 import { MutedTag } from "@/routes/($lang).settings.muted.tags/_components/muted-tag"
+import { MutedTagInput } from "@/routes/($lang).settings.muted.tags/_components/muted-tag-input"
 import {
   ApolloError,
   useMutation,
   useSuspenseQuery,
 } from "@apollo/client/index.js"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 export const MutedTagList = () => {
   const appContext = useContext(AuthContext)
@@ -19,7 +21,23 @@ export const MutedTagList = () => {
     variables: { offset: 0, limit: 128 },
   })
 
+  console.log(data)
+
   const [text, setText] = useState("")
+
+  const [tags, setTags] = useState<Tag[]>()
+
+  useEffect(() => {
+    if (data?.viewer?.mutedTags) {
+      setTags(
+        data.viewer.mutedTags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+          text: tag.name,
+        })),
+      )
+    }
+  }, [data])
 
   const count = text.length
 
@@ -56,6 +74,7 @@ export const MutedTagList = () => {
 
   return (
     <>
+      <MutedTagInput tags={tags ? tags : []} setTags={setTags} />
       <div className="space-y-4">
         <div className="flex items-start space-x-4">
           <div className="flex-1">
