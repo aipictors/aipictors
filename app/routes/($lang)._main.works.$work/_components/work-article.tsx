@@ -19,10 +19,6 @@ type Props = {
 export const WorkArticle = (props: Props) => {
   return (
     <article className="flex flex-col">
-      <img
-        alt=""
-        src="https://www.aipictors.com/wp-content/uploads/2022/12/Qg62jAX3CzJyVchs0nRBUiZb97vNST.png"
-      />
       <WorkImageView
         workImageURL={props.work.imageURL}
         subWorkImageURLs={props.work.subWorks.map((subWork) => {

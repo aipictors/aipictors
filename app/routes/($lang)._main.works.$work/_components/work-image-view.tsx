@@ -1,7 +1,7 @@
 import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.works.$work/_components/work-image-thumbnail-carousel"
 import { PhotoView } from "react-photo-view"
-import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { ImagesPreview } from "@/_components/images-preview"
 
 type Props = {
   workImageURL?: string
@@ -12,39 +12,33 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   const allImageURLs = workImageURL
     ? [workImageURL, ...subWorkImageURLs]
     : subWorkImageURLs
+
   const shouldRenderCarousel = allImageURLs.length > 1
 
   const [selectedImage, setSelectedImage] = useState<string>(allImageURLs[0])
 
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+
   // 画像選択関数
   const handleSelectImage = (imageURL: string) => {
     setSelectedImage(imageURL)
+    setSelectedImageIndex(allImageURLs.indexOf(imageURL))
   }
 
-  // キーボードイベントハンドラー
-  const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      handleSelectImage(imageURL)
-    }
-  }
+  useEffect(() => {
+    setSelectedImage(allImageURLs[0])
+    setSelectedImageIndex(0)
+  }, [workImageURL])
 
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
       <div>
-        {allImageURLs.map((selectedImage, index) => (
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <PhotoView key={index} src={selectedImage}>
-            {index < 1 ? (
-              <img
-                className="h-full w-auto rounded bg-card object-contain xl:h-screen"
-                alt=""
-                src={selectedImage}
-              />
-            ) : undefined}
-          </PhotoView>
-        ))}
+        <ImagesPreview
+          initIndex={selectedImageIndex}
+          thumbnailUrl={selectedImage}
+          imageURLs={allImageURLs}
+        />
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
           selectedImage={selectedImage}
