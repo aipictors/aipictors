@@ -27,11 +27,11 @@ jobs:
         id: cache-node_modules
         uses: actions/cache/restore@v4
         with:
-          path: node_modules
+          path: ~/.bun/install/cache
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
         
       - name: install deps
-        run: bun install --ignore-scripts
+        run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
 
       - name: build
         run: bun run build
