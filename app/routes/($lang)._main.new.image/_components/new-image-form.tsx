@@ -38,6 +38,8 @@ import TagsInput from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import ThemeInput from "@/routes/($lang)._main.new.image/_components/theme-input"
 import CategoryEditableInput from "@/routes/($lang)._main.new.image/_components/category-editable-input"
+import { albumsQuery } from "@/_graphql/queries/album/albums"
+import AlbumInput from "@/routes/($lang)._main.new.image/_components/series-input"
 
 const NewImageForm = () => {
   // 画像の状態を保持するための型
@@ -55,12 +57,10 @@ const NewImageForm = () => {
     fetchPolicy: "cache-first",
   })
 
-  // Date型で現在の日付を初期値としてuseStateを使用
   const [date, setDate] = useState(new Date())
 
   const [isHideTheme, setIsHideTheme] = useState(false)
 
-  // useQueryのvariablesオプションで、適切な日付のパーツを使用
   const {
     data: theme,
     loading: themeLoading,
@@ -73,6 +73,23 @@ const NewImageForm = () => {
     },
     fetchPolicy: "cache-first",
   })
+
+  // TODO: 所有者で絞り込む
+  const { data: albums } = useQuery(albumsQuery, {
+    variables: {
+      limit: 124,
+      offset: 0,
+      where: {},
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  const optionAlbums = albums?.albums
+    ? (albums?.albums.map((album) => ({
+        id: album.id,
+        name: album.title,
+      })) as AiModel[])
+    : []
 
   const optionModels = aiModels
     ? (aiModels?.aiModels.map((model) => ({
@@ -99,6 +116,8 @@ const NewImageForm = () => {
   const [enCaption, setEnCaption] = useState("")
 
   const [themeId, setThemeId] = useState("")
+
+  const [albumId, setAlbumId] = useState("")
 
   const [tags, setTags] = useState<Tag[]>([])
 
@@ -375,7 +394,6 @@ const NewImageForm = () => {
               }}
               setTime={setReservationTime}
             />
-
             {!isHideTheme && (
               <ThemeInput
                 onChange={(value: boolean) => {
@@ -393,6 +411,13 @@ const NewImageForm = () => {
             <CategoryEditableInput
               isChecked={isTagEditable}
               onChange={setIsTagEditable}
+            />
+            <AlbumInput
+              album={albumId}
+              albums={optionAlbums}
+              setAlbumId={(value: string) => {
+                setAlbumId(value)
+              }}
             />
           </div>
         </ScrollArea>
