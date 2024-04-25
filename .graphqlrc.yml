@@ -1,0 +1,5 @@
+schema: "https://graphql-6ouzjmdzha-an.a.run.app"
+documents:
+  - "app/_graphql/fragments/*.ts"
+  - "app/_graphql/mutations/*.ts"
+  - "app/_graphql/queries/*.ts"

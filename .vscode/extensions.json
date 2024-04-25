@@ -1,12 +1,13 @@
 {
   "recommendations": [
-    "apollographql.vscode-apollo",
+    "GraphQL.vscode-graphql",
+    "GraphQL.vscode-graphql-syntax",
     "biomejs.biome",
     "bradlc.vscode-tailwindcss",
     "editorconfig.editorconfig",
     "mikestead.dotenv",
+    "oven.bun-vscode",
     "streetsidesoftware.code-spell-checker",
-    "yoavbls.pretty-ts-errors",
-    "oven.bun-vscode"
+    "yoavbls.pretty-ts-errors"
   ]
 }

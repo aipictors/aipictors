@@ -5,7 +5,7 @@ import { fontFamily } from "tailwindcss/defaultTheme"
 export default {
   plugins: [animatePlugin],
   darkMode: ["class"],
-  content: ["app/**/*.tsx"],
+  content: [".storybook/**/*.tsx", "app/**/*.tsx"],
   theme: {
     /**
      * shadcn/ui

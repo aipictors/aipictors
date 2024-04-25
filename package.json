@@ -2,6 +2,7 @@
   "name": "aipictors",
   "version": "1.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && remix vite:build",
     "deploy": "bun run build && wrangler pages deploy",
@@ -136,6 +137,5 @@
     "vite": "^5.2.9",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^3.50.0"
-  },
-  "type": "module"
+  }
 }
