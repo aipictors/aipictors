@@ -1,6 +1,6 @@
-import { object, string } from "valibot"
+import { object, string, parse } from "valibot"
 
-export const vEnv = object({
+const envSchema = object({
   VITE_SENTRY_VERSION: string(),
   VITE_APP_URL: string(),
   VITE_GRAPHQL_ENDPOINT: string(),
@@ -13,4 +13,4 @@ export const vEnv = object({
   VITE_FIREBASE_MEASUREMENT_ID: string(),
 })
 
-export const env = vEnv._parse(import.meta.env)
+export const env = parse(envSchema, import.meta.env)
