@@ -145,7 +145,6 @@ export const LikeButton = ({
 
   return (
     <button
-      // biome-ignore lint/nursery/useSortedClasses: This rule is ignored because the class order is significant for proper styling.
       // If props.isBackgroundNone is true, set no background color.
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
       className={`relative flex items-center justify-center rounded-md ${
