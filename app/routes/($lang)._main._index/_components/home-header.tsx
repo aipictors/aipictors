@@ -83,7 +83,13 @@ export const HomeHeader = (props: Props) => {
         <Link to={"/generation"}>
           <Button variant={"secondary"}>{"生成"}</Button>
         </Link>
-        <Link to={"https://aipictors.com/post"}>
+        <Link
+          to={
+            config.isDevelopmentMode
+              ? "/new/image"
+              : "https://aipictors.com/post"
+          }
+        >
           <Button variant={"secondary"}>{"投稿"}</Button>
         </Link>
         {/* {config.isReleaseMode ? (
