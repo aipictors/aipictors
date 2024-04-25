@@ -29,7 +29,7 @@ const ImageItem = forwardRef<HTMLDivElement, Props>(
         <img
           src={item.content}
           alt={`${item.id}`}
-          className="h-32 w-32 object-fill"
+          className="h-24 w-24 object-fill md:h-32 md:w-32"
           style={{
             borderRadius: "8px",
             boxShadow: isDragging

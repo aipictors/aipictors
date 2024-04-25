@@ -1,5 +1,6 @@
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { SortableItems } from "@/_components/drag/sortable-items"
+import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
 import {} from "@dnd-kit/core"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
@@ -42,29 +43,37 @@ const ImagesInput = (props: Props) => {
     },
     onDrop: (acceptedFiles) => {
       // biome-ignore lint/complexity/noForEach: <explanation>
-      acceptedFiles.forEach((file) => {
+      acceptedFiles.forEach(async (file) => {
+        const pngInfo = await getExtractInfoFromPNG(file)
+        console.log("pngInfo", pngInfo)
+
         const reader = new FileReader()
         reader.onload = (event) => {
           if (event.target) {
-            const imageDataURL = event.target.result
-            if (imageDataURL) {
+            const img = new Image()
+            img.onload = () => {
+              const canvas = document.createElement("canvas")
+              canvas.width = img.width
+              canvas.height = img.height
+              const ctx = canvas.getContext("2d")
+              ctx?.drawImage(img, 0, 0)
+              // Convert the image to WebP format
+              const webpDataURL = canvas.toDataURL("image/webp")
               setItems((prevItems) => [
                 ...(prevItems ?? []),
                 {
                   id: prevItems?.length ?? 0,
-                  content: imageDataURL as string,
-                } as TSortableItem,
+                  content: webpDataURL,
+                },
               ])
 
-              props.onChange(items?.map((item) => item.content as string) ?? [])
-
-              console.log("items", items)
+              props.onChange(items?.map((item) => item.content) ?? [])
             }
+            img.src = event.target.result as string
           }
         }
         reader.readAsDataURL(file)
       })
-
       // ここで input の id が image_inputの要素に file をセットする
       const inputElement = document.getElementById(
         "image_input",
@@ -108,7 +117,7 @@ const ImagesInput = (props: Props) => {
           maxLength={maxSize}
           {...getInputProps()}
         />
-        <p>画像／動画を追加</p>
+        <p className="font-bold">画像／動画を追加</p>
       </div>
       <SortableItems
         items={items ?? []}

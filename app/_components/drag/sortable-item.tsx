@@ -1,6 +1,7 @@
 import ImageItem from "@/_components/drag/image-item"
 import { Button } from "@/_components/ui/button"
 import { useSortable } from "@dnd-kit/sortable"
+import { XIcon } from "lucide-react"
 import { useState, type HTMLAttributes } from "react"
 
 // ドラッグ可能なアイテムの型
@@ -49,28 +50,18 @@ const SortableItem = ({ item, ...props }: Props) => {
         {...props} // propsをスプレッドして他の属性を適用
       >
         <ImageItem item={item} />
-        <Button
-          onClick={() => {
-            if (props.onDelete) {
-              props.onDelete(item.id)
-            }
-            setIsDeleted(true)
-          }}
-          className="absolute top-1 right-1 z-1"
-        >
-          x
-        </Button>
       </div>
       <Button
+        className="absolute top-2 right-2 h-6 w-6 md:h-8 md:w-8"
+        size={"icon"}
         onClick={() => {
           if (props.onDelete) {
             props.onDelete(item.id)
           }
           setIsDeleted(true)
         }}
-        className="absolute top-1 right-1 z-1"
       >
-        x
+        <XIcon className="h-4 w-4 md:h-6 md:w-6" />
       </Button>
     </div>
   )

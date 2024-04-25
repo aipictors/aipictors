@@ -1,37 +1,32 @@
 import { Input } from "@/_components/ui/input"
-import {} from "@/_components/ui/select"
-
-import {} from "@dnd-kit/core"
-import {} from "@dnd-kit/sortable"
+import {} from "@/_components/ui/radio-group"
 
 type Props = {
-  label?: string
+  link: string
   onChange: (value: string) => void
 }
 
 /**
- * タイトル入力
+ * 関連リンク入力
  * @param props
  * @returns
  */
-const TitleInput = (props: Props) => {
+const RelatedLinkInput = (props: Props) => {
   return (
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
-        <div className="flex flex-col">
-          <p className="mb-1 text-sm">
-            {props.label ? props.label : "タイトル"}
-          </p>
+        <div className="mt-2 flex flex-col">
+          <p className="mb-1 text-sm">{"関連リンク"}</p>
           <Input
             onChange={(event) => {
               props.onChange(event.target.value)
             }}
+            value={props.link}
             minLength={1}
-            maxLength={120}
+            maxLength={320}
             required
             type="text"
-            name="title"
-            placeholder={props.label ? props.label : "タイトル"}
+            placeholder={"https://"}
             className="w-full"
           />
         </div>
@@ -40,4 +35,4 @@ const TitleInput = (props: Props) => {
   )
 }
 
-export default TitleInput
+export default RelatedLinkInput

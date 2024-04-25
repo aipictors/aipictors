@@ -28,6 +28,8 @@ import AlbumInput from "@/routes/($lang)._main.new.image/_components/series-inpu
 import { AuthContext } from "@/_contexts/auth-context"
 import ImagesInput from "@/routes/($lang)._main.new.image/_components/images-input"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
+import RelatedLinkInput from "@/routes/($lang)._main.new.image/_components/related-link-input"
+import AdWorkInput from "@/routes/($lang)._main.new.image/_components/ad-work-input"
 
 const NewImageForm = () => {
   const authContext = useContext(AuthContext)
@@ -61,14 +63,14 @@ const NewImageForm = () => {
   })
 
   const { data: albums } = useQuery(albumsQuery, {
+    skip: authContext.isLoading,
     variables: {
       limit: 124,
       offset: 0,
       where: {
-        // ownerUserId: authContext.userId,
+        ownerUserId: authContext.userId,
       },
     },
-    fetchPolicy: "cache-first",
   })
 
   const optionAlbums = albums?.albums
@@ -106,9 +108,13 @@ const NewImageForm = () => {
 
   const [albumId, setAlbumId] = useState("")
 
+  const [link, setLink] = useState("")
+
   const [tags, setTags] = useState<Tag[]>([])
 
   const [isTagEditable, setIsTagEditable] = useState(false)
+
+  const [isAd, setIsAd] = useState(false)
 
   const [ratingRestriction, setRatingRestriction] = useState("G")
 
@@ -125,10 +131,10 @@ const NewImageForm = () => {
   return (
     <>
       <div className="relative w-[100%]">
-        <ScrollArea className="bg-gray-100 dark:bg-black">
+        <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`items-center mb-2 p-0 md:p-1 rounded bg-gray-800 ${
+            className={`items-center mb-2 p-2 rounded bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
@@ -143,8 +149,8 @@ const NewImageForm = () => {
               </p>
             </div>
           </div>
-          <div className="p-2">
-            <TitleInput setTitle={setTitle} />
+          <ScrollArea className="max-h-[100%] overflow-y-auto p-2 md:max-h-[64vh]">
+            <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
@@ -154,7 +160,7 @@ const NewImageForm = () => {
                   </Button>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
-                  <TitleInput label={"英語タイトル"} setTitle={setEnTitle} />
+                  <TitleInput label={"英語タイトル"} onChange={setEnTitle} />
                   <CaptionInput
                     label={"英語キャプション"}
                     setCaption={setEnCaption}
@@ -222,10 +228,12 @@ const NewImageForm = () => {
                 setAlbumId(value)
               }}
             />
-          </div>
-        </ScrollArea>
+            <RelatedLinkInput link={link} onChange={setLink} />
+            <AdWorkInput isChecked={isAd} onChange={setIsAd} />
+          </ScrollArea>
+        </div>
         <Button
-          className="bottom-0 w-full"
+          className="bottom-0 mb-2 w-full"
           type="submit"
           onClick={() => {
             // ここに投稿処理を書く
