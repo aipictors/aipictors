@@ -1,5 +1,3 @@
-@import "@fontsource-variable/noto-sans-jp/wght.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,4 +99,8 @@ html {
 
 .like-animation-end {
   animation: heart-beat-end 0.2s linear forwards;
+}
+
+.like-image {
+  background: url("_assets/particle.avif");
 }

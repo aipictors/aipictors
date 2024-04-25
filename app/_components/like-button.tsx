@@ -56,7 +56,7 @@ export const LikeButton = ({
           >
             <div
               className={cn(
-                "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+                "like-image absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
               )}
               style={{
                 width: `${size}px`,
@@ -145,7 +145,6 @@ export const LikeButton = ({
 
   return (
     <button
-      // biome-ignore lint/nursery/useSortedClasses: This rule is ignored because the class order is significant for proper styling.
       // If props.isBackgroundNone is true, set no background color.
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
       className={`relative flex items-center justify-center rounded-md ${
@@ -164,7 +163,7 @@ export const LikeButton = ({
     >
       <div
         className={cn(
-          "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+          "like-image top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
         )}
         style={{
           width: `${size}px`,
