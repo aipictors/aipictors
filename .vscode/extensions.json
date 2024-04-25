@@ -4,10 +4,9 @@
     "GraphQL.vscode-graphql-syntax",
     "biomejs.biome",
     "bradlc.vscode-tailwindcss",
-    "editorconfig.editorconfig",
-    "mikestead.dotenv",
     "oven.bun-vscode",
     "streetsidesoftware.code-spell-checker",
-    "yoavbls.pretty-ts-errors"
+    "yoavbls.pretty-ts-errors",
+    "dotenv.dotenv-vscode"
   ]
 }
