@@ -67,7 +67,7 @@ export default function Work() {
           <WorkRelatedList works={data.work.user.works} />
           <WorkCommentList workId={data.work.id} comments={data.workComments} />
 
-          <div className="block lg:hidden">
+          <div className="mt-2 block md:mt-0 lg:hidden">
             <WorkUser
               userId={data.work.user.id}
               userName={data.work.user.name}

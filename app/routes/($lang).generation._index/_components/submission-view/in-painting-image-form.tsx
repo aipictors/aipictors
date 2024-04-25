@@ -91,6 +91,11 @@ export const InPaintingImageForm = (props: Props) => {
       30,
     )}_control_net_image.png`
 
+    if (props.userNanoid === null) {
+      toast("画面更新して再度お試し下さい。")
+      return null
+    }
+
     const controlNetImageUrl = await uploadImage(
       base64,
       controlNetImageFileName,

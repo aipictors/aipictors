@@ -25,7 +25,7 @@ const UserProfile = (props: UserProfileProps) => {
             biography={props.user.biography || ""}
           />
         </div>
-        <FollowButton />
+        <FollowButton targetUserId={props.user.id} isFollow={false} />
       </div>
     </header>
   )

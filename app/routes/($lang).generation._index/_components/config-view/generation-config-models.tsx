@@ -86,17 +86,21 @@ export const GenerationConfigModels = (props: Props) => {
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
                   onClick={() => {
-                    props.onSelectModelId(
-                      model?.id,
-                      model?.type,
-                      model?.prompts.join(",") ?? "",
-                    )
+                    if (model) {
+                      props.onSelectModelId(
+                        model?.id,
+                        model?.type,
+                        model?.prompts.join(",") ?? "",
+                      )
+                    }
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(
-                      model?.id,
-                      model?.displayName ?? "",
-                    )
+                    if (model) {
+                      props.onClickSearchModelWorks(
+                        model?.id,
+                        model?.displayName ?? "",
+                      )
+                    }
                   }}
                 />
                 {model?.id === props.currentModelId && (
@@ -127,17 +131,21 @@ export const GenerationConfigModels = (props: Props) => {
                   name={trimString(model?.displayName ?? "")}
                   isSelected={model?.id === props.currentModelId}
                   onClick={() => {
-                    props.onSelectModelId(
-                      model?.id,
-                      model?.type,
-                      model?.prompts.join(",") ?? "",
-                    )
+                    if (model) {
+                      props.onSelectModelId(
+                        model?.id,
+                        model?.type,
+                        model?.prompts.join(",") ?? "",
+                      )
+                    }
                   }}
                   onSearchClick={() => {
-                    props.onClickSearchModelWorks(
-                      model?.id,
-                      model?.displayName ?? "",
-                    )
+                    if (model) {
+                      props.onClickSearchModelWorks(
+                        model?.id,
+                        model?.displayName ?? "",
+                      )
+                    }
                   }}
                 />
                 {model?.id === props.currentModelId && (

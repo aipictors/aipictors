@@ -58,7 +58,7 @@ export default {
         /**
          * custom color
          */
-        "clear-bright-blue": "#1fa3fb",
+        "clear-bright-blue": "#0090f0",
       },
       /**
        * shadcn/ui

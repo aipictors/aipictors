@@ -9,16 +9,16 @@ type Props = {
 export const UserStickerList = (props: Props) => {
   return (
     <div className="grid grid-cols-2 gap-2 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 xl:grid-cols-6">
-      {props.stickers.map((props) => (
+      {props.stickers.map((sticker) => (
         <Link
-          key={props.id}
-          to={`https://www.aipictors.com/stamp/?id=${props.id}`}
+          key={sticker.id}
+          to={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
         >
           <StickerCard
-            title={props.title}
-            imageURL={props.image?.downloadURL ?? null}
-            downloadsCount={props.downloadsCount}
-            usesCount={props.usesCount}
+            title={sticker.title}
+            imageURL={sticker.imageUrl}
+            downloadsCount={sticker.downloadsCount}
+            usesCount={sticker.usesCount}
           />
         </Link>
       ))}

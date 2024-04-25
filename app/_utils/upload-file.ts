@@ -12,7 +12,7 @@ export const uploadFile = async (file: File): Promise<string> => {
     })
 
     if (response.ok) {
-      const responseData = await response.json()
+      const responseData = (await response.json()) as { url: string }
       return responseData.url
     }
     throw new Error()
