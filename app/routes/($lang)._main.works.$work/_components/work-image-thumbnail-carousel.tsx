@@ -29,15 +29,13 @@ export const WorkImageThumbnailCarousel: React.FC<
         {allImageURLs.map((imageURL, index) => {
           // 選択された画像かどうかを判定し、対応するスタイルを適用
           const isSelected = imageURL === selectedImage
-          const imageClassName = `w-80 h-40 object-cover rounded cursor-pointer ${
-            isSelected ? "border-4" : ""
-          }`
+          const imageClassName = "w-40 h-40 object-cover cursor-pointer"
 
           return (
             <CarouselItem
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
-              className={`basis-1/3${isSelected ? "selected-style" : ""}`}
+              className={"basis-1/3"}
             >
               <img
                 className={imageClassName}

@@ -130,7 +130,7 @@ export default function Index() {
           works={section.works}
         />
       ))}
-      <HomeTagsSection tags={data.tags} />
+      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
     </AppPage>
   )
 }
