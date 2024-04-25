@@ -49,7 +49,12 @@ export const GenerationConfigRestoration = (props: Props) => {
    */
   useEffect(() => {
     try {
-      if (data !== null && data !== undefined) {
+      if (
+        data !== null &&
+        data !== undefined &&
+        data.imageGenerationTask !== null &&
+        data.imageGenerationTask !== undefined
+      ) {
         const task = data.imageGenerationTask
         context.updateSettings(
           task.model.id,
@@ -78,7 +83,12 @@ export const GenerationConfigRestoration = (props: Props) => {
     }
 
     try {
-      if (work !== null && work !== undefined) {
+      if (
+        work !== null &&
+        work !== undefined &&
+        work.work !== null &&
+        work.work !== undefined
+      ) {
         const workData = work.work
         if (workData) {
           context.updateSettings(
