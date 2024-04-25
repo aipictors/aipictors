@@ -1,8 +1,22 @@
-import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/_components/ui/accordion"
 import { Button } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
+import { ScrollArea } from "@/_components/ui/scroll-area"
+import { aiModelsQuery } from "@/_graphql/queries/model/models"
 import { uploadFile } from "@/_utils/upload-file"
-
+import CaptionInput from "@/routes/($lang)._main.new.image/_components/caption-input"
+import DateInput from "@/routes/($lang)._main.new.image/_components/date-input"
+import ModelInput from "@/routes/($lang)._main.new.image/_components/model-input"
+import RatingInput from "@/routes/($lang)._main.new.image/_components/rating-input"
+import TasteInput from "@/routes/($lang)._main.new.image/_components/taste-input"
+import TitleInput from "@/routes/($lang)._main.new.image/_components/title-input"
+import ViewInput from "@/routes/($lang)._main.new.image/_components/view-input"
+import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
+import { useQuery } from "@apollo/client/index.js"
 import {
   DndContext,
   KeyboardSensor,
@@ -19,6 +33,11 @@ import {
 import type { SetStateAction } from "react"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
+import type { Tag } from "@/_components/tag/tag-input"
+import TagsInput from "@/routes/($lang)._main.new.image/_components/tag-input"
+import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
+import ThemeInput from "@/routes/($lang)._main.new.image/_components/theme-input"
+import CategoryEditableInput from "@/routes/($lang)._main.new.image/_components/category-editable-input"
 
 const NewImageForm = () => {
   // 画像の状態を保持するための型
@@ -27,19 +46,74 @@ const NewImageForm = () => {
     url: string
   }
 
+  const { data: aiModels } = useQuery(aiModelsQuery, {
+    variables: {
+      limit: 124,
+      offset: 0,
+      where: {},
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  // Date型で現在の日付を初期値としてuseStateを使用
+  const [date, setDate] = useState(new Date())
+
+  const [isHideTheme, setIsHideTheme] = useState(false)
+
+  // useQueryのvariablesオプションで、適切な日付のパーツを使用
+  const {
+    data: theme,
+    loading: themeLoading,
+    error,
+  } = useQuery(dailyThemeQuery, {
+    variables: {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
+      day: date.getDate(), // getDate()は月の日にちを返す
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  const optionModels = aiModels
+    ? (aiModels?.aiModels.map((model) => ({
+        id: model.workModelId,
+        name: model.name,
+      })) as AiModel[])
+    : []
+
+  console.log(optionModels)
+
   /**
    * 画像の配列を保持する状態
    */
   const [selectedImages, setSelectedImages] = useState<ImageItem[]>([])
-  /**
-   * ホバー状態を管理
-   */
+
   const [isHovered, setIsHovered] = useState(false)
-  const [ageRestriction, setAgeRestriction] = useState("全年齢")
-  const [publicMode, setPublicMode] = useState("全公開")
-  const [taste, setTaste] = useState("イラスト系")
-  const [aiUsed, setAiUsed] = useState("NovelAI")
+
+  const [title, setTitle] = useState("")
+
+  const [enTitle, setEnTitle] = useState("")
+
+  const [caption, setCaption] = useState("")
+
+  const [enCaption, setEnCaption] = useState("")
+
+  const [themeId, setThemeId] = useState("")
+
+  const [tags, setTags] = useState<Tag[]>([])
+
+  const [isTagEditable, setIsTagEditable] = useState(false)
+
+  const [ratingRestriction, setRatingRestriction] = useState("G")
+
+  const [viewMode, setViewMode] = useState("public")
+
+  const [taste, setTaste] = useState("illust")
+
+  const [aiUsed, setAiUsed] = useState("1")
+
   const [reservationDate, setReservationDate] = useState("")
+
   const [reservationTime, setReservationTime] = useState("")
 
   const maxSize = 32 * 1024 * 1024
@@ -139,22 +213,6 @@ const NewImageForm = () => {
     setSelectedImages(newSelectedImages)
   }
 
-  const handleAgeRestrictionChange = (value: string) => {
-    setAgeRestriction(value)
-  }
-
-  const handlePublicModeChange = (value: string) => {
-    setPublicMode(value)
-  }
-
-  const handleTasteChange = (value: string) => {
-    setTaste(value)
-  }
-
-  const handleAiUsedChange = (value: string) => {
-    setAiUsed(value)
-  }
-
   const handleReservationDateChange = (event: {
     target: { value: SetStateAction<string> }
   }) => {
@@ -217,158 +275,134 @@ const NewImageForm = () => {
 
   return (
     <>
-      <div>
-        <div
-          className={`items-center bg-black${
-            isHovered ? "border-2 border-white border-dashed" : ""
-          }`}
-        >
+      <div className="relative w-[100%]">
+        <ScrollArea className="bg-gray-100 dark:bg-black">
           <div
-            className="m-4 flex cursor-pointer flex-col items-center justify-center rounded bg-blue-500 p-4 text-white"
-            {...getRootProps()}
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`items-center mb-2 p-0 md:p-1 rounded bg-gray-800 ${
+              isHovered ? "border-2 border-white border-dashed" : ""
+            }`}
           >
-            <input
-              multiple={true}
-              id="image_input"
-              type="file"
-              accept="image/*"
-              {...getInputProps()}
-            />
-            <p>画像／動画を追加</p>
+            <div
+              className="m-auto mt-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+              {...getRootProps()}
+            >
+              <input
+                multiple={true}
+                id="image_input"
+                type="file"
+                accept="image/*"
+                {...getInputProps()}
+              />
+              <p>画像／動画を追加</p>
+            </div>
+            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+              <div className="flex flex-wrap justify-center">
+                <SortableContext
+                  items={selectedImages}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {selectedImages.map((imageItem) => (
+                    <SelectedImageItem
+                      key={imageItem.id}
+                      image={imageItem.url}
+                      id={imageItem.id}
+                    />
+                  ))}
+                </SortableContext>
+              </div>
+            </DndContext>
+            <div className="m-4 flex flex-col text-white">
+              <p className="text-center text-sm">
+                JPEG、PNG、GIF、WEBP、BMP、MP4
+              </p>
+              <p className="text-center text-sm">
+                1枚32MB以内、最大200枚、動画は32MB、12秒まで
+              </p>
+            </div>
           </div>
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="flex flex-wrap justify-center">
-              <SortableContext
-                items={selectedImages}
-                strategy={verticalListSortingStrategy}
-              >
-                {selectedImages.map((imageItem) => (
-                  <SelectedImageItem
-                    key={imageItem.id}
-                    image={imageItem.url}
-                    id={imageItem.id}
+          <div className="p-2">
+            <TitleInput setTitle={setTitle} />
+            <CaptionInput setCaption={setCaption} />
+            <Accordion type="single" collapsible>
+              <AccordionItem value="setting">
+                <AccordionTrigger>
+                  <Button variant={"secondary"} className="w-full">
+                    英語キャプションを入力
+                  </Button>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-2">
+                  <TitleInput label={"英語タイトル"} setTitle={setEnTitle} />
+                  <CaptionInput
+                    label={"英語キャプション"}
+                    setCaption={setEnCaption}
                   />
-                ))}
-              </SortableContext>
-            </div>
-          </DndContext>
-          <div className="m-4 flex flex-col text-white">
-            <p className="text-sm">JPEG、PNG、GIF、WEBP、BMP、MP4</p>
-            <p className="text-sm">
-              1枚32MB以内、最大200枚、動画は32MB、12秒まで
-            </p>
-          </div>
-        </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <RatingInput
+              rating={ratingRestriction}
+              setRating={setRatingRestriction}
+            />
+            <ViewInput viewMode={viewMode} setViewMode={setViewMode} />
+            <TasteInput taste={taste} setTaste={setTaste} />
+            <ModelInput
+              model={aiUsed}
+              models={optionModels}
+              setModel={setAiUsed}
+            />
+            <DateInput
+              date={reservationDate}
+              time={reservationTime}
+              setDate={(value: string) => {
+                setReservationDate(value)
+                const today = new Date()
+                today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
+                const threeDaysLater = new Date(today)
+                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
 
-        <div>
-          <div className="flex flex-col">
-            <p className="text-sm">タイトル</p>
-            <Input
-              id="title_input"
-              minLength={1}
-              maxLength={120}
-              required
-              type="text"
-              name="title"
-              placeholder="タイトル"
-              className="w-full"
+                const changeDate = new Date(value)
+                changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
+
+                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= threeDaysLater) {
+                  setDate(changeDate)
+                  setIsHideTheme(false)
+                } else {
+                  setIsHideTheme(true)
+                }
+                setThemeId("")
+              }}
+              setTime={setReservationTime}
+            />
+
+            {!isHideTheme && (
+              <ThemeInput
+                onChange={(value: boolean) => {
+                  if (value) {
+                    setThemeId(theme?.dailyTheme?.id ?? "")
+                  } else {
+                    setThemeId("")
+                  }
+                }}
+                title={theme?.dailyTheme?.title ?? ""}
+                isLoading={themeLoading}
+              />
+            )}
+            <TagsInput tags={tags} setTags={setTags} />
+            <CategoryEditableInput
+              isChecked={isTagEditable}
+              onChange={setIsTagEditable}
             />
           </div>
-
-          <div className="mt-4 flex flex-col">
-            <p className="text-sm">キャプション</p>
-            <AutoResizeTextarea
-              maxLength={3000}
-              placeholder="キャプション"
-              className="w-full"
-            />
-          </div>
-
-          <div className="mt-4 flex flex-col">
-            <p className="text-sm">年齢制限</p>
-            <div
-            // onChange={handleAgeRestrictionChange}
-            // value={ageRestriction}
-            >
-              <div className="flex flex-col space-y-2">
-                <input type="radio" value="全年齢" name="ageRestriction" />
-                全年齢
-                <input type="radio" value="R-15" name="ageRestriction" />
-                R-15
-                <input type="radio" value="R-18" name="ageRestriction" />
-                R-18
-                <input type="radio" value="R-18G" name="ageRestriction" />
-                R-18G
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-col">
-            <p className="text-sm">公開モード</p>
-            <div
-            // onChange={handlePublicModeChange}
-            // value={publicMode}
-            >
-              <div className="flex flex-col space-y-2">
-                <input type="radio" value="全公開" name="publicMode" />
-                全公開
-                <input
-                  type="radio"
-                  value="限定公開(URLのみアクセス可)"
-                  name="publicMode"
-                />
-                限定公開(URLのみアクセス可)
-                <input type="radio" value="新着非表示" name="publicMode" />
-                新着非表示
-                <input type="radio" value="アーカイブ" name="publicMode" />
-                アーカイブ
-                <input type="radio" value="下書き" name="publicMode" />
-                下書き
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <p className="text-sm">テイスト</p>
-            <select
-              onChange={(e) => handleTasteChange(e.target.value)}
-              value={taste}
-            >
-              <option value="イラスト系">イラスト系</option>
-              <option value="セミリアル系">セミリアル系</option>
-              <option value="リアル系">リアル系</option>
-            </select>
-          </div>
-          <div className="mt-4 flex flex-col">
-            <p className="text-sm">使用AI</p>
-            <select
-              onChange={(e) => handleAiUsedChange(e.target.value)}
-              value={aiUsed}
-            >
-              <option value="NovelAI">NovelAI</option>
-              <option value="そのほか">そのほか</option>
-            </select>
-          </div>
-          <div className="mt-4 flex flex-col">
-            <p className="text-sm">予約投稿</p>
-            <div className="block md:flex">
-              <Input
-                type="date"
-                value={reservationDate}
-                onChange={handleReservationDateChange}
-                className="mt-2 mr-0 md:mt-0 md:mr-2"
-              />
-              <Input
-                type="time"
-                value={reservationTime}
-                onChange={handleReservationTimeChange}
-              />
-            </div>
-          </div>
-          {/* Submit button */}
-          <Button type="submit" onClick={handleUpload}>
-            投稿
-          </Button>
-        </div>
+        </ScrollArea>
+        <Button
+          className="bottom-0 w-full"
+          type="submit"
+          onClick={handleUpload}
+        >
+          投稿
+        </Button>
       </div>
     </>
   )

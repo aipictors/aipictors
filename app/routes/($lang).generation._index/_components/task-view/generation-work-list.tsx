@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Skeleton } from "@/_components/ui/skeleton"
-import type { WorkNode, WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
 import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation.tasks.$task/_components/fallback-task-card"
@@ -53,8 +53,9 @@ export const GenerationWorkList = (props: Props) => {
 
           {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
           {props.works !== undefined &&
+            props.works?.works !== undefined &&
             props.works?.works.map(
-              (work: WorkNode) =>
+              (work) =>
                 work && (
                   <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
                     <Suspense fallback={<FallbackTaskCard />}>

@@ -63,7 +63,7 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
       return
     }
     if (module === "softedge_pidinet") {
-      props.setModel(null)
+      props.setModel("")
       return
     }
     if (module === "mlsd") {
@@ -79,10 +79,10 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
       return
     }
     if (module === "reference_only") {
-      props.setModel(null)
+      props.setModel("")
       return
     }
-    props.setModel(null)
+    props.setModel("")
   }
 
   // https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp

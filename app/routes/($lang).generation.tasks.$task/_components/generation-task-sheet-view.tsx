@@ -295,13 +295,17 @@ export function GenerationTaskSheetView(props: Props) {
 
   const imageGenerationTask =
     props.task.id !== context.config.viewTaskId
-      ? useCachedImageGenerationTask(context.config.viewTaskId)
+      ? useCachedImageGenerationTask(context.config.viewTaskId ?? "")
       : props.task
 
   useEffect(() => {
-    setRating(imageGenerationTask.rating ?? 0)
-    setIsProtected(imageGenerationTask.isProtected ?? false)
+    if (imageGenerationTask) {
+      setRating(imageGenerationTask.rating ?? 0)
+      setIsProtected(imageGenerationTask.isProtected ?? false)
+    }
   }, [context.config.viewTaskId])
+
+  if (!imageGenerationTask) return null
 
   if (isDesktop) {
     return (

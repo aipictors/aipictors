@@ -49,10 +49,12 @@ export const workQuery = gql(`
       }
       model
       modelHash
+      generationModelId
       isTagEditable
       isLiked
       isInCollection
       isPromotion
+      isGeneration
       prompt
       negativePrompt
       seed
@@ -60,6 +62,8 @@ export const workQuery = gql(`
       sampler
       scale
       strength
+      vae
+      clipSkip
       otherGenerationParams
       pngInfo
       style

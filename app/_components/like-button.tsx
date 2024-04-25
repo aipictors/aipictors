@@ -30,7 +30,7 @@ export const LikeButton = ({
   onClick,
   targetWorkId,
   targetWorkOwnerUserId,
-  isBackgroundNone,
+  isBackgroundNone = true,
   strokeWidth = 1,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)

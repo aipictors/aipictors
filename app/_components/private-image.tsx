@@ -20,7 +20,7 @@ const Component = (props: Props) => {
         props.token,
       )}`}
       data-original={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
-        props.originalToken,
+        props.originalToken || "",
       )}`}
     />
   )

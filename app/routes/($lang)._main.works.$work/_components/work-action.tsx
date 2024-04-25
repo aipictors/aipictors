@@ -37,6 +37,7 @@ export const WorkAction = (props: Props) => {
           defaultLiked={props.defaultLiked}
           defaultLikedCount={props.workLikesCount}
           targetWorkId={props.targetWorkId}
+          isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
         />
         <Button aria-label={"フォルダに追加"} size={"icon"} variant="secondary">

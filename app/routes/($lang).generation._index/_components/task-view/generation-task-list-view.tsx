@@ -166,7 +166,9 @@ export const GenerationTaskListView = (props: Props) => {
    */
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
-      tasks?.viewer?.imageGenerationTasks.map((task) => task.nanoid) ?? [],
+      (tasks?.viewer?.imageGenerationTasks
+        .map((task) => task.nanoid)
+        .filter((id) => id !== null) as string[]) ?? [],
     )
     if (!props.isEditMode) {
       onToggleEditMode()
@@ -212,24 +214,25 @@ export const GenerationTaskListView = (props: Props) => {
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
       />
-      {/* <Suspense fallback={<AppLoadingPage />}> */}
-      <GenerationTaskList
-        currentPage={page}
-        hidedTaskIds={hidedTaskIds}
-        rating={props.rating}
-        protect={props.protect}
-        isEditMode={props.isEditMode}
-        isPreviewMode={props.isPreviewMode}
-        selectedTaskIds={selectedTaskIds}
-        tasks={tasks}
-        protectedTasks={protectedTasks}
-        taskContentPositionType={showTaskPositionType}
-        onCancel={undefined}
-        setCurrentPage={setPage}
-        setHidedTaskIds={setHidedTaskIds}
-        setSelectedTaskIds={setSelectedTaskIds}
-        thumbnailSize={thumbnailSize()}
-      />
+      {tasks !== undefined && protectedTasks !== undefined && (
+        <GenerationTaskList
+          currentPage={page}
+          hidedTaskIds={hidedTaskIds}
+          rating={props.rating}
+          protect={props.protect}
+          isEditMode={props.isEditMode}
+          isPreviewMode={props.isPreviewMode}
+          selectedTaskIds={selectedTaskIds}
+          tasks={tasks}
+          protectedTasks={protectedTasks}
+          taskContentPositionType={showTaskPositionType}
+          onCancel={undefined}
+          setCurrentPage={setPage}
+          setHidedTaskIds={setHidedTaskIds}
+          setSelectedTaskIds={setSelectedTaskIds}
+          thumbnailSize={thumbnailSize()}
+        />
+      )}
       {/* </Suspense> */}
     </GenerationViewCard>
   )

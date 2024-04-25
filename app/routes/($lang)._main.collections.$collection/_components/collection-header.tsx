@@ -11,7 +11,7 @@ export const CollectionHeader = () => {
       />
       <div className="flex">
         <p className="text-lg">{"コレクション名"}</p>
-        <FollowButton />
+        <FollowButton targetUserId={""} isFollow={false} />
       </div>
       <div className="flex">
         <Avatar />

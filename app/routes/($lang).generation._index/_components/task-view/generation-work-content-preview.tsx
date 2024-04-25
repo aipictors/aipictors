@@ -11,7 +11,11 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 export const GenerationWorkContentPreview = () => {
   const context = useGenerationContext()
 
-  const previewImageURL = context.config.previewImageURL
+  const previewImageURL = context.config.previewImageURL ?? ""
+
+  if (previewImageURL === "") {
+    return null
+  }
 
   return (
     <>

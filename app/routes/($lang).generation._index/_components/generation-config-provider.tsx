@@ -32,6 +32,9 @@ export const GenerationConfigProvider = (props: Props) => {
   // TODO: 後で移動
   const cacheStorage = new GenerationConfigState({
     modelId: config.generationFeature.defaultImageModelId,
+    searchModelId: null,
+    // biome-ignore lint/suspicious/noDuplicateObjectKeys: <explanation>
+    searchModelName: null,
     modelIds: config.generationFeature.defaultImageModelIds,
     favoriteModelIds: [],
     promptText: "",
@@ -57,6 +60,25 @@ export const GenerationConfigProvider = (props: Props) => {
     thumbnailSizeInHistoryListFull:
       config.generationFeature.defaultThumbnailSizeInHistoryListFull,
     taskListThumbnailType: config.generationFeature.defaultThumbnailType,
+    upscaleSize: 1,
+    page: 1,
+    controlNetImageBase64: "",
+    controlNetMaskImageBase64: "",
+    controlNetControlMode: "",
+    controlNetEnabled: false,
+    controlNetGuidanceEnd: 0,
+    controlNetGuidanceStart: 0,
+    controlNetPixelPerfect: false,
+    controlNetProcessorRes: 0,
+    controlNetResizeMode: "",
+    controlNetThresholdA: 0.5,
+    controlNetThresholdB: 0.5,
+    controlNetWeight: 1,
+    controlNetModule: null,
+    controlNetModel: null,
+    controlNetSaveDetectedMap: null,
+    controlNetHrOption: null,
+    previewImageURL: null, // Add previewImageURL property
   })
 
   const stateText =
