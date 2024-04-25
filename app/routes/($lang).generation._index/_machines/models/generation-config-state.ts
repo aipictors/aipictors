@@ -8,7 +8,7 @@ import {
   string,
 } from "valibot"
 
-const vProps = object({
+const zProps = object({
   modelId: string(),
   searchModelId: optional(string()),
   searchModelName: optional(string()),
@@ -54,7 +54,7 @@ const vProps = object({
   controlNetHrOption: optional(string()),
 })
 
-type Props = Output<typeof vProps>
+type Props = Output<typeof zProps>
 
 /**
  * 画像生成のエディタの状態
