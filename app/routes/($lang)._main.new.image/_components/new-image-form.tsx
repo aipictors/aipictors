@@ -35,6 +35,9 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import type { Tag } from "@/_components/tag/tag-input"
 import TagsInput from "@/routes/($lang)._main.new.image/_components/tag-input"
+import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
+import ThemeInput from "@/routes/($lang)._main.new.image/_components/theme-input"
+import CategoryEditableInput from "@/routes/($lang)._main.new.image/_components/category-editable-input"
 
 const NewImageForm = () => {
   // 画像の状態を保持するための型
@@ -48,6 +51,25 @@ const NewImageForm = () => {
       limit: 124,
       offset: 0,
       where: {},
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  // Date型で現在の日付を初期値としてuseStateを使用
+  const [date, setDate] = useState(new Date())
+
+  const [isHideTheme, setIsHideTheme] = useState(false)
+
+  // useQueryのvariablesオプションで、適切な日付のパーツを使用
+  const {
+    data: theme,
+    loading: themeLoading,
+    error,
+  } = useQuery(dailyThemeQuery, {
+    variables: {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
+      day: date.getDate(), // getDate()は月の日にちを返す
     },
     fetchPolicy: "cache-first",
   })
@@ -76,7 +98,11 @@ const NewImageForm = () => {
 
   const [enCaption, setEnCaption] = useState("")
 
+  const [themeId, setThemeId] = useState("")
+
   const [tags, setTags] = useState<Tag[]>([])
+
+  const [isTagEditable, setIsTagEditable] = useState(false)
 
   const [ratingRestriction, setRatingRestriction] = useState("G")
 
@@ -298,7 +324,6 @@ const NewImageForm = () => {
           <div className="p-2">
             <TitleInput setTitle={setTitle} />
             <CaptionInput setCaption={setCaption} />
-
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
@@ -315,7 +340,6 @@ const NewImageForm = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-
             <RatingInput
               rating={ratingRestriction}
               setRating={setRatingRestriction}
@@ -330,10 +354,46 @@ const NewImageForm = () => {
             <DateInput
               date={reservationDate}
               time={reservationTime}
-              setDate={setReservationDate}
+              setDate={(value: string) => {
+                setReservationDate(value)
+                const today = new Date()
+                today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
+                const threeDaysLater = new Date(today)
+                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+
+                const changeDate = new Date(value)
+                changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
+
+                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= threeDaysLater) {
+                  setDate(changeDate)
+                  setIsHideTheme(false)
+                } else {
+                  setIsHideTheme(true)
+                }
+                setThemeId("")
+              }}
               setTime={setReservationTime}
             />
+
+            {!isHideTheme && (
+              <ThemeInput
+                onChange={(value: boolean) => {
+                  if (value) {
+                    setThemeId(theme?.dailyTheme?.id ?? "")
+                  } else {
+                    setThemeId("")
+                  }
+                }}
+                title={theme?.dailyTheme?.title ?? ""}
+                isLoading={themeLoading}
+              />
+            )}
             <TagsInput tags={tags} setTags={setTags} />
+            <CategoryEditableInput
+              isChecked={isTagEditable}
+              onChange={setIsTagEditable}
+            />
           </div>
         </ScrollArea>
         <Button
