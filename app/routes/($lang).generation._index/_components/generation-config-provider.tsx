@@ -33,7 +33,6 @@ export const GenerationConfigProvider = (props: Props) => {
   const cacheStorage = new GenerationConfigState({
     modelId: config.generationFeature.defaultImageModelId,
     searchModelId: null,
-    // biome-ignore lint/suspicious/noDuplicateObjectKeys: <explanation>
     searchModelName: null,
     modelIds: config.generationFeature.defaultImageModelIds,
     favoriteModelIds: [],
