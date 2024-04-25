@@ -254,10 +254,6 @@ export const config = {
     promptsCheck: "https://internal.api.aipictors.com/prompts/check/index.php",
   },
   /**
-   * バージョン
-   */
-  version: env.VITE_VERSION,
-  /**
    * サイトのURL
    */
   siteURL: env.VITE_APP_URL,

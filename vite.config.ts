@@ -17,4 +17,7 @@ export default defineConfig({
     remix(),
     tsconfigPaths(),
   ],
+  define: {
+    VITE_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
 })
