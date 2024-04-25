@@ -19,7 +19,6 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   useRouteError,
-  useNavigation,
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
@@ -27,6 +26,8 @@ import { Suspense } from "react"
 import { Toaster } from "@/_components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
 import "react-photo-view/dist/react-photo-view.css"
+import "@fontsource-variable/noto-sans-jp"
+import notoSansJPWoff2 from "@fontsource-variable/noto-sans-jp/files/noto-sans-jp-latin-wght-normal.woff2?url"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -36,7 +37,19 @@ export const headers: HeadersFunction = () => {
 }
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }]
+  return [
+    // tailwind.cssのロード
+    { rel: "stylesheet", href: styles, crossOrigin: "anonymous" },
+
+    // フォントのpreload
+    {
+      rel: "preload",
+      as: "font",
+      type: "font/woff2",
+      href: notoSansJPWoff2,
+      crossOrigin: "anonymous",
+    },
+  ]
 }
 
 export const meta: MetaFunction = () => {
@@ -56,26 +69,6 @@ export function ErrorBoundary() {
   return <AppNotFoundPage />
 }
 
-// export async function loader({ request }: LoaderFunctionArgs) {
-//   const { getTheme } = await themeSessionResolver(request)
-
-//   return {
-//     theme: getTheme(),
-//   }
-// }
-
-/**
- * remix-themeで使用する
- */
-// export default function AppWithProviders() {
-//   const data = useLoaderData<typeof loader>()
-//   return (
-//     <ThemeProvider specifiedTheme={data.theme} themeAction="/action/set-theme">
-//       <App />
-//     </ThemeProvider>
-//   )
-// }
-
 type Props = Readonly<{
   children: React.ReactNode
 }>
@@ -84,8 +77,6 @@ type Props = Readonly<{
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
 export function Layout(props: Props) {
-  const navigation = useNavigation()
-
   if (
     typeof window !== "undefined" &&
     typeof import.meta.env.VITE_SENTRY_DSN === "string"

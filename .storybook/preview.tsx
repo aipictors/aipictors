@@ -1,13 +1,7 @@
 import "../app/globals.css"
 
-// biome-ignore lint/nursery/noUnusedImports: <explanation>
-import React from "react"
-
 import type { Preview } from "@storybook/react"
-import { notoSansFont } from "../app/_fonts/noto-sans-font"
 import { cn } from "../lib/utils"
-
-console.log(notoSansFont)
 
 const preview: Preview = {
   parameters: {
