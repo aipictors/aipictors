@@ -1,4 +1,5 @@
-import styles from "@/tailwind.css?url"
+import "react-photo-view/dist/react-photo-view.css"
+import "@fontsource-variable/noto-sans-jp"
 
 import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
@@ -25,9 +26,8 @@ import { ThemeProvider } from "next-themes"
 import { Suspense } from "react"
 import { Toaster } from "@/_components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
-import "react-photo-view/dist/react-photo-view.css"
-import "@fontsource-variable/noto-sans-jp"
 import notoSansJPWoff2 from "@fontsource-variable/noto-sans-jp/files/noto-sans-jp-latin-wght-normal.woff2?url"
+import styles from "@/tailwind.css?url"
 
 export const headers: HeadersFunction = () => {
   return {
