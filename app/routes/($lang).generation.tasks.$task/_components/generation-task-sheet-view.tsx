@@ -1,5 +1,3 @@
-"use client"
-
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"

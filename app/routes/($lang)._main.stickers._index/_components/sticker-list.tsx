@@ -1,4 +1,3 @@
-"use client"
 import type { StickersQuery } from "@/_graphql/__generated__/graphql"
 import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
 

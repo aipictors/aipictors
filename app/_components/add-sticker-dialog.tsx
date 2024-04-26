@@ -20,7 +20,7 @@ import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { useMutation } from "@apollo/client/index.js"
 import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
-import type { StickerGenre } from "graphql/__generated__/graphql"
+import type { StickerGenre } from "@/_graphql/__generated__/graphql"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 
 type Props = {

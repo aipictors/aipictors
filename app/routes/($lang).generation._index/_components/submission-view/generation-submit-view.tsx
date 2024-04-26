@@ -1,5 +1,3 @@
-"use client"
-
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import type {
   ImageGenerationSizeType,

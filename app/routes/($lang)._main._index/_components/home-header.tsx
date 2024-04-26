@@ -1,5 +1,3 @@
-"use client"
-
 import { AppHeader } from "@/_components/app/app-header"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { LogoutDialogLegacy } from "@/_components/logout-dialog-legacy"
