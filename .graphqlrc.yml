@@ -1,4 +1,4 @@
-schema: "https://graphql-6ouzjmdzha-an.a.run.app"
+schema: "https://aipics.fly.dev"
 documents:
   - "app/_graphql/fragments/*.ts"
   - "app/_graphql/mutations/*.ts"
