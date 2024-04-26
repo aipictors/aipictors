@@ -16,7 +16,7 @@ const RelatedLinkInput = (props: Props) => {
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
         <div className="mt-2 flex flex-col">
-          <p className="mb-1 text-sm">{"関連リンク"}</p>
+          <p className="mb-1 font-bold text-sm">{"関連リンク"}</p>
           <Input
             onChange={(event) => {
               props.onChange(event.target.value)

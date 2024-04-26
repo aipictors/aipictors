@@ -24,6 +24,7 @@ type Props = {
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   isDeletable?: boolean
+  onDelete?: (id: number) => void
 }
 
 /**
@@ -89,6 +90,9 @@ export const SortableItems = (props: Props) => {
               onDelete={(id: number) => {
                 props.setItems((prev) => prev.filter((item) => item.id !== id))
                 changeIndex()
+                if (props.onDelete) {
+                  props.onDelete(id)
+                }
               }}
               isDeletable={true}
               key={item.id}

@@ -16,7 +16,7 @@ const AdWorkInput = (props: Props) => {
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
         <div className="mt-2 flex flex-col">
-          <p className="mt-1 mb-1 text-sm">宣伝作品</p>
+          <p className="mt-1 mb-1 font-bold text-sm">宣伝作品</p>
           <div className="mb-1 items-center text-sm opacity-65">
             <p>広告枠を使って自身のサービスやプランを宣伝できます。</p>
             <p>スタンダード、プレミアムプランの場合、1週間に1作品可能です。</p>

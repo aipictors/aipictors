@@ -27,9 +27,11 @@ import { albumsQuery } from "@/_graphql/queries/album/albums"
 import AlbumInput from "@/routes/($lang)._main.new.image/_components/series-input"
 import { AuthContext } from "@/_contexts/auth-context"
 import ImagesInput from "@/routes/($lang)._main.new.image/_components/images-input"
-import type { TSortableItem } from "@/_components/drag/sortable-item"
 import RelatedLinkInput from "@/routes/($lang)._main.new.image/_components/related-link-input"
 import AdWorkInput from "@/routes/($lang)._main.new.image/_components/ad-work-input"
+import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
+import GenerationParamsInput from "@/routes/($lang)._main.new.image/_components/generation-params-input"
+import { Checkbox } from "@/_components/ui/checkbox"
 
 const NewImageForm = () => {
   const authContext = useContext(AuthContext)
@@ -69,9 +71,14 @@ const NewImageForm = () => {
       offset: 0,
       where: {
         ownerUserId: authContext.userId,
+        isSensitiveAndAllRating: true,
+        needInspected: false,
+        needsThumbnailImage: false,
       },
     },
   })
+
+  console.log(albums)
 
   const optionAlbums = albums?.albums
     ? (albums?.albums.map((album) => ({
@@ -90,8 +97,6 @@ const NewImageForm = () => {
   /**
    * 画像の配列を保持する状態
    */
-  const [selectedImages, setSelectedImages] = useState<TSortableItem[]>([])
-
   const [isHovered, setIsHovered] = useState(false)
 
   const [title, setTitle] = useState("")
@@ -128,6 +133,10 @@ const NewImageForm = () => {
 
   const [reservationTime, setReservationTime] = useState("")
 
+  const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
+
+  const [pngInfo, setPngInfo] = useState<PNGInfo | null>(null)
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -138,7 +147,16 @@ const NewImageForm = () => {
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
-            <ImagesInput onChange={setImageBase64List} />
+            <ImagesInput
+              onChangePngInfo={setPngInfo}
+              onChange={setImageBase64List}
+              onDelete={(index) => {
+                // もし全ての画像が削除されたらPNGInfoをnullにする
+                if (imageBase64List.length === 1) {
+                  setPngInfo(null)
+                }
+              }}
+            />
 
             <div className="m-4 flex flex-col text-white">
               <p className="text-center text-sm">
@@ -179,6 +197,40 @@ const NewImageForm = () => {
               models={optionModels}
               setModel={setAiUsed}
             />
+            {pngInfo && (
+              <div className="items-center">
+                <Checkbox
+                  checked={isSetGenerationParams}
+                  onCheckedChange={() => {
+                    setIsSetGenerationParams((prev) => !prev)
+                  }}
+                  id="set-generation-check"
+                />
+                <label
+                  htmlFor="set-generation-check"
+                  className="ml-2 font-medium text-sm"
+                >
+                  生成情報を公開する
+                </label>
+              </div>
+            )}
+            {pngInfo && isSetGenerationParams && (
+              <Accordion type="single" collapsible>
+                <AccordionItem value="setting">
+                  <AccordionTrigger>
+                    <Button variant={"secondary"} className="w-full">
+                      生成情報を確認する
+                    </Button>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-2">
+                    <GenerationParamsInput
+                      pngInfo={pngInfo}
+                      setPngInfo={setPngInfo}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
             <DateInput
               date={reservationDate}
               time={reservationTime}

@@ -3,22 +3,27 @@ interface PNGChunk {
   text: string
 }
 
-interface PNGInfo {
+interface PNGItem {
   [key: string]: string | undefined
 }
 
-export interface ImageParameters {
+interface ImageParameters {
   prompt: string
   negativePrompt: string
   seed: string
   steps: string
+  strength: string
+  noise: string
   scale: string
   sampler: string
-  strategy: string
-  noise: string
   vae: string
   modelHash: string
   model: string
+}
+
+export interface PNGInfo {
+  params: ImageParameters
+  src: string
 }
 
 /**
@@ -29,7 +34,8 @@ export interface ImageParameters {
 export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
   const chunks = await extractInfoFromPNG(file)
   const pngInfo = parsePNGInfo(chunks)
-  return pngInfo
+  const pngStr = getPngInfo(chunks)
+  return { params: exchangeFromPNGItem(pngInfo), src: pngStr }
 }
 
 /**
@@ -89,8 +95,31 @@ const extractInfoFromPNG = (file: File): Promise<PNGChunk[]> => {
   })
 }
 
-const parsePNGInfo = (chunks: PNGChunk[]): PNGInfo => {
-  const info: PNGInfo = {}
+const getPngInfo = (chunks: PNGChunk[]): string => {
+  // 一つの文字列にする
+  const info = chunks.map((e) => `${e.keyword}: ${e.text}`).join("\n")
+  return info
+}
+
+const exchangeFromPNGItem = (item: PNGItem): ImageParameters => {
+  const parameters: ImageParameters = {
+    prompt: item.prompt ?? "",
+    negativePrompt: item.negativePrompt ?? "",
+    seed: item.seed ?? "",
+    steps: item.steps ?? "",
+    strength: item.strength ?? "",
+    noise: item.noise ?? "",
+    scale: item.scale ?? "",
+    sampler: item.sampler ?? "",
+    vae: item.vae ?? "",
+    modelHash: item.modelHash ?? "",
+    model: item.model ?? "",
+  }
+  return parameters
+}
+
+const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
+  const info: PNGItem = {}
 
   if (chunks.some((e) => e.keyword === "Software" && e.text === "NovelAI")) {
     const description = chunks.find((e) => e.keyword === "Description")
@@ -131,34 +160,60 @@ const parsePNGInfo = (chunks: PNGChunk[]): PNGInfo => {
       }
     }
   } else if (chunks.some((e) => e.keyword === "parameters")) {
+    // prompts
     const text = chunks[0].text
     const promptMatch = text.match(/^(.+?)\s*Negative prompt:/)
     const prompt = promptMatch ? promptMatch[1].trim() : ""
     info.prompt = prompt
 
-    // Extract negative prompt
+    // negativePrompts
     const negativePromptMatch = text.match(/Negative prompt:\s*(.+?),\s*Steps:/)
     const negativePrompt = negativePromptMatch
       ? negativePromptMatch[1].trim()
       : ""
     info.negativePrompt = negativePrompt
 
-    // Extract steps
+    // seed
+    const seedMatch = text.match(/Seed:\s*(\d+),/)
+    const seed = seedMatch ? Number.parseInt(seedMatch[1], 10) : 0
+    info.seed = seed.toString()
+
+    // scale
+    const scaleMatch = text.match(/CFG scale:\s*([^,]+)/)
+    const scale = scaleMatch ? scaleMatch[1] : ""
+    info.scale = scale
+
+    // steps
     const stepsMatch = text.match(/Steps:\s*(\d+),/)
     const steps = stepsMatch ? Number.parseInt(stepsMatch[1], 10) : 0
     info.steps = steps.toString()
 
-    // Extract model
+    // strength
+    const strengthMatch = text.match(/Denoising strength:\s*([^,]+)/)
+    const strength = strengthMatch ? strengthMatch[1] : ""
+    info.strength = strength
+
+    // sampler
+    const samplerMatch = text.match(/Sampler:\s*([^,]+)/)
+    const sampler = samplerMatch ? samplerMatch[1] : ""
+    info.sampler = sampler.toString()
+
+    // noise
+    const noiseMatch = text.match(/Noise:\s*([^,]+)/)
+    const noise = noiseMatch ? noiseMatch[1] : ""
+    info.noise = noise
+
+    // model
     const modelMatch = text.match(/Model:\s*([^,]+)/)
     const model = modelMatch ? modelMatch[1].trim() : ""
     info.model = model
 
-    // Extract VAE
+    // vae
     const vaeMatch = text.match(/VAE:\s*([^,]+)/)
     const vae = vaeMatch ? vaeMatch[1].trim() : ""
     info.vae = vae
 
-    // Extract Model hash
+    // modelHash
     const modelHashMatch = text.match(/Model hash:\s*([^,]+)/)
     const modelHash = modelHashMatch ? modelHashMatch[1].trim() : ""
     info.modelHash = modelHash
