@@ -19,7 +19,7 @@ type Props = {
   title?: string
 }
 
-export const HomeHeader = (props: Props) => {
+const HomeHeader = (props: Props) => {
   const navigation = useNavigation()
 
   const authContext = useContext(AuthContext)
@@ -117,3 +117,5 @@ export const HomeHeader = (props: Props) => {
     </AppHeader>
   )
 }
+
+export default HomeHeader
