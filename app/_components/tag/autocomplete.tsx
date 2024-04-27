@@ -26,13 +26,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   children,
 }) => {
   return (
-    <Command className="w-full border">
+    <Command className="min-w-[320px] border">
       {children}
       <CommandList>
-        {/* <CommandEmpty>No results found.</CommandEmpty> */}
-        {autocompleteOptions.length !== 0 && (
-          <CommandGroup heading="">
-            {autocompleteOptions.map((option) => (
+        <CommandGroup heading="">
+          {autocompleteOptions.length !== 0 &&
+            autocompleteOptions.map((option) => (
               <CommandItem key={option.id}>
                 {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
                 <div
@@ -52,8 +51,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
                 </div>
               </CommandItem>
             ))}
-          </CommandGroup>
-        )}
+        </CommandGroup>
       </CommandList>
     </Command>
   )

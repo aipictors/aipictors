@@ -1,10 +1,13 @@
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
+import { Button } from "@/_components/ui/button"
+import type { TagNode } from "graphql/__generated__/graphql"
 import { useState } from "react"
 
 type Props = {
   tags: Tag[]
   whiteListTags: Tag[]
   setTags: (value: Tag[]) => void
+  recommendedTags: TagNode[]
 }
 
 /**
@@ -15,7 +18,7 @@ type Props = {
 export const TagsInput = (props: Props) => {
   const [isFocus, setIsFocus] = useState(false)
 
-  const whiteListTags = isFocus ? props.whiteListTags : []
+  const whiteListTags = props.whiteListTags
 
   return (
     <>
@@ -38,10 +41,10 @@ export const TagsInput = (props: Props) => {
               console.log(newTags)
             }}
             onFocus={() => {
-              setIsFocus(true)
+              // setIsFocus(true)
             }}
             onBlur={() => {
-              setIsFocus(false)
+              //setIsFocus(false)
             }}
             autocompleteOptions={whiteListTags.map((tag) => ({
               id: tag.id,
@@ -51,6 +54,31 @@ export const TagsInput = (props: Props) => {
             }))}
             enableAutocomplete={true}
           />
+          <p className="mt-2 text-sm">
+            プロンプト付きの画像を読み込むとおすすめタグが更新されます
+          </p>
+          {props.recommendedTags && (
+            <div className="mt-2 flex flex-wrap">
+              {props.recommendedTags.map((tag) => (
+                <Button
+                  key={tag.id}
+                  className="mr-2 mb-2 w-auto"
+                  variant={"secondary"}
+                  onClick={() => {
+                    props.setTags([
+                      ...props.tags,
+                      {
+                        id: tag.id,
+                        text: tag.name,
+                      } as Tag,
+                    ])
+                  }}
+                >
+                  {tag.name}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

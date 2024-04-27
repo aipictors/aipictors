@@ -32,8 +32,10 @@ import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
-import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { ImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/images-and-video.input"
+import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
+import { Loader2Icon } from "lucide-react"
+import type { TagNode } from "graphql/__generated__/graphql"
 
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
@@ -47,12 +49,21 @@ export const NewImageForm = () => {
     fetchPolicy: "cache-first",
   })
 
-  const { data: recommendedTags } = useQuery(recommendedTagsFromPromptsQuery, {
-    variables: {
-      prompts: "",
-    },
-    fetchPolicy: "cache-first",
-  })
+  const [pngInfo, setPngInfo] = useState<PNGInfo | null>(null)
+
+  const { data: recommendedTagsRet, loading: recommendedTagsLoading } =
+    useQuery(recommendedTagsFromPromptsQuery, {
+      variables: {
+        prompts: pngInfo?.params.prompt ?? "girl",
+      },
+    })
+
+  const recommendedTags =
+    recommendedTagsRet?.recommendedTagsFromPrompts as TagNode[]
+
+  console.log(recommendedTagsRet)
+
+  console.log(pngInfo?.params.prompt)
 
   const [date, setDate] = useState(new Date())
 
@@ -166,8 +177,6 @@ export const NewImageForm = () => {
   const [reservationTime, setReservationTime] = useState("")
 
   const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
-
-  const [pngInfo, setPngInfo] = useState<PNGInfo | null>(null)
 
   return (
     <>
@@ -306,8 +315,21 @@ export const NewImageForm = () => {
                 onChange={(value: boolean) => {
                   if (value) {
                     setThemeId(theme?.dailyTheme?.id ?? "")
+                    // タグをセット
+                    setTags([
+                      ...tags,
+                      {
+                        id: 9999,
+                        text: theme?.dailyTheme?.title,
+                      } as unknown as Tag,
+                    ])
                   } else {
                     setThemeId("")
+                    // タグを削除
+                    const newTags = tags.filter(
+                      (tag) => tag.text !== theme?.dailyTheme?.title,
+                    )
+                    setTags(newTags)
                   }
                 }}
                 title={theme?.dailyTheme?.title ?? ""}
@@ -318,7 +340,12 @@ export const NewImageForm = () => {
               whiteListTags={whiteTags}
               tags={tags}
               setTags={setTags}
+              recommendedTags={recommendedTags ?? []}
             />
+
+            {recommendedTagsLoading && (
+              <Loader2Icon className="h-4 w-4 animate-spin" />
+            )}
             <CategoryEditableInput
               isChecked={isTagEditable}
               onChange={setIsTagEditable}
