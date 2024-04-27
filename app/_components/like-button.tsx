@@ -20,6 +20,7 @@ type LikeButtonProps = {
   targetWorkOwnerUserId: string
   isBackgroundNone?: boolean
   strokeWidth?: number
+  isParticle?: boolean
 }
 
 export const LikeButton = ({
@@ -32,6 +33,7 @@ export const LikeButton = ({
   targetWorkOwnerUserId,
   isBackgroundNone = true,
   strokeWidth = 1,
+  isParticle = false,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)
 
@@ -56,7 +58,7 @@ export const LikeButton = ({
           >
             <div
               className={cn(
-                "like-image absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+                "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
               )}
               style={{
                 width: `${size}px`,
@@ -145,9 +147,11 @@ export const LikeButton = ({
 
   return (
     <button
-      // If props.isBackgroundNone is true, set no background color.
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`relative flex items-center justify-center rounded-md ${
+      className={`${
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        isParticle ? "like-button " : ""
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      }relative flex items-center justify-center rounded-md ${
         isBackgroundNone
           ? ""
           : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -156,14 +160,13 @@ export const LikeButton = ({
       style={{
         width: text ? "auto" : `${size}px`,
         height: `${size}px`,
-        paddingLeft: text ? `${size}px` : "0",
       }}
       onClick={handleOnClick}
       type="button"
     >
       <div
         className={cn(
-          "like-image top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+          "top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
         )}
         style={{
           width: `${size}px`,
