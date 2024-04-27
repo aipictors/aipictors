@@ -1,3 +1,12 @@
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  console.log('Notification notificationclick triggered', event.notification);
+  const message = event.notification.data.FCM_MSG ? event.notification.data.FCM_MSG : event.notification;
+  event.waitUntil(
+    clients.openWindow(message.data.link)
+  );
+});
+
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js")
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js")
 
@@ -12,3 +21,18 @@ firebase.initializeApp({
 })
 
 const messaging = firebase.messaging()
+
+messaging.onBackgroundMessage((payload) => {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  // Customize notification here
+  const notificationOptions = {
+    body: payload.data.body,
+    icon: payload.data.icon,
+    image: payload.data.imageUrl,
+    data: payload.data,
+  };
+
+  self.registration.showNotification(payload.data.title,
+    notificationOptions);
+});
+

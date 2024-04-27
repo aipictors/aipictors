@@ -7,8 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { getMessaging, onMessage } from "firebase/messaging"
-import { toast } from "sonner"
-
 type Props = {
   children: React.ReactNode
 }
@@ -35,9 +33,17 @@ if (typeof window !== "undefined" && getApps().length === 0) {
   try {
     getMessaging(getApp())
     onMessage(getMessaging(), (payload) => {
-      if (payload.notification === undefined) return
-      toast(payload.notification.title, {
-        description: payload.notification.body,
+      console.log(payload)
+      navigator.serviceWorker.ready.then((registration) => {
+        console.log(registration)
+        const notificationOptions = {
+          body: payload.data.body,
+          icon: payload.data.icon,
+          image: payload.data.imageUrl,
+          data: payload.data,
+        }
+
+        registration.showNotification(payload.data.title, notificationOptions)
       })
     })
   } catch (error) {
