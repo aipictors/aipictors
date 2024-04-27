@@ -1,9 +1,9 @@
 self.addEventListener("notificationclick", (event) => {
   event.notification.close()
-  console.log("Notification notificationclick triggered", event.notification)
   const message = event.notification.data.FCM_MSG
     ? event.notification.data.FCM_MSG
     : event.notification
+  if (typeof message.data.link !== "string") return
   event.waitUntil(clients.openWindow(message.data.link))
 })
 
@@ -23,17 +23,10 @@ firebase.initializeApp({
 const messaging = firebase.messaging()
 
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload,
-  )
-  // Customize notification here
-  const notificationOptions = {
+  self.registration.showNotification(payload.data.title, {
     body: payload.data.body,
     icon: payload.data.icon,
     image: payload.data.imageUrl,
     data: payload.data,
-  }
-
-  self.registration.showNotification(payload.data.title, notificationOptions)
+  })
 })
