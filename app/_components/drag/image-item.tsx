@@ -10,7 +10,7 @@ type Props = {
 /**
  * 画像アイテム
  */
-const ImageItem = forwardRef<HTMLDivElement, Props>(
+export const ImageItem = forwardRef<HTMLDivElement, Props>(
   ({ item, isOpacityEnabled, isDragging, style, ...props }, ref) => {
     if (!item.content) {
       return null
@@ -43,5 +43,3 @@ const ImageItem = forwardRef<HTMLDivElement, Props>(
     )
   },
 )
-
-export default ImageItem

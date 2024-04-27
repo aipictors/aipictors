@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { FolderIcon } from "lucide-react"
-import MenuPopover from "./work-action-menu"
+import { MenuPopover } from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 import { LikeButton } from "@/_components/like-button"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"

@@ -1,4 +1,4 @@
-import CropImageField from "@/_components/crop-image-field"
+import { CropImageField } from "@/_components/crop-image-field"
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import getBase64FromImageUrl from "@/_utils/get-base64-from-image-url"
+import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { useContext, useState } from "react"
 import { Button } from "@/_components/ui/button"
 import { toast } from "sonner"

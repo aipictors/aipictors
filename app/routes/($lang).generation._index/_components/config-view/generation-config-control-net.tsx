@@ -1,4 +1,4 @@
-import CropImageField from "@/_components/crop-image-field"
+import { CropImageField } from "@/_components/crop-image-field"
 import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
 import { Button } from "@/_components/ui/button"
 import {
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import getBase64FromImageUrl from "@/_utils/get-base64-from-image-url"
+import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { GenerationConfigControlNetDialogContents } from "@/routes/($lang).generation._index/_components/config-view/generation-config-control-net-dialog-contents"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { parseGenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"

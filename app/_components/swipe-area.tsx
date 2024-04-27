@@ -12,7 +12,7 @@ type Props = {
  * @param props
  * @returns
  */
-const SwipeArea: React.FC<Props> = ({ onPrev, onNext, children }) => {
+export const SwipeArea: React.FC<Props> = ({ onPrev, onNext, children }) => {
   const [startPosition, setStartPosition] = useState<number | null>(null)
 
   const handleTouchStart = useCallback(
@@ -76,5 +76,3 @@ const SwipeArea: React.FC<Props> = ({ onPrev, onNext, children }) => {
     </div>
   )
 }
-
-export default SwipeArea

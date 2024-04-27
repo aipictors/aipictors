@@ -7,7 +7,7 @@ type Props = {
 /**
  * 作品の画像
  */
-export default function WorkCard(props: Props) {
+export function WorkCard(props: Props) {
   if (!props.imageURL) {
     return null
   }

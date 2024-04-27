@@ -16,7 +16,7 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
 /**
  * 画像トリミングを行い新たな画像urlを作成
  */
-export default async function getCroppedImage(
+export async function getCroppedImage(
   imageSrc: string,
   pixelCrop: Area,
   fileExtension?: string,

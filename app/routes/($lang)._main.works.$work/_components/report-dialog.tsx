@@ -26,7 +26,7 @@ import { toast } from "sonner"
 /**
  * 作品の報告ダイアログ
  */
-export default function ReportDialog() {
+export function ReportDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>

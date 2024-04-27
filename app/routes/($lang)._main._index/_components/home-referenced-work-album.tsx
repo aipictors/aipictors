@@ -5,7 +5,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
   workId: string
 }
 
-export default function HomeReferencedWorkAlbum({
+export function HomeReferencedWorkAlbum({
   photo,
   wrapperStyle,
   workId, // workId を引数として受け取る

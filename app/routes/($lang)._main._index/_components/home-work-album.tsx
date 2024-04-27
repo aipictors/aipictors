@@ -7,7 +7,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
   workOwnerUserId: string
 }
 
-export default function HomeWorkAlbum({
+export function HomeWorkAlbum({
   photo,
   wrapperStyle,
   workId,

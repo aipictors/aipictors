@@ -1,4 +1,4 @@
-import ImageItem from "@/_components/drag/image-item"
+import { ImageItem } from "@/_components/drag/image-item"
 import { Button } from "@/_components/ui/button"
 import { useSortable } from "@dnd-kit/sortable"
 import { XIcon } from "lucide-react"
@@ -20,7 +20,7 @@ type Props = {
  * ドラッグ可能なアイテム
  * @param props
  */
-const SortableItem = ({ item, ...props }: Props) => {
+export const SortableItem = ({ item, ...props }: Props) => {
   if (!item.content) {
     return null
   }
@@ -66,5 +66,3 @@ const SortableItem = ({ item, ...props }: Props) => {
     </div>
   )
 }
-
-export default SortableItem

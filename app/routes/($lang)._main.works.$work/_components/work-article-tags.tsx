@@ -6,7 +6,9 @@ type WorkArticleTagProps = {
   tagNames: string[]
 }
 
-const WorkArticleTags: React.FC<WorkArticleTagProps> = ({ tagNames }) => {
+export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
+  tagNames,
+}) => {
   return (
     <div className="flex flex-row flex-wrap">
       {tagNames.map((tagName) => (
@@ -17,5 +19,3 @@ const WorkArticleTags: React.FC<WorkArticleTagProps> = ({ tagNames }) => {
     </div>
   )
 }
-
-export default WorkArticleTags

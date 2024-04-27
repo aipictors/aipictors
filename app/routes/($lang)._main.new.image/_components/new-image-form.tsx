@@ -7,33 +7,33 @@ import {
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { aiModelsQuery } from "@/_graphql/queries/model/models"
-import CaptionInput from "@/routes/($lang)._main.new.image/_components/caption-input"
-import DateInput from "@/routes/($lang)._main.new.image/_components/date-input"
-import ModelInput from "@/routes/($lang)._main.new.image/_components/model-input"
-import RatingInput from "@/routes/($lang)._main.new.image/_components/rating-input"
-import TasteInput from "@/routes/($lang)._main.new.image/_components/taste-input"
-import TitleInput from "@/routes/($lang)._main.new.image/_components/title-input"
-import ViewInput from "@/routes/($lang)._main.new.image/_components/view-input"
+import { CaptionInput } from "@/routes/($lang)._main.new.image/_components/caption-input"
+import { DateInput } from "@/routes/($lang)._main.new.image/_components/date-input"
+import { ModelInput } from "@/routes/($lang)._main.new.image/_components/model-input"
+import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating-input"
+import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
+import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
+import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 import { useQuery } from "@apollo/client/index.js"
 import {} from "@dnd-kit/core"
 import { useContext, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
-import TagsInput from "@/routes/($lang)._main.new.image/_components/tag-input"
+import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
-import ThemeInput from "@/routes/($lang)._main.new.image/_components/theme-input"
-import CategoryEditableInput from "@/routes/($lang)._main.new.image/_components/category-editable-input"
+import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
+import { CategoryEditableInput } from "@/routes/($lang)._main.new.image/_components/category-editable-input"
 import { albumsQuery } from "@/_graphql/queries/album/albums"
-import AlbumInput from "@/routes/($lang)._main.new.image/_components/series-input"
+import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-input"
 import { AuthContext } from "@/_contexts/auth-context"
-import ImagesInput from "@/routes/($lang)._main.new.image/_components/images-input"
-import RelatedLinkInput from "@/routes/($lang)._main.new.image/_components/related-link-input"
-import AdWorkInput from "@/routes/($lang)._main.new.image/_components/ad-work-input"
+import { ImagesInput } from "@/routes/($lang)._main.new.image/_components/images-input"
+import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
+import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
 import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
-import GenerationParamsInput from "@/routes/($lang)._main.new.image/_components/generation-params-input"
+import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 
-const NewImageForm = () => {
+export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
@@ -150,7 +150,7 @@ const NewImageForm = () => {
             <ImagesInput
               onChangePngInfo={setPngInfo}
               onChange={setImageBase64List}
-              onDelete={(index) => {
+              onDelete={() => {
                 // もし全ての画像が削除されたらPNGInfoをnullにする
                 if (imageBase64List.length === 1) {
                   setPngInfo(null)
@@ -298,5 +298,3 @@ const NewImageForm = () => {
     </>
   )
 }
-
-export default NewImageForm

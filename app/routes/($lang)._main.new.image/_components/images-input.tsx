@@ -19,7 +19,7 @@ type Props = {
  * @param props
  * @returns
  */
-const ImagesInput = (props: Props) => {
+export const ImagesInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024
 
   const [items, setItems] = useState<TSortableItem[]>([])
@@ -166,5 +166,3 @@ const ImagesInput = (props: Props) => {
     </>
   )
 }
-
-export default ImagesInput

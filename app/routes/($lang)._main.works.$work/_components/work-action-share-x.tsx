@@ -44,5 +44,3 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
     )
   },
 )
-
-export default XIntent

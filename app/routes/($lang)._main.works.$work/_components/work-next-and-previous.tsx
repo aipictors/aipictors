@@ -58,5 +58,3 @@ function keyDownHandler(e: KeyboardEvent, work: WorkQuery["work"]): void {
     }
   }
 }
-
-export default WorkNextAndPrevious

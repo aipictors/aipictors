@@ -1,4 +1,4 @@
-import ImageCropperModal from "@/_components/modal-image-cropper"
+import { ImageCropperModal } from "@/_components/modal-image-cropper"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import { Input } from "@/_components/ui/input"
@@ -19,7 +19,7 @@ type Props = {
  * @param props
  * @returns
  */
-const CropImageField = (props: Props) => {
+export const CropImageField = (props: Props) => {
   const [image, setImage] = useState<string | undefined>(undefined)
 
   const [croppedImage, setCroppedImage] = useState<string>("")
@@ -153,5 +153,3 @@ const CropImageField = (props: Props) => {
     </>
   )
 }
-
-export default CropImageField

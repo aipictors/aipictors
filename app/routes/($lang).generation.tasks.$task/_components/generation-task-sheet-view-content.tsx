@@ -1,6 +1,6 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { PrivateImage } from "@/_components/private-image"
-import SwipeArea from "@/_components/swipe-area"
+import { SwipeArea } from "@/_components/swipe-area"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Separator } from "@/_components/ui/separator"

@@ -6,7 +6,7 @@ import {
 } from "@/_components/ui/popover"
 import { useLocation } from "@remix-run/react"
 import { Share2 } from "lucide-react"
-import CopyWorkUrlButton from "./work-action-copy-url"
+import { CopyWorkUrlButton } from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
 
 type Props = {

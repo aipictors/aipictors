@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
-import getCroppedImage from "@/_utils/get-cropped-image"
+import { getCroppedImage } from "@/_utils/get-cropped-image"
 import getResizedImg from "@/_utils/get-resized-image"
 import { useState } from "react"
 import type { Area } from "react-easy-crop"
@@ -19,9 +19,8 @@ type Props = {
 
 /**
  * モーダル画像クロップ
- * TODO: react-easy-cropがESMに対応していないので変更する
  */
-const ImageCropperModal = (props: Props) => {
+export const ImageCropperModal = (props: Props) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
 
   const [zoom, setZoom] = useState(1)
@@ -116,5 +115,3 @@ const ImageCropperModal = (props: Props) => {
     </Dialog>
   )
 }
-
-export default ImageCropperModal

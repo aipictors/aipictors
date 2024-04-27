@@ -1,5 +1,5 @@
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
-import HomeWorkAlbum from "@/routes/($lang)._main._index/_components/home-work-album"
+import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {

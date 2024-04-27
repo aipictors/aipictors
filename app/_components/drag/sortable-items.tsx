@@ -16,8 +16,8 @@ import {
 } from "@dnd-kit/sortable"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { useState } from "react"
-import ImageItem from "@/_components/drag/image-item"
-import SortableItem from "@/_components/drag/sortable-item"
+import { ImageItem } from "@/_components/drag/image-item"
+import { SortableItem } from "@/_components/drag/sortable-item"
 
 type Props = {
   items: TSortableItem[]

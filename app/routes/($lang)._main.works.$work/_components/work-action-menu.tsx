@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/_components/ui/popover"
-import ReportDialog from "@/routes/($lang)._main.works.$work/_components/report-dialog"
+import { ReportDialog } from "@/routes/($lang)._main.works.$work/_components/report-dialog"
 import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 /**
  * 作品への報告、画像ダウンロードのメニュー
  */
-export default function MenuPopover(props: Props) {
+export function MenuPopover(props: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>
