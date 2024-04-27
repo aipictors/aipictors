@@ -219,7 +219,12 @@ export const config = {
    * GraphQLのエンドポイント
    */
   graphql: {
-    endpoint: env.VITE_GRAPHQL_ENDPOINT,
+    get endpoint() {
+      if (typeof window === "undefined") {
+        return env.VITE_GRAPHQL_ENDPOINT_REMIX
+      }
+      return env.VITE_GRAPHQL_ENDPOINT
+    },
   },
   /**
    * クエリ
