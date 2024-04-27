@@ -167,7 +167,7 @@ export function GenerationSubmissionView(props: Props) {
      * 生成種別
      */
     const generationType =
-      context.config.i2iImageBase64 && isStandardOrPremium
+      context.config.i2iImageBase64 && isLiteOrStandardOrPremium
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 

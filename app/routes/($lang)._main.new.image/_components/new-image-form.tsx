@@ -26,12 +26,14 @@ import { CategoryEditableInput } from "@/routes/($lang)._main.new.image/_compone
 import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-input"
 import { AuthContext } from "@/_contexts/auth-context"
-import { ImagesInput } from "@/routes/($lang)._main.new.image/_components/images-input"
 import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
 import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
 import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
+import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
+import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
+import { ImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/images-and-video.input"
 
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
@@ -45,9 +47,37 @@ export const NewImageForm = () => {
     fetchPolicy: "cache-first",
   })
 
+  const { data: recommendedTags } = useQuery(recommendedTagsFromPromptsQuery, {
+    variables: {
+      prompts: "",
+    },
+    fetchPolicy: "cache-first",
+  })
+
   const [date, setDate] = useState(new Date())
 
   const [isHideTheme, setIsHideTheme] = useState(false)
+
+  const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
+
+  const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
+    variables: {
+      where: {
+        isSensitive: isSensitiveWhiteTags,
+      },
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  const whiteTags = whiteTagsRet?.whiteListTags
+    ? whiteTagsRet.whiteListTags.map(
+        (tag) =>
+          ({
+            id: tag.id,
+            text: tag.name,
+          }) as Tag,
+      )
+    : []
 
   const {
     data: theme,
@@ -99,6 +129,8 @@ export const NewImageForm = () => {
    */
   const [isHovered, setIsHovered] = useState(false)
 
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+
   const [title, setTitle] = useState("")
 
   const [enTitle, setEnTitle] = useState("")
@@ -147,7 +179,7 @@ export const NewImageForm = () => {
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
-            <ImagesInput
+            {/* <ImagesInput
               onChangePngInfo={setPngInfo}
               onChange={setImageBase64List}
               onDelete={() => {
@@ -155,6 +187,20 @@ export const NewImageForm = () => {
                 if (imageBase64List.length === 1) {
                   setPngInfo(null)
                 }
+              }}
+            /> */}
+
+            <ImagesAndVideoInput
+              onChangePngInfo={setPngInfo}
+              onChange={setImageBase64List}
+              onDelete={() => {
+                // もし全ての画像が削除されたらPNGInfoをnullにする
+                if (imageBase64List.length === 1) {
+                  setPngInfo(null)
+                }
+              }}
+              onVideoChange={(videoFile: File | null) => {
+                setVideoFile(videoFile)
               }}
             />
 
@@ -268,7 +314,11 @@ export const NewImageForm = () => {
                 isLoading={themeLoading}
               />
             )}
-            <TagsInput tags={tags} setTags={setTags} />
+            <TagsInput
+              whiteListTags={whiteTags}
+              tags={tags}
+              setTags={setTags}
+            />
             <CategoryEditableInput
               isChecked={isTagEditable}
               onChange={setIsTagEditable}
