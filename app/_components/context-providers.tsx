@@ -33,17 +33,15 @@ if (typeof window !== "undefined" && getApps().length === 0) {
   try {
     getMessaging(getApp())
     onMessage(getMessaging(), (payload) => {
-      console.log(payload)
       navigator.serviceWorker.ready.then((registration) => {
-        console.log(registration)
-        const notificationOptions = {
+        if (payload.data === undefined) return
+        registration.showNotification(payload.data.title, {
           body: payload.data.body,
           icon: payload.data.icon,
-          image: payload.data.imageUrl,
           data: payload.data,
-        }
-
-        registration.showNotification(payload.data.title, notificationOptions)
+          // @ts-ignore https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
+          image: payload.data.imageUrl,
+        })
       })
     })
   } catch (error) {
