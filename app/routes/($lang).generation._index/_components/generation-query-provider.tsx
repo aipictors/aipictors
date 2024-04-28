@@ -8,6 +8,7 @@ import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current
 import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useQuery } from "@apollo/client/index.js"
 import { useContext, useEffect } from "react"
 
@@ -25,12 +26,14 @@ type Props = {
 export const GenerationQueryProvider = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  const context = useGenerationContext()
+
   const { data: viewer, refetch } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
   const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: 2000,
+    pollInterval: context.currentPass?.type === undefined ? 10000 : 2000,
   })
 
   const userNanoid = viewer?.viewer?.user.nanoid ?? null
