@@ -1,5 +1,6 @@
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
+import { useState } from "react"
 
 type Props = {
   tags: Tag[]
@@ -67,12 +68,12 @@ export const TagsInput = (props: Props) => {
                       ...props.tags,
                       {
                         id: tag.id,
-                        text: tag.name,
+                        text: tag.text,
                       } as Tag,
                     ])
                   }}
                 >
-                  {tag.name}
+                  {tag.text}
                 </Button>
               ))}
             </div>
