@@ -46,6 +46,7 @@ if (typeof window !== "undefined" && getApps().length === 0) {
             data: payload.data,
             // @ts-ignore https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
             image: payload.data.imageUrl,
+            tag: payload.data.tag,
           })
         })
       })

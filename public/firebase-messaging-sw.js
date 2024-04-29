@@ -28,5 +28,6 @@ messaging.onBackgroundMessage((payload) => {
     icon: payload.data.icon,
     image: payload.data.imageUrl,
     data: payload.data,
+    tag: payload.data.tag,
   })
 })
