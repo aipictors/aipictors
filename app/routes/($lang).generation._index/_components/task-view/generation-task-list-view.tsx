@@ -1,5 +1,4 @@
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
-import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { config } from "@/config"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationTaskList } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list"
@@ -48,57 +47,36 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const queryData = useGenerationQuery()
-
-  const isTimeout = useFocusTimeout()
-
-  const { data: tasks, startPolling } = useQuery(
-    viewerImageGenerationTasksQuery,
-    {
-      variables: {
-        limit:
-          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-            ? 32
-            : config.query.maxLimit,
-        offset: page * 32,
-        where: {
-          ...(props.rating !== -1 && {
-            rating: props.rating,
-          }),
-          ...(props.protect !== -1 && {
-            isProtected: props.protect === 1,
-          }),
-        },
-      },
-      fetchPolicy: "cache-first",
-    },
-  )
-
-  const { data: protectedTasks } = useQuery(viewerImageGenerationTasksQuery, {
+  const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: config.query.maxLimit,
-      offset: 0,
+      limit:
+        props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+          ? 32
+          : config.query.maxLimit,
+      offset: page * 32,
       where: {
-        isProtected: true,
         ...(props.rating !== -1 && {
           rating: props.rating,
+        }),
+        ...(props.protect !== -1 && {
+          isProtected: props.protect === 1,
         }),
       },
     },
     fetchPolicy: "cache-first",
   })
 
+  const queryData = useGenerationQuery()
   const hasActiveTasks =
     queryData.viewer.inProgressImageGenerationTasksCount > 0 ||
     queryData.viewer.inProgressImageGenerationReservedTasksCount > 0
 
   useEffect(() => {
-    if (hasActiveTasks) {
-      startPolling(isTimeout ? 3000 : 2000)
-      return
-    }
-    startPolling(600000)
-  }, [hasActiveTasks, isTimeout])
+    refetch()
+  }, [
+    queryData.viewer.inProgressImageGenerationTasksCount ||
+      queryData.viewer.inProgressImageGenerationReservedTasksCount,
+  ])
 
   /**
    * レーティングを変更する
@@ -214,7 +192,7 @@ export const GenerationTaskListView = (props: Props) => {
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
       />
-      {tasks !== undefined && protectedTasks !== undefined && (
+      {tasks !== undefined && (
         <GenerationTaskList
           currentPage={page}
           hidedTaskIds={hidedTaskIds}
@@ -224,7 +202,6 @@ export const GenerationTaskListView = (props: Props) => {
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
           tasks={tasks}
-          protectedTasks={protectedTasks}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}
           setCurrentPage={setPage}

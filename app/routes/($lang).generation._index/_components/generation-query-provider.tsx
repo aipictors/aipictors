@@ -6,9 +6,10 @@ import type {
 } from "@/_graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
+import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
+import { checkInGenerationProgressStatus } from "@/_utils/check-in-generation-progress-status"
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
-import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useQuery } from "@apollo/client/index.js"
 import { useContext, useEffect } from "react"
 
@@ -26,15 +27,12 @@ type Props = {
 export const GenerationQueryProvider = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const context = useGenerationContext()
-
   const { data: viewer, refetch } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
-  const { data: status } = useQuery(viewerImageGenerationStatusQuery, {
-    pollInterval: context.currentPass?.type === undefined ? 10000 : 2000,
-  })
+  const { data: status, refetch: refetchViewerImageGenerationStatus } =
+    useQuery(viewerImageGenerationStatusQuery)
 
   const userNanoid = viewer?.viewer?.user.nanoid ?? null
 
@@ -43,13 +41,33 @@ export const GenerationQueryProvider = (props: Props) => {
     activeImageGeneration({ nanoid: userNanoid })
   }, [userNanoid])
 
-  // TODO: route.tsxでauthContext.isLoadingを使用したので不要
+  const isTimeout = useFocusTimeout()
+
+  const inProgressImageGenerationTasksCount =
+    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+
+  const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
+
   useEffect(() => {
-    if (authContext.isLoading) return
-    if (authContext.isNotLoggedIn) return
-    // ログイン状態が変わったら再取得
-    refetch()
-  }, [authContext.isLoggedIn])
+    const time = setInterval(async () => {
+      if (isTimeout) {
+        return
+      }
+      if (authContext.userId !== null) {
+        const needFetch = await checkInGenerationProgressStatus(
+          authContext.userId,
+          inProgressImageGenerationTasksCount.toString(),
+          imageGenerationWaitCount.toString(),
+        )
+        if (needFetch) {
+          refetchViewerImageGenerationStatus()
+        }
+      }
+    }, 2000)
+    return () => {
+      clearInterval(time)
+    }
+  }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
 
   return (
     <GenerationQueryContext.Provider

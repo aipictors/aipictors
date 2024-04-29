@@ -26,7 +26,6 @@ type Props = {
   viewCount?: number
   currentPage: number
   tasks: ViewerImageGenerationTasksQuery
-  protectedTasks: ViewerImageGenerationTasksQuery
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
@@ -51,9 +50,7 @@ export const GenerationTaskList = (props: Props) => {
 
   const tasks = props.tasks
 
-  const protectedTasks = props.protectedTasks
-
-  if (tasks === undefined || protectedTasks === undefined) {
+  if (tasks === undefined) {
     return null
   }
 
@@ -69,9 +66,6 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
-  const imageGenerationProtectedTasks =
-    protectedTasks.viewer?.imageGenerationTasks ?? []
-
   /**
    * フィルターしたレーティングが０のタスク（一部）
    */
@@ -85,17 +79,6 @@ export const GenerationTaskList = (props: Props) => {
           )
         })
       : []
-
-  /**
-   * 保護済みタスク
-   */
-  const currentProtectedTasks = imageGenerationProtectedTasks.filter((task) => {
-    return (
-      task.isProtected === (props.protect === 1) &&
-      task.nanoid &&
-      !props.hidedTaskIds.includes(task.nanoid)
-    )
-  })
 
   const onDelete = (taskId: string) => {
     props.setHidedTaskIds([...props.hidedTaskIds, ...taskId.split(",")])
@@ -141,16 +124,6 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
-  const activeRatingZeroTasks = currentRatingZeroTasks.filter((task) => {
-    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    return task.status === "DONE"
-  })
-
-  const activeProtectedTasks = currentProtectedTasks.filter((task) => {
-    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
-    return task.status === "DONE"
-  })
-
   const onSelectTask = (taskId: string | null, status: string) => {
     if (status !== "DONE") {
       toast("選択できない履歴です")
@@ -176,16 +149,7 @@ export const GenerationTaskList = (props: Props) => {
     props.setSelectedTaskIds([...props.selectedTaskIds, taskId])
   }
 
-  const combineDisplayProtectedTasks = [
-    ...inProgressTasks,
-    ...activeProtectedTasks,
-    ...activeRatingZeroTasks,
-  ]
-
-  const componentTasks =
-    props.protect === -1 || props.protect === 0
-      ? activeTasks
-      : combineDisplayProtectedTasks
+  const componentTasks = activeTasks
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
   const taskIdList = componentTasks.map((task) => task.id)
