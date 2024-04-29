@@ -35,8 +35,6 @@ import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
 import { ImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/images-and-video.input"
 import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { Loader2Icon } from "lucide-react"
-import type { TagNode } from "graphql/__generated__/graphql"
-
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
@@ -58,12 +56,13 @@ export const NewImageForm = () => {
       },
     })
 
-  const recommendedTags =
-    recommendedTagsRet?.recommendedTagsFromPrompts as TagNode[]
-
-  console.log(recommendedTagsRet)
-
-  console.log(pngInfo?.params.prompt)
+  const recommendedTags = recommendedTagsRet?.recommendedTagsFromPrompts?.map(
+    (tag) =>
+      ({
+        id: tag.id,
+        text: tag.name,
+      }) as Tag,
+  )
 
   const [date, setDate] = useState(new Date())
 

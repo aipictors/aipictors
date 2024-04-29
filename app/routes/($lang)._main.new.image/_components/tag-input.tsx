@@ -1,13 +1,11 @@
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
-import type { TagNode } from "graphql/__generated__/graphql"
-import { useState } from "react"
 
 type Props = {
   tags: Tag[]
   whiteListTags: Tag[]
   setTags: (value: Tag[]) => void
-  recommendedTags: TagNode[]
+  recommendedTags: Tag[]
 }
 
 /**
