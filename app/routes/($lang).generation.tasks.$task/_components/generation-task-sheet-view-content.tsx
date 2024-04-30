@@ -57,7 +57,7 @@ type Props = {
   onPrevTask(): void
   setRating: (value: number) => void
   setShowInPaintDialog: (value: boolean) => void
-  saveGenerationImage(taskId: string): void
+  saveGenerationImage(userToken: string, fileName: string): void
   toggleProtectedImage(taskId: string): void
   copyGeneration(generationParameters: GenerationParameters): void
   copyUrl(nanoid: string): void
@@ -121,6 +121,8 @@ export function GenerationTaskSheetViewContent(props: Props) {
   const width = props.generationSize.width * upscaleSize
   const height = props.generationSize.height * upscaleSize
 
+  const userToken = context.config.currentUserToken
+
   return (
     <>
       <ScrollArea className={cn({ "mx-auto w-full": props.isListFullSize })}>
@@ -160,20 +162,32 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         />
                       }
                     >
-                      <GenerationImageDialogButton
-                        taskId={props.task.id}
-                        taskToken={props.task.token}
-                      >
-                        <PrivateImage
-                          className={"m-auto max-h-96"}
+                      {props.task.imageFileName &&
+                      props.task.thumbnailImageFileName &&
+                      userToken ? (
+                        <GenerationImageDialogButton
                           taskId={props.task.id}
-                          token={props.task.token as string}
-                          isThumbnail={
-                            context.config.taskListThumbnailType === "light"
-                          }
-                          alt={"-"}
-                        />
-                      </GenerationImageDialogButton>
+                          userToken={userToken}
+                          fileName={props.task.imageFileName}
+                          thumbnailFileName={props.task.thumbnailImageFileName}
+                        >
+                          <PrivateImage
+                            className={"m-auto max-h-96"}
+                            taskId={props.task.id}
+                            token={userToken}
+                            isThumbnail={
+                              context.config.taskListThumbnailType === "light"
+                            }
+                            alt={"-"}
+                            fileName={props.task.imageFileName}
+                            thumbnailFileName={
+                              props.task.thumbnailImageFileName
+                            }
+                          />
+                        </GenerationImageDialogButton>
+                      ) : (
+                        <></>
+                      )}
                     </Suspense>
                     {/* ダウンロード用（非表示） */}
                     <Suspense
@@ -185,14 +199,22 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         />
                       }
                     >
-                      <PrivateImage
-                        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                        className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
-                        taskId={props.task.id}
-                        token={props.task.token as string}
-                        isThumbnail={false}
-                        alt={"-"}
-                      />
+                      {userToken &&
+                        props.task.imageFileName &&
+                        props.task.thumbnailImageFileName && (
+                          <PrivateImage
+                            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                            className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
+                            taskId={props.task.id}
+                            token={userToken}
+                            isThumbnail={false}
+                            alt={"-"}
+                            fileName={props.task.imageFileName}
+                            thumbnailFileName={
+                              props.task.thumbnailImageFileName ?? ""
+                            }
+                          />
+                        )}
                     </Suspense>
                   </ErrorBoundary>
                 </>
@@ -273,12 +295,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     icon={LinkIcon}
                   />
                 )}
-                {props.task && props.task.token !== null && (
+                {props.task?.imageFileName && (
                   <GenerationMenuButton
                     title={"画像を保存する"}
                     onClick={() =>
-                      props.task.token &&
-                      props.saveGenerationImage(props.task.token)
+                      userToken &&
+                      props.saveGenerationImage(
+                        userToken,
+                        props.task.imageFileName ?? "",
+                      )
                     }
                     icon={ArrowDownToLine}
                   />
@@ -428,21 +453,24 @@ export function GenerationTaskSheetViewContent(props: Props) {
           )}
         </div>
       </ScrollArea>
-      <InPaintingDialog
-        isOpen={props.showInPaintDialog}
-        onClose={() => props.setShowInPaintDialog(false)}
-        taskId={props.task.id}
-        token={props.task.token ?? ""}
-        userNanoid={props.userNanoid}
-        configSeed={props.task.seed}
-        configSteps={props.task.steps}
-        configSampler={props.task.sampler}
-        configSizeType={props.task.sizeType}
-        configModel={props.task.model?.name}
-        configVae={props.task.vae}
-        configScale={props.task.scale}
-        configClipSkip={props.task.clipSkip}
-      />
+      {props.task.imageFileName && userToken && (
+        <InPaintingDialog
+          isOpen={props.showInPaintDialog}
+          onClose={() => props.setShowInPaintDialog(false)}
+          taskId={props.task.id}
+          token={userToken}
+          fileName={props.task.imageFileName}
+          userNanoid={props.userNanoid}
+          configSeed={props.task.seed}
+          configSteps={props.task.steps}
+          configSampler={props.task.sampler}
+          configSizeType={props.task.sizeType}
+          configModel={props.task.model?.name}
+          configVae={props.task.vae}
+          configScale={props.task.scale}
+          configClipSkip={props.task.clipSkip}
+        />
+      )}
     </>
   )
 }

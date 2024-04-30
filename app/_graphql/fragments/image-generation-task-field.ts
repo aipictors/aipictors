@@ -28,8 +28,6 @@ export const imageGenerationTaskFieldsFragment = gql(`
       type
     }
     vae
-    token
-    thumbnailToken
     nanoid
     estimatedSeconds
     controlNetControlMode
@@ -47,5 +45,9 @@ export const imageGenerationTaskFieldsFragment = gql(`
     controlNetSaveDetectedMap
     controlNetHrOption
     upscaleSize
+    imageFileName
+    thumbnailImageFileName
+    imageFileName
+    thumbnailImageFileName
   }
 `)

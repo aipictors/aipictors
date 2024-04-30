@@ -15,8 +15,12 @@ import { GenerationTaskDetailsView } from "@/routes/($lang).generation._index/_c
 import { GenerationTaskListView } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list-view"
 import { GenerationWorkContentPreview } from "@/routes/($lang).generation._index/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/routes/($lang).generation._index/_components/task-view/generation-works-from-model-view"
-import { useMutation } from "@apollo/client/index.js"
-import { useState } from "react"
+import { useMutation, useQuery } from "@apollo/client/index.js"
+import { useEffect, useState } from "react"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { getUserToken } from "@/_utils/get-user-token"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { setUserToken } from "@/_utils/set-user-token"
 
 type Props = {
   termsMarkdownText: string
@@ -38,6 +42,39 @@ export const GenerationForm = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithWordPressTokenMutation,
   )
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+
+  const cookieUserToken = getUserToken()
+
+  const currentUserToken =
+    cookieUserToken !== null ? cookieUserToken : token?.viewer?.token ?? ""
+
+  if (cookieUserToken === null) {
+    setUserToken(currentUserToken)
+  }
+
+  const context = useGenerationContext()
+
+  useEffect(() => {
+    const cookieUserToken = getUserToken()
+
+    if (currentUserToken !== null && cookieUserToken === null) {
+      context.changeCurrentUserToken(currentUserToken)
+    }
+  }, [currentUserToken, cookieUserToken])
+
+  // 10分単位でユーザのtokenをRefetchする
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => {
+        tokenRefetch()
+      },
+      10 * 60 * 1000,
+    )
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   return (
     <GenerationView
@@ -72,6 +109,7 @@ export const GenerationForm = (props: Props) => {
               setProtect={setProtect}
               toggleEditMode={toggleEditMode}
               togglePreviewMode={togglePreviewMode}
+              currentUserToken={currentUserToken}
             />
           }
           taskDetails={<GenerationTaskDetailsView />}

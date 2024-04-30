@@ -362,6 +362,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * controlNetEnabledを変更する
+   * @param value
+   */
+  const changeCurrentUserToken = (token: string) => {
+    const value = configAction.updateCurrentUserToken(token).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * controlNetGuidanceEndを変更する
    * @param value
    */
@@ -616,6 +625,7 @@ export const useGenerationContext = () => {
     changeControlNetSaveDetectedMap,
     changeControlNetHrOption,
     changeControlNetModuleAndModelAndImage,
+    changeCurrentUserToken,
     updateLoraModel: updateLoraModel,
     initPromptWithLoraModel: initPromptWithLoraModel,
     updateSearchWorksModelIdAndName: updateSearchWorksModelIdAndName,

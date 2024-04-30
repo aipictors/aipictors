@@ -91,9 +91,16 @@ export const copyUrl = (taskId: string) => {
  * @param taskId
  * @returns
  */
-export const saveGenerationImage = async (taskId: string) => {
+export const saveGenerationImage = async (
+  userToken: string,
+  fileName: string | null,
+) => {
+  if (!fileName) {
+    return
+  }
+
   const imageElement = document.querySelector(
-    `.generation-image-${taskId}`,
+    `.generation-image-${userToken}&name=${fileName}`,
   ) as HTMLImageElement
   if (!imageElement) {
     toast("しばらくしてからお試し下さい。")
@@ -238,7 +245,8 @@ export function GenerationTaskView(props: Props) {
 
   if (
     data.imageGenerationTask.status !== "RESERVED" &&
-    (data.imageGenerationTask == null || data.imageGenerationTask.token == null)
+    (data.imageGenerationTask.thumbnailImageFileName === null ||
+      data.imageGenerationTask.imageFileName === null)
   ) {
     return <div>{"画像が見つかりませんでした"}</div>
   }
@@ -290,6 +298,8 @@ export function GenerationTaskView(props: Props) {
   const width = generationSize.width * upscaleSize
   const height = generationSize.height * upscaleSize
 
+  const userToken = context.config.currentUserToken
+
   return (
     <>
       <ScrollArea
@@ -300,7 +310,7 @@ export function GenerationTaskView(props: Props) {
             props.isScroll ? "max-h-[88vh]" : ""
           }`}
         >
-          {data.imageGenerationTask.token && (
+          {data.imageGenerationTask.imageFileName && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button className={"px-2"} variant={"ghost"}>
@@ -311,14 +321,23 @@ export function GenerationTaskView(props: Props) {
                       />
                     }
                   >
-                    <PrivateImage
-                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                      className={`generation-image-${props.taskId} m-auto max-h-screen`}
-                      taskId={data.imageGenerationTask.id}
-                      token={data.imageGenerationTask.token}
-                      isThumbnail={true}
-                      alt={"-"}
-                    />
+                    {data.imageGenerationTask.thumbnailImageFileName &&
+                      data.imageGenerationTask.imageFileName &&
+                      data.imageGenerationTask.id &&
+                      userToken && (
+                        <PrivateImage
+                          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                          className={`generation-image-${props.taskId} m-auto max-h-screen`}
+                          taskId={data.imageGenerationTask.id}
+                          token={userToken}
+                          isThumbnail={true}
+                          alt={"-"}
+                          thumbnailFileName={
+                            data.imageGenerationTask.thumbnailImageFileName
+                          }
+                          fileName={data.imageGenerationTask.imageFileName}
+                        />
+                      )}
                   </Suspense>
                 </Button>
               </DialogTrigger>
@@ -330,13 +349,21 @@ export function GenerationTaskView(props: Props) {
                     />
                   }
                 >
-                  <PrivateImage
-                    className={"m-auto h-[auto] max-h-[88vh] max-w-[80vw]"}
-                    taskId={data.imageGenerationTask.id}
-                    token={data.imageGenerationTask.token}
-                    isThumbnail={false}
-                    alt={"-"}
-                  />
+                  {data.imageGenerationTask.thumbnailImageFileName &&
+                    data.imageGenerationTask.imageFileName &&
+                    userToken && (
+                      <PrivateImage
+                        className={"m-auto h-[auto] max-h-[88vh] max-w-[80vw]"}
+                        taskId={data.imageGenerationTask.id}
+                        token={userToken}
+                        isThumbnail={false}
+                        alt={"-"}
+                        fileName={data.imageGenerationTask.imageFileName}
+                        thumbnailFileName={
+                          data.imageGenerationTask.thumbnailImageFileName
+                        }
+                      />
+                    )}
                 </Suspense>
               </DialogContent>
             </Dialog>
@@ -372,11 +399,20 @@ export function GenerationTaskView(props: Props) {
               onClick={() => copyUrl(props.taskId)}
               icon={LinkIcon}
             />
-            <GenerationMenuButton
-              title={"画像を保存する"}
-              onClick={() => saveGenerationImage(props.taskId)}
-              icon={ArrowDownToLine}
-            />
+            {userToken &&
+              data.imageGenerationTask &&
+              data.imageGenerationTask.imageFileName && (
+                <GenerationMenuButton
+                  title={"画像を保存する"}
+                  onClick={() =>
+                    saveGenerationImage(
+                      userToken,
+                      data.imageGenerationTask.imageFileName,
+                    )
+                  }
+                  icon={ArrowDownToLine}
+                />
+              )}
             <AppConfirmDialog
               title={"確認"}
               description={"本当に削除しますか？"}
@@ -525,12 +561,13 @@ export function GenerationTaskView(props: Props) {
         </AppFixedContent>
       )}
 
-      {data.imageGenerationTask.token && (
+      {userToken && data.imageGenerationTask.imageFileName && (
         <InPaintingDialog
           isOpen={showInPaintDialog}
           onClose={() => setShowInPaintDialog(false)}
           taskId={props.taskId}
-          token={data.imageGenerationTask.token}
+          token={userToken}
+          fileName={data.imageGenerationTask.imageFileName}
           userNanoid={userNanoid}
           configSeed={data.imageGenerationTask.seed}
           configSteps={data.imageGenerationTask.steps}

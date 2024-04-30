@@ -17,6 +17,7 @@ type Props = {
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
   isPreviewByHover: boolean
+  userToken: string
   onClick?(): void
   onCancel?(): void
   onRestore?(taskId: string): void
@@ -42,6 +43,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
             task={props.task}
             taskIds={props.taskIds}
             sizeType={props.sizeType}
+            userToken={props.userToken}
             onRestore={props.onRestore}
             onCancel={props.onCancel}
             onDelete={props.onDelete}
@@ -52,6 +54,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
             task={props.task}
             taskIds={props.taskIds}
             sizeType={props.sizeType}
+            userToken={props.userToken}
             onRestore={props.onRestore}
             onCancel={props.onCancel}
             onDelete={props.onDelete}
@@ -60,6 +63,7 @@ export const GenerationTaskResponsiveCard = (props: Props) => {
         {!props.isDialog && isDesktop && (
           <GenerationTaskButton
             task={props.task}
+            userToken={props.userToken}
             taskIds={props.taskIds}
             isPreviewByHover={props.isPreviewByHover}
             sizeType={props.sizeType}

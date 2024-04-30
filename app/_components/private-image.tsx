@@ -1,3 +1,4 @@
+import { config } from "@/config"
 import { memo } from "react"
 
 type Props = {
@@ -6,22 +7,25 @@ type Props = {
   alt: string
   token: string
   isThumbnail?: boolean
-  originalToken?: string
+  thumbnailFileName: string
+  fileName: string
 }
 
 const Component = (props: Props) => {
+  const imageUrl = props.isThumbnail ? props.thumbnailFileName : props.fileName
+
   return (
     <img
       style={{ userSelect: "none" }}
       className={props.className}
       alt={props.alt}
       draggable={false}
-      src={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
+      src={`${config.wordpressEndpoint.privateImage}?token=${encodeURIComponent(
         props.token,
-      )}`}
-      data-original={`https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
-        props.originalToken || "",
-      )}`}
+      )}&name=${imageUrl}`}
+      data-original={`${
+        config.wordpressEndpoint.privateImage
+      }?token=${encodeURIComponent(props.token || "")}&name=${props.fileName}`}
     />
   )
 }

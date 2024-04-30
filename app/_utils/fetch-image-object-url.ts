@@ -4,14 +4,14 @@
  * @param token トークン
  * @returns
  */
-export const fetchImage = async (imageURL: string, token: string) => {
+export const fetchImage = async (imageURL: string) => {
   try {
     const res = await fetch(imageURL, {
       mode: "cors",
       priority: "high",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
     })
     const blob = await res.blob()
     return URL.createObjectURL(blob)

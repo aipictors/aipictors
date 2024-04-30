@@ -5,13 +5,14 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/_components/ui/dialog"
-import { InPaintingImageForm } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-image-form"
+import { InPaintingImageForm } from "./InPaintingImageForm"
 
 type Props = {
   isOpen: boolean
   onClose(): void
   taskId: string
   token: string
+  fileName: string
   userNanoid: string | null
   configSeed: number
   configSteps: number
@@ -36,6 +37,7 @@ export const InPaintingDialog = (props: Props) => {
         <InPaintingImageForm
           taskId={props.taskId}
           token={props.token}
+          fileName={props.fileName}
           userNanoid={props.userNanoid}
           configSeed={props.configSeed}
           configSteps={props.configSteps}

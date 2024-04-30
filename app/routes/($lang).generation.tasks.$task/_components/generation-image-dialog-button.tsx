@@ -1,14 +1,15 @@
 import { PrivateImage } from "@/_components/private-image"
 import { Dialog, DialogContent, DialogTrigger } from "@/_components/ui/dialog"
-import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
 import { Suspense } from "react"
 
 type Props = {
   taskId: string
-  taskToken: string | null
   children: React.ReactNode
   isAbsolute?: boolean
+  fileName: string
+  thumbnailFileName: string
+  userToken: string
 }
 
 /**
@@ -17,8 +18,6 @@ type Props = {
  * @returns
  */
 export function GenerationImageDialogButton(props: Props) {
-  const context = useGenerationContext()
-
   return (
     <Dialog>
       <DialogTrigger
@@ -38,13 +37,17 @@ export function GenerationImageDialogButton(props: Props) {
             />
           }
         >
-          <PrivateImage
-            className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
-            taskId={props.taskId}
-            token={props.taskToken as string}
-            isThumbnail={false}
-            alt={"-"}
-          />
+          {props.userToken && (
+            <PrivateImage
+              className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
+              taskId={props.taskId}
+              token={props.userToken}
+              isThumbnail={false}
+              alt={"-"}
+              fileName={props.fileName}
+              thumbnailFileName={props.thumbnailFileName}
+            />
+          )}
         </Suspense>
       </DialogContent>
     </Dialog>

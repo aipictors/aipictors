@@ -1,5 +1,6 @@
 import { Sheet, SheetContent } from "@/_components/ui/sheet"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
 import { GenerationTaskSheetView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view"
 import { useState } from "react"
@@ -18,16 +19,23 @@ type Props = {
 export function GenerationTaskSheetButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
+  const context = useGenerationContext()
+
+  const userToken = context.config.currentUserToken
+
+  if (!userToken) {
+    return
+  }
+
   return (
     <>
       <GenerationTaskEditableCard
         taskNanoid={props.task.nanoid}
         taskId={props.task.id}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
-        token={props.task.token}
+        userToken={userToken}
         optionButtonSize={props.sizeType}
         task={props.task}
-        thumbnailToken={props.task.thumbnailToken}
         isSelectDisabled={true}
         isPreviewByHover={true}
         rating={props.task.rating ?? 0}

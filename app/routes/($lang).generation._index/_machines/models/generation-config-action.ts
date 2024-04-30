@@ -264,6 +264,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * ユーザIDのToken
+   * @param id
+   * @returns
+   */
+  updateCurrentUserToken(token: string | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      currentUserToken: token,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * モデルIDを変更する
    * @param id
    * @returns

@@ -15,6 +15,7 @@ type Props = {
   taskContentPositionType?: TaskContentPositionType
   isDialog: boolean
   isPreviewByHover: boolean
+  userToken: string
   onClick?(): void
   onCancel?(): void
   onRestore?(taskId: string): void
@@ -41,8 +42,7 @@ export const GenerationTaskCard = (props: Props) => {
           taskNanoid={props.task.nanoid}
           task={props.task}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
-          token={props.task.token}
-          thumbnailToken={props.task.thumbnailToken}
+          userToken={props.userToken}
           optionButtonSize={props.sizeType}
           rating={props.task.rating ?? 0}
           isProtected={props.task.isProtected ?? false}
@@ -59,6 +59,7 @@ export const GenerationTaskCard = (props: Props) => {
           selectedTaskIds={props.selectedTaskIds}
           sizeType={props.sizeType}
           isDialog={props.isDialog}
+          userToken={props.userToken}
           onClick={props.onClick}
           onCancel={props.onCancel}
           onRestore={props.onRestore}

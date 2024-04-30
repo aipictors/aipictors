@@ -23,9 +23,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 type Props = {
   taskId: string
   taskNanoid: string | null
-  token: string | null
   isSelected?: boolean
-  thumbnailToken: string | null
   estimatedSeconds?: number
   rating: number
   isProtected: boolean
@@ -33,6 +31,7 @@ type Props = {
   isSelectDisabled: boolean
   task: ImageGenerationTaskFieldsFragment
   isPreviewByHover?: boolean
+  userToken: string
   onClick?(): void
   onCancel?(): void
   onDelete?(taskId: string): void
@@ -162,11 +161,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
     )
   }
 
-  if (
-    props.token == null ||
-    props.thumbnailToken == null ||
-    props.taskNanoid == null
-  ) {
+  if (props.userToken == null || props.taskNanoid == null) {
     return (
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
@@ -199,18 +194,15 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        {props.thumbnailToken && props.token ? (
+        {props.task.imageFileName && props.task.thumbnailImageFileName ? (
           <PrivateImage
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`m-auto generation-image-${props.taskNanoid}`}
-            originalToken={props.token}
+            token={props.userToken}
             taskId={props.taskId}
-            token={
-              context.config.taskListThumbnailType === "light"
-                ? props.thumbnailToken
-                : props.token
-            }
             isThumbnail={context.config.taskListThumbnailType === "light"}
+            fileName={props.task.imageFileName}
+            thumbnailFileName={props.task.thumbnailImageFileName}
             alt={"-"}
           />
         ) : (
@@ -218,14 +210,19 @@ export const GenerationTaskEditableCard = (props: Props) => {
         )}
       </SelectableCardButton>
       {/* 拡大ボタン */}
-      {isDesktop && isHovered && (
-        <GenerationTaskZoomUpButton
-          taskId={props.taskId}
-          token={props.token}
-          size={optionButtonSize(props.optionButtonSize)}
-          setIsHovered={setIsHovered}
-        />
-      )}
+      {isDesktop &&
+        isHovered &&
+        props.task.imageFileName &&
+        props.task.thumbnailImageFileName && (
+          <GenerationTaskZoomUpButton
+            taskId={props.taskId}
+            token={props.userToken}
+            size={optionButtonSize(props.optionButtonSize)}
+            setIsHovered={setIsHovered}
+            imageFileName={props.task.imageFileName}
+            thumbnailImageFileName={props.task.thumbnailImageFileName}
+          />
+        )}
       {/* お気に入りボタン */}
       {isDesktop && (isHovered || rating !== 0) && (
         <GenerationTaskRatingButton

@@ -11,6 +11,7 @@ type Props = {
   task: ImageGenerationTaskFieldsFragment
   taskIds?: string[]
   sizeType: number
+  userToken: string
   onRestore?(taskId: string): void
   onCancel?(): void
   onDelete?(taskId: string): void
@@ -42,8 +43,7 @@ export function GenerationTaskDialogButton(props: Props) {
           taskNanoid={props.task.nanoid}
           estimatedSeconds={props.task.estimatedSeconds ?? 0}
           taskId={props.task.id}
-          token={props.task.token}
-          thumbnailToken={props.task.thumbnailToken}
+          userToken={props.userToken}
           task={props.task}
           optionButtonSize={props.sizeType}
           isSelectDisabled={true}

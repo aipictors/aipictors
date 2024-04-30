@@ -35,7 +35,13 @@ export const GenerationTaskContentPreview = () => {
 
   const imageGenerationTask = data?.imageGenerationTask
 
-  if (imageGenerationTask === null || imageGenerationTask === undefined) {
+  const userToken = context.config.currentUserToken
+
+  if (
+    imageGenerationTask === null ||
+    imageGenerationTask === undefined ||
+    userToken === null
+  ) {
     return null
   }
 
@@ -43,15 +49,19 @@ export const GenerationTaskContentPreview = () => {
     <>
       <Card className="flex h-[100vh] w-auto flex-col">
         <div className="m-auto max-h-[100vh]">
-          {imageGenerationTask.status === "DONE" && (
-            <PrivateImage
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
-              taskId={imageGenerationTask.id}
-              token={imageGenerationTask.token ?? ""}
-              alt={"-"}
-            />
-          )}
+          {imageGenerationTask.status === "DONE" &&
+            imageGenerationTask.imageFileName &&
+            imageGenerationTask.thumbnailImageFileName && (
+              <PrivateImage
+                // biome-ignore lint/nursery/useSortedClasses: <explanation>
+                className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
+                taskId={imageGenerationTask.id}
+                token={userToken}
+                alt={"-"}
+                fileName={imageGenerationTask.imageFileName}
+                thumbnailFileName={imageGenerationTask.thumbnailImageFileName}
+              />
+            )}
           {imageGenerationTask.status === "RESERVED" && <p>{"予約生成中"}</p>}
           <div className="m-auto mb-1">
             <p className="mb-1 font-semibold">{"Model"}</p>
