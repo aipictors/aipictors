@@ -61,7 +61,7 @@ export const InProgressGenerationCard = (props: Props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <div className="flex flex-col text-sky-600 text-sm dark:text-cyan-400">
+                  <div className="flex flex-col text-sky-600 text-sm dark:text-cyan-500">
                     <div>{"優先生成で"}</div>
                     <div>{"速度向上する"}</div>
                     <div>{`${initNormalWaitCount}人をスキップできます`}</div>
@@ -69,7 +69,7 @@ export const InProgressGenerationCard = (props: Props) => {
                 </Link>
               )}
               {isStandardOrPremium && initNormalWaitCount !== 0 && (
-                <div className="flex flex-col text-sky-600 text-sm dark:text-cyan-400">
+                <div className="flex flex-col text-sky-600 text-sm dark:text-cyan-500">
                   <div>{`優先生成：${initNormalWaitCount}人をスキップしました`}</div>
                 </div>
               )}
