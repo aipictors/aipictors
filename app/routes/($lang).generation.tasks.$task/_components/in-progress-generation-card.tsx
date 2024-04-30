@@ -39,23 +39,6 @@ export const InProgressGenerationCard = (props: Props) => {
     dataContext.currentPass?.type === "STANDARD" ||
     dataContext.currentPass?.type === "PREMIUM"
 
-  // const waitSecondsLabel = () => {
-  //   const waitSecondsOnOneTask = 15
-  //   if (initWaitCount * waitSecondsOnOneTask > 120) {
-  //     return "数分"
-  //   }
-  //   if (initWaitCount * waitSecondsOnOneTask > 60) {
-  //     return "1分"
-  //   }
-  //   if (initWaitCount * waitSecondsOnOneTask > 20) {
-  //     return "数十秒"
-  //   }
-  //   if (initWaitCount * waitSecondsOnOneTask > 0) {
-  //     return "十数秒"
-  //   }
-  //   return "十数秒"
-  // }
-
   return (
     <>
       <Card>

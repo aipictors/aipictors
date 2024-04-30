@@ -161,7 +161,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
     )
   }
 
-  if (props.userToken == null || props.taskNanoid == null) {
+  if (!props.task.imageFileName) {
     return (
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}

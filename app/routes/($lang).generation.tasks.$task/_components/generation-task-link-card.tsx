@@ -60,7 +60,7 @@ export const GenerationTaskLinkCard = (props: Props) => {
     }
   }
 
-  if (props.token == null || props.taskNanoid == null) {
+  if (!props.imageFileName) {
     return (
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
