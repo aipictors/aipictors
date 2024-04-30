@@ -20,6 +20,7 @@ import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { setUserToken } from "@/_utils/set-user-token"
+import { jwtDecode } from "jwt-decode"
 
 type Props = {
   termsMarkdownText: string
@@ -42,30 +43,25 @@ export const GenerationForm = (props: Props) => {
 
   const cookieUserToken = getUserToken()
 
-  const currentUserToken = token?.viewer?.token
+  const viewerUserToken = token?.viewer?.token
 
   const context = useGenerationContext()
 
-  const newCurrentUserToken = getUserToken() ?? token?.viewer?.token ?? ""
-
-  // 23時間単位でユーザのtokenをRefetchする
   useEffect(() => {
-    const intervalId = setInterval(
-      () => {
-        tokenRefetch()
-      },
-      23 * 60 * 60 * 1000,
-    )
-
-    return () => clearInterval(intervalId)
-  }, [])
-
-  useEffect(() => {
-    if (cookieUserToken === null && currentUserToken) {
-      setUserToken(currentUserToken)
+    if (cookieUserToken !== null) {
+      const decoded = jwtDecode(cookieUserToken)
+      // 期限が切れてたら、新しいトークンをセット
+      if ((decoded.exp ?? 0 < new Date().getTime() / 1000) && viewerUserToken) {
+        context.changeCurrentUserToken(viewerUserToken)
+        setUserToken(viewerUserToken)
+      } else {
+        context.changeCurrentUserToken(cookieUserToken)
+      }
+    } else if (viewerUserToken) {
+      context.changeCurrentUserToken(viewerUserToken)
+      setUserToken(viewerUserToken)
     }
-    context.changeCurrentUserToken(newCurrentUserToken)
-  }, [currentUserToken])
+  }, [cookieUserToken, viewerUserToken])
 
   return (
     <GenerationView
@@ -100,7 +96,7 @@ export const GenerationForm = (props: Props) => {
               setProtect={setProtect}
               toggleEditMode={toggleEditMode}
               togglePreviewMode={togglePreviewMode}
-              currentUserToken={newCurrentUserToken}
+              currentUserToken={context.config.currentUserToken ?? ""}
             />
           }
           taskDetails={<GenerationTaskDetailsView />}
