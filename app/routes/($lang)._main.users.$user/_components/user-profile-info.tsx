@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState } from "react"
-import { RiEye2Line, RiHeartLine } from "react-icons/ri"
+import { RiEye2Line, RiHeartLine } from "@remixicon/react"
 
 type UserProfileInfoProps = {
   name: string

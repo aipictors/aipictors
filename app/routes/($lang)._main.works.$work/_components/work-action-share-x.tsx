@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
+import { RiTwitterXLine } from "@remixicon/react"
 import { type HTMLProps, forwardRef } from "react"
-import { RiTwitterXLine } from "react-icons/ri"
 
 interface XIntentProps extends HTMLProps<HTMLAnchorElement> {
   text?: string

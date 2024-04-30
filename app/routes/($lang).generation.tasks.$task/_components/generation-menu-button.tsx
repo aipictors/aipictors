@@ -1,10 +1,10 @@
 import { Button } from "@/_components/ui/button"
+import type { RemixiconComponentType } from "@remixicon/react"
 import type { LucideIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
-import type { IconType } from "react-icons"
 
 type Props = {
-  icon?: LucideIcon | IconType
+  icon?: LucideIcon | RemixiconComponentType
   isLoading?: boolean
   onClick?(): void
   title?: string

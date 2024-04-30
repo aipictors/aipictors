@@ -1,8 +1,8 @@
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import type { Contributor } from "@/routes/($lang)._main.contributors/_types/contributor"
+import { RiTwitterXLine } from "@remixicon/react"
 import { HomeIcon } from "lucide-react"
-import { TbBrandXFilled } from "react-icons/tb"
 
 type Props = {
   user: Contributor
@@ -66,7 +66,7 @@ export const ContributorCard = (props: Props) => {
                   rel="noopener noreferrer"
                 >
                   <Button size={"icon"} variant={"outline"}>
-                    <TbBrandXFilled />
+                    <RiTwitterXLine />
                   </Button>
                 </a>
               )}

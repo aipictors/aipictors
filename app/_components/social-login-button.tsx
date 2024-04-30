@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import { ReloadIcon } from "@radix-ui/react-icons"
+import { RiRestartLine } from "@remixicon/react"
 import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 import type { ReactElement } from "react"
 import { toast } from "sonner"
@@ -38,7 +38,7 @@ export const SocialLoginButton = (props: Props) => {
       disabled={props.disabled}
     >
       {props.disabled ? (
-        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+        <RiRestartLine className="mr-2 h-4 w-4 animate-spin" />
       ) : (
         props.icon
       )}
