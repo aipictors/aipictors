@@ -1,4 +1,3 @@
-import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { GenerationAdvertisementView } from "@/routes/($lang).generation._index/_components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "@/routes/($lang).generation._index/_components/config-view/generation-config-view"
 import { GenerationSideTabsView } from "@/routes/($lang).generation._index/_components/generation-side-tabs-view/generation-side-tabs-view"
@@ -15,11 +14,12 @@ import { GenerationTaskDetailsView } from "@/routes/($lang).generation._index/_c
 import { GenerationTaskListView } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list-view"
 import { GenerationWorkContentPreview } from "@/routes/($lang).generation._index/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/routes/($lang).generation._index/_components/task-view/generation-works-from-model-view"
-import { useMutation, useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index.js"
 import { useEffect, useState } from "react"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { setUserToken } from "@/_utils/set-user-token"
 
 type Props = {
   termsMarkdownText: string
@@ -37,10 +37,6 @@ export const GenerationForm = (props: Props) => {
   const [isEditMode, toggleEditMode] = useState(false)
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
-
-  const [mutation, { loading: isLoading }] = useMutation(
-    loginWithWordPressTokenMutation,
-  )
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
@@ -63,11 +59,12 @@ export const GenerationForm = (props: Props) => {
 
     return () => clearInterval(intervalId)
   }, [])
+
   useEffect(() => {
-    if (/* cookieUserToken === null && */ currentUserToken) {
-      // setUserToken(currentUserToken)
-      context.changeCurrentUserToken(currentUserToken)
+    if (cookieUserToken === null && currentUserToken) {
+      setUserToken(currentUserToken)
     }
+    context.changeCurrentUserToken(newCurrentUserToken)
   }, [currentUserToken])
 
   return (
