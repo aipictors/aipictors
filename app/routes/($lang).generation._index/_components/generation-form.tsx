@@ -41,27 +41,27 @@ export const GenerationForm = (props: Props) => {
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
-  const cookieUserToken = getUserToken()
+  const localStorageUserToken = getUserToken()
 
   const viewerUserToken = token?.viewer?.token
 
   const context = useGenerationContext()
 
   useEffect(() => {
-    if (cookieUserToken !== null) {
-      const decoded = jwtDecode(cookieUserToken)
+    if (localStorageUserToken !== null) {
+      const decoded = jwtDecode(localStorageUserToken)
       // 期限が切れてたら、新しいトークンをセット
       if ((decoded.exp ?? 0 < new Date().getTime() / 1000) && viewerUserToken) {
         context.changeCurrentUserToken(viewerUserToken)
         setUserToken(viewerUserToken)
       } else {
-        context.changeCurrentUserToken(cookieUserToken)
+        context.changeCurrentUserToken(localStorageUserToken)
       }
     } else if (viewerUserToken) {
       context.changeCurrentUserToken(viewerUserToken)
       setUserToken(viewerUserToken)
     }
-  }, [cookieUserToken, viewerUserToken])
+  }, [localStorageUserToken, viewerUserToken])
 
   return (
     <GenerationView

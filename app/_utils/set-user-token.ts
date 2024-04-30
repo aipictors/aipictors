@@ -1,6 +1,5 @@
 /**
- * ユーザIDのトークンをローカルストレージに保存し、有効期限を設定
- * @param token 保存するユーザトークン
+ * ユーザIDのトークンをローカルストレージに保存
  */
 export const setUserToken = (token: string) => {
   try {
