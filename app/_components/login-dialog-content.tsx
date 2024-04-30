@@ -16,7 +16,7 @@ import {
   signInWithCustomToken,
 } from "firebase/auth"
 import { useState } from "react"
-import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
+import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 
 /**

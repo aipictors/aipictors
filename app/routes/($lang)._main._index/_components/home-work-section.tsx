@@ -7,7 +7,7 @@ import {
 } from "@/_components/ui/tooltip"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons"
+import { RiQuestionLine } from "@remixicon/react"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {
@@ -35,7 +35,7 @@ export const HomeWorkSection = (props: Props) => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <QuestionMarkCircledIcon className="inline h-6 w-auto" />
+                  <RiQuestionLine className="inline h-6 w-auto" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{props.tooltip}</p>

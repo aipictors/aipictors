@@ -12,7 +12,7 @@ import {
   getAuth,
   signInWithCustomToken,
 } from "firebase/auth"
-import { RiGoogleFill, RiTwitterXFill } from "react-icons/ri"
+import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 
 type Props = {

@@ -3,9 +3,9 @@ import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
 import { EventUserTag } from "@/routes/($lang).events.wakiaiai/_components/event-user-tag"
 import type { EventUser } from "@/routes/($lang).events/_types/event-user"
+import { RiTwitterXLine } from "@remixicon/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { ExternalLinkIcon, MousePointerClickIcon } from "lucide-react"
-import { TbBrandXFilled } from "react-icons/tb"
 
 type Props = {
   user: EventUser
@@ -61,7 +61,7 @@ export const EventCreatorCard = (props: Props) => {
                 rel="noopener noreferrer"
               >
                 <Button size={"icon"} variant={"outline"}>
-                  <TbBrandXFilled />
+                  <RiTwitterXLine />
                 </Button>
               </a>
             )}

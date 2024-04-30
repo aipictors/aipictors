@@ -1,8 +1,8 @@
 import { Button } from "@/_components/ui/button"
 import { Textarea } from "@/_components/ui/textarea"
+import { RiCloseCircleLine } from "@remixicon/react"
 import { Send } from "lucide-react"
 import { useState } from "react"
-import { IoIosCloseCircle } from "react-icons/io"
 
 type Props = {
   isLoading: boolean
@@ -34,7 +34,7 @@ export const GenerationMessageInput = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index} className="relative">
           <img src={image} alt={`Selected ${index}`} />
-          <IoIosCloseCircle
+          <RiCloseCircleLine
             className="absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center"
             onClick={() => handleDeleteImage(index)}
           />

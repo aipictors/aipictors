@@ -6,6 +6,12 @@ import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import { Link } from "@remix-run/react"
 import {
+  RiDiscordLine,
+  RiThreadsLine,
+  RiTwitterXLine,
+  RiYoutubeLine,
+} from "@remixicon/react"
+import {
   AlertTriangleIcon,
   AwardIcon,
   BookImageIcon,
@@ -24,12 +30,6 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import {
-  TbBrandDiscordFilled,
-  TbBrandThreads,
-  TbBrandX,
-  TbBrandYoutubeFilled,
-} from "react-icons/tb"
 
 export const HomeRouteList = () => {
   const authContext = useContext(AuthContext)
@@ -144,26 +144,26 @@ export const HomeRouteList = () => {
         <Separator />
       </div>
       <HomeNavigationButton
-        icon={TbBrandX}
+        icon={RiTwitterXLine}
         href={"https://twitter.com/Aipictors"}
       >
         {"Twitter"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        icon={TbBrandDiscordFilled}
+        icon={RiDiscordLine}
         href={"https://discord.gg/CsSbTHYY"}
       >
         {"Discord"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"https://www.threads.net/@aipictors"}
-        icon={TbBrandThreads}
+        icon={RiThreadsLine}
       >
         {"Threads"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"https://www.youtube.com/@aipictors"}
-        icon={TbBrandYoutubeFilled}
+        icon={RiYoutubeLine}
       >
         {"YouTube"}
       </HomeNavigationButton>

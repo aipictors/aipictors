@@ -1,7 +1,7 @@
 // copy-work-url.tsx
 
 import { Button } from "@/_components/ui/button"
-import { RiFileCopyLine } from "react-icons/ri"
+import { RiFileCopyLine } from "@remixicon/react"
 import { toast } from "sonner"
 
 type Props = {

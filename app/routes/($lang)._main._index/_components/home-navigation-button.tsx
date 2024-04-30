@@ -1,11 +1,11 @@
 import { Button } from "@/_components/ui/button"
 import { Link } from "@remix-run/react"
+import type { RemixiconComponentType } from "@remixicon/react"
 import type { LucideIcon } from "lucide-react"
 import { forwardRef } from "react"
-import type { IconType } from "react-icons"
 
 type Props = {
-  icon?: LucideIcon | IconType
+  icon?: LucideIcon | RemixiconComponentType
   href?: string
   children: React.ReactNode
   onClick?(): void

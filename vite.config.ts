@@ -2,6 +2,8 @@ import {
   vitePlugin as remix,
   cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
 } from "@remix-run/dev"
+import { analyzer } from "vite-bundle-analyzer"
+
 // import million from "million/compiler"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
@@ -16,6 +18,7 @@ export default defineConfig({
     remixCloudflareDevProxy(),
     remix(),
     tsconfigPaths(),
+    analyzer({ analyzerMode: "server", openAnalyzer: true }),
   ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),

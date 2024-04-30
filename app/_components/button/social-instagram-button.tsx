@@ -1,5 +1,5 @@
 import { Button, type ButtonProps } from "@/_components/ui/button"
-import { TbBrandInstagram } from "react-icons/tb"
+import { RiInstagramLine } from "@remixicon/react"
 
 type Props = ButtonProps
 
@@ -11,7 +11,7 @@ type Props = ButtonProps
 export const SocialInstagramButton = (props: Props) => {
   return (
     <Button aria-label={"instagram"} size={"icon"} {...props}>
-      <TbBrandInstagram />
+      <RiInstagramLine />
     </Button>
   )
 }
