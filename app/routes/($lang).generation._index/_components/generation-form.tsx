@@ -65,7 +65,7 @@ export const GenerationForm = (props: Props) => {
       context.changeCurrentUserToken(viewerUserToken)
       setUserToken(viewerUserToken)
     }
-  }, [localStorageUserToken, viewerUserToken])
+  }, [localStorageUserToken, viewerUserToken, context.config.page])
 
   return (
     <GenerationView
