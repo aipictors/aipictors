@@ -238,7 +238,7 @@ export const config = {
   wordpressEndpoint: {
     siteURL: "https://www.aipictors.com",
     privateImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/private-image.php",
+      "https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php",
     www4: "https://www4.aipictors.com/index.php",
     uploadPrivateImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",

@@ -5,6 +5,8 @@ type Props = {
   taskId: string
   token: string
   size: number
+  imageFileName: string
+  thumbnailImageFileName: string
   setIsHovered: (isHovered: boolean) => void
 }
 
@@ -17,7 +19,9 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
     <GenerationImageDialogButton
       isAbsolute={true}
       taskId={props.taskId}
-      taskToken={props.token}
+      userToken={props.token}
+      fileName={props.imageFileName}
+      thumbnailFileName={props.thumbnailImageFileName}
     >
       <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
         <div

@@ -66,11 +66,14 @@ export const copyUrl = (taskId: string) => {
  * @param token
  * @returns
  */
-export const saveGenerationImage = async (token: string) => {
+export const saveGenerationImage = async (
+  userToken: string,
+  fileName: string,
+) => {
   const image = await createImageFileFromUrl({
     url: `https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
-      token,
-    )}`,
+      userToken,
+    )}&name=${fileName}`,
   })
   downloadImageFile(image)
 }

@@ -1,4 +1,3 @@
-import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { GenerationAdvertisementView } from "@/routes/($lang).generation._index/_components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "@/routes/($lang).generation._index/_components/config-view/generation-config-view"
 import { GenerationSideTabsView } from "@/routes/($lang).generation._index/_components/generation-side-tabs-view/generation-side-tabs-view"
@@ -15,8 +14,13 @@ import { GenerationTaskDetailsView } from "@/routes/($lang).generation._index/_c
 import { GenerationTaskListView } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list-view"
 import { GenerationWorkContentPreview } from "@/routes/($lang).generation._index/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/routes/($lang).generation._index/_components/task-view/generation-works-from-model-view"
-import { useMutation } from "@apollo/client/index.js"
-import { useState } from "react"
+import { useQuery } from "@apollo/client/index.js"
+import { useEffect, useState } from "react"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { getUserToken } from "@/_utils/get-user-token"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { setUserToken } from "@/_utils/set-user-token"
+import { jwtDecode } from "jwt-decode"
 
 type Props = {
   termsMarkdownText: string
@@ -35,9 +39,33 @@ export const GenerationForm = (props: Props) => {
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
 
-  const [mutation, { loading: isLoading }] = useMutation(
-    loginWithWordPressTokenMutation,
-  )
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+
+  const localStorageUserToken = getUserToken()
+
+  const viewerUserToken = token?.viewer?.token
+
+  const context = useGenerationContext()
+
+  useEffect(() => {
+    if (localStorageUserToken !== null) {
+      const decoded = jwtDecode(localStorageUserToken)
+      // 期限が切れてたら、新しいトークンをセット
+      if (
+        decoded.exp &&
+        decoded.exp < new Date().getTime() / 1000 &&
+        viewerUserToken
+      ) {
+        context.changeCurrentUserToken(viewerUserToken)
+        setUserToken(viewerUserToken)
+      } else {
+        context.changeCurrentUserToken(localStorageUserToken)
+      }
+    } else if (viewerUserToken) {
+      context.changeCurrentUserToken(viewerUserToken)
+      setUserToken(viewerUserToken)
+    }
+  }, [localStorageUserToken, viewerUserToken])
 
   return (
     <GenerationView
@@ -72,6 +100,7 @@ export const GenerationForm = (props: Props) => {
               setProtect={setProtect}
               toggleEditMode={toggleEditMode}
               togglePreviewMode={togglePreviewMode}
+              currentUserToken={context.config.currentUserToken ?? ""}
             />
           }
           taskDetails={<GenerationTaskDetailsView />}

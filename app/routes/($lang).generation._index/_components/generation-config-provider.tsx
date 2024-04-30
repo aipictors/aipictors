@@ -78,7 +78,8 @@ export const GenerationConfigProvider = (props: Props) => {
     controlNetModel: null,
     controlNetSaveDetectedMap: null,
     controlNetHrOption: null,
-    previewImageURL: null, // Add previewImageURL property
+    previewImageURL: null,
+    currentUserToken: null,
   })
 
   const stateText =

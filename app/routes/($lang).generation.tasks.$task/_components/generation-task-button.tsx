@@ -10,6 +10,7 @@ type Props = {
   sizeType: number
   taskContentPositionType?: TaskContentPositionType
   isPreviewByHover: boolean
+  userToken: string
   onRestore?(taskId: string): void
   onCancel?(): void
   onDelete?(taskId: string): void
@@ -46,8 +47,7 @@ export function GenerationTaskButton(props: Props) {
         taskId={props.task.id}
         isPreviewByHover={props.isPreviewByHover}
         estimatedSeconds={props.task.estimatedSeconds ?? 0}
-        token={props.task.token}
-        thumbnailToken={props.task.thumbnailToken}
+        userToken={props.userToken}
         optionButtonSize={props.sizeType}
         task={props.task}
         isSelectDisabled={true}

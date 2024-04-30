@@ -27,17 +27,23 @@ export const GenerationTaskContentPreview = () => {
     context.config.previewTaskId,
   )
 
+  const userToken = context.config.currentUserToken
+
   return (
     <>
       <Card className="flex h-[100vh] w-auto flex-col">
-        {imageGenerationTask && (
+        {imageGenerationTask?.imageFileName &&
+        imageGenerationTask.thumbnailImageFileName &&
+        userToken ? (
           <div className="m-auto max-h-[100vh]">
             <PrivateImage
               // biome-ignore lint/nursery/useSortedClasses: <explanation>
               className={`max-h-[64vh] generation-image-${imageGenerationTask.id}`}
               taskId={imageGenerationTask.id}
-              token={imageGenerationTask.token ?? ""}
+              token={userToken}
               isThumbnail={context.config.taskListThumbnailType === "light"}
+              fileName={imageGenerationTask.imageFileName}
+              thumbnailFileName={imageGenerationTask.thumbnailImageFileName}
               alt={"-"}
             />
             <div className="m-auto mb-1">
@@ -45,6 +51,8 @@ export const GenerationTaskContentPreview = () => {
               <p>{imageGenerationTask.model?.name}</p>
             </div>
           </div>
+        ) : (
+          <></>
         )}
       </Card>
     </>

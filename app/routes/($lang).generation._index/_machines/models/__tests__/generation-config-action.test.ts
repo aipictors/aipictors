@@ -46,6 +46,7 @@ const config = new GenerationConfigState({
   controlNetThresholdA: 0.5,
   controlNetThresholdB: 0.5,
   controlNetWeight: 1,
+  currentUserToken: "",
 })
 
 describe("ImageGenerationAction", () => {

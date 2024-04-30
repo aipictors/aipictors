@@ -17,6 +17,8 @@ type Props = {
   isSelected?: boolean
   estimatedSeconds?: number
   isSelectDisabled: boolean
+  imageFileName: string
+  thumbnailImageFileName: string
   onClick?(): void
   onCancel?(): void
 }
@@ -89,6 +91,8 @@ export const GenerationTaskLinkCard = (props: Props) => {
             token={viewToken}
             isThumbnail={context.config.taskListThumbnailType === "light"}
             alt={"-"}
+            fileName={props.imageFileName}
+            thumbnailFileName={props.thumbnailImageFileName}
           />
         </Link>
       </SelectableCardButton>

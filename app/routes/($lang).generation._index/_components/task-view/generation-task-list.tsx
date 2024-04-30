@@ -26,6 +26,7 @@ type Props = {
   viewCount?: number
   currentPage: number
   tasks: ViewerImageGenerationTasksQuery
+  userToken: string
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
@@ -110,12 +111,14 @@ export const GenerationTaskList = (props: Props) => {
   }
 
   const inProgressTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
+    if (task.isDeleted || (!task.imageFileName && task.status === "DONE"))
+      return false
     return task.status === "IN_PROGRESS" || task.status === "RESERVED"
   })
 
   const activeTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.token && task.status === "DONE")) return false
+    if (task.isDeleted || (!task.imageFileName && task.status === "DONE"))
+      return false
     return (
       task.status === "PENDING" ||
       task.status === "IN_PROGRESS" ||
@@ -187,6 +190,7 @@ export const GenerationTaskList = (props: Props) => {
                   isDialog={state === "HISTORY_LIST_FULL"}
                   rating={props.rating}
                   selectedTaskIds={props.selectedTaskIds}
+                  userToken={props.userToken}
                   onClick={() => onSelectTask(task.nanoid, task.status)}
                   onCancel={props.onCancel}
                   onRestore={onRestore}

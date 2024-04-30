@@ -16,6 +16,7 @@ type Props = {
   protect: number
   isEditMode: boolean
   isPreviewMode: boolean
+  currentUserToken: string
   setRating: (rating: number) => void
   setProtect: (protect: number) => void
   toggleEditMode: (value: boolean) => void
@@ -67,9 +68,6 @@ export const GenerationTaskListView = (props: Props) => {
   })
 
   const queryData = useGenerationQuery()
-  const hasActiveTasks =
-    queryData.viewer.inProgressImageGenerationTasksCount > 0 ||
-    queryData.viewer.inProgressImageGenerationReservedTasksCount > 0
 
   useEffect(() => {
     refetch()
@@ -202,6 +200,7 @@ export const GenerationTaskListView = (props: Props) => {
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
           tasks={tasks}
+          userToken={props.currentUserToken}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}
           setCurrentPage={setPage}
