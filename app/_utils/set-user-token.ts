@@ -5,7 +5,7 @@
 export const setUserToken = (token: string) => {
   try {
     const now = new Date()
-    const expiryDate = new Date(now.getTime() + 23 * 60 * 60 * 1000) // 23時間後
+    const expiryDate = new Date(now.getTime() + 60 * 60 * 24 * 6) // JWTの有効期限は7日だが安全を取って6日間にする
 
     // ローカルストレージにトークンと有効期限を保存
     localStorage.setItem("user_token", token)

@@ -20,7 +20,6 @@ import { useEffect, useState } from "react"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { setUserToken } from "@/_utils/set-user-token"
 
 type Props = {
   termsMarkdownText: string
@@ -51,8 +50,8 @@ export const GenerationForm = (props: Props) => {
 
   const context = useGenerationContext()
 
-  if (cookieUserToken === null && currentUserToken) {
-    setUserToken(currentUserToken)
+  if (/* cookieUserToken === null && */ currentUserToken) {
+    // setUserToken(currentUserToken)
     context.changeCurrentUserToken(currentUserToken)
   }
 
