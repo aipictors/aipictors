@@ -8,9 +8,16 @@ import { config } from "@/config"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { useContext } from "react"
+
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control":
+      "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000",
+  }
+}
 
 export const meta: MetaFunction = () => {
   const siteName = "無料AIイラスト生成 - スマホ対応"
