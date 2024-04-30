@@ -47,30 +47,24 @@ export const GenerationForm = (props: Props) => {
 
   const cookieUserToken = getUserToken()
 
-  const currentUserToken =
-    cookieUserToken !== null ? cookieUserToken : token?.viewer?.token ?? ""
-
-  if (cookieUserToken === null) {
-    setUserToken(currentUserToken)
-  }
+  const currentUserToken = token?.viewer?.token
 
   const context = useGenerationContext()
 
-  useEffect(() => {
-    const cookieUserToken = getUserToken()
+  if (cookieUserToken === null && currentUserToken) {
+    setUserToken(currentUserToken)
+    context.changeCurrentUserToken(currentUserToken)
+  }
 
-    if (currentUserToken !== null && cookieUserToken === null) {
-      context.changeCurrentUserToken(currentUserToken)
-    }
-  }, [currentUserToken, cookieUserToken])
+  const newCurrentUserToken = getUserToken() ?? token?.viewer?.token ?? ""
 
-  // 10分単位でユーザのtokenをRefetchする
+  // 23時間単位でユーザのtokenをRefetchする
   useEffect(() => {
     const intervalId = setInterval(
       () => {
         tokenRefetch()
       },
-      10 * 60 * 1000,
+      23 * 60 * 60 * 1000,
     )
 
     return () => clearInterval(intervalId)
@@ -109,7 +103,7 @@ export const GenerationForm = (props: Props) => {
               setProtect={setProtect}
               toggleEditMode={toggleEditMode}
               togglePreviewMode={togglePreviewMode}
-              currentUserToken={currentUserToken}
+              currentUserToken={newCurrentUserToken}
             />
           }
           taskDetails={<GenerationTaskDetailsView />}
