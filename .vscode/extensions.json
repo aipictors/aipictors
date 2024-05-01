@@ -5,8 +5,6 @@
     "biomejs.biome",
     "bradlc.vscode-tailwindcss",
     "oven.bun-vscode",
-    "streetsidesoftware.code-spell-checker",
-    "yoavbls.pretty-ts-errors",
-    "dotenv.dotenv-vscode"
+    "streetsidesoftware.code-spell-checker"
   ]
 }
