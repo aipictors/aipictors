@@ -140,20 +140,24 @@ const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
         info.noise = json.noise
         info.scale = json.scale
 
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.uc
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.steps
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.sampler
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.seed
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.strength
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.noise
-        // biome-ignore lint/performance/noDelete: <explanation>
-        delete json.scale
+        // JSONをMapに変換
+        const jsonMap = new Map(Object.entries(json))
+
+        // 削除したいキーのリスト
+        const keysToDelete = [
+          "uc",
+          "steps",
+          "sampler",
+          "seed",
+          "strength",
+          "noise",
+          "scale",
+        ]
+
+        for (const key of keysToDelete) {
+          jsonMap.delete(key)
+        }
+
         info.other = objectToText(json)
       } catch (error) {
         console.log("Comment parse error: ", error, comment.text)
@@ -239,8 +243,7 @@ const objectToText = (obj: Record<string, string | number>): string => {
 }
 
 const controlCodeToSpace = (str: string): string => {
-  // biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
-  return str.replace(/[\x00-\x1F\x7F-\x9F]/g, " ")
+  return str.replace(/[\n\r\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, " ")
 }
 
 const arrayBufferUTF8ToString = (arrayBuffer: ArrayBuffer): string => {
