@@ -1,5 +1,5 @@
 import { getBreakpoint } from "@/_utils/get-breakpoints"
-import { throttle } from "lodash-es"
+import { throttle } from "../_lib/throttle"
 import { useEffect, useState } from "react"
 
 export const useBreakpoint = () => {
