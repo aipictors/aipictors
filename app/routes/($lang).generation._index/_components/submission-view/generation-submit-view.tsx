@@ -231,24 +231,24 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (
-      context.config.upscaleSize === 2 &&
-      context.config.modelType === "SDXL"
-    ) {
-      if (isDesktop) {
-        toast(
-          "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
-        )
-        return
-      }
-      toast(
-        "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
-        {
-          position: "top-center",
-        },
-      )
-      return
-    }
+    // if (
+    //   context.config.upscaleSize === 2 &&
+    //   context.config.modelType === "SDXL"
+    // ) {
+    //   if (isDesktop) {
+    //     toast(
+    //       "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+    //     )
+    //     return
+    //   }
+    //   toast(
+    //     "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
+    //     {
+    //       position: "top-center",
+    //     },
+    //   )
+    //   return
+    // }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
       if (isDesktop) {

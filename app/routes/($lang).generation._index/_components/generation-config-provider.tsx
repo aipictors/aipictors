@@ -59,7 +59,7 @@ export const GenerationConfigProvider = (props: Props) => {
     thumbnailSizeInHistoryListFull:
       config.generationFeature.defaultThumbnailSizeInHistoryListFull,
     taskListThumbnailType: config.generationFeature.defaultThumbnailType,
-    upscaleSize: 1,
+    upscaleSize: 2,
     page: 1,
     controlNetImageBase64: "",
     controlNetMaskImageBase64: "",
