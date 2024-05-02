@@ -69,6 +69,10 @@ export const GenerationQueryProvider = (props: Props) => {
     }
   }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
 
+  useEffect(() => {
+    refetchViewerImageGenerationStatus()
+  }, [authContext.isLoggedIn])
+
   return (
     <GenerationQueryContext.Provider
       value={{
