@@ -1,6 +1,6 @@
+import { ResizablePanelWithMemory } from "@/_components/resizable-panel-with-memory"
 import {
   ResizableHandle,
-  ResizablePanel,
   ResizablePanelGroup,
 } from "@/_components/ui/resizable"
 import { Separator } from "@/_components/ui/separator"
@@ -78,25 +78,31 @@ export const GenerationMainView = (props: Props) => {
       direction="horizontal"
       className="mt-2 flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
     >
-      <ResizablePanel className="lg:min-w-40 xl:min-w-40">
+      <ResizablePanelWithMemory
+        id="generation-config"
+        className="lg:min-w-40 xl:min-w-40"
+      >
         {props.config}
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel className="flex flex-col gap-4 lg:min-w-40 xl:min-w-40 md:flex-row lg:flex-col">
+      </ResizablePanelWithMemory>
+      <ResizableHandle aria-setsize={1} withHandle />
+      <ResizablePanelWithMemory
+        id="generation-main"
+        className="flex flex-col gap-4 lg:min-w-40 xl:min-w-40 md:flex-row lg:flex-col"
+      >
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel>
+          <ResizablePanelWithMemory id="generation-editor">
             <div className="h-full flex-1 overflow-hidden">
               {props.promptEditor}
             </div>
-          </ResizablePanel>
+          </ResizablePanelWithMemory>
           <ResizableHandle withHandle className="mt-2 mb-2" />
-          <ResizablePanel>
+          <ResizablePanelWithMemory id="generation-negative">
             <div className="h-full flex-1 overflow-hidden">
               {props.negativePromptEditor}
             </div>
-          </ResizablePanel>
+          </ResizablePanelWithMemory>
         </ResizablePanelGroup>
-      </ResizablePanel>
+      </ResizablePanelWithMemory>
     </ResizablePanelGroup>
   )
 }

@@ -75,8 +75,6 @@ export const GenerationQueryProvider = (props: Props) => {
     refetchViewerImageGenerationStatus()
   }, [authContext.isLoggedIn])
 
-  console.log(props.negativePromptCategories)
-
   return (
     <GenerationQueryContext.Provider
       value={{
