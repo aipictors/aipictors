@@ -25,19 +25,42 @@ type Props = {
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
 
-  const currentModels = context.config.modelIds.map((modelId) => {
-    return context.models.find((model) => {
-      return model.id === modelId
-    })
-  })
+  const currentModelIds = [
+    Number(props.currentModelId),
+    ...context.config.modelIds.filter(
+      (id) => Number(id) !== Number(props.currentModelId),
+    ),
+  ]
 
-  const favoritedModels = props.favoritedModelIds
+  const currentModels = currentModelIds
+    .map((modelId) => {
+      return context.models.find((model) => {
+        return Number(model.id) === Number(modelId)
+      })
+    })
+    .slice(0, 3)
+
+  const favoritedModelIds = [
+    Number(props.currentModelId),
+    ...props.favoritedModelIds.filter(
+      (id) => id !== Number(props.currentModelId),
+    ),
+  ]
+  const favoritedModels = favoritedModelIds
     .map((modelId) => {
       return props.models.find((model) => {
         return Number(model.id) === modelId
       })
     })
     .slice(0, 3)
+
+  // const favoritedModels = props.favoritedModelIds
+  //   .map((modelId) => {
+  //     return props.models.find((model) => {
+  //       return Number(model.id) === modelId
+  //     })
+  //   })
+  //   .slice(0, 3)
 
   /**
    * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
@@ -65,6 +88,10 @@ export const GenerationConfigModels = (props: Props) => {
 
     return input
   }
+
+  const currentModel = context.models.find((model) => {
+    return model.id === context.config.modelId
+  })
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { Textarea } from "@/_components/ui/textarea"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import {} from "@/_components/ui/dialog"
 
 export const GenerationNegativePromptView = () => {
   const context = useGenerationContext()
@@ -40,6 +41,30 @@ export const GenerationNegativePromptView = () => {
           }}
         />
       </div>
+      {/* <Dialog
+        open={value}
+        onOpenChange={(isOpen) => {
+          if (isOpen) return
+          setFalse()
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button
+            onClick={setTrue}
+            variant={"secondary"}
+            size={"sm"}
+            className="w-full"
+          >
+            {"キーワードから選ぶ"}
+          </Button>
+        </DialogTrigger>
+        <PromptCategoriesDialogContent
+          selectedPromptIds={selectedPromptIds}
+          onClose={setFalse}
+          promptCategories={context.promptCategories}
+          onSelect={onSelectPromptId}
+        />
+      </Dialog> */}
     </GenerationViewCard>
   )
 }
