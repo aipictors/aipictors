@@ -5,7 +5,7 @@ export function throttle<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let lastTime = 0
   return (...args: Parameters<T>): void => {
-    const now = new Date().getTime()
+    const now = performance.now()
     if (now - lastTime >= timeFrame) {
       func(...args)
       lastTime = now
