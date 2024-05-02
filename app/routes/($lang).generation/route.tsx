@@ -2,6 +2,7 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
@@ -52,6 +53,11 @@ export const loader = async () => {
     variables: {},
   })
 
+  const negativePromptCategoriesReq = client.query({
+    query: negativePromptCategoriesQuery,
+    variables: {},
+  })
+
   const imageModelsReq = client.query({
     query: imageModelsQuery,
     variables: {},
@@ -63,15 +69,23 @@ export const loader = async () => {
   })
 
   const resp = await Promise.all([
+    negativePromptCategoriesReq,
     promptCategoriesReq,
     imageModelsReq,
     imageLoraModelsReq,
   ])
 
-  const [promptCategoriesResp, imageModelsResp, imageLoraModelsResp] = resp
+  const [
+    negativePromptCategoriesResp,
+    promptCategoriesResp,
+    imageModelsResp,
+    imageLoraModelsResp,
+  ] = resp
 
   return {
     promptCategories: promptCategoriesResp.data.promptCategories,
+    negativePromptCategories:
+      negativePromptCategoriesResp.data.negativePromptCategories,
     imageModels: imageModelsResp.data.imageModels,
     imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
   }
@@ -90,11 +104,14 @@ export default function GenerationLayout() {
     return <AppLoadingPage />
   }
 
+  console.log(data.negativePromptCategories)
+
   return (
     <>
       <HomeHeader title="画像生成 β" />
       <GenerationQueryProvider
         promptCategories={data.promptCategories}
+        negativePromptCategories={data.negativePromptCategories}
         imageModels={data.imageModels}
         imageLoraModels={data.imageLoraModels}
       >
