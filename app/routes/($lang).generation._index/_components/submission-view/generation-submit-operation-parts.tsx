@@ -352,31 +352,53 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
-                <div className="flex items-center space-x-2">
-                  <Switch id="airplane-mode" />
-                  <Label htmlFor="airplane-mode">高解像度</Label>
+                <div className="flex w-full items-center space-x-2">
+                  <div className="flex w-48 items-center md:w-40">
+                    <Switch
+                      onClick={() => {
+                        context.changeUpscaleSize(
+                          context.config.upscaleSize === 2 ? 1 : 2,
+                        )
+                      }}
+                      checked={context.config.upscaleSize === 2}
+                      id="extras-mode"
+                    />
+                    <div className="text-center leading-3">
+                      <Label
+                        htmlFor="extras-mode"
+                        className="block text-center"
+                      >
+                        高解像度
+                      </Label>
+                      <Label
+                        htmlFor="extras-mode"
+                        className="block text-center text-xs"
+                      >
+                        2枚消費
+                      </Label>
+                    </div>
+                  </div>
+                  <GenerationSubmitButton
+                    onClick={async () => {
+                      await props.onCreateTask()
+                    }}
+                    isLoading={props.isCreatingTask}
+                    isDisabled={context.config.isDisabled}
+                    generatingCount={
+                      props.inProgressImageGenerationTasksCount +
+                      props.inProgressImageGenerationReservedTasksCount
+                    }
+                    maxGeneratingCount={
+                      props.availableImageGenerationMaxTasksCount -
+                      props.tasksCount
+                    }
+                    buttonActionCaption={getSubmitButtonLabel(
+                      !!context.config.i2iImageBase64,
+                      context.config.promptText,
+                      context.config.seed,
+                    )}
+                  />
                 </div>
-
-                <GenerationSubmitButton
-                  onClick={async () => {
-                    await props.onCreateTask()
-                  }}
-                  isLoading={props.isCreatingTask}
-                  isDisabled={context.config.isDisabled}
-                  generatingCount={
-                    props.inProgressImageGenerationTasksCount +
-                    props.inProgressImageGenerationReservedTasksCount
-                  }
-                  maxGeneratingCount={
-                    props.availableImageGenerationMaxTasksCount -
-                    props.tasksCount
-                  }
-                  buttonActionCaption={getSubmitButtonLabel(
-                    !!context.config.i2iImageBase64,
-                    context.config.promptText,
-                    context.config.seed,
-                  )}
-                />
               </DialogTrigger>
               <DialogContent className="min-w-[64vw]">
                 <DialogHeader>
