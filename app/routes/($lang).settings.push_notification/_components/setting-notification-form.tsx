@@ -12,7 +12,7 @@ export const SettingNotificationForm = () => {
           >
             {"全年齢いいね"}
           </label>
-          <Checkbox id="terms" />
+          <Checkbox id="terms1" />
         </div>
         <div className="flex justify-between">
           <label
@@ -21,7 +21,7 @@ export const SettingNotificationForm = () => {
           >
             {"R-18いいね"}
           </label>
-          <Checkbox id="terms" />
+          <Checkbox id="terms2" />
         </div>
       </div>
       <div className="space-y-4">
@@ -33,7 +33,7 @@ export const SettingNotificationForm = () => {
           >
             {"定期いいね通知"}
           </label>
-          <Checkbox id="terms" />
+          <Checkbox id="terms3" />
         </div>
         <div className="flex justify-between">
           <label
@@ -42,7 +42,7 @@ export const SettingNotificationForm = () => {
           >
             {"リアルタイムいいね通知"}
           </label>
-          <Checkbox id="terms" />
+          <Checkbox id="terms4" />
         </div>
         <div className="flex justify-between">
           <label
@@ -51,7 +51,7 @@ export const SettingNotificationForm = () => {
           >
             {"コメント"}
           </label>
-          <Checkbox id="terms" />
+          <Checkbox id="terms5" />
         </div>
       </div>
     </>
