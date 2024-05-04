@@ -1,7 +1,7 @@
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
+import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation._index/_components/generation-task-responsive-card"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
-import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
-import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-responsive-card"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment

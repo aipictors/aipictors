@@ -11,5 +11,6 @@ export type Props = {
   configModel: string | null
   configVae: string | null
   configClipSkip: number
+  maskBase64: string
   onClose(): void
 }

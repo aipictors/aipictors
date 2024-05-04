@@ -8,17 +8,17 @@ import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-i
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
-import { GenerationTaskDeleteButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-delete-button"
-import { GenerationTaskProtectedButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-protected-button"
-import { GenerationTaskRatingButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-rating-button"
-import { GenerationTaskZoomUpButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-zoom-up-button"
-import { InProgressGenerationCard } from "@/routes/($lang).generation.tasks.$task/_components/in-progress-generation-card"
-import { ReservedGenerationCard } from "@/routes/($lang).generation.tasks.$task/_components/reserved-generation-card"
 import { useMutation } from "@apollo/client/index.js"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
+import { ReservedGenerationCard } from "@/routes/($lang).generation._index/_components/reserved-generation-card"
+import { InProgressGenerationCard } from "@/routes/($lang).generation._index/_components/in-progress-generation-card"
+import { GenerationTaskZoomUpButton } from "@/routes/($lang).generation._index/_components/generation-task-zoom-up-button"
+import { GenerationTaskRatingButton } from "@/routes/($lang).generation._index/_components/generation-task-rating-button"
+import { GenerationTaskDeleteButton } from "@/routes/($lang).generation._index/_components/generation-task-delete-button"
+import { GenerationTaskProtectedButton } from "@/routes/($lang).generation._index/_components/generation-task-protected-button"
 
 type Props = {
   taskId: string

@@ -8,13 +8,13 @@ import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/routes/($lang).generation._index/_utils/download-image-file"
-import { GenerationTaskSheetViewContent } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view-content"
-import { InProgressImageGenerationTaskResult } from "@/routes/($lang).generation.tasks.$task/_components/in-progress-image-generation-task-result"
-import type { GenerationParameters } from "@/routes/($lang).generation.tasks.$task/_types/generation-parameters"
+import { GenerationTaskSheetViewContent } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view-content"
+import { InProgressImageGenerationTaskResult } from "@/routes/($lang).generation._index/_components/in-progress-image-generation-task-result"
+import type { GenerationParameters } from "@/routes/($lang).generation._index/_types/generation-parameters"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
+} from "@/routes/($lang).generation._index/_types/generation-size"
 import { useMutation } from "@apollo/client/index.js"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -24,6 +24,7 @@ type Props = {
   task: ImageGenerationTaskFieldsFragment
   isReferenceLink?: boolean
   isScroll?: boolean
+  setShowInPaintDialog?: (show: boolean) => void
 }
 
 /**
@@ -158,7 +159,19 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const onInPaint = () => {
-    setShowInPaintDialog(true)
+    if (props.setShowInPaintDialog) {
+      props.setShowInPaintDialog(true)
+    } else {
+      setShowInPaintDialog(true)
+    }
+  }
+
+  const setShowInPaintChange = (show: boolean) => {
+    if (props.setShowInPaintDialog) {
+      props.setShowInPaintDialog(true)
+    } else {
+      setShowInPaintDialog(show)
+    }
   }
 
   const onPost = () => {
@@ -332,7 +345,7 @@ export function GenerationTaskSheetView(props: Props) {
         onNextTask={onNextTask}
         onPrevTask={onPrevTask}
         setRating={setRating}
-        setShowInPaintDialog={setShowInPaintDialog}
+        setShowInPaintDialog={setShowInPaintChange}
         saveGenerationImage={saveGenerationImage}
         toggleProtectedImage={toggleProtectedImage}
         copyGeneration={copyGeneration}
@@ -365,7 +378,7 @@ export function GenerationTaskSheetView(props: Props) {
       onChangeRating={onChangeRating}
       toggleProtectedImage={toggleProtectedImage}
       setRating={setRating}
-      setShowInPaintDialog={setShowInPaintDialog}
+      setShowInPaintDialog={setShowInPaintChange}
       saveGenerationImage={saveGenerationImage}
       copyGeneration={copyGeneration}
       copyUrl={copyUrl}
