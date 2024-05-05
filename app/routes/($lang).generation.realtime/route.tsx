@@ -116,7 +116,8 @@ export default function GenerationLayout() {
             onChangeBrushImageBase64={onChangeBrushImageBase64}
             width={512}
             height={512}
-            imageUrl="https://files.aipictors.com/white-bg-512-512-square.png"
+            isBackground={true}
+            isColorPicker={true}
           />
         </div>
       </AppPageCenter>

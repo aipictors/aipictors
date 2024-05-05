@@ -25,6 +25,8 @@ interface IProps {
   imageUrl?: string // 画像のURL
   isMosaicMode?: boolean
   isColorPicker?: boolean
+  isBackground?: boolean
+  isBackgroundColorPicker?: boolean
   onChangeBrushImageBase64?(value: string): void
 }
 
@@ -45,6 +47,8 @@ const PaintCanvas: React.FC<IProps> = ({
   imageUrl,
   isMosaicMode,
   isColorPicker,
+  isBackground,
+  isBackgroundColorPicker,
   onChangeBrushImageBase64,
 }) => {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -66,6 +70,8 @@ const PaintCanvas: React.FC<IProps> = ({
   const [canvasWidth, setCanvasWidth] = useState<number>(width || 240)
 
   const [canvasHeight, setCanvasHeight] = useState<number>(height || 360)
+
+  const [backgroundColor, setBackgroundColor] = useState("#fff")
 
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
@@ -519,6 +525,16 @@ const PaintCanvas: React.FC<IProps> = ({
               title="Choose a color"
             />
           )}
+          {isBackgroundColorPicker && (
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              className="mr-2 h-10 w-10 cursor-pointer border-0 p-0"
+              style={{ backgroundColor: color }}
+              title="Choose a color"
+            />
+          )}
         </div>
         <div
           className={cn(
@@ -552,6 +568,22 @@ const PaintCanvas: React.FC<IProps> = ({
                 }}
               />
             )}
+
+            {/* 真っ白な背景のキャンバスを描画する */}
+            {isBackground && (
+              <canvas
+                ref={assistedCanvasRef}
+                width={width}
+                height={height}
+                className={cn("absolute top-0 left-0")}
+                style={{
+                  backgroundColor: `${backgroundColor}`,
+                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                }}
+              />
+            )}
+
             {imageUrl && (
               <canvas
                 ref={imageCanvasRef}
