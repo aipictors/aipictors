@@ -590,6 +590,7 @@ export const useGenerationContext = () => {
       })
     },
     promptCategories: dataContext.promptCategories,
+    negativePromptCategories: dataContext.negativePromptCategories,
     models: dataContext.models,
     loraModels: dataContext.loraModels,
     user: dataContext.user,

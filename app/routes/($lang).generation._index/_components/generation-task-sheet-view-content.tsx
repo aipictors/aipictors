@@ -7,12 +7,12 @@ import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/utils"
-import { GenerationImageDialogButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-image-dialog-button"
-import { GenerationMenuButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-menu-button"
-import { GenerationReferenceDialog } from "@/routes/($lang).generation.tasks.$task/_components/generation-reference-dialog-button"
-import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
-import type { GenerationParameters } from "@/routes/($lang).generation.tasks.$task/_types/generation-parameters"
-import type { GenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
+import { GenerationImageDialogButton } from "@/routes/($lang).generation._index/_components/generation-image-dialog-button"
+import { GenerationMenuButton } from "@/routes/($lang).generation._index/_components/generation-menu-button"
+import { GenerationReferenceDialog } from "@/routes/($lang).generation._index/_components/generation-reference-dialog-button"
+import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation._index/_components/generation-task-content-image-place-holder"
+import type { GenerationParameters } from "@/routes/($lang).generation._index/_types/generation-parameters"
+import type { GenerationSize } from "@/routes/($lang).generation._index/_types/generation-size"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -20,7 +20,6 @@ import {
   ChevronRight,
   ClipboardCopy,
   FileUp,
-  LinkIcon,
   LockKeyholeIcon,
   LockKeyholeOpenIcon,
   PenIcon,
@@ -28,11 +27,11 @@ import {
 } from "lucide-react"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import { CopyButton } from "./copy-button"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskError } from "@/routes/($lang).generation._index/_components/task-view/generation-task-error"
 import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
 import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
+import { CopyButton } from "@/routes/($lang).generation._index/_components/copy-button"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
@@ -284,17 +283,6 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   }
                   icon={ClipboardCopy}
                 />
-                {props.task.nanoid !== null && props.task.nanoid !== "" && (
-                  <GenerationMenuButton
-                    title={"URLをコピーする"}
-                    onClick={() => {
-                      if (props.task.nanoid !== null) {
-                        props.copyUrl(props.task.nanoid)
-                      }
-                    }}
-                    icon={LinkIcon}
-                  />
-                )}
                 {props.task?.imageFileName && (
                   <GenerationMenuButton
                     title={"画像を保存する"}

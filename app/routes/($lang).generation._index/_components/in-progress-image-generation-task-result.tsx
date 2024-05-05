@@ -1,17 +1,16 @@
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
-import { GenerationMenuButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-menu-button"
+import { GenerationMenuButton } from "@/routes/($lang).generation._index/_components/generation-menu-button"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
+} from "@/routes/($lang).generation._index/_types/generation-size"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
   ClipboardCopy,
   FileUp,
-  LinkIcon,
   Trash2,
 } from "lucide-react"
 import { CopyButton } from "./copy-button"
@@ -81,12 +80,6 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
             onClick={() => {}}
             disabled={true}
             icon={ClipboardCopy}
-          />
-          <GenerationMenuButton
-            title={"URLをコピーする"}
-            onClick={() => {}}
-            disabled={true}
-            icon={LinkIcon}
           />
           <GenerationMenuButton
             title={"画像を保存する"}

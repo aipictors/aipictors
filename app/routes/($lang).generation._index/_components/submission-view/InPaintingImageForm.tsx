@@ -4,14 +4,13 @@ import { Separator } from "@/_components/ui/separator"
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { fetchImage } from "@/_utils/fetch-image-object-url"
 import { uploadImage } from "@/_utils/upload-image"
-import { InPaintingEditImage } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-edit-image"
 import { InPaintingSetting } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-setting"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { useMutation } from "@apollo/client/index.js"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import type { Props } from "./in-painting-image-form"
 import { config } from "@/config"
@@ -43,11 +42,11 @@ export const InPaintingImageForm = (props: Props) => {
     },
   })
 
-  const [createTask] = useMutation(createImageGenerationTaskMutation)
+  const [createTask, { loading: isCreatingTask }] = useMutation(
+    createImageGenerationTaskMutation,
+  )
 
   const [maskImageBase64, setMaskImageBase64] = useState("")
-
-  const [isLoading, setIsLoading] = useState(true)
 
   const [promptText, setPromptText] = useState("")
 
@@ -69,9 +68,9 @@ export const InPaintingImageForm = (props: Props) => {
     setDenoisingStrengthSize(value)
   }
 
-  const onChangePaint = (imageBase64: string) => {
-    setMaskImageBase64(imageBase64)
-  }
+  useEffect(() => {
+    setMaskImageBase64(props.maskBase64)
+  }, [props.maskBase64])
 
   const getControlNetImageUrl = async (base64: string | null) => {
     if (base64 === null) {
@@ -143,6 +142,9 @@ export const InPaintingImageForm = (props: Props) => {
         context.config.controlNetImageBase64,
       )
 
+      console.log(srcImageURL)
+      console.log(maskImageURL)
+
       await createTask({
         variables: {
           input: {
@@ -163,7 +165,9 @@ export const InPaintingImageForm = (props: Props) => {
             t2tDenoisingStrengthSize: denoisingStrengthSize,
             t2tInpaintingFillSize: fillSize,
             controlNetImageUrl: controlNetImageUrl,
-            controlNetWeight: Number(context.config.controlNetWeight),
+            controlNetWeight: context.config.controlNetWeight
+              ? Number(context.config.controlNetWeight)
+              : null,
             controlNetModel: context.config.controlNetModel,
             controlNetModule: context.config.controlNetModule,
           },
@@ -180,7 +184,7 @@ export const InPaintingImageForm = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="mt-16 mr-16 flex flex-col p-4">
         <div>
           <p className="text-lg">{"一部修正"}</p>
           <p className="text-md">
@@ -207,15 +211,10 @@ export const InPaintingImageForm = (props: Props) => {
         <div className="py-2">
           <Separator />
         </div>
-        <InPaintingEditImage
-          onLoaded={() => setIsLoading(false)}
-          isLoading={isLoading}
-          onChange={onChangePaint}
-          imageUrl={data}
-        />
-      </div>
-      <div>
-        <Button disabled={isLoading} onClick={onCreateTask}>
+        <Button
+          disabled={isCreatingTask || !maskImageBase64 || !promptText}
+          onClick={onCreateTask}
+        >
           {"修正する"}
         </Button>
       </div>

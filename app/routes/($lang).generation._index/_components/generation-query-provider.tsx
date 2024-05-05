@@ -3,6 +3,7 @@ import type {
   ImageLoraModelsQuery,
   ImageModelsQuery,
   PromptCategoriesQuery,
+  NegativePromptCategoriesQuery,
 } from "@/_graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
@@ -16,6 +17,7 @@ import { useContext, useEffect } from "react"
 type Props = {
   children: React.ReactNode
   promptCategories: PromptCategoriesQuery["promptCategories"]
+  negativePromptCategories: NegativePromptCategoriesQuery["negativePromptCategories"]
   imageModels: ImageModelsQuery["imageModels"]
   imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
 }
@@ -77,6 +79,7 @@ export const GenerationQueryProvider = (props: Props) => {
     <GenerationQueryContext.Provider
       value={{
         promptCategories: props.promptCategories,
+        negativePromptCategories: props.negativePromptCategories,
         models: props.imageModels,
         loraModels: props.imageLoraModels,
         user: viewer?.viewer?.user ?? null,

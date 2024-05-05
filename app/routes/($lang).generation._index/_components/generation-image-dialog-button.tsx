@@ -1,6 +1,6 @@
 import { PrivateImage } from "@/_components/private-image"
 import { Dialog, DialogContent, DialogTrigger } from "@/_components/ui/dialog"
-import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-content-image-place-holder"
+import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation._index/_components/generation-task-content-image-place-holder"
 import { Suspense } from "react"
 
 type Props = {

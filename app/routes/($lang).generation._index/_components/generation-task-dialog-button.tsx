@@ -1,9 +1,10 @@
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
+import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { ErrorResultCard } from "@/routes/($lang).generation.tasks.$task/_components/error-result-card"
-import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
-import { GenerationTaskSheetView } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-sheet-view"
+import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
+import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
+import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view"
 import { useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -24,7 +25,11 @@ type Props = {
 export function GenerationTaskDialogButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
+  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+
   const context = useGenerationContext()
+
+  const userNanoid = context.user?.nanoid ?? null
 
   const onClickTask = () => {
     setTimeout(() => {
@@ -54,6 +59,27 @@ export function GenerationTaskDialogButton(props: Props) {
           onCancel={props.onCancel}
           onDelete={props.onDelete}
         />
+        {showInPaintDialog &&
+          props.userToken &&
+          props.task.imageFileName &&
+          userNanoid && (
+            <InPaintingDialog
+              isOpen={showInPaintDialog}
+              onClose={() => setShowInPaintDialog(false)}
+              taskId={props.task.id}
+              token={props.userToken}
+              fileName={props.task.imageFileName}
+              userNanoid={userNanoid}
+              configSeed={props.task.seed}
+              configSteps={props.task.steps}
+              configSampler={props.task.sampler}
+              configSizeType={props.task.sizeType}
+              configModel={props.task.model?.name}
+              configVae={props.task.vae}
+              configScale={props.task.scale}
+              configClipSkip={props.task.clipSkip}
+            />
+          )}
         <Dialog
           open={isOpen}
           onOpenChange={(isOpen) => {
@@ -73,6 +99,14 @@ export function GenerationTaskDialogButton(props: Props) {
               isScroll={true}
               task={props.task}
               isReferenceLink={true}
+              setShowInPaintDialog={(value) => {
+                setShowInPaintDialog(value)
+                if (value) {
+                  setIsOpen(false)
+                } else {
+                  setIsOpen(true)
+                }
+              }}
             />
           </DialogContent>
         </Dialog>

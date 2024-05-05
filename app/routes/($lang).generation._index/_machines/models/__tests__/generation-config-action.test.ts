@@ -27,7 +27,7 @@ const config = new GenerationConfigState({
   taskListThumbnailType: "light",
   page: 0,
   controlNetImageBase64: "",
-  upscaleSize: 1,
+  upscaleSize: 2,
   previewImageURL: "",
   searchModelId: null,
   searchModelName: null,

@@ -1,4 +1,4 @@
-import { GenerationImageDialogButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-image-dialog-button"
+import { GenerationImageDialogButton } from "@/routes/($lang).generation._index/_components/generation-image-dialog-button"
 import { ZoomIn } from "lucide-react"
 
 type Props = {

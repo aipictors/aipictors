@@ -3,7 +3,7 @@ import { CrossPlatformTooltip } from "@/_components/cross-platform-tooltip"
 import { Slider } from "@/_components/ui/slider"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { parseGenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
+import { parseGenerationSize } from "@/routes/($lang).generation._index/_types/generation-size"
 
 /**
  * i2i向け画像設定

@@ -20,6 +20,7 @@ import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { setUserToken } from "@/_utils/set-user-token"
+import { jwtDecode } from "jwt-decode"
 
 type Props = {
   termsMarkdownText: string
@@ -48,21 +49,17 @@ export const GenerationForm = (props: Props) => {
 
   useEffect(() => {
     if (localStorageUserToken !== null) {
-      // const decoded = jwtDecode(localStorageUserToken)
+      const decoded = jwtDecode(localStorageUserToken)
       // 期限が切れてたら、新しいトークンをセット
-      // if (
-      //   decoded.exp &&
-      //   decoded.exp < new Date().getTime() / 1000 &&
-      //   viewerUserToken
-      // ) {
-      //   context.changeCurrentUserToken(viewerUserToken)
-      //   setUserToken(viewerUserToken)
-      // } else {
-      //   context.changeCurrentUserToken(localStorageUserToken)
-      // }
-      if (viewerUserToken) {
+      if (
+        decoded.exp &&
+        decoded.exp < new Date().getTime() / 1000 &&
+        viewerUserToken
+      ) {
         context.changeCurrentUserToken(viewerUserToken)
         setUserToken(viewerUserToken)
+      } else {
+        context.changeCurrentUserToken(localStorageUserToken)
       }
     } else if (viewerUserToken) {
       context.changeCurrentUserToken(viewerUserToken)

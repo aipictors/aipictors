@@ -14,6 +14,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
+import { Label } from "@/_components/ui/label"
+import { Switch } from "@/_components/ui/switch"
 import { AuthContext } from "@/_contexts/auth-context"
 import { GenerationReserveCountInput } from "@/routes/($lang).generation._index/_components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-button"
@@ -126,7 +128,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   onChange={props.setGenerationCount}
                   count={props.generationCount}
                 />
-
+                {"枚"}
                 <Button
                   className="mr-2"
                   size={"icon"}
@@ -151,72 +153,145 @@ export function GenerationSubmitOperationParts(props: Props) {
         </div>
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (
-          <LoginDialogButton
-            label="生成"
-            isLoading={
-              authContext.isLoading ||
-              (authContext.isLoggedIn && context.user === null)
-            }
-            isWidthFull={true}
-            triggerChildren={
-              <GradientBorderButton
-                onClick={() => {}}
-                className="w-full text-balance"
-              >
-                <div className="flex items-center">
-                  {"生成"}
-                  {(authContext.isLoading ||
-                    (authContext.isLoggedIn && context.user === null)) && (
-                    <span className="ml-2 animate-spin">
-                      <Loader2Icon />
-                    </span>
-                  )}
-                </div>
-              </GradientBorderButton>
-            }
-          />
+          <>
+            <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+              <Switch
+                onClick={() => {
+                  context.changeUpscaleSize(
+                    context.config.upscaleSize === 2 ? 1 : 2,
+                  )
+                }}
+                checked={context.config.upscaleSize === 2}
+                id="extras-mode"
+              />
+              <div className="text-center leading-3">
+                <Label htmlFor="extras-mode" className="block text-center">
+                  高解像度
+                </Label>
+                <Label
+                  htmlFor="extras-mode"
+                  className="block text-center text-xs"
+                >
+                  2枚消費
+                </Label>
+              </div>
+            </div>
+            <LoginDialogButton
+              label="生成"
+              isLoading={
+                authContext.isLoading ||
+                (authContext.isLoggedIn && context.user === null)
+              }
+              isWidthFull={true}
+              triggerChildren={
+                <GradientBorderButton
+                  onClick={() => {}}
+                  className="w-full text-balance"
+                >
+                  <div className="flex items-center">
+                    {"生成"}
+                    {(authContext.isLoading ||
+                      (authContext.isLoggedIn && context.user === null)) && (
+                      <span className="ml-2 animate-spin">
+                        <Loader2Icon />
+                      </span>
+                    )}
+                  </div>
+                </GradientBorderButton>
+              }
+            />
+          </>
         )}
         {/* 規約確認開始ボタン */}
         {authContext.isLoggedIn &&
           context.user !== null &&
           context.user?.hasSignedImageGenerationTerms !== true && (
-            <GenerationTermsButton
-              termsMarkdownText={props.termsText}
-              isLoading={props.isCreatingTask}
-              onSubmit={props.onSignTerms}
-              triggerChildren={
-                <GradientBorderButton
-                  disabled={props.isCreatingTask}
-                  onClick={() => {}}
-                  className="w-full text-balance"
-                >
-                  {props.isCreatingTask ? "処理中.." : "生成"}
-                </GradientBorderButton>
-              }
-            />
+            <>
+              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+                <Switch
+                  onClick={() => {
+                    context.changeUpscaleSize(
+                      context.config.upscaleSize === 2 ? 1 : 2,
+                    )
+                  }}
+                  checked={context.config.upscaleSize === 2}
+                  id="extras-mode"
+                />
+                <div className="text-center leading-3">
+                  <Label htmlFor="extras-mode" className="block text-center">
+                    高解像度
+                  </Label>
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block text-center text-xs"
+                  >
+                    2枚消費
+                  </Label>
+                </div>
+              </div>
+
+              <GenerationTermsButton
+                termsMarkdownText={props.termsText}
+                isLoading={props.isCreatingTask}
+                onSubmit={props.onSignTerms}
+                triggerChildren={
+                  <GradientBorderButton
+                    disabled={props.isCreatingTask}
+                    onClick={() => {}}
+                    className="w-full text-balance"
+                  >
+                    {props.isCreatingTask ? "処理中.." : "生成"}
+                  </GradientBorderButton>
+                }
+              />
+            </>
           )}
         {/* プレミアムの場合はサブスク案内ダイアログなしver */}
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <GenerationSubmitButton
-              onClick={async () => {
-                await props.onCreateTask()
-              }}
-              isLoading={props.isCreatingTask}
-              isDisabled={context.config.isDisabled}
-              generatingCount={
-                props.inProgressImageGenerationTasksCount +
-                props.inProgressImageGenerationReservedTasksCount
-              }
-              maxGeneratingCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
-              buttonActionCaption={getSubmitButtonLabel(
-                !!context.config.i2iImageBase64,
-                context.config.promptText,
-                context.config.seed,
-              )}
-            />
+            <>
+              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+                <Switch
+                  onClick={() => {
+                    context.changeUpscaleSize(
+                      context.config.upscaleSize === 2 ? 1 : 2,
+                    )
+                  }}
+                  checked={context.config.upscaleSize === 2}
+                  id="extras-mode"
+                />
+                <div className="text-center leading-3">
+                  <Label htmlFor="extras-mode" className="block text-center">
+                    高解像度
+                  </Label>
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block text-center text-xs"
+                  >
+                    2枚消費
+                  </Label>
+                </div>
+              </div>
+              <GenerationSubmitButton
+                onClick={async () => {
+                  await props.onCreateTask()
+                }}
+                isLoading={props.isCreatingTask}
+                isDisabled={context.config.isDisabled}
+                generatingCount={
+                  props.inProgressImageGenerationTasksCount +
+                  props.inProgressImageGenerationReservedTasksCount
+                }
+                maxGeneratingCount={
+                  props.availableImageGenerationMaxTasksCount - props.tasksCount
+                }
+                buttonActionCaption={getSubmitButtonLabel(
+                  !!context.config.i2iImageBase64,
+                  context.config.promptText,
+                  context.config.seed,
+                )}
+              />
+            </>
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
@@ -224,25 +299,50 @@ export function GenerationSubmitOperationParts(props: Props) {
             props.availableImageGenerationMaxTasksCount -
               (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <GenerationSubmitButton
-              onClick={async () => {
-                await props.onCreateTask()
-              }}
-              isLoading={props.isCreatingTask}
-              isDisabled={context.config.isDisabled}
-              generatingCount={
-                props.inProgressImageGenerationTasksCount +
-                props.inProgressImageGenerationReservedTasksCount
-              }
-              maxGeneratingCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
-              buttonActionCaption={getSubmitButtonLabel(
-                !!context.config.i2iImageBase64,
-                context.config.promptText,
-                context.config.seed,
-              )}
-            />
+            <>
+              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+                <Switch
+                  onClick={() => {
+                    context.changeUpscaleSize(
+                      context.config.upscaleSize === 2 ? 1 : 2,
+                    )
+                  }}
+                  checked={context.config.upscaleSize === 2}
+                  id="extras-mode"
+                />
+                <div className="text-center leading-3">
+                  <Label htmlFor="extras-mode" className="block text-center">
+                    高解像度
+                  </Label>
+                  <Label
+                    htmlFor="extras-mode"
+                    className="block text-center text-xs"
+                  >
+                    2枚消費
+                  </Label>
+                </div>
+              </div>
+
+              <GenerationSubmitButton
+                onClick={async () => {
+                  await props.onCreateTask()
+                }}
+                isLoading={props.isCreatingTask}
+                isDisabled={context.config.isDisabled}
+                generatingCount={
+                  props.inProgressImageGenerationTasksCount +
+                  props.inProgressImageGenerationReservedTasksCount
+                }
+                maxGeneratingCount={
+                  props.availableImageGenerationMaxTasksCount - props.tasksCount
+                }
+                buttonActionCaption={getSubmitButtonLabel(
+                  !!context.config.i2iImageBase64,
+                  context.config.promptText,
+                  context.config.seed,
+                )}
+              />
+            </>
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
@@ -252,26 +352,53 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
-                <GenerationSubmitButton
-                  onClick={async () => {
-                    await props.onCreateTask()
-                  }}
-                  isLoading={props.isCreatingTask}
-                  isDisabled={context.config.isDisabled}
-                  generatingCount={
-                    props.inProgressImageGenerationTasksCount +
-                    props.inProgressImageGenerationReservedTasksCount
-                  }
-                  maxGeneratingCount={
-                    props.availableImageGenerationMaxTasksCount -
-                    props.tasksCount
-                  }
-                  buttonActionCaption={getSubmitButtonLabel(
-                    !!context.config.i2iImageBase64,
-                    context.config.promptText,
-                    context.config.seed,
-                  )}
-                />
+                <div className="flex w-full items-center space-x-2">
+                  <div className="flex w-48 items-center md:w-40">
+                    <Switch
+                      onClick={() => {
+                        context.changeUpscaleSize(
+                          context.config.upscaleSize === 2 ? 1 : 2,
+                        )
+                      }}
+                      checked={context.config.upscaleSize === 2}
+                      id="extras-mode"
+                    />
+                    <div className="text-center leading-3">
+                      <Label
+                        htmlFor="extras-mode"
+                        className="block text-center"
+                      >
+                        高解像度
+                      </Label>
+                      <Label
+                        htmlFor="extras-mode"
+                        className="block text-center text-xs"
+                      >
+                        2枚消費
+                      </Label>
+                    </div>
+                  </div>
+                  <GenerationSubmitButton
+                    onClick={async () => {
+                      await props.onCreateTask()
+                    }}
+                    isLoading={props.isCreatingTask}
+                    isDisabled={context.config.isDisabled}
+                    generatingCount={
+                      props.inProgressImageGenerationTasksCount +
+                      props.inProgressImageGenerationReservedTasksCount
+                    }
+                    maxGeneratingCount={
+                      props.availableImageGenerationMaxTasksCount -
+                      props.tasksCount
+                    }
+                    buttonActionCaption={getSubmitButtonLabel(
+                      !!context.config.i2iImageBase64,
+                      context.config.promptText,
+                      context.config.seed,
+                    )}
+                  />
+                </div>
               </DialogTrigger>
               <DialogContent className="min-w-[64vw]">
                 <DialogHeader>

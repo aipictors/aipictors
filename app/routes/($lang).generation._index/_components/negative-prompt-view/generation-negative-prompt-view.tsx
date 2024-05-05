@@ -1,28 +1,60 @@
 import { Textarea } from "@/_components/ui/textarea"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import {} from "@/_components/ui/dialog"
+import { Dialog, DialogTrigger } from "@/_components/ui/dialog"
+import { Button } from "@/_components/ui/button"
+import { NegativePromptsDialogContent } from "@/routes/($lang).generation._index/_components/negative-prompt-view/negative-prompts-dialog-content"
+import { useBoolean } from "usehooks-ts"
+
+/**
+ * Format prompt text
+ * @param text
+ * @returns
+ */
+export const formatPromptTextForKeyWord = (text: string) => {
+  return text
+    .split(",")
+    .filter((t) => t.length !== 0)
+    .join(",")
+}
 
 export const GenerationNegativePromptView = () => {
   const context = useGenerationContext()
 
-  const onAddPrompt = (text: string) => {
-    if (context.config.promptText.includes(text)) {
-      const replacedText = context.config.promptText.replace(text, "")
-      const draftText = replacedText
-        .split(",")
-        .filter((p) => p !== "")
-        .join(",")
-      context.updatePrompt(draftText)
-      return
-    }
-    const draftText = context.config.promptText
-      .split(",")
-      .filter((p) => p !== "")
-      .concat([text])
-      .join(",")
-    context.updatePrompt(draftText)
+  const formattedNegativePromptText = formatPromptTextForKeyWord(
+    context.config.negativePromptText,
+  )
+
+  const categoryNegativePrompts = context.negativePromptCategories.flatMap(
+    (category) => {
+      return category.prompts
+    },
+  )
+
+  const onSelectPromptId = (promptId: string) => {
+    const categoryNegativePrompt = categoryNegativePrompts.find((prompt) => {
+      return prompt.id === promptId
+    })
+    const promptText = categoryNegativePrompt?.words.join(",") ?? ""
+    const draftPromptText = formattedNegativePromptText.includes(promptText)
+      ? formattedNegativePromptText.replaceAll(promptText, "")
+      : [formattedNegativePromptText, promptText].join(",")
+    const draftFormattedNegativePromptText =
+      formatPromptTextForKeyWord(draftPromptText)
+    context.updateNegativePrompt(draftFormattedNegativePromptText)
   }
+
+  const currentNegativePrompts = categoryNegativePrompts.filter((prompt) => {
+    return (
+      context.config.negativePromptText.indexOf(prompt.words.join(",")) !== -1
+    )
+  })
+
+  const selectedNegativePromptIds = currentNegativePrompts.map(
+    (prompt) => prompt.id,
+  )
+
+  const { value, setTrue, setFalse } = useBoolean()
 
   return (
     <GenerationViewCard
@@ -40,31 +72,31 @@ export const GenerationNegativePromptView = () => {
             context.updateNegativePrompt(event.target.value)
           }}
         />
+        <Dialog
+          open={value}
+          onOpenChange={(isOpen) => {
+            if (isOpen) return
+            setFalse()
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button
+              onClick={setTrue}
+              variant={"secondary"}
+              size={"sm"}
+              className="w-full"
+            >
+              {"キーワードから選ぶ"}
+            </Button>
+          </DialogTrigger>
+          <NegativePromptsDialogContent
+            selectedNegativePromptIds={selectedNegativePromptIds}
+            onClose={setFalse}
+            negativePromptCategories={context.negativePromptCategories}
+            onSelect={onSelectPromptId}
+          />
+        </Dialog>
       </div>
-      {/* <Dialog
-        open={value}
-        onOpenChange={(isOpen) => {
-          if (isOpen) return
-          setFalse()
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button
-            onClick={setTrue}
-            variant={"secondary"}
-            size={"sm"}
-            className="w-full"
-          >
-            {"キーワードから選ぶ"}
-          </Button>
-        </DialogTrigger>
-        <PromptCategoriesDialogContent
-          selectedPromptIds={selectedPromptIds}
-          onClose={setFalse}
-          promptCategories={context.promptCategories}
-          onSelect={onSelectPromptId}
-        />
-      </Dialog> */}
     </GenerationViewCard>
   )
 }

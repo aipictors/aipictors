@@ -2,7 +2,7 @@ import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
-import { GenerationTaskEditableCard } from "@/routes/($lang).generation.tasks.$task/_components/generation-task-editable-card"
+import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment

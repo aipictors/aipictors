@@ -11,21 +11,21 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { PromptCategoriesQuery } from "@/_graphql/__generated__/graphql"
-import { PromptCategoryIcon } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-category-icon"
+import type { NegativePromptCategoriesQuery } from "@/_graphql/__generated__/graphql"
+import { NegativePromptCategoryIcon } from "@/routes/($lang).generation._index/_components/negative-prompt-view/negative-prompt-category-icon"
 
 type Props = {
-  selectedPromptIds: string[]
+  selectedNegativePromptIds: string[]
   onClose(): void
-  promptCategories: PromptCategoriesQuery["promptCategories"]
+  negativePromptCategories: NegativePromptCategoriesQuery["negativePromptCategories"]
   onSelect(id: string): void
 }
 
 export const NegativePromptsDialogContent = (props: Props) => {
-  const defaultOpenCategories = props.promptCategories
+  const defaultOpenCategories = props.negativePromptCategories
     .filter((category) =>
       category.prompts.some((prompt) =>
-        props.selectedPromptIds.includes(prompt.id),
+        props.selectedNegativePromptIds.includes(prompt.id),
       ),
     )
     .map((category) => category.id)
@@ -40,12 +40,12 @@ export const NegativePromptsDialogContent = (props: Props) => {
             className="w-full pr-4"
             defaultValue={defaultOpenCategories}
           >
-            {props.promptCategories.map((promptCategory) => (
+            {props.negativePromptCategories.map((promptCategory) => (
               <AccordionItem value={promptCategory.id} key={promptCategory.id}>
                 <AccordionTrigger>
                   <div className="flex flex-col space-y-2">
                     <div className="flex gap-x-4">
-                      <PromptCategoryIcon name={promptCategory.name} />
+                      <NegativePromptCategoryIcon name={promptCategory.name} />
                       <p>{promptCategory.name}</p>
                     </div>
                   </div>
@@ -54,7 +54,7 @@ export const NegativePromptsDialogContent = (props: Props) => {
                   {promptCategory.prompts.map((prompt) => (
                     <Button
                       variant={
-                        props.selectedPromptIds.includes(prompt.id)
+                        props.selectedNegativePromptIds.includes(prompt.id)
                           ? "default"
                           : "secondary"
                       }

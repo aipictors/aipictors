@@ -1,6 +1,6 @@
 import { Card } from "@/_components/ui/card"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
-import { GenerationTaskCancelButton } from "@/routes/($lang).generation.tasks.$task/_components/generation-cancel-button"
+import { GenerationTaskCancelButton } from "@/routes/($lang).generation._index/_components/generation-cancel-button"
 import { useMutation } from "@apollo/client/index.js"
 import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"

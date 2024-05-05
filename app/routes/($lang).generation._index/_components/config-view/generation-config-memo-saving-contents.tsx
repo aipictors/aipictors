@@ -12,7 +12,7 @@ import { createImageGenerationMemoMutation } from "@/_graphql/mutations/create-i
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { parseGenerationSize } from "@/routes/($lang).generation.tasks.$task/_types/generation-size"
+import { parseGenerationSize } from "@/routes/($lang).generation._index/_types/generation-size"
 import { useMutation } from "@apollo/client/index.js"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
