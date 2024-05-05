@@ -1,4 +1,6 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { AppPageCenter } from "@/_components/app/app-page-center"
+import PaintCanvas from "@/_components/paint-canvas"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
@@ -6,11 +8,8 @@ import { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-promp
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
-import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
-import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Outlet, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { useContext } from "react"
 
 export const headers: HeadersFunction = () => {
@@ -104,23 +103,23 @@ export default function GenerationLayout() {
     return <AppLoadingPage />
   }
 
-  console.log(data.negativePromptCategories)
+  const onChangeBrushImageBase64 = (value: string) => {
+    console.log(value)
+  }
 
   return (
     <>
-      <HomeHeader title="画像生成 β" />
-      <GenerationQueryProvider
-        promptCategories={data.promptCategories}
-        negativePromptCategories={data.negativePromptCategories}
-        imageModels={data.imageModels}
-        imageLoraModels={data.imageLoraModels}
-      >
-        <GenerationConfigProvider>
-          <div className="container max-w-none">
-            <Outlet />
-          </div>
-        </GenerationConfigProvider>
-      </GenerationQueryProvider>
+      <AppPageCenter>
+        <div className="w-full space-y-8 py-8">
+          <h1 className="font-bold text-2xl">{"リアルタイム生成"}</h1>
+          <PaintCanvas
+            onChangeBrushImageBase64={onChangeBrushImageBase64}
+            width={512}
+            height={512}
+            imageUrl="https://files.aipictors.com/white-bg-512-512-square.png"
+          />
+        </div>
+      </AppPageCenter>
     </>
   )
 }

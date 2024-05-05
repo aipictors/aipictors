@@ -22,7 +22,7 @@ import MosaicCanvas from "@/_components/mosaic-canvas"
 interface IProps {
   width?: number // キャンバスの横幅
   height?: number // キャンバスの立幅
-  imageUrl: string // 画像のURL
+  imageUrl?: string // 画像のURL
   isMosaicMode?: boolean
   isColorPicker?: boolean
   onChangeBrushImageBase64?(value: string): void
@@ -522,7 +522,7 @@ const PaintCanvas: React.FC<IProps> = ({
         </div>
         <div
           className={cn(
-            "flex h-[100%] w-full items-center justify-center overflow-hidden border-gray-50 dark:bg-gray-900",
+            "flex h-[100%] w-full items-center justify-center overflow-hidden border-gray-50 bg-gray-100 dark:bg-gray-900",
           )}
         >
           <div
@@ -539,7 +539,7 @@ const PaintCanvas: React.FC<IProps> = ({
               handleWheel(event)
             }
           >
-            {isMosaicMode && (
+            {isMosaicMode && imageUrl && (
               <MosaicCanvas
                 className={cn("absolute top-0 left-0")}
                 imageUrl={imageUrl}
@@ -547,8 +547,8 @@ const PaintCanvas: React.FC<IProps> = ({
                 width={width}
                 height={height}
                 style={{
-                  top: `${(-1 * canvasHeight) / 2}px`,
-                  left: `${(-1 * canvasWidth) / 2}px`,
+                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
@@ -559,8 +559,8 @@ const PaintCanvas: React.FC<IProps> = ({
                 height={height}
                 className={cn("absolute top-0 left-0")}
                 style={{
-                  top: `${(-1 * canvasHeight) / 2}px`,
-                  left: `${(-1 * canvasWidth) / 2}px`,
+                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
@@ -570,8 +570,8 @@ const PaintCanvas: React.FC<IProps> = ({
               height={height}
               className={cn("absolute top-0 left-0")}
               style={{
-                top: `${(-1 * canvasHeight) / 2}px`,
-                left: `${(-1 * canvasWidth) / 2}px`,
+                top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
               }}
             />
             <canvas
@@ -580,8 +580,8 @@ const PaintCanvas: React.FC<IProps> = ({
               height={height}
               className={cn("absolute top-0 left-0 opacity-50")}
               style={{
-                top: `${(-1 * canvasHeight) / 2}px`,
-                left: `${(-1 * canvasWidth) / 2}px`,
+                top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
               }}
             />
           </div>
