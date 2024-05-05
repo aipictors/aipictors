@@ -2,16 +2,6 @@ import type { Contributor } from "@/routes/($lang)._main.contributors/_types/con
 
 export const contributors: Contributor[] = [
   {
-    name: "Mikage",
-    message:
-      "AIイラストレーター、可愛い女の子の作品から音楽まで幅広く活動されています。インフラ、サイト開発全般のフォローを頂いております。",
-    iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/02/WCj5aPFThLd1g9Vv0yn2f7zZEq6mJB.webp",
-    xId: "mikage",
-    aipictorsId: "mikage",
-    homeUrl: "https://loan.mikage.to/",
-  },
-  {
     name: "Stella",
     message:
       "主にnijijourneyでイラストを生成されています。Flutterアプリの開発、拡張機能の開発を頂いております。",
