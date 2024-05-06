@@ -8,7 +8,7 @@ import { InPaintingSetting } from "@/routes/($lang).generation._index/_component
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"

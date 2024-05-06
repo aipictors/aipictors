@@ -14,7 +14,7 @@ import { GenerationTaskDetailsView } from "@/routes/($lang).generation._index/_c
 import { GenerationTaskListView } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list-view"
 import { GenerationWorkContentPreview } from "@/routes/($lang).generation._index/_components/task-view/generation-work-content-preview"
 import { GenerationWorkListModelView } from "@/routes/($lang).generation._index/_components/task-view/generation-works-from-model-view"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"

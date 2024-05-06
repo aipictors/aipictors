@@ -9,7 +9,7 @@ import { WorkCommentResponse } from "@/routes/($lang)._main.works.$work/_compone
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 

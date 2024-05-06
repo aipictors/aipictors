@@ -12,7 +12,7 @@ import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
 import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {

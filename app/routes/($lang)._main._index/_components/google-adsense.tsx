@@ -1,6 +1,6 @@
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
-import { useSuspenseQuery } from "@apollo/client/index.js"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import type React from "react"
 import { useEffect } from "react"

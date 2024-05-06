@@ -8,7 +8,7 @@ import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/im
 import { GenerationTaskError } from "@/routes/($lang).generation._index/_components/task-view/generation-task-error"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view"
-import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 

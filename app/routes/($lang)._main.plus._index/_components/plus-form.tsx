@@ -9,7 +9,7 @@ import { PassBenefitList } from "@/routes/($lang)._main.plus._index/_components/
 import { PassImageGenerationBenefitList } from "@/routes/($lang)._main.plus._index/_components/pass-image-generation-benefit-list"
 import { PlusAbout } from "@/routes/($lang)._main.plus._index/_components/plus-about"
 import { toPassName } from "@/routes/($lang)._main.plus._index/_utils/to-pass-name"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index.js"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 
 export const PlusForm = () => {

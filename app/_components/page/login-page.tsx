@@ -6,7 +6,7 @@ import { Separator } from "@/_components/ui/separator"
 import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
 import { AppCanvas } from "@/routes/($lang).app._index/_components/app-canvas"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import {
   GoogleAuthProvider,

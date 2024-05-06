@@ -13,7 +13,7 @@ import { GenerationTaskRatingSelect } from "@/routes/($lang).generation._index/_
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"

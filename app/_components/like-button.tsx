@@ -4,7 +4,7 @@ import { cn } from "@/_lib/utils"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { createWorkLikeMutation } from "@/_graphql/mutations/create-work-like"
 import { deleteWorkLikeMutation } from "@/_graphql/mutations/delete-work-like"
 
