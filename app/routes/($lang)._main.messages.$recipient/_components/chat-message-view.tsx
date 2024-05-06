@@ -2,7 +2,7 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { createMessageMutation } from "@/_graphql/mutations/create-message"
 import { ChatMessageListContent } from "@/routes/($lang)._main.messages.$recipient/_components/chat-message-list-content"
 import { MessageInput } from "@/routes/($lang)._main.support.chat/_components/message-input"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { Suspense } from "react"
 import { toast } from "sonner"
 

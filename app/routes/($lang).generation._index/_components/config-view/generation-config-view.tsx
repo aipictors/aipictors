@@ -30,7 +30,7 @@ import { GenerationConfigVae } from "@/routes/($lang).generation._index/_compone
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
 

@@ -10,6 +10,7 @@ import { config } from "@/config"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
+import { ApolloError } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { useContext } from "react"
@@ -47,56 +48,66 @@ export const meta: MetaFunction = () => {
 }
 
 export const loader = async () => {
-  const client = createClient()
+  try {
+    const client = createClient()
 
-  const promptCategoriesReq = client.query({
-    query: promptCategoriesQuery,
-    variables: {},
-  })
+    const promptCategoriesReq = client.query({
+      query: promptCategoriesQuery,
+      variables: {},
+    })
 
-  const negativePromptCategoriesReq = client.query({
-    query: negativePromptCategoriesQuery,
-    variables: {},
-  })
+    const negativePromptCategoriesReq = client.query({
+      query: negativePromptCategoriesQuery,
+      variables: {},
+    })
 
-  const controlNetCategoriesReq = client.query({
-    query: controlNetCategoriesQuery,
-    variables: {},
-  })
+    const controlNetCategoriesReq = client.query({
+      query: controlNetCategoriesQuery,
+      variables: {},
+    })
 
-  const imageModelsReq = client.query({
-    query: imageModelsQuery,
-    variables: {},
-  })
+    const imageModelsReq = client.query({
+      query: imageModelsQuery,
+      variables: {},
+    })
 
-  const imageLoraModelsReq = client.query({
-    query: imageLoraModelsQuery,
-    variables: {},
-  })
+    const imageLoraModelsReq = client.query({
+      query: imageLoraModelsQuery,
+      variables: {},
+    })
 
-  const resp = await Promise.all([
-    negativePromptCategoriesReq,
-    promptCategoriesReq,
-    imageModelsReq,
-    imageLoraModelsReq,
-    controlNetCategoriesReq,
-  ])
+    const resp = await Promise.all([
+      negativePromptCategoriesReq,
+      promptCategoriesReq,
+      imageModelsReq,
+      imageLoraModelsReq,
+      controlNetCategoriesReq,
+    ])
 
-  const [
-    negativePromptCategoriesResp,
-    promptCategoriesResp,
-    imageModelsResp,
-    imageLoraModelsResp,
-    controlNetCategoriesResp,
-  ] = resp
+    const [
+      negativePromptCategoriesResp,
+      promptCategoriesResp,
+      imageModelsResp,
+      imageLoraModelsResp,
+      controlNetCategoriesResp,
+    ] = resp
 
-  return {
-    promptCategories: promptCategoriesResp.data.promptCategories,
-    negativePromptCategories:
-      negativePromptCategoriesResp.data.negativePromptCategories,
-    imageModels: imageModelsResp.data.imageModels,
-    imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
-    controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
+    return {
+      promptCategories: promptCategoriesResp.data.promptCategories,
+      negativePromptCategories:
+        negativePromptCategoriesResp.data.negativePromptCategories,
+      imageModels: imageModelsResp.data.imageModels,
+      imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
+      controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
+    }
+  } catch (error) {
+    if (error instanceof ApolloError) {
+      throw new Response(error.message, { status: 500 })
+    }
+    if (error instanceof Error) {
+      throw new Response(error.message, { status: 500 })
+    }
+    throw new Response("ERROR", { status: 500 })
   }
 }
 

@@ -15,7 +15,7 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { checkNgPrompts } from "@/routes/($lang).generation._index/_utils/check-ng-prompts"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"

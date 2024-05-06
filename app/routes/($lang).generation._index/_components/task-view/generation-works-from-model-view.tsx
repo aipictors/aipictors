@@ -5,7 +5,7 @@ import { GenerationWorkList } from "@/routes/($lang).generation._index/_componen
 import { GenerationWorkListActions } from "@/routes/($lang).generation._index/_components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import { useState } from "react"
 
 /**

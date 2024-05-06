@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/_components/ui/dialog"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
 import React from "react"
 

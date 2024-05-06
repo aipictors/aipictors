@@ -12,7 +12,7 @@ import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { checkInGenerationProgressStatus } from "@/_utils/check-in-generation-progress-status"
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 
 type Props = {

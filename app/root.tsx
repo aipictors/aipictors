@@ -28,8 +28,15 @@ import { Toaster } from "@/_components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
 import notoSansJPWoff2 from "@fontsource-variable/noto-sans-jp/files/noto-sans-jp-latin-wght-normal.woff2?url"
 import styles from "@/tailwind.css?url"
+import { AppErrorPage } from "@/_components/app/app-error-page"
 
-export const headers: HeadersFunction = () => {
+export const headers: HeadersFunction = (props) => {
+  if (props.errorHeaders !== undefined) {
+    return {
+      "Cache-Control": "max-age=0, s-maxage=0",
+    }
+  }
+
   return {
     "Cache-Control":
       "max-age=120, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000",
@@ -64,6 +71,10 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error) && error.status === 404) {
     return <AppNotFoundPage />
+  }
+
+  if (isRouteErrorResponse(error) && 400 < error.status) {
+    return <AppErrorPage status={error.status} message={error.data} />
   }
 
   return <AppNotFoundPage />

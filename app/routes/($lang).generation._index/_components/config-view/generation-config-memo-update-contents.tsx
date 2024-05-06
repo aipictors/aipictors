@@ -15,7 +15,7 @@ import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-i
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { Loader2, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
