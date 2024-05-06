@@ -25,13 +25,20 @@ type Props = {
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()
 
-  const currentModelIds = [
-    Number(props.currentModelId),
-    ...context.config.modelIds.filter(
-      (id) => Number(id) !== Number(props.currentModelId),
-    ),
-  ]
+  // 直近で使用したモデル一覧
+  // 既に表示されているモデルの中に選択中のモデルがあれば並び替えしない
+  const currentModelIds = !context.config.modelIds.includes(
+    props.currentModelId,
+  )
+    ? [
+        Number(props.currentModelId),
+        ...context.config.modelIds.filter(
+          (id) => Number(id) !== Number(props.currentModelId),
+        ),
+      ]
+    : context.config.modelIds
 
+  // 表示する一覧を追加
   const currentModels = currentModelIds
     .map((modelId) => {
       return context.models.find((model) => {
@@ -40,12 +47,20 @@ export const GenerationConfigModels = (props: Props) => {
     })
     .slice(0, 3)
 
-  const favoritedModelIds = [
-    Number(props.currentModelId),
-    ...props.favoritedModelIds.filter(
-      (id) => id !== Number(props.currentModelId),
-    ),
-  ]
+  // 直近で使用したお気に入り一覧
+  // 既に表示されているモデルの中に選択中のモデルがあれば並び替えしない
+  const favoritedModelIds = !props.favoritedModelIds
+    .slice(0, 3)
+    .includes(Number(props.currentModelId))
+    ? [
+        Number(props.currentModelId),
+        ...props.favoritedModelIds.filter(
+          (id) => id !== Number(props.currentModelId),
+        ),
+      ]
+    : props.favoritedModelIds
+
+  // 表示する一覧を追加
   const favoritedModels = favoritedModelIds
     .map((modelId) => {
       return props.models.find((model) => {
@@ -53,14 +68,6 @@ export const GenerationConfigModels = (props: Props) => {
       })
     })
     .slice(0, 3)
-
-  // const favoritedModels = props.favoritedModelIds
-  //   .map((modelId) => {
-  //     return props.models.find((model) => {
-  //       return Number(model.id) === modelId
-  //     })
-  //   })
-  //   .slice(0, 3)
 
   /**
    * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
