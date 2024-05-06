@@ -14,6 +14,8 @@ type Props = {
   item: TSortableItem
   isDeletable?: boolean
   onDelete?: (id: number) => void
+  optionalButton?: React.ReactNode
+  onClickOptionButton?: (id: number) => void
 } & HTMLAttributes<HTMLDivElement>
 
 /**
@@ -63,6 +65,18 @@ export const SortableItem = ({ item, ...props }: Props) => {
       >
         <XIcon className="h-4 w-4 md:h-6 md:w-6" />
       </Button>
+      {props.optionalButton && (
+        // biome-ignore lint/complexity/useOptionalChain: <explanation>
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        <div
+          onClick={() =>
+            // biome-ignore lint/complexity/useOptionalChain: <explanation>
+            props.onClickOptionButton && props.onClickOptionButton(item.id)
+          }
+        >
+          {props.optionalButton}
+        </div>
+      )}
     </div>
   )
 }

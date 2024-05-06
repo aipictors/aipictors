@@ -183,32 +183,24 @@ export const NewImageForm = () => {
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`items-center mb-2 p-2 rounded bg-gray-800 ${
+            className={`relative items-center mb-2 p-2 rounded bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
-            {/* <ImagesInput
-              onChangePngInfo={setPngInfo}
-              onChange={setImageBase64List}
-              onDelete={() => {
-                // もし全ての画像が削除されたらPNGInfoをnullにする
-                if (imageBase64List.length === 1) {
-                  setPngInfo(null)
-                }
-              }}
-            /> */}
-
             <ImagesAndVideoInput
               onChangePngInfo={setPngInfo}
               onChange={setImageBase64List}
               onDelete={() => {
                 // もし全ての画像が削除されたらPNGInfoをnullにする
-                if (imageBase64List.length === 1) {
+                if (imageBase64List.length === 0) {
                   setPngInfo(null)
                 }
               }}
               onVideoChange={(videoFile: File | null) => {
                 setVideoFile(videoFile)
+              }}
+              onMosaicButtonClick={(id) => {
+                console.log(imageBase64List[id])
               }}
             />
 

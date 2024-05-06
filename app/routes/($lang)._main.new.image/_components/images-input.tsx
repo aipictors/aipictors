@@ -6,7 +6,7 @@ import {
 } from "@/_utils/get-extract-info-from-png"
 import {} from "@dnd-kit/core"
 import { useEffect, useState } from "react"
-import { useDropzone } from "react-dropzone-esm"
+import { useDropzone } from "react-dropzone"
 
 type Props = {
   onChange: (imageBase64List: string[]) => void
@@ -53,7 +53,7 @@ export const ImagesInput = (props: Props) => {
     })
   }, [firstImageBase64])
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     minSize: 1,
     maxSize: maxSize,
     accept: {
@@ -145,6 +145,7 @@ export const ImagesInput = (props: Props) => {
           type="file"
           accept="image/*"
           maxLength={maxSize}
+          className="absolute bottom-0 h-[100%] w-[100%] opacity-0"
           {...getInputProps()}
         />
         <p className="font-bold">画像／動画を追加</p>
