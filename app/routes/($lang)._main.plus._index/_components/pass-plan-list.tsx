@@ -2,7 +2,7 @@ import type { PassType } from "@/_graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { PassPlanDescription } from "@/routes/($lang)._main.plus._index/_components/pass-plan-description"
 import { toPassFeatures } from "@/routes/($lang)._main.plus._index/_utils/to-pass-features"
-import { useSuspenseQuery } from "@apollo/client/index.js"
+import { useSuspenseQuery } from "@apollo/client/index"
 
 type Props = {
   isLoading: boolean

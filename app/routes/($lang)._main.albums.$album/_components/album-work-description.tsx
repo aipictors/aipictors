@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/_components/ui/card"
 import type { AlbumQuery } from "@/_graphql/__generated__/graphql"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
-import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 

@@ -15,7 +15,7 @@ import {
   type GenerationSize,
   parseGenerationSize,
 } from "@/routes/($lang).generation._index/_types/generation-size"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"

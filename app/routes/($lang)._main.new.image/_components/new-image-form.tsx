@@ -15,7 +15,7 @@ import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-i
 import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import {} from "@dnd-kit/core"
 import { useContext, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"

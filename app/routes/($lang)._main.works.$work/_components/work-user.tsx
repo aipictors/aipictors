@@ -8,7 +8,7 @@ import {
 } from "@/_components/ui/card"
 import { PromptonRequestTextButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-text-button"
 import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
-import { skipToken, useSuspenseQuery } from "@apollo/client/index.js"
+import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 

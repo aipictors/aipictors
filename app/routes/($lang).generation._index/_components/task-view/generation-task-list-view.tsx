@@ -8,7 +8,7 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
-import { useQuery } from "@apollo/client/index.js"
+import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 
 type Props = {

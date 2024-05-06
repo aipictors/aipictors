@@ -1,6 +1,6 @@
 import { followUserMutation } from "@/_graphql/mutations/follow-user"
 import { unFollowUserMutation } from "@/_graphql/mutations/un-follow-user"
-import { useMutation } from "@apollo/client/index.js"
+import { useMutation } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"

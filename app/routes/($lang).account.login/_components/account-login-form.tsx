@@ -7,7 +7,7 @@ import {
   ApolloError,
   useMutation,
   useSuspenseQuery,
-} from "@apollo/client/index.js"
+} from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 

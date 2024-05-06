@@ -1,6 +1,6 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
-import { useMutation, useQuery } from "@apollo/client/index.js"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import { ToggleGroup, ToggleGroupItem } from "@/_components/ui/toggle-group"
 import { Button } from "@/_components/ui/button"

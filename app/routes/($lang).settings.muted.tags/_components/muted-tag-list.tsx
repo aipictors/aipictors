@@ -9,7 +9,7 @@ import {
   ApolloError,
   useMutation,
   useSuspenseQuery,
-} from "@apollo/client/index.js"
+} from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
 export const MutedTagList = () => {

@@ -4,7 +4,7 @@ import { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-sup
 import { SupportMessageList } from "@/routes/($lang)._main.support.chat/_components/support-message-list"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationMessageInput } from "@/routes/($lang).generation._index/_components/task-view/generation-message-input"
-import { useMutation, useQuery } from "@apollo/client/index.js"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"

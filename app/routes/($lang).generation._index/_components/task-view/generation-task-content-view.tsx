@@ -3,8 +3,8 @@ import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { useSuspenseQuery } from "@apollo/client/index.js"
-import { skipToken } from "@apollo/client/index.js"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { skipToken } from "@apollo/client/index"
 import { useContext } from "react"
 
 /**
