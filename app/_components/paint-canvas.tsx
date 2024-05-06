@@ -28,6 +28,8 @@ interface IProps {
   isBackground?: boolean
   isBackgroundColorPicker?: boolean
   onChangeBrushImageBase64?(value: string): void
+  onChangeSetDrawing?(value: boolean): void // 描画中かどうかの状態を変更する関数
+  onChangeCompositionCanvasBase64?(value: string): void // 合成画像のbase64を変更する関数
 }
 
 // Canvas 描画状態を保存するためのインターフェース
@@ -50,12 +52,16 @@ const PaintCanvas: React.FC<IProps> = ({
   isBackground,
   isBackgroundColorPicker,
   onChangeBrushImageBase64,
+  onChangeSetDrawing,
+  onChangeCompositionCanvasBase64,
 }) => {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const [tool, setTool] = useState(isMosaicMode ? "eraser" : "brush")
 
@@ -166,6 +172,8 @@ const PaintCanvas: React.FC<IProps> = ({
     const imageCanvas = imageCanvasRef.current
     if (isMosaicMode && !imageCanvas) return
 
+    const backgroundCanvas = backgroundCanvasRef.current
+
     const assistedCanvas = assistedCanvasRef.current
     if (!assistedCanvas) return
 
@@ -178,6 +186,8 @@ const PaintCanvas: React.FC<IProps> = ({
     if (!assistedCtx) return
 
     const handleMouseDown = (e: MouseEvent | TouchEvent) => {
+      if (onChangeSetDrawing) onChangeSetDrawing(true)
+
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
       const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
       const rect = brushCanvas.getBoundingClientRect()
@@ -222,25 +232,24 @@ const PaintCanvas: React.FC<IProps> = ({
           points.push({ x, y }) // 追加の点を配列に保存
           ctx.lineTo(x, y)
           ctx.stroke()
-
-          return
-        }
-        const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-        const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
-        const x = (clientX - rect.left) / scale
-        const y = (clientY - rect.top) / scale
-
-        ctx.lineTo(x, y)
-        ctx.stroke()
-
-        assistedCtx.lineTo(x, y)
-        assistedCtx.stroke()
-
-        if (tool === "lasso") {
-          assistedCtx.fillStyle = `rgba(${[120, 0, 0, 0.5]})`
-          assistedCtx.fill()
         } else {
+          const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
+          const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+          const x = (clientX - rect.left) / scale
+          const y = (clientY - rect.top) / scale
+
+          ctx.lineTo(x, y)
           ctx.stroke()
+
+          assistedCtx.lineTo(x, y)
+          assistedCtx.stroke()
+
+          if (tool === "lasso") {
+            assistedCtx.fillStyle = `rgba(${[120, 0, 0, 0.5]})`
+            assistedCtx.fill()
+          } else {
+            ctx.stroke()
+          }
         }
       }
 
@@ -285,6 +294,26 @@ const PaintCanvas: React.FC<IProps> = ({
             // index以降の履歴を削除
             canvasStates.splice(stateIndex + 1)
             saveCanvasState(brushCanvas)
+          }
+        }
+
+        if (onChangeSetDrawing) onChangeSetDrawing(false)
+
+        if (onChangeCompositionCanvasBase64) {
+          // キャンバスを合成してbase64に変換してセットする
+          const compositionCanvas = document.createElement("canvas")
+          compositionCanvas.width = canvasWidth
+          compositionCanvas.height = canvasHeight
+          const compositionCtx = compositionCanvas.getContext("2d")
+          if (compositionCtx) {
+            if (backgroundCanvas) {
+              compositionCtx.drawImage(backgroundCanvas, 0, 0)
+            }
+            if (imageCanvas) {
+              compositionCtx.drawImage(imageCanvas, 0, 0)
+            }
+            compositionCtx.drawImage(brushCanvas, 0, 0)
+            onChangeCompositionCanvasBase64(compositionCanvas.toDataURL())
           }
         }
       }
@@ -538,7 +567,7 @@ const PaintCanvas: React.FC<IProps> = ({
         </div>
         <div
           className={cn(
-            "flex h-[100%] w-full items-center justify-center overflow-hidden border-gray-50 bg-gray-100 dark:bg-gray-900",
+            "flex h-[100%] w-full items-center justify-center overflow-hidden border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-900",
           )}
         >
           <div
@@ -572,7 +601,7 @@ const PaintCanvas: React.FC<IProps> = ({
             {/* 真っ白な背景のキャンバスを描画する */}
             {isBackground && (
               <canvas
-                ref={assistedCanvasRef}
+                ref={backgroundCanvasRef}
                 width={width}
                 height={height}
                 className={cn("absolute top-0 left-0")}

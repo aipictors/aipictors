@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react"
 import PrivateImagePaintCanvas from "@/_components/private-image-paint-canvas"
 import { InPaintingImageForm } from "@/routes/($lang).generation._index/_components/submission-view/InPaintingImageForm"
 import { useEffect, useState } from "react"
+import { cn } from "@/_lib/utils"
 
 type Props = {
   isOpen: boolean
@@ -29,7 +30,10 @@ type Props = {
  */
 export const InPaintingDialog = (props: Props) => {
   const [maskBase64, setMaskBase64] = useState("")
+
   const [maskImage64, setMaskImage64] = useState("")
+
+  const [isDrawing, setIsDrawing] = useState(false)
 
   /**
    * base64画像の色を反転させて、透明部分は黒色にする
@@ -179,14 +183,28 @@ export const InPaintingDialog = (props: Props) => {
   return (
     props.isOpen && (
       <>
-        <div className="fixed top-0 left-0 z-50 h-[100vh] w-[100vw] bg-white dark:bg-black">
-          <div className="relative z-60 block h-[100%] overflow-y-auto md:flex">
+        <div
+          className={cn(
+            `${isDrawing ? "overflow-hidden" : ""}`,
+            "fixed top-0 left-0 z-50 h-[100vh] w-[100vw] bg-white dark:bg-black",
+          )}
+        >
+          <div
+            className={cn(
+              `${isDrawing ? "overflow-hidden" : "overflow-y-auto"}`,
+              "relative z-60 block h-[100%] md:flex",
+            )}
+          >
             <div className="h-[100%] w-[80%]">
               <PrivateImagePaintCanvas
                 fileName={props.fileName}
                 token={props.token}
                 onChangeBrushImageBase64={(value) => {
                   setMaskBase64(value)
+                }}
+                setIsDrawing={(value) => {
+                  setIsDrawing(value)
+                  console.log(isDrawing)
                 }}
               />
             </div>

@@ -6,6 +6,7 @@ type Props = {
   fileName: string
   token: string
   onChangeBrushImageBase64?(value: string): void
+  setIsDrawing?(value: boolean): void
 }
 
 export const PrivateImagePaintCanvas = (props: Props) => {
@@ -44,6 +45,7 @@ export const PrivateImagePaintCanvas = (props: Props) => {
     <PaintCanvas
       imageUrl={base64Image}
       onChangeBrushImageBase64={props.onChangeBrushImageBase64}
+      onChangeSetDrawing={props.setIsDrawing}
     />
   )
 }

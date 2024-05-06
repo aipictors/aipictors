@@ -1,6 +1,6 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AppPageCenter } from "@/_components/app/app-page-center"
 import PaintCanvas from "@/_components/paint-canvas"
+import RealTimeCanvas from "@/_components/realtime-canvas"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
@@ -10,6 +10,7 @@ import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import React, { useEffect } from "react"
 import { useContext } from "react"
 
 export const headers: HeadersFunction = () => {
@@ -107,20 +108,49 @@ export default function GenerationLayout() {
     console.log(value)
   }
 
+  const onChangeCompositionCanvasBase64 = (value: string) => {
+    console.log(value)
+  }
+
+  // 描画中かどうか
+  const [isDrawing, setIsDrawing] = React.useState(false)
+
+  // 生成中かどうか
+  const [isGenerating, setIsGenerating] = React.useState(false)
+
+  useEffect(() => {
+    if (!isDrawing) {
+      // 生成リクエストを送信する
+    } else {
+      // 生成リクエストをキャンセルする
+    }
+  }, [isDrawing])
+
   return (
     <>
-      <AppPageCenter>
-        <div className="w-full space-y-8 py-8">
-          <h1 className="font-bold text-2xl">{"リアルタイム生成"}</h1>
+      <div className="w-full space-y-8 py-8">
+        <h1 className="font-bold text-2xl">{"リアルタイム生成"}</h1>
+        <div className="flex items-center">
           <PaintCanvas
             onChangeBrushImageBase64={onChangeBrushImageBase64}
             width={512}
             height={512}
             isBackground={true}
             isColorPicker={true}
+            onChangeSetDrawing={(value) => {
+              setIsDrawing(value)
+            }}
+            onChangeCompositionCanvasBase64={onChangeCompositionCanvasBase64}
+          />
+          <RealTimeCanvas
+            width={512}
+            height={512}
+            imageBase64=""
+            isDrawing={isDrawing}
+            isGenerating={false}
           />
         </div>
-      </AppPageCenter>
+      </div>
     </>
   )
 }
