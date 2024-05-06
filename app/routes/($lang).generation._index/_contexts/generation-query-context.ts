@@ -5,12 +5,14 @@ import type {
   NegativePromptCategoriesQuery,
   ViewerCurrentPassQuery,
   ViewerImageGenerationStatusQuery,
+  ControlNetCategoriesQuery,
 } from "@/_graphql/__generated__/graphql"
 import { createContext } from "react"
 
 type Context = {
   promptCategories: PromptCategoriesQuery["promptCategories"]
   negativePromptCategories: NegativePromptCategoriesQuery["negativePromptCategories"]
+  controlNetCategories: ControlNetCategoriesQuery["controlNetCategories"]
   models: ImageModelsQuery["imageModels"]
   loraModels: ImageLoraModelsQuery["imageLoraModels"]
   user: NonNullable<ViewerCurrentPassQuery["viewer"]>["user"] | null
@@ -22,6 +24,7 @@ type Context = {
 export const GenerationQueryContext = createContext<Context>({
   promptCategories: [],
   negativePromptCategories: [],
+  controlNetCategories: [],
   models: [],
   loraModels: [],
   user: null,

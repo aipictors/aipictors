@@ -1,5 +1,6 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
+import { controlNetCategoriesQuery } from "@/_graphql/queries/controlnet-category/controlnet-category"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
@@ -58,6 +59,11 @@ export const loader = async () => {
     variables: {},
   })
 
+  const controlNetCategoriesReq = client.query({
+    query: controlNetCategoriesQuery,
+    variables: {},
+  })
+
   const imageModelsReq = client.query({
     query: imageModelsQuery,
     variables: {},
@@ -73,6 +79,7 @@ export const loader = async () => {
     promptCategoriesReq,
     imageModelsReq,
     imageLoraModelsReq,
+    controlNetCategoriesReq,
   ])
 
   const [
@@ -80,6 +87,7 @@ export const loader = async () => {
     promptCategoriesResp,
     imageModelsResp,
     imageLoraModelsResp,
+    controlNetCategoriesResp,
   ] = resp
 
   return {
@@ -88,6 +96,7 @@ export const loader = async () => {
       negativePromptCategoriesResp.data.negativePromptCategories,
     imageModels: imageModelsResp.data.imageModels,
     imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
+    controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
   }
 }
 
@@ -104,14 +113,13 @@ export default function GenerationLayout() {
     return <AppLoadingPage />
   }
 
-  console.log(data.negativePromptCategories)
-
   return (
     <>
       <HomeHeader title="画像生成 β" />
       <GenerationQueryProvider
         promptCategories={data.promptCategories}
         negativePromptCategories={data.negativePromptCategories}
+        controlNetCategories={data.controlNetCategories}
         imageModels={data.imageModels}
         imageLoraModels={data.imageLoraModels}
       >

@@ -2,6 +2,12 @@ import { ConfigLoraModel } from "@/routes/($lang).generation._index/_components/
 import { LoraModelListDialogButton } from "@/routes/($lang).generation._index/_components/config-view/lora-model-list-dialog-button"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useBoolean } from "usehooks-ts"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/_components/ui/accordion"
 
 export const GenerationConfigLoraModels = () => {
   const context = useGenerationContext()
@@ -33,25 +39,40 @@ export const GenerationConfigLoraModels = () => {
   return (
     <>
       {0 < selectedModels.length && (
-        <div className="space-y-2">
-          {selectedModels.map((model) => (
-            <ConfigLoraModel
-              key={model.id}
-              imageURL={model.thumbnailImageURL ?? ""}
-              name={model.name}
-              description={model.description ?? ""}
-              value={
-                currentModels.find((m) => m.name === model.name)?.value ?? 0
-              }
-              setValue={(value) => {
-                context.updateLoraModel(model.name, value)
-              }}
-              onDelete={() => {
-                context.changeLoraModel(model.name)
-              }}
-            />
-          ))}
-        </div>
+        <Accordion type="single" collapsible defaultValue="setting">
+          <AccordionItem value="setting">
+            <AccordionTrigger>
+              <div className="flex text-left">
+                <p>LoRA（エフェクト）詳細</p>
+                <p>({selectedModels.length})</p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              {0 < selectedModels.length && (
+                <div className="space-y-2">
+                  {selectedModels.map((model) => (
+                    <ConfigLoraModel
+                      key={model.id}
+                      imageURL={model.thumbnailImageURL ?? ""}
+                      name={model.name}
+                      description={model.description ?? ""}
+                      value={
+                        currentModels.find((m) => m.name === model.name)
+                          ?.value ?? 0
+                      }
+                      setValue={(value) => {
+                        context.updateLoraModel(model.name, value)
+                      }}
+                      onDelete={() => {
+                        context.changeLoraModel(model.name)
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       )}
       <LoraModelListDialogButton
         isOpen={isOpen}
