@@ -6,7 +6,7 @@ import {
 } from "@/_utils/get-extract-info-from-png"
 import {} from "@dnd-kit/core"
 import { useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { useDropzone } from "react-dropzone-esm"
 
 type Props = {
   onChange: (imageBase64List: string[]) => void
