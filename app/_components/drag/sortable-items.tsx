@@ -70,9 +70,9 @@ export const SortableItems = (props: Props) => {
     changeIndex()
   }
 
-  const handleDragCancel = () => {
-    setActiveItem(undefined)
-  }
+  // const handleDragCancel = () => {
+  //   setActiveItem(undefined)
+  // }
 
   const changeIndex = () => {
     const itemIds = props.items.map((item) => item.id)
@@ -85,7 +85,7 @@ export const SortableItems = (props: Props) => {
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
+      onDragCancel={undefined}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
         <div className="flex w-full flex-wrap justify-center gap-4">

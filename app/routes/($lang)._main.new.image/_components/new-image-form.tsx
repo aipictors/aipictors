@@ -35,6 +35,10 @@ import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
 import { ImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/images-and-video.input"
 import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { Loader2Icon } from "lucide-react"
+import PaintCanvas from "@/_components/paint-canvas"
+import FullScreenContainer from "@/_components/full-screen-container"
+import React from "react"
+import type { TSortableItem } from "@/_components/drag/sortable-item"
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
@@ -69,6 +73,8 @@ export const NewImageForm = () => {
   const [isHideTheme, setIsHideTheme] = useState(false)
 
   const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
+
+  const [isDrawing, setIsDrawing] = React.useState(false)
 
   const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
     variables: {
@@ -153,6 +159,8 @@ export const NewImageForm = () => {
 
   const [imageBase64List, setImageBase64List] = useState([""])
 
+  const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
+
   const [albumId, setAlbumId] = useState("")
 
   const [link, setLink] = useState("")
@@ -177,6 +185,12 @@ export const NewImageForm = () => {
 
   const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
 
+  const [items, setItems] = useState<TSortableItem[]>([])
+
+  const onCloseImageEffectTool = () => {
+    setEditTargetImageBase64("")
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -200,8 +214,10 @@ export const NewImageForm = () => {
                 setVideoFile(videoFile)
               }}
               onMosaicButtonClick={(id) => {
-                console.log(imageBase64List[id])
+                setEditTargetImageBase64(imageBase64List[id])
               }}
+              items={items}
+              onChangeItems={setItems}
             />
 
             <div className="m-4 flex flex-col text-white">
@@ -363,6 +379,35 @@ export const NewImageForm = () => {
           投稿
         </Button>
       </div>
+      {editTargetImageBase64 !== "" && (
+        <FullScreenContainer
+          onClose={onCloseImageEffectTool}
+          enabledScroll={isDrawing}
+        >
+          <PaintCanvas
+            onChangeSetDrawing={setIsDrawing}
+            imageUrl={editTargetImageBase64}
+            isMosaicMode={true}
+            isShowSubmitButton={true}
+            onSubmit={(base64) => {
+              const newImageBase64List = imageBase64List.map((image) =>
+                image === editTargetImageBase64 ? base64 : image,
+              )
+              setImageBase64List(newImageBase64List)
+              setItems((prev) =>
+                prev.map((item) =>
+                  item.content === editTargetImageBase64
+                    ? { ...item, content: base64 }
+                    : item,
+                ),
+              )
+
+              console.log(items)
+              setEditTargetImageBase64("")
+            }}
+          />
+        </FullScreenContainer>
+      )}
     </>
   )
 }

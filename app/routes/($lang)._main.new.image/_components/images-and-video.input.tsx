@@ -1,6 +1,7 @@
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { SortableItems } from "@/_components/drag/sortable-items"
 import { Button } from "@/_components/ui/button"
+import { cn } from "@/_lib/utils"
 import {
   getExtractInfoFromPNG,
   type PNGInfo,
@@ -8,7 +9,7 @@ import {
 import { VideoItem } from "@/routes/($lang)._main.new.image/_components/video-item"
 import {} from "@dnd-kit/core"
 import { PencilLineIcon, PlusIcon } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 
@@ -18,6 +19,9 @@ type Props = {
   onChangePngInfo?: (pngInfo: PNGInfo) => void
   onDelete?: (id: number) => void
   onMosaicButtonClick?: (id: number) => void
+  items?: TSortableItem[]
+  onChangeItems?: (items: TSortableItem[]) => void
+  onChangeIndexList?: (indexList: number[]) => void
 }
 
 /**
@@ -28,16 +32,29 @@ type Props = {
 export const ImagesAndVideoInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024
 
-  const [items, setItems] = useState<TSortableItem[]>([])
+  const [items, setItems] = useState<TSortableItem[]>(props.items ?? [])
 
   const [indexList, setIndexList] = useState<number[]>([])
+
+  useEffect(() => {
+    if (props.onChangeItems) {
+      props.onChangeItems(items)
+    }
+    if (props.onChangeIndexList) {
+      props.onChangeIndexList(indexList)
+    }
+  }, [items, indexList])
+
+  useEffect(() => {
+    setItems(props.items ?? [])
+  }, [props.items])
 
   const [isHovered, setIsHovered] = useState(false)
 
   const [videoFile, setVideoFile] = useState<null | File>(null)
 
   const { getRootProps, getInputProps } = useDropzone({
-    minSize: 1,
+    minSize: 0,
     maxSize: maxSize,
     accept: {
       "image/jpeg": [".jpeg", ".jpg"],
@@ -150,7 +167,10 @@ export const ImagesAndVideoInput = (props: Props) => {
     <>
       <div
         {...getRootProps()}
-        className="absolute top-0 left-0 h-[100%] w-[100%]"
+        className={cn(
+          "absolute top-0 left-0 h-[100%] w-[100%] border-2",
+          isHovered ? "border-2 border-clear-bright-blue" : "",
+        )}
       >
         <input {...getInputProps()} />
         {items.length === 0 && (

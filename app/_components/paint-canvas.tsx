@@ -27,9 +27,16 @@ interface IProps {
   isColorPicker?: boolean
   isBackground?: boolean
   isBackgroundColorPicker?: boolean
+  isShowSubmitButton?: boolean
+  isPadding?: boolean
+  imageBase64?: string
+  backImageBase64?: string
   onChangeBrushImageBase64?(value: string): void
   onChangeSetDrawing?(value: boolean): void // 描画中かどうかの状態を変更する関数
   onChangeCompositionCanvasBase64?(value: string): void // 合成画像のbase64を変更する関数
+  onSubmit?(value: string): void
+  onClose?(): void
+  setBackImageBase64?(value: string): void
 }
 
 // Canvas 描画状態を保存するためのインターフェース
@@ -51,9 +58,16 @@ const PaintCanvas: React.FC<IProps> = ({
   isColorPicker,
   isBackground,
   isBackgroundColorPicker,
+  isShowSubmitButton,
+  isPadding,
+  imageBase64,
+  backImageBase64,
   onChangeBrushImageBase64,
   onChangeSetDrawing,
   onChangeCompositionCanvasBase64,
+  onSubmit,
+  onClose,
+  setBackImageBase64,
 }) => {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -79,11 +93,18 @@ const PaintCanvas: React.FC<IProps> = ({
 
   const [backgroundColor, setBackgroundColor] = useState("#fff")
 
+  const [mosaicCanvasRef, setMosaicCanvasRef] =
+    useState<HTMLCanvasElement | null>(null)
+
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
 
   // 現在の Canvas の状態を示すインデックス
   const [stateIndex, setStateIndex] = useState<number>(0)
+
+  const onChangeMosaicCanvasRef = (canvas: HTMLCanvasElement) => {
+    setMosaicCanvasRef(canvas)
+  }
 
   // Canvas の描画状態を保存する関数
   const saveCanvasState = (canvas: HTMLCanvasElement) => {
@@ -166,6 +187,49 @@ const PaintCanvas: React.FC<IProps> = ({
   }
 
   useEffect(() => {
+    if (imageBase64) {
+      // 画像のbase64がセットされたら、キャンバスに描画する
+      const imageCanvas = imageCanvasRef.current
+      if (!imageCanvas) return
+      const ctx = imageCanvas.getContext("2d")
+      if (!ctx) return
+      const image = new Image()
+      image.crossOrigin = "Anonymous" // CORSを回避するための設定
+      image.src = imageBase64
+      image.onload = () => {
+        imageCanvas.width = image.width
+        imageCanvas.height = image.height
+        ctx.drawImage(image, 0, 0, image.width, image.height)
+        saveCanvasState(imageCanvas)
+      }
+    }
+  }, [imageBase64])
+
+  useEffect(() => {
+    if (backImageBase64) {
+      if (backImageBase64) {
+        // brashRefに対して再描画する
+        const brushCanvas = brushCanvasRef.current
+        if (!brushCanvas) return
+        const ctx = brushCanvas.getContext("2d")
+        if (!ctx) return
+        const image = new Image()
+        image.crossOrigin = "Anonymous" // CORSを回避するための設定
+        image.src = `data:image/png;base64,${backImageBase64}`
+        image.onload = () => {
+          brushCanvas.width = image.width
+          brushCanvas.height = image.height
+          ctx.drawImage(image, 0, 0, image.width, image.height)
+          saveCanvasState(brushCanvas)
+        }
+      }
+      if (setBackImageBase64) {
+        setBackImageBase64("")
+      }
+    }
+  }, [backImageBase64])
+
+  useEffect(() => {
     const brushCanvas = brushCanvasRef.current
     if (!brushCanvas) return
 
@@ -244,7 +308,8 @@ const PaintCanvas: React.FC<IProps> = ({
           assistedCtx.lineTo(x, y)
           assistedCtx.stroke()
 
-          if (tool === "lasso") {
+          if (tool === "lasso" || tool === "lasso-mosaic") {
+            // 投げ縄のときは描写範囲を塗りつぶす
             assistedCtx.fillStyle = `rgba(${[120, 0, 0, 0.5]})`
             assistedCtx.fill()
           } else {
@@ -424,8 +489,8 @@ const PaintCanvas: React.FC<IProps> = ({
   }
 
   return (
-    <section className="relative h-[100%]">
-      <div className="block h-[100%] p-4 md:flex">
+    <section className="relative h-[100%] w-[100%]">
+      <div className="block h-[100%] w-[100%] md:flex">
         <div className="mb-1 flex md:flex-col">
           {!isMosaicMode && (
             <Button
@@ -527,7 +592,7 @@ const PaintCanvas: React.FC<IProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <div className="flex items-center p-2">
+              <div className={`flex items-center${isPadding ? "p-2" : ""}`}>
                 <div className="flex flex-col">
                   <p className="w-48">{"ブラシサイズ："}</p>
                   <Slider
@@ -591,6 +656,7 @@ const PaintCanvas: React.FC<IProps> = ({
                 mosaicSize={10}
                 width={width}
                 height={height}
+                onChangeCanvasRef={onChangeMosaicCanvasRef}
                 style={{
                   top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
                   left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
@@ -646,6 +712,49 @@ const PaintCanvas: React.FC<IProps> = ({
               }}
             />
           </div>
+          {isShowSubmitButton && (
+            <Button
+              className="absolute bottom-8 md:bottom-12"
+              onClick={() => {
+                if (onSubmit) {
+                  // キャンバスを合成する（brush、image、background）
+                  const compositeCanvas = document.createElement("canvas")
+                  const ctx = compositeCanvas.getContext("2d")
+
+                  if (!ctx) return
+
+                  // 各キャンバスのサイズに合わせて、合成用キャンバスのサイズを設定（この例では最初のキャンバスのサイズを使用）
+                  compositeCanvas.width = brushCanvasRef?.current?.width || 0
+                  compositeCanvas.height = brushCanvasRef?.current?.height || 0
+
+                  // 各キャンバスを合成キャンバスに描画（存在する場合のみ）
+                  if (backgroundCanvasRef?.current) {
+                    ctx.drawImage(backgroundCanvasRef.current, 0, 0)
+                  }
+                  if (mosaicCanvasRef) {
+                    ctx.drawImage(mosaicCanvasRef, 0, 0)
+                  }
+                  if (imageCanvasRef?.current) {
+                    ctx.drawImage(imageCanvasRef.current, 0, 0)
+                  }
+                  if (brushCanvasRef?.current) {
+                    ctx.drawImage(brushCanvasRef.current, 0, 0)
+                  }
+
+                  // 合成したキャンバスからDataURLを取得
+                  const dataUrl = compositeCanvas.toDataURL()
+
+                  // onSubmit関数を呼び出し、DataURLを渡す
+                  onSubmit(dataUrl)
+                }
+                if (onClose) {
+                  onClose()
+                }
+              }}
+            >
+              決定
+            </Button>
+          )}
           <div className="absolute bottom-2 z-50 w-[72%] md:bottom-8">
             <Slider
               aria-label="slider-ex-2"
