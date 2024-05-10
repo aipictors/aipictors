@@ -52,9 +52,9 @@ export const GenerationTaskListView = (props: Props) => {
     variables: {
       limit:
         props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-          ? 32
+          ? 56
           : config.query.maxLimit,
-      offset: page * 32,
+      offset: page * 56,
       where: {
         ...(props.rating !== -1 && {
           rating: props.rating,
