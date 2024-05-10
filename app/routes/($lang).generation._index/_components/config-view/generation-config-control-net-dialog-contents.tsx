@@ -149,12 +149,6 @@ export const GenerationConfigControlNetDialogContents = (props: Props) => {
             <SelectItem value="dw_openpose_full">
               {"DWポーズ(全身、顔、手を同じポーズで生成)"}
             </SelectItem>
-            <SelectItem value="openpose_full">
-              {"Openpose full(全身、顔、手を同じポーズで生成(棒人間))"}
-            </SelectItem>
-            <SelectItem value="openpose">
-              {"Openpose(全身を同じポーズで生成(棒人間))"}
-            </SelectItem>
             <SelectItem value="canny">{"Canny(線画抽出)を元に生成"}</SelectItem>
             <SelectItem value="depth_midas">
               {"Depth(深度情報付き)を元に生成"}

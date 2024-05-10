@@ -66,6 +66,8 @@ export const GenerationConfigControlNet = () => {
     context.changeControlNetModuleAndModelAndWeight(model, module, weight)
   }
 
+  const controlNetCategories = context.controlNetCategories
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
