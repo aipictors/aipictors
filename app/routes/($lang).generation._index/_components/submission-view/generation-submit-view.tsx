@@ -477,7 +477,7 @@ export function GenerationSubmissionView(props: Props) {
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =
-    queryData.viewer.availableImageGenerationMaxTasksCount ?? 30
+    queryData.viewer.availableImageGenerationMaxTasksCount ?? 10
 
   /**
    * 生成中コスト

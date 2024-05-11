@@ -35,7 +35,7 @@ export const config = {
      * 1日の画像生成数
      */
     imageGenerationsCount: {
-      free: 30,
+      free: 10,
       lite: 50,
       standard: 100,
       premium: 200,

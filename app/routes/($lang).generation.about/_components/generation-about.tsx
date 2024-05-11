@@ -25,7 +25,7 @@ export const GenerationAbout = () => {
       >
         <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform whitespace-nowrap text-center font-bold text-4xl text-white">
           <h1>{"AI画像生成サービス"}</h1>
-          <h2>{"1日30枚無料！"}</h2>
+          <h2>{"1日10枚無料！"}</h2>
         </div>
       </div>
       <Link to={"/generation"} className={"m-auto mt-8 mb-8 block w-64"}>
