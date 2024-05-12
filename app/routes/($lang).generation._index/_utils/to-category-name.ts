@@ -3,6 +3,10 @@ export const toCategoryName = (category: string | null) => {
     return "美少女イラスト"
   }
 
+  if (category === "ANIME_GIRL") {
+    return "美少女アニメ"
+  }
+
   if (category === "ANIMAL") {
     return "獣系"
   }
