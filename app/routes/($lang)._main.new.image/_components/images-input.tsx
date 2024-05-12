@@ -5,7 +5,7 @@ import {
   getExtractInfoFromPNG,
 } from "@/_utils/get-extract-info-from-png"
 import {} from "@dnd-kit/core"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 
 type Props = {
@@ -24,36 +24,11 @@ export const ImagesInput = (props: Props) => {
 
   const [items, setItems] = useState<TSortableItem[]>([])
 
-  useEffect(() => {
-    setItems([
-      {
-        id: 0,
-        content: "",
-      } as TSortableItem,
-    ])
-  }, [])
-
   const [indexList, setIndexList] = useState<number[]>([])
 
   const [isHovered, setIsHovered] = useState(false)
 
-  const [firstImageBase64, setFirstImageBase64] = useState("")
-
-  useEffect(() => {
-    setItems((prevItems) => {
-      if (prevItems.length === 1) {
-        return [
-          {
-            id: 0,
-            content: firstImageBase64,
-          },
-        ]
-      }
-      return prevItems
-    })
-  }, [firstImageBase64])
-
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     minSize: 1,
     maxSize: maxSize,
     accept: {
@@ -66,7 +41,7 @@ export const ImagesInput = (props: Props) => {
     onDrop: (acceptedFiles) => {
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
-        if (items.length === 1 && file.type === "image/png") {
+        if (items.length === 0 && file.type === "image/png") {
           const pngInfo = await getExtractInfoFromPNG(file)
           if (props.onChangePngInfo) {
             props.onChangePngInfo(pngInfo)
@@ -85,19 +60,13 @@ export const ImagesInput = (props: Props) => {
               ctx?.drawImage(img, 0, 0)
               // Convert the image to WebP format
               const webpDataURL = canvas.toDataURL("image/webp")
-              setItems((prevItems) => [
-                ...(prevItems ?? []),
-                {
-                  id: prevItems?.length ?? 0,
-                  content: webpDataURL,
-                },
-              ])
+
+              items.push({
+                id: items.length,
+                content: webpDataURL,
+              })
 
               props.onChange(items?.map((item) => item.content) ?? [])
-
-              if (items.length === 0) {
-                setFirstImageBase64(webpDataURL)
-              }
             }
             img.src = event.target.result as string
           }
@@ -145,6 +114,7 @@ export const ImagesInput = (props: Props) => {
           type="file"
           accept="image/*"
           maxLength={maxSize}
+          className="absolute bottom-0 h-[100%] w-[100%] opacity-0"
           {...getInputProps()}
         />
         <p className="font-bold">画像／動画を追加</p>
@@ -157,10 +127,6 @@ export const ImagesInput = (props: Props) => {
           if (props.onDelete) {
             props.onDelete(index)
           }
-          if (items.length === 2) {
-            setFirstImageBase64("")
-          }
-          console.log(firstImageBase64)
         }}
       />
     </>

@@ -1,6 +1,9 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { LoginDialogButton } from "@/_components/login-dialog-button"
 import PaintCanvas from "@/_components/paint-canvas"
 import RealTimeCanvas from "@/_components/realtime-canvas"
+import { Input } from "@/_components/ui/input"
+import { Slider } from "@/_components/ui/slider"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
@@ -8,9 +11,10 @@ import { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-promp
 import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
+import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useContext } from "react"
 
 export const headers: HeadersFunction = () => {
@@ -24,7 +28,7 @@ export const meta: MetaFunction = () => {
   const siteName = "無料AIイラスト生成 - スマホ対応"
 
   const description =
-    "無料で画像生成することができます。1日無料30枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
+    "無料で画像生成することができます。1日無料10枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
 
   return [
     { title: siteName },
@@ -100,23 +104,60 @@ export default function GenerationLayout() {
 
   const authContext = useContext(AuthContext)
 
+  const [updatedGenerationImageBase64, setUpdatedGenerationImageBase64] =
+    useState("")
+
   if (authContext.isLoading) {
     return <AppLoadingPage />
   }
 
   const onChangeBrushImageBase64 = (value: string) => {
-    console.log(value)
+    // console.log(value)
   }
 
-  const onChangeCompositionCanvasBase64 = (value: string) => {
-    console.log(value)
+  // 生成中かどうか
+  const [isGenerating, setIsGenerating] = React.useState(false)
+
+  const [creativity, setCreativity] = React.useState(0.94)
+
+  const [prompts, setPrompts] = React.useState(
+    "masterpiece, best quality, 1girl",
+  )
+
+  // 描画した結果
+  const onChangeCompositionCanvasBase64 = async (value: string) => {
+    if (!isGenerating) {
+      setIsGenerating(true)
+      const response = await fetch(
+        "https://www.aipictors.com/wp-content/themes/AISite/generation.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `id=1&prompt=${prompts}&creativity=${creativity}&base64=${encodeURIComponent(
+            value,
+          )}`,
+        },
+      )
+
+      const data = (await response.json()) as { status: string; image: string } // Specify the type of 'data'
+      if (data.status === "success") {
+        // 成功した場合、取得した画像データを状態に設定
+        setUpdatedGenerationImageBase64(data.image)
+      } else {
+        // エラーの場合、エラーログを出力
+        console.error("Error with the generation:", data)
+      }
+
+      setIsGenerating(false)
+    }
   }
 
   // 描画中かどうか
   const [isDrawing, setIsDrawing] = React.useState(false)
 
-  // 生成中かどうか
-  const [isGenerating, setIsGenerating] = React.useState(false)
+  const [backImageBase64, setBackImageBase64] = React.useState("")
 
   useEffect(() => {
     if (!isDrawing) {
@@ -126,29 +167,135 @@ export default function GenerationLayout() {
     }
   }, [isDrawing])
 
+  const context = useGenerationContext()
+
+  if (context.user === null) {
+    return (
+      <>
+        <p>ログインしてください</p>
+        <LoginDialogButton
+          label="生成"
+          isLoading={
+            authContext.isLoading ||
+            (authContext.isLoggedIn && context.user === null)
+          }
+          isWidthFull={true}
+          triggerChildren={
+            <div className="relative max-w-[1120px]">
+              <div className="w-full">
+                <h1 className="mb-4 font-bold text-2xl">
+                  {"リアルタイム生成"}
+                </h1>
+                <div className="flex items-center">
+                  <p className="w-auto font-bold text-sm">プロンプト：</p>
+                  <Input
+                    value={prompts}
+                    className="mr-2 w-80"
+                    onChange={(event) => {
+                      setPrompts(event.target.value)
+                    }}
+                  />
+                  <p className="w-auto font-bold text-sm">
+                    元画像を参考にする度合：
+                  </p>
+                  <div className="w-32">
+                    <Slider
+                      aria-label="slider-ex-2"
+                      defaultValue={[creativity]}
+                      min={0.1}
+                      max={1}
+                      step={0.01}
+                      onValueChange={(value) => {
+                        setCreativity(value[0])
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center md:flex-row">
+                  <div className="h-[400px] w-[400px] md:h-[512px] md:w-[556px]">
+                    <PaintCanvas
+                      width={512}
+                      height={512}
+                      isBackground={true}
+                      isColorPicker={true}
+                      isPadding={false}
+                      backImageBase64={backImageBase64}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <RealTimeCanvas
+                      width={512}
+                      height={512}
+                      imageBase64={updatedGenerationImageBase64}
+                      isDrawing={isDrawing}
+                      isGenerating={isGenerating}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      </>
+    )
+  }
+
   return (
     <>
-      <div className="w-full space-y-8 py-8">
-        <h1 className="font-bold text-2xl">{"リアルタイム生成"}</h1>
+      <div className="w-full">
+        <h1 className="mb-4 font-bold text-2xl">{"リアルタイム生成"}</h1>
         <div className="flex items-center">
-          <PaintCanvas
-            onChangeBrushImageBase64={onChangeBrushImageBase64}
-            width={512}
-            height={512}
-            isBackground={true}
-            isColorPicker={true}
-            onChangeSetDrawing={(value) => {
-              setIsDrawing(value)
+          <p className="w-auto font-bold text-sm">プロンプト：</p>
+          <Input
+            value={prompts}
+            className="mr-2 w-80"
+            onChange={(event) => {
+              setPrompts(event.target.value)
             }}
-            onChangeCompositionCanvasBase64={onChangeCompositionCanvasBase64}
           />
-          <RealTimeCanvas
-            width={512}
-            height={512}
-            imageBase64=""
-            isDrawing={isDrawing}
-            isGenerating={false}
-          />
+          <p className="w-auto font-bold text-sm">元画像を参考にする度合：</p>
+          <div className="w-32">
+            <Slider
+              aria-label="slider-ex-2"
+              defaultValue={[creativity]}
+              min={0.1}
+              max={1}
+              step={0.01}
+              onValueChange={(value) => {
+                setCreativity(value[0])
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col items-center md:flex-row">
+          <div className="h-[400px] w-[400px] md:h-[512px] md:w-[556px]">
+            <PaintCanvas
+              onChangeBrushImageBase64={onChangeBrushImageBase64}
+              width={512}
+              height={512}
+              isBackground={true}
+              isColorPicker={true}
+              isPadding={false}
+              onChangeSetDrawing={(value) => {
+                setIsDrawing(value)
+              }}
+              onChangeCompositionCanvasBase64={onChangeCompositionCanvasBase64}
+              backImageBase64={backImageBase64}
+              setBackImageBase64={(value) => {
+                setBackImageBase64(value)
+              }}
+            />
+          </div>
+          <div className="p-4">
+            <RealTimeCanvas
+              width={512}
+              height={512}
+              imageBase64={updatedGenerationImageBase64}
+              isDrawing={isDrawing}
+              isGenerating={isGenerating}
+              updatedPaintCanvasBase64={setBackImageBase64}
+            />
+          </div>
         </div>
       </div>
     </>

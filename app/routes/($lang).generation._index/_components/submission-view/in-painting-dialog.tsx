@@ -1,10 +1,8 @@
 import {} from "@/_components/ui/dialog"
-import { Button } from "@/_components/ui/button"
-import { XIcon } from "lucide-react"
 import PrivateImagePaintCanvas from "@/_components/private-image-paint-canvas"
 import { InPaintingImageForm } from "@/routes/($lang).generation._index/_components/submission-view/InPaintingImageForm"
 import { useEffect, useState } from "react"
-import { cn } from "@/_lib/utils"
+import FullScreenContainer from "@/_components/full-screen-container"
 
 type Props = {
   isOpen: boolean
@@ -183,57 +181,37 @@ export const InPaintingDialog = (props: Props) => {
   return (
     props.isOpen && (
       <>
-        <div
-          className={cn(
-            `${isDrawing ? "overflow-hidden" : ""}`,
-            "fixed top-0 left-0 z-50 h-[100vh] w-[100vw] bg-white dark:bg-black",
-          )}
-        >
-          <div
-            className={cn(
-              `${isDrawing ? "overflow-hidden" : "overflow-y-auto"}`,
-              "relative z-60 block h-[100%] md:flex",
-            )}
-          >
-            <div className="h-[100%] w-[80%]">
-              <PrivateImagePaintCanvas
-                fileName={props.fileName}
-                token={props.token}
-                onChangeBrushImageBase64={(value) => {
-                  setMaskBase64(value)
-                }}
-                setIsDrawing={(value) => {
-                  setIsDrawing(value)
-                  console.log(isDrawing)
-                }}
-              />
-            </div>
-            <InPaintingImageForm
-              taskId={props.taskId}
-              token={props.token}
+        <FullScreenContainer onClose={props.onClose} enabledScroll={isDrawing}>
+          <div className="h-[100%] w-[80%]">
+            <PrivateImagePaintCanvas
               fileName={props.fileName}
-              userNanoid={props.userNanoid}
-              configSeed={props.configSeed}
-              configSteps={props.configSteps}
-              configSampler={props.configSampler}
-              configScale={props.configScale}
-              configSizeType={props.configSizeType}
-              configModel={props.configModel}
-              configVae={props.configVae}
-              configClipSkip={props.configClipSkip}
-              onClose={props.onClose}
-              maskBase64={maskImage64}
+              token={props.token}
+              onChangeBrushImageBase64={(value) => {
+                setMaskBase64(value)
+              }}
+              setIsDrawing={(value) => {
+                setIsDrawing(value)
+                console.log(isDrawing)
+              }}
             />
-            <Button
-              className="absolute top-8 right-8"
-              variant={"ghost"}
-              size={"icon"}
-              onClick={props.onClose}
-            >
-              <XIcon className="w-8" />
-            </Button>
           </div>
-        </div>
+          <InPaintingImageForm
+            taskId={props.taskId}
+            token={props.token}
+            fileName={props.fileName}
+            userNanoid={props.userNanoid}
+            configSeed={props.configSeed}
+            configSteps={props.configSteps}
+            configSampler={props.configSampler}
+            configScale={props.configScale}
+            configSizeType={props.configSizeType}
+            configModel={props.configModel}
+            configVae={props.configVae}
+            configClipSkip={props.configClipSkip}
+            onClose={props.onClose}
+            maskBase64={maskImage64}
+          />
+        </FullScreenContainer>
       </>
     )
   )

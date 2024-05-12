@@ -16,7 +16,7 @@ export const 通常: Story = {
     isLoading: false,
     isDisabled: false,
     generatingCount: 0,
-    maxGeneratingCount: 30,
+    maxGeneratingCount: 10,
     buttonActionCaption: "生成",
   },
 }
@@ -26,7 +26,7 @@ export const ローディング: Story = {
     isLoading: true,
     isDisabled: false,
     generatingCount: 0,
-    maxGeneratingCount: 30,
+    maxGeneratingCount: 10,
     buttonActionCaption: "生成",
   },
 }
@@ -36,7 +36,7 @@ export const 無効: Story = {
     isLoading: false,
     isDisabled: true,
     generatingCount: 0,
-    maxGeneratingCount: 30,
+    maxGeneratingCount: 10,
     buttonActionCaption: "生成",
   },
 }

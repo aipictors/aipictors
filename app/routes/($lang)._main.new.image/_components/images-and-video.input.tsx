@@ -1,11 +1,14 @@
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { SortableItems } from "@/_components/drag/sortable-items"
+import { Button } from "@/_components/ui/button"
+import { cn } from "@/_lib/utils"
 import {
-  type PNGInfo,
   getExtractInfoFromPNG,
+  type PNGInfo,
 } from "@/_utils/get-extract-info-from-png"
 import { VideoItem } from "@/routes/($lang)._main.new.image/_components/video-item"
 import {} from "@dnd-kit/core"
+import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
@@ -15,6 +18,10 @@ type Props = {
   onChange: (imageBase64List: string[]) => void
   onChangePngInfo?: (pngInfo: PNGInfo) => void
   onDelete?: (id: number) => void
+  onMosaicButtonClick?: (id: number) => void
+  items?: TSortableItem[]
+  onChangeItems?: (items: TSortableItem[]) => void
+  onChangeIndexList?: (indexList: number[]) => void
 }
 
 /**
@@ -25,41 +32,29 @@ type Props = {
 export const ImagesAndVideoInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024
 
-  const [items, setItems] = useState<TSortableItem[]>([])
-
-  useEffect(() => {
-    setItems([
-      {
-        id: 0,
-        content: "",
-      } as TSortableItem,
-    ])
-  }, [])
+  const [items, setItems] = useState<TSortableItem[]>(props.items ?? [])
 
   const [indexList, setIndexList] = useState<number[]>([])
 
-  const [isHovered, setIsHovered] = useState(false)
+  useEffect(() => {
+    if (props.onChangeItems) {
+      props.onChangeItems(items)
+    }
+    if (props.onChangeIndexList) {
+      props.onChangeIndexList(indexList)
+    }
+  }, [items, indexList])
 
-  const [firstImageBase64, setFirstImageBase64] = useState("")
+  useEffect(() => {
+    setItems(props.items ?? [])
+  }, [props.items])
+
+  const [isHovered, setIsHovered] = useState(false)
 
   const [videoFile, setVideoFile] = useState<null | File>(null)
 
-  useEffect(() => {
-    setItems((prevItems) => {
-      if (prevItems.length === 1) {
-        return [
-          {
-            id: 0,
-            content: firstImageBase64,
-          },
-        ]
-      }
-      return prevItems
-    })
-  }, [firstImageBase64])
-
   const { getRootProps, getInputProps } = useDropzone({
-    minSize: 1,
+    minSize: 0,
     maxSize: maxSize,
     accept: {
       "image/jpeg": [".jpeg", ".jpg"],
@@ -100,7 +95,7 @@ export const ImagesAndVideoInput = (props: Props) => {
           props.onVideoChange(null)
           setVideoFile(null)
 
-          if (items.length === 1 && file.type === "image/png") {
+          if (items.length === 0 && file.type === "image/png") {
             const pngInfo = await getExtractInfoFromPNG(file)
             if (props.onChangePngInfo) {
               props.onChangePngInfo(pngInfo)
@@ -119,19 +114,19 @@ export const ImagesAndVideoInput = (props: Props) => {
                 ctx?.drawImage(img, 0, 0)
                 // Convert the image to WebP format
                 const webpDataURL = canvas.toDataURL("image/webp")
-                setItems((prevItems) => [
-                  ...(prevItems ?? []),
-                  {
-                    id: prevItems?.length ?? 0,
-                    content: webpDataURL,
-                  },
-                ])
+                // setItems((prevItems) => [
+                //   ...(prevItems ?? []),
+                //   {
+                //     id: prevItems?.length ?? 0,
+                //     content: webpDataURL,
+                //   },
+                // ])
+                items.push({
+                  id: items.length,
+                  content: webpDataURL,
+                })
 
                 props.onChange(items?.map((item) => item.content) ?? [])
-
-                if (items.length === 0) {
-                  setFirstImageBase64(webpDataURL)
-                }
               }
               img.src = event.target.result as string
             }
@@ -172,20 +167,22 @@ export const ImagesAndVideoInput = (props: Props) => {
     <>
       <div
         {...getRootProps()}
-        className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+        className={cn(
+          "absolute top-0 left-0 h-[100%] w-[100%] border-2",
+          isHovered ? "border-2 border-clear-bright-blue" : "",
+        )}
       >
-        <input
-          className="height-[64px] absolute opacity-0"
-          multiple={true}
-          id="image_input"
-          type="file"
-          accept="image/*"
-          maxLength={maxSize}
-          {...getInputProps()}
-        />
-        <p className="font-bold">画像／動画を追加</p>
+        <input {...getInputProps()} />
+        {items.length === 0 && (
+          <>
+            <div className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white">
+              {" "}
+              <p className="font-bold">画像／動画を追加</p>
+            </div>
+          </>
+        )}
       </div>
-
+      {items.length === 0 && <div className="h-24" />}
       {videoFile && (
         <VideoItem
           videoFile={videoFile}
@@ -204,11 +201,26 @@ export const ImagesAndVideoInput = (props: Props) => {
           if (props.onDelete) {
             props.onDelete(index)
           }
-          if (items.length === 2) {
-            setFirstImageBase64("")
-          }
-          console.log(firstImageBase64)
         }}
+        optionalButton={
+          <Button
+            className="absolute bottom-2 left-2 h-6 w-6 md:h-8 md:w-8"
+            size={"icon"}
+            onClick={() => {}}
+          >
+            <PencilLineIcon className="h-4 w-4 md:h-6 md:w-6" />
+          </Button>
+        }
+        onClickOptionButton={(index) => {
+          if (props.onMosaicButtonClick) props.onMosaicButtonClick(index)
+        }}
+        dummyEnableDragItem={
+          items.length !== 0 && (
+            <div className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-600 dark:bg-gray-700 hover:opacity-80">
+              <PlusIcon className="h-12 w-12" />
+            </div>
+          )
+        }
       />
     </>
   )

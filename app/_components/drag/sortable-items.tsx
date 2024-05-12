@@ -15,6 +15,7 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
+import type React from "react"
 import { useState } from "react"
 import { ImageItem } from "@/_components/drag/image-item"
 import { SortableItem } from "@/_components/drag/sortable-item"
@@ -25,6 +26,9 @@ type Props = {
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   isDeletable?: boolean
   onDelete?: (id: number) => void
+  optionalButton?: React.ReactNode
+  onClickOptionButton?: (id: number) => void
+  dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
 }
 
 /**
@@ -66,9 +70,9 @@ export const SortableItems = (props: Props) => {
     changeIndex()
   }
 
-  const handleDragCancel = () => {
-    setActiveItem(undefined)
-  }
+  // const handleDragCancel = () => {
+  //   setActiveItem(undefined)
+  // }
 
   const changeIndex = () => {
     const itemIds = props.items.map((item) => item.id)
@@ -81,7 +85,7 @@ export const SortableItems = (props: Props) => {
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
+      onDragCancel={undefined}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
         <div className="flex w-full flex-wrap justify-center gap-4">
@@ -97,8 +101,11 @@ export const SortableItems = (props: Props) => {
               isDeletable={true}
               key={item.id}
               item={item}
+              optionalButton={props.optionalButton}
+              onClickOptionButton={props.onClickOptionButton}
             />
           ))}
+          {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}
         </div>
       </SortableContext>
       <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>

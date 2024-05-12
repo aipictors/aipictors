@@ -33,7 +33,8 @@ export async function createImageFiles(props: Props) {
       )
 
       if (imageElement === null) {
-        throw new Error(`Image element not found for taskId: ${imageId}`)
+        console.log(`Image element not found for taskId: ${imageId}`)
+        continue
       }
 
       const dataName = props.dataName
@@ -41,13 +42,14 @@ export async function createImageFiles(props: Props) {
         : imageElement.src
 
       if (typeof dataName === "undefined") {
-        throw new Error("dataName is undefined")
+        console.log("dataName is undefined")
+        continue
       }
 
       const response = await fetch(dataName)
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch image: ${dataName}`)
+        throw new Error(`画像の取得に失敗しました: ${dataName}`)
       }
 
       const blob = await response.blob()

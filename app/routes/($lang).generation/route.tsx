@@ -26,7 +26,7 @@ export const meta: MetaFunction = () => {
   const metaTitle = "無料AIイラスト生成 - スマホ対応"
 
   const metaDescription =
-    "無料で画像生成することができます。1日無料30枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
+    "無料で画像生成することができます。1日無料10枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
 
   const metaImage = `${config.siteURL}/opengraph-image.jpg`
 

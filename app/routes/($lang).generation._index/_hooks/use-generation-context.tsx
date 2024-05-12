@@ -591,6 +591,7 @@ export const useGenerationContext = () => {
     },
     promptCategories: dataContext.promptCategories,
     negativePromptCategories: dataContext.negativePromptCategories,
+    controlNetCategories: dataContext.controlNetCategories,
     models: dataContext.models,
     loraModels: dataContext.loraModels,
     user: dataContext.user,

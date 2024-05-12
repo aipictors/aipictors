@@ -66,6 +66,8 @@ export const GenerationConfigControlNet = () => {
     context.changeControlNetModuleAndModelAndWeight(model, module, weight)
   }
 
+  const controlNetCategories = context.controlNetCategories
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -86,6 +88,28 @@ export const GenerationConfigControlNet = () => {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
+      {/* {context.config.controlNetModule === null &&
+        controlNetCategories &&
+        controlNetCategories?.[0]?.contents &&
+        // GenerationConfigControlNetTemplateButton
+        controlNetCategories.map((item) => (
+          <GenerationConfigControlNetTemplateButton
+            key={item.contents[0].module}
+            module={item.contents[0].module}
+            model={""}
+            weight={1}
+            imageUrl={item.contents[0].imageUrl}
+            thumbnailImageUrl={item.contents[0].thumbnailImageUrl}
+            onClick={(module, model, weight, imageBase64) => {
+              setModule(module)
+              setModel(model)
+              setWeight(weight)
+              context.changeControlNetImageBase64(imageBase64)
+              setTrue()
+            }}
+          />
+        ))} */}
+
       {context.config.controlNetModule !== null && (
         <div className="text-sm">Module: {context.config.controlNetModule}</div>
       )}

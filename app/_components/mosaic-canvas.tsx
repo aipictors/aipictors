@@ -7,6 +7,7 @@ const MosaicCanvas = ({
   height,
   className,
   style,
+  onChangeCanvasRef,
 }: {
   imageUrl: string
   mosaicSize?: number
@@ -14,8 +15,15 @@ const MosaicCanvas = ({
   height?: number
   className?: string
   style?: React.CSSProperties
+  onChangeCanvasRef?: (canvas: HTMLCanvasElement) => void
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  useEffect(() => {
+    if (onChangeCanvasRef && canvasRef.current !== null) {
+      onChangeCanvasRef(canvasRef.current)
+    }
+  }, [canvasRef])
 
   useEffect(() => {
     const canvas = canvasRef.current

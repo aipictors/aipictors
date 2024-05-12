@@ -27,6 +27,7 @@ export const ImageItem = forwardRef<HTMLDivElement, Props>(
     return (
       <div ref={ref} style={styles} {...props}>
         <img
+          draggable={false}
           src={item.content}
           alt={`${item.id}`}
           className="h-24 w-24 object-fill md:h-32 md:w-32"
