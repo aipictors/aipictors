@@ -22,6 +22,12 @@ export const ImageModelCard = (props: Props) => {
     if (input === "lametta_v1745_fp16") {
       return "lametta"
     }
+    if (input === "bluePencil_ex") {
+      return "bluePencil_ex"
+    }
+    if (input === "animaPencilXL_v310") {
+      return "animaPencilXL_v3.1"
+    }
 
     const suffix = input.match(/_v\d+.*$/)?.[0]
 
