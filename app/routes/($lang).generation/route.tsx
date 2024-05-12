@@ -23,27 +23,24 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = () => {
-  const siteName = "無料AIイラスト生成 - スマホ対応"
+  const metaTitle = "無料AIイラスト生成 - スマホ対応"
 
-  const description =
+  const metaDescription =
     "無料で画像生成することができます。1日無料30枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
 
+  const metaImage = `${config.siteURL}/opengraph-image.jpg`
+
   return [
-    { title: siteName },
-    {
-      name: "description",
-      content: description,
-    },
-    { property: "og:title", content: siteName },
-    { property: "og:description", content: description },
-    { property: "og:site_name", content: siteName },
-    {
-      property: "og:image",
-      content: `${config.siteURL}/opengraph-image.jpg`,
-    },
+    { title: metaTitle },
+    { name: "description", content: metaDescription },
+    { name: "twitter:title", content: metaTitle },
+    { name: "twitter:description", content: metaDescription },
+    { name: "twitter:image", content: metaImage },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: siteName },
-    { name: "twitter:description", content: description },
+    { property: "og:title", content: metaTitle },
+    { property: "og:description", content: metaDescription },
+    { property: "og:image", content: metaImage },
+    { property: "og:site_name", content: metaTitle },
   ]
 }
 

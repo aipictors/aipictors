@@ -16,8 +16,8 @@ export default function FlutterApp() {
 
 export const meta: MetaFunction = () => {
   return [
-    { name: "robots", content: "noindex" },
     { title: "Aipictorsアプリ" },
-    { description: "Aipictorsのアプリをダウンロード" },
+    { name: "description", content: "Aipictorsのアプリをダウンロード" },
+    { name: "robots", content: "noindex" },
   ]
 }

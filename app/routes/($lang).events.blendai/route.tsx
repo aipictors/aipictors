@@ -83,7 +83,7 @@ export default function BlendAi() {
 export const meta: MetaFunction = () => {
   return [
     { title: "BlendAI×Aipictors企画 - デルタもん生成企画" },
-    { description: "BlendAIとAipictorsの企画ページです。" },
+    { name: "description", content: "BlendAIとAipictorsの企画ページです。" },
     {
       property: "og:title",
       content: "BlendAI×Aipictors企画 - デルタもん生成企画",

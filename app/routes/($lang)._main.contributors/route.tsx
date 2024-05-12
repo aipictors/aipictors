@@ -4,7 +4,7 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 export const meta: MetaFunction = () => {
   return [
     { title: "Aipictors Contributors" },
-    { description: "Aipictorsのコントリビュータ一覧です" },
+    { name: "description", content: "Aipictorsのコントリビュータ一覧です" },
     { property: "og:title", content: "Aipictors Contributors" },
     {
       property: "og:description",
