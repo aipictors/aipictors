@@ -123,7 +123,7 @@ export default function GenerationLayout() {
 
   return (
     <>
-      <HomeHeader title="画像生成 β" />
+      <HomeHeader title="Aipictors画像生成" />
       <GenerationQueryProvider
         promptCategories={data.promptCategories}
         negativePromptCategories={data.negativePromptCategories}
