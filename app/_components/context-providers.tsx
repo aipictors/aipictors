@@ -29,14 +29,14 @@ export const ContextProviders = (props: Props) => {
 
 if (typeof window !== "undefined" && getApps().length === 0) {
   // この設定が必要化はよくわからない…
-  self.addEventListener("notificationclick", (event) => {
-    event.notification.close()
-    const message = event.notification.data.FCM_MSG
-      ? event.notification.data.FCM_MSG
-      : event.notification
-    if (typeof message.data.link !== "string") return
-    event.waitUntil(clients.openWindow(message.data.link))
-  })
+  // self.addEventListener("notificationclick", (event) => {
+  //   event.notification.close()
+  //   const message = event.notification.data.FCM_MSG
+  //     ? event.notification.data.FCM_MSG
+  //     : event.notification
+  //   if (typeof message.data.link !== "string") return
+  //   event.waitUntil(clients.openWindow(message.data.link))
+  // })
 
   initializeApp(config.firebaseConfig)
   initializeAnalytics(getApp())
