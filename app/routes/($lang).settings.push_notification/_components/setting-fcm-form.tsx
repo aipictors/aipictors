@@ -1,7 +1,8 @@
 import { Button } from "@/_components/ui/button"
 import { config } from "@/config"
 import { getMessaging, getToken } from "firebase/messaging"
-export function SettingFcmForm(): void {
+
+export const SettingFcmForm = () => {
   const onClick = async () => {
     const token = await getToken(getMessaging(), {
       vapidKey: config.fcm.vapidKey,
@@ -41,5 +42,9 @@ export function SettingFcmForm(): void {
     */
   }
 
-  return <Button onClick={onClick}>{"通知を受信する"}</Button>
+  return (
+    <>
+      <Button onClick={onClick}>{"通知を受信する"}</Button>
+    </>
+  )
 }
