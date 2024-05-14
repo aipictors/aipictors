@@ -6,9 +6,7 @@ import { ApolloProvider } from "@apollo/client/index"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { getMessaging, onMessage } from "firebase/messaging"
-import { toast } from "sonner"
-
+import { getMessaging, onMessage, getToken } from "firebase/messaging"
 type Props = {
   children: React.ReactNode
 }
@@ -30,14 +28,37 @@ export const ContextProviders = (props: Props) => {
 }
 
 if (typeof window !== "undefined" && getApps().length === 0) {
+  // この設定が必要化はよくわからない…
+  self.addEventListener("notificationclick", (event) => {
+    event.notification.close()
+    const message = event.notification.data.FCM_MSG
+      ? event.notification.data.FCM_MSG
+      : event.notification
+    if (typeof message.data.link !== "string") return
+    event.waitUntil(clients.openWindow(message.data.link))
+  })
+
   initializeApp(config.firebaseConfig)
   initializeAnalytics(getApp())
   try {
     getMessaging(getApp())
     onMessage(getMessaging(), (payload) => {
-      if (payload.notification === undefined) return
-      toast(payload.notification.title, {
-        description: payload.notification.body,
+      console.log("onMessage", payload)
+      getToken(getMessaging(), {
+        vapidKey: config.fcm.vapidKey,
+      }).then((token) => {
+        navigator.serviceWorker.ready.then((registration) => {
+          if (payload.data === undefined) return
+          console.log("serviceWorker.ready", payload)
+          registration.showNotification(payload.data.title, {
+            body: payload.data.body,
+            icon: payload.data.icon,
+            data: payload.data,
+            // @ts-ignore https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
+            image: payload.data.imageUrl,
+            tag: payload.data.tag,
+          })
+        })
       })
     })
   } catch (error) {

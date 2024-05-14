@@ -1,3 +1,12 @@
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const message = event.notification.data.FCM_MSG
+    ? event.notification.data.FCM_MSG
+    : event.notification
+  if (typeof message.data.link !== "string") return
+  event.waitUntil(clients.openWindow(message.data.link))
+})
+
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js")
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js")
 
@@ -12,3 +21,13 @@ firebase.initializeApp({
 })
 
 const messaging = firebase.messaging()
+
+messaging.onBackgroundMessage((payload) => {
+  self.registration.showNotification(payload.data.title, {
+    body: payload.data.body,
+    icon: payload.data.icon,
+    image: payload.data.imageUrl,
+    data: payload.data,
+    tag: payload.data.tag,
+  })
+})
