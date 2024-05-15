@@ -74,12 +74,12 @@ export const SettingFcmForm = () => {
             {Notification.permission !== "granted" ? (
               <>
                 <XIcon className="h-4 w-4" />
-                <span className="text-sm">ブラウザの通知設定がON</span>
+                <span className="text-sm">ブラウザの通知設定がOFF</span>
               </>
             ) : (
               <>
                 <CircleCheckBigIcon className="h-4 w-4" />
-                <span className="text-sm">ブラウザの通知設定がOFF</span>
+                <span className="text-sm">ブラウザの通知設定がON</span>
               </>
             )}
           </div>
@@ -88,7 +88,7 @@ export const SettingFcmForm = () => {
               <>
                 <XIcon className="h-4 w-4" />
                 <span className="text-sm">
-                  通知に必要な情報をサーバに送信済み
+                  通知に必要な情報をサーバに未送信
                 </span>
               </>
             ) : (
