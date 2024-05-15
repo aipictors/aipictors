@@ -175,8 +175,13 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const onPost = () => {
+    if (!imageGenerationTask) {
+      toast("履歴が見つかりません、画面更新下さい。")
+      return
+    }
+
     window.location.href = `https://www.aipictors.com/post?generation=${
-      props.task.nanoid ?? ""
+      imageGenerationTask.nanoid ?? ""
     }`
   }
 
@@ -185,14 +190,14 @@ export function GenerationTaskSheetView(props: Props) {
   )
 
   const onDelete = async () => {
-    if (props.task.nanoid === null) {
+    if (!imageGenerationTask || imageGenerationTask.nanoid === null) {
       toast("存在しない履歴です")
       return
     }
     await deleteTask({
       variables: {
         input: {
-          nanoid: props.task.nanoid,
+          nanoid: imageGenerationTask.nanoid,
         },
       },
     })
