@@ -56,7 +56,7 @@ export const SettingFcmForm = () => {
   const onClickTestNotify = async () => {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
-        new Notification("テスト通知!", {
+        new Notification("テスト通知", {
           body: "テスト通知",
           icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnails/aipictors_square_logo.png",
         })
