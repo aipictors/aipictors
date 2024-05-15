@@ -36,6 +36,15 @@ export const SettingFcmForm = () => {
       })
       console.log(token)
 
+      // 取得したtokenを使ってブラウザにテスト通知メッセージを表示する
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("テスト通知", {
+          body: "テスト通知メッセージ",
+          icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnails/aipictors_square_logo.png",
+          data: {},
+        })
+      })
+
       // tokenを保存する
       await mutation({
         variables: {
@@ -67,7 +76,11 @@ export const SettingFcmForm = () => {
   return (
     <>
       <div>
-        <Button onClick={onClick} disabled={isLoading} className="mr-4">
+        <Button
+          onClick={onClick}
+          disabled={isLoadingNotifySetting}
+          className="mr-4"
+        >
           {"通知を受信する"}
           {isLoadingNotifySetting && (
             <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
