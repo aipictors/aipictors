@@ -25,23 +25,33 @@ export const SettingFcmForm = () => {
 
   const [webFcmToken, setWebFcmToken] = useState(data?.viewer?.user.webFcmToken)
 
-  const onClick = async () => {
-    const token = await getToken(getMessaging(), {
-      vapidKey: config.fcm.vapidKey,
-    })
-    console.log(token)
+  const [isLoadingNotifySetting, setIsLoadingNotifySetting] = useState(false)
 
-    // tokenを保存する
-    await mutation({
-      variables: {
-        input: {
-          token: token,
+  const onClick = async () => {
+    try {
+      setIsLoadingNotifySetting(true)
+
+      const token = await getToken(getMessaging(), {
+        vapidKey: config.fcm.vapidKey,
+      })
+      console.log(token)
+
+      // tokenを保存する
+      await mutation({
+        variables: {
+          input: {
+            token: token,
+          },
         },
-      },
-    }).then(async (result) => {
-      toast("通知を受信する設定をしました。")
-      setWebFcmToken(token)
-    })
+      }).then(async (result) => {
+        toast("通知を受信する設定をしました。")
+        setWebFcmToken(token)
+        setIsLoadingNotifySetting(false)
+      })
+    } catch (error) {
+      setIsLoadingNotifySetting(false)
+    }
+    setIsLoadingNotifySetting(false)
   }
 
   const onClickTestNotify = async () => {
@@ -59,7 +69,9 @@ export const SettingFcmForm = () => {
       <div>
         <Button onClick={onClick} disabled={isLoading} className="mr-4">
           {"通知を受信する"}
-          {isLoading && <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />}
+          {isLoadingNotifySetting && (
+            <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
+          )}
         </Button>
 
         <Button
