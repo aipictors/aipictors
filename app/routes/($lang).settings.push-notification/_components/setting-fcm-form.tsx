@@ -53,6 +53,19 @@ export const SettingFcmForm = () => {
     setIsLoadingNotifySetting(false)
   }
 
+  const onClickTestNotify = async () => {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        new Notification("テスト通知!", {
+          body: "テスト通知",
+          icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnails/aipictors_square_logo.png",
+        })
+      } else {
+        toast("通知設定がOFFです。")
+      }
+    })
+  }
+
   return (
     <>
       <div>
@@ -67,6 +80,13 @@ export const SettingFcmForm = () => {
           )}
         </Button>
 
+        <Button
+          onClick={onClickTestNotify}
+          disabled={isLoading}
+          variant={"secondary"}
+        >
+          {"テスト通知"}
+        </Button>
         <div className="mt-4 space-y-2">
           <div className="flex items-center">
             {Notification.permission !== "granted" ? (
