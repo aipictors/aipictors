@@ -1,6 +1,10 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { SettingNotificationForm } from "@/routes/($lang).settings.notification/_components/setting-notification-form"
 
+/**
+ * 通知設定ページ
+ * @returns
+ */
 export default function SettingNotification() {
   return (
     <AppPageCenter>

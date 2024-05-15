@@ -20,6 +20,7 @@ export const userFieldsFragment = gql(`
       id
       downloadURL
     }
+    webFcmToken
     isFollower
     isFollowee
   }

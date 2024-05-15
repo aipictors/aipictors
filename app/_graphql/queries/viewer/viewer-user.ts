@@ -23,6 +23,7 @@ export const viewerUserQuery = gql(`
           id
           downloadURL
         }
+        webFcmToken
       }
     }
   }

@@ -1,5 +1,9 @@
 import { Checkbox } from "@/_components/ui/checkbox"
 
+/**
+ * 通知設定フォーム
+ * @returns
+ */
 export const SettingNotificationForm = () => {
   return (
     <>

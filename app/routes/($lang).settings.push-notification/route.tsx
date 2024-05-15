@@ -1,6 +1,11 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
 import { Separator } from "@/_components/ui/separator"
-import { SettingFcmForm } from "@/routes/($lang).settings.push_notification/_components/setting-fcm-form"
+import { SettingFcmForm } from "@/routes/($lang).settings.push-notification/_components/setting-fcm-form"
+
+/**
+ * 通知設定ページ
+ * @returns
+ */
 export default function SettingNotification() {
   return (
     <AppPageCenter>
