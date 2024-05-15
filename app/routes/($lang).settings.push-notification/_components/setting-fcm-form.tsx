@@ -34,16 +34,6 @@ export const SettingFcmForm = () => {
       const token = await getToken(getMessaging(), {
         vapidKey: config.fcm.vapidKey,
       })
-      console.log(token)
-
-      // 取得したtokenを使ってブラウザにテスト通知メッセージを表示する
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification("テスト通知", {
-          body: "テスト通知メッセージ",
-          icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnails/aipictors_square_logo.png",
-          data: {},
-        })
-      })
 
       // tokenを保存する
       await mutation({
