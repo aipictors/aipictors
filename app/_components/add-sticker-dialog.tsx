@@ -11,7 +11,6 @@ import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { useContext, useState } from "react"
 import { Button } from "@/_components/ui/button"
 import { toast } from "sonner"
-import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { AuthContext } from "@/_contexts/auth-context"
 import { Checkbox } from "@/_components/ui/checkbox"
@@ -22,6 +21,7 @@ import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
 import type { StickerGenre } from "@/_graphql/__generated__/graphql"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
+import { uploadImage } from "@/_utils/upload-image"
 
 type Props = {
   onAddedSicker?: () => void
@@ -97,7 +97,7 @@ export const AddStickerDialog = (props: Props) => {
 
     try {
       // 画像をアップロードする処理
-      const uploadedImageUrl = await uploadPublicImage(
+      const uploadedImageUrl = await uploadImage(
         imageBase64,
         imageFileName,
         authContext.userId,

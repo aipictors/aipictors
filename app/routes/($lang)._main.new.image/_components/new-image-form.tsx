@@ -39,6 +39,7 @@ import PaintCanvas from "@/_components/paint-canvas"
 import FullScreenContainer from "@/_components/full-screen-container"
 import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
+import { toast } from "sonner"
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
@@ -124,8 +125,6 @@ export const NewImageForm = () => {
     },
   })
 
-  console.log(albums)
-
   const optionAlbums = albums?.albums
     ? (albums?.albums.map((album) => ({
         id: album.id,
@@ -157,7 +156,7 @@ export const NewImageForm = () => {
 
   const [themeId, setThemeId] = useState("")
 
-  const [imageBase64List, setImageBase64List] = useState([""])
+  const [imageBase64List, setImageBase64List] = useState([])
 
   const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
 
@@ -191,16 +190,69 @@ export const NewImageForm = () => {
     setEditTargetImageBase64("")
   }
 
+  const onPost = async () => {
+    // タイトル、画像チェック
+    if (title === "") {
+      toast("タイトルを入力してください")
+      return
+    }
+
+    if (imageBase64List.length === 0) {
+      toast("画像を選択してください")
+      return
+    }
+
+    // 予約投稿の時間は日付と時間両方の入力が必要
+    if (
+      (reservationDate !== "" && reservationTime === "") ||
+      (reservationDate === "" && reservationTime !== "")
+    ) {
+      toast("予約投稿の時間を入力してください")
+      return
+    }
+
+    // サムネイル生成
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`relative items-center mb-2 p-2 rounded bg-gray-800 ${
+            className={`relative items-center mb-4 pb-2 rounded bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
+            {imageBase64List.length !== 0 && (
+              <div className="mb-4 bg-gray-700 p-1 pl-4 dark:bg-blend-darken">
+                <div className="flex space-x-4">
+                  <div className="flex">
+                    {"イラスト"}
+                    {imageBase64List.length.toString()}
+                    {"枚"}
+                  </div>
+                  <div className="flex">
+                    {(() => {
+                      const totalBytes = imageBase64List.reduce(
+                        (acc, imageBase64) => {
+                          const byteLength = new TextEncoder().encode(
+                            imageBase64,
+                          ).length
+                          return acc + byteLength
+                        },
+                        0,
+                      )
+
+                      if (totalBytes < 1024 * 1024) {
+                        return `${(totalBytes / 1024).toFixed(2)} KB`
+                      }
+                      return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
             <ImagesAndVideoInput
               onChangePngInfo={setPngInfo}
               onChange={setImageBase64List}
@@ -368,14 +420,7 @@ export const NewImageForm = () => {
             <AdWorkInput isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
-        <Button
-          className="bottom-0 mb-2 w-full"
-          type="submit"
-          onClick={() => {
-            // ここに投稿処理を書く
-            console.log(imageBase64List)
-          }}
-        >
+        <Button className="bottom-0 mb-2 w-full" type="submit" onClick={onPost}>
           投稿
         </Button>
       </div>
