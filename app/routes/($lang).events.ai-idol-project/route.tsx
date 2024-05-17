@@ -139,7 +139,7 @@ export default function EventAiIdolProject() {
       <p className="text-sm">
         プロンプトをコピーしてローカルマシンで生成することもできます
       </p>
-      <div className="mt-4 flex flex-wrap justify-center space-x-2">
+      <div className="mt-8 flex flex-wrap justify-center space-x-8">
         {characterCards}
       </div>
     </>
