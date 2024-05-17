@@ -1,7 +1,9 @@
 import {} from "@/_components/ui/card"
+import { config } from "@/config"
 import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/_components/character-card"
 import { ImageSliderAnimation } from "@/routes/($lang).events.ai-idol-project/_components/image-slider-animation"
 import type { MetaFunction } from "@remix-run/cloudflare"
+import { useMediaQuery } from "usehooks-ts"
 
 export default function EventAiIdolProject() {
   const imageUrls = [
@@ -105,6 +107,8 @@ export default function EventAiIdolProject() {
     />
   ))
 
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <>
       <ImageSliderAnimation imageURLs={imageUrls} />
@@ -132,6 +136,19 @@ export default function EventAiIdolProject() {
         AI IDOL
         PROJECT（アイプロ）の作品をご投稿いただいてプロジェクトを応援したり、投稿されている作品をチェックしたりして楽しみましょう！
       </p>
+      {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+      <iframe
+        className="m-auto mt-8 mb-24"
+        width={isDesktop ? "560" : "auto"}
+        height="315"
+        src="https://www.youtube.com/embed/q1wVDZe5rMg?si=wu-mwywyLZ9xZLVD"
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      ></iframe>
+
       <h2 className="mt-4 font-bold text-xl">アイドル一覧</h2>
       <p className="text-sm">
         クリックすることでプロンプトがセットされた状態で生成できます！

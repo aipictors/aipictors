@@ -28,7 +28,7 @@ export function CharacterCard(props: Props) {
     <>
       <div className="mt-4 h-auto max-w-80 md:max-w-96">
         <a href={`/generation?prompts=${props.prompt}`}>
-          <p className="text-center font-bold mt-2 mb-2">{props.name}</p>
+          <p className="mt-2 mb-2 text-center font-bold">{props.name}</p>
           <Card>
             <img
               className="w-full rounded-lg object-cover transition-transform duration-300 hover:scale-105"
