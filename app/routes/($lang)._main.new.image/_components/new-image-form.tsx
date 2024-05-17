@@ -156,7 +156,7 @@ export const NewImageForm = () => {
 
   const [themeId, setThemeId] = useState("")
 
-  const [imageBase64List, setImageBase64List] = useState([])
+  const [imageBase64List, setImageBase64List] = useState<string[]>([])
 
   const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
 
@@ -435,8 +435,8 @@ export const NewImageForm = () => {
             isMosaicMode={true}
             isShowSubmitButton={true}
             onSubmit={(base64) => {
-              const newImageBase64List = imageBase64List.map((image) =>
-                image === editTargetImageBase64 ? base64 : image,
+              const newImageBase64List: string[] = imageBase64List.map(
+                (image) => (image === editTargetImageBase64 ? base64 : image),
               )
               setImageBase64List(newImageBase64List)
               setItems((prev) =>
@@ -446,7 +446,6 @@ export const NewImageForm = () => {
                     : item,
                 ),
               )
-
               console.log(items)
               setEditTargetImageBase64("")
             }}
