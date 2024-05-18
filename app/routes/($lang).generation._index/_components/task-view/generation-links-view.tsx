@@ -16,7 +16,7 @@ export const GenerationLinksView = () => {
     <GenerationViewCard>
       <div className="min-h-96">
         {isNonSubscription ? (
-          <a href="https://docs.google.com/forms/d/1caWuCqOr_p0JBGjoh_mfQIzKAk3-y7GR1IF0zxct7zE/edit">
+          <a href="https://forms.gle/Md4kZmTsZHA2TqYz6">
             <img
               src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/nonsubscription-banner.jpg"
               alt="google form non subscription"
@@ -24,7 +24,7 @@ export const GenerationLinksView = () => {
             />
           </a>
         ) : (
-          <a href="https://docs.google.com/forms/d/1VhJ-HwRTmHsSDA0MqD30ZJNj2X9Tu7n5aIJ7dQEqMtI/edit">
+          <a href="https://forms.gle/3bPTebm44vyF3HjD6">
             <img
               src="https://www.aipictors.com/wp-content/uploads/2023/11/gene-anke-banner-2.webp"
               alt="google form"
