@@ -14,7 +14,7 @@ export const GenerationLinksView = () => {
 
   return (
     <GenerationViewCard>
-      <div>
+      <div className="min-h-96">
         {isNonSubscription ? (
           <a href="https://docs.google.com/forms/d/1caWuCqOr_p0JBGjoh_mfQIzKAk3-y7GR1IF0zxct7zE/edit">
             <img
