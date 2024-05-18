@@ -68,7 +68,7 @@ export default function EventAiIdolProject() {
     {
       name: "双星ルカ",
       imageURL:
-        "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/%E3%83%A6%E3%82%A8%E9%80%8F%E9%81%8E_1.webp",
+        "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/%E3%83%AB%E3%82%AB%E9%80%8F%E9%81%8E.webp",
       prompt:
         "1girl、Odd eyes with red left eye and blue right eye Odd eyes of two different colors red and blue False eyes (dark eye color), sweater with visible red shoulders, girl, age15, smiling, choker with black keyhole on neck, red hair, short hair",
       profile:
