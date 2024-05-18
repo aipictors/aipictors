@@ -1,3 +1,4 @@
+import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
 import {} from "@/_components/ui/card"
 import { config } from "@/config"
 import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/_components/character-card"
@@ -136,6 +137,13 @@ export default function EventAiIdolProject() {
         AI IDOL
         PROJECT（アイプロ）の作品をご投稿いただいてプロジェクトを応援したり、投稿されている作品をチェックしたりして楽しみましょう！
       </p>
+      <GlowingGradientBorderButton
+        onClick={() => {
+          window.open("https://www.aipictors.com/events/ai-idol-project-event/")
+        }}
+      >
+        イベント専用ページはこちら
+      </GlowingGradientBorderButton>
       {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
       <iframe
         className="m-auto mt-8 mb-24"
