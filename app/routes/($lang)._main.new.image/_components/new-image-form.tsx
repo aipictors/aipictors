@@ -186,6 +186,8 @@ export const NewImageForm = () => {
 
   const [items, setItems] = useState<TSortableItem[]>([])
 
+  const [indexList, setIndexList] = useState<number[]>([])
+
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
   }
@@ -226,7 +228,7 @@ export const NewImageForm = () => {
           >
             {imageBase64List.length !== 0 && (
               <div className="mb-4 bg-gray-700 p-1 pl-4 dark:bg-blend-darken">
-                <div className="flex space-x-4">
+                <div className="flex space-x-4 text-white">
                   <div className="flex">
                     {"イラスト"}
                     {imageBase64List.length.toString()}
@@ -254,9 +256,17 @@ export const NewImageForm = () => {
               </div>
             )}
             <ImagesAndVideoInput
+              indexList={indexList}
+              setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
               onChange={setImageBase64List}
-              onDelete={() => {
+              onDelete={(id: number) => {
+                // imageBase64Listの要素を削除
+                const newImageBase64List = imageBase64List.filter(
+                  (_, index) => index !== id,
+                )
+                setImageBase64List(newImageBase64List)
+
                 // もし全ての画像が削除されたらPNGInfoをnullにする
                 if (imageBase64List.length === 0) {
                   setPngInfo(null)

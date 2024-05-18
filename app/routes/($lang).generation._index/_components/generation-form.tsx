@@ -21,6 +21,7 @@ import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { setUserToken } from "@/_utils/set-user-token"
 import { jwtDecode } from "jwt-decode"
+import { GenerationLinksView } from "@/routes/($lang).generation._index/_components/task-view/generation-links-view"
 
 type Props = {
   termsMarkdownText: string
@@ -106,6 +107,7 @@ export const GenerationForm = (props: Props) => {
           taskDetails={<GenerationTaskDetailsView />}
           workListFromModel={<GenerationWorkListModelView />}
           communication={<GenerationCommunicationView />}
+          links={<GenerationLinksView />}
         />
       }
     />

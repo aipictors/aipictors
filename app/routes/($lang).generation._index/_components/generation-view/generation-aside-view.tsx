@@ -23,6 +23,10 @@ type Props = {
    * コミュニケーション
    */
   communication: React.ReactNode
+  /**
+   * リンク
+   */
+  links: React.ReactNode
 }
 
 /**
@@ -72,6 +76,10 @@ export const GenerationAsideView = (props: Props) => {
 
   if (state === "COMMUNICATION") {
     return <>{props.communication}</>
+  }
+
+  if (state === "LINKS") {
+    return <>{props.links}</>
   }
 
   if (state === "HISTORY_LIST_FULL") {

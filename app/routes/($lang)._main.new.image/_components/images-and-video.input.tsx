@@ -22,6 +22,8 @@ type Props = {
   items?: TSortableItem[]
   onChangeItems?: (items: TSortableItem[]) => void
   onChangeIndexList?: (indexList: number[]) => void
+  indexList: number[]
+  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 /**
@@ -34,16 +36,14 @@ export const ImagesAndVideoInput = (props: Props) => {
 
   const [items, setItems] = useState<TSortableItem[]>(props.items ?? [])
 
-  const [indexList, setIndexList] = useState<number[]>([])
-
   useEffect(() => {
     if (props.onChangeItems) {
       props.onChangeItems(items)
     }
     if (props.onChangeIndexList) {
-      props.onChangeIndexList(indexList)
+      props.onChangeIndexList(props.indexList)
     }
-  }, [items, indexList])
+  }, [items, props.indexList])
 
   useEffect(() => {
     setItems(props.items ?? [])
@@ -112,15 +112,7 @@ export const ImagesAndVideoInput = (props: Props) => {
                 canvas.height = img.height
                 const ctx = canvas.getContext("2d")
                 ctx?.drawImage(img, 0, 0)
-                // Convert the image to WebP format
                 const webpDataURL = canvas.toDataURL("image/webp")
-                // setItems((prevItems) => [
-                //   ...(prevItems ?? []),
-                //   {
-                //     id: prevItems?.length ?? 0,
-                //     content: webpDataURL,
-                //   },
-                // ])
                 items.push({
                   id: items.length,
                   content: webpDataURL,
@@ -196,7 +188,7 @@ export const ImagesAndVideoInput = (props: Props) => {
       <SortableItems
         items={items ?? []}
         setItems={setItems}
-        setIndexList={setIndexList}
+        setIndexList={props.setIndexList}
         onDelete={(index) => {
           if (props.onDelete) {
             props.onDelete(index)

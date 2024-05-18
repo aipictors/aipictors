@@ -72,6 +72,15 @@ export function GenerationSideTabsView() {
             >
               ご要望など
             </TabsTrigger>
+            <TabsTrigger
+              onClick={() => {
+                send({ type: "OPEN_LINKS" })
+              }}
+              className="w-full"
+              value="LINKS"
+            >
+              アンケート、コミュニティ
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       )}
