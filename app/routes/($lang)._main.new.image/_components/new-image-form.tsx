@@ -156,8 +156,6 @@ export const NewImageForm = () => {
 
   const [themeId, setThemeId] = useState("")
 
-  const [imageBase64List, setImageBase64List] = useState<string[]>([])
-
   const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
 
   const [albumId, setAlbumId] = useState("")
@@ -199,8 +197,8 @@ export const NewImageForm = () => {
       return
     }
 
-    if (imageBase64List.length === 0) {
-      toast("画像を選択してください")
+    if (items.map((item) => item.content).length === 0) {
+      toast("画像もしくは動画を選択してください")
       return
     }
 
@@ -226,25 +224,24 @@ export const NewImageForm = () => {
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
-            {imageBase64List.length !== 0 && (
+            {items.map((item) => item.content).length !== 0 && (
               <div className="mb-4 bg-gray-700 p-1 pl-4 dark:bg-blend-darken">
                 <div className="flex space-x-4 text-white">
                   <div className="flex">
                     {"イラスト"}
-                    {imageBase64List.length.toString()}
+                    {items.map((item) => item.content).length.toString()}
                     {"枚"}
                   </div>
                   <div className="flex">
                     {(() => {
-                      const totalBytes = imageBase64List.reduce(
-                        (acc, imageBase64) => {
+                      const totalBytes = items
+                        .map((item) => item.content)
+                        .reduce((acc, imageBase64) => {
                           const byteLength = new TextEncoder().encode(
                             imageBase64,
                           ).length
                           return acc + byteLength
-                        },
-                        0,
-                      )
+                        }, 0)
 
                       if (totalBytes < 1024 * 1024) {
                         return `${(totalBytes / 1024).toFixed(2)} KB`
@@ -259,16 +256,9 @@ export const NewImageForm = () => {
               indexList={indexList}
               setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
-              onChange={setImageBase64List}
               onDelete={(id: number) => {
-                // imageBase64Listの要素を削除
-                const newImageBase64List = imageBase64List.filter(
-                  (_, index) => index !== id,
-                )
-                setImageBase64List(newImageBase64List)
-
                 // もし全ての画像が削除されたらPNGInfoをnullにする
-                if (imageBase64List.length === 0) {
+                if (items.map((item) => item.content).length === 0) {
                   setPngInfo(null)
                 }
               }}
@@ -276,7 +266,7 @@ export const NewImageForm = () => {
                 setVideoFile(videoFile)
               }}
               onMosaicButtonClick={(id) => {
-                setEditTargetImageBase64(imageBase64List[id])
+                setEditTargetImageBase64(items[indexList[id]].content)
               }}
               items={items}
               onChangeItems={setItems}
@@ -445,10 +435,6 @@ export const NewImageForm = () => {
             isMosaicMode={true}
             isShowSubmitButton={true}
             onSubmit={(base64) => {
-              const newImageBase64List: string[] = imageBase64List.map(
-                (image) => (image === editTargetImageBase64 ? base64 : image),
-              )
-              setImageBase64List(newImageBase64List)
               setItems((prev) =>
                 prev.map((item) =>
                   item.content === editTargetImageBase64
@@ -456,7 +442,6 @@ export const NewImageForm = () => {
                     : item,
                 ),
               )
-              console.log(items)
               setEditTargetImageBase64("")
             }}
           />

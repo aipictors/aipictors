@@ -67,16 +67,37 @@ export const SortableItems = (props: Props) => {
     setActiveItem(undefined)
 
     // インデックス並び替え
-    changeIndex()
+    changeIndexList(activeIndex, overIndex)
   }
 
-  // const handleDragCancel = () => {
-  //   setActiveItem(undefined)
-  // }
+  const changeIndexList = (activeIndex: number, overIndex: number) => {
+    const newIds = props.items
+      .map((item) => item.id)
+      .map((id) => {
+        if (id === activeIndex) {
+          return overIndex
+        }
+        if (id === overIndex) {
+          return activeIndex
+        }
+        return id
+      })
+    props.setIndexList(newIds)
+  }
 
-  const changeIndex = () => {
-    const itemIds = props.items.map((item) => item.id)
-    props.setIndexList(itemIds)
+  const deleteIndex = (deleteId: number) => {
+    // 以降を-1する
+    const newIds = props.items
+      .filter((item) => item.id !== deleteId)
+      .map((item) => item.id)
+      .map((id) => (id > deleteId ? id - 1 : id))
+    props.setIndexList(newIds)
+
+    // itemsのidを振りなおす
+    const newItems = props.items
+      .filter((item) => item.id !== deleteId)
+      .map((item, index) => ({ ...item, id: index }))
+    props.setItems(newItems)
   }
 
   return (
@@ -93,7 +114,7 @@ export const SortableItems = (props: Props) => {
             <SortableItem
               onDelete={(id: number) => {
                 props.setItems((prev) => prev.filter((item) => item.id !== id))
-                changeIndex()
+                deleteIndex(id)
                 if (props.onDelete) {
                   props.onDelete(id)
                 }

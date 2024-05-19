@@ -15,12 +15,11 @@ import { toast } from "sonner"
 
 type Props = {
   onVideoChange: (videoFile: File | null) => void
-  onChange: (imageBase64List: string[]) => void
   onChangePngInfo?: (pngInfo: PNGInfo) => void
   onDelete?: (id: number) => void
   onMosaicButtonClick?: (id: number) => void
   items?: TSortableItem[]
-  onChangeItems?: (items: TSortableItem[]) => void
+  onChangeItems: (items: TSortableItem[]) => void
   onChangeIndexList?: (indexList: number[]) => void
   indexList: number[]
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
@@ -118,7 +117,9 @@ export const ImagesAndVideoInput = (props: Props) => {
                   content: webpDataURL,
                 })
 
-                props.onChange(items?.map((item) => item.content) ?? [])
+                // props.onChange(items?.map((item) => item.content) ?? [])
+
+                props.onChangeItems([...items])
               }
               img.src = event.target.result as string
             }
