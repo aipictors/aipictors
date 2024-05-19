@@ -40,6 +40,7 @@ import FullScreenContainer from "@/_components/full-screen-container"
 import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
+import { uploadPublicImage } from "@/_utils/upload-public-image"
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
@@ -212,6 +213,8 @@ export const NewImageForm = () => {
     }
 
     // サムネイル生成
+    const thumbnailImageBase64 = items[0].content
+    uploadPublicImage(thumbnailImageBase64)
   }
 
   return (
