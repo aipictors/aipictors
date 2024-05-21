@@ -107,7 +107,7 @@
     "@biomejs/biome": "^1.7.0",
     "@cloudflare/workers-types": "^4.20240405.0",
     "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "4.2.5",
+    "@graphql-codegen/client-preset": "4.2.6",
     "@million/lint": "latest",
     "@remix-run/cloudflare-pages": "^2.8.1",
     "@remix-run/dev": "^2.8.1",
