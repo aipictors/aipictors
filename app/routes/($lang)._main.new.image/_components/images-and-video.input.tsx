@@ -39,14 +39,17 @@ export const ImagesAndVideoInput = (props: Props) => {
     if (props.onChangeItems) {
       props.onChangeItems(items)
     }
+  }, [items])
+
+  useEffect(() => {
     if (props.onChangeIndexList) {
       props.onChangeIndexList(props.indexList)
     }
-  }, [items, props.indexList])
+  }, [props.indexList])
 
-  useEffect(() => {
-    setItems(props.items ?? [])
-  }, [props.items])
+  // useEffect(() => {
+  //   setItems(props.items ?? [])
+  // }, [props.items])
 
   const [isHovered, setIsHovered] = useState(false)
 
@@ -190,9 +193,9 @@ export const ImagesAndVideoInput = (props: Props) => {
         items={items ?? []}
         setItems={setItems}
         setIndexList={props.setIndexList}
-        onDelete={(index) => {
+        onDelete={(deleteId) => {
           if (props.onDelete) {
-            props.onDelete(index)
+            props.onDelete(deleteId)
           }
         }}
         optionalButton={

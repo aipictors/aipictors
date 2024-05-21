@@ -264,6 +264,11 @@ export const NewImageForm = () => {
                 if (items.map((item) => item.content).length === 0) {
                   setPngInfo(null)
                 }
+
+                const newItems = items
+                  .filter((item) => item.id !== id)
+                  .map((item, index) => ({ ...item, id: index }))
+                setItems(newItems)
               }}
               onVideoChange={(videoFile: File | null) => {
                 setVideoFile(videoFile)

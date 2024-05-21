@@ -94,10 +94,10 @@ export const SortableItems = (props: Props) => {
     props.setIndexList(newIds)
 
     // itemsのidを振りなおす
-    const newItems = props.items
-      .filter((item) => item.id !== deleteId)
-      .map((item, index) => ({ ...item, id: index }))
-    props.setItems(newItems)
+    // const newItems = props.items
+    //   .filter((item) => item.id !== deleteId)
+    //   .map((item, index) => ({ ...item, id: index }))
+    // props.setItems(newItems)
   }
 
   return (

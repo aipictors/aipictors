@@ -40,7 +40,7 @@ export const uploadPublicImage = async (base64: string): Promise<string> => {
   // APIリクエストの送信
   try {
     const response = await fetch(url, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
