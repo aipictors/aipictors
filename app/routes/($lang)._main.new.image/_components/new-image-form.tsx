@@ -41,6 +41,13 @@ import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-postion-adjust-input"
+import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
+
+/**
+ * 新規作品フォーム
+ * @returns
+ */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
@@ -185,7 +192,21 @@ export const NewImageForm = () => {
 
   const [items, setItems] = useState<TSortableItem[]>([])
 
+  const [thumbnailBase64, setThumbnailBase64] = useState("")
+
+  const [ogpBase64, setOgpBase64] = useState("")
+
+  const [thumbnailPosX, setThumbnailPosX] = useState(0)
+
+  const [thumbnailPosY, setThumbnailPosY] = useState(0)
+
+  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false)
+
   const [indexList, setIndexList] = useState<number[]>([])
+
+  const [translateX, setTranslateX] = useState(0)
+
+  const [translateY, setTranslateY] = useState(0)
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
@@ -223,7 +244,7 @@ export const NewImageForm = () => {
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`relative items-center mb-4 pb-2 rounded bg-gray-800 ${
+            className={`relative items-center pb-2 bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
@@ -274,21 +295,43 @@ export const NewImageForm = () => {
                 setVideoFile(videoFile)
               }}
               onMosaicButtonClick={(id) => {
-                setEditTargetImageBase64(items[indexList[id]].content)
+                setEditTargetImageBase64(items[id].content)
               }}
               items={items}
               onChangeItems={setItems}
+              setThumbnailBase64={setThumbnailBase64}
+              setOgpBase64={setOgpBase64}
+              setIsThumbnailLandscape={setIsThumbnailLandscape}
             />
-
-            <div className="m-4 flex flex-col text-white">
-              <p className="text-center text-sm">
-                JPEG、PNG、GIF、WEBP、BMP、MP4
-              </p>
-              <p className="text-center text-sm">
-                1枚32MB以内、最大200枚、動画は32MB、12秒まで
-              </p>
-            </div>
+            {!items.length && (
+              <div className="m-4 flex flex-col text-white">
+                <p className="text-center text-sm">
+                  JPEG、PNG、GIF、WEBP、BMP、MP4
+                </p>
+                <p className="text-center text-sm">
+                  1枚32MB以内、最大200枚、動画は32MB、12秒まで
+                </p>
+              </div>
+            )}
           </div>
+          {thumbnailBase64 !== "" && (
+            <ThumbnailPositionAdjustInput
+              isThumbnailLandscape={isThumbnailLandscape}
+              thumbnailBase64={thumbnailBase64}
+              thumbnailPosX={thumbnailPosX}
+              thumbnailPosY={thumbnailPosY}
+              setThumbnailPosX={setThumbnailPosX}
+              setThumbnailPosY={setThumbnailPosY}
+            />
+          )}
+          {thumbnailBase64 !== "" && (
+            <OgpInput
+              imageBase64={thumbnailBase64}
+              setOgpBase64={setOgpBase64}
+              ogpBase64={ogpBase64}
+            />
+          )}
+
           <ScrollArea className="max-h-[100%] overflow-y-auto p-2 md:max-h-[64vh]">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
@@ -451,6 +494,7 @@ export const NewImageForm = () => {
                 ),
               )
               setEditTargetImageBase64("")
+              setOgpBase64("")
             }}
           />
         </FullScreenContainer>

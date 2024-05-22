@@ -23,6 +23,9 @@ type Props = {
   onChangeIndexList?: (indexList: number[]) => void
   indexList: number[]
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
+  setThumbnailBase64?: (thumbnailBase64: string) => void
+  setOgpBase64?: (ogpBase64: string) => void
+  setIsThumbnailLandscape?: (isThumbnailLandscape: boolean) => void
 }
 
 /**
@@ -36,8 +39,30 @@ export const ImagesAndVideoInput = (props: Props) => {
   const [items, setItems] = useState<TSortableItem[]>(props.items ?? [])
 
   useEffect(() => {
+    const beforeItems = props.items ?? []
+
     if (props.onChangeItems) {
       props.onChangeItems(items)
+    }
+
+    // 違いがあったらサムネイルを更新
+    if (
+      beforeItems.length &&
+      items.length &&
+      beforeItems[0].content !== items[0].content
+    ) {
+      updateThumbnail()
+    }
+    if (items.length === 0) {
+      if (props.setOgpBase64) {
+        props.setOgpBase64("")
+      }
+      if (props.setIsThumbnailLandscape) {
+        props.setIsThumbnailLandscape(false)
+      }
+      if (props.setThumbnailBase64) {
+        props.setThumbnailBase64("")
+      }
     }
   }, [items])
 
@@ -45,7 +70,45 @@ export const ImagesAndVideoInput = (props: Props) => {
     if (props.onChangeIndexList) {
       props.onChangeIndexList(props.indexList)
     }
+
+    updateThumbnail()
   }, [props.indexList])
+
+  const updateThumbnail = () => {
+    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
+    if (props.setThumbnailBase64) {
+      if (props.items && props.items.length > 0) {
+        props.setThumbnailBase64(props.items[0].content)
+      } else {
+        props.setThumbnailBase64("")
+      }
+    }
+    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
+    if (props.setOgpBase64) {
+      if (props.items && props.items.length > 0) {
+        props.setOgpBase64("")
+      } else {
+        props.setOgpBase64("")
+      }
+    }
+
+    if (props.setIsThumbnailLandscape) {
+      if (props.items && props.items.length > 0) {
+        const item = items[0]
+        if (item) {
+          const img = new Image()
+          img.src = item.content
+          img.onload = () => {
+            if (props.setIsThumbnailLandscape) {
+              props.setIsThumbnailLandscape(img.width > img.height)
+            }
+          }
+        }
+      } else {
+        props.setIsThumbnailLandscape(false)
+      }
+    }
+  }
 
   // useEffect(() => {
   //   setItems(props.items ?? [])
@@ -92,6 +155,7 @@ export const ImagesAndVideoInput = (props: Props) => {
                 content: "",
               } as TSortableItem,
             ])
+            updateThumbnail()
           }
         } else {
           props.onVideoChange(null)
@@ -123,6 +187,8 @@ export const ImagesAndVideoInput = (props: Props) => {
                 // props.onChange(items?.map((item) => item.content) ?? [])
 
                 props.onChangeItems([...items])
+
+                updateThumbnail()
               }
               img.src = event.target.result as string
             }
@@ -164,7 +230,7 @@ export const ImagesAndVideoInput = (props: Props) => {
       <div
         {...getRootProps()}
         className={cn(
-          "absolute top-0 left-0 h-[100%] w-[100%] border-2",
+          "absolute top-0 left-0 h-[100%] w-[100%] border-2 border-gray-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
