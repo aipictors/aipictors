@@ -185,6 +185,14 @@ export const ImagesAndVideoInput = (props: Props) => {
           onDelete={() => {
             setVideoFile(null)
             props.onVideoChange(null)
+            if (props.onDelete) {
+              props.onDelete(0)
+            }
+            props.onChangeItems([])
+            if (props.onChangeIndexList) {
+              props.onChangeIndexList([])
+            }
+            setItems([])
           }}
         />
       )}
