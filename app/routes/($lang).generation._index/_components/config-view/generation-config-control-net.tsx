@@ -60,7 +60,7 @@ export const GenerationConfigControlNet = () => {
    * 決定
    */
   const onSubmitControlNet = () => {
-    if (model === "" || module === "") {
+    if (model === "" && module === "") {
       return
     }
     context.changeControlNetModuleAndModelAndWeight(model, module, weight)
