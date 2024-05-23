@@ -6,7 +6,7 @@
     </a>
 </div>
 <p align="center">
-    <a href="https://remix.run//">Remix</a> / <a href="https://ui.shadcn.com/">shadcn/ui</a> / <a href="https://graphql.org/">GraphQL</a>などで構成されたAipictorsの新しいWebサイト
+    <a href="https://remix.run/">Remix</a> / <a href="https://ui.shadcn.com/">shadcn/ui</a> / <a href="https://graphql.org/">GraphQL</a>などで構成されたAipictorsの新しいWebサイト
 </p>
 
 # ⚙️ 環境構築
@@ -90,6 +90,10 @@ README 以外にも、[docs](/docs)ディレクトリにドキュメントがあ
 - [Biome について](/docs/biome.md)
 - [lefthook について](/docs/lefthook.md)
 - [単体テストについて](/docs/testing.md)
+
+開発で気を付けていることは下記の記事にまとめています。
+
+- [開発で気を付けていること](https://zenn.dev/aipics/articles/a3962af1986502)
 
 # 📣 不具合 / ご意見ご要望
 
