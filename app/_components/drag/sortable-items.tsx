@@ -23,7 +23,7 @@ import { SortableItem } from "@/_components/drag/sortable-item"
 type Props = {
   items: TSortableItem[]
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
-  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
+  setIndexList: (indexList: number[]) => void
   isDeletable?: boolean
   onDelete?: (id: number) => void
   optionalButton?: React.ReactNode
@@ -92,12 +92,6 @@ export const SortableItems = (props: Props) => {
       .map((item) => item.id)
       .map((id) => (id > deleteId ? id - 1 : id))
     props.setIndexList(newIds)
-
-    // itemsのidを振りなおす
-    // const newItems = props.items
-    //   .filter((item) => item.id !== deleteId)
-    //   .map((item, index) => ({ ...item, id: index }))
-    // props.setItems(newItems)
   }
 
   return (

@@ -17,8 +17,9 @@ type Props = {
   onVideoChange: (videoFile: File | null) => void
   onChangePngInfo?: (pngInfo: PNGInfo) => void
   onDelete?: (id: number) => void
-  onMosaicButtonClick?: (id: number) => void
-  items?: TSortableItem[]
+  onMosaicButtonClick?: (content: string) => void
+  // items?: TSortableItem[]
+  videoFile?: File | null
   onChangeItems: (items: TSortableItem[]) => void
   onChangeIndexList?: (indexList: number[]) => void
   indexList: number[]
@@ -36,10 +37,12 @@ type Props = {
 export const ImagesAndVideoInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024
 
-  const [items, setItems] = useState<TSortableItem[]>(props.items ?? [])
+  const [items, setItems] = useState<TSortableItem[]>([])
+
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
-    const beforeItems = props.items ?? []
+    const beforeItems = items ?? []
 
     if (props.onChangeItems) {
       props.onChangeItems(items)
@@ -74,18 +77,18 @@ export const ImagesAndVideoInput = (props: Props) => {
     updateThumbnail()
   }, [props.indexList])
 
-  const updateThumbnail = () => {
+  const updateThumbnail = (webpDataURL: string | null = null) => {
     // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setThumbnailBase64) {
-      if (props.items && props.items.length > 0) {
-        props.setThumbnailBase64(props.items[0].content)
+      if (!webpDataURL && items && items.length > 0) {
+        props.setThumbnailBase64(items[0].content)
       } else {
-        props.setThumbnailBase64("")
+        props.setThumbnailBase64(webpDataURL ? webpDataURL : "")
       }
     }
     // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setOgpBase64) {
-      if (props.items && props.items.length > 0) {
+      if (items && items.length > 0) {
         props.setOgpBase64("")
       } else {
         props.setOgpBase64("")
@@ -93,15 +96,13 @@ export const ImagesAndVideoInput = (props: Props) => {
     }
 
     if (props.setIsThumbnailLandscape) {
-      if (props.items && props.items.length > 0) {
-        const item = items[0]
-        if (item) {
-          const img = new Image()
-          img.src = item.content
-          img.onload = () => {
-            if (props.setIsThumbnailLandscape) {
-              props.setIsThumbnailLandscape(img.width > img.height)
-            }
+      if ((items && items.length > 0) || webpDataURL) {
+        const base64 = webpDataURL ? webpDataURL : items[0].content
+        const img = new Image()
+        img.src = base64
+        img.onload = () => {
+          if (props.setIsThumbnailLandscape) {
+            props.setIsThumbnailLandscape(img.width > img.height)
           }
         }
       } else {
@@ -109,14 +110,6 @@ export const ImagesAndVideoInput = (props: Props) => {
       }
     }
   }
-
-  // useEffect(() => {
-  //   setItems(props.items ?? [])
-  // }, [props.items])
-
-  const [isHovered, setIsHovered] = useState(false)
-
-  const [videoFile, setVideoFile] = useState<null | File>(null)
 
   const { getRootProps, getInputProps } = useDropzone({
     minSize: 0,
@@ -140,26 +133,38 @@ export const ImagesAndVideoInput = (props: Props) => {
           // 12秒以内の動画でない場合はアラートを出す
           const video = document.createElement("video")
           video.src = URL.createObjectURL(file)
+
           video.onloadedmetadata = () => {
             if (video.duration > 12) {
               toast("動画は12秒以下にしてください")
               return
             }
+
             // 動画をセット
             props.onVideoChange(file)
-            setVideoFile(file)
-            // 画像はリセット
-            setItems([
-              {
-                id: 0,
-                content: "",
-              } as TSortableItem,
-            ])
-            updateThumbnail()
+
+            // アイテムリストに動画のみをセット
+            setItems([])
+            props.onChangeItems([])
+
+            // 動画のサムネイルを生成するためのCanvasを作成
+            const canvas = document.createElement("canvas")
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            const ctx = canvas.getContext("2d")
+
+            // タイムラインで指定できるライブラリを使ってサムネイルを取得
+            const time = video.duration / 2
+            video.currentTime = time
+            video.onseeked = () => {
+              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
+              const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
+
+              updateThumbnail(thumbnailUrl)
+            }
           }
         } else {
           props.onVideoChange(null)
-          setVideoFile(null)
 
           if (items.length === 0 && file.type === "image/png") {
             const pngInfo = await getExtractInfoFromPNG(file)
@@ -245,11 +250,10 @@ export const ImagesAndVideoInput = (props: Props) => {
         )}
       </div>
       {items.length === 0 && <div className="h-24" />}
-      {videoFile && (
+      {props.videoFile && (
         <VideoItem
-          videoFile={videoFile}
+          videoFile={props.videoFile}
           onDelete={() => {
-            setVideoFile(null)
             props.onVideoChange(null)
             if (props.onDelete) {
               props.onDelete(0)
@@ -266,8 +270,12 @@ export const ImagesAndVideoInput = (props: Props) => {
       <SortableItems
         items={items ?? []}
         setItems={setItems}
-        setIndexList={props.setIndexList}
+        // setIndexList={props.setIndexList}
+        setIndexList={(indexList) => {
+          props.setIndexList(indexList)
+        }}
         onDelete={(deleteId) => {
+          console.log(props.indexList)
           if (props.onDelete) {
             props.onDelete(deleteId)
           }
@@ -282,7 +290,11 @@ export const ImagesAndVideoInput = (props: Props) => {
           </Button>
         }
         onClickOptionButton={(index) => {
-          if (props.onMosaicButtonClick) props.onMosaicButtonClick(index)
+          if (props.onMosaicButtonClick) {
+            const itemIds = items.map((item) => item.id)
+            const targetIndex = itemIds.indexOf(index)
+            props.onMosaicButtonClick(items[targetIndex].content)
+          }
         }}
         dummyEnableDragItem={
           items.length !== 0 && (

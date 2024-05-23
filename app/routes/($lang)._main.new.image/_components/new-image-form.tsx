@@ -152,8 +152,6 @@ export const NewImageForm = () => {
    */
   const [isHovered, setIsHovered] = useState(false)
 
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-
   const [title, setTitle] = useState("")
 
   const [enTitle, setEnTitle] = useState("")
@@ -191,6 +189,8 @@ export const NewImageForm = () => {
   const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
 
   const [items, setItems] = useState<TSortableItem[]>([])
+
+  const [videoFile, setVideoFile] = useState<File | null>(null)
 
   const [thumbnailBase64, setThumbnailBase64] = useState("")
 
@@ -279,25 +279,25 @@ export const NewImageForm = () => {
             <ImagesAndVideoInput
               indexList={indexList}
               setIndexList={setIndexList}
+              videoFile={videoFile}
               onChangePngInfo={setPngInfo}
-              onDelete={(id: number) => {
+              onDelete={(deletedId: number) => {
                 // もし全ての画像が削除されたらPNGInfoをnullにする
                 if (items.map((item) => item.content).length === 0) {
                   setPngInfo(null)
                 }
 
-                const newItems = items
-                  .filter((item) => item.id !== id)
-                  .map((item, index) => ({ ...item, id: index }))
+                const itemIds = items.map((item) => item.id)
+                const targetIndex = itemIds.indexOf(deletedId)
+                const newItems = items.filter((item) => item.id !== targetIndex)
                 setItems(newItems)
               }}
               onVideoChange={(videoFile: File | null) => {
                 setVideoFile(videoFile)
               }}
-              onMosaicButtonClick={(id) => {
-                setEditTargetImageBase64(items[id].content)
+              onMosaicButtonClick={(content) => {
+                setEditTargetImageBase64(content)
               }}
-              items={items}
               onChangeItems={setItems}
               setThumbnailBase64={setThumbnailBase64}
               setOgpBase64={setOgpBase64}
@@ -493,6 +493,12 @@ export const NewImageForm = () => {
                     : item,
                 ),
               )
+
+              // もし先頭のアイテムを書き換えたならサムネイル更新
+              if (items[0].content === editTargetImageBase64) {
+                setThumbnailBase64(base64)
+              }
+
               setEditTargetImageBase64("")
               setOgpBase64("")
             }}
