@@ -91,10 +91,6 @@ README 以外にも、[docs](/docs)ディレクトリにドキュメントがあ
 - [lefthook について](/docs/lefthook.md)
 - [単体テストについて](/docs/testing.md)
 
-開発で気を付けていることは下記の記事にまとめています。
-
-- [開発で気を付けていること](https://zenn.dev/aipics/articles/a3962af1986502)
-
 # 📣 不具合 / ご意見ご要望
 
 不具合の報告は[こちらから](https://github.com/aipictors/aipictors/issues/new/choose)(GitHub アカウントが必要)。
