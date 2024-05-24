@@ -322,7 +322,7 @@ export function GenerationTaskSheetView(props: Props) {
       setRating(imageGenerationTask.rating ?? 0)
       setIsProtected(imageGenerationTask.isProtected ?? false)
     }
-  }, [context.config.viewTaskId])
+  }, [imageGenerationTask])
 
   if (!imageGenerationTask) return null
 
