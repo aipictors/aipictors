@@ -1,44 +1,79 @@
 import { Textarea } from "@/_components/ui/textarea"
-import { forwardRef, useState, useEffect } from "react"
+import { forwardRef, useState, useEffect, useCallback, useRef } from "react"
 
-type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement>
+type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  minHeight?: string
+}
 
 /**
  * 自動リサイズのテキストエリア
  */
 export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
   (props, ref) => {
+    const { minHeight = "auto", value, ...rest } = props
+
     // テキストエリアの高さを状態として保持
     const [textAreaHeight, setTextAreaHeight] = useState("auto")
 
+    const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
+
+    const prevValueRef = useRef<string | undefined>(undefined)
+
+    const combinedRef = useCallback(
+      (node: HTMLTextAreaElement) => {
+        // `ref` が関数であれば呼び出す
+        if (typeof ref === "function") {
+          ref(node)
+        } else if (ref) {
+          // `ref` がオブジェクトであれば current プロパティを設定
+          ;(ref as React.MutableRefObject<HTMLTextAreaElement | null>).current =
+            node
+        }
+        textAreaRef.current = node
+      },
+      [ref],
+    )
+
+    // 高さを調整する関数
+    const adjustHeight = useCallback((element: HTMLTextAreaElement | null) => {
+      if (element) {
+        element.style.height = "auto"
+        const updatedHeight = `${element.scrollHeight}px`
+        setTextAreaHeight(updatedHeight)
+        element.style.height = updatedHeight
+      }
+    }, [])
+
     // テキストエリアの内容が変わった際に高さを調整する処理
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const target = e.target
-      // 高さを一時的に小さくしてスクロールバーをリセット
-      target.style.height = "auto"
-      // 新しいスクロール高さに基づいて高さを設定
-      const updatedHeight = `${target.scrollHeight}px`
-      setTextAreaHeight(updatedHeight)
-      target.style.height = updatedHeight
+      adjustHeight(e.target)
     }
 
+    // refが設定されたときやvalueが変わったときに高さを調整
     useEffect(() => {
-      if (ref && "current" in ref && ref.current) {
-        ref.current.style.height = "auto"
-        setTextAreaHeight(`${ref.current.scrollHeight}px`)
+      if (textAreaRef.current && prevValueRef.current !== String(value)) {
+        adjustHeight(textAreaRef.current)
+        prevValueRef.current = String(value)
       }
-    }, [ref])
+    }, [value, adjustHeight, textAreaHeight])
 
     return (
       <Textarea
-        ref={ref}
-        {...props}
+        ref={combinedRef}
+        {...rest}
+        value={value}
         style={{
           ...props.style,
-          minHeight: "unset",
+          minHeight: minHeight,
           overflow: "hidden",
           resize: "none",
           height: textAreaHeight,
+        }}
+        onChange={(e) => {
+          if (props.onChange) {
+            props.onChange(e)
+          }
+          handleInput(e)
         }}
         onInput={handleInput}
       />

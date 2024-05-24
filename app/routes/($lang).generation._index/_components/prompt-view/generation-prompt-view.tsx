@@ -100,6 +100,7 @@ export const GenerationPromptView = () => {
               onBlur={() => {
                 context.initPromptWithLoraModel()
               }}
+              minHeight="120px"
             />
           )}
 
