@@ -65,7 +65,7 @@ export const GenerationNegativePromptView = () => {
     >
       <div className="relative flex h-full flex-col gap-y-2 px-4 pb-2 md:pb-4">
         <Textarea
-          className="h-full min-h-16 resize-none font-mono md:min-h-16"
+          className="h-full min-h-32 resize-none font-mono md:min-h-16"
           placeholder={"EasyNegativeなど"}
           value={context.config.negativePromptText}
           onChange={(event) => {

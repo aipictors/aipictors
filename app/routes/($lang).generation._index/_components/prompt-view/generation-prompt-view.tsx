@@ -1,11 +1,13 @@
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogTrigger } from "@/_components/ui/dialog"
 import { Textarea } from "@/_components/ui/textarea"
+import { config } from "@/config"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { PromptCategoriesDialogContent } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-categories-dialog-content"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { BookTextIcon } from "lucide-react"
-import { useBoolean } from "usehooks-ts"
+import { useBoolean, useMediaQuery } from "usehooks-ts"
 
 /**
  * Format prompt text
@@ -50,6 +52,8 @@ export const GenerationPromptView = () => {
 
   const { value, setTrue, setFalse } = useBoolean()
 
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <>
       <GenerationViewCard
@@ -71,19 +75,34 @@ export const GenerationPromptView = () => {
         }
       >
         <div className="relative flex h-full flex-col gap-y-2 px-4 pb-1 md:pb-4">
-          <Textarea
-            className="h-full min-h-16 resize-none font-mono md:min-h-16"
-            placeholder={
-              "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece"
-            }
-            value={context.config.promptText}
-            onChange={(event) => {
-              context.updatePrompt(event.target.value)
-            }}
-            onBlur={() => {
-              context.initPromptWithLoraModel()
-            }}
-          />
+          {isDesktop ? (
+            <Textarea
+              className="h-full min-h-48 resize-none font-mono md:min-h-16"
+              placeholder={
+                "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece"
+              }
+              value={context.config.promptText}
+              onChange={(event) => {
+                context.updatePrompt(event.target.value)
+              }}
+              onBlur={() => {
+                context.initPromptWithLoraModel()
+              }}
+            />
+          ) : (
+            <AutoResizeTextarea
+              className="h-full min-h-48 resize-none font-mono md:min-h-16"
+              placeholder={"生成キーワード例: 1 girl, masterpiece"}
+              value={context.config.promptText}
+              onChange={(event) => {
+                context.updatePrompt(event.target.value)
+              }}
+              onBlur={() => {
+                context.initPromptWithLoraModel()
+              }}
+            />
+          )}
+
           <Dialog
             open={value}
             onOpenChange={(isOpen) => {
