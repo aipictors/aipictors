@@ -63,9 +63,9 @@ export const GenerationNegativePromptView = () => {
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
       }
     >
-      <div className="flex h-full flex-col gap-y-2 px-4 pb-2 md:pb-4">
+      <div className="relative flex h-full flex-col gap-y-2 px-4 pb-2 md:pb-4">
         <Textarea
-          className="h-full min-h-24 resize-none font-mono md:min-h-40"
+          className="h-full min-h-16 resize-none font-mono md:min-h-16"
           placeholder={"EasyNegativeなど"}
           value={context.config.negativePromptText}
           onChange={(event) => {
@@ -84,7 +84,7 @@ export const GenerationNegativePromptView = () => {
               onClick={setTrue}
               variant={"secondary"}
               size={"sm"}
-              className="w-full"
+              className="sticky bottom-0 w-full"
             >
               {"キーワードから選ぶ"}
             </Button>

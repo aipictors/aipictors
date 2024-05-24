@@ -15,6 +15,7 @@ type Props = {
   taskContentPreview: React.ReactNode
   taskDetails: React.ReactNode
   workContentPreview: React.ReactNode
+  submissionView: React.ReactNode
 }
 
 /**
@@ -101,6 +102,7 @@ export const GenerationMainView = (props: Props) => {
               {props.negativePromptEditor}
             </div>
           </ResizablePanelWithMemory>
+          <div className="mt-4 mb-4">{props.submissionView}</div>
         </ResizablePanelGroup>
       </ResizablePanelWithMemory>
     </ResizablePanelGroup>

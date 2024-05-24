@@ -14,6 +14,7 @@ import { cn } from "@/_lib/utils"
 import { config } from "@/config"
 import { GenerationConfigClipSkip } from "@/routes/($lang).generation._index/_components/config-view/generation-config-clip-skip"
 import { GenerationConfigControlNet } from "@/routes/($lang).generation._index/_components/config-view/generation-config-control-net"
+import { GenerationConfigCount } from "@/routes/($lang).generation._index/_components/config-view/generation-config-count"
 import { GenerationConfigI2i } from "@/routes/($lang).generation._index/_components/config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "@/routes/($lang).generation._index/_components/config-view/generation-config-lora-models"
 import { GenerationConfigMemoButton } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-button"
@@ -25,11 +26,11 @@ import { GenerationConfigScale } from "@/routes/($lang).generation._index/_compo
 import { GenerationConfigSeed } from "@/routes/($lang).generation._index/_components/config-view/generation-config-seed"
 import { GenerationConfigSize } from "@/routes/($lang).generation._index/_components/config-view/generation-config-size"
 import { GenerationConfigStep } from "@/routes/($lang).generation._index/_components/config-view/generation-config-step"
-import { GenerationConfigUpscale } from "@/routes/($lang).generation._index/_components/config-view/generation-config-upscale"
 import { GenerationConfigVae } from "@/routes/($lang).generation._index/_components/config-view/generation-config-vae"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
@@ -38,11 +39,12 @@ import { useContext } from "react"
  * エディタの設定
  * ローカルストレージにより設定内容が保存されて、復元されるのでサーバレンダリングと
  * クライアントレンダリングの不一致を解決するため遅延インポートで本コンポーネントを読み込むこと
- * @param props
  * @returns
  */
 export function GenerationConfigView() {
   const context = useGenerationContext()
+
+  const queryData = useGenerationQuery()
 
   const { send } = GenerationConfigContext.useActorRef()
 
@@ -92,6 +94,18 @@ export function GenerationConfigView() {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
     },
   )
+
+  /**
+   * 最大生成枚数
+   */
+  const availableImageGenerationMaxTasksCount =
+    queryData.viewer.availableImageGenerationMaxTasksCount ?? 10
+
+  const inProgressImageGenerationTasksCost =
+    queryData.viewer.inProgressImageGenerationTasksCost ?? 0
+
+  const remainingImageGenerationTasksCount =
+    queryData.viewer.remainingImageGenerationTasksCount
 
   useEffect(() => {
     if (authContext.isLoading) return
@@ -149,7 +163,18 @@ export function GenerationConfigView() {
           <Separator />
           <GenerationConfigLoraModels />
           <Separator />
-          <GenerationConfigUpscale />
+          <GenerationConfigCount
+            availableImageGenerationMaxTasksCount={
+              availableImageGenerationMaxTasksCount
+            }
+            tasksCount={
+              inProgressImageGenerationTasksCost +
+              remainingImageGenerationTasksCount
+            }
+            setGenerationCount={context.changeGenerationCount}
+            generationCount={context.config.generationCount}
+          />
+
           <GenerationConfigSize
             modelType={configModelType}
             value={context.config.sizeType}

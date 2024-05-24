@@ -24,7 +24,14 @@ export const ConfigModelButton = (props: Props) => {
       <Button
         disabled={props.isDisabled}
         variant={props.isSelected ? "default" : "secondary"}
-        className="h-auto w-full overflow-y-hidden p-2"
+        className={
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          // biome-ignore lint/style/useTemplate: <explanation>
+          "h-auto w-full overflow-y-hidden p-2 " +
+          (props.isSelected
+            ? "bg-zinc-300 text-black dark:bg-zinc-700 dark:hover:bg-zinc-700 hover:bg-zinc-300 dark:text-white"
+            : "")
+        }
         onClick={props.onClick}
       >
         <div className="flex w-full space-x-2">

@@ -85,6 +85,13 @@ export const GenerationForm = (props: Props) => {
           taskContentPreview={<GenerationTaskContentPreview />}
           taskDetails={<GenerationTaskDetailsView />}
           workContentPreview={<GenerationWorkContentPreview />}
+          submissionView={
+            <GenerationHeaderView
+              submission={
+                <GenerationSubmissionView termsText={props.termsMarkdownText} />
+              }
+            />
+          }
         />
       }
       asideHeader={<GenerationSideTabsView />}

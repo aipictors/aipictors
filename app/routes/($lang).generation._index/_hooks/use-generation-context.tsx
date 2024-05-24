@@ -509,6 +509,15 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * 生成回数を変更する
+   * @param value
+   */
+  const changeGenerationCount = (item: number) => {
+    const value = configAction.changeGenerationCount(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * LoRAモデルを追加する
    * @param modelName
    */
@@ -626,6 +635,7 @@ export const useGenerationContext = () => {
     changeControlNetModel,
     changeControlNetSaveDetectedMap,
     changeControlNetHrOption,
+    changeGenerationCount,
     changeControlNetModuleAndModelAndImage,
     changeCurrentUserToken,
     updateLoraModel: updateLoraModel,

@@ -31,8 +31,6 @@ export function GenerationSubmissionView(props: Props) {
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  const [generationCount, setGenerationCount] = useState(1)
-
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
@@ -176,7 +174,7 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (generationCount > 1 && !isStandardOrPremium) {
+    if (context.config.generationCount > 1 && !isStandardOrPremium) {
       toast("STANDARD以上のプランで2枚以上を同時指定可能です。")
       return
     }
@@ -190,13 +188,17 @@ export function GenerationSubmissionView(props: Props) {
     // i2iの場合は連続生成数を超過していたらエラーにする
     if (
       generationType === "IMAGE_TO_IMAGE" &&
-      inProgressImageGenerationTasksCount + generationCount > maxTasksCount
+      inProgressImageGenerationTasksCount + context.config.generationCount >
+        maxTasksCount
     ) {
       toast("同時生成枚数の上限です。")
       return
     }
 
-    if (generationCount > 1 && context.config.controlNetImageBase64 !== null) {
+    if (
+      context.config.generationCount > 1 &&
+      context.config.controlNetImageBase64 !== null
+    ) {
       toast("ControlNetを使用する場合は1枚ずつ生成下さい。")
       return
     }
@@ -230,25 +232,6 @@ export function GenerationSubmissionView(props: Props) {
       )
       return
     }
-
-    // if (
-    //   context.config.upscaleSize === 2 &&
-    //   context.config.modelType === "SDXL"
-    // ) {
-    //   if (isDesktop) {
-    //     toast(
-    //       "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
-    //     )
-    //     return
-    //   }
-    //   toast(
-    //     "SDXLモデルと高解像度生成の組み合わせは現在一時停止しております、申し訳ございません",
-    //     {
-    //       position: "top-center",
-    //     },
-    //   )
-    //   return
-    // }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
       if (isDesktop) {
@@ -333,13 +316,18 @@ export function GenerationSubmissionView(props: Props) {
           return
         }
         await createTaskCore(
-          generationCount,
+          context.config.generationCount,
           model.name,
           generationType,
           i2iFileUrl,
         )
       } else {
-        await createTaskCore(generationCount, model.name, generationType, "")
+        await createTaskCore(
+          context.config.generationCount,
+          model.name,
+          generationType,
+          "",
+        )
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -529,8 +517,6 @@ export function GenerationSubmissionView(props: Props) {
           availableImageGenerationMaxTasksCount={
             availableImageGenerationMaxTasksCount
           }
-          generationCount={generationCount}
-          setGenerationCount={setGenerationCount}
           onCreateTask={onCreateTask}
           onSignTerms={onSignTerms}
         />

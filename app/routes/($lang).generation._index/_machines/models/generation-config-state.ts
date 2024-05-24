@@ -53,6 +53,7 @@ const zProps = object({
   controlNetSaveDetectedMap: nullable(boolean()),
   controlNetHrOption: nullable(string()),
   currentUserToken: nullable(string()),
+  generationCount: number(),
 })
 
 type Props = Output<typeof zProps>
@@ -150,6 +151,8 @@ export class GenerationConfigState implements Props {
   readonly searchModelName!: Props["searchModelName"]
 
   readonly currentUserToken!: Props["currentUserToken"]
+
+  readonly generationCount!: Props["generationCount"]
 
   constructor(props: Props) {
     Object.assign(this, props)

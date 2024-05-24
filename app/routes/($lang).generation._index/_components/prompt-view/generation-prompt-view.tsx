@@ -70,10 +70,12 @@ export const GenerationPromptView = () => {
           </>
         }
       >
-        <div className="flex h-full flex-col gap-y-2 px-4 pb-1 md:pb-4">
+        <div className="relative flex h-full flex-col gap-y-2 px-4 pb-1 md:pb-4">
           <Textarea
-            className="h-full min-h-72 resize-none font-mono md:min-h-40"
-            placeholder={"プロンプト"}
+            className="h-full min-h-16 resize-none font-mono md:min-h-16"
+            placeholder={
+              "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece"
+            }
             value={context.config.promptText}
             onChange={(event) => {
               context.updatePrompt(event.target.value)
@@ -94,7 +96,7 @@ export const GenerationPromptView = () => {
                 onClick={setTrue}
                 variant={"secondary"}
                 size={"sm"}
-                className="w-full"
+                className="sticky bottom-0 w-full"
               >
                 {"キーワードから選ぶ"}
               </Button>

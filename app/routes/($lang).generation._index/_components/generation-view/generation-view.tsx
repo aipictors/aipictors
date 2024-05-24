@@ -73,7 +73,6 @@ export const GenerationView = (props: Props) => {
           id="generation-header-main"
           className="flex flex-col"
         >
-          <Suspense fallback={<AppLoadingPage />}>{props.header}</Suspense>
           <Suspense fallback={<AppLoadingPage />}>{props.main}</Suspense>
         </ResizablePanelWithMemory>
         <ResizableHandle withHandle className="mr-4 ml-4" />

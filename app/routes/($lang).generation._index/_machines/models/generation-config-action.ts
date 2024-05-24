@@ -802,6 +802,18 @@ export class GenerationConfigAction {
   }
 
   /**
+   * 生成回数を変更する
+   * @returns
+   */
+  changeGenerationCount(value: number) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      generationCount: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * LoRAモデルを追加する
    * @param name
    * @returns

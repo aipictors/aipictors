@@ -1,3 +1,4 @@
+import { GradientBlueButton } from "@/_components/button/gradient-blue-button"
 import { GradientBorderButton } from "@/_components/button/gradient-border-button"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { Button } from "@/_components/ui/button"
@@ -17,6 +18,7 @@ import {
 import { Label } from "@/_components/ui/label"
 import { Switch } from "@/_components/ui/switch"
 import { AuthContext } from "@/_contexts/auth-context"
+import { config } from "@/config"
 import { GenerationReserveCountInput } from "@/routes/($lang).generation._index/_components/submission-view/generation-reserve-count-input"
 import { GenerationSubmitButton } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-button"
 import { GenerationTermsButton } from "@/routes/($lang).generation._index/_components/submission-view/generation-terms-button"
@@ -24,6 +26,7 @@ import { SubscriptionDialogContent } from "@/routes/($lang).generation._index/_c
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   isCreatingTask: boolean
@@ -33,8 +36,6 @@ type Props = {
   tasksCount: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
-  generationCount: number
-  setGenerationCount: (count: number) => void
   onCreateTask: () => void
   onSignTerms: () => void
 }
@@ -82,75 +83,82 @@ export function GenerationSubmitOperationParts(props: Props) {
   }
 
   const onMinusButtonClick = () => {
-    if (props.generationCount <= 1) {
+    if (context.config.generationCount <= 1) {
       return
     }
-    props.setGenerationCount(props.generationCount - 1)
+    context.changeGenerationCount(context.config.generationCount - 1)
   }
 
   const onPlusButtonClick = () => {
-    if (props.generationCount >= props.availableImageGenerationMaxTasksCount) {
+    if (
+      context.config.generationCount >=
+      props.availableImageGenerationMaxTasksCount
+    ) {
       return
     }
-    props.setGenerationCount(props.generationCount + 1)
+    context.changeGenerationCount(context.config.generationCount + 1)
   }
+
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <>
       <div className="flex items-center">
-        <div className="flex items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="block md:hidden">
-              <Button
-                className="mr-2"
-                size={"icon"}
-                variant={"ghost"}
-                onClick={onMinusButtonClick}
-              >
-                <SettingsIcon className="m-auto" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <div className="flex items-center p-2">
+        {!isDesktop && (
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="block md:hidden">
                 <Button
                   className="mr-2"
                   size={"icon"}
                   variant={"ghost"}
                   onClick={onMinusButtonClick}
                 >
-                  <Minus className="m-auto" />
+                  <SettingsIcon className="m-auto" />
                 </Button>
-                <GenerationReserveCountInput
-                  maxCount={
-                    props.availableImageGenerationMaxTasksCount -
-                    props.tasksCount
-                  }
-                  onChange={props.setGenerationCount}
-                  count={props.generationCount}
-                />
-                {"枚"}
-                <Button
-                  className="mr-2"
-                  size={"icon"}
-                  variant={"ghost"}
-                  onClick={onPlusButtonClick}
-                >
-                  <Plus className="m-auto" />
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="hidden items-center md:flex">
-            <GenerationReserveCountInput
-              maxCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
-              onChange={props.setGenerationCount}
-              count={props.generationCount}
-            />
-            <div className="mr-2">枚</div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <div className="flex items-center p-2">
+                  <Button
+                    className="mr-2"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onClick={onMinusButtonClick}
+                  >
+                    <Minus className="m-auto" />
+                  </Button>
+                  <GenerationReserveCountInput
+                    maxCount={
+                      props.availableImageGenerationMaxTasksCount -
+                      props.tasksCount
+                    }
+                    onChange={context.changeGenerationCount}
+                    count={context.config.generationCount}
+                  />
+                  {"枚"}
+                  <Button
+                    className="mr-2"
+                    size={"icon"}
+                    variant={"ghost"}
+                    onClick={onPlusButtonClick}
+                  >
+                    <Plus className="m-auto" />
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="hidden items-center md:flex">
+              <GenerationReserveCountInput
+                maxCount={
+                  props.availableImageGenerationMaxTasksCount - props.tasksCount
+                }
+                onChange={context.changeGenerationCount}
+                count={context.config.generationCount}
+              />
+              <div className="mr-2">枚</div>
+            </div>
           </div>
-        </div>
+        )}
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
         {(!authContext.isLoggedIn || context.user === null) && (
           <>
@@ -184,9 +192,10 @@ export function GenerationSubmitOperationParts(props: Props) {
               }
               isWidthFull={true}
               triggerChildren={
-                <GradientBorderButton
+                <GradientBlueButton
                   onClick={() => {}}
                   className="w-full text-balance"
+                  isNoBackground={true}
                 >
                   <div className="flex items-center">
                     {"生成"}
@@ -197,7 +206,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                       </span>
                     )}
                   </div>
-                </GradientBorderButton>
+                </GradientBlueButton>
               }
             />
           </>
@@ -239,6 +248,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     disabled={props.isCreatingTask}
                     onClick={() => {}}
                     className="w-full text-balance"
+                    isNoBackground={true}
                   >
                     {props.isCreatingTask ? "処理中.." : "生成"}
                   </GradientBorderButton>

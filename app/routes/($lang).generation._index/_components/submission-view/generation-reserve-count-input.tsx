@@ -4,11 +4,13 @@ type Props = {
   onChange(count: number): void
   maxCount: number
   count: number
+  disabled?: boolean
 }
 
 export function GenerationReserveCountInput(props: Props) {
   return (
     <Input
+      disabled={props.disabled}
       className={"mr-2 w-16 md:w-20"}
       onChange={(e) => {
         if (Number(e.target.value) > props.maxCount) {

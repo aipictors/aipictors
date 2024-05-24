@@ -11,7 +11,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
-import { Slider } from "@/_components/ui/slider"
 import { deleteReservedImageGenerationTasksMutation } from "@/_graphql/mutations/delete-image-generation-reserved-tasks"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
@@ -23,12 +22,10 @@ import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 type Props = {
-  thumbnailSize: number
   thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
   onChangeTaskContentPositionType(type: TaskContentPositionType): void
   onChangeThumbnailType(type: TaskListThumbnailType): void
-  onChange(size: number): void
   onSelectAll(): void
   onCancelAll(): void
 }
@@ -87,24 +84,6 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{"サイズ"}</DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuLabel>{"サイズ変更"}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Slider
-                className="color-pink w-32 px-2 py-4"
-                aria-label="slider-ex-2"
-                min={1}
-                max={9}
-                step={1}
-                value={[props.thumbnailSize]}
-                onValueChange={(value) => props.onChange(value[0])}
-              />
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>{"サムネイル画質"}</DropdownMenuSubTrigger>
           <DropdownMenuPortal>

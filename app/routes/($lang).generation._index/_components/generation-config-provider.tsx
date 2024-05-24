@@ -79,6 +79,7 @@ export const GenerationConfigProvider = (props: Props) => {
     controlNetHrOption: null,
     previewImageURL: null,
     currentUserToken: null,
+    generationCount: 1,
   })
 
   const stateText =

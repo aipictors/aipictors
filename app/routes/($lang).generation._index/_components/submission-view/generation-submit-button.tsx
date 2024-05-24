@@ -1,4 +1,4 @@
-import { GradientBorderButton } from "@/_components/button/gradient-border-button"
+import { GradientBlueButton } from "@/_components/button/gradient-blue-button"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {
@@ -15,11 +15,12 @@ export function GenerationSubmitButton(props: Props) {
     props.maxGeneratingCount <= 0 ? 0 : props.maxGeneratingCount
 
   return (
-    <GradientBorderButton
+    <GradientBlueButton
       onClick={props.onClick}
       className="w-full text-balance"
       size={"lg"}
       disabled={props.isLoading || props.isDisabled}
+      isNoBackground={true}
     >
       <div className="flex items-center">
         {props.isLoading
@@ -33,6 +34,6 @@ export function GenerationSubmitButton(props: Props) {
           />
         )}
       </div>
-    </GradientBorderButton>
+    </GradientBlueButton>
   )
 }

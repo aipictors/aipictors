@@ -1,4 +1,5 @@
 import { Button } from "@/_components/ui/button"
+import { Slider } from "@/_components/ui/slider"
 import { Toggle } from "@/_components/ui/toggle"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { config } from "@/config"
@@ -187,9 +188,7 @@ export const GenerationTaskListActions = (props: Props) => {
           isEnable={isEmpty}
         />
         <GenerationTaskActionDropdownMenu
-          thumbnailSize={props.thumbnailSize}
           thumbnailType={props.thumbnailType}
-          onChange={props.setThumbnailSize}
           taskContentPositionType={props.taskContentPositionType}
           onChangeThumbnailType={props.onChangeThumbnailType}
           onChangeTaskContentPositionType={
@@ -199,6 +198,15 @@ export const GenerationTaskListActions = (props: Props) => {
           onCancelAll={props.onCancelAll}
         />
       </div>
+      <Slider
+        className="color-pink ml-2 w-32 px-2 pb-4"
+        aria-label="slider-ex-2"
+        min={1}
+        max={9}
+        step={1}
+        value={[props.thumbnailSize]}
+        onValueChange={(value) => props.setThumbnailSize(value[0])}
+      />
     </>
   )
 }
