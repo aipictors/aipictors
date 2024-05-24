@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { CopyButton } from "./copy-button"
 import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment | undefined
@@ -114,17 +115,25 @@ export const InProgressImageGenerationTaskResult = (props: Props) => {
           <Separator />
         </div>
         <p className="mb-1 font-semibold">{"prompt"}</p>
-        <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+        <AutoResizeTextarea
+          disabled={true}
+          className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
+        >
           {props.task.prompt}
-        </p>
+        </AutoResizeTextarea>
         <CopyButton text={props.task.prompt} />
         <div className="py-2">
           <Separator />
         </div>
-        <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
-        <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+        <div>
+          <p className="mb-1 font-semibold">{"NegativePrompt"}</p>
+        </div>
+        <AutoResizeTextarea
+          disabled={true}
+          className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
+        >
           {props.task.negativePrompt}
-        </p>
+        </AutoResizeTextarea>
         <CopyButton text={props.task.negativePrompt} />
         <div className="py-2">
           <Separator />

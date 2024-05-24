@@ -32,6 +32,7 @@ import { GenerationTaskError } from "@/routes/($lang).generation._index/_compone
 import { StarRating } from "@/routes/($lang).generation._index/_components/task-view/star-rating"
 import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 import { CopyButton } from "@/routes/($lang).generation._index/_components/copy-button"
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 
 type Props = {
   task: ImageGenerationTaskFieldsFragment
@@ -364,9 +365,12 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           <div className="space-y-2">
             <p className="font-bold">{"prompt"}</p>
-            <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+            <AutoResizeTextarea
+              disabled={true}
+              className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
+            >
               {props.task.prompt}
-            </p>
+            </AutoResizeTextarea>
             <CopyButton text={props.task.prompt} />
           </div>
           <div className="py-2">
@@ -374,9 +378,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           <div className="space-y-2">
             <p className="font-bold">{"NegativePrompt"}</p>
-            <p className="max-h-24 overflow-y-auto rounded-md border p-2 text-sm">
+            <AutoResizeTextarea
+              disabled={true}
+              className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
+            >
               {props.task.negativePrompt}
-            </p>
+            </AutoResizeTextarea>
+
             <CopyButton text={props.task.negativePrompt} />
           </div>
           <div className="py-2">
