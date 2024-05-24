@@ -22,6 +22,7 @@ import {
   MessageCircleIcon,
   MoonIcon,
   SettingsIcon,
+  SquareKanbanIcon,
   SunIcon,
   UserCircleIcon,
   UserIcon,
@@ -79,6 +80,11 @@ export const HomeUserNavigationMenu = (props: Props) => {
           href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
           icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
           label="マイページ"
+        />
+        <MenuItemLink
+          href={`https://www.aipictors.com/dashboard/?id=${authContext.userId}`}
+          icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+          label="ダッシュボード"
         />
         <MenuItemLink
           href="/account/login"

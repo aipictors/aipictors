@@ -460,6 +460,7 @@ export const useGenerationContext = () => {
       .changeControlNetMaskImageBase64(null)
       .changeControlNetControlMode(null)
       .changeControlNetWeight(null)
+      .changeGenerationCount(1)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

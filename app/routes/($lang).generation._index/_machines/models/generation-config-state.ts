@@ -157,6 +157,5 @@ export class GenerationConfigState implements Props {
   constructor(props: Props) {
     Object.assign(this, props)
     this.isDisabled = false
-    this.generationCount = 1
   }
 }

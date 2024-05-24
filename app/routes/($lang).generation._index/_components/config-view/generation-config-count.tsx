@@ -47,7 +47,10 @@ export const GenerationConfigCount = (props: Props) => {
             aria-label="slider-ex-2"
             defaultValue={[context.config.generationCount]}
             min={1}
-            max={props.availableImageGenerationMaxTasksCount - props.tasksCount}
+            max={Math.min(
+              props.availableImageGenerationMaxTasksCount - props.tasksCount,
+              10,
+            )}
             step={1}
             onValueChange={(value) => {
               context.changeGenerationCount(value[0])
