@@ -252,6 +252,10 @@ export function GenerationTaskSheetView(props: Props) {
     if (!taskIds.length || index === 0) {
       return
     }
+    // もし予約タスクなら何もしない
+    if (taskIds[index - 1] === "RESERVED") {
+      return
+    }
     const nextTaskId = taskIds[index - 1]
     context.updateViewTaskId(nextTaskId)
   }
@@ -318,8 +322,8 @@ export function GenerationTaskSheetView(props: Props) {
       : props.task
 
   useEffect(() => {
-    if (imageGenerationTask) {
-      setRating(imageGenerationTask.rating ?? 0)
+    if (imageGenerationTask && imageGenerationTask.status !== "IN_PROGRESS") {
+      setRating(imageGenerationTask?.rating ?? 0)
       setIsProtected(imageGenerationTask.isProtected ?? false)
     }
   }, [imageGenerationTask])

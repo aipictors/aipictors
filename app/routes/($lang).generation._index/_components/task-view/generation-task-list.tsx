@@ -155,7 +155,9 @@ export const GenerationTaskList = (props: Props) => {
   const componentTasks = activeTasks
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
-  const taskIdList = componentTasks.map((task) => task.id)
+  const taskIdList = componentTasks
+    .filter((task) => task.status === "DONE" && task.nanoid)
+    .map((task) => task.id)
 
   return (
     <>
