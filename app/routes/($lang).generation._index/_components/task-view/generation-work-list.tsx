@@ -28,7 +28,7 @@ export const GenerationWorkList = (props: Props) => {
 
   return (
     <>
-      <ScrollArea>
+      <ScrollArea type="always">
         {/* <Suspense fallback={<AppLoadingPage />}> */}
         <div
           className={cn("grid gap-2 p-2 pt-0 pr-4 pb-16 md:pb-4 sm:pl-4", {

@@ -29,7 +29,7 @@ export const MessageThreadList = () => {
 
   return (
     <aside className="sticky h-main w-80 min-w-80 pb-4 pl-4">
-      <ScrollArea className="h-full">
+      <ScrollArea type="always" className="h-full">
         <div className="w-full space-y-2">
           {messageThreads.map((messageThread) => (
             <Link
