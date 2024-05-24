@@ -68,6 +68,10 @@ export const GenerationForm = (props: Props) => {
     }
   }, [localStorageUserToken, viewerUserToken, context.config.page])
 
+  useEffect(() => {
+    context.resetImageInputSetting()
+  }, [])
+
   return (
     <GenerationView
       header={

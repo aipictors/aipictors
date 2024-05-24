@@ -451,6 +451,19 @@ export const useGenerationContext = () => {
     actor.send({ type: "UPDATE_CONFIG", value })
   }
 
+  const resetImageInputSetting = () => {
+    const value = configAction
+      .changeControlNetModule(null)
+      .changeControlNetModel(null)
+      .changeI2iImageBase64("")
+      .changeControlNetImageBase64(null)
+      .changeControlNetMaskImageBase64(null)
+      .changeControlNetControlMode(null)
+      .changeControlNetWeight(null)
+      .getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
   const changeControlNetModuleAndModelAndWeight = (
     model: string | null,
     module: string | null,
@@ -606,6 +619,7 @@ export const useGenerationContext = () => {
     user: dataContext.user,
     currentPass: dataContext.currentPass,
     reset,
+    resetImageInputSetting,
     resetForInit,
     changeMode,
     updateSettings,
