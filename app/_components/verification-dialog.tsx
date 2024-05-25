@@ -44,6 +44,15 @@ export const VerificationDialog = (props: Props) => {
         onOpenChange={() => {
           props.onClose()
           setShowVerificationResult(false)
+          if (
+            props.verificationResult === "verification_error" ||
+            props.verificationResult === "verification"
+          ) {
+            // URLパラメータを削除
+            if (window) {
+              window.location.href = "/generation"
+            }
+          }
         }}
       >
         <DialogContent>
