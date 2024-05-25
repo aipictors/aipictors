@@ -15,10 +15,17 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { checkNgPrompts } from "@/routes/($lang).generation._index/_utils/check-ng-prompts"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
-import { useMutation } from "@apollo/client/index"
-import { useState } from "react"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
+import { useBoolean, useMediaQuery } from "usehooks-ts"
+import {} from "@/_components/ui/dialog"
+import { VerificationDialog } from "@/_components/verification-dialog"
+import { useSearchParams } from "@remix-run/react"
+import { useQuery } from "@apollo/client/index"
+import { viewerLineUserIdQuery } from "@/_graphql/queries/viewer/viewer-line-user-id"
+import { AuthContext } from "@/_contexts/auth-context"
+import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 
 type Props = {
   termsText: string
@@ -62,6 +69,12 @@ export function GenerationSubmissionView(props: Props) {
       },
     },
   )
+
+  const authContext = useContext(AuthContext)
+
+  const { data: lineUserId, refetch } = useQuery(viewerLineUserIdQuery, {
+    skip: authContext.isNotLoggedIn,
+  })
 
   const [signTerms, { loading: isSigningTerms }] = useMutation(
     signImageGenerationTermsMutation,
@@ -148,6 +161,21 @@ export function GenerationSubmissionView(props: Props) {
     return controlNetImageUrl
   }
 
+  // 認証モーダルの開閉
+  const {
+    value: isOpenVerificationModal,
+    setTrue: openVerificationModal,
+    setFalse: closeVerificationModal,
+  } = useBoolean()
+
+  const appContext = useContext(AuthContext)
+
+  const { data = null } = useSuspenseQuery(viewerUserQuery, {
+    skip: appContext.isLoading,
+  })
+
+  const generatedCount = data?.viewer?.user.generatedCount ?? 0
+
   /**
    * タスクを作成ボタンを押したときのコールバック
    */
@@ -160,6 +188,19 @@ export function GenerationSubmissionView(props: Props) {
       context.currentPass?.type === "LITE" ||
       context.currentPass?.type === "STANDARD" ||
       context.currentPass?.type === "PREMIUM"
+
+    // SMS認証が完了していない場合はエラーを表示する
+    // TODO: SMS認証が完了しているかどうかの判定を追加する
+    if (
+      !context.currentPass?.type &&
+      !lineUserId?.viewer?.lineUserId &&
+      generatedCount >= 10
+    ) {
+      // 無料プランのユーザの場合はSMS認証が必要
+      toast("本人確認が完了していません。本人確認を完了してください。")
+      openVerificationModal()
+      return
+    }
 
     /**
      * 生成種別
@@ -497,30 +538,41 @@ export function GenerationSubmissionView(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
 
+  const [searchParams] = useSearchParams()
+
+  const verificationResult = searchParams.get("result")
+
   return (
-    <AppFixedContent position="bottom">
-      <div className="space-y-2">
-        <GenerationSubmitOperationParts
-          isCreatingTask={isCreatingTask || isSigningTerms}
-          inProgressImageGenerationTasksCount={
-            inProgressImageGenerationTasksCount
-          }
-          inProgressImageGenerationReservedTasksCount={
-            inProgressImageGenerationReservedTasksCount
-          }
-          maxTasksCount={maxTasksCount}
-          tasksCount={
-            inProgressImageGenerationTasksCost +
-            remainingImageGenerationTasksCount
-          }
-          termsText={props.termsText}
-          availableImageGenerationMaxTasksCount={
-            availableImageGenerationMaxTasksCount
-          }
-          onCreateTask={onCreateTask}
-          onSignTerms={onSignTerms}
-        />
-      </div>
-    </AppFixedContent>
+    <>
+      <AppFixedContent position="bottom">
+        <div className="space-y-2">
+          <GenerationSubmitOperationParts
+            isCreatingTask={isCreatingTask || isSigningTerms}
+            inProgressImageGenerationTasksCount={
+              inProgressImageGenerationTasksCount
+            }
+            inProgressImageGenerationReservedTasksCount={
+              inProgressImageGenerationReservedTasksCount
+            }
+            maxTasksCount={maxTasksCount}
+            tasksCount={
+              inProgressImageGenerationTasksCost +
+              remainingImageGenerationTasksCount
+            }
+            termsText={props.termsText}
+            availableImageGenerationMaxTasksCount={
+              availableImageGenerationMaxTasksCount
+            }
+            onCreateTask={onCreateTask}
+            onSignTerms={onSignTerms}
+          />
+        </div>
+      </AppFixedContent>
+      <VerificationDialog
+        verificationResult={verificationResult}
+        isOpen={isOpenVerificationModal}
+        onClose={closeVerificationModal}
+      />
+    </>
   )
 }
