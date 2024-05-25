@@ -7,6 +7,7 @@ import {
 import { useQuery } from "@apollo/client/index"
 import { verificationUrlQuery } from "@/_graphql/queries/viewer/viewer-varification-url"
 import { useEffect, useState } from "react"
+import { LineLoggedInButton } from "@/_components/button/line-logged-in-button"
 
 type Props = {
   isOpen: boolean
@@ -80,20 +81,30 @@ export const VerificationDialog = (props: Props) => {
             )}
             {!props.verificationResult && (
               <>
-                <p>無料プランのお試し生成が完了いたしました。</p>
-                <p>本人確認することで、毎日無料で10枚生成可能です。</p>
+                <p className="text-left text-md">
+                  お試しプランの生成が完了いたしました。
+                </p>
+                <p className="text-left text-md">
+                  本人確認で毎日無料で10枚生成可能です。
+                </p>
+                <p className="text-left text-sm">
+                  認証情報は本人確認のみに使用し、他の用途では一切使用されません。
+                </p>
                 <a
                   href={verificationUrl}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <img
-                    className="max-w-32"
-                    src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_login_base.png"
-                    alt="login"
-                  />
+                  <div className="mt-2 mb-2">
+                    <LineLoggedInButton
+                      onClick={() => {}}
+                      text={"LINEでログインして本人確認"}
+                    />
+                  </div>
                 </a>
-                <p>Aipictors+に加入する場合は本人確認が不要です。</p>
+                <p className="text-left">
+                  Aipictors+に加入すると本人確認不要です。
+                </p>
                 <a href="/plus">
                   <img
                     src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-plus-plans-lists_%20.png"
