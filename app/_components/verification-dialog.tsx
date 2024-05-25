@@ -82,7 +82,7 @@ export const VerificationDialog = (props: Props) => {
             {!props.verificationResult && (
               <>
                 <p className="text-left text-md">
-                  お試しプランの生成が完了いたしました。
+                  お試しプランの生成が終了いたしました。
                 </p>
                 <p className="text-left text-md">
                   本人確認で毎日無料で10枚生成可能です。
