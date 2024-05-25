@@ -64,11 +64,12 @@ export const VerificationDialog = (props: Props) => {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <img
-                    className="max-w-32"
-                    src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_login_base.png"
-                    alt="login"
-                  />
+                  <div className="mt-2 mb-2">
+                    <LineLoggedInButton
+                      onClick={() => {}}
+                      text={"LINEでログインして本人確認"}
+                    />
+                  </div>
                 </a>
                 <p>Aipictors+に加入する場合は本人確認が不要です。</p>
                 <a href="/plus">
