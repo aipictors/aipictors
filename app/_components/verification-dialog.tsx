@@ -76,11 +76,11 @@ export const VerificationDialog = (props: Props) => {
                   <div className="mt-2 mb-2">
                     <LineLoggedInButton
                       onClick={() => {}}
-                      text={"LINEでログインして本人確認"}
+                      text={"LINEでログインしてアカウント認証"}
                     />
                   </div>
                 </a>
-                <p>Aipictors+に加入する場合は本人確認が不要です。</p>
+                <p>Aipictors+に加入する場合は認証不要です。</p>
                 <a href="/plus">
                   <img
                     src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-plus-plans-lists_%20.png"
@@ -108,12 +108,12 @@ export const VerificationDialog = (props: Props) => {
                   <div className="mt-2 mb-2">
                     <LineLoggedInButton
                       onClick={() => {}}
-                      text={"LINEでログインして本人確認"}
+                      text={"LINEでログインしてアカウント認証"}
                     />
                   </div>
                 </a>
                 <p className="text-left">
-                  Aipictors+に加入すると本人確認不要です。
+                  Aipictors+に加入する場合は認証不要です。
                 </p>
                 <a href="/plus">
                   <img
