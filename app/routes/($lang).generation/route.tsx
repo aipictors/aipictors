@@ -82,22 +82,14 @@ export async function loader() {
       controlNetCategoriesResp,
     ] = resp
 
-    return json(
-      {
-        promptCategories: promptCategoriesResp.data.promptCategories,
-        negativePromptCategories:
-          negativePromptCategoriesResp.data.negativePromptCategories,
-        imageModels: imageModelsResp.data.imageModels,
-        imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
-        controlNetCategories:
-          controlNetCategoriesResp.data.controlNetCategories,
-      },
-      {
-        headers: {
-          "Cache-Control": config.cacheControl.short,
-        },
-      },
-    )
+    return json({
+      promptCategories: promptCategoriesResp.data.promptCategories,
+      negativePromptCategories:
+        negativePromptCategoriesResp.data.negativePromptCategories,
+      imageModels: imageModelsResp.data.imageModels,
+      imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
+      controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
+    })
   } catch (error) {
     if (error instanceof ApolloError) {
       throw new Response(error.message, { status: 500 })
