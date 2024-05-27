@@ -2,7 +2,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import { ThemeList } from "@/routes/($lang)._main.themes._index/_components/theme-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -19,11 +19,12 @@ export async function loader() {
       where: { year: year, month: month },
     },
   })
-  return {
+
+  return json({
     year,
     month,
     dailyThemesResp,
-  }
+  })
 }
 
 export default function SensitiveThemes() {

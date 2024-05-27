@@ -3,7 +3,7 @@ import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.awards._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.awards._index/_components/ranking-work-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -27,12 +27,12 @@ export async function loader() {
     },
   })
 
-  return {
+  return json({
     year,
     month,
     day,
     workAwards: workAwardsResp,
-  }
+  })
 }
 
 /**

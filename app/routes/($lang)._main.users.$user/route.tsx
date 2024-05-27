@@ -5,9 +5,9 @@ import { createClient } from "@/_lib/client"
 import UserProfile from "@/routes/($lang)._main.users.$user/_components/user-profile"
 import { UserTabs } from "@/routes/($lang)._main.users.$user/_components/user-tabs"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import { json, useLoaderData, useParams } from "@remix-run/react"
 
-export const loader = async (props: LoaderFunctionArgs) => {
+export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
@@ -25,9 +25,9 @@ export const loader = async (props: LoaderFunctionArgs) => {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     user: userResp.data.user,
-  }
+  })
 }
 
 export default function UserLayout() {

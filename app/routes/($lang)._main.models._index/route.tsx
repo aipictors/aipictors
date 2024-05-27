@@ -3,7 +3,7 @@ import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { createClient } from "@/_lib/client"
 import { GoogleAdsense } from "@/routes/($lang)._main._index/_components/google-adsense"
 import { ImageModelList } from "@/routes/($lang)._main.models._index/_components/image-model-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 /**
  * モデルの一覧
@@ -17,9 +17,9 @@ export async function loader() {
     variables: {},
   })
 
-  return {
+  return json({
     imageModels: resp.data.imageModels,
-  }
+  })
 }
 
 export default function ModelsPage() {

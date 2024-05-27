@@ -3,7 +3,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { TagReferencedWorkSection } from "@/routes/($lang).generation.tags.$tag/_components/tag-referenced-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -25,10 +25,11 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     },
   })
-  return {
+
+  return json({
     works: worksResp.data.works,
     tag: props.params.tag,
-  }
+  })
 }
 
 export default function GenerationTag() {

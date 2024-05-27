@@ -6,7 +6,7 @@ import { createClient } from "@/_lib/client"
 import { ModelHeader } from "@/routes/($lang)._main.models.$model/_components/model-header"
 import { WorkList } from "@/routes/($lang)._main.works._index/_components/work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -32,10 +32,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return {
+  return json({
     imageModel: resp.data.imageModel,
     works: worksResp.data.works,
-  }
+  })
 }
 
 /**

@@ -3,7 +3,7 @@ import { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
 import { createClient } from "@/_lib/client"
 import { UserAlbumList } from "@/routes/($lang)._main.users.$user.albums/_components/user-album-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -26,9 +26,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     albums: albumsResp.data.user.albums,
-  }
+  })
 }
 
 export default function UserAlbums() {

@@ -5,7 +5,7 @@ import { RelatedModelList } from "@/routes/($lang)._main.search/_components/rela
 import { RelatedTagList } from "@/routes/($lang)._main.search/_components/related-tag-list"
 import { SearchHeader } from "@/routes/($lang)._main.search/_components/search-header"
 import { WorkList } from "@/routes/($lang)._main.works._index/_components/work-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -18,9 +18,10 @@ export async function loader() {
       where: {},
     },
   })
-  return {
+
+  return json({
     worksResp,
-  }
+  })
 }
 
 export default function Search() {

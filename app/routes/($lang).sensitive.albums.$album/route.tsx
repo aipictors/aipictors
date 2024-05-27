@@ -6,9 +6,9 @@ import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_compon
 import { AlbumWorkDescription } from "@/routes/($lang)._main.albums.$album/_components/album-work-description"
 import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
-export const loader = async (props: LoaderFunctionArgs) => {
+export async function loader(props: LoaderFunctionArgs) {
   if (props.params.album === undefined) {
     throw new Response(null, { status: 404 })
   }
@@ -35,10 +35,10 @@ export const loader = async (props: LoaderFunctionArgs) => {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     album: albumResp.data.album,
     albumWorks: albumWorksResp.data.album?.works ?? [],
-  }
+  })
 }
 
 export default function SensitiveAlbumPage() {

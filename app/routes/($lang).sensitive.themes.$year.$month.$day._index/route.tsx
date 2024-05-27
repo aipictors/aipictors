@@ -2,9 +2,9 @@ import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
-export const loader = async (props: LoaderFunctionArgs) => {
+export async function loader(props: LoaderFunctionArgs) {
   if (
     props.params.year === undefined ||
     props.params.month === undefined ||
@@ -36,7 +36,7 @@ export const loader = async (props: LoaderFunctionArgs) => {
     throw new Response("Not found", { status: 404 })
   }
 
-  return { dailyTheme }
+  return json({ dailyTheme })
 }
 
 export default function SensitiveDayThemePage() {

@@ -9,7 +9,7 @@ import { WorkNextAndPrevious } from "@/routes/($lang)._main.works.$work/_compone
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
 
@@ -42,10 +42,10 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     work: workResp.data.work,
     workComments: workCommentsResp.data.work.comments,
-  }
+  })
 }
 
 export default function Work() {

@@ -9,7 +9,7 @@ import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export const meta: MetaFunction = () => {
   return [
@@ -87,13 +87,13 @@ export async function loader() {
     variables: {},
   })
 
-  return {
+  return json({
     generationWorkResp: generationWorkResp.data.works,
     suggestedWorkResp: suggestedWorkResp.data.works,
     recommendedWorks: recommendedWorksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
-  }
+  })
 }
 
 export default function Index() {

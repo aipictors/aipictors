@@ -4,7 +4,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { CollectionArticle } from "@/routes/($lang)._main.collections.$collection/_components/collection-article"
 import { WorkList } from "@/routes/($lang)._main.works._index/_components/work-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 
 export async function loader() {
@@ -18,9 +18,9 @@ export async function loader() {
       where: {},
     },
   })
-  return {
+  return json({
     worksResp,
-  }
+  })
 }
 
 /**
