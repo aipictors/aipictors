@@ -15,6 +15,7 @@ export const viewerUserQuery = gql(`
         receivedViewsCount
         awardsCount
         followersCount
+        followCount
         iconImage {
           id
           downloadURL
@@ -25,6 +26,10 @@ export const viewerUserQuery = gql(`
         }
         webFcmToken
         generatedCount
+        promptonUser {
+          id
+          name
+        }
       }
     }
   }

@@ -7,6 +7,14 @@ export const userQuery = gql(`
       isFollower
       isFollowee
       isMuted
+      promptonUser {
+        id
+        name
+      }
+      githubAccountId
+      twitterAccountId
+      worksCount
+      createdAt
     }
   }
 `)
