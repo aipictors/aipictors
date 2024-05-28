@@ -1,17 +1,18 @@
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
-import React from "react"
+import React, { Suspense } from "react"
 import { useContext } from "react"
 import type { DashboardContentType } from "@/routes/($lang).dashboard._index/_types/content-type"
 import type { WorksOrderby } from "@/routes/($lang).dashboard._index/_types/works-orderby"
 // import { ScrollArea } from "@/_components/ui/scroll-area"
 import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-list"
-import { toDateText } from "@/_utils/to-date-text"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import type { SortType } from "@/routes/($lang).dashboard._index/_types/sort-type"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 
 export const DashboardContents = () => {
   const [page, setPage] = React.useState(0)
@@ -68,6 +69,31 @@ export const DashboardContents = () => {
 
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
+  const onClickLikeSortButton = () => {
+    setWorksOrderBy("LIKES_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickBookmarkSortButton = () => {
+    setWorksOrderBy("BOOKMARKS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickCommentSortButton = () => {
+    setWorksOrderBy("COMMENTS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickViewSortButton = () => {
+    setWorksOrderBy("VIEWS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickDateSortButton = () => {
+    setWorksOrderBy("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
   return (
     <>
       <div className="w-full">
@@ -100,39 +126,48 @@ export const DashboardContents = () => {
             </TabsList>
           </Tabs>
         </div>
-        {dashBoardContentType === "WORK" && worksLength !== 0 && (
-          <>
-            <WorksList
-              works={
-                works?.map((work) => ({
-                  id: work.id,
-                  title: work.title,
-                  thumbnailImageUrl: work.smallThumbnailImageURL,
-                  likesCount: work.likesCount,
-                  bookmarksCount: 0,
-                  commentsCount: work.commentsCount ?? 0,
-                  viewsCount: work.viewsCount,
-                  accessType: work.accessType,
-                  createdAt: toDateText(work.createdAt),
-                  isTagEditable: work.isTagEditable,
-                })) ?? []
-              }
-            />
-            <div className="mt-4 mb-8">
-              <ResponsivePagination
-                perPage={16}
-                maxCount={worksMaxCount}
-                currentPage={page}
-                onPageChange={(page: number) => {
-                  setPage(page)
-                }}
+        <Suspense fallback={<AppLoadingPage />}>
+          {dashBoardContentType === "WORK" && worksLength !== 0 && (
+            <>
+              <WorksList
+                works={
+                  works?.map((work) => ({
+                    id: work.id,
+                    title: work.title,
+                    thumbnailImageUrl: work.smallThumbnailImageURL,
+                    likesCount: work.likesCount,
+                    bookmarksCount: 0,
+                    commentsCount: work.commentsCount ?? 0,
+                    viewsCount: work.viewsCount,
+                    accessType: work.accessType,
+                    createdAt: toDateTimeText(work.createdAt),
+                    isTagEditable: work.isTagEditable,
+                  })) ?? []
+                }
+                sort={worksOrderDeskAsc}
+                orderBy={worksOrderBy}
+                onClickLikeSortButton={onClickLikeSortButton}
+                onClickBookmarkSortButton={onClickBookmarkSortButton}
+                onClickCommentSortButton={onClickCommentSortButton}
+                onClickViewSortButton={onClickViewSortButton}
+                onClickDateSortButton={onClickDateSortButton}
               />
-            </div>
-          </>
-        )}
-        {dashBoardContentType === "WORK" && worksLength === 0 && (
-          <p>作品が存在しません。</p>
-        )}
+              <div className="mt-4 mb-8">
+                <ResponsivePagination
+                  perPage={16}
+                  maxCount={worksMaxCount}
+                  currentPage={page}
+                  onPageChange={(page: number) => {
+                    setPage(page)
+                  }}
+                />
+              </div>
+            </>
+          )}
+          {dashBoardContentType === "WORK" && worksLength === 0 && (
+            <p>作品が存在しません。</p>
+          )}
+        </Suspense>
       </div>
     </>
   )

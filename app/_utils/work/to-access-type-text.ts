@@ -10,7 +10,7 @@ export const toAccessTypeText = (type: WorkAccessType) => {
     case "PUBLIC":
       return "公開"
     case "SILENT":
-      return "非公開"
+      return "公開(新着無)"
     case "PRIVATE":
       return "非公開"
     case "LIMITED":
