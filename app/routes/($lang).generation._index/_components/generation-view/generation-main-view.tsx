@@ -77,7 +77,7 @@ export const GenerationMainView = (props: Props) => {
   return (
     <ResizablePanelGroup
       direction="horizontal"
-      className="mt-2 flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
+      className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
     >
       <ResizablePanelWithMemory
         id="generation-config"

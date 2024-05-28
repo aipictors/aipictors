@@ -21,6 +21,7 @@ export const userQuery = gql(`
       receivedLikesCount
       receivedViewsCount
       awardsCount
+      followCount
       followersCount
       worksCount
       iconImage {

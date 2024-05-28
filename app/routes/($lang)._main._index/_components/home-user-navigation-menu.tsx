@@ -101,17 +101,16 @@ export const HomeUserNavigationMenu = (props: Props) => {
             </a>
           </div>
         </div>
-
         <div className="p-1">
           <div className="flex items-center gap-x-2 p-2">
-            <div className="w-16">
+            <a className="w-16" href="/following">
               <p>{followCount}</p>
               <p className="text-xs opacity-80">{"フォロー中"}</p>
-            </div>
-            <div className="w-16">
+            </a>
+            <a className="w-16" href="/followers">
               <p>{followerCount}</p>
               <p className="text-xs opacity-80">{"フォロワー"}</p>
-            </div>
+            </a>
           </div>
           <MenuItemLink
             href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
