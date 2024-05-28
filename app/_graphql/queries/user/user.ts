@@ -36,21 +36,33 @@ export const userQuery = gql(`
       isFollowee
       headerImageUrl
       followees(offset: $followeesOffset, limit: $followeesLimit) {
+        id
         name
         iconUrl
         headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
         works(offset: $followeesWorksOffset, limit: $followeesWorksLimit) {
           ...PartialWorkFields
         }
       }
       followers(offset: $followersOffset, limit: $followersLimit) {
+        id
         name
         iconUrl
         headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
         works(offset: $followersWorksOffset, limit: $followersWorksLimit) {
           ...PartialWorkFields
         }
       }
+      biography
+      enBiography
     }
   }
 `)

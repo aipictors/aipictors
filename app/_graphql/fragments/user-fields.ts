@@ -24,5 +24,6 @@ export const userFieldsFragment = gql(`
     isFollower
     isFollowee
     headerImageUrl
+    biography
   }
 `)
