@@ -8,6 +8,7 @@ export const workQuery = gql(`
       rating
       description
       imageURL
+      smallThumbnailImageURL
       largeThumbnailImageURL
       user {
         promptonUser {

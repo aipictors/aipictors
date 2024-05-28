@@ -18,6 +18,14 @@ export const loader = async (props: LoaderFunctionArgs) => {
     query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
+      followeesOffset: 0,
+      followeesLimit: 0,
+      followeesWorksOffset: 0,
+      followeesWorksLimit: 0,
+      followersOffset: 0,
+      followersLimit: 0,
+      followersWorksOffset: 0,
+      followersWorksLimit: 0,
     },
   })
 

@@ -65,8 +65,8 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
         style={{
           ...props.style,
           minHeight: minHeight,
-          overflow: "hidden",
           resize: "none",
+          cursor: "text",
           height: textAreaHeight,
         }}
         onChange={(e) => {

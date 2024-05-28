@@ -7,6 +7,9 @@ export const partialWorkFieldsFragment = gql(`
     likesCount
     commentsCount
     createdAt
+    smallThumbnailImageURL
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
     largeThumbnailImageURL
     largeThumbnailImageHeight
     largeThumbnailImageWidth
