@@ -20,6 +20,11 @@ export const FollowingList = () => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId,
+      worksWhere: {},
+      followeesWorksWhere: {},
+      followersWorksWhere: {},
+      worksOffset: 0,
+      worksLimit: 0,
       followeesOffset: 16 * page,
       followeesLimit: 16,
       followeesWorksOffset: 0,

@@ -3,14 +3,19 @@ import { gql } from "@/_graphql/__generated__"
 export const userQuery = gql(`
   query User(
     $userId: ID!,
+    $worksOffset: Int!,
+    $worksLimit: Int!,
+    $worksWhere: UserWorksWhereInput,
     $followeesOffset: Int!,
     $followeesLimit: Int!,
     $followeesWorksOffset: Int!,
     $followeesWorksLimit: Int!,
+    $followeesWorksWhere: UserWorksWhereInput,
     $followersOffset: Int!,
     $followersLimit: Int!,
     $followersWorksOffset: Int!,
     $followersWorksLimit: Int!
+    $followersWorksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
@@ -36,6 +41,9 @@ export const userQuery = gql(`
       isFollower
       isFollowee
       headerImageUrl
+      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
+        ...PartialWorkFields
+      }
       followees(offset: $followeesOffset, limit: $followeesLimit) {
         id
         name
@@ -45,7 +53,7 @@ export const userQuery = gql(`
         isFollower
         isFollowee
         enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit) {
+        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
           ...PartialWorkFields
         }
       }
@@ -58,7 +66,7 @@ export const userQuery = gql(`
         isFollower
         isFollowee
         enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit) {
+        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
           ...PartialWorkFields
         }
       }

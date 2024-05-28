@@ -17,6 +17,11 @@ export async function loader(props: LoaderFunctionArgs) {
     query: userQuery,
     variables: {
       userId: props.params.user,
+      worksWhere: {},
+      followeesWorksWhere: {},
+      followersWorksWhere: {},
+      worksOffset: 0,
+      worksLimit: 0,
       followeesOffset: 0,
       followeesLimit: 0,
       followeesWorksOffset: 0,
