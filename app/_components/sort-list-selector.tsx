@@ -21,7 +21,7 @@ export const SortListSelector = (props: Props) => {
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={index}
             onClick={item.callback}
-            className="flex w-full cursor-pointer items-center p-4 transition-all hover:bg-gray-100"
+            className="flex w-full cursor-pointer items-center p-4 transition-all dark:hover:bg-gray-800 hover:bg-gray-100"
           >
             {props.nowSortType === item.sortType ? (
               <CheckIcon className="mr-2 w-4" />

@@ -1,10 +1,8 @@
 import { Badge } from "@/_components/ui/badge"
 import { Separator } from "@/_components/ui/separator"
 import {} from "@/_components/ui/table"
-import type { WorkAccessType } from "@/_types/work-access-type"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { SortType } from "@/_types/sort-type"
-import type { WorksOrderby } from "@/routes/($lang).dashboard._index/_types/works-orderby"
 import {
   EyeIcon,
   FolderIcon,
@@ -12,6 +10,7 @@ import {
   MessageCircle,
   PencilIcon,
 } from "lucide-react"
+import type { AccessType, WorkOrderBy } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   works: {
@@ -23,16 +22,11 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: WorkAccessType
+    accessType: AccessType
     isTagEditable: boolean
   }[]
   sort: SortType
-  orderBy: WorksOrderby
-  onClickLikeSortButton: () => void
-  onClickBookmarkSortButton: () => void
-  onClickCommentSortButton: () => void
-  onClickViewSortButton: () => void
-  onClickDateSortButton: () => void
+  orderBy: WorkOrderBy
 }
 
 /**
@@ -49,7 +43,7 @@ export const WorksSpList = (props: Props) => {
               <img
                 src={work.thumbnailImageUrl}
                 alt=""
-                className="mr-4 h-[72px] w-[72px] rounded-md object-cover"
+                className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
             </a>
             <div className="w-full space-y-2">

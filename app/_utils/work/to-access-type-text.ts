@@ -1,11 +1,11 @@
-import type { WorkAccessType } from "@/_types/work-access-type"
+import type { AccessType } from "@/_graphql/__generated__/graphql"
 
 /**
  * 作品の公開状態の文言を返す
  * @param
  * @returns
  */
-export const toAccessTypeText = (type: WorkAccessType) => {
+export const toAccessTypeText = (type: AccessType) => {
   switch (type) {
     case "PUBLIC":
       return "公開"
@@ -18,5 +18,4 @@ export const toAccessTypeText = (type: WorkAccessType) => {
     case "DRAFT":
       return "下書き"
   }
-  return "不明"
 }

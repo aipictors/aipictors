@@ -1,16 +1,15 @@
-import type { WorksOrderby } from "@/routes/($lang).dashboard._index/_types/works-orderby"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/_components/ui/drawer"
 import type { SortType } from "@/_types/sort-type"
 import { SortListSelector } from "@/_components/sort-list-selector"
+import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   nowSort: SortType
-  allOrderBy: WorksOrderby[]
-  nowOrderBy: WorksOrderby
+  allOrderBy: WorkOrderBy[]
+  nowOrderBy: WorkOrderBy
   setSort: (sort: SortType) => void
+  onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
@@ -22,12 +21,7 @@ type Props = {
  * 作品一覧
  */
 export const WorksListSortableSetting = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
-  console.log("nowOrderBy", props.nowOrderBy)
-  console.log("nowSort", props.nowSort)
-
-  const getLabel = (nowOrderBy: WorksOrderby) => {
+  const getLabel = (nowOrderBy: WorkOrderBy) => {
     switch (nowOrderBy) {
       case "LIKES_COUNT":
         return "いいね！順"
@@ -39,6 +33,8 @@ export const WorksListSortableSetting = (props: Props) => {
         return "閲覧数順"
       case "DATE_CREATED":
         return "日付順"
+      case "NAME":
+        return "タイトル順"
       default:
         return "日付順"
     }
@@ -93,6 +89,18 @@ export const WorksListSortableSetting = (props: Props) => {
     }
   }
 
+  const onClickTitleSortButton = () => {
+    if (props.nowOrderBy === "NAME") {
+      if (props.nowSort === "ASC") {
+        props.setSort("DESC")
+      } else {
+        props.setSort("ASC")
+      }
+    } else {
+      props.onClickTitleSortButton()
+    }
+  }
+
   const onClickDateSortButton = () => {
     if (props.nowOrderBy === "DATE_CREATED") {
       if (props.nowSort === "ASC") {
@@ -109,7 +117,7 @@ export const WorksListSortableSetting = (props: Props) => {
     <>
       <Drawer>
         <DrawerTrigger>
-          <div className="text-md">
+          <div className="mb-4 text-md">
             <div className="flex items-center">
               {getLabel(props.nowOrderBy)}
               {props.nowSort === "ASC" ? <ChevronUp /> : <ChevronDown />}
@@ -142,6 +150,12 @@ export const WorksListSortableSetting = (props: Props) => {
                 sortType: "VIEWS_COUNT",
                 label: "閲覧数順",
                 callback: onClickViewSortButton,
+              },
+              {
+                sort: "ASC",
+                sortType: "NAME",
+                label: "タイトル順",
+                callback: onClickTitleSortButton,
               },
               {
                 sort: "ASC",

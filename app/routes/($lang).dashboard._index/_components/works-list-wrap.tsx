@@ -27,6 +27,7 @@ type Props = {
   orderBy: WorkOrderBy
   accessType: AccessType | null
   rating: Rating | null
+  sumWorksCount: number
   setWorkTabType: (workTabType: WorkTabType | null) => void
   setAccessType: (accessType: AccessType | null) => void
   setRating: (rating: Rating | null) => void
@@ -42,7 +43,7 @@ type Props = {
 /**
  * 作品一覧
  */
-export const WorksList = (props: Props) => {
+export const WorksListWrap = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const truncateTitle = (title: string, maxLength: number) => {

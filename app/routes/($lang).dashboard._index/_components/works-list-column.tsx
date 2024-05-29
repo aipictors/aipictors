@@ -1,12 +1,12 @@
 import {} from "@/_components/ui/table"
+import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import type { SortType } from "@/_types/sort-type"
-import type { WorksOrderby } from "@/routes/($lang).dashboard._index/_types/works-orderby"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 type Props = {
   label: string
-  orderBy: WorksOrderby
-  nowOrderBy: WorksOrderby
+  orderBy: WorkOrderBy
+  nowOrderBy: WorkOrderBy
   sort: SortType
   onClick: () => void
 }
