@@ -10,9 +10,11 @@ import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-l
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
-import type { SortType } from "@/routes/($lang).dashboard._index/_types/sort-type"
+import type { SortType } from "@/_types/sort-type"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import type { WorkRatingType } from "@/_types/work-rating-type"
+import type { WorkAccessType } from "@/_types/work-access-type"
 
 export const DashboardContents = () => {
   const [page, setPage] = React.useState(0)
@@ -27,6 +29,12 @@ export const DashboardContents = () => {
     React.useState<SortType>("DESC")
 
   const authContext = useContext(AuthContext)
+
+  const [accessType, setAccessType] = React.useState<WorkAccessType | null>(
+    null,
+  )
+
+  const [rating, setRating] = React.useState<WorkRatingType | null>(null)
 
   if (
     authContext.isLoading ||
@@ -144,8 +152,14 @@ export const DashboardContents = () => {
                     isTagEditable: work.isTagEditable,
                   })) ?? []
                 }
+                sumWorksCount={worksMaxCount}
+                accessType={accessType}
+                rating={rating}
                 sort={worksOrderDeskAsc}
                 orderBy={worksOrderBy}
+                setAccessType={setAccessType}
+                setRating={setRating}
+                setSort={setWorksOrderDeskAsc}
                 onClickLikeSortButton={onClickLikeSortButton}
                 onClickBookmarkSortButton={onClickBookmarkSortButton}
                 onClickCommentSortButton={onClickCommentSortButton}

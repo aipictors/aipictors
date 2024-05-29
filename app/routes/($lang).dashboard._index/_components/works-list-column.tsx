@@ -1,5 +1,5 @@
 import {} from "@/_components/ui/table"
-import type { SortType } from "@/routes/($lang).dashboard._index/_types/sort-type"
+import type { SortType } from "@/_types/sort-type"
 import type { WorksOrderby } from "@/routes/($lang).dashboard._index/_types/works-orderby"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
