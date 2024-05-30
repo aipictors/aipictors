@@ -1,4 +1,5 @@
 import { Button } from "@/_components/ui/button"
+import { CreateAlbumDialog } from "@/routes/($lang).dashboard._index/_components/create-album-dialog"
 
 /**
  * シリーズ追加ボタン
@@ -6,13 +7,15 @@ import { Button } from "@/_components/ui/button"
 export const WorksSeriesAddButton = () => {
   return (
     <>
-      <Button
-        className="ml-auto block"
-        variant={"secondary"}
-        onClick={() => {}}
-      >
-        追加
-      </Button>
+      <CreateAlbumDialog>
+        <Button
+          className="ml-auto block"
+          variant={"secondary"}
+          onClick={() => {}}
+        >
+          追加
+        </Button>
+      </CreateAlbumDialog>
     </>
   )
 }
