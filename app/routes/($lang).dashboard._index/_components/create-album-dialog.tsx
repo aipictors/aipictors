@@ -1,6 +1,6 @@
 import {} from "@/_components/ui/table"
 import { PlusIcon } from "lucide-react"
-import { Suspense, useState } from "react"
+import { Suspense, useContext, useState } from "react"
 import { Dialog, DialogTrigger, DialogContent } from "@/_components/ui/dialog"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { CropImageField } from "@/_components/crop-image-field"
@@ -11,6 +11,7 @@ import { SelectCreatedWorksDialog } from "@/routes/($lang).dashboard._index/_com
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import { AuthContext } from "@/_contexts/auth-context"
 
 type Props = {
   children: React.ReactNode
@@ -20,15 +21,25 @@ type Props = {
  * シリーズ一覧テーブルの項目
  */
 export const CreateAlbumDialog = (props: Props) => {
+  const appContext = useContext(AuthContext)
+
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string>("")
 
   const [title, setTitle] = useState<string>("")
 
+  const [slug, setSlug] = useState<string>("")
+
   const [description, setDescription] = useState<string>("")
 
   const [selectedWorks, setSelectedWorks] = useState<WorksQuery["works"]>([])
+
+  const handleSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    const alphanumericValue = value.replace(/[^a-zA-Z0-9]/g, "") // Remove non-alphanumeric characters
+    setSlug(alphanumericValue)
+  }
 
   /**
    * クロップ完了
@@ -59,7 +70,6 @@ export const CreateAlbumDialog = (props: Props) => {
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">カバー</p>
-                  <p className="text-sm opacity-50">*必須</p>
                 </div>
                 <CropImageField
                   isHidePreviewImage={false}
@@ -84,8 +94,26 @@ export const CreateAlbumDialog = (props: Props) => {
                   onChange={(event) => {
                     setTitle(event.target.value)
                   }}
+                  maxLength={32}
                 />
               </div>
+              <div className="space-y-1">
+                <div className="flex space-x-2">
+                  <p className="font-bold text-sm">リンク名(英数字のみ)</p>
+                  <p className="text-sm opacity-50">*必須</p>
+                </div>
+                <Input
+                  placeholder="URLに使用されるリンク名(/series/●●)"
+                  value={slug}
+                  type="text"
+                  onChange={handleSlugChange}
+                  maxLength={32}
+                />
+                <p className="text-sm opacity-80">
+                  {`https://beta.aipictors.com/${appContext.userId}/series/${slug}`}
+                </p>
+              </div>
+
               <div className="space-y-1">
                 <div className="flex space-x-2">
                   <p className="font-bold text-sm">説明</p>
@@ -97,6 +125,7 @@ export const CreateAlbumDialog = (props: Props) => {
                   onChange={(event) => {
                     setDescription(event.target.value)
                   }}
+                  maxLength={160}
                 />
               </div>
               <div className="space-y-1">

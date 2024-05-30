@@ -24,7 +24,9 @@ export const SelectCreatedWorksDialog = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
+
   const [page, setPage] = React.useState(0)
+
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
   const worksResult = useSuspenseQuery(worksQuery, {
