@@ -84,9 +84,11 @@ export const WorksSetting = (props: Props) => {
               sumAlbumsCount={props.sumAlbumsCount}
               setWorkTabType={props.setWorkTabType}
             />
-            <WorksListFilterSettingButton
-              onToggleFilterButton={onToggleFilterButton}
-            />
+            <div className="ml-auto">
+              <WorksListFilterSettingButton
+                onToggleFilterButton={onToggleFilterButton}
+              />
+            </div>
           </div>
           <div
             className="mt-4 mb-4"

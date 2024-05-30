@@ -11,7 +11,7 @@ export const WorksListFilterSettingButton = (props: Props) => {
   return (
     <>
       <Button
-        className="ml-auto block"
+        className="block"
         variant={"secondary"}
         onClick={props.onToggleFilterButton}
       >

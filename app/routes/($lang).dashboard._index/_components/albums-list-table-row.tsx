@@ -1,10 +1,10 @@
 import { TableRow, TableCell } from "@/_components/ui/table"
 import { Loader2Icon, TrashIcon } from "lucide-react"
-import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
+import { deleteAlbumMutation } from "@/_graphql/mutations/delete-album"
 
 type Props = {
   album: {
@@ -21,14 +21,14 @@ type Props = {
  * シリーズ一覧テーブルの項目
  */
 export const AlbumsListTableRow = (props: Props) => {
-  const [deleteWork, { loading: isLoadingDeleteAlbum }] =
-    useMutation(deleteWorkMutation)
+  const [deleteAlbum, { loading: isLoadingDeleteAlbum }] =
+    useMutation(deleteAlbumMutation)
 
-  const onDeleteSeries = async (workId: string) => {
-    await deleteWork({
+  const onDeleteSeries = async (id: string) => {
+    await deleteAlbum({
       variables: {
         input: {
-          workId: workId,
+          albumId: id,
         },
       },
     })

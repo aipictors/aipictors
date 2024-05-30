@@ -18,6 +18,7 @@ import type {
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
 import { AlbumsListSortableSetting } from "@/routes/($lang).dashboard._index/_components/albums-list-sortable-setting"
+import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
 
 type Props = {
   workTabType: WorkTabType | null
@@ -69,9 +70,12 @@ export const AlbumsSetting = (props: Props) => {
               sumAlbumsCount={props.sumAlbumsCount}
               setWorkTabType={props.setWorkTabType}
             />
-            <WorksListFilterSettingButton
-              onToggleFilterButton={onToggleFilterButton}
-            />
+            <div className="ml-auto flex space-x-2">
+              <WorksSeriesAddButton />
+              <WorksListFilterSettingButton
+                onToggleFilterButton={onToggleFilterButton}
+              />
+            </div>
           </div>
           <div
             className="mt-4 mb-4"
