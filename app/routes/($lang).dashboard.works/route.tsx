@@ -39,7 +39,7 @@ export default function DashboardLayout() {
     <>
       <Suspense fallback={<AppLoadingPage />}>
         {authContext.isLoggedIn && (
-          <DashboardContents dashboardContentType="HOME" />
+          <DashboardContents dashboardContentType="WORK" />
         )}
       </Suspense>
     </>

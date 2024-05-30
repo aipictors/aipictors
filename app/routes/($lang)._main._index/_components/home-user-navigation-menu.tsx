@@ -16,7 +16,6 @@ import {
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import {
-  AlbumIcon,
   CoffeeIcon,
   GemIcon,
   LogOutIcon,
@@ -123,9 +122,9 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="ダッシュボード"
           />
           <MenuItemLink
-            href={`https://www.aipictors.com/dashboard/?id=${authContext.userId}&tab=series`}
-            icon={<AlbumIcon className="mr-2 inline-block w-4" />}
-            label="シリーズ"
+            href={"/dashboard/works"}
+            icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+            label="自分の作品"
           />
           {featurePromptonRequest &&
             (promptonUser === "" && viewerUserToken ? (

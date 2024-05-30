@@ -1,7 +1,6 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import { WorksListSortableSetting } from "@/routes/($lang).dashboard._index/_components/works-list-sortable-setting"
 import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
 import {
   Select,
@@ -12,39 +11,32 @@ import {
 } from "@/_components/ui/select"
 import { useState } from "react"
 import { WorksListFilterSettingButton } from "@/routes/($lang).dashboard._index/_components/works-list-filter-setting-button"
-import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type {
-  AccessType,
-  Rating,
-  WorkOrderBy,
+  AlbumOrderBy,
+  AlbumRating,
 } from "@/_graphql/__generated__/graphql"
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
+import { AlbumsListSortableSetting } from "@/routes/($lang).dashboard._index/_components/albums-list-sortable-setting"
 
 type Props = {
   workTabType: WorkTabType | null
   sort: SortType
-  orderBy: WorkOrderBy
-  accessType: AccessType | null
-  rating: Rating | null
+  orderBy: AlbumOrderBy
+  rating: AlbumRating | null
   sumWorksCount: number
   sumAlbumsCount: number
   setWorkTabType: (workTabType: WorkTabType | null) => void
-  setAccessType: (accessType: AccessType | null) => void
-  setRating: (rating: Rating | null) => void
+  setRating: (rating: AlbumRating | null) => void
   setSort: (sort: SortType) => void
-  onClickTitleSortButton: () => void
-  onClickLikeSortButton: () => void
-  onClickBookmarkSortButton: () => void
-  onClickCommentSortButton: () => void
-  onClickViewSortButton: () => void
-  onClickDateSortButton: () => void
+  onClickAlbumTitleSortButton: () => void
+  onClickAlbumDateSortButton: () => void
 }
 
 /**
- * 一覧設定
+ * アルバム設定
  */
-export const WorksSetting = (props: Props) => {
+export const AlbumsSetting = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -53,14 +45,7 @@ export const WorksSetting = (props: Props) => {
 
   const [opacity, setOpacity] = useState(0)
 
-  const allSortType = [
-    "LIKES_COUNT",
-    "BOOKMARKS_COUNT",
-    "COMMENTS_COUNT",
-    "VIEWS_COUNT",
-    "DATE_CREATED",
-    "NAME",
-  ] as WorkOrderBy[]
+  const allSortType = ["DATE_CREATED", "NAME"] as AlbumOrderBy[]
 
   const onToggleFilterButton = () => {
     if (isFilterOpen) {
@@ -99,41 +84,13 @@ export const WorksSetting = (props: Props) => {
           >
             <div className="flex space-x-4">
               <Select
-                value={props.accessType ? props.accessType : ""}
-                onValueChange={(value) => {
-                  if (value === "ALL") {
-                    props.setAccessType(null)
-                    return
-                  }
-                  props.setAccessType(value as AccessType)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      props.accessType
-                        ? toAccessTypeText(props.accessType)
-                        : "すべての公開範囲"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">{"すべての公開範囲"}</SelectItem>
-                  <SelectItem value="PUBLIC">{"公開"}</SelectItem>
-                  <SelectItem value="SILENT">{"公開(新着無)"}</SelectItem>
-                  <SelectItem value="LIMITED">{"限定公開"}</SelectItem>
-                  <SelectItem value="PRIVATE">{"非公開"}</SelectItem>
-                  <SelectItem value="DRAFT">{"下書き"}</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
                 value={props.rating ? props.rating : ""}
                 onValueChange={(value) => {
                   if (value === "ALL") {
                     props.setRating(null)
                     return
                   }
-                  props.setRating(value as Rating)
+                  props.setRating(value as AlbumRating)
                 }}
               >
                 <SelectTrigger>
@@ -148,26 +105,20 @@ export const WorksSetting = (props: Props) => {
                 <SelectContent>
                   <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
                   <SelectItem value="G">{"G"}</SelectItem>
-                  <SelectItem value="R15">{"R15"}</SelectItem>
                   <SelectItem value="R18">{"R18"}</SelectItem>
-                  <SelectItem value="R18G">{"R18G"}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </>
         {!isDesktop && (
-          <WorksListSortableSetting
+          <AlbumsListSortableSetting
             nowSort={props.sort}
             nowOrderBy={props.orderBy}
             allOrderBy={allSortType}
             setSort={props.setSort}
-            onClickTitleSortButton={props.onClickTitleSortButton}
-            onClickLikeSortButton={props.onClickLikeSortButton}
-            onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-            onClickCommentSortButton={props.onClickCommentSortButton}
-            onClickViewSortButton={props.onClickViewSortButton}
-            onClickDateSortButton={props.onClickDateSortButton}
+            onClickAlbumTitleSortButton={props.onClickAlbumTitleSortButton}
+            onClickAlbumDateSortButton={props.onClickAlbumDateSortButton}
           />
         )}
       </div>

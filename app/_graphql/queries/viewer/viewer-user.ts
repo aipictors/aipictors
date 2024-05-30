@@ -11,8 +11,6 @@ export const viewerUserQuery = gql(`
         biography
         login
         name
-        receivedLikesCount
-        receivedViewsCount
         awardsCount
         followersCount
         followCount
@@ -30,6 +28,12 @@ export const viewerUserQuery = gql(`
           id
           name
         }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
       }
     }
   }

@@ -1,6 +1,7 @@
 type Props = {
   children: React.ReactNode
   disabled?: boolean
+  isActive?: boolean
   onClick(): void
 }
 
@@ -15,9 +16,10 @@ export function RoundedLightButton(props: Props) {
       onClick={props.onClick}
       type="button"
       disabled={props.disabled}
-      className={
-        "flex items-center justify-center rounded-md bg-zinc-100 p-1 pl-2 duration-200 dark:bg-zinc-800 hover:opacity-80"
-      }
+      className={`flex items-center justify-center rounded-full p-1 pr-2 pl-4 duration-200 hover:opacity-80${
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        props.isActive ? " bg-zinc-100 dark:bg-zinc-800" : " bg-transparent"
+      }`}
     >
       {props.children}
     </button>

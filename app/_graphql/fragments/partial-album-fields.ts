@@ -11,5 +11,21 @@ export const partialAlbumFieldsFragment = gql(`
       id
       downloadURL
     }
+    thumbnailImageURL
+    description
+    works(limit: $limit, offset: $offset) {
+      id
+      title
+      imageURL
+      largeThumbnailImageURL
+      smallThumbnailImageURL
+      accessType
+      rating
+      createdAt
+    }
+    rating
+    createdAt
+    slug
+    userId
   }
 `)
