@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * カテゴリ編集許可入力
- * @param props
- * @returns
  */
 export const CategoryEditableInput = (props: Props) => {
   return (
@@ -17,7 +15,7 @@ export const CategoryEditableInput = (props: Props) => {
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">タグの編集許可</p>
-          <div className="items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <Checkbox
               onCheckedChange={(value: boolean) => {
                 props.onChange(value)

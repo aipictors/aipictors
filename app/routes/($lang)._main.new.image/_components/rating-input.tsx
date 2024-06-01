@@ -1,8 +1,9 @@
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
+import type { Rating } from "@/_graphql/__generated__/graphql"
 
 type Props = {
-  rating: string
-  setRating: (value: string) => void
+  rating: Rating
+  setRating: (value: Rating) => void
 }
 
 /**
@@ -19,25 +20,35 @@ export const RatingInput = (props: Props) => {
           <RadioGroup
             value={props.rating}
             onValueChange={(value) => {
-              props.setRating(value)
+              props.setRating(value as Rating)
             }}
-            className="flex items-center space-x-2 text-sm"
+            className="flex flex-wrap space-x-0 text-sm md:space-x-4"
           >
-            <div className="items-center space-x-2">
-              <RadioGroupItem value="G" id="person-check" />
-              <label htmlFor="person-check">{"全年齢"}</label>
+            <div className="mb-2 w-1/3 md:w-auto">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="G" id="person-check" />
+                <label htmlFor="person-check">{"全年齢"}</label>
+              </div>
             </div>
-            <div className="items-center space-x-2">
-              <RadioGroupItem value="R15" id="animal-check" />
-              <label htmlFor="animal-check">{"R15"}</label>
+            <div className="mb-2 w-auto">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="R15" id="animal-check" />
+                <label htmlFor="animal-check">
+                  {"R15（軽度な性的表現、水着など）"}
+                </label>
+              </div>
             </div>
-            <div className="items-center space-x-2">
-              <RadioGroupItem value="R18" id="machine-check" />
-              <label htmlFor="machine-check">{"R18"}</label>
+            <div className="mb-2 w-1/3 md:w-auto">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="R18" id="machine-check" />
+                <label htmlFor="machine-check">{"R18"}</label>
+              </div>
             </div>
-            <div className="items-center space-x-2">
-              <RadioGroupItem value="R18G" id="background-check" />
-              <label htmlFor="background-check">{"R18G"}</label>
+            <div className="mb-2 w-1/3 md:w-auto">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="R18G" id="background-check" />
+                <label htmlFor="background-check">{"R18G"}</label>
+              </div>
             </div>
           </RadioGroup>
         </div>

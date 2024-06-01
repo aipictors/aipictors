@@ -38,7 +38,7 @@ export const ThumbnailPositionAdjustInput = (props: Props) => {
                 className={props.isThumbnailLandscape ? "h-16" : "w-16"}
               />
             </div>
-            <p>サムネイルを調整</p>
+            <p className="text-white">サムネイルを調整</p>
           </div>
         </div>
       </ThumbnailPositionAdjustDialog>

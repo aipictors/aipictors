@@ -8,6 +8,7 @@ import { useState, type HTMLAttributes } from "react"
 export type TSortableItem = {
   id: number
   content: string // 画像のURLなど
+  isContentEdited?: boolean // コンテンツが編集されたかどうか
 }
 
 type Props = {
@@ -60,7 +61,7 @@ export const SortableItem = ({ item, ...props }: Props) => {
           if (props.onDelete) {
             props.onDelete(item.id)
           }
-          setIsDeleted(true)
+          // setIsDeleted(true)
         }}
       >
         <XIcon className="h-4 w-4 md:h-6 md:w-6" />
@@ -69,10 +70,13 @@ export const SortableItem = ({ item, ...props }: Props) => {
         // biome-ignore lint/complexity/useOptionalChain: <explanation>
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div
-          onClick={() =>
+          onClick={() => {
             // biome-ignore lint/complexity/useOptionalChain: <explanation>
-            props.onClickOptionButton && props.onClickOptionButton(item.id)
-          }
+            if (props.onClickOptionButton) {
+              props.onClickOptionButton(item.id)
+            }
+          }}
+          className="absolute bottom-2 left-2"
         >
           {props.optionalButton}
         </div>

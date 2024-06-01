@@ -63,6 +63,8 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
   }
 
   const handleMouseUp = () => {
+    if (isSquare) return
+
     // ドラッグ終了時に枠からはみ出てる場合は枠内に画像を合わせる
     const container = containerRef.current
     const image = imageRef.current
@@ -116,22 +118,6 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
 
     setIsDragging(false)
   }
-
-  // const handleMouseMove = (e: MouseEvent) => {
-  //   if (isSquare || !isDragging) return
-  //   const { movementX, movementY } = e
-  //   if (props.isThumbnailLandscape) {
-  //     setTranslate((prev) => ({
-  //       ...prev,
-  //       x: Math.max(-31.6, Math.min(0, prev.x + (movementX / 160) * 100)),
-  //     }))
-  //   } else {
-  //     setTranslate((prev) => ({
-  //       ...prev,
-  //       y: Math.max(-31.6, Math.min(0, prev.y + (movementY / 160) * 100)),
-  //     }))
-  //   }
-  // }
 
   const handleMouseMove = (e: MouseEvent) => {
     if (isSquare || !isDragging) return
