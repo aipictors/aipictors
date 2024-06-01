@@ -57,6 +57,7 @@ import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components
 import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
+import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 
 /**
  * 新規作品フォーム
@@ -188,6 +189,8 @@ export const NewImageForm = () => {
   const [tags, setTags] = useState<Tag[]>([])
 
   const [isTagEditable, setIsTagEditable] = useState(false)
+
+  const [isCommentsEditable, setIsCommentsEditable] = useState(false)
 
   const [isAd, setIsAd] = useState(false)
 
@@ -422,6 +425,7 @@ export const NewImageForm = () => {
               relatedUrl: link,
               tags: tags.map((tag) => tag.text),
               isTagEditable: isTagEditable,
+              isCommentEditable: isCommentsEditable,
               thumbnailPosition: isThumbnailLandscape
                 ? thumbnailPosX
                 : thumbnailPosY,
@@ -481,6 +485,7 @@ export const NewImageForm = () => {
               relatedUrl: link,
               tags: tags.map((tag) => tag.text),
               isTagEditable: isTagEditable,
+              isCommentEditable: isCommentsEditable,
               thumbnailPosition: isThumbnailLandscape
                 ? thumbnailPosX
                 : thumbnailPosY,
@@ -745,6 +750,10 @@ export const NewImageForm = () => {
             <CategoryEditableInput
               isChecked={isTagEditable}
               onChange={setIsTagEditable}
+            />
+            <CommentsEditableInput
+              isChecked={isCommentsEditable}
+              onChange={setIsCommentsEditable}
             />
             <AlbumInput
               album={albumId}
