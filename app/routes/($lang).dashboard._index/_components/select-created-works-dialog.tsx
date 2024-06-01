@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import React from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
+import { ScrollArea } from "@/_components/ui/scroll-area"
 
 type Props = {
   children?: React.ReactNode
@@ -173,21 +174,25 @@ export const SelectCreatedWorksDialog = (props: Props) => {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            <ScrollArea className="max-h-80 overflow-y-auto md:max-h-[100%]">
+              {tab === "NO_SELECTED" && (
+                <>
+                  <div className="flex flex-wrap">{renderWorks(works)}</div>
+                </>
+              )}
+              {tab === "SELECTED" && (
+                <div className="flex flex-wrap">
+                  {renderWorks(props.selectedWorks)}
+                </div>
+              )}
+            </ScrollArea>
             {tab === "NO_SELECTED" && (
-              <>
-                <div className="flex flex-wrap">{renderWorks(works)}</div>
-                <ResponsivePagination
-                  perPage={32}
-                  maxCount={worksMaxCount}
-                  currentPage={page}
-                  onPageChange={(page: number) => setPage(page)}
-                />
-              </>
-            )}
-            {tab === "SELECTED" && (
-              <div className="flex flex-wrap">
-                {renderWorks(props.selectedWorks)}
-              </div>
+              <ResponsivePagination
+                perPage={32}
+                maxCount={worksMaxCount}
+                currentPage={page}
+                onPageChange={(page: number) => setPage(page)}
+              />
             )}
           </>
           <div className="space-y-4">{""}</div>

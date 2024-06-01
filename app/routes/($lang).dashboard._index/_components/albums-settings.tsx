@@ -62,7 +62,7 @@ export const AlbumsSetting = (props: Props) => {
     <>
       <div className="mb-4">
         <>
-          <div className="flex">
+          <div className="flex items-center">
             <WorksSettingContents
               workTabType={props.workTabType}
               sumWorksCount={props.sumWorksCount}

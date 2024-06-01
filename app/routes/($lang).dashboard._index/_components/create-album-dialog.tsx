@@ -160,7 +160,6 @@ export const CreateAlbumDialog = (props: Props) => {
       >
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
-          {"シリーズ追加"}
           <ScrollArea className="overflow-y-auto">
             <div className="max-h-[80vh] space-y-4 md:max-h-[100%]">
               <div className="space-y-1">
