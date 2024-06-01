@@ -19,8 +19,6 @@ type Props = {
 
 /**
  * エディタの設定
- * @param props
- * @returns
  */
 export const GenerationConfigModels = (props: Props) => {
   const context = useGenerationContext()

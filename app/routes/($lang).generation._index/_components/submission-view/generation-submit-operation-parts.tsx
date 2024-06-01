@@ -44,7 +44,6 @@ type Props = {
  * 生成ボタンのラベル
  * @param mode
  * @param isSetI2iImage
- * @returns
  */
 export function getSubmitButtonLabel(
   isSetI2iImage: boolean,
@@ -67,8 +66,6 @@ export function getSubmitButtonLabel(
 
 /**
  * 生成実行に関わる操作UI
- * @param props
- * @returns
  */
 export function GenerationSubmitOperationParts(props: Props) {
   const context = useGenerationContext()

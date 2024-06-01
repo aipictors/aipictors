@@ -16,8 +16,6 @@ type Props = {
 
 /**
  * ドラッグ可能な複数画像選択
- * @param props
- * @returns
  */
 export const ImagesInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024

@@ -1,10 +1,10 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   children: React.ReactNode
-}
+}>
 
-export const AppHeader = (props: Props) => {
+export function AppHeader(props: Props) {
   return (
     <>
       <header className="fixed z-50 w-full bg-card">

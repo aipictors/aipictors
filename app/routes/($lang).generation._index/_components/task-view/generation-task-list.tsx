@@ -2,7 +2,7 @@ import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { ViewerImageGenerationTasksQuery } from "@/_graphql/__generated__/graphql"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation._index/_components/fallback-task-card"
 import { GenerationTaskCard } from "@/routes/($lang).generation._index/_components/generation-task-card"
@@ -35,8 +35,6 @@ type Props = {
 
 /**
  * 画像生成履歴の一覧
- * @param props
- * @returns
  */
 export const GenerationTaskList = (props: Props) => {
   const context = useGenerationContext()

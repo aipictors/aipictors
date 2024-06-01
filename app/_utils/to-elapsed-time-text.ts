@@ -9,7 +9,6 @@ import {
 /**
  * 経過した時間を表す文字列を返す
  * @param createdAt
- * @returns
  */
 export const toElapsedTimeText = (createdAt: number) => {
   const dateLeft = new Date()

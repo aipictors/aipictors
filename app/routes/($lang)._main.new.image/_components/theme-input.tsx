@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * お題入力
- * @param props
- * @returns
  */
 export const ThemeInput = (props: Props) => {
   return (

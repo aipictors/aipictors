@@ -14,8 +14,6 @@ type Props = {
 
 /**
  * 生成回数の設定
- * @param props
- * @returns
  */
 export const GenerationConfigCount = (props: Props) => {
   const context = useGenerationContext()

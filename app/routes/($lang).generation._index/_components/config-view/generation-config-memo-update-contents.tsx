@@ -28,8 +28,6 @@ type Props = {
 
 /**
  * 履歴メモ更新コンテンツ
- * @param props
- * @returns
  */
 export const GenerationConfigMemoUpdateContent = (props: Props) => {
   const context = useGenerationContext()

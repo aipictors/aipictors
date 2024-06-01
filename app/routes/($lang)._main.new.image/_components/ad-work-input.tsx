@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 宣伝作品かどうか入力
- * @param props
- * @returns
  */
 export const AdWorkInput = (props: Props) => {
   return (

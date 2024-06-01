@@ -47,7 +47,6 @@ import { createRandomString } from "@/routes/($lang).generation._index/_utils/cr
 
 /**
  * 新規作品フォーム
- * @returns
  */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)

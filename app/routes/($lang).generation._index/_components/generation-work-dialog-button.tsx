@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 生成作品のダイアログのボタン
- * @param props
- * @returns
  */
 export function GenerationWorkDialogButton(props: Props) {
   const context = useGenerationContext()

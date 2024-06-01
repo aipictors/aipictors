@@ -5,8 +5,6 @@ type Props = ButtonProps
 
 /**
  * メールリンク
- * @param props
- * @returns
  */
 export const LinkEmailButton = (props: Props) => {
   return (

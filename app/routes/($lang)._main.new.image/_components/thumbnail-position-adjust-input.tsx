@@ -12,7 +12,6 @@ type Props = {
 
 /**
  * サムネイル位置調整フォーム
- * @returns
  */
 export const ThumbnailPositionAdjustInput = (props: Props) => {
   return (

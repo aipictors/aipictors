@@ -11,8 +11,6 @@ import { useInterval } from "usehooks-ts"
 
 /**
  * 連絡画面
- * @param props
- * @returns
  */
 export const GenerationCommunicationView = () => {
   const { data: supportMessages, refetch } = useQuery(

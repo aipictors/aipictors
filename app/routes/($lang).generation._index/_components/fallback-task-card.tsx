@@ -3,7 +3,6 @@ import { Loader2Icon } from "lucide-react"
 
 /**
  * 読み込み中の履歴
- * @returns
  */
 export const FallbackTaskCard = () => {
   return (

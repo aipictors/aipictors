@@ -21,7 +21,6 @@ type Props = {
 
 /**
  * VAEの設定
- * @returns
  */
 export const GenerationConfigVae = (props: Props) => {
   return (

@@ -3,7 +3,6 @@ import type { AccessType } from "@/_graphql/__generated__/graphql"
 /**
  * 作品の公開状態の文言を返す
  * @param
- * @returns
  */
 export const toAccessTypeText = (type: AccessType) => {
   switch (type) {

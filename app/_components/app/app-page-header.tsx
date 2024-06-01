@@ -1,16 +1,16 @@
 import { AppBreadcrumb } from "@/_components/app/app-breadcrumb"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
-type Props = {
+type Props = Readonly<{
   className?: string
   breadcrumb?: WithContext<BreadcrumbList>
   title?: React.ReactNode
   description?: React.ReactNode
   action?: React.ReactNode
-}
+}>
 
-export const AppPageHeader = (props: Props) => {
+export function AppPageHeader(props: Props) {
   return (
     <div className={cn("space-y-1", props.className)}>
       {props.breadcrumb && <AppBreadcrumb breadcrumb={props.breadcrumb} />}

@@ -13,8 +13,6 @@ type Props = {
 
 /**
  * テイスト入力
- * @param props
- * @returns
  */
 export const TasteInput = (props: Props) => {
   return (

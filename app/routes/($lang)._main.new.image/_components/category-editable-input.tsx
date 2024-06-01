@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * カテゴリ編集許可入力
- * @param props
- * @returns
  */
 export const CategoryEditableInput = (props: Props) => {
   return (

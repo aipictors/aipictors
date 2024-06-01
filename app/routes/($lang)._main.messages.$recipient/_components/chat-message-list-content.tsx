@@ -9,8 +9,6 @@ type Props = {
 }
 
 /**
- * @param props
- * @returns
  */
 export function ChatMessageListContent(props: Props) {
   const { data, refetch } = useSuspenseQuery(messageThreadMessagesQuery, {

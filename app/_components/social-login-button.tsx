@@ -14,8 +14,6 @@ type Props = {
 /**
  * ソーシャルログインボタン
  * Googleでログインするなど
- * @param props
- * @returns
  */
 export const SocialLoginButton = (props: Props) => {
   const onLogin = async () => {

@@ -1,5 +1,5 @@
 import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
@@ -14,7 +14,6 @@ type Props = {
 
 /**
  * 画像生成の履歴の保護ボタン
- * @returns
  */
 export const GenerationTaskProtectedButton = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(

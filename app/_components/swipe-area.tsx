@@ -9,8 +9,6 @@ type Props = {
 /**
  * スワイプエリア
  * childrenで指定された領域についてスマホ、PCでスワイプ操作可能にする
- * @param props
- * @returns
  */
 export const SwipeArea: React.FC<Props> = ({ onPrev, onNext, children }) => {
   const [startPosition, setStartPosition] = useState<number | null>(null)

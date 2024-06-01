@@ -17,8 +17,6 @@ type Props = {
 
 /**
  * モデル入力
- * @param props
- * @returns
  */
 export const ModelInput = (props: Props) => {
   return (

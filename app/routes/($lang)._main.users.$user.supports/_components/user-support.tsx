@@ -9,8 +9,6 @@ type Props = {
 
 /**
  * 支援リクエスト
- * @param props
- * @returns
  */
 export const UserSupport = (props: Props) => {
   return (

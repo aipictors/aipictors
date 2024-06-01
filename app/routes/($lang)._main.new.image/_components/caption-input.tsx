@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * キャプション入力
- * @param props
- * @returns
  */
 export const CaptionInput = (props: Props) => {
   return (

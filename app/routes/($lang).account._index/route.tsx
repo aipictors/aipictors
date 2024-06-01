@@ -3,7 +3,6 @@ import { AccountNavigation } from "@/routes/($lang).account._index/_components/a
 
 /**
  * アカウント
- * @returns
  */
 export default function Account() {
   return (

@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 関連リンク入力
- * @param props
- * @returns
  */
 export const RelatedLinkInput = (props: Props) => {
   return (

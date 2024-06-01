@@ -17,7 +17,6 @@ type Props = {
 
 /**
  * レスポンシブ対応のページネーション
- * @returns
  */
 export const ResponsivePagination = ({
   maxCount,

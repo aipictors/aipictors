@@ -31,8 +31,6 @@ type Props = {
 
 /**
  * 画像生成画面のサイド部分
- * @param props
- * @returns
  */
 export const GenerationAsideView = (props: Props) => {
   const context = useGenerationContext()

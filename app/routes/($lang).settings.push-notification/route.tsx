@@ -4,7 +4,6 @@ import { SettingFcmForm } from "@/routes/($lang).settings.push-notification/_com
 
 /**
  * 通知設定ページ
- * @returns
  */
 export default function SettingNotification() {
   return (

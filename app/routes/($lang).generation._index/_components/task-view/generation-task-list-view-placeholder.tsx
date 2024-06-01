@@ -2,8 +2,6 @@ import { Skeleton } from "@/_components/ui/skeleton"
 
 /**
  * タスク一覧のプレースホルダー
- * @param props
- * @returns
  */
 export const GenerationTaskListViewPlaceholder = () => {
   return (

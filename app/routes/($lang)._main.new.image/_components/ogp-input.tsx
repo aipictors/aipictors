@@ -8,7 +8,6 @@ type Props = {
 
 /**
  * OGPフォーム
- * @returns
  */
 export const OgpInput = (props: Props) => {
   const defaultImageUrl =

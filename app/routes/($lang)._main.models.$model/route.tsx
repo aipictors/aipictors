@@ -40,8 +40,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * モデルの詳細
- * @param props
- * @returns
  */
 export default function ModelPage() {
   const params = useParams()

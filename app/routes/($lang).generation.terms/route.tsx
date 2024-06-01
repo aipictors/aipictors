@@ -6,7 +6,6 @@ import { Link } from "@remix-run/react"
 
 /**
  * 画像生成機能の利用規約
- * @returns
  */
 export default function GenerationTerms() {
   return (

@@ -32,8 +32,6 @@ type Props = {
 
 /**
  * その他ボタン
- * @param props
- * @returns
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

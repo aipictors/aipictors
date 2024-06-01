@@ -22,7 +22,6 @@ type Props = {
 
 /**
  * PCとスマホの両方で使えるツールチップ
- * @returns
  */
 export const CrossPlatformTooltip = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

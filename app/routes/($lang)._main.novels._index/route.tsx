@@ -3,7 +3,6 @@ import { NovelCard } from "@/routes/($lang)._main.novels._index/_components/nove
 
 /**
  * 小説の一覧
- * @returns
  */
 export default function Novels() {
   return (

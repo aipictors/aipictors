@@ -24,8 +24,6 @@ type Props = {
 
 /**
  * その他ボタン
- * @param props
- * @returns
  */
 export function GenerationWorkActionDropdownMenu(props: Props) {
   return (

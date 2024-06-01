@@ -18,8 +18,6 @@ import { toast } from "sonner"
 
 /**
  * ログアウトする
- * @param props
- * @returns
  */
 export function NavigationLogoutDialogButton() {
   const handleLogout = async () => {

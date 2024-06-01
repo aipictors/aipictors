@@ -48,8 +48,6 @@ type Props = {
 
 /**
  * 履歴の操作
- * @param props
- * @returns
  */
 export const GenerationTaskListActions = (props: Props) => {
   const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)

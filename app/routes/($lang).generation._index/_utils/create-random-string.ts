@@ -1,7 +1,6 @@
 /**
  * ランダムな文字列を生成する
  * @param count
- * @returns
  */
 export function createRandomString(count: number) {
   const characters =

@@ -20,8 +20,6 @@ type Props = {
 
 /**
  * 画像生画面のメイン部分
- * @param props
- * @returns
  */
 export const GenerationMainView = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

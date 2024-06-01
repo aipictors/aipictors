@@ -3,8 +3,6 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 
 /**
  * 作品プレビュー内容
- * @param props
- * @returns
  */
 export const GenerationWorkContentPreview = () => {
   const context = useGenerationContext()

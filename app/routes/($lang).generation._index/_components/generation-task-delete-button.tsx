@@ -1,5 +1,5 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { Loader2Icon, XIcon } from "lucide-react"
 
 type Props = {
@@ -9,7 +9,6 @@ type Props = {
 
 /**
  * 画像生成の削除ボタン
- * @returns
  */
 export const GenerationTaskDeleteButton = (props: Props) => {
   return (

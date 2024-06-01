@@ -18,8 +18,6 @@ type Props = {
 
 /**
  * 参照生成ダイアログ
- * @param props
- * @returns
  */
 export function GenerationReferenceDialog(props: Props) {
   return (

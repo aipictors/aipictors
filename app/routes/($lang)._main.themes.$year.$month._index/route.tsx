@@ -38,7 +38,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * その月のテーマ一覧
- * @returns
  */
 export default function MonthThemes() {
   const params = useParams()

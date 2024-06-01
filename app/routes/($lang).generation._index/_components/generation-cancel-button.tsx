@@ -9,7 +9,6 @@ type Props = {
 
 /**
  * 単一生成タスクのキャンセルボタン
- * @returns
  */
 export const GenerationTaskCancelButton = (props: Props) => {
   return (

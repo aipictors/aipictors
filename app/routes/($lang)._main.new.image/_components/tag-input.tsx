@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * タグ入力
- * @param props
- * @returns
  */
 export const TagsInput = (props: Props) => {
   const [isFocus, setIsFocus] = useState(false)

@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 履歴プレビューモード切替ボタン
- * @param props
- * @returns
  */
 export function GenerationTaskPreviewModeButton(props: Props) {
   return (

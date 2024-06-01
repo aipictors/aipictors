@@ -12,8 +12,6 @@ type Props = {
 
 /**
  * ボーダーが虹色のボタン
- * @param props
- * @returns
  */
 export function GradientBorderButton(props: Props) {
   return (

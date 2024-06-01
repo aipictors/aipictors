@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 動画アイテム
- * @param props
- * @returns
  */
 export const VideoItem = (props: Props) => {
   return (

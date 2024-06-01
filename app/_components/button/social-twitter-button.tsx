@@ -5,8 +5,6 @@ type Props = ButtonProps
 
 /**
  * Twitter
- * @param props
- * @returns
  */
 export const SocialTwitterButton = (props: Props) => {
   return (

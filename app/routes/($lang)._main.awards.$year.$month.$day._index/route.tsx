@@ -50,8 +50,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * ある日のランキングの履歴
- * @param props
- * @returns
  */
 export default function DayAwards() {
   const params = useParams()

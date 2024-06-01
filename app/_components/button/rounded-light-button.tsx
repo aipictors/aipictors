@@ -7,8 +7,6 @@ type Props = {
 
 /**
  * 角丸の淡い色のボタン
- * @param props
- * @returns
  */
 export function RoundedLightButton(props: Props) {
   return (

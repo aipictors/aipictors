@@ -2,7 +2,6 @@
  * 画像を取得する
  * @param imageURL 画像のURL
  * @param token トークン
- * @returns
  */
 export const fetchImage = async (imageURL: string) => {
   try {

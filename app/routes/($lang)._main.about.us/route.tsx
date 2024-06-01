@@ -7,7 +7,6 @@ export const meta: MetaFunction = () => {
 
 /**
  * 組織について
- * @returns
  */
 export default function AboutUs() {
   return (

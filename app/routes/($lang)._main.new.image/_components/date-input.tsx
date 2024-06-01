@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 日付入力
- * @param props
- * @returns
  */
 export const DateInput = (props: Props) => {
   return (

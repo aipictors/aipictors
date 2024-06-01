@@ -1,9 +1,9 @@
 import { Button } from "@/_components/ui/button"
 
-type Props = {
+type Props = Readonly<{
   status: number
   message: string
-}
+}>
 
 /**
  * v0 by Vercel.

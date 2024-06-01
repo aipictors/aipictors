@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import * as React from "react"
 
 import { Button } from "@/_components/ui/button"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
 type CarouselProps = {
   opts?: CarouselOptions

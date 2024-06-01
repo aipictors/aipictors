@@ -2,7 +2,6 @@ import { Link } from "@remix-run/react"
 
 /**
  * 広告
- * @returns
  */
 export function GenerationAdvertisementView() {
   return (

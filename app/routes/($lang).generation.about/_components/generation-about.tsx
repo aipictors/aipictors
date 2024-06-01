@@ -9,7 +9,6 @@ import { Link } from "@remix-run/react"
 
 /**
  * 画像生成についての説明
- * @returns
  */
 export const GenerationAbout = () => {
   return (

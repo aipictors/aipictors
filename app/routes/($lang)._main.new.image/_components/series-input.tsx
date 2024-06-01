@@ -17,8 +17,6 @@ type Props = {
 
 /**
  * シリーズ入力
- * @param props
- * @returns
  */
 export const AlbumInput = (props: Props) => {
   return (

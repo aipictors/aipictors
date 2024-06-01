@@ -4,8 +4,6 @@ import {} from "@apollo/client/index"
 
 /**
  * リンク
- * @param props
- * @returns
  */
 export const GenerationLinksView = () => {
   const context = useGenerationContext()

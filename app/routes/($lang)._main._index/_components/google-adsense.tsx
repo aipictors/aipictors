@@ -14,8 +14,6 @@ type Props = {
 
 /**
  * Google広告
- * @param props
- * @returns
  */
 export const GoogleAdsense = (props: Props) => {
   const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})

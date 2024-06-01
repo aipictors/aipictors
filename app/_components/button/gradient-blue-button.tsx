@@ -12,8 +12,6 @@ type Props = {
 
 /**
  * 青グラデボタン
- * @param props
- * @returns
  */
 export function GradientBlueButton(props: Props) {
   return (

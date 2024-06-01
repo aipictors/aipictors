@@ -7,8 +7,6 @@ type Props = {
 
 /**
  * 履歴のメモボタン
- * @param props
- * @returns
  */
 export function GenerationConfigMemoButton(props: Props) {
   return (

@@ -7,8 +7,6 @@ type Props = {
 
 /**
  * 公開モード入力
- * @param props
- * @returns
  */
 export const ViewInput = (props: Props) => {
   return (

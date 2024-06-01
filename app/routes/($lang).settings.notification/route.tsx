@@ -3,7 +3,6 @@ import { SettingNotificationForm } from "@/routes/($lang).settings.notification/
 
 /**
  * 通知設定ページ
- * @returns
  */
 export default function SettingNotification() {
   return (

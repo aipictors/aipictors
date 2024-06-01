@@ -5,7 +5,6 @@ import { NotificationTab } from "@/routes/($lang)._main.notifications/_component
 
 /**
  * 通知の一覧
- * @returns
  */
 export default function Notifications() {
   return (

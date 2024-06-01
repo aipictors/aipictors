@@ -1,5 +1,5 @@
 import type * as ResizablePrimitive from "react-resizable-panels"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { ResizablePanel } from "@/_components/ui/resizable"
 import {} from "react"
 import { getCookie } from "@/_utils/get-cookie"
@@ -7,8 +7,6 @@ import { getCookie } from "@/_utils/get-cookie"
 /**
  * リサイザーパネルのサイズ記憶付きハンドル
  * id（一意）を指定することでCookieにサイズを保存
- * @param props
- * @returns
  */
 export const ResizablePanelWithMemory = ({
   id,

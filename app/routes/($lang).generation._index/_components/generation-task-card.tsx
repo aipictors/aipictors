@@ -25,7 +25,6 @@ type Props = {
 
 /**
  * 画像生成タスク
- * @returns
  */
 export const GenerationTaskCard = (props: Props) => {
   return (

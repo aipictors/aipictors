@@ -9,8 +9,6 @@ type Props = {
 
 /**
  * メニュー項目
- * @param props
- * @returns
  */
 export const MenuItemLink = (props: Props) => {
   return (

@@ -1,16 +1,14 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   children: React.ReactNode
   className?: string
-}
+}>
 
 /**
  * デフォルトのページのレイアウト
- * @param props
- * @returns
  */
-export const AppPageCenter = (props: Props) => {
+export function AppPageCenter(props: Props) {
   return (
     <main className="flex w-full justify-center">
       <div

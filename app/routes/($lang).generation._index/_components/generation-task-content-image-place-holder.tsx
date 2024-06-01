@@ -7,8 +7,6 @@ type Props = {
 
 /**
  * 履歴一覧の履歴シートの中に表示する履歴内容
- * @param props
- * @returns
  */
 export function GenerationTaskContentImagePlaceHolder(props: Props) {
   return (

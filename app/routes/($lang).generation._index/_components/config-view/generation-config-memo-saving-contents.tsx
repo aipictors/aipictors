@@ -25,8 +25,6 @@ type Props = {
 
 /**
  * 履歴メモ保存コンテンツ
- * @param props
- * @returns
  */
 export const GenerationConfigMemoSavingContent = (props: Props) => {
   const context = useGenerationContext()

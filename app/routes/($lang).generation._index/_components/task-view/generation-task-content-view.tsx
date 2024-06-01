@@ -9,8 +9,6 @@ import { useContext } from "react"
 
 /**
  * タスク内容
- * @param props
- * @returns
  */
 export const GenerationTaskContentPreview = () => {
   const context = useGenerationContext()

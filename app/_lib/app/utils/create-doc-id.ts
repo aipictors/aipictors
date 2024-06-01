@@ -1,6 +1,5 @@
 /**
  * 20文字のランダムな文字列を生成する
- * @returns
  */
 export const createDocId = () => {
   const text = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
