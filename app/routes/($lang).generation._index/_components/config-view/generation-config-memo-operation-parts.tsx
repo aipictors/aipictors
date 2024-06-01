@@ -15,8 +15,6 @@ type Props = {
 
 /**
  * 履歴メモ設定ダイアログ
- * @param props
- * @returns
  */
 export const GenerationConfigMemoOperationParts = (props: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)

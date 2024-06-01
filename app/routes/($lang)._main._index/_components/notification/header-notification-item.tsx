@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * ヘッダーの通知アイテム
- * @param props
- * @returns
  */
 export const HeaderNotificationItem = (props: Props) => {
   return (

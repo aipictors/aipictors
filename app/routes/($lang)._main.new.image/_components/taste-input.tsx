@@ -5,16 +5,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_components/ui/select"
+import type { ImageStyle } from "@/_graphql/__generated__/graphql"
 
 type Props = {
-  taste: string
-  setTaste: (value: string) => void
+  imageStyle: ImageStyle
+  setImageStyle: (value: ImageStyle) => void
 }
 
 /**
  * テイスト入力
- * @param props
- * @returns
  */
 export const TasteInput = (props: Props) => {
   return (
@@ -23,18 +22,18 @@ export const TasteInput = (props: Props) => {
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">テイスト</p>
           <Select
-            value={props.taste}
+            value={props.imageStyle}
             onValueChange={(value) => {
-              props.setTaste(value)
+              props.setImageStyle(value as ImageStyle)
             }}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="w-full">
-              <SelectItem value={"illust"}>{"イラスト"}</SelectItem>
-              <SelectItem value={"semiReal"}>{"セミリアル"}</SelectItem>
-              <SelectItem value={"real"}>{"リアル"}</SelectItem>
+              <SelectItem value={"ILLUSTRATION"}>{"イラスト"}</SelectItem>
+              <SelectItem value={"SEMI_REAL"}>{"セミリアル"}</SelectItem>
+              <SelectItem value={"REAL"}>{"リアル"}</SelectItem>
             </SelectContent>
           </Select>
         </div>

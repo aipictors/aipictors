@@ -15,8 +15,6 @@ type Props = {
 
 /**
  * 保護
- * @param props
- * @returns
  */
 export function GenerationTaskProtectedSelect(props: Props) {
   return (

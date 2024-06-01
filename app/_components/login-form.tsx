@@ -21,8 +21,6 @@ type Props = {
 
 /**
  * ログイン
- * @param props
- * @returns
  */
 export const LoginDialog = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(

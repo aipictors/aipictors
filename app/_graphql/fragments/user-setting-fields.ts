@@ -5,5 +5,6 @@ export const userSettingFieldsFragment = gql(`
     userId
     favoritedImageGenerationModelIds
     preferenceRating
+    featurePromptonRequest
   }
 `)

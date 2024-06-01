@@ -21,7 +21,7 @@ import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
 import type { StickerGenre } from "@/_graphql/__generated__/graphql"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
-import { uploadImage } from "@/_utils/upload-image"
+import { uploadPublicImage } from "@/_utils/upload-public-image"
 
 type Props = {
   onAddedSicker?: () => void
@@ -97,7 +97,7 @@ export const AddStickerDialog = (props: Props) => {
 
     try {
       // 画像をアップロードする処理
-      const uploadedImageUrl = await uploadImage(
+      const uploadedImageUrl = await uploadPublicImage(
         imageBase64,
         imageFileName,
         authContext.userId,

@@ -15,9 +15,9 @@ import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-i
 import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
-import { useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import {} from "@dnd-kit/core"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
@@ -32,7 +32,6 @@ import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
-import { ImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/images-and-video.input"
 import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { Loader2Icon } from "lucide-react"
 import PaintCanvas from "@/_components/paint-canvas"
@@ -41,15 +40,33 @@ import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-postion-adjust-input"
+import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-input"
 import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
+import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
+import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
+import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
+import { uploadPublicVideo } from "@/_utils/upload-public-video"
+import { createWorkMutation } from "@/_graphql/mutations/create-work"
+import type {
+  AccessType,
+  ImageStyle,
+  Rating,
+} from "@/_graphql/__generated__/graphql"
+import { sha256 } from "@/_utils/sha256"
+import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
+import { resizeImage } from "@/_utils/resize-image"
+import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
+import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 
 /**
  * 新規作品フォーム
- * @returns
  */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
+
+  if (!authContext || !authContext.userId) {
+    return "ログインしてください"
+  }
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
     variables: {
@@ -174,11 +191,11 @@ export const NewImageForm = () => {
 
   const [isAd, setIsAd] = useState(false)
 
-  const [ratingRestriction, setRatingRestriction] = useState("G")
+  const [ratingRestriction, setRatingRestriction] = useState<Rating>("G")
 
-  const [viewMode, setViewMode] = useState("public")
+  const [accessType, setAccessType] = useState<AccessType>("PUBLIC")
 
-  const [taste, setTaste] = useState("illust")
+  const [imageStyle, setImageStyle] = useState<ImageStyle>("ILLUSTRATION")
 
   const [aiUsed, setAiUsed] = useState("1")
 
@@ -190,6 +207,8 @@ export const NewImageForm = () => {
 
   const [items, setItems] = useState<TSortableItem[]>([])
 
+  const [indexList, setIndexList] = useState<number[]>([])
+
   const [videoFile, setVideoFile] = useState<File | null>(null)
 
   const [thumbnailBase64, setThumbnailBase64] = useState("")
@@ -200,43 +219,319 @@ export const NewImageForm = () => {
 
   const [thumbnailPosY, setThumbnailPosY] = useState(0)
 
-  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false)
+  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false) // サムネイルが横長かどうか
 
-  const [indexList, setIndexList] = useState<number[]>([])
+  const [isCreatedWork, setIsCreatedWork] = useState(false) // 作品作成が完了したかどうか
 
-  const [translateX, setTranslateX] = useState(0)
+  const [isCreatingWork, setIsCreatingWork] = useState(false) // 作品作成中かどうか
 
-  const [translateY, setTranslateY] = useState(0)
+  const [uploadedWorkId, setUploadedWorkId] = useState("")
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
   }
 
-  const onPost = async () => {
-    // タイトル、画像チェック
-    if (title === "") {
-      toast("タイトルを入力してください")
-      return
+  const [createWork, { loading: isCreatedLoading }] =
+    useMutation(createWorkMutation)
+
+  const uploadVideo = async () => {
+    if (authContext.userId === null || videoFile === null) {
+      return ""
     }
 
-    if (items.map((item) => item.content).length === 0) {
-      toast("画像もしくは動画を選択してください")
-      return
-    }
+    const videoFileName = `${createRandomString(30)}.mp4`
 
-    // 予約投稿の時間は日付と時間両方の入力が必要
-    if (
-      (reservationDate !== "" && reservationTime === "") ||
-      (reservationDate === "" && reservationTime !== "")
-    ) {
-      toast("予約投稿の時間を入力してください")
-      return
-    }
-
-    // サムネイル生成
-    const thumbnailImageBase64 = items[0].content
-    uploadPublicImage(thumbnailImageBase64)
+    const videoUrl = await uploadPublicVideo(
+      videoFile,
+      videoFileName,
+      authContext.userId,
+    )
+    return videoUrl
   }
+
+  const uploadImages = async () => {
+    if (authContext.userId === null) {
+      return []
+    }
+
+    const images = items.map((item) => item.content)
+
+    const imageUrls = await Promise.all(
+      images.map(async (image) => {
+        const imageFileName = `${createRandomString(30)}.webp`
+
+        const imageUrl = await uploadPublicImage(
+          image,
+          imageFileName,
+          authContext.userId,
+        )
+        return imageUrl
+      }),
+    )
+
+    return imageUrls
+  }
+
+  const successUploadedProcess = () => {
+    setIsCreatingWork(false)
+    setIsCreatedWork(true)
+    toast("作品を投稿しました")
+  }
+
+  /**
+   * 投稿処理
+   * @returns
+   */
+  const onPost = async () => {
+    const uploadedImageUrls = []
+    try {
+      setIsCreatingWork(true)
+
+      if (!authContext || !authContext.userId) {
+        toast("ログインしてください")
+        return
+      }
+
+      if (title === "") {
+        toast("タイトルを入力してください")
+        return
+      }
+
+      if (title.length > 120) {
+        toast("タイトルは120文字以内で入力してください")
+        return
+      }
+
+      if (caption.length > 3000) {
+        toast("キャプションは3000文字以内で入力してください")
+        return
+      }
+
+      if (enTitle.length > 120) {
+        toast("英語タイトルは120文字以内で入力してください")
+        return
+      }
+
+      if (enCaption.length > 3000) {
+        toast("英語キャプションは3000文字以内で入力してください")
+        return
+      }
+
+      if (
+        videoFile === null &&
+        items.map((item) => item.content).length === 0
+      ) {
+        toast("画像もしくは動画を選択してください")
+        return
+      }
+
+      // 予約投稿の時間は日付と時間両方の入力が必要
+      if (
+        (reservationDate !== "" && reservationTime === "") ||
+        (reservationDate === "" && reservationTime !== "")
+      ) {
+        toast("予約投稿の時間を入力してください")
+        return
+      }
+
+      if (thumbnailBase64 === "") {
+        toast("サムネイルを設定してください")
+        return
+      }
+
+      // サムネイルを作成してアップロード
+      const smallThumbnail = isThumbnailLandscape
+        ? await resizeImage(thumbnailBase64, 400, 0, "webp")
+        : await resizeImage(thumbnailBase64, 0, 400, "webp")
+      const largeThumbnail = isThumbnailLandscape
+        ? await resizeImage(thumbnailBase64, 600, 0, "webp")
+        : await resizeImage(thumbnailBase64, 0, 600, "webp")
+      const smallThumbnailFileName = `${createRandomString(30)}.webp`
+      const largeThumbnailFileName = `${createRandomString(30)}.webp`
+      const ogpImageFileName = `${createRandomString(30)}.webp`
+      const smallThumbnailUrl = await uploadPublicImage(
+        smallThumbnail.base64,
+        smallThumbnailFileName,
+        authContext.userId,
+      )
+      if (smallThumbnailUrl === "") {
+        toast("サムネイルのアップロードに失敗しました")
+        return
+      }
+
+      uploadedImageUrls.push(smallThumbnailUrl)
+      const largeThumbnailUrl = await uploadPublicImage(
+        largeThumbnail.base64,
+        largeThumbnailFileName,
+        authContext.userId,
+      )
+      if (largeThumbnailUrl === "") {
+        toast("サムネイルのアップロードに失敗しました")
+        return
+      }
+      uploadedImageUrls.push(largeThumbnailUrl)
+      const ogpBase64Url = await uploadPublicImage(
+        ogpBase64,
+        ogpImageFileName,
+        authContext.userId,
+      )
+      if (ogpBase64Url === "") {
+        toast("サムネイルのアップロードに失敗しました")
+        return
+      }
+      uploadedImageUrls.push(ogpBase64Url)
+
+      // Int型にするために日付をミリ秒に変換
+      const reservedAt =
+        reservationDate !== "" && reservationTime !== ""
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          : undefined
+
+      // トップ画像をSha256でハッシュ化
+      const mainImageSha256 = await sha256(thumbnailBase64)
+
+      const mainImageSize = await getSizeFromBase64(thumbnailBase64)
+
+      // 動画もしくは画像をアップロード
+      if (videoFile) {
+        const videoUrl = await uploadVideo()
+        if (videoUrl === "") {
+          toast("動画のアップロードに失敗しました")
+          return
+        }
+
+        const work = await createWork({
+          variables: {
+            input: {
+              title: title,
+              entitle: enTitle,
+              explanation: caption,
+              enExplanation: enCaption,
+              rating: ratingRestriction,
+              prompt: pngInfo?.params.prompt ?? "",
+              negativePrompt: pngInfo?.params.negativePrompt ?? "",
+              seed: pngInfo?.params.seed ?? "",
+              sampler: pngInfo?.params.sampler ?? "",
+              strength: pngInfo?.params.strength ?? "",
+              noise: pngInfo?.params.noise ?? "",
+              modelName: pngInfo?.params.model ?? "",
+              modelHash: pngInfo?.params.modelHash ?? "",
+              otherGenerationParams: "",
+              pngInfo: pngInfo?.src ?? "",
+              imageStyle: imageStyle,
+              relatedUrl: link,
+              tags: tags.map((tag) => tag.text),
+              isTagEditable: isTagEditable,
+              thumbnailPosition: isThumbnailLandscape
+                ? thumbnailPosX
+                : thumbnailPosY,
+              modelId: aiUsed,
+              type: "VIDEO",
+              subjectId: themeId,
+              albumId: albumId,
+              isPromotion: isAd,
+              reservedAt: reservedAt,
+              mainImageSha256: mainImageSha256,
+              accessType: accessType,
+              imageUrls: [largeThumbnailFileName],
+              smallThumbnailImageURL: smallThumbnailUrl,
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: largeThumbnailUrl,
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: videoUrl,
+              ogpImageUrl: ogpBase64Url,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+            },
+          },
+        })
+
+        if (work.data?.createWork) {
+          setUploadedWorkId(work.data.createWork.id)
+        }
+      }
+
+      if (videoFile === null && items.length !== 0) {
+        const imageUrls = await uploadImages()
+        if (imageUrls.length === 0) {
+          toast("画像のアップロードに失敗しました")
+          return
+        }
+        const work = await createWork({
+          variables: {
+            input: {
+              title: title,
+              entitle: enTitle,
+              explanation: caption,
+              enExplanation: enCaption,
+              rating: ratingRestriction,
+              prompt: pngInfo?.params.prompt ?? "",
+              negativePrompt: pngInfo?.params.negativePrompt ?? "",
+              seed: pngInfo?.params.seed ?? "",
+              sampler: pngInfo?.params.sampler ?? "",
+              strength: pngInfo?.params.strength ?? "",
+              noise: pngInfo?.params.noise ?? "",
+              modelName: pngInfo?.params.model ?? "",
+              modelHash: pngInfo?.params.modelHash ?? "",
+              otherGenerationParams: "",
+              pngInfo: pngInfo?.src ?? "",
+              imageStyle: imageStyle,
+              relatedUrl: link,
+              tags: tags.map((tag) => tag.text),
+              isTagEditable: isTagEditable,
+              thumbnailPosition: isThumbnailLandscape
+                ? thumbnailPosX
+                : thumbnailPosY,
+              modelId: aiUsed,
+              type: "WORK",
+              subjectId: themeId,
+              albumId: albumId,
+              isPromotion: isAd,
+              reservedAt: reservedAt,
+              mainImageSha256: mainImageSha256,
+              accessType: accessType,
+              imageUrls: imageUrls,
+              smallThumbnailImageURL: smallThumbnailUrl,
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: largeThumbnailUrl,
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: "",
+              ogpImageUrl: ogpBase64Url,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+            },
+          },
+        })
+
+        if (work.data?.createWork) {
+          setUploadedWorkId(work.data.createWork.id)
+        }
+      }
+
+      successUploadedProcess()
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+      // 失敗したらアップロードした画像は削除する
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      uploadedImageUrls.forEach(async (url) => {
+        await deleteUploadedImage(url)
+      })
+    } finally {
+      setIsCreatingWork(false)
+    }
+  }
+
+  useEffect(() => {
+    if (items.map((item) => item.content).length === 0) {
+      setPngInfo(null)
+    }
+  }, [items])
 
   return (
     <>
@@ -276,22 +571,13 @@ export const NewImageForm = () => {
                 </div>
               </div>
             )}
-            <ImagesAndVideoInput
+            <DraggableImagesAndVideoInput
               indexList={indexList}
-              setIndexList={setIndexList}
+              items={items}
               videoFile={videoFile}
+              setItems={setItems}
+              setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
-              onDelete={(deletedId: number) => {
-                // もし全ての画像が削除されたらPNGInfoをnullにする
-                if (items.map((item) => item.content).length === 0) {
-                  setPngInfo(null)
-                }
-
-                const itemIds = items.map((item) => item.id)
-                const targetIndex = itemIds.indexOf(deletedId)
-                const newItems = items.filter((item) => item.id !== targetIndex)
-                setItems(newItems)
-              }}
               onVideoChange={(videoFile: File | null) => {
                 setVideoFile(videoFile)
               }}
@@ -332,7 +618,7 @@ export const NewImageForm = () => {
             />
           )}
 
-          <ScrollArea className="max-h-[100%] overflow-y-auto p-2 md:max-h-[64vh]">
+          <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
             <Accordion type="single" collapsible>
@@ -355,15 +641,15 @@ export const NewImageForm = () => {
               rating={ratingRestriction}
               setRating={setRatingRestriction}
             />
-            <ViewInput viewMode={viewMode} setViewMode={setViewMode} />
-            <TasteInput taste={taste} setTaste={setTaste} />
+            <ViewInput accessType={accessType} setAccessType={setAccessType} />
+            <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
             <ModelInput
               model={aiUsed}
               models={optionModels}
               setModel={setAiUsed}
             />
             {pngInfo && (
-              <div className="items-center">
+              <div className="flex items-center">
                 <Checkbox
                   checked={isSetGenerationParams}
                   onCheckedChange={() => {
@@ -471,9 +757,11 @@ export const NewImageForm = () => {
             <AdWorkInput isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
-        <Button className="bottom-0 mb-2 w-full" type="submit" onClick={onPost}>
-          投稿
-        </Button>
+        <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
+          <Button className="w-full" type="submit" onClick={onPost}>
+            投稿
+          </Button>
+        </div>
       </div>
       {editTargetImageBase64 !== "" && (
         <FullScreenContainer
@@ -505,6 +793,17 @@ export const NewImageForm = () => {
           />
         </FullScreenContainer>
       )}
+
+      <SuccessCreatedWorkDialog
+        isOpen={isCreatedWork}
+        onClose={() => {}}
+        title={title}
+        imageBase64={thumbnailBase64}
+        workId={uploadedWorkId}
+        shareTags={["Aipictors", "AIイラスト", "AIart"]}
+      />
+
+      <CreatingWorkDialog isOpen={isCreatingWork} />
     </>
   )
 }

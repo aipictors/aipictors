@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { LoaderIcon } from "lucide-react"
 
 type Props = {
@@ -22,8 +22,6 @@ type Props = {
 
 /**
  * ログイン
- * @param props
- * @returns
  */
 export function LoginDialogButton(props: Props) {
   return (

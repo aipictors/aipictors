@@ -3,7 +3,6 @@ import { NoteCard } from "@/routes/($lang)._main.notes._index/_components/note-c
 
 /**
  * コラムの一覧
- * @returns
  */
 export default function Notes() {
   return (

@@ -6,7 +6,7 @@ import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { GenerationImageDialogButton } from "@/routes/($lang).generation._index/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/routes/($lang).generation._index/_components/generation-menu-button"
 import { GenerationReferenceDialog } from "@/routes/($lang).generation._index/_components/generation-reference-dialog-button"
@@ -65,8 +65,6 @@ type Props = {
 
 /**
  * 履歴一覧の履歴シートの中に表示する履歴内容
- * @param props
- * @returns
  */
 export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()

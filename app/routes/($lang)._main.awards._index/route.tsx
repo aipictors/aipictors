@@ -37,7 +37,6 @@ export async function loader() {
 
 /**
  * ランキングの履歴
- * @returns
  */
 export default function Awards() {
   const data = useLoaderData<typeof loader>()

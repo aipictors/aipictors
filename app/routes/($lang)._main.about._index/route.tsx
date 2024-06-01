@@ -8,7 +8,6 @@ export const meta: MetaFunction = () => {
 
 /**
  * サイトについて
- * @returns
  */
 export default function About() {
   return (

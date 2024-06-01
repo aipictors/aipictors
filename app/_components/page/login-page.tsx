@@ -19,7 +19,6 @@ import { toast } from "sonner"
 
 /**
  * ログインページ
- * @returns
  */
 export const LoginPage = () => {
   const [mutation, { loading: isLoading }] = useMutation(

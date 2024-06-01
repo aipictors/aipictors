@@ -5,8 +5,6 @@ type Props = ButtonProps
 
 /**
  * 外部リンク
- * @param props
- * @returns
  */
 export const LinkWebButton = (props: Props) => {
   return (

@@ -7,7 +7,6 @@ import { json, useLoaderData } from "@remix-run/react"
 
 /**
  * モデルの一覧
- * @returns
  */
 export async function loader() {
   const client = createClient()

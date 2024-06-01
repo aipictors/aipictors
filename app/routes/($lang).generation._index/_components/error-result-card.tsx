@@ -3,7 +3,6 @@ import { FrownIcon } from "lucide-react"
 
 /**
  * エラーになった履歴
- * @returns
  */
 export const ErrorResultCard = () => {
   return (

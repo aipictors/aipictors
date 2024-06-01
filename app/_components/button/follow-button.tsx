@@ -12,8 +12,6 @@ type Props = {
 
 /**
  * フォロー
- * @param props
- * @returns
  */
 export const FollowButton = (props: Props) => {
   const authContext = useContext(AuthContext)

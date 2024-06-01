@@ -6,7 +6,6 @@ import { useContext, useEffect } from "react"
 
 /**
  * 自動ログアウトフォーム
- * @returns
  */
 export const AutoLogoutForm = () => {
   const authContext = useContext(AuthContext)

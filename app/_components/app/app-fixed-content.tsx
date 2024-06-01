@@ -1,16 +1,14 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   position: "top" | "bottom" | "left" | "right"
   children: React.ReactNode
-}
+}>
 
 /**
  * 画面に固定表示するコンテンツ
- * @param props
- * @returns
  */
-export const AppFixedContent = (props: Props) => {
+export function AppFixedContent(props: Props) {
   return (
     <div
       className={cn(

@@ -9,7 +9,6 @@ import { useBoolean } from "usehooks-ts"
 /**
  * Format prompt text
  * @param text
- * @returns
  */
 export const formatPromptTextForKeyWord = (text: string) => {
   return text

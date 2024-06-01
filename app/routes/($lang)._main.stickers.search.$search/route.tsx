@@ -37,7 +37,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * スタンプの検索画面
- * @returns
  */
 export default function Stickers() {
   const params = useParams()

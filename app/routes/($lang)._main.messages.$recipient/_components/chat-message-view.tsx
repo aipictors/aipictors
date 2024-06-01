@@ -11,8 +11,6 @@ type Props = {
 }
 
 /**
- * @param props
- * @returns
  */
 export function ChatMessageView(props: Props) {
   const [createMessage, { loading: isLoading }] = useMutation(

@@ -20,8 +20,6 @@ type Props = {
 
 /**
  * 画像生画面のメイン部分
- * @param props
- * @returns
  */
 export const GenerationMainView = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
@@ -77,7 +75,7 @@ export const GenerationMainView = (props: Props) => {
   return (
     <ResizablePanelGroup
       direction="horizontal"
-      className="mt-2 flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
+      className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
     >
       <ResizablePanelWithMemory
         id="generation-config"

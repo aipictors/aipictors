@@ -5,8 +5,6 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 
 /**
  * 生成履歴詳細
- * @param props
- * @returns
  */
 export const GenerationTaskDetailsView = () => {
   const { send } = GenerationConfigContext.useActorRef()

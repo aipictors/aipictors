@@ -21,8 +21,6 @@ type Props = {
 
 /**
  * ログアウト・ダイアログ
- * @param props
- * @returns
  */
 export const LogoutDialogLegacy = (props: Props) => {
   const handleLogout = async () => {

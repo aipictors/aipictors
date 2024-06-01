@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Skeleton } from "@/_components/ui/skeleton"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation._index/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/routes/($lang).generation._index/_components/generation-work-card "
@@ -18,8 +18,6 @@ type Props = {
 
 /**
  * 画像生成作品の一覧
- * @param props
- * @returns
  */
 export const GenerationWorkList = (props: Props) => {
   if (props.works === undefined && !props.loading) {

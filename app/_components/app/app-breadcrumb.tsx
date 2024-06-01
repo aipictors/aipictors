@@ -2,11 +2,11 @@ import { config } from "@/config"
 import { Link } from "@remix-run/react"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
-type Props = {
+type Props = Readonly<{
   breadcrumb: WithContext<BreadcrumbList>
-}
+}>
 
-export const AppBreadcrumb = (props: Props) => {
+export function AppBreadcrumb(props: Props) {
   if (!Array.isArray(props.breadcrumb.itemListElement)) {
     return null
   }

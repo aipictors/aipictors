@@ -8,7 +8,6 @@ type Props = {
 
 /**
  * OGPフォーム
- * @returns
  */
 export const OgpInput = (props: Props) => {
   const defaultImageUrl =
@@ -29,7 +28,7 @@ export const OgpInput = (props: Props) => {
                 className={"max-w-24 rounded-md"}
               />
             </div>
-            <p>SNSシェア時のサムネイル調整</p>
+            <p className="text-white">SNSシェア時のサムネイル調整</p>
           </div>
         </div>
       </OgpDialog>

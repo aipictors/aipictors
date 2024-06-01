@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { eventUsers } from "@/routes/($lang).events.wakiaiai/_assets/event-users"
 import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai/_components/event-creator-card"
 import { EventImage } from "@/routes/($lang).events.wakiaiai/_components/event-image"

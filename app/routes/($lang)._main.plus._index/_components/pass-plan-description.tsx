@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_components/ui/card"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { toMoneyNumberText } from "@/_utils/to-money-number-text"
 
 type Props = {

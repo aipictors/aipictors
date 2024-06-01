@@ -14,8 +14,6 @@ import { ErrorBoundary } from "react-error-boundary"
 
 /**
  * タスク詳細内容
- * @param props
- * @returns
  */
 export const GenerationTaskContent = () => {
   const context = useGenerationContext()

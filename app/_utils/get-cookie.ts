@@ -1,6 +1,5 @@
 /**
  * Cookie情報取得
- * @returns
  */
 export const getCookie = (id: string) => {
   try {

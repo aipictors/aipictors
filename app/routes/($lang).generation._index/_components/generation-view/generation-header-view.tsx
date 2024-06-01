@@ -6,8 +6,6 @@ type Props = {
 
 /**
  * 画像生成画面のヘッダー部分
- * @param props
- * @returns
  */
 export const GenerationHeaderView = (props: Props) => {
   const state = GenerationConfigContext.useSelector((snap) => {

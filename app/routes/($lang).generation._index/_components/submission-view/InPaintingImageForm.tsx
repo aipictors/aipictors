@@ -18,7 +18,6 @@ import { config } from "@/config"
 /**
  * インペイント用のフォーム
  * @param count
- * @returns
  */
 
 export const InPaintingImageForm = (props: Props) => {

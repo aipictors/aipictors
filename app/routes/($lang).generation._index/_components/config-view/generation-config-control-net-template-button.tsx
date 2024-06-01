@@ -17,7 +17,6 @@ type Props = {
 
 /**
  * ControlNet設定
- * @returns
  */
 export const GenerationConfigControlNetTemplateButton = (props: Props) => {
   return (

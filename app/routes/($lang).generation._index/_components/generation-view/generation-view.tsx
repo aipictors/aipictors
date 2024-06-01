@@ -19,8 +19,6 @@ type Props = {
 
 /**
  * 画像生成画面
- * @param props
- * @returns
  */
 export const GenerationView = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

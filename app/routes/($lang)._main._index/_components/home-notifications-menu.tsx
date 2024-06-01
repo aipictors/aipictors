@@ -10,7 +10,6 @@ import { useState } from "react"
 
 /**
  * ヘッダーのお知らせメニュー
- * @returns
  */
 export const HomeNotificationsMenu = () => {
   const tabValues = [

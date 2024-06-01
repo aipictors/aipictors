@@ -1,4 +1,4 @@
-import { ThumbnailPositionAdjustDialog } from "@/routes/($lang)._main.new.image/_components/thumbnail-postion-adjust-dialog"
+import { ThumbnailPositionAdjustDialog } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-dialog"
 import type React from "react"
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
 
 /**
  * サムネイル位置調整フォーム
- * @returns
  */
 export const ThumbnailPositionAdjustInput = (props: Props) => {
   return (
@@ -38,7 +37,7 @@ export const ThumbnailPositionAdjustInput = (props: Props) => {
                 className={props.isThumbnailLandscape ? "h-16" : "w-16"}
               />
             </div>
-            <p>サムネイルを調整</p>
+            <p className="text-white">サムネイルを調整</p>
           </div>
         </div>
       </ThumbnailPositionAdjustDialog>

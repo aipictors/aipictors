@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 履歴のリセットボタン
- * @param props
- * @returns
  */
 export function GenerationConfigResetButton(props: Props) {
   return (

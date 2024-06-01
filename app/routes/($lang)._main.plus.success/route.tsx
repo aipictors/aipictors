@@ -5,7 +5,6 @@ import { ThumbsUpIcon } from "lucide-react"
 
 /**
  * サブスクの決済を完了した場合のページ
- * @returns
  */
 export default function PlusSuccess() {
   return (

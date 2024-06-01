@@ -1,8 +1,7 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
 /**
  * フッター
- * @returns
  */
 export const HomeFooter = () => {
   return (

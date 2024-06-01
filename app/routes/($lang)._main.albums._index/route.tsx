@@ -3,7 +3,6 @@ import { AlbumCard } from "@/routes/($lang)._main.albums._index/_components/albu
 
 /**
  * シリーズの一覧
- * @returns
  */
 export default function albums() {
   return (

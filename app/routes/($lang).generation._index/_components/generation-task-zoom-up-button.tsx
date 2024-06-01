@@ -12,7 +12,6 @@ type Props = {
 
 /**
  * 画像生成の履歴の画像ズームアップボタン
- * @returns
  */
 export const GenerationTaskZoomUpButton = (props: Props) => {
   return (

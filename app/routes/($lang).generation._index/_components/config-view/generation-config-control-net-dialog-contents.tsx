@@ -23,7 +23,6 @@ type Props = {
 
 /**
  * ControlNet設定ダイアログ内容
- * @returns
  */
 export const GenerationConfigControlNetDialogContents = (props: Props) => {
   const isShowWeight = () => {

@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import * as React from "react"
 
 import { type ButtonProps, buttonVariants } from "@/_components/ui/button"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
 import { Link } from "@remix-run/react"
 

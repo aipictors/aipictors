@@ -3,7 +3,6 @@ import { format } from "date-fns"
 /**
  * 日付のテキストを返す
  * @param time
- * @returns
  */
 export const toDateText = (time: number) => {
   const date = new Date(time * 1000)

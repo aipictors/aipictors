@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 履歴メモ一覧
- * @param props
- * @returns
  */
 export const GenerationConfigMemoList = (props: Props) => {
   if (props.memos === undefined) {

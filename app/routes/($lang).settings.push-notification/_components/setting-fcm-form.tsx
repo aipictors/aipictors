@@ -53,6 +53,28 @@ export const SettingFcmForm = () => {
     setIsLoadingNotifySetting(false)
   }
 
+  const onDeleteToken = async () => {
+    try {
+      setIsLoadingNotifySetting(true)
+
+      // tokenを削除する
+      await mutation({
+        variables: {
+          input: {
+            token: null,
+          },
+        },
+      }).then(async (result) => {
+        toast("通知を受信する設定を解除しました。")
+        setWebFcmToken(null)
+        setIsLoadingNotifySetting(false)
+      })
+    } catch (error) {
+      setIsLoadingNotifySetting(false)
+    }
+    setIsLoadingNotifySetting(false)
+  }
+
   const onClickTestNotify = async () => {
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
@@ -79,6 +101,20 @@ export const SettingFcmForm = () => {
             <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
           )}
         </Button>
+
+        {webFcmToken && (
+          <Button
+            onClick={onDeleteToken}
+            disabled={isLoadingNotifySetting}
+            className="mr-4"
+            variant={"secondary"}
+          >
+            {"Push通知解除"}
+            {isLoadingNotifySetting && (
+              <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
+            )}
+          </Button>
+        )}
 
         <Button
           onClick={onClickTestNotify}

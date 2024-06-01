@@ -7,8 +7,6 @@ import { useContext } from "react"
 
 /**
  * タスクプレビュー内容
- * @param props
- * @returns
  */
 export const GenerationTaskContentPreview = () => {
   const context = useGenerationContext()

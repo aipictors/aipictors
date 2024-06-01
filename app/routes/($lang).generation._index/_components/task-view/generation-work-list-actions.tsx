@@ -23,8 +23,6 @@ type Props = {
 
 /**
  * 作品一覧の操作
- * @param props
- * @returns
  */
 export const GenerationWorkListActions = (props: Props) => {
   const context = useGenerationContext()

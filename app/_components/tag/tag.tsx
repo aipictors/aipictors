@@ -2,7 +2,7 @@ import { X } from "lucide-react"
 import type { TagInputProps, Tag as TagType } from "@/_components/tag/tag-input"
 
 import { cva } from "class-variance-authority"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { Button } from "@/_components/ui/button"
 
 export const tagVariants = cva(

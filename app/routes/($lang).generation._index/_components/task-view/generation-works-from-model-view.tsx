@@ -10,8 +10,6 @@ import { useState } from "react"
 
 /**
  * モデルから作品検索
- * @param props
- * @returns
  */
 export const GenerationWorkListModelView = () => {
   const { send } = GenerationConfigContext.useActorRef()

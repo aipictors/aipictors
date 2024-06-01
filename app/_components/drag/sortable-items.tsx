@@ -23,9 +23,8 @@ import { SortableItem } from "@/_components/drag/sortable-item"
 type Props = {
   items: TSortableItem[]
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
-  setIndexList: (indexList: number[]) => void
+  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   isDeletable?: boolean
-  onDelete?: (id: number) => void
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void
   dummyEnableDragItem?: React.ReactNode // アイテム一覧に並び替えできないダミーアイテム
@@ -58,13 +57,19 @@ export const SortableItems = (props: Props) => {
 
     const activeIndex = props.items.findIndex((item) => item.id === active.id)
     const overIndex = props.items.findIndex((item) => item.id === over.id)
-
-    if (activeIndex !== overIndex) {
-      props.setItems((prev) =>
-        arrayMove<TSortableItem>(prev, activeIndex, overIndex),
-      )
-    }
+    const newItems =
+      activeIndex !== overIndex
+        ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
+        : props.items
     setActiveItem(undefined)
+
+    // itemsの各itemsのidをいまの並び順ごとに0, 1, 2...と振り直す
+    props.setItems(() =>
+      newItems.map((item, index) => ({
+        ...item,
+        id: index,
+      })),
+    )
 
     // インデックス並び替え
     changeIndexList(activeIndex, overIndex)
@@ -85,13 +90,24 @@ export const SortableItems = (props: Props) => {
     props.setIndexList(newIds)
   }
 
-  const deleteIndex = (deleteId: number) => {
-    // 以降を-1する
-    const newIds = props.items
-      .filter((item) => item.id !== deleteId)
-      .map((item) => item.id)
-      .map((id) => (id > deleteId ? id - 1 : id))
-    props.setIndexList(newIds)
+  const deleteIndex = (deletedId: number) => {
+    console.log("deletedId", deletedId)
+
+    // deletedId以降は1つずつ前にずらす
+    props.setIndexList((prev) =>
+      prev
+        .filter((id) => id !== deletedId)
+        .map((id) => (id > deletedId ? id - 1 : id)),
+    )
+
+    const newItems = props.items.filter((item) => item.id !== deletedId)
+    // itemsの各itemsのidをいまの並び順ごとに0, 1, 2...と振り直す
+    props.setItems(() =>
+      newItems.map((item, index) => ({
+        ...item,
+        id: index,
+      })),
+    )
   }
 
   return (
@@ -106,13 +122,7 @@ export const SortableItems = (props: Props) => {
         <div className="flex w-full flex-wrap justify-center gap-4">
           {props.items.map((item) => (
             <SortableItem
-              onDelete={(id: number) => {
-                props.setItems((prev) => prev.filter((item) => item.id !== id))
-                deleteIndex(id)
-                if (props.onDelete) {
-                  props.onDelete(id)
-                }
-              }}
+              onDelete={deleteIndex}
               isDeletable={true}
               key={item.id}
               item={item}

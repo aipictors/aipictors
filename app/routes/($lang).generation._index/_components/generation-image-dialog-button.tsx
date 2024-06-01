@@ -14,8 +14,6 @@ type Props = {
 
 /**
  * 生成画像のダイアログのボタン
- * @param props
- * @returns
  */
 export function GenerationImageDialogButton(props: Props) {
   return (

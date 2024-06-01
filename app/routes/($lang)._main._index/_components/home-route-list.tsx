@@ -131,7 +131,6 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          isDisabled={config.isReleaseMode}
           href={"/settings/restriction"}
           icon={SettingsIcon}
         >

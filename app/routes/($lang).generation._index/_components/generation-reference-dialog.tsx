@@ -17,8 +17,6 @@ type Props = {
 
 /**
  * 参照生成ダイアログボタン
- * @param props
- * @returns
  */
 export function GenerationReferenceDialogButton(props: Props) {
   return (

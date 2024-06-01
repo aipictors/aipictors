@@ -20,7 +20,6 @@ type Props = {
 
 /**
  * 画像生成の履歴
- * @returns
  */
 export function GenerationTaskDialogButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)

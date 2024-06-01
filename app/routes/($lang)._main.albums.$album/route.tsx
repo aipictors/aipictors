@@ -49,7 +49,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * シリーズの詳細
- * @returns
  */
 export default function albums() {
   const params = useParams()

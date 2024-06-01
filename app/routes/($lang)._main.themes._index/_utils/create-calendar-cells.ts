@@ -2,7 +2,6 @@
  * カレンダーのセルを作成する
  * @param year
  * @param month
- * @returns
  */
 export const createCalendarCells = (year: number, month: number) => {
   const first = new Date(year, month - 1, 1).getDay()

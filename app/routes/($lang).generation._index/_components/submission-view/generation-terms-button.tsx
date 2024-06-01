@@ -22,8 +22,6 @@ type Props = {
 
 /**
  * 画像生成の利用規約のダイアログ
- * @param props
- * @returns
  */
 export const GenerationTermsButton = (props: Props) => {
   return (

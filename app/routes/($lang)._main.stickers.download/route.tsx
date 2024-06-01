@@ -2,7 +2,6 @@ import { AppPage } from "@/_components/app/app-page"
 
 /**
  * ダウンロードしたスタンプの一覧
- * @returns
  */
 export default function Sticker() {
   return (

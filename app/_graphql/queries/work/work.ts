@@ -5,9 +5,14 @@ export const workQuery = gql(`
     work(id: $id) {
       id
       title
+      accessType
+      adminAccessType
+      promptAccessType
       rating
       description
+      isSensitive
       imageURL
+      smallThumbnailImageURL
       largeThumbnailImageURL
       user {
         promptonUser {
@@ -32,6 +37,7 @@ export const workQuery = gql(`
       createdAt
       likesCount
       viewsCount
+      commentsCount
       subWorks {
         ...SubWorkFields
       }

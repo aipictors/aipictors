@@ -1,5 +1,5 @@
 import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { StarIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
@@ -14,7 +14,6 @@ type Props = {
 
 /**
  * 画像生成の履歴のレーティングボタン
- * @returns
  */
 export const GenerationTaskRatingButton = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(

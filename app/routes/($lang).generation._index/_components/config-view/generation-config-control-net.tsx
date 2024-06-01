@@ -18,7 +18,6 @@ import { useBoolean } from "usehooks-ts"
 
 /**
  * ControlNet設定
- * @returns
  */
 export const GenerationConfigControlNet = () => {
   const context = useGenerationContext()

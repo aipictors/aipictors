@@ -1,7 +1,7 @@
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { SortableItems } from "@/_components/drag/sortable-items"
 import { Button } from "@/_components/ui/button"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import {
   getExtractInfoFromPNG,
   type PNGInfo,
@@ -31,8 +31,6 @@ type Props = {
 
 /**
  * ドラッグ可能な複数画像選択
- * @param props
- * @returns
  */
 export const ImagesAndVideoInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024
@@ -235,7 +233,7 @@ export const ImagesAndVideoInput = (props: Props) => {
       <div
         {...getRootProps()}
         className={cn(
-          "absolute top-0 left-0 h-[100%] w-[100%] border-2 border-gray-800",
+          "h-[100%] w-[100%] border-2 border-gray-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
@@ -249,7 +247,6 @@ export const ImagesAndVideoInput = (props: Props) => {
           </>
         )}
       </div>
-      {items.length === 0 && <div className="h-24" />}
       {props.videoFile && (
         <VideoItem
           videoFile={props.videoFile}

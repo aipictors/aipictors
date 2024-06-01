@@ -1,5 +1,5 @@
 import { Button } from "@/_components/ui/button"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { XIcon } from "lucide-react"
 import { useCallback, useEffect } from "react"
 
@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 画面全体へ表示するためのコンテナー
- * @param props
- * @returns
  */
 export const FullScreenContainer = (props: Props) => {
   /**

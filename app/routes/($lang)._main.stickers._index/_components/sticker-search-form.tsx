@@ -9,8 +9,6 @@ type Props = {
 
 /**
  * 検索フォーム
- * @param props
- * @returns
  */
 export const StickerSearchForm = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState(props.text || "")

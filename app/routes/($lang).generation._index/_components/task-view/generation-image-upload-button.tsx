@@ -12,8 +12,6 @@ type Props = {
 
 /**
  * 生成画像の投稿ボタン
- * @param props
- * @returns
  */
 export function GenerationImagePostButton(props: Props) {
   const onClick = async () => {

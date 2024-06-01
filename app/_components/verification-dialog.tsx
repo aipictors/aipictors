@@ -17,8 +17,6 @@ type Props = {
 
 /**
  * 認証ダイアログ
- * @param props
- * @returns
  */
 export const VerificationDialog = (props: Props) => {
   const { data: verificationUrlRet, refetch: verificationUrlRefetch } =

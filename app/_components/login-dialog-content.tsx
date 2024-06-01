@@ -21,8 +21,6 @@ import { toast } from "sonner"
 
 /**
  * ログイン
- * @param props
- * @returns
  */
 export function LoginDialogContent() {
   const [mutation, { loading: isLoading }] = useMutation(

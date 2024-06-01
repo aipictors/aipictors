@@ -11,10 +11,9 @@ export const viewerUserQuery = gql(`
         biography
         login
         name
-        receivedLikesCount
-        receivedViewsCount
         awardsCount
         followersCount
+        followCount
         iconImage {
           id
           downloadURL
@@ -25,6 +24,16 @@ export const viewerUserQuery = gql(`
         }
         webFcmToken
         generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
       }
     }
   }

@@ -12,8 +12,6 @@ import { LogInIcon } from "lucide-react"
 
 /**
  * ログイン
- * @param props
- * @returns
  */
 export function LoginNavigationButton() {
   return (

@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * お題入力
- * @param props
- * @returns
  */
 export const ThemeInput = (props: Props) => {
   return (
@@ -23,7 +21,7 @@ export const ThemeInput = (props: Props) => {
           {props.isLoading ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
-            <div className="items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <Checkbox
                 onCheckedChange={(value: boolean) => {
                   props.onChange(value)
