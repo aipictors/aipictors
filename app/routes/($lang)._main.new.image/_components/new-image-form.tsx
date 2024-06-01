@@ -804,7 +804,7 @@ export const NewImageForm = () => {
       )}
 
       <SuccessCreatedWorkDialog
-        isOpen={true}
+        isOpen={isCreatedWork}
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
