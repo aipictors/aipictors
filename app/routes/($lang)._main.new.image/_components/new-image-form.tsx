@@ -43,6 +43,7 @@ import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-postion-adjust-input"
 import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
+import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 
 /**
  * 新規作品フォーム
@@ -233,9 +234,16 @@ export const NewImageForm = () => {
       return
     }
 
+    if (!authContext || !authContext.userId) {
+      toast("ログインしてください")
+      return
+    }
+
+    const imageFileName = `${createRandomString(32)}.webp`
+
     // サムネイル生成
     const thumbnailImageBase64 = items[0].content
-    uploadPublicImage(thumbnailImageBase64)
+    uploadPublicImage(thumbnailImageBase64, imageFileName, authContext.userId)
   }
 
   return (

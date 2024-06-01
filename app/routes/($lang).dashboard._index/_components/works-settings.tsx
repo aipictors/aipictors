@@ -38,6 +38,7 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
 }
 
@@ -169,6 +170,7 @@ export const WorksSetting = (props: Props) => {
             onClickBookmarkSortButton={props.onClickBookmarkSortButton}
             onClickCommentSortButton={props.onClickCommentSortButton}
             onClickViewSortButton={props.onClickViewSortButton}
+            onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
             onClickDateSortButton={props.onClickDateSortButton}
           />
         )}

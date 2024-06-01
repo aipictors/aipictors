@@ -242,6 +242,8 @@ export const config = {
     www4: "https://www4.aipictors.com/index.php",
     uploadPrivateImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
+    uploadPublicImage:
+      "https://www.aipictors.com/wp-content/themes/AISite/upload-public-image.php",
     uploadImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-public-image.php",
     deleteUploadedImage:

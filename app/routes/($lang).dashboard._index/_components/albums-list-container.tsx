@@ -10,6 +10,7 @@ import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AlbumsList } from "@/routes/($lang).dashboard._index/_components/albums-list"
+import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
 
 type Props = {
   page: number
@@ -36,8 +37,7 @@ export const AlbumsListContainer = (props: Props) => {
   ) {
     return null
   }
-
-  const albumsResp = useSuspenseQuery(albumsQuery, {
+  const { data: albumsResp, refetch } = useSuspenseQuery(albumsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 16 * props.page,
@@ -54,10 +54,17 @@ export const AlbumsListContainer = (props: Props) => {
     },
   })
 
-  const albums = albumsResp?.data?.albums ?? []
+  const albums = albumsResp?.albums ?? []
+
+  const refetchAlbums = () => {
+    refetch()
+  }
 
   return (
     <>
+      <div className="mb-2">
+        <WorksSeriesAddButton refetch={refetchAlbums} />
+      </div>
       <AlbumsList
         albums={
           albums?.map((album) => ({

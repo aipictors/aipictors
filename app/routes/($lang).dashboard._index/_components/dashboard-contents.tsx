@@ -99,6 +99,11 @@ export const DashboardContents = (props: Props) => {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
+  const onClickAccessTypeSortButton = () => {
+    setWorkOrderby("ACCESS_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
   const onClickDateSortButton = () => {
     setWorkOrderby("DATE_CREATED")
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
@@ -115,20 +120,21 @@ export const DashboardContents = (props: Props) => {
     setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      where: {
-        ownerUserId: authContext.userId,
-        isSensitiveAndAllRating: albumRating === null,
-        isSensitive: albumRating !== "G",
-        needInspected: false,
-        needsThumbnailImage: false,
+  const { data: albumsCountResp, refetch: albumsCountRefetch } =
+    useSuspenseQuery(albumsCountQuery, {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      variables: {
+        where: {
+          ownerUserId: authContext.userId,
+          isSensitiveAndAllRating: albumRating === null,
+          isSensitive: albumRating !== "G",
+          needInspected: false,
+          needsThumbnailImage: false,
+        },
       },
-    },
-  })
+    })
 
-  const albumsMaxCount = albumsCountResp.data?.albumsCount ?? 0
+  const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
 
   return (
     <>
@@ -179,6 +185,7 @@ export const DashboardContents = (props: Props) => {
                   onClickBookmarkSortButton={onClickBookmarkSortButton}
                   onClickCommentSortButton={onClickCommentSortButton}
                   onClickViewSortButton={onClickViewSortButton}
+                  onClickAccessTypeSortButton={onClickAccessTypeSortButton}
                   onClickDateSortButton={onClickDateSortButton}
                   setWorkTabType={setWorkTabType}
                   setAccessType={setAccessType}
@@ -203,7 +210,9 @@ export const DashboardContents = (props: Props) => {
                     onClickBookmarkSortButton={onClickBookmarkSortButton}
                     onClickCommentSortButton={onClickCommentSortButton}
                     onClickViewSortButton={onClickViewSortButton}
+                    onClickAccessTypeSortButton={onClickAccessTypeSortButton}
                     onClickDateSortButton={onClickDateSortButton}
+                    albumsCountRefetch={albumsCountRefetch}
                   />
                 </Suspense>
               </>
@@ -223,7 +232,6 @@ export const DashboardContents = (props: Props) => {
                   setRating={setAlbumRating}
                   setSort={setAlbumOrderDeskAsc}
                 />
-
                 <Suspense fallback={<AppLoadingPage />}>
                   <AlbumsListContainer
                     page={albumPage}

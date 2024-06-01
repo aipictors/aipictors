@@ -32,6 +32,7 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
 }
 
@@ -92,7 +93,15 @@ export const WorksListTable = (props: Props) => {
                   onClick={props.onClickViewSortButton}
                 />
               </TableHead>
-              <TableHead>状態</TableHead>
+              <TableHead>
+                <WorksListColumn
+                  label="状態"
+                  orderBy="ACCESS_TYPE"
+                  nowOrderBy={props.orderBy}
+                  sort={props.sort}
+                  onClick={props.onClickAccessTypeSortButton}
+                />
+              </TableHead>
               <TableHead>{}</TableHead>
               <TableHead>
                 <WorksListColumn

@@ -12,9 +12,15 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
+import { useMutation } from "@apollo/client/index"
+import { createAlbumMutation } from "@/_graphql/mutations/create-album"
+import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
+import { toast } from "sonner"
+import { uploadPublicImage } from "@/_utils/upload-public-image"
 
 type Props = {
   children: React.ReactNode
+  refetch: () => void
 }
 
 /**
@@ -25,7 +31,7 @@ export const CreateAlbumDialog = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string>("")
+  const [thumbnailImageBase64, setThumbnailImageBase64] = useState<string>("")
 
   const [title, setTitle] = useState<string>("")
 
@@ -34,6 +40,10 @@ export const CreateAlbumDialog = (props: Props) => {
   const [description, setDescription] = useState<string>("")
 
   const [selectedWorks, setSelectedWorks] = useState<WorksQuery["works"]>([])
+
+  const [isCreating, setIsCreating] = useState<boolean>(false)
+
+  const [createAlbum] = useMutation(createAlbumMutation)
 
   const handleSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -47,11 +57,97 @@ export const CreateAlbumDialog = (props: Props) => {
    */
   const onCrop = async (croppedImage: string) => {
     const base64 = await getBase64FromImageUrl(croppedImage)
-    setThumbnailImageUrl(base64)
+    setThumbnailImageBase64(base64)
   }
 
+  /**
+   * 画像リセット
+   */
   const onReset = () => {
-    setThumbnailImageUrl("")
+    setThumbnailImageBase64("")
+  }
+
+  /**
+   * シリーズ作成
+   */
+  const onCreateAlbum = async () => {
+    if (appContext.userId === null) {
+      toast("ログインしてください")
+      return
+    }
+
+    const trimmedTitle = title.trim()
+
+    const trimmedSlug = slug.trim()
+
+    // タイトルが未入力の場合
+    if (trimmedTitle === "") {
+      toast("タイトルを入力してください")
+      return
+    }
+
+    // リンク名が未入力の場合
+    if (trimmedSlug === "") {
+      toast("リンク名を入力してください")
+      return
+    }
+
+    // 作品が未選択の場合
+    if (selectedWorks.length === 0) {
+      toast("作品を選択してください")
+      return
+    }
+
+    setIsCreating(true)
+
+    try {
+      if (thumbnailImageBase64) {
+        // サムネイル画像が存在するならアップロードする
+        const imageFileName = `${createRandomString(32)}.webp`
+
+        const thumbnailUrl = await uploadPublicImage(
+          thumbnailImageBase64,
+          imageFileName,
+          appContext.userId,
+        )
+
+        await createAlbum({
+          variables: {
+            input: {
+              title: trimmedTitle,
+              slug: trimmedSlug,
+              description: description,
+              thumbnailUrl: thumbnailUrl,
+              workIds: selectedWorks.map((work) => work.id),
+            },
+          },
+        })
+        setIsCreating(false)
+        setIsOpen(false)
+        toast("シリーズを追加しました")
+        props.refetch()
+        return
+      }
+
+      await createAlbum({
+        variables: {
+          input: {
+            title: trimmedTitle,
+            slug: trimmedSlug,
+            description: description,
+            workIds: selectedWorks.map((work) => work.id),
+          },
+        },
+      })
+      setIsCreating(false)
+      setIsOpen(false)
+      toast("シリーズを追加しました")
+      props.refetch()
+    } catch (error) {
+      setIsCreating(false)
+      setIsOpen(false)
+      toast("シリーズ追加に失敗しました")
+    }
   }
 
   return (
@@ -77,6 +173,7 @@ export const CreateAlbumDialog = (props: Props) => {
                   cropHeight={627}
                   onDeleteImage={onReset}
                   onCrop={onCrop}
+                  fileExtension={"webp"}
                 />
                 <p className="text-sm">
                   カバーにはR18部分を含まないようにしてください。
@@ -152,7 +249,9 @@ export const CreateAlbumDialog = (props: Props) => {
               </div>
             </div>
           </ScrollArea>
-          <Button onClick={() => {}}>保存して追加</Button>
+          <Button disabled={isCreating} onClick={onCreateAlbum}>
+            保存して追加
+          </Button>
           <Button
             variant={"secondary"}
             onClick={() => {

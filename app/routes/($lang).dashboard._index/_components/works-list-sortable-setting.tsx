@@ -14,6 +14,7 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
 }
 
@@ -101,6 +102,18 @@ export const WorksListSortableSetting = (props: Props) => {
     }
   }
 
+  const onClickAccessTypeSortButton = () => {
+    if (props.nowOrderBy === "ACCESS_TYPE") {
+      if (props.nowSort === "ASC") {
+        props.setSort("DESC")
+      } else {
+        props.setSort("ASC")
+      }
+    } else {
+      props.onClickAccessTypeSortButton()
+    }
+  }
+
   const onClickDateSortButton = () => {
     if (props.nowOrderBy === "DATE_CREATED") {
       if (props.nowSort === "ASC") {
@@ -156,6 +169,12 @@ export const WorksListSortableSetting = (props: Props) => {
                 sortType: "NAME",
                 label: "タイトル順",
                 callback: onClickTitleSortButton,
+              },
+              {
+                sort: "ASC",
+                sortType: "ACCESS_TYPE",
+                label: "状態順",
+                callback: onClickAccessTypeSortButton,
               },
               {
                 sort: "ASC",

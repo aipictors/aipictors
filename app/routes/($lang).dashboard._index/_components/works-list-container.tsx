@@ -31,7 +31,9 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  albumsCountRefetch: () => void
 }
 
 /**
@@ -49,47 +51,51 @@ export const WorksListContainer = (props: Props) => {
     return null
   }
 
-  const workResp = useSuspenseQuery(worksQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      offset: 16 * props.page,
-      limit: 16,
-      where: {
-        userId: authContext.userId,
-        orderBy: props.orderBy,
-        sort: props.sort,
-        isIncludePrivate: true,
-        ...(props.accessType !== null && {
-          accessTypes: [props.accessType],
-        }),
-        ...(props.rating !== null && {
-          ratings: [props.rating],
-        }),
+  const { data: workResp, refetch: workRespRefetch } = useSuspenseQuery(
+    worksQuery,
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      variables: {
+        offset: 16 * props.page,
+        limit: 16,
+        where: {
+          userId: authContext.userId,
+          orderBy: props.orderBy,
+          sort: props.sort,
+          isIncludePrivate: true,
+          ...(props.accessType !== null && {
+            accessTypes: [props.accessType],
+          }),
+          ...(props.rating !== null && {
+            ratings: [props.rating],
+          }),
+        },
       },
     },
-  })
+  )
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      where: {
-        userId: authContext.userId,
-        orderBy: props.orderBy,
-        sort: props.sort,
-        isIncludePrivate: true,
-        ...(props.accessType !== null && {
-          accessTypes: [props.accessType],
-        }),
-        ...(props.rating !== null && {
-          ratings: [props.rating],
-        }),
+  const { data: worksCountResp, refetch: worksCountRespRefetch } =
+    useSuspenseQuery(worksCountQuery, {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      variables: {
+        where: {
+          userId: authContext.userId,
+          orderBy: props.orderBy,
+          sort: props.sort,
+          isIncludePrivate: true,
+          ...(props.accessType !== null && {
+            accessTypes: [props.accessType],
+          }),
+          ...(props.rating !== null && {
+            ratings: [props.rating],
+          }),
+        },
       },
-    },
-  })
+    })
 
-  const works = workResp?.data?.works
+  const works = workResp?.works
 
-  const worksMaxCount = worksCountResp.data?.worksCount ?? 0
+  const worksMaxCount = worksCountResp?.worksCount ?? 0
 
   useEffect(() => {
     props.setWorksMaxCount(worksMaxCount)
@@ -125,6 +131,7 @@ export const WorksListContainer = (props: Props) => {
         onClickBookmarkSortButton={props.onClickBookmarkSortButton}
         onClickCommentSortButton={props.onClickCommentSortButton}
         onClickViewSortButton={props.onClickViewSortButton}
+        onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
         onClickDateSortButton={props.onClickDateSortButton}
       />
       <div className="mt-4 mb-8">
