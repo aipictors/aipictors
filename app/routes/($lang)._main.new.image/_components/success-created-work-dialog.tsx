@@ -9,7 +9,6 @@ type Props = {
   imageBase64: string
   workId: string
   shareTags: string[]
-  onClose: () => void
 }
 
 export const SuccessCreatedWorkDialog = (props: Props) => {
@@ -54,14 +53,17 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
       }, 1000) // Adjust this interval to keep confetti always visible
       return () => clearInterval(interval)
     }
-  }, [])
+  }, [props.isOpen, props.workId])
 
   return (
     <>
       <Dialog
         onOpenChange={(isOpen) => {
           if (!isOpen) {
-            props.onClose()
+            // ページ遷移
+            if (typeof window !== "undefined") {
+              window.location.href = `https://aipictors.com/works/${props.workId}`
+            }
           }
         }}
         open={props.isOpen}
@@ -93,7 +95,16 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               hashtags={props.shareTags}
             />
           </div>
-          <Button className="mt-2">閉じる</Button>
+          <Button
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.location.href = `https://aipictors.com/works/${props.workId}`
+              }
+            }}
+            className="mt-2"
+          >
+            閉じる
+          </Button>
         </DialogContent>
       </Dialog>
     </>
