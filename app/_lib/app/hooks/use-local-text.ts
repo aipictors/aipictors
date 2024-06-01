@@ -3,7 +3,6 @@ import { toLocalTextFactory } from "@/_lib/app/utils/to-local-text-factory"
 
 /**
  * 言語設定を含むテキストを取得する
- * @returns
  */
 export const useLocalText = () => {
   const locale = useLocale()

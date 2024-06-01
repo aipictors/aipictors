@@ -15,8 +15,6 @@ type Props = {
 
 /**
  * 枚数指定
- * @param props
- * @returns
  */
 export function GenerationTaskCountSelect(props: Props) {
   return (

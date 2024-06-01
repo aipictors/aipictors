@@ -6,8 +6,6 @@ import { Suspense } from "react"
 
 /**
  * サブスクリプション案内ダイアログ内容
- * @param props
- * @returns
  */
 export function SubscriptionDialogContent() {
   return (

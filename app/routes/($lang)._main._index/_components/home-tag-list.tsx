@@ -14,8 +14,6 @@ type Props = {
 
 /**
  * ホーム上部に
- * @param props
- * @returns
  */
 export const HomeTagList = (props: Props) => {
   const plugin = React.useRef(

@@ -5,8 +5,6 @@ type Props = ButtonProps
 
 /**
  * Instagram
- * @param props
- * @returns
  */
 export const SocialInstagramButton = (props: Props) => {
   return (

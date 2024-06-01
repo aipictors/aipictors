@@ -17,7 +17,6 @@ type Props = {
 
 /**
  * 画像作品カード
- * @returns
  */
 export const GenerationWorkCard = (props: Props) => {
   const [isHovered, setIsHovered] = useState(false)

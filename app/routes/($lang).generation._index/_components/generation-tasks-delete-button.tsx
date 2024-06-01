@@ -13,7 +13,6 @@ type Props = {
 
 /**
  * 画像生成の一括削除ボタン
- * @returns
  */
 export const GenerationTasksDeleteButton = (props: Props) => {
   if (props.isDeletedLoading) {

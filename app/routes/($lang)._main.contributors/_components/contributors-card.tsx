@@ -10,8 +10,6 @@ type Props = {
 
 /**
  * コントリビュータのカード
- * @param props
- * @returns
  */
 export const ContributorCard = (props: Props) => {
   return (

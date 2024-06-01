@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * タイトル入力
- * @param props
- * @returns
  */
 export const TitleInput = (props: Props) => {
   return (

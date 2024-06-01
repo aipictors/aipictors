@@ -29,7 +29,6 @@ type Props = {
 
 /**
  * 画像生成
- * @returns
  */
 export const GenerationForm = (props: Props) => {
   const [rating, setRating] = useState(-1)

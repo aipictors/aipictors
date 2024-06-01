@@ -12,7 +12,6 @@ type Props = {
 
 /**
  * 生成予約の履歴
- * @returns
  */
 export const ReservedGenerationLinkCard = (props: Props) => {
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import { Heart } from "lucide-react"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"

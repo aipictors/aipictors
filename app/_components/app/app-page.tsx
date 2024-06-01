@@ -1,18 +1,16 @@
 import { AppPageCenter } from "@/_components/app/app-page-center"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   children: React.ReactNode
   className?: string
   isCenter?: boolean
-}
+}>
 
 /**
  * デフォルトのページのレイアウト
- * @param props
- * @returns
  */
-export const AppPage = (props: Props) => {
+export function AppPage(props: Props) {
   if (props.isCenter) {
     return <AppPageCenter {...props} />
   }

@@ -5,7 +5,6 @@ import { useParams } from "@remix-run/react"
 
 /**
  * スタンプの詳細
- * @returns
  */
 export default function Sticker() {
   const params = useParams()

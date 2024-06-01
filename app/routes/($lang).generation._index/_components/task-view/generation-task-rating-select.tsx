@@ -15,8 +15,6 @@ type Props = {
 
 /**
  * お気に入り
- * @param props
- * @returns
  */
 export function GenerationTaskRatingSelect(props: Props) {
   return (

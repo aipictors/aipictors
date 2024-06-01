@@ -5,8 +5,6 @@ type Props = {
 
 /**
  * ダッシュボードホームコンテンツコンテナ
- * @param props
- * @returns
  */
 export const DashboardHomeContentContainer = (props: Props) => {
   return (

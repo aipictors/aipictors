@@ -60,7 +60,6 @@ import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 
 /**
  * 新規作品フォーム
- * @returns
  */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)

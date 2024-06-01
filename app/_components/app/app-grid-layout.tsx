@@ -1,11 +1,11 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   className?: string
   children: React.ReactNode
-}
+}>
 
-export const AppGridLayout = (props: Props) => {
+export function AppGridLayout(props: Props) {
   return (
     <div
       className={cn(

@@ -1,12 +1,12 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 
-type Props = {
+type Props = Readonly<{
   className?: string
   isFullWidth?: boolean
   children: React.ReactNode
-}
+}>
 
-export const AppColumnLayout = (props: Props) => {
+export function AppColumnLayout(props: Props) {
   return (
     <div
       className={cn(

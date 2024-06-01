@@ -23,8 +23,6 @@ type Props = {
 
 /**
  * インペイントダイアログ
- * @param props
- * @returns
  */
 export const InPaintingDialog = (props: Props) => {
   const [maskBase64, setMaskBase64] = useState("")

@@ -14,7 +14,6 @@ type Props = {
 
 /**
  * ClipSkipの設定
- * @returns
  */
 export const GenerationConfigClipSkip = (props: Props) => {
   return (

@@ -1,15 +1,15 @@
 import "zenn-content-css"
 
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { marked } from "marked"
 import type React from "react"
 
-type Props = {
+type Props = Readonly<{
   className?: string
   children: React.ReactNode
-}
+}>
 
-export const AppMarkdown = (props: Props) => {
+export function AppMarkdown(props: Props) {
   if (typeof props.children !== "string") {
     return <>{props.children}</>
   }

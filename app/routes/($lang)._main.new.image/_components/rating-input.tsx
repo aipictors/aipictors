@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 年齢制限入力
- * @param props
- * @returns
  */
 export const RatingInput = (props: Props) => {
   return (

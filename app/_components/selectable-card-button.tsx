@@ -1,4 +1,4 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 // import Theme from "@/routes/($lang)._main.themes.$year.$month.$day._index/route"
 import { CheckIcon } from "lucide-react"
 
@@ -20,8 +20,6 @@ type Props = {
 
 /**
  * 選択可能なカード型ボタン
- * @param props
- * @returns
  */
 export function SelectableCardButton(props: Props) {
   return (

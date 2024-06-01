@@ -6,8 +6,6 @@ type Props = {
 
 /**
  * LINEログインボタン
- * @param props
- * @returns
  */
 export function LineLoggedInButton(props: Props) {
   const buttonText = props.text || "LINEログイン"

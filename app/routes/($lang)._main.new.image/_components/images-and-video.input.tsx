@@ -1,7 +1,7 @@
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { SortableItems } from "@/_components/drag/sortable-items"
 import { Button } from "@/_components/ui/button"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import {
   getExtractInfoFromPNG,
   type PNGInfo,
@@ -31,8 +31,6 @@ type Props = {
 
 /**
  * ドラッグ可能な複数画像選択
- * @param props
- * @returns
  */
 export const ImagesAndVideoInput = (props: Props) => {
   const maxSize = 32 * 1024 * 1024

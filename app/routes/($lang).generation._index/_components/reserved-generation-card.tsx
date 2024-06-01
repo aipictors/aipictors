@@ -1,4 +1,4 @@
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskCancelButton } from "@/routes/($lang).generation._index/_components/generation-cancel-button"
@@ -15,7 +15,6 @@ type Props = {
 
 /**
  * 生成予約の履歴
- * @returns
  */
 export const ReservedGenerationCard = (props: Props) => {
   const context = useGenerationContext()

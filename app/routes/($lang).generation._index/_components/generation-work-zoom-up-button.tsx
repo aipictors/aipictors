@@ -8,7 +8,6 @@ type Props = {
 
 /**
  * 画像生成作品の画像ズームアップボタン
- * @returns
  */
 export const GenerationWorkZoomUpButton = (props: Props) => {
   return (

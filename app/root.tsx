@@ -5,7 +5,7 @@ import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
 import { ContextProviders } from "@/_components/context-providers"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { config } from "@/config"
 import type {
   HeadersFunction,

@@ -1,6 +1,5 @@
 /**
  * Cookieからログイン情報を取得する
- * @returns
  */
 export const getCookieLoginToken = () => {
   try {

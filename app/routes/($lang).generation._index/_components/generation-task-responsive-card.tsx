@@ -27,7 +27,6 @@ type Props = {
 
 /**
  * レスポンシブ対応の画像生成の履歴
- * @returns
  */
 export const GenerationTaskResponsiveCard = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

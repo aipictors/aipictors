@@ -4,7 +4,6 @@ import { useCallback } from "react"
 
 /**
  * エラーになった履歴
- * @returns
  */
 export const GenerationTaskError = () => {
   const reloadPage = useCallback(() => {

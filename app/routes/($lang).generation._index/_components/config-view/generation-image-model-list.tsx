@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { removeDuplicates } from "@/_utils/remove-duplicates"
 import { config } from "@/config"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"

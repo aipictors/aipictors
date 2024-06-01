@@ -4,8 +4,6 @@ type Props = {
 
 /**
  * 記事のページ
- * @param props
- * @returns
  */
 export const ArticlePage = (props: Props) => {
   return (

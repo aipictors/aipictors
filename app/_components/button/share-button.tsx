@@ -3,7 +3,6 @@ import { ShareIcon } from "lucide-react"
 
 /**
  * 共有
- * @returns
  */
 export const ShareButton = () => {
   return (

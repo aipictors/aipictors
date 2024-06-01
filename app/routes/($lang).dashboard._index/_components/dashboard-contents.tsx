@@ -27,8 +27,6 @@ type Props = {
 
 /**
  * ダッシュボードコンテンツ
- * @param props
- * @returns
  */
 export const DashboardContents = (props: Props) => {
   const [page, setPage] = React.useState(0)

@@ -8,7 +8,6 @@ type Props = {
 
 /**
  * 画像生成作品のリンクボタン
- * @returns
  */
 export const GenerationWorkLinkButton = (props: Props) => {
   return (

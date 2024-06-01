@@ -12,7 +12,7 @@ import {
 import { Checkbox } from "@/_components/ui/checkbox"
 import { useState } from "react"
 
-type Props = {
+type Props = Readonly<{
   description: string
   title?: string
   nextLabel?: string
@@ -21,14 +21,12 @@ type Props = {
   cookieKey?: string
   onNext(): void
   onCancel(): void
-}
+}>
 
 /**
  * 確認ダイアログ
- * @param props
- * @returns
  */
-export const AppConfirmDialog = (props: Props) => {
+export function AppConfirmDialog(props: Props) {
   const [isCheck, setIsCheck] = useState(false)
 
   if (props.cookieKey) {

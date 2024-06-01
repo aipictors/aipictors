@@ -65,7 +65,6 @@ export const copyUrl = (taskId: string) => {
 /**
  * 生成履歴の画像を保存する
  * @param token
- * @returns
  */
 export const saveGenerationImage = async (
   userToken: string,
@@ -81,8 +80,6 @@ export const saveGenerationImage = async (
 
 /**
  * 履歴一覧の履歴シートの中に表示する履歴情報
- * @param props
- * @returns
  */
 export function GenerationTaskSheetView(props: Props) {
   const [mutation, { loading: isRatingLoading }] = useMutation(

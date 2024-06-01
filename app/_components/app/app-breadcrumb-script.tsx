@@ -1,10 +1,10 @@
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
-type Props = {
+type Props = Readonly<{
   breadcrumb: WithContext<BreadcrumbList>
-}
+}>
 
-export const AppBreadcrumbScript = (props: Props) => {
+export function AppBreadcrumbScript(props: Props) {
   return (
     <script
       type="application/ld+json"

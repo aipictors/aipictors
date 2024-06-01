@@ -1,7 +1,6 @@
 /**
  * 画像URLからBase64を生成する
  * @param imageURL
- * @returns
  */
 export function createBase64FromImageURL(imageURL: string): Promise<string> {
   return new Promise((resolve, reject) => {

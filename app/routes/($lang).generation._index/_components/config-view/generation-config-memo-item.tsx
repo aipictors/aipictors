@@ -8,8 +8,6 @@ type Props = {
 
 /**
  * 履歴メモ単体
- * @param props
- * @returns
  */
 export const GenerationConfigMemoItem = (props: Props) => {
   if (props.memo === undefined) return null

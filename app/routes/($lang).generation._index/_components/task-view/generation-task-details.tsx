@@ -13,7 +13,6 @@ import { Suspense, useContext } from "react"
 
 /**
  * 画像生成履歴の詳細
- * @returns
  */
 export const GenerationTaskDetails = () => {
   const context = useGenerationContext()

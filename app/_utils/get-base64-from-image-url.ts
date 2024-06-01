@@ -1,7 +1,6 @@
 /**
  * 画像URLからBase64文字列を取得する
  * @param url 画像URL
- * @returns
  */
 export async function getBase64FromImageUrl(url: string): Promise<string> {
   try {

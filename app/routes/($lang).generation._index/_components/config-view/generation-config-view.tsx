@@ -10,7 +10,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
 import { viewerCurrentImageGenerationMemosQuery } from "@/_graphql/queries/viewer/viewer-current-image-generation-memos"
 import { viewerFavoritedImageGenerationModelsQuery } from "@/_graphql/queries/viewer/viewer-favorited-image-generation-models"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import { config } from "@/config"
 import { GenerationConfigClipSkip } from "@/routes/($lang).generation._index/_components/config-view/generation-config-clip-skip"
 import { GenerationConfigControlNet } from "@/routes/($lang).generation._index/_components/config-view/generation-config-control-net"
@@ -39,7 +39,6 @@ import { useContext } from "react"
  * エディタの設定
  * ローカルストレージにより設定内容が保存されて、復元されるのでサーバレンダリングと
  * クライアントレンダリングの不一致を解決するため遅延インポートで本コンポーネントを読み込むこと
- * @returns
  */
 export function GenerationConfigView() {
   const context = useGenerationContext()

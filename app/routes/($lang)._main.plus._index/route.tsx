@@ -5,7 +5,6 @@ import { PlusNoteList } from "@/routes/($lang)._main.plus._index/_components/plu
 
 /**
  * サブスク
- * @returns
  */
 export default function Plus() {
   return (

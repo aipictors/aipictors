@@ -41,7 +41,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
 /**
  * その日のテーマ一覧
- * @returns
  */
 export default function Theme() {
   const params = useParams()

@@ -9,8 +9,6 @@ type Props = {
 
 /**
  * 画像プレビュー
- * @param props
- * @returns
  */
 export const ImagesPreview = (props: Props) => {
   const onChangePreviewImage = (visible: boolean) => {

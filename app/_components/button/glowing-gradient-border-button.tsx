@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * ボーダーが光るグラデーションボタン
- * @param props
- * @returns
  */
 export function GlowingGradientBorderButton(props: Props) {
   return (

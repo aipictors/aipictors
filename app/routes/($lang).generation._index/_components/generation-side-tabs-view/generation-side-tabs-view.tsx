@@ -4,7 +4,6 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 
 /**
  * サイドコンテンツ切替タブ
- * @returns
  */
 export function GenerationSideTabsView() {
   const context = useGenerationContext()

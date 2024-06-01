@@ -7,8 +7,6 @@ type Props = {
 
 /**
  * ドット
- * @param props
- * @returns
  */
 export const DotButton = (props: Props) => {
   return (

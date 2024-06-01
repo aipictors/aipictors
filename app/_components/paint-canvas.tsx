@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { Slider } from "@/_components/ui/slider"
-import { cn } from "@/_lib/utils"
+import { cn } from "@/_lib/cn"
 import MosaicCanvas from "@/_components/mosaic-canvas"
 
 interface IProps {

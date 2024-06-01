@@ -18,8 +18,6 @@ type Props = {
 
 /**
  * 履歴メモ設定ダイアログ
- * @param props
- * @returns
  */
 export const GenerationConfigMemoSettingDialog = (props: Props) => {
   return (

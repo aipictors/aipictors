@@ -25,8 +25,6 @@ type Props = {
 
 /**
  * タスク関連
- * @param props
- * @returns
  */
 export const GenerationTaskListView = (props: Props) => {
   const context = useGenerationContext()

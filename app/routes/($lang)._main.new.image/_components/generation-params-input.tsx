@@ -11,8 +11,6 @@ type Props = {
 
 /**
  * 生成パラメータ入力
- * @param props
- * @returns
  */
 export const GenerationParamsInput = (props: Props) => {
   return (

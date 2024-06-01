@@ -3,7 +3,6 @@ import { GuidelineArticle } from "@/routes/($lang)._main.guideline/_components/g
 
 /**
  * ガイドライン
- * @returns
  */
 export default function Guideline() {
   return (

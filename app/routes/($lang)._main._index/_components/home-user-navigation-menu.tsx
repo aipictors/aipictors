@@ -41,8 +41,6 @@ type Props = {
 
 /**
  * ヘッダーのナビゲーションメニュー
- * @param props
- * @returns
  */
 export const HomeUserNavigationMenu = (props: Props) => {
   const authContext = useContext(AuthContext)

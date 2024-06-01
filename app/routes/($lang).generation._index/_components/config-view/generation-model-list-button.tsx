@@ -27,8 +27,6 @@ type Props = {
 
 /**
  * モデル一覧を表示するボタン
- * @param props
- * @returns
  */
 export const GenerationModelListButton = (props: Props) => {
   const context = useGenerationContext()

@@ -9,8 +9,6 @@ type Props = {
 
 /**
  * 画像生成参考カード
- * @param props
- * @returns
  */
 export const ImageGenerationReferenceCard = (props: Props) => {
   return (

@@ -6,8 +6,6 @@ type Props = {
 
 /**
  * 画像生成機能を有効化する
- * @param props
- * @returns
  */
 export async function activeImageGeneration(props: Props) {
   const formData = new FormData()

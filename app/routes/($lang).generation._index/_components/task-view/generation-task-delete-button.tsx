@@ -12,8 +12,6 @@ type Props = {
 
 /**
  * 履歴の削除ボタン
- * @param props
- * @returns
  */
 export function GenerationTaskDeleteButton(props: Props) {
   return props.isEnable ? (

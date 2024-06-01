@@ -3,7 +3,6 @@ import type { Rating } from "@/_graphql/__generated__/graphql"
 /**
  * 作品の年齢制限の文言を返す
  * @param
- * @returns
  */
 export const toRatingText = (type: Rating) => {
   switch (type) {
