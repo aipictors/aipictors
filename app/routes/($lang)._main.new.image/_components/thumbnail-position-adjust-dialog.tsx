@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "@/_components/ui/dialog"
 import { Button } from "@/_components/ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type Props = {
   thumbnailBase64: string
@@ -30,6 +30,10 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
   const [isSquare, setIsSquare] = useState<boolean>(false)
+
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const imageRef = useRef<HTMLImageElement>(null)
 
   const onClose = () => {
     setIsOpen(false)
@@ -59,22 +63,117 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
   }
 
   const handleMouseUp = () => {
+    // ドラッグ終了時に枠からはみ出てる場合は枠内に画像を合わせる
+    const container = containerRef.current
+    const image = imageRef.current
+
+    if (!container || !image) return
+
+    const containerRect = container.getBoundingClientRect()
+    const imageRect = image.getBoundingClientRect()
+
+    if (props.isThumbnailLandscape) {
+      if (containerRect.right > imageRect.right) {
+        setTranslate((prev) => {
+          const adjustTranslation = (initialX: number) => {
+            let result = initialX
+            while (true) {
+              result += 0.1
+              const newX = result
+              image.style.transform = `translateX(${newX}%)`
+              const newImageRect = image.getBoundingClientRect()
+              if (containerRect.right < newImageRect.right) {
+                return newX
+              }
+            }
+          }
+
+          const newX = adjustTranslation(prev.x)
+          return { ...prev, x: newX }
+        })
+      }
+    } else {
+      if (containerRect.bottom > imageRect.bottom) {
+        setTranslate((prev) => {
+          const adjustTranslation = (initialY: number) => {
+            let result = initialY
+            while (true) {
+              result += 0.1
+              const newY = result
+              image.style.transform = `translateY(${newY}%)`
+              const newImageRect = image.getBoundingClientRect()
+              if (containerRect.bottom < newImageRect.bottom) {
+                return newY
+              }
+            }
+          }
+
+          const newY = adjustTranslation(prev.y)
+          return { ...prev, y: newY }
+        })
+      }
+    }
+
     setIsDragging(false)
   }
 
+  // const handleMouseMove = (e: MouseEvent) => {
+  //   if (isSquare || !isDragging) return
+  //   const { movementX, movementY } = e
+  //   if (props.isThumbnailLandscape) {
+  //     setTranslate((prev) => ({
+  //       ...prev,
+  //       x: Math.max(-31.6, Math.min(0, prev.x + (movementX / 160) * 100)),
+  //     }))
+  //   } else {
+  //     setTranslate((prev) => ({
+  //       ...prev,
+  //       y: Math.max(-31.6, Math.min(0, prev.y + (movementY / 160) * 100)),
+  //     }))
+  //   }
+  // }
+
   const handleMouseMove = (e: MouseEvent) => {
     if (isSquare || !isDragging) return
+
     const { movementX, movementY } = e
+
+    const container = containerRef.current
+
+    const image = imageRef.current
+
+    if (!container || !image) return
+
+    const containerRect = container.getBoundingClientRect()
+
+    const imageRect = image.getBoundingClientRect()
+
     if (props.isThumbnailLandscape) {
-      setTranslate((prev) => ({
-        ...prev,
-        x: Math.max(-31.6, Math.min(0, prev.x + (movementX / 160) * 100)),
-      }))
+      if (containerRect.right < imageRect.right && movementX <= 0) {
+        setTranslate((prev) => ({
+          ...prev,
+          x: Math.max(Math.min(0, prev.x + (movementX / 160) * 100)),
+        }))
+      }
+      if (containerRect.left > imageRect.left && movementX >= 0) {
+        setTranslate((prev) => ({
+          ...prev,
+          x: Math.max(Math.min(0, prev.x + (movementX / 160) * 100)),
+        }))
+      }
     } else {
-      setTranslate((prev) => ({
-        ...prev,
-        y: Math.max(-31.6, Math.min(0, prev.y + (movementY / 160) * 100)),
-      }))
+      if (containerRect.bottom < imageRect.bottom && movementY <= 0) {
+        setTranslate((prev) => ({
+          ...prev,
+          y: Math.max(Math.min(0, prev.y + (movementY / 160) * 100)),
+        }))
+      }
+      if (containerRect.top > imageRect.top && movementY >= 0) {
+        setTranslate((prev) => ({
+          ...prev,
+          y: Math.max(Math.min(0, prev.y + (movementY / 160) * 100)),
+        }))
+      }
     }
   }
 
@@ -111,7 +210,10 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>{"サムネイル調整"}</DialogTitle>
         </DialogHeader>
-        <div className="relative m-auto h-[160px] w-[160px] overflow-hidden border-4 border-clear-bright-blue">
+        <div
+          ref={containerRef}
+          className="relative m-auto h-[160px] w-[160px] overflow-hidden border-4 border-clear-bright-blue"
+        >
           <div
             style={{
               cursor: props.isThumbnailLandscape ? "ew-resize" : "ns-resize",
@@ -120,6 +222,7 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
             onMouseDown={handleMouseDown}
           >
             <img
+              ref={imageRef}
               draggable={false}
               src={`${props.thumbnailBase64}`}
               alt="Thumbnail"

@@ -41,7 +41,7 @@ import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-postion-adjust-input"
+import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-input"
 import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 
@@ -340,7 +340,7 @@ export const NewImageForm = () => {
             />
           )}
 
-          <ScrollArea className="max-h-[100%] overflow-y-auto p-2 md:max-h-[64vh]">
+          <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
             <Accordion type="single" collapsible>
@@ -479,9 +479,11 @@ export const NewImageForm = () => {
             <AdWorkInput isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
-        <Button className="bottom-0 mb-2 w-full" type="submit" onClick={onPost}>
-          投稿
-        </Button>
+        <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
+          <Button className="w-full" type="submit" onClick={onPost}>
+            投稿
+          </Button>
+        </div>
       </div>
       {editTargetImageBase64 !== "" && (
         <FullScreenContainer

@@ -235,7 +235,7 @@ export const ImagesAndVideoInput = (props: Props) => {
       <div
         {...getRootProps()}
         className={cn(
-          "absolute top-0 left-0 h-[100%] w-[100%] border-2 border-gray-800",
+          "h-[100%] w-[100%] border-2 border-gray-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
@@ -249,7 +249,6 @@ export const ImagesAndVideoInput = (props: Props) => {
           </>
         )}
       </div>
-      {items.length === 0 && <div className="h-24" />}
       {props.videoFile && (
         <VideoItem
           videoFile={props.videoFile}
