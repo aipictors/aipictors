@@ -21,6 +21,8 @@ import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
+import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -134,6 +136,13 @@ export const DashboardContents = (props: Props) => {
     })
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
+
+  const { data: pass } = useSuspenseQuery(viewerCurrentPassQuery, {})
+
+  const passData = pass?.viewer?.currentPass
+
+  const isStandardOrPremium =
+    passData?.type === "STANDARD" || passData?.type === "PREMIUM"
 
   return (
     <>
@@ -262,9 +271,12 @@ export const DashboardContents = (props: Props) => {
           </>
         )}
         {dashBoardContentType === "RECOMMEND" && (
-          <Suspense fallback={<AppLoadingPage />}>
-            <RecommendedListContainer />
-          </Suspense>
+          <>
+            <Suspense fallback={<AppLoadingPage />}>
+              <RecommendedListContainer />
+            </Suspense>
+            {!isStandardOrPremium && <RecommendedBanner />}
+          </>
         )}
       </div>
     </>
