@@ -8,6 +8,7 @@ export const partialWorkFieldsFragment = gql(`
     adminAccessType
     likesCount
     commentsCount
+    bookmarksCount
     viewsCount
     createdAt
     isTagEditable

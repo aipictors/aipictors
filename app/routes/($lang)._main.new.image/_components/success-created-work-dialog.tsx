@@ -42,17 +42,19 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
   }
 
   useEffect(() => {
-    const confettiContainer = document.getElementById(
-      "confetti-container",
-    ) as HTMLElement
-    if (confettiContainer) {
-      confettiContainer.innerHTML = "" // Clear previous confetti
-      createConfetti(confettiContainer)
-      const interval = setInterval(() => {
+    setTimeout(() => {
+      const confettiContainer = document.getElementById(
+        "confetti-container",
+      ) as HTMLElement
+      if (confettiContainer) {
+        confettiContainer.innerHTML = "" // Clear previous confetti
         createConfetti(confettiContainer)
-      }, 1000) // Adjust this interval to keep confetti always visible
-      return () => clearInterval(interval)
-    }
+        const interval = setInterval(() => {
+          createConfetti(confettiContainer)
+        }, 1000) // Adjust this interval to keep confetti always visible
+        return () => clearInterval(interval)
+      }
+    }, 1000)
   }, [props.isOpen, props.workId])
 
   return (

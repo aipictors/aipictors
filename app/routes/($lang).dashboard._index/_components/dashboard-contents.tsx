@@ -19,6 +19,7 @@ import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_componen
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
 
 type Props = {
@@ -163,9 +164,23 @@ export const DashboardContents = (props: Props) => {
               >
                 作品
               </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setDashBoardContentType("RECOMMEND")
+                }}
+                className="w-full"
+                value="RECOMMEND"
+              >
+                推薦
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
+        {dashBoardContentType === "HOME" && (
+          <Suspense fallback={<AppLoadingPage />}>
+            <DashboardHomeContents />
+          </Suspense>
+        )}
         {dashBoardContentType === "WORK" && (
           <>
             {workTabType === "WORK" && (
@@ -246,9 +261,9 @@ export const DashboardContents = (props: Props) => {
             )}
           </>
         )}
-        {dashBoardContentType === "HOME" && (
+        {dashBoardContentType === "RECOMMEND" && (
           <Suspense fallback={<AppLoadingPage />}>
-            <DashboardHomeContents />
+            <RecommendedListContainer />
           </Suspense>
         )}
       </div>
