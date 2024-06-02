@@ -50,8 +50,6 @@ export const HomeNotificationsContents = (props: Props) => {
     )
   }
 
-  console.log(notificationList)
-
   return (
     <>
       <ScrollArea className="h-96 overflow-y-auto">
