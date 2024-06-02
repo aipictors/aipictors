@@ -38,11 +38,13 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
           thumbnailUrl={selectedImage}
           imageURLs={allImageURLs}
         />
-        <WorkImageThumbnailCarousel
-          allImageURLs={allImageURLs}
-          selectedImage={selectedImage}
-          onSelectImage={handleSelectImage}
-        />
+        <div className="p-2">
+          <WorkImageThumbnailCarousel
+            allImageURLs={allImageURLs}
+            selectedImage={selectedImage}
+            onSelectImage={handleSelectImage}
+          />
+        </div>
       </div>
     )
   }

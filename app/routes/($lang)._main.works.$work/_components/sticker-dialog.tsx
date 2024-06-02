@@ -3,12 +3,13 @@ import { Dialog, DialogContent, DialogFooter } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
 import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-stickers"
-import { config } from "@/config"
 import { useQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { StickerButton } from "@/routes/($lang)._main.works.$work/_components/sticker-button"
 import { AddStickerButton } from "@/_components/add-sticker-button"
+import { ResponsivePagination } from "@/_components/responsive-pagination"
+import { viewerUserStickersCountQuery } from "@/_graphql/queries/viewer/viewer-user-stickers-count"
 
 type Props = {
   isOpen: boolean
@@ -22,25 +23,38 @@ type Props = {
 export const StickerDialog = (props: Props) => {
   const appContext = useContext(AuthContext)
 
+  const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
+
+  const [relatedSortStickerPage, setRelatedSortStickerPage] = useState(0)
+
   const [type, setType] = useState("CREATED")
 
   const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
     skip: appContext.isLoading,
     variables: {
-      limit: config.query.maxLimit,
-      offset: 0,
+      limit: 64,
+      offset: createdSortStickerPage * 64,
       orderBy: "DATE_CREATED",
     },
   })
 
+  const { data: stickersCount = null } = useQuery(
+    viewerUserStickersCountQuery,
+    {
+      skip: appContext.isLoading,
+    },
+  )
+
   const { data: relatedStickers = null } = useQuery(viewerUserStickersQuery, {
     skip: appContext.isLoading,
     variables: {
-      limit: 16,
+      limit: 64,
       offset: 0,
       orderBy: "DATE_USED",
     },
   })
+
+  const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
 
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
@@ -70,24 +84,26 @@ export const StickerDialog = (props: Props) => {
 
         <ScrollArea className="w-full">
           {type === "CREATED" && (
-            <div className="m-auto flex max-h-[64vh] max-w-[80vw] flex-wrap items-center">
-              {stickers?.viewer?.userStickers?.map((sticker) => (
-                <StickerButton
-                  key={sticker.id}
-                  imageUrl={sticker.imageUrl ?? ""}
-                  title={sticker.title}
-                  onClick={() => {
-                    props.onSend(sticker.id, sticker.imageUrl ?? "")
-                    props.onClose()
+            <>
+              <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
+                {stickers?.viewer?.userStickers?.map((sticker) => (
+                  <StickerButton
+                    key={sticker.id}
+                    imageUrl={sticker.imageUrl ?? ""}
+                    title={sticker.title}
+                    onClick={() => {
+                      props.onSend(sticker.id, sticker.imageUrl ?? "")
+                      props.onClose()
+                    }}
+                  />
+                ))}
+                <AddStickerButton
+                  onAddedSicker={() => {
+                    refetch()
                   }}
                 />
-              ))}
-              <AddStickerButton
-                onAddedSicker={() => {
-                  refetch()
-                }}
-              />
-            </div>
+              </div>
+            </>
           )}
           {type === "RELATED" && (
             <div className="m-auto flex max-h-[64vh] max-w-[80vw] flex-wrap items-center">
@@ -109,6 +125,18 @@ export const StickerDialog = (props: Props) => {
             </div>
           )}
         </ScrollArea>
+        {type === "CREATED" && (
+          <div className="mt-1 mb-1">
+            <ResponsivePagination
+              perPage={64}
+              maxCount={maxCount}
+              currentPage={createdSortStickerPage}
+              onPageChange={(page: number) => {
+                setCreatedSortStickerPage(page)
+              }}
+            />
+          </div>
+        )}
         <DialogFooter>
           <Button
             variant={"secondary"}

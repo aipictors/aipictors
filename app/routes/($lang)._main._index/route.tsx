@@ -1,9 +1,7 @@
-import { AppDevelopmentPage } from "@/_components/app/app-development-page"
 import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import { config } from "@/config"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
@@ -98,10 +96,6 @@ export async function loader() {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
-
-  if (!config.isDevelopmentMode) {
-    return <AppDevelopmentPage />
-  }
 
   const sections = [
     {

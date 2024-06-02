@@ -49,7 +49,7 @@ export const ImagesPreview = (props: Props) => {
               className={
                 props.imageClassName
                   ? props.imageClassName
-                  : "h-full max-h-[80vh] w-auto rounded bg-card object-contain xl:h-screen"
+                  : "m-auto h-full max-h-[64vh] w-auto rounded bg-card object-contain xl:h-screen md:max-h-[72vh]"
               }
               alt="selected-image"
               src={props.thumbnailUrl}
