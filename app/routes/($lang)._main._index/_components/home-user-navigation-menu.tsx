@@ -115,7 +115,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="マイページ"
           />
           <MenuItemLink
-            href={`https://www.aipictors.com/dashboard/?id=${authContext.userId}`}
+            href={"/dashboard"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label="ダッシュボード"
           />

@@ -41,35 +41,37 @@ export const HomeNotificationsMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <div className="p-2 text-center font-bold opacity-80">{"通知"}</div>
-        <Tabs defaultValue={defaultTab}>
-          <div className="border-b">
-            <TabsList className="mx-0 mb-1 md:mx-4">
-              {tabValues.map((tabValue) => (
-                <TabsTrigger
-                  key={tabValue}
-                  value={tabValue}
-                  onClick={() => handleTabClick(tabValue)}
-                >
-                  {tabLabel[tabValues.indexOf(tabValue)]}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+        <div className="w-96">
+          <div className="p-2 text-center font-bold opacity-80">{"通知"}</div>
+          <Tabs defaultValue={defaultTab}>
+            <div className="border-b">
+              <TabsList className="mx-0 mb-1 md:mx-4">
+                {tabValues.map((tabValue) => (
+                  <TabsTrigger
+                    key={tabValue}
+                    value={tabValue}
+                    onClick={() => handleTabClick(tabValue)}
+                  >
+                    {tabLabel[tabValues.indexOf(tabValue)]}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+          </Tabs>
+          <div className="relative h-96">
+            <Suspense
+              fallback={
+                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">
+                  <AppLoadingPage />
+                </div>
+              }
+            >
+              {activeTab !== "WORK_COMMENT" && (
+                <HomeNotificationsContents type={activeTab} />
+              )}
+              {activeTab === "WORK_COMMENT" && <HomeNotificationCommentsTabs />}
+            </Suspense>
           </div>
-        </Tabs>
-        <div className="relative h-96">
-          <Suspense
-            fallback={
-              <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">
-                <AppLoadingPage />
-              </div>
-            }
-          >
-            {activeTab !== "WORK_COMMENT" && (
-              <HomeNotificationsContents type={activeTab} />
-            )}
-            {activeTab === "WORK_COMMENT" && <HomeNotificationCommentsTabs />}
-          </Suspense>
         </div>
         {/* フッター部分 */}
         <div className="border-t pt-2 pb-2 pl-4">

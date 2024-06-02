@@ -23,22 +23,25 @@ export const HomeNotificationCommentsTabs = () => {
 
   return (
     <>
-      <Tabs className="pt-1" defaultValue={defaultTab}>
-        <div className="border-b">
-          <TabsList className="mx-0 mb-1 md:mx-4">
-            {tabValues.map((tabValue) => (
-              <TabsTrigger
-                key={tabValue}
-                value={tabValue}
-                onClick={() => handleTabClick(tabValue)}
-              >
-                {tabLabel[tabValues.indexOf(tabValue)]}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
-      </Tabs>
-      <ScrollArea className="h-96 overflow-y-auto">
+      <ScrollArea className="relative h-96 overflow-y-auto">
+        <Tabs
+          className="sticky top-0 z-10 bg-white pt-1 dark:bg-zinc-900"
+          defaultValue={defaultTab}
+        >
+          <div className="border-b">
+            <TabsList className="mx-0 mb-1 md:mx-4">
+              {tabValues.map((tabValue) => (
+                <TabsTrigger
+                  key={tabValue}
+                  value={tabValue}
+                  onClick={() => handleTabClick(tabValue)}
+                >
+                  {tabLabel[tabValues.indexOf(tabValue)]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+        </Tabs>
         <HomeNotificationCommentsContents type={activeTab} />
       </ScrollArea>
     </>

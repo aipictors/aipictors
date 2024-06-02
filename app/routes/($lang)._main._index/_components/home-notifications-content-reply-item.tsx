@@ -46,11 +46,13 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
             )}
             <p className="text-sm opacity-80">{props.createdAt}</p>
           </div>
-          <img
-            src={props.thumbnailUrl}
-            alt="thumbnail"
-            className="h-12 w-12 rounded-md object-cover"
-          />
+          <div className="h-12 w-12 overflow-hidden rounded-md">
+            <img
+              src={props.thumbnailUrl}
+              alt="thumbnail"
+              className="h-16 w-16 object-cover"
+            />
+          </div>
         </>
       </a>
     </>
