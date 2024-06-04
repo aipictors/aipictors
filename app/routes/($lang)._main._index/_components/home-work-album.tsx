@@ -8,6 +8,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
   userIcon: string
   workId: string
   workOwnerUserId: string
+  isLiked: boolean
 }
 
 export function HomeWorkAlbum({
@@ -18,6 +19,7 @@ export function HomeWorkAlbum({
   userIcon,
   workId,
   workOwnerUserId,
+  isLiked,
 }: HomeWorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
@@ -43,6 +45,7 @@ export function HomeWorkAlbum({
           size={56}
           targetWorkId={workId}
           targetWorkOwnerUserId={workOwnerUserId}
+          defaultLiked={isLiked}
           defaultLikedCount={0}
           isBackgroundNone={true}
           strokeWidth={2}

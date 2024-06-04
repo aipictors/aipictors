@@ -20,6 +20,7 @@ export const partialWorkFieldsFragment = gql(`
     largeThumbnailImageWidth
     prompt
     negativePrompt
+    isLiked
     user {
       id
       name

@@ -1,4 +1,3 @@
-import { Button } from "@/_components/ui/button"
 import { Link } from "@remix-run/react"
 
 type Props = {
@@ -16,12 +15,12 @@ export const TagButton = (props: Props) => {
 
   return (
     <Link to={`/tags/${props.name}`}>
-      <Button
-        className="bg-blue-500 text-white"
+      <div
+        className="rounded-md bg-blue-500 p-1 pr-2 pl-2 text-white"
         style={{ backgroundColor: randomColor() }}
       >
         #{props.name}
-      </Button>
+      </div>
     </Link>
   )
 }

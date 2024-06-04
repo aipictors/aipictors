@@ -109,38 +109,41 @@ export const LikeButton = ({
   useEffect(() => {
     setIsLiked(defaultLiked)
     setLikedCount(defaultLikedCount)
-  }, [])
+  }, [defaultLiked, defaultLikedCount])
 
   const handleOnClick = async () => {
     if (onClick) {
       onClick(!isLiked)
     }
 
-    if (!isLiked) {
-      await createWorkLike({
-        variables: {
-          input: {
-            workId: targetWorkId,
+    try {
+      if (!isLiked) {
+        await createWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
           },
-        },
-      })
-    } else {
-      await deleteWorkLike({
-        variables: {
-          input: {
-            workId: targetWorkId,
+        })
+      } else {
+        await deleteWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
           },
-        },
-      })
+        })
+      }
+    } finally {
+      setIsLiked(!isLiked)
+      setClicked(!clicked)
+      if (isLiked) {
+        setLikedCount(likedCount - 1)
+      } else {
+        setLikedCount(likedCount + 1)
+      }
     }
 
-    setIsLiked(!isLiked)
-    setClicked(!clicked)
-    if (isLiked) {
-      setLikedCount(likedCount - 1)
-    } else {
-      setLikedCount(likedCount + 1)
-    }
     // if (!clicked) setClicked(true)
   }
 

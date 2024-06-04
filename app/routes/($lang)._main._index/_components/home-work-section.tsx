@@ -28,6 +28,7 @@ export const HomeWorkSection = (props: Props) => {
       "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
     userName: work.user.name, // 作品の所有者の名前
     workOwnerUserId: work.user.id,
+    isLiked: work.isLiked,
   }))
 
   return (
@@ -65,6 +66,7 @@ export const HomeWorkSection = (props: Props) => {
             userIcon={photoProps.photo.userIcon}
             workId={photoProps.photo.workId}
             workOwnerUserId={photoProps.photo.workOwnerUserId}
+            isLiked={photoProps.photo.isLiked}
           />
         )}
         defaultContainerWidth={1200}

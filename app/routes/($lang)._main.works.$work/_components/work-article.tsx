@@ -8,7 +8,6 @@ import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
 import { Link } from "@remix-run/react"
 import {} from "@/_components/ui/tabs"
-import { useState } from "react"
 import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$work/_components/work-article-generation-parameters"
 
 type Props = {
@@ -19,8 +18,6 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkArticle = (props: Props) => {
-  const [viewGenerationType, setViewGenerationType] = useState("prompt")
-
   return (
     <article className="flex flex-col">
       <WorkImageView
