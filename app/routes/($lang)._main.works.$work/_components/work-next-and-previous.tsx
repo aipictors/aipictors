@@ -36,7 +36,7 @@ export const WorkNextAndPrevious = (props: Props) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="mb-4 flex">
+      <div className="mb-4 flex justify-center">
         <SmallSquareThumbnail work={props.work.nextWork} linkToWork={true} />
         <SmallSquareThumbnail work={props.work} isFocus={true} />
         <SmallSquareThumbnail

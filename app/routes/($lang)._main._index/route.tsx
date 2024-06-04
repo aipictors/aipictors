@@ -2,20 +2,35 @@ import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
+  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
+
+  const metaDescription =
+    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
+
+  const metaImage =
+    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
+
   return [
-    { title: "New Remix App" },
-    {
-      name: "description",
-      content: "Welcome to Remix! Using Vite and Cloudflare!",
-    },
+    { title: metaTitle },
+    { name: "description", content: "noindex" },
+    { name: "twitter:title", content: metaTitle },
+    { name: "twitter:description", content: metaDescription },
+    { name: "twitter:image", content: metaImage },
+    { name: "twitter:card", content: "summary_large_image" },
+    { property: "og:title", content: metaTitle },
+    { property: "og:description", content: metaDescription },
+    { property: "og:image", content: metaImage },
+    { property: "og:site_name", content: metaTitle },
   ]
 }
 
@@ -27,7 +42,7 @@ export async function loader() {
     query: worksQuery,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: 8,
       where: {
         isFeatured: true,
       },
@@ -98,13 +113,13 @@ export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   const sections = [
-    {
-      title: "イラスト無料生成で参考にできる作品",
-      tooltip: "イラスト無料生成で参考にできる作品です。",
-      works: data.generationWorkResp,
-    },
-    { title: "おすすめ作品", works: data.suggestedWorkResp },
-    { title: "推薦作品", works: data.recommendedWorks },
+    // {
+    //   title: "無料生成できる作品",
+    //   tooltip: "無料画像生成で参考にできる作品です。",
+    //   works: data.generationWorkResp,
+    // },
+    { title: "おすすめ", works: data.suggestedWorkResp, tooltip: "" },
+    { title: "ユーザからの推薦", works: data.recommendedWorks, tooltip: "" },
     // { title: "コレクション", works: data.suggestedWorkResp },
     // { title: "人気タグ", works: data.suggestedWorkResp },
     // { title: "ショート動画", works: data.suggestedWorkResp },
@@ -114,13 +129,15 @@ export default function Index() {
 
   return (
     <AppPage className="space-y-4">
-      <HomeTagList hotTags={data.hotTags} />
-      <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
+      <HomeBanners />
+      <Suspense>
+        <HomeTagList hotTags={data.hotTags} />
+      </Suspense>
       {sections.map((section) => (
         <HomeWorkSection
           key={section.title}
           title={section.title}
-          tooltip={section.tooltip}
+          tooltip={section.tooltip ? section.tooltip : undefined}
           works={section.works}
         />
       ))}

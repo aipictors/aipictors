@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogFooter } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
 import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-stickers"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { StickerButton } from "@/routes/($lang)._main.works.$work/_components/sticker-button"
@@ -29,30 +29,36 @@ export const StickerDialog = (props: Props) => {
 
   const [type, setType] = useState("CREATED")
 
-  const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      limit: 64,
-      offset: createdSortStickerPage * 64,
-      orderBy: "DATE_CREATED",
+  const { data: stickers = null, refetch } = useSuspenseQuery(
+    viewerUserStickersQuery,
+    {
+      skip: appContext.isLoading,
+      variables: {
+        limit: 64,
+        offset: createdSortStickerPage * 64,
+        orderBy: "DATE_CREATED",
+      },
     },
-  })
+  )
 
-  const { data: stickersCount = null } = useQuery(
+  const { data: stickersCount = null } = useSuspenseQuery(
     viewerUserStickersCountQuery,
     {
       skip: appContext.isLoading,
     },
   )
 
-  const { data: relatedStickers = null } = useQuery(viewerUserStickersQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      limit: 64,
-      offset: 0,
-      orderBy: "DATE_USED",
+  const { data: relatedStickers = null } = useSuspenseQuery(
+    viewerUserStickersQuery,
+    {
+      skip: appContext.isLoading,
+      variables: {
+        limit: 64,
+        offset: 0,
+        orderBy: "DATE_USED",
+      },
     },
-  })
+  )
 
   const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
 

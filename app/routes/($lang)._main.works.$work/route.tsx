@@ -65,9 +65,30 @@ export default function Work() {
             <WorkArticle work={data?.work} />
           </Suspense>
           <WorkRelatedList works={data.work.user.works} />
-          <WorkCommentList workId={data.work.id} comments={data.workComments} />
-
+          <Suspense fallback={<AppLoadingPage />}>
+            <WorkCommentList
+              workId={data.work.id}
+              comments={data.workComments}
+            />
+          </Suspense>
           <div className="mt-2 block md:mt-0 lg:hidden">
+            <Suspense>
+              <WorkUser
+                userId={data.work.user.id}
+                userName={data.work.user.name}
+                userIconImageURL={data.work.user.iconImage?.downloadURL}
+                userFollowersCount={data.work.user.followersCount}
+                userBiography={data.work.user.biography}
+                userPromptonId={data.work.user.promptonUser?.id}
+                userWorksCount={data.work.user.worksCount}
+              />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
+        <div className="mt-2 md:mt-0">
+          <Suspense>
             <WorkUser
               userId={data.work.user.id}
               userName={data.work.user.name}
@@ -77,20 +98,7 @@ export default function Work() {
               userPromptonId={data.work.user.promptonUser?.id}
               userWorksCount={data.work.user.worksCount}
             />
-          </div>
-        </div>
-      </div>
-      <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
-        <div className="mt-2 md:mt-0">
-          <WorkUser
-            userId={data.work.user.id}
-            userName={data.work.user.name}
-            userIconImageURL={data.work.user.iconImage?.downloadURL}
-            userFollowersCount={data.work.user.followersCount}
-            userBiography={data.work.user.biography}
-            userPromptonId={data.work.user.promptonUser?.id}
-            userWorksCount={data.work.user.worksCount}
-          />
+          </Suspense>
         </div>
         <WorkNextAndPrevious work={data.work} />
       </div>

@@ -3,12 +3,13 @@ import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { useContext, useState } from "react"
+import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { createResponseCommentMutation } from "@/_graphql/mutations/create-response-comment"
 import { StickerDialog } from "@/routes/($lang)._main.works.$work/_components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 
 type Props = {
   targetCommentId: string
@@ -106,22 +107,24 @@ export const ReplyCommentInput = (props: Props) => {
           <Button onClick={onComment}>{"送信"}</Button>
         )}
       </div>
-      <StickerDialog
-        isOpen={isOpen}
-        onClose={onClose}
-        onSend={async (stickerId: string, stickerImageURL: string) => {
-          await sendComment(
-            comment,
-            props.targetCommentId,
-            stickerId,
-            stickerImageURL,
-          )
+      <Suspense fallback={<AppLoadingPage />}>
+        <StickerDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          onSend={async (stickerId: string, stickerImageURL: string) => {
+            await sendComment(
+              comment,
+              props.targetCommentId,
+              stickerId,
+              stickerImageURL,
+            )
 
-          setComment("")
+            setComment("")
 
-          onClose()
-        }}
-      />
+            onClose()
+          }}
+        />
+      </Suspense>
     </>
   )
 }

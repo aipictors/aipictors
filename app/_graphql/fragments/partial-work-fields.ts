@@ -24,6 +24,11 @@ export const partialWorkFieldsFragment = gql(`
       id
       name
       iconUrl
+      iconImage {
+        downloadURL
+        id
+        type
+      }
     }
   }
 `)
