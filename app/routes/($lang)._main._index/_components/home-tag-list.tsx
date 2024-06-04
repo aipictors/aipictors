@@ -46,7 +46,7 @@ export const HomeTagList = (props: Props) => {
       // onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
-        <CarouselItem className="basis-auto" key={8888}>
+        <CarouselItem className="basis-auto" key={-1}>
           {theme && <TagButton name={`今日のお題「${theme}」`} />}
         </CarouselItem>
 
