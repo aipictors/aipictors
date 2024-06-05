@@ -47,12 +47,14 @@ export const HomeTagList = (props: Props) => {
     >
       <CarouselContent>
         <CarouselItem className="basis-auto" key={-1}>
-          {theme && <TagButton name={`今日のお題「${theme}」`} />}
+          {theme && (
+            <TagButton link={`${theme}`} name={`今日のお題「${theme}」`} />
+          )}
         </CarouselItem>
 
         {props.hotTags?.map((tag) => (
           <CarouselItem className="basis-auto" key={tag.id}>
-            <TagButton name={tag.name} />
+            <TagButton link={`${tag.name}`} name={tag.name} />
           </CarouselItem>
         ))}
       </CarouselContent>
