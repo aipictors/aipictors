@@ -1,19 +1,17 @@
-import {} from "@/_components/ui/avatar"
-import type { WorkCommentsQuery } from "@/_graphql/__generated__/graphql"
-import {} from "@/_components/ui/tabs"
-import { useSuspenseQuery } from "@apollo/client/index"
+import type {
+  WorkCommentsQuery,
+  WorkQuery,
+} from "@/_graphql/__generated__/graphql"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { workQuery } from "@/_graphql/queries/work/work"
 import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 import { WorkNextAndPrevious } from "@/routes/($lang)._main.works.$work/_components/work-next-and-previous"
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
-import { Suspense, useContext } from "react"
-import { AuthContext } from "@/_contexts/auth-context"
+import { Suspense } from "react"
 
 type Props = {
-  workId: string
+  work: NonNullable<WorkQuery>["work"]
   comments: NonNullable<WorkCommentsQuery["work"]>["comments"]
 }
 
@@ -21,22 +19,11 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkContainer = (props: Props) => {
-  const appContext = useContext(AuthContext)
-
-  const { data } = useSuspenseQuery(workQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      id: props.workId,
-    },
-  })
-
-  const work = data?.work
+  const work = props.work
 
   if (!work) {
     return null
   }
-
-  console.log(work)
 
   return (
     <div className="flex w-full overflow-hidden p-4">
@@ -78,7 +65,7 @@ export const WorkContainer = (props: Props) => {
             />
           </Suspense>
         </div>
-        <WorkNextAndPrevious work={data.work} />
+        <WorkNextAndPrevious work={work} />
       </div>
     </div>
   )

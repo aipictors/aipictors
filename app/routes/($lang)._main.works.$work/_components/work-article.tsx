@@ -3,12 +3,13 @@ import { Button } from "@/_components/ui/button"
 import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
-import { WorkAction } from "@/routes/($lang)._main.works.$work/_components/work-action"
-import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
 import { Link } from "@remix-run/react"
 import {} from "@/_components/ui/tabs"
 import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$work/_components/work-article-generation-parameters"
+import { WorkActionContainer } from "@/routes/($lang)._main.works.$work/_components/work-action-container"
+import { Suspense } from "react"
+import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -34,14 +35,15 @@ export const WorkArticle = (props: Props) => {
             </Button>
           </a>
         )}
-        <WorkAction
-          workLikesCount={props.work.likesCount}
-          title={props.work.title}
-          imageUrl={props.work.imageURL}
-          defaultLiked={props.work.isLiked}
-          targetWorkId={props.work.id}
-          targetWorkOwnerUserId={props.work.user.id}
-        />
+        <Suspense>
+          <WorkActionContainer
+            workLikesCount={props.work.likesCount}
+            title={props.work.title}
+            imageUrl={props.work.imageURL}
+            targetWorkId={props.work.id}
+            targetWorkOwnerUserId={props.work.user.id}
+          />
+        </Suspense>
         <h1 className="font-bold text-lg">{props.work.title}</h1>
         <div className="flex flex-col space-y-2">
           <span className="text-sm">

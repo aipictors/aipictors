@@ -54,7 +54,7 @@ export default function Work() {
 
   return (
     <Suspense>
-      <WorkContainer workId={params.work} comments={data.workComments} />
+      <WorkContainer work={data.work} comments={data.workComments} />
     </Suspense>
   )
 }
