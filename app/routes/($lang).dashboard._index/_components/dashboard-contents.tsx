@@ -19,7 +19,10 @@ import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_componen
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
+import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -134,6 +137,13 @@ export const DashboardContents = (props: Props) => {
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
 
+  const { data: pass } = useSuspenseQuery(viewerCurrentPassQuery, {})
+
+  const passData = pass?.viewer?.currentPass
+
+  const isStandardOrPremium =
+    passData?.type === "STANDARD" || passData?.type === "PREMIUM"
+
   return (
     <>
       <div className="w-full">
@@ -163,9 +173,23 @@ export const DashboardContents = (props: Props) => {
               >
                 作品
               </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setDashBoardContentType("RECOMMEND")
+                }}
+                className="w-full"
+                value="RECOMMEND"
+              >
+                推薦
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
+        {dashBoardContentType === "HOME" && (
+          <Suspense fallback={<AppLoadingPage />}>
+            <DashboardHomeContents />
+          </Suspense>
+        )}
         {dashBoardContentType === "WORK" && (
           <>
             {workTabType === "WORK" && (
@@ -246,10 +270,13 @@ export const DashboardContents = (props: Props) => {
             )}
           </>
         )}
-        {dashBoardContentType === "HOME" && (
-          <Suspense fallback={<AppLoadingPage />}>
-            <DashboardHomeContents />
-          </Suspense>
+        {dashBoardContentType === "RECOMMEND" && (
+          <>
+            <Suspense fallback={<AppLoadingPage />}>
+              <RecommendedListContainer />
+            </Suspense>
+            {!isStandardOrPremium && <RecommendedBanner />}
+          </>
         )}
       </div>
     </>

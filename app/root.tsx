@@ -25,6 +25,7 @@ import { PhotoProvider } from "react-photo-view"
 import notoSansJPWoff2 from "@fontsource-variable/noto-sans-jp/files/noto-sans-jp-latin-wght-normal.woff2?url"
 import styles from "@/tailwind.css?url"
 import { AppErrorPage } from "@/_components/app/app-error-page"
+import { ProgressBar } from "@/_components/progress-bar"
 
 export const links: LinksFunction = () => {
   return [
@@ -120,6 +121,7 @@ export default function App() {
       <Suspense fallback={null}>
         <AppAnalytics />
       </Suspense>
+      <ProgressBar />
     </>
   )
 }

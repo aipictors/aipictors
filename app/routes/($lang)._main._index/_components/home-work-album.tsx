@@ -3,15 +3,23 @@ import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
+  userId: string
+  userName: string
+  userIcon: string
   workId: string
   workOwnerUserId: string
+  isLiked: boolean
 }
 
 export function HomeWorkAlbum({
   photo,
   wrapperStyle,
+  userId,
+  userName,
+  userIcon,
   workId,
   workOwnerUserId,
+  isLiked,
 }: HomeWorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
@@ -24,11 +32,20 @@ export function HomeWorkAlbum({
           className={"rounded"}
         />
       </Link>
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-8 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+        <Link to={`/users/${userId}`}>
+          <div className="flex items-center space-x-2">
+            <img src={userIcon} alt="" className="h-4 w-4 rounded-full" />
+            <span className="text-sm text-white">{userName}</span>
+          </div>
+        </Link>
+      </div>
       <div className="absolute right-1 bottom-1">
         <LikeButton
           size={56}
           targetWorkId={workId}
           targetWorkOwnerUserId={workOwnerUserId}
+          defaultLiked={isLiked}
           defaultLikedCount={0}
           isBackgroundNone={true}
           strokeWidth={2}

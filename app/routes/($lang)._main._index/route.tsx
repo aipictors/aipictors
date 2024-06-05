@@ -1,50 +1,41 @@
-import { AppDevelopmentPage } from "@/_components/app/app-development-page"
 import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
-import { config } from "@/config"
+import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
-import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
+import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
+import { HomeWorks } from "@/routes/($lang)._main._index/_components/home-works"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
+import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
+  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
+
+  const metaDescription =
+    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
+
+  const metaImage =
+    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
+
   return [
-    { title: "New Remix App" },
-    {
-      name: "description",
-      content: "Welcome to Remix! Using Vite and Cloudflare!",
-    },
+    { title: metaTitle },
+    { name: "description", content: "noindex" },
+    { name: "twitter:title", content: metaTitle },
+    { name: "twitter:description", content: metaDescription },
+    { name: "twitter:image", content: metaImage },
+    { name: "twitter:card", content: "summary_large_image" },
+    { property: "og:title", content: metaTitle },
+    { property: "og:description", content: metaDescription },
+    { property: "og:image", content: metaImage },
+    { property: "og:site_name", content: metaTitle },
   ]
 }
 
 export async function loader() {
   const client = createClient()
-
-  // 生成作品
-  const generationWorkResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        isFeatured: true,
-      },
-    },
-  })
-
-  // おすすめ作品
-  const suggestedWorkResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {},
-    },
-  })
 
   // Fetch data from the given URL and parse it to the TagData type
   const tags = await fetch(
@@ -69,28 +60,13 @@ export async function loader() {
   // タグからランダムに8つ取得
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 8)
 
-  // 推薦作品
-  const recommendedWorksResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        isRecommended: true,
-      },
-    },
-  })
-
   // コレクション
   const hotTagsResp = await client.query({
     query: hotTagsQuery,
     variables: {},
   })
 
-  return json({
-    generationWorkResp: generationWorkResp.data.works,
-    suggestedWorkResp: suggestedWorkResp.data.works,
-    recommendedWorks: recommendedWorksResp.data.works,
+  return {
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
   })
@@ -99,37 +75,21 @@ export async function loader() {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
-  if (!config.isDevelopmentMode) {
-    return <AppDevelopmentPage />
-  }
-
-  const sections = [
-    {
-      title: "イラスト無料生成で参考にできる作品",
-      tooltip: "イラスト無料生成で参考にできる作品です。",
-      works: data.generationWorkResp,
-    },
-    { title: "おすすめ作品", works: data.suggestedWorkResp },
-    { title: "推薦作品", works: data.recommendedWorks },
-    // { title: "コレクション", works: data.suggestedWorkResp },
-    // { title: "人気タグ", works: data.suggestedWorkResp },
-    // { title: "ショート動画", works: data.suggestedWorkResp },
-    // { title: "小説", works: data.suggestedWorkResp },
-    // { title: "コラム", works: data.suggestedWorkResp },
-  ]
-
   return (
     <AppPage className="space-y-4">
-      <HomeTagList hotTags={data.hotTags} />
-      <p className="fw-bold">開発中のページですので内容は仮のものです。</p>
-      {sections.map((section) => (
-        <HomeWorkSection
-          key={section.title}
-          title={section.title}
-          tooltip={section.tooltip}
-          works={section.works}
-        />
-      ))}
+      <HomeBanners />
+      <Suspense>
+        <HomeTagList hotTags={data.hotTags} />
+      </Suspense>
+      <Suspense
+        fallback={
+          <>
+            <HomeWorkDummies />
+          </>
+        }
+      >
+        <HomeWorks />
+      </Suspense>
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
     </AppPage>
   )

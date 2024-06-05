@@ -11,19 +11,28 @@ import { RiQuestionLine } from "@remixicon/react"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]>
+  works: NonNullable<WorksQuery["works"]> | null
   title: string
   tooltip?: string
 }
 
 export const HomeWorkSection = (props: Props) => {
-  // 各作品のデータを変換
+  if (props.works === null) {
+    return null
+  }
+
   const photos = props.works.map((work) => ({
     src: work.largeThumbnailImageURL,
     width: work.largeThumbnailImageWidth,
     height: work.largeThumbnailImageHeight,
     workId: work.id, // 各作品のID
+    userId: work.user.id, // 作品の所有者のID
+    userIcon:
+      work.user?.iconImage?.downloadURL ??
+      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
+    userName: work.user.name, // 作品の所有者の名前
     workOwnerUserId: work.user.id,
+    isLiked: work.isLiked,
   }))
 
   return (
@@ -56,8 +65,12 @@ export const HomeWorkSection = (props: Props) => {
           // @ts-ignore 後で考える
           <HomeWorkAlbum
             {...photoProps}
+            userId={photoProps.photo.userId}
+            userName={photoProps.photo.userName}
+            userIcon={photoProps.photo.userIcon}
             workId={photoProps.photo.workId}
             workOwnerUserId={photoProps.photo.workOwnerUserId}
+            isLiked={photoProps.photo.isLiked}
           />
         )}
         defaultContainerWidth={1200}

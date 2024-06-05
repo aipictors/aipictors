@@ -1,3 +1,4 @@
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { Button } from "@/_components/ui/button"
 import {
   DropdownMenu,
@@ -5,43 +6,31 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
+import type { NotificationType } from "@/_graphql/__generated__/graphql"
+import { HomeNotificationCommentsTabs } from "@/routes/($lang)._main._index/_components/home-notifications-comments-tabs"
+import { HomeNotificationsContents } from "@/routes/($lang)._main._index/_components/home-notifications-contents"
 import { BellIcon } from "lucide-react"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 
 /**
  * ヘッダーのお知らせメニュー
  */
 export const HomeNotificationsMenu = () => {
-  const tabValues = [
+  const tabValues: NotificationType[] = [
     "LIKED_WORK",
     "WORK_COMMENT",
     "WORK_AWARD",
-    "COMMENT_REPLY",
     "FOLLOW",
   ]
 
-  const tabLabel = ["いいね", "コメント", "ランキング", "返信", "フォロー"]
+  const tabLabel = ["いいね", "コメント", "ランキング", "フォロー"]
 
   const defaultTab = tabValues[0]
 
-  const [activeTab, setActiveTab] = useState(defaultTab)
+  const [activeTab, setActiveTab] = useState<NotificationType>(defaultTab)
 
-  /*
-  const { data: notifications } = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 40,
-      where: {
-        type: activeTab as NotificationType,
-      },
-    },
-    fetchPolicy: "cache-first",
-  })
-  */
-
-  // TabTriggerがクリックされたときにactiveTabを更新
   const handleTabClick = (value: string) => {
-    setActiveTab(value)
+    setActiveTab(value as NotificationType)
   }
 
   return (
@@ -52,42 +41,42 @@ export const HomeNotificationsMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <div className="p-2 text-center font-bold opacity-80">{"通知"}</div>
-        <Tabs defaultValue={defaultTab}>
-          <div className="border-b">
-            <TabsList className="mx-4">
-              {tabValues.map((tabValue) => (
-                <TabsTrigger
-                  key={tabValue}
-                  value={tabValue}
-                  onClick={() => handleTabClick(tabValue)}
-                >
-                  {tabLabel[tabValues.indexOf(tabValue)]}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+        <div className="w-96">
+          <div className="p-2 text-center font-bold opacity-80">{"通知"}</div>
+          <Tabs defaultValue={defaultTab}>
+            <div className="border-b">
+              <TabsList className="mx-0 mb-1 md:mx-4">
+                {tabValues.map((tabValue) => (
+                  <TabsTrigger
+                    key={tabValue}
+                    value={tabValue}
+                    onClick={() => handleTabClick(tabValue)}
+                  >
+                    {tabLabel[tabValues.indexOf(tabValue)]}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+          </Tabs>
+          <div className="relative h-96">
+            <Suspense
+              fallback={
+                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">
+                  <AppLoadingPage />
+                </div>
+              }
+            >
+              {activeTab !== "WORK_COMMENT" && (
+                <HomeNotificationsContents type={activeTab} />
+              )}
+              {activeTab === "WORK_COMMENT" && <HomeNotificationCommentsTabs />}
+            </Suspense>
           </div>
-          {/* notifications?.viewer && (
-            <TabsContent className="max-w-40" value={activeTab}>
-              <div className="flex h-64 w-full flex-col">
-                <ScrollArea className="w-full">
-                  {activeTab === "LIKED_WORK" &&
-                    notifications.viewer.notifications.map((notification) => {
-                      const likedWorkNotification =
-                        notification as LikedWorkNotificationNode
-                      return (
-                        <HeaderNotificationItem
-                          key={likedWorkNotification.id}
-                          text={likedWorkNotification.work.title}
-                          link={`/notification/${likedWorkNotification.id}`}
-                        />
-                      )
-                    })}
-                </ScrollArea>
-              </div>
-            </TabsContent>
-          ) */}
-        </Tabs>
+        </div>
+        {/* フッター部分 */}
+        <div className="border-t pt-2 pb-2 pl-4">
+          <a href="/notifications">通知履歴</a>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

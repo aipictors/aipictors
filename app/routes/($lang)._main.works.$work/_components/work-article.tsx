@@ -7,9 +7,8 @@ import { WorkAction } from "@/routes/($lang)._main.works.$work/_components/work-
 import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
 import { Link } from "@remix-run/react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { useState } from "react"
-import { Card } from "@/_components/ui/card"
+import {} from "@/_components/ui/tabs"
+import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$work/_components/work-article-generation-parameters"
 
 type Props = {
   work: NonNullable<WorkQuery["work"]>
@@ -19,8 +18,6 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkArticle = (props: Props) => {
-  const [viewGenerationType, setViewGenerationType] = useState("prompt")
-
   return (
     <article className="flex flex-col">
       <WorkImageView
@@ -83,131 +80,16 @@ export const WorkArticle = (props: Props) => {
           {props.work.description}
         </p>
 
-        <Tabs value={viewGenerationType}>
-          <TabsList className="w-full max-w-[320px] overflow-x-auto md:max-w-[100%]">
-            {props.work.prompt && (
-              <TabsTrigger
-                onClick={() => {
-                  setViewGenerationType("prompt")
-                }}
-                className="w-full"
-                value="prompt"
-              >
-                Prompts
-              </TabsTrigger>
-            )}
-            {props.work.negativePrompt && (
-              <TabsTrigger
-                onClick={() => {
-                  setViewGenerationType("negativePrompt")
-                }}
-                className="w-full"
-                value="negativePrompt"
-              >
-                NegativePrompts
-              </TabsTrigger>
-            )}
-            {(props.work.steps ||
-              props.work.scale ||
-              props.work.seed ||
-              props.work.sampler) && (
-              <TabsTrigger
-                onClick={() => {
-                  setViewGenerationType("parameter")
-                }}
-                className="w-full"
-                value="parameter"
-              >
-                Parameter
-              </TabsTrigger>
-            )}
-            {props.work.otherGenerationParams && (
-              <TabsTrigger
-                onClick={() => {
-                  setViewGenerationType("other")
-                }}
-                className="w-full"
-                value="other"
-              >
-                Other
-              </TabsTrigger>
-            )}
-          </TabsList>
-          {props.work.prompt && (
-            <TabsContent value="prompt">
-              <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
-                {props.work.prompt}
-              </Card>
-            </TabsContent>
-          )}
-          {props.work.negativePrompt && (
-            <TabsContent value="negativePrompt">
-              <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
-                {props.work.negativePrompt}
-              </Card>
-            </TabsContent>
-          )}
-          {(props.work.steps ||
-            props.work.scale ||
-            props.work.seed ||
-            props.work.sampler) && (
-            <TabsContent value="parameter">
-              <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
-                <div className="p-4">
-                  <div className="flex flex-wrap justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-center text-sm opacity-50">
-                        Steps
-                      </span>
-                      <span className="text-center text-lg">
-                        {props.work.steps}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-center text-sm opacity-50">
-                        Scale
-                      </span>
-                      <span className="text-center text-lg">
-                        {props.work.scale}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-center text-sm opacity-50">
-                        Seed
-                      </span>
-                      <span className="text-center text-lg">
-                        {props.work.seed}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-center text-sm opacity-50">
-                        Sampler
-                      </span>
-                      <span className="text-center text-lg">
-                        {props.work.sampler}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-center text-sm opacity-50">
-                        Strength
-                      </span>
-                      <span className="text-center text-lg">
-                        {props.work.strength}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </TabsContent>
-          )}
-          {props.work.otherGenerationParams && (
-            <TabsContent value="other">
-              <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
-                {props.work.otherGenerationParams}
-              </Card>
-            </TabsContent>
-          )}
-        </Tabs>
+        <WorkArticleGenerationParameters
+          prompt={props.work.prompt}
+          negativePrompt={props.work.negativePrompt}
+          steps={props.work.steps}
+          scale={props.work.scale}
+          seed={props.work.seed}
+          sampler={props.work.sampler}
+          strength={props.work.strength}
+          otherGenerationParams={props.work.otherGenerationParams}
+        />
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">

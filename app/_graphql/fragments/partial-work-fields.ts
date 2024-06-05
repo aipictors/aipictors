@@ -8,6 +8,7 @@ export const partialWorkFieldsFragment = gql(`
     adminAccessType
     likesCount
     commentsCount
+    bookmarksCount
     viewsCount
     createdAt
     isTagEditable
@@ -19,10 +20,16 @@ export const partialWorkFieldsFragment = gql(`
     largeThumbnailImageWidth
     prompt
     negativePrompt
+    isLiked
     user {
       id
       name
       iconUrl
+      iconImage {
+        downloadURL
+        id
+        type
+      }
     }
   }
 `)

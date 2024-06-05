@@ -47,7 +47,11 @@ export const LikeButton = ({
         description={"ログインして、いいねしてみましょう！"}
         triggerChildren={
           <button
-            className="relative flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            className={
+              isBackgroundNone
+                ? "relative flex items-center justify-center rounded-md text-secondary-foreground"
+                : "relative flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            }
             style={{
               width: text ? "auto" : `${size}px`,
               height: `${size}px`,
@@ -70,7 +74,7 @@ export const LikeButton = ({
               }}
             >
               <Heart
-                className={"fill-transparent text-black dark:text-white"}
+                className={"fill-white text-black dark:text-white"}
                 size={Math.floor(size / 2)}
                 strokeWidth={1}
               />
@@ -105,38 +109,41 @@ export const LikeButton = ({
   useEffect(() => {
     setIsLiked(defaultLiked)
     setLikedCount(defaultLikedCount)
-  }, [])
+  }, [defaultLiked, defaultLikedCount])
 
   const handleOnClick = async () => {
     if (onClick) {
       onClick(!isLiked)
     }
 
-    if (!isLiked) {
-      await createWorkLike({
-        variables: {
-          input: {
-            workId: targetWorkId,
+    try {
+      if (!isLiked) {
+        await createWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
           },
-        },
-      })
-    } else {
-      await deleteWorkLike({
-        variables: {
-          input: {
-            workId: targetWorkId,
+        })
+      } else {
+        await deleteWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
           },
-        },
-      })
+        })
+      }
+    } finally {
+      setIsLiked(!isLiked)
+      setClicked(!clicked)
+      if (isLiked) {
+        setLikedCount(likedCount - 1)
+      } else {
+        setLikedCount(likedCount + 1)
+      }
     }
 
-    setIsLiked(!isLiked)
-    setClicked(!clicked)
-    if (isLiked) {
-      setLikedCount(likedCount - 1)
-    } else {
-      setLikedCount(likedCount + 1)
-    }
     // if (!clicked) setClicked(true)
   }
 

@@ -9,5 +9,8 @@ export const partialUserFieldsFragment = gql(`
       id
       downloadURL
     }
+    isFollowee
+    isFollower
+    iconUrl
   }
 `)
