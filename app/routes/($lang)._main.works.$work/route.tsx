@@ -4,7 +4,7 @@ import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
 import { WorkContainer } from "@/routes/($lang)._main.works.$work/_components/work-container"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
 
@@ -37,10 +37,10 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     work: workResp.data.work,
     workComments: workCommentsResp.data.work.comments,
-  }
+  })
 }
 
 export default function Work() {

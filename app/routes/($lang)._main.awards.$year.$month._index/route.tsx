@@ -2,7 +2,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { ParamsError } from "@/_errors/params-error"
 import { RankingHeader } from "@/routes/($lang)._main.awards._index/_components/ranking-header"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -18,10 +18,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const month = Number.parseInt(props.params.month)
 
-  return {
+  return json({
     year,
     month,
-  }
+  })
 }
 
 /**

@@ -4,7 +4,7 @@ import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.awards._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.awards._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -40,12 +40,13 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     },
   })
-  return {
+
+  return json({
     year,
     month,
     day,
     workAwards: workAwardsResp,
-  }
+  })
 }
 
 /**

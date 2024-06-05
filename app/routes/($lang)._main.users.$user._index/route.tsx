@@ -4,7 +4,7 @@ import { createClient } from "@/_lib/client"
 import { UserWorkList } from "@/routes/($lang)._main.users.$user/_components/user-work-list"
 import { UserWorkListActions } from "@/routes/($lang)._main.users.$user/_components/user-work-list-actions"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -27,9 +27,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     user: worksResp.data.user,
-  }
+  })
 }
 
 export default function UserLayout() {

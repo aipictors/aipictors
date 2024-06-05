@@ -5,7 +5,7 @@ import { StickerList } from "@/routes/($lang)._main.stickers._index/_components/
 import { StickerListHeader } from "@/routes/($lang)._main.stickers._index/_components/sticker-list-header"
 import { StickerSearchForm } from "@/routes/($lang)._main.stickers._index/_components/sticker-search-form"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -27,11 +27,12 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const isEmpty = stickers.data.stickers.length === 0
-  return {
+
+  return json({
     stickers: stickers.data.stickers,
     isEmpty,
     search: props.params.search,
-  }
+  })
 }
 
 /**

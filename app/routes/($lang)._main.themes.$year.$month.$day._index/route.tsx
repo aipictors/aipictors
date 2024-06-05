@@ -2,7 +2,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { DailyThemesDocument as dailyThemesQuery } from "@/_graphql/__generated__/graphql"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -34,9 +34,10 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const [dailyTheme] = dailyThemesResp.data.dailyThemes
-  return {
+
+  return json({
     dailyTheme,
-  }
+  })
 }
 
 /**

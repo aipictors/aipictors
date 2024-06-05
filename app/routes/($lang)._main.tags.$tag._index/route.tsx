@@ -4,7 +4,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { TagWorkSection } from "@/routes/($lang)._main.tags._index/_components/tag-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -24,9 +24,10 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     },
   })
-  return {
+
+  return json({
     works: worksResp.data.works,
-  }
+  })
 }
 
 export default function Tag() {

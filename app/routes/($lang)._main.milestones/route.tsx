@@ -18,7 +18,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { createClient } from "@/_lib/client"
-import { Link, useLoaderData } from "@remix-run/react"
+import { Link, json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -41,10 +41,10 @@ export async function loader() {
 
   const appMilestones = appResp.data.milestones
 
-  return {
+  return json({
     milestones,
     appMilestones,
-  }
+  })
 }
 
 export default function Milestone() {

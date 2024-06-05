@@ -11,16 +11,9 @@ import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
 import { ApolloError } from "@apollo/client/index"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Outlet, useLoaderData } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { Outlet, json, useLoaderData } from "@remix-run/react"
 import { useContext } from "react"
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control":
-      "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000",
-  }
-}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "無料AIイラスト生成 - スマホ対応"
@@ -44,7 +37,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export const loader = async () => {
+export async function loader() {
   try {
     const client = createClient()
 
@@ -89,14 +82,14 @@ export const loader = async () => {
       controlNetCategoriesResp,
     ] = resp
 
-    return {
+    return json({
       promptCategories: promptCategoriesResp.data.promptCategories,
       negativePromptCategories:
         negativePromptCategoriesResp.data.negativePromptCategories,
       imageModels: imageModelsResp.data.imageModels,
       imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
       controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
-    }
+    })
   } catch (error) {
     if (error instanceof ApolloError) {
       throw new Response(error.message, { status: 500 })

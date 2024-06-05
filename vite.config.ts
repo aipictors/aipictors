@@ -1,7 +1,4 @@
-import {
-  vitePlugin as remix,
-  cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
-} from "@remix-run/dev"
+import { vitePlugin, cloudflareDevProxyVitePlugin } from "@remix-run/dev"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 
@@ -12,7 +9,15 @@ export default defineConfig({
   ssr: {
     noExternal: ["react-easy-crop", "tslib"],
   },
-  plugins: [remixCloudflareDevProxy(), remix(), tsconfigPaths()],
+  plugins: [
+    cloudflareDevProxyVitePlugin(),
+    vitePlugin({
+      future: {
+        unstable_singleFetch: true,
+      },
+    }),
+    tsconfigPaths(),
+  ],
   define: {
     VITE_VERSION: JSON.stringify(process.env.npm_package_version),
   },

@@ -12,17 +12,10 @@ import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { json, useLoaderData } from "@remix-run/react"
 import React, { useEffect, useState } from "react"
 import { useContext } from "react"
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control":
-      "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000",
-  }
-}
 
 export const meta: MetaFunction = () => {
   const siteName = "無料AIイラスト生成 - スマホ対応"
@@ -49,7 +42,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export const loader = async () => {
+export async function loader() {
   const client = createClient()
 
   const promptCategoriesReq = client.query({
@@ -86,13 +79,13 @@ export const loader = async () => {
     imageLoraModelsResp,
   ] = resp
 
-  return {
+  return json({
     promptCategories: promptCategoriesResp.data.promptCategories,
     negativePromptCategories:
       negativePromptCategoriesResp.data.negativePromptCategories,
     imageModels: imageModelsResp.data.imageModels,
     imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
-  }
+  })
 }
 
 export function HydrateFallback() {

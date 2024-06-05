@@ -6,13 +6,13 @@ import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export const meta: MetaFunction = () => {
   return []
 }
 
-export const loader = async (props: LoaderFunctionArgs) => {
+export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
 
   if (props.params.work === undefined) {
@@ -41,10 +41,10 @@ export const loader = async (props: LoaderFunctionArgs) => {
     throw new Response("Not found", { status: 404 })
   }
 
-  return {
+  return json({
     work: workResp.data.work,
     workComments: workCommentsResp.data.work.comments,
-  }
+  })
 }
 
 export default function SensitiveWorkPage() {

@@ -3,7 +3,7 @@ import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
 import { UserSupport } from "@/routes/($lang)._main.users.$user.supports/_components/user-support"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -37,9 +37,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     user: userResp.data.user,
-  }
+  })
 }
 
 export default function UserSupports() {

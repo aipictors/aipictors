@@ -7,7 +7,7 @@ import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_compon
 import { AlbumWorkDescription } from "@/routes/($lang)._main.albums.$album/_components/album-work-description"
 import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -41,10 +41,10 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return {
+  return json({
     album: albumResp.data.album,
     albumWorks: albumWorksResp.data.album.works,
-  }
+  })
 }
 
 /**

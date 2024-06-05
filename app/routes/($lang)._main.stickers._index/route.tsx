@@ -4,7 +4,7 @@ import { StickerList } from "@/routes/($lang)._main.stickers._index/_components/
 import { StickerListHeader } from "@/routes/($lang)._main.stickers._index/_components/sticker-list-header"
 import { StickerSearchForm } from "@/routes/($lang)._main.stickers._index/_components/sticker-search-form"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,9 +27,10 @@ export async function loader() {
       where: {},
     },
   })
-  return {
+
+  return json({
     stickers: stickersResp.data.stickers,
-  }
+  })
 }
 
 export default function StickersPage() {

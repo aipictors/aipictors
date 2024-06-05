@@ -7,11 +7,7 @@ import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
 import { ContextProviders } from "@/_components/context-providers"
 import { cn } from "@/_lib/cn"
 import { config } from "@/config"
-import type {
-  HeadersFunction,
-  LinksFunction,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare"
 import {
   Links,
   Meta,
@@ -31,24 +27,10 @@ import styles from "@/tailwind.css?url"
 import { AppErrorPage } from "@/_components/app/app-error-page"
 import { ProgressBar } from "@/_components/progress-bar"
 
-export const headers: HeadersFunction = (props) => {
-  if (props.errorHeaders !== undefined) {
-    return {
-      "Cache-Control": "max-age=0, s-maxage=0",
-    }
-  }
-
-  return {
-    "Cache-Control":
-      "max-age=120, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000",
-  }
-}
-
 export const links: LinksFunction = () => {
   return [
     // tailwind.cssのロード
     { rel: "stylesheet", href: styles, crossOrigin: "anonymous" },
-
     // フォントのpreload
     {
       rel: "preload",

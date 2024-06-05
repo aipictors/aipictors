@@ -4,7 +4,7 @@ import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import { ThemeHeader } from "@/routes/($lang)._main.themes._index/_components/theme-header"
 import { ThemeList } from "@/routes/($lang)._main.themes._index/_components/theme-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -21,11 +21,12 @@ export async function loader() {
       where: { year: year, month: month },
     },
   })
-  return {
+
+  return json({
     dailyThemes: dailyThemesResp.data.dailyThemes,
     year,
     month,
-  }
+  })
 }
 
 export default function Themes() {

@@ -4,6 +4,20 @@ import { env } from "@/env"
  * 設定
  */
 export const config = {
+  cacheControl: {
+    get home() {
+      return "max-age=0, s-maxage=480, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+    get short() {
+      return "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+    get oneHour() {
+      return "max-age=0, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+    get oneDay() {
+      return "max-age=0, s-maxage=86400, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+  },
   fcm: {
     get vapidKey() {
       return "BOvVhnNNznMu2HYzfZVdJa5hQwnAQW5Prld1gboUgkRY3rO6d3oLMP3WP0bKazNWm9AVI0LBQ8L94FTbN_Y4rn4"

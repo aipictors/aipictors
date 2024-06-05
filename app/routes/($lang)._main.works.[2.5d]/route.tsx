@@ -4,7 +4,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeWorkList } from "@/routes/($lang)._main._index/_components/home-work-list"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 
 export async function loader() {
   const client = createClient()
@@ -22,10 +22,11 @@ export async function loader() {
     query: hotTagsQuery,
     variables: {},
   })
-  return {
+
+  return json({
     works: worksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,
-  }
+  })
 }
 
 /**

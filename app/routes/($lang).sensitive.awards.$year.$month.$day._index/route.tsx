@@ -5,9 +5,9 @@ import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.awards._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.awards._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import { json, useLoaderData, useParams } from "@remix-run/react"
 
-export const loader = async (props: LoaderFunctionArgs) => {
+export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
 
   if (
@@ -37,9 +37,9 @@ export const loader = async (props: LoaderFunctionArgs) => {
     },
   })
 
-  return {
+  return json({
     workAwards: workAwardsResp.data.workAwards,
-  }
+  })
 }
 
 export default function SensitiveAwardsPage() {
