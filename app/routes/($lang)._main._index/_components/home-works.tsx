@@ -1,12 +1,22 @@
 import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
+import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 
 export const HomeWorks = () => {
   const appContext = useContext(AuthContext)
+
+  if (appContext.isLoading) {
+    return (
+      <>
+        <HomeWorkDummies />
+        <HomeWorkDummies />
+      </>
+    )
+  }
 
   // おすすめ作品
   const { data: suggestedWorkResp } = useSuspenseQuery(worksQuery, {
@@ -56,7 +66,7 @@ export const HomeWorks = () => {
           key={section.title}
           title={section.title}
           tooltip={section.tooltip ? section.tooltip : undefined}
-          works={section.works ?? []}
+          works={section.works ?? null}
         />
       ))}
     </>

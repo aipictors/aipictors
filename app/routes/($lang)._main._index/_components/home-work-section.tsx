@@ -11,12 +11,16 @@ import { RiQuestionLine } from "@remixicon/react"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]>
+  works: NonNullable<WorksQuery["works"]> | null
   title: string
   tooltip?: string
 }
 
 export const HomeWorkSection = (props: Props) => {
+  if (props.works === null) {
+    return null
+  }
+
   const photos = props.works.map((work) => ({
     src: work.largeThumbnailImageURL,
     width: work.largeThumbnailImageWidth,

@@ -1,10 +1,10 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppPage } from "@/_components/app/app-page"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { createClient } from "@/_lib/client"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
+import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorks } from "@/routes/($lang)._main._index/_components/home-works"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
@@ -81,7 +81,13 @@ export default function Index() {
       <Suspense>
         <HomeTagList hotTags={data.hotTags} />
       </Suspense>
-      <Suspense fallback={<AppLoadingPage />}>
+      <Suspense
+        fallback={
+          <>
+            <HomeWorkDummies />
+          </>
+        }
+      >
         <HomeWorks />
       </Suspense>
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
