@@ -69,7 +69,7 @@ export async function loader() {
   return {
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
-  })
+  }
 }
 
 export default function Index() {
