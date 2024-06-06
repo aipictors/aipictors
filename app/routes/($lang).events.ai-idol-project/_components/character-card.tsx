@@ -7,6 +7,7 @@ type Props = {
   name: string
   imageURL: string
   prompt: string
+  negativePrompts: string
   profile: string
   xlink: string
 }
@@ -27,7 +28,13 @@ export function CharacterCard(props: Props) {
   return (
     <>
       <div className="mt-4 h-auto max-w-80 md:max-w-96">
-        <a href={`/generation?prompts=${props.prompt}`}>
+        <a
+          href={
+            props.negativePrompts
+              ? `/generation?prompts=${props.prompt}&negativeprompts=${props.negativePrompts}`
+              : `/generation?prompts=${props.prompt}`
+          }
+        >
           <p className="mt-2 mb-2 text-center font-bold">{props.name}</p>
           <Card>
             <img

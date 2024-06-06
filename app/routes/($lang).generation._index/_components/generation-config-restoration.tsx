@@ -30,6 +30,8 @@ export const GenerationConfigRestoration = (props: Props) => {
 
   const promptText = searchParams.get("prompts")
 
+  const negativePromptText = searchParams.get("negativeprompts")
+
   const { send } = GenerationConfigContext.useActorRef()
 
   const { data } = useSuspenseQuery(
@@ -123,7 +125,11 @@ export const GenerationConfigRestoration = (props: Props) => {
   useEffect(() => {
     if (!promptText) return
     try {
-      context.updatePrompt(promptText)
+      if (negativePromptText) {
+        context.updatePromptAndNegativePrompt(promptText, negativePromptText)
+      } else {
+        context.updatePrompt(promptText)
+      }
       toast("プロンプトを復元しました。", { position: "top-center" })
     } catch (error) {
       // captureException(error)

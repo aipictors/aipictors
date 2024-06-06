@@ -6,7 +6,7 @@ import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 
-export const HomeWorks = () => {
+export const HomeWorksWithLoggedIn = () => {
   const appContext = useContext(AuthContext)
 
   if (appContext.isLoading) {
@@ -16,6 +16,10 @@ export const HomeWorks = () => {
         <HomeWorkDummies />
       </>
     )
+  }
+
+  if (appContext.isNotLoggedIn) {
+    return null
   }
 
   // おすすめ作品

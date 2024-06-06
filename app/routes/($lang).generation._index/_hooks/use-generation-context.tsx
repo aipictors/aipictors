@@ -110,6 +110,20 @@ export const useGenerationContext = () => {
   }
 
   /**
+   * プロンプトとネガティブプロンプトを変更する
+   */
+  const updatePromptAndNegativePrompt = (
+    prompt: string,
+    negativePrompt: string,
+  ) => {
+    const value = configAction
+      .updatePrompt(prompt)
+      .updateNegativePrompt(negativePrompt)
+      .getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * サンプラを変更する
    * @param text
    */
@@ -659,6 +673,7 @@ export const useGenerationContext = () => {
     updatePreviewImageURL,
     updatePrompt,
     updateNegativePrompt,
+    updatePromptAndNegativePrompt,
     updateSampler,
     updateSteps,
     updateScale,

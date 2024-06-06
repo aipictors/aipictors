@@ -7,7 +7,7 @@ export const workAwardsQuery = gql(`
       index
       dateText
       work {
-        ...FeedWorkFields
+        ...PartialWorkFields
       }
     }
   }

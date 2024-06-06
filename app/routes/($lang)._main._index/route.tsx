@@ -1,14 +1,17 @@
 import { AppPage } from "@/_components/app/app-page"
+import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
+import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
+import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
-import { HomeWorks } from "@/routes/($lang)._main._index/_components/home-works"
+import { HomeWorksWithLoggedIn } from "@/routes/($lang)._main._index/_components/home-works-with-logged-in"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
@@ -37,13 +40,58 @@ export const meta: MetaFunction = () => {
 export async function loader() {
   const client = createClient()
 
-  // Fetch data from the given URL and parse it to the TagData type
+  // おすすめ作品
+  const suggestedWorkResp = await client.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 80,
+      where: {
+        orderBy: "LIKES_COUNT",
+        sort: "DESC",
+        // 直近1週間の作品
+        afterCreatedAt: new Date(
+          Date.now() - 7 * 24 * 60 * 60 * 1000,
+        ).toDateString(),
+        ratings: ["G"],
+      },
+    },
+  })
+
+  // 推薦作品
+  const recommendedWorksResp = await client.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 54,
+      where: {
+        isRecommended: true,
+        ratings: ["G"],
+      },
+    },
+  })
+
+  // ランキング
+  const workAwardsResp = await client.query({
+    query: workAwardsQuery,
+    variables: {
+      offset: 0,
+      limit: 8,
+      where: {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
+        day: new Date().getDate() - 1,
+      },
+    },
+  })
+
+  // おすすめタグ一覧
+  // タグからランダムに8つ取得
   const tags = await fetch(
     "https://www.aipictors.com/wp-content/themes/AISite/json/hashtag/hashtag-image-0.json",
   )
     .then((res) => res.json())
     .then((data: unknown) => {
-      // Assuming the data is an array of arrays, convert it to an array of TagData
       return (data as [string, string][]).map(
         ([name, thumbnailUrl]): WorkTag => ({
           name,
@@ -52,12 +100,10 @@ export async function loader() {
       )
     })
 
-  // biome-ignore lint/complexity/noForEach: <explanation>
-  tags.forEach((tag) => {
+  for (const tag of tags) {
     tag.thumbnailUrl = `https://www.aipictors.com/wp-content/uploads/${tag.thumbnailUrl}`
-  })
+  }
 
-  // タグからランダムに8つ取得
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 8)
 
   // コレクション
@@ -66,14 +112,25 @@ export async function loader() {
     variables: {},
   })
 
-  return {
+  return json({
+    suggestedWorkResp: suggestedWorkResp.data.works,
+    recommendedWorks: recommendedWorksResp.data.works,
+    workAwards: workAwardsResp.data.workAwards,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
-  }
+  })
 }
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  const sections = [
+    {
+      title: "ユーザからの推薦",
+      works: data?.workAwards,
+      tooltip: "",
+    },
+  ]
 
   return (
     <AppPage className="space-y-4">
@@ -81,6 +138,7 @@ export default function Index() {
       <Suspense>
         <HomeTagList hotTags={data.hotTags} />
       </Suspense>
+      <HomeAwardWorkSection title={"前日ランキング"} works={data.workAwards} />
       <Suspense
         fallback={
           <>
@@ -88,7 +146,7 @@ export default function Index() {
           </>
         }
       >
-        <HomeWorks />
+        <HomeWorksWithLoggedIn />
       </Suspense>
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
     </AppPage>

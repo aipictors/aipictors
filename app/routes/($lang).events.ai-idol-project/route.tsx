@@ -30,7 +30,9 @@ export default function EventAiIdolProject() {
       imageURL:
         "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/%E3%83%A6%E3%82%A8%E9%80%8F%E9%81%8E_1.webp",
       prompt:
-        "1girl,She has purple hair, long braids, one knot fishbone ponytail, fluffy one knot braids, intelligent glasses, green eyes, expressionless, about 16 years old",
+        "((((long fish-bone braid hair, pony-tail-style)))),1 girl solo, she has purple hair, green eyes, intelligent glasses ,expressionless, about 16 years old, white coat",
+      negativePrompt:
+        "(((Biological fish, snakes,Animal Ears,smile,short-hair,medium hair))), twintails",
       profile:
         "AIから生まれた新人アイドル、ユエ...。-手元で出会えるアイドル-AiIdolProject所属。あの子たちの、笑顔の理由。この頭脳で解き明かす...。えっ、絵文字...？......これでいい🤗？",
       xlink: "https://x.com/Yue_Aipro",
@@ -70,7 +72,7 @@ export default function EventAiIdolProject() {
       imageURL:
         "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/%E3%83%AB%E3%82%AB%E9%80%8F%E9%81%8E.webp",
       prompt:
-        "1girl、Odd eyes with red left eye and blue right eye Odd eyes of two different colors red and blue False eyes (dark eye color), sweater with visible red shoulders, girl, age15, smiling, choker with black keyhole on neck, red hair, short hair",
+        "(((((heterrochromia, red eye,blue eye))))),1 girl solo, heterrochromia, red eye,blue eye, sweater with red shoulders, girl, 15 years old, smiling, choker with black keyhole around neck, (red hair), short hair",
       profile:
         "僕はAIから生まれた新人アイドル、ルカだ🎸 -手元で出会えるアイドル-AiIdolProject？🤔とかいう事務所に所属することになった。心の中にいるもう一人の相棒のことも、一緒に応援してほしい。ミュージシャンとしてじゃない、今度はアイドルとして一流を目指すよ🎶！",
       xlink: "https://x.com/Ruka_Aipro",
@@ -103,6 +105,7 @@ export default function EventAiIdolProject() {
       key={character.name}
       imageURL={character.imageURL}
       prompt={character.prompt}
+      negativePrompts={character.negativePrompt ?? ""}
       profile={character.profile}
       xlink={character.xlink}
     />
