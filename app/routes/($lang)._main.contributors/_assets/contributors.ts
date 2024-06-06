@@ -2,6 +2,7 @@ import type { Contributor } from "@/routes/($lang)._main.contributors/_types/con
 
 export const contributors: Contributor[] = [
   {
+    id: 1,
     name: "Stella",
     message:
       "主にnijijourneyでイラストを生成されています。Flutterアプリの開発、拡張機能の開発を頂いております。",
@@ -12,6 +13,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 2,
     name: "haruka(Rutei)",
     message: "アナリティクス分析などにコントリビュート頂いております。",
     iconImageURL:
@@ -21,6 +23,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 3,
     name: "zzz",
     message: "サイト方針のご相談、公開モデルの搭載などさせて頂いております。",
     iconImageURL:
@@ -30,6 +33,7 @@ export const contributors: Contributor[] = [
     homeUrl: "https://ai-drawing.net/",
   },
   {
+    id: 4,
     name: "morisato",
     message:
       "広報、ぴくたーちゃんLoRAの開発などにコントリビュート頂いております。",
@@ -40,6 +44,7 @@ export const contributors: Contributor[] = [
     homeUrl: "https://civitai.com/user/swingwings/models",
   },
   {
+    id: 5,
     name: "L4Ph",
     message: "インフラ整備、開発頂いております。",
     iconImageURL:
@@ -49,6 +54,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 6,
     name: "syuribox",
     message: "広報などにコントリビュート頂いております。",
     iconImageURL:
@@ -58,6 +64,7 @@ export const contributors: Contributor[] = [
     homeUrl: "https://kakuyomu.jp/users/syuribox",
   },
   {
+    id: 7,
     name: "ねこねこにゃんにゃん",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
@@ -67,6 +74,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 8,
     name: "エルセンナ",
     message: "アプリの翻訳などにコントリビュート頂いております。",
     iconImageURL:
@@ -76,6 +84,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 9,
     name: "Kakko",
     message: "イベント、イラスト本などの整備、フォローなど頂いております。",
     iconImageURL:
@@ -85,6 +94,7 @@ export const contributors: Contributor[] = [
     homeUrl: "https://prompton.io/kakowara",
   },
   {
+    id: 10,
     name: "erot",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
@@ -94,6 +104,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 11,
     name: "shirotaka",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
@@ -103,6 +114,7 @@ export const contributors: Contributor[] = [
     homeUrl: "https://lit.link/WhiteRICEsub",
   },
   {
+    id: 12,
     name: "忙海AI",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
@@ -112,6 +124,7 @@ export const contributors: Contributor[] = [
     homeUrl: null,
   },
   {
+    id: 13,
     name: "thumbnailstorie",
     message: "作品画面の開発などにコントリビュート頂いております。",
     iconImageURL:

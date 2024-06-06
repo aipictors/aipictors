@@ -1,4 +1,5 @@
 export type Contributor = {
+  id: number
   name: string
   message: string | null
   aipictorsId: string | null
