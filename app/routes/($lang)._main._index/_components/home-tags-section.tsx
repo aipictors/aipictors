@@ -20,7 +20,7 @@ export const HomeTagsSection = (props: Props) => {
 
   return (
     <>
-      <h2 className="items-center space-x-2 font-bold text-2xl">
+      <h2 className="items-center space-x-2 font-bold text-md">
         {props.title}
       </h2>
       <Carousel
@@ -45,6 +45,7 @@ export const HomeTagsSection = (props: Props) => {
             </CarouselItem>
           ))}
         </CarouselContent>
+        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
       </Carousel>
     </>
   )

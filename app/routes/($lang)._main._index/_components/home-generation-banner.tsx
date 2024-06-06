@@ -28,7 +28,7 @@ export const HomeGenerationBanner = () => {
     worksResp?.works[Math.floor(Math.random() * worksResp?.works.length)]
 
   return (
-    <div className="flex w-full items-center overflow-hidden rounded-md">
+    <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
       <div className="m-auto">
         <p className="font-semibold text-md">
           無料で生成して

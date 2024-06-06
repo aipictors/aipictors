@@ -3,14 +3,14 @@ import { Card } from "@/_components/ui/card"
 type Props = {
   title?: string
   imageURL: string | null
-  // work: {
-  //   user: {
-  //     name: string
-  //     iconImage: {
-  //       downloadURL: string | null
-  //     } | null
-  //   }
-  // }
+  work: {
+    user: {
+      name: string
+      iconImage: {
+        downloadURL: string | null
+      } | null
+    }
+  }
 }
 
 export const RankingCard = (props: Props) => (

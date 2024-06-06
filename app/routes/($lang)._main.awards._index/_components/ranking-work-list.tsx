@@ -14,6 +14,7 @@ export const RankingWorkList = (props: Props) => {
             key={props.id}
             title={props.work.title}
             imageURL={props.work.smallThumbnailImageURL}
+            work={props.work}
           />
         )
       })}

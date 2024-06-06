@@ -17,7 +17,7 @@ type Props = {
 }
 
 export const HomeWorkSection = (props: Props) => {
-  if (props.works === null) {
+  if (props.works === null || props.works.length === 0) {
     return null
   }
 
@@ -37,8 +37,8 @@ export const HomeWorkSection = (props: Props) => {
 
   return (
     <section className="space-y-4">
-      <div className="flex justify-between">
-        <h2 className="items-center space-x-2 font-bold text-2xl">
+      <div className="flex items-center justify-between">
+        <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
           {props.tooltip && (
             <TooltipProvider>

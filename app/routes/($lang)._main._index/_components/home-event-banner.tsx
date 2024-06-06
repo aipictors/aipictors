@@ -3,7 +3,7 @@
  */
 export const HomeEventBanner = () => {
   return (
-    <div className="flex w-full items-center overflow-hidden rounded-md">
+    <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
       <div className="m-auto ml-2">
         <p className="font-semibold text-lg">AI IDOL PROJECT</p>
         <p className="font-semibold text-sm">

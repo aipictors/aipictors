@@ -27,8 +27,10 @@ export const HomeWorksWithLoggedIn = () => {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
-      limit: 16,
-      where: {},
+      limit: 80,
+      where: {
+        ratings: ["G"],
+      },
     },
   })
 
@@ -37,30 +39,30 @@ export const HomeWorksWithLoggedIn = () => {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: 80,
       where: {
         isRecommended: true,
+        ratings: ["G"],
       },
     },
   })
 
+  const suggestedWorks = [...(suggestedWorkResp?.works || [])]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 16)
+
+  const recommendedWorks = [...(recommendedWorksResp?.works || [])]
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 16)
+
   const sections = [
-    // {
-    //   title: "無料生成できる作品",
-    //   tooltip: "無料画像生成で参考にできる作品です。",
-    //   works: data.generationWorkResp,
-    // },
-    { title: "おすすめ", works: suggestedWorkResp?.works, tooltip: "" },
+    // ランダムに24作品
+    { title: "おすすめ", works: suggestedWorks, tooltip: "" },
     {
       title: "ユーザからの推薦",
-      works: recommendedWorksResp?.works,
+      works: recommendedWorks,
       tooltip: "",
     },
-    // { title: "コレクション", works: data.suggestedWorkResp },
-    // { title: "人気タグ", works: data.suggestedWorkResp },
-    // { title: "ショート動画", works: data.suggestedWorkResp },
-    // { title: "小説", works: data.suggestedWorkResp },
-    // { title: "コラム", works: data.suggestedWorkResp },
   ]
 
   return (

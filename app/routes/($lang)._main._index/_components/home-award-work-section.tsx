@@ -1,14 +1,20 @@
+import { CroppedWorkSquare } from "@/_components/cropped-work-square"
+import { LikeButton } from "@/_components/like-button"
 import { Button } from "@/_components/ui/button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/_components/ui/carousel"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
+import { UserNameBadge } from "@/_components/user-name-badge"
 import type { WorkAwardsQuery } from "@/_graphql/__generated__/graphql"
-import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
 import { RiQuestionLine } from "@remixicon/react"
-import PhotoAlbum from "react-photo-album"
 
 type Props = {
   works: NonNullable<WorkAwardsQuery["workAwards"]> | null
@@ -16,29 +22,30 @@ type Props = {
   tooltip?: string
 }
 
+/**
+ * ランキング作品一覧
+ */
 export const HomeAwardWorkSection = (props: Props) => {
   if (props.works === null) {
     return null
   }
 
-  const photos = props.works.map((work) => ({
-    src: work.work.largeThumbnailImageURL,
-    width: work.work.largeThumbnailImageWidth,
-    height: work.work.largeThumbnailImageWidth,
-    workId: work.work.id, // 各作品のID
-    userId: work.work.user.id, // 作品の所有者のID
-    userIcon:
-      work.work.user?.iconImage?.downloadURL ??
-      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
-    userName: work.work.user.name, // 作品の所有者の名前
-    workOwnerUserId: work.work.user.id,
-    isLiked: work.work.isLiked,
+  const works = props.works.map((work) => ({
+    id: work.work.id,
+    src: work.work.smallThumbnailImageURL,
+    width: work.work.smallThumbnailImageWidth,
+    height: work.work.smallThumbnailImageHeight,
+    workId: work.work.id,
+    thumbnailImagePosition: work.work.thumbnailImagePosition,
+    userId: work.work.user.id,
+    userIcon: work.work.user.iconImage?.downloadURL,
+    userName: work.work.user.name,
   }))
 
   return (
     <section className="space-y-4">
-      <div className="flex justify-between">
-        <h2 className="items-center space-x-2 font-bold text-2xl">
+      <div className="flex items-center justify-between">
+        <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
           {props.tooltip && (
             <TooltipProvider>
@@ -57,28 +64,47 @@ export const HomeAwardWorkSection = (props: Props) => {
           {"すべて見る"}
         </Button>
       </div>
-      <PhotoAlbum
-        layout="rows"
-        columns={3}
-        photos={photos}
-        renderPhoto={(photoProps) => (
-          // @ts-ignore 後で考える
-          <HomeWorkAlbum
-            {...photoProps}
-            userId={photoProps.photo.userId}
-            userName={photoProps.photo.userName}
-            userIcon={photoProps.photo.userIcon}
-            workId={photoProps.photo.workId}
-            workOwnerUserId={photoProps.photo.workOwnerUserId}
-            isLiked={photoProps.photo.isLiked}
-          />
-        )}
-        defaultContainerWidth={1200}
-        sizes={{
-          size: "calc(100vw - 240px)",
-          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-        }}
-      />
+
+      <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
+        <CarouselContent>
+          {works.map((work, index) => (
+            <CarouselItem
+              key={work.workId}
+              className="relative basis-1/3.5 space-y-2"
+            >
+              <div className="relative">
+                <CroppedWorkSquare
+                  workId={work.workId}
+                  imageUrl={work.src}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="lg"
+                  imageWidth={work.width}
+                  imageHeight={work.height}
+                  ranking={index + 1}
+                />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={work.workId}
+                    targetWorkOwnerUserId={work.userId}
+                    defaultLiked={false}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+              <UserNameBadge
+                userId={work.userId}
+                userIconImageURL={work.userIcon}
+                name={work.userName}
+                width={"lg"}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
+      </Carousel>
     </section>
   )
 }
