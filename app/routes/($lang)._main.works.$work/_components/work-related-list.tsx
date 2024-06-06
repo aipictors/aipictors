@@ -28,7 +28,7 @@ type Props = {
  */
 export function WorkRelatedList(props: Props) {
   return (
-    <div className="space-y-4 pt-2">
+    <div className="relative space-y-4 pt-2">
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
           {props.works.map((work) => (
@@ -59,7 +59,10 @@ export function WorkRelatedList(props: Props) {
               </div>
             </CarouselItem>
           ))}
+          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
+          <div className="relative basis-1/3.5 space-y-2" />
         </CarouselContent>
+        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
       </Carousel>
       <Separator />
     </div>
