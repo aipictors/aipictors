@@ -13,8 +13,7 @@ export const RankingWorkList = (props: Props) => {
           <RankingCard
             key={props.id}
             title={props.work.title}
-            imageURL={props.work.imageURL}
-            // work={props.work}
+            imageURL={props.work.smallThumbnailImageURL}
           />
         )
       })}
