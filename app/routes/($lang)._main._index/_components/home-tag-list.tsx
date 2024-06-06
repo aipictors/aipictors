@@ -17,10 +17,6 @@ type Props = {
  * ホーム上部に表示するタグ一覧
  */
 export const HomeTagList = (props: Props) => {
-  // const plugin = React.useRef(
-  //   Autoplay({ delay: 2000, stopOnInteraction: true }),
-  // )
-
   const [date, setDate] = useState(new Date())
 
   const { data: worksResp } = useSuspenseQuery(dailyThemeQuery, {
@@ -39,12 +35,7 @@ export const HomeTagList = (props: Props) => {
   const themeId = worksResp?.dailyTheme?.id ?? ""
 
   return (
-    <Carousel
-      opts={{ dragFree: true, loop: false }}
-      // plugins={[plugin.current]}
-      // onMouseEnter={plugin.current.stop}
-      // onMouseLeave={plugin.current.reset}
-    >
+    <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>
         <CarouselItem className="basis-auto" key={-1}>
           {theme && (
@@ -58,6 +49,7 @@ export const HomeTagList = (props: Props) => {
           </CarouselItem>
         ))}
       </CarouselContent>
+      <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
     </Carousel>
   )
 }

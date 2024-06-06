@@ -12,8 +12,13 @@ export const workQuery = gql(`
       description
       isSensitive
       imageURL
-      smallThumbnailImageURL
       largeThumbnailImageURL
+      largeThumbnailImageWidth
+      largeThumbnailImageHeight
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
       user {
         promptonUser {
           id
@@ -24,9 +29,14 @@ export const workQuery = gql(`
         isMuted
         works(offset: 0, limit: 16) {
           id
+          userId
           largeThumbnailImageURL
           largeThumbnailImageWidth
           largeThumbnailImageHeight
+          smallThumbnailImageURL
+          smallThumbnailImageWidth
+          smallThumbnailImageHeight
+          thumbnailImagePosition
         }
       }
       dailyTheme {
@@ -46,12 +56,14 @@ export const workQuery = gql(`
         smallThumbnailImageURL
         smallThumbnailImageWidth
         smallThumbnailImageHeight
+        thumbnailImagePosition
       }
       previousWork {
         id
         smallThumbnailImageURL
         smallThumbnailImageWidth
         smallThumbnailImageHeight
+        thumbnailImagePosition
       }
       model
       modelHash

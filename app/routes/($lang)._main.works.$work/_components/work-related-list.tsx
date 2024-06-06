@@ -2,45 +2,61 @@
  * 作品の関連作品一覧
  */
 
+import { CroppedWorkSquare } from "@/_components/cropped-work-square"
+import { LikeButton } from "@/_components/like-button"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
-import { Link } from "@remix-run/react"
-
-type Work = {
-  id: string
-  largeThumbnailImageURL: string
-  largeThumbnailImageHeight: number
-  largeThumbnailImageWidth: number
-}
 
 type Props = {
-  works: Work[]
+  works: {
+    smallThumbnailImageURL: string
+    thumbnailImagePosition: number
+    smallThumbnailImageWidth: number
+    smallThumbnailImageHeight: number
+    id: string
+    userId: string
+    isLiked: boolean
+  }[]
 }
 
+/**
+ * 直近の作品一覧
+ */
 export function WorkRelatedList(props: Props) {
   return (
-    <div className="max-w-[80vw] space-y-4 pt-2">
+    <div className="space-y-4 pt-2">
       <Carousel opts={{ dragFree: true }}>
         <CarouselContent>
           {props.works.map((work) => (
             <CarouselItem
               key={work.id}
-              className="mr-2 basis-1/3 rounded bg-gray-100 lg:basis-1/4 md:basis-1/4 sm:basis-1/3 dark:bg-gray-900"
+              className="relative basis-1/3.5 space-y-2"
             >
-              <Link to={`/works/${work.id}`}>
-                <img
-                  key={work.id}
-                  className="h-24 w-24 rounded object-cover lg:h-40 md:h-32 lg:w-40 md:w-32" // object-cover を object-contain に変更
-                  alt=""
-                  src={work.largeThumbnailImageURL}
-                  height={work.largeThumbnailImageHeight}
-                  width={work.largeThumbnailImageWidth}
+              <div className="relative">
+                <CroppedWorkSquare
+                  workId={work.id}
+                  imageUrl={work.smallThumbnailImageURL}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="md"
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
                 />
-              </Link>
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={32}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.userId}
+                    defaultLiked={false}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>

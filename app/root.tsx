@@ -91,7 +91,10 @@ export function Layout(props: Props) {
         <Meta />
         <Links />
       </head>
-      <body className={cn("margin-0 min-h-screen font-sans antialiased")}>
+      <body
+        className={cn("margin-0 min-h-screen font-sans antialiased")}
+        style={{ margin: "0 !important" }}
+      >
         <ThemeProvider
           attribute={"class"}
           defaultTheme={"system"}

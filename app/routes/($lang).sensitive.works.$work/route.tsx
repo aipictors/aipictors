@@ -4,7 +4,6 @@ import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
 import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
-import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 
@@ -54,7 +53,7 @@ export default function SensitiveWorkPage() {
     <ArticlePage>
       <WorkArticle work={data.work} />
       <WorkCommentList workId={data.work.id} comments={data.workComments} />
-      <WorkRelatedList works={data.work.user.works} />
+      {/* <WorkRelatedList works={data.work.user.works} /> */}
     </ArticlePage>
   )
 }

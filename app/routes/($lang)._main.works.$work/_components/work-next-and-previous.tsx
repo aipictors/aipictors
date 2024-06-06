@@ -1,3 +1,4 @@
+import { CroppedWorkSquare } from "@/_components/cropped-work-square"
 import {
   Tooltip,
   TooltipContent,
@@ -5,7 +6,6 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { WorkQuery } from "@/_graphql/__generated__/graphql"
-import { SmallSquareThumbnail } from "@/routes/($lang)._main.works.$work/_components/small-square-thumbnail"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
@@ -36,13 +36,41 @@ export const WorkNextAndPrevious = (props: Props) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="mb-4 flex justify-center">
-        <SmallSquareThumbnail work={props.work.nextWork} linkToWork={true} />
-        <SmallSquareThumbnail work={props.work} isFocus={true} />
-        <SmallSquareThumbnail
-          work={props.work.previousWork}
-          linkToWork={true}
-        />
+      <div className="flex justify-center space-x-2">
+        {props.work.nextWork && (
+          <CroppedWorkSquare
+            workId={props.work.nextWork.id}
+            imageUrl={props.work.nextWork.smallThumbnailImageURL}
+            imageWidth={props.work.nextWork.smallThumbnailImageWidth}
+            imageHeight={props.work.nextWork.smallThumbnailImageHeight}
+            thumbnailImagePosition={
+              props.work.nextWork.thumbnailImagePosition ?? 0
+            }
+            size={"sm"}
+          />
+        )}
+        <div className="opacity-50">
+          <CroppedWorkSquare
+            workId={props.work.id}
+            imageUrl={props.work.smallThumbnailImageURL}
+            imageWidth={props.work.smallThumbnailImageWidth}
+            imageHeight={props.work.smallThumbnailImageHeight}
+            thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
+            size={"sm"}
+          />
+        </div>
+        {props.work.previousWork && (
+          <CroppedWorkSquare
+            workId={props.work.previousWork.id}
+            imageUrl={props.work.previousWork.smallThumbnailImageURL}
+            imageWidth={props.work.previousWork.smallThumbnailImageWidth}
+            imageHeight={props.work.previousWork.smallThumbnailImageHeight}
+            thumbnailImagePosition={
+              props.work.previousWork.thumbnailImagePosition ?? 0
+            }
+            size={"sm"}
+          />
+        )}
       </div>
     </div>
   )

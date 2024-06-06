@@ -25,14 +25,24 @@ export const WorkContainer = (props: Props) => {
     return null
   }
 
+  const relatedWorks = work.user.works.map((work) => ({
+    smallThumbnailImageURL: work.smallThumbnailImageURL,
+    thumbnailImagePosition: work.thumbnailImagePosition ?? 0,
+    smallThumbnailImageWidth: work.smallThumbnailImageWidth,
+    smallThumbnailImageHeight: work.smallThumbnailImageHeight,
+    id: work.id,
+    userId: work.userId,
+    isLiked: false,
+  }))
+
   return (
-    <div className="flex w-full overflow-hidden p-4">
-      <div className="flex flex-col items-center justify-center">
+    <div className="flex w-full overflow-hidden p-0 md:p-4">
+      <div className="flex flex-col items-center justify-center overflow-hidden">
         <div className="mx-auto w-full max-w-screen-lg">
           <Suspense fallback={<AppLoadingPage />}>
             <WorkArticle work={work} />
           </Suspense>
-          <WorkRelatedList works={work.user.works} />
+          <WorkRelatedList works={relatedWorks} />
           <Suspense fallback={<AppLoadingPage />}>
             <WorkCommentList workId={work.id} comments={props.comments} />
           </Suspense>
