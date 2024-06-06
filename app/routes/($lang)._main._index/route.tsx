@@ -10,9 +10,16 @@ import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorksWithLoggedIn } from "@/routes/($lang)._main._index/_components/home-works-with-logged-in"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
+
+// TODO: 正式に公開するときはキャッシュを有効にする
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": "max-age=0, s-maxage=0",
+  }
+}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
