@@ -15,10 +15,9 @@ export function AppBreadcrumb(props: Props) {
 
   return (
     <div className="overflow-x-auto">
-      <nav className="flex space-x-2">
+      <nav>
         {props.breadcrumb.itemListElement.map((item, index) => (
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-          <>
+          <div key="index" className="flex space-x-2">
             <Link
               to={
                 item.item === config.siteURL
@@ -30,7 +29,7 @@ export function AppBreadcrumb(props: Props) {
               {item.name}
             </Link>
             {index === length - 1 ? null : <span className="mx-2">{"/"}</span>}
-          </>
+          </div>
         ))}
       </nav>
     </div>

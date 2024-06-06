@@ -80,29 +80,34 @@ export default function Milestone() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.milestones.map(
-                    (milestone) =>
-                      // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-                      !milestone.isDone && (
-                        <TableRow key={milestone.id}>
-                          <TableCell className="font-bold">
-                            {milestone.version}
-                          </TableCell>
-                          <TableCell>{milestone.title}</TableCell>
-                          <TableCell>{milestone.description}</TableCell>
-                          <TableCell>
-                            {milestone.dueDate
-                              ? convertDateFormat(milestone.dueDate)
-                              : "未定"}
-                          </TableCell>
-                          <TableCell>
-                            <Link to={milestone.pageURL} target="_blank">
-                              {"GitHubで確認"}
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ),
-                  )}
+                  {data.milestones.map((milestone, index) => {
+                    return (
+                      <TableRow
+                        key={milestone.id}
+                        className={milestone.isDone ? "hidden" : ""}
+                      >
+                        <TableCell className="font-bold">
+                          {milestone.version}
+                        </TableCell>
+                        <TableCell>{milestone.title}</TableCell>
+                        <TableCell>{milestone.description}</TableCell>
+                        <TableCell>
+                          {milestone.dueDate
+                            ? convertDateFormat(milestone.dueDate)
+                            : "未定"}
+                        </TableCell>
+                        <TableCell key={`link-${milestone.id}`}>
+                          <Link
+                            key={`link-${milestone.id}`}
+                            to={milestone.pageURL}
+                            target="_blank"
+                          >
+                            {"GitHubで確認"}
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </Card>
@@ -132,24 +137,23 @@ export default function Milestone() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {data.milestones.map(
-                          (milestone) =>
-                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-                            milestone.isDone && (
-                              <TableRow key={milestone.id}>
-                                <TableCell className="font-bold">
-                                  {milestone.version}
-                                </TableCell>
-                                <TableCell>{milestone.title}</TableCell>
-                                <TableCell>{milestone.description}</TableCell>
-                                <TableCell>
-                                  <Link to={milestone.pageURL} target="_blank">
-                                    {"GitHubで確認"}
-                                  </Link>
-                                </TableCell>
-                              </TableRow>
-                            ),
-                        )}
+                        {data.milestones.map((milestone) => (
+                          <TableRow
+                            key={milestone.id}
+                            className={!milestone.isDone ? "hidden" : ""}
+                          >
+                            <TableCell className="font-bold">
+                              {milestone.version}
+                            </TableCell>
+                            <TableCell>{milestone.title}</TableCell>
+                            <TableCell>{milestone.description}</TableCell>
+                            <TableCell>
+                              <Link to={milestone.pageURL} target="_blank">
+                                {"GitHubで確認"}
+                              </Link>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </Card>
@@ -188,29 +192,28 @@ export default function Milestone() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.appMilestones.map(
-                    (milestone) =>
-                      // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-                      !milestone.isDone && (
-                        <TableRow key={milestone.id}>
-                          <TableCell className="font-bold">
-                            {milestone.version}
-                          </TableCell>
-                          <TableCell>{milestone.title}</TableCell>
-                          <TableCell>{milestone.description}</TableCell>
-                          <TableCell>
-                            {milestone.dueDate
-                              ? convertDateFormat(milestone.dueDate)
-                              : "未定"}
-                          </TableCell>
-                          <TableCell>
-                            <Link to={milestone.pageURL} target="_blank">
-                              {"GitHubで確認"}
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ),
-                  )}
+                  {data.appMilestones.map((milestone) => (
+                    <TableRow
+                      key={milestone.id}
+                      className={milestone.isDone ? "hidden" : ""}
+                    >
+                      <TableCell className="font-bold">
+                        {milestone.version}
+                      </TableCell>
+                      <TableCell>{milestone.title}</TableCell>
+                      <TableCell>{milestone.description}</TableCell>
+                      <TableCell>
+                        {milestone.dueDate
+                          ? convertDateFormat(milestone.dueDate)
+                          : "未定"}
+                      </TableCell>
+                      <TableCell>
+                        <Link to={milestone.pageURL} target="_blank">
+                          {"GitHubで確認"}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </Card>
@@ -240,24 +243,23 @@ export default function Milestone() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {data.appMilestones.map(
-                          (milestone) =>
-                            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-                            milestone.isDone && (
-                              <TableRow key={milestone.id}>
-                                <TableCell className="font-bold">
-                                  {milestone.version}
-                                </TableCell>
-                                <TableCell>{milestone.title}</TableCell>
-                                <TableCell>{milestone.description}</TableCell>
-                                <TableCell>
-                                  <Link to={milestone.pageURL} target="_blank">
-                                    {"GitHubで確認"}
-                                  </Link>
-                                </TableCell>
-                              </TableRow>
-                            ),
-                        )}
+                        {data.appMilestones.map((milestone) => (
+                          <TableRow
+                            key={milestone.id}
+                            className={!milestone.isDone ? "hidden" : ""}
+                          >
+                            <TableCell className="font-bold">
+                              {milestone.version}
+                            </TableCell>
+                            <TableCell>{milestone.title}</TableCell>
+                            <TableCell>{milestone.description}</TableCell>
+                            <TableCell>
+                              <Link to={milestone.pageURL} target="_blank">
+                                {"GitHubで確認"}
+                              </Link>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </Card>

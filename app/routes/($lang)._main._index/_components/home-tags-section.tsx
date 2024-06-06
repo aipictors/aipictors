@@ -47,16 +47,5 @@ export const HomeTagsSection = (props: Props) => {
         </CarouselContent>
       </Carousel>
     </>
-
-    // <section className="space-y-4">
-    //   <div className="flex justify-between">
-    //     {props.tags.map((tag) => (
-    //       // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-    //       <div className="h-24 w-16">
-    //         <img alt="" src={tag.thumbnailUrl} />
-    //       </div>
-    //     ))}
-    //   </div>
-    // </section>
   )
 }

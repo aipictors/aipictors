@@ -28,24 +28,26 @@ export const SupportMessageList = (props: Props) => {
       className="mb-16 h-full max-h-[50vh] flex-1 space-y-4 overflow-x-auto md:max-h-[100%]"
       ref={containerRef}
     >
-      {messages.map((message) =>
-        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-        message.isViewer ? (
+      {messages
+        .filter((message) => message.isViewer)
+        .map((message) => (
           <SenderMessage
-            key={message.id}
+            key={`sender-${message.id}`} // Add a unique key prop for SenderMessage
             createdAt={message.createdAt}
             isRead={message.isRead}
             text={message.text ?? "-"}
           />
-        ) : (
+        ))}
+      {messages
+        .filter((message) => !message.isViewer)
+        .map((message) => (
           <RecipientMessage
-            key={message.id}
-            text={message.text ?? "-"}
+            key={`recipient-${message.id}`} // Add a unique key prop for RecipientMessage
             createdAt={message.createdAt}
             iconImageURL={props.recipientIconImageURL}
+            text={message.text ?? "-"}
           />
-        ),
-      )}
+        ))}
     </div>
   )
 }

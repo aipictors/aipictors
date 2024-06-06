@@ -97,8 +97,7 @@ export const ContributorsView = () => {
         <h2 className="py-4 font-bold text-2xl">{"コントリビュータ一覧"}</h2>
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
           {contributors.map((user: Contributor) => (
-            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-            <ContributorCard user={user} />
+            <ContributorCard key={user.id} user={user} />
           ))}
         </div>
       </div>
