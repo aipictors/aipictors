@@ -3,8 +3,9 @@ import {} from "@/_components/ui/carousel"
 import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
+import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 
 type Props = {
   title: string
@@ -16,17 +17,37 @@ type Props = {
 export const HomeVideosSection = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  const [recommendedIds, setRecommendedIds] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchRecommendedIds = async () => {
+      const userId = authContext.userId ?? "-1"
+
+      try {
+        const ids = await getRecommendedWorkIds(userId, undefined, "video", "G")
+        setRecommendedIds(ids)
+      } catch (error) {
+        console.error("Error fetching recommended work IDs:", error)
+      }
+    }
+
+    fetchRecommendedIds()
+  }, [authContext.userId])
+
   const { data: videoWorks } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
       limit: 16,
       where: {
-        workType: "VIDEO",
-        ratings: ["G"],
+        ids: recommendedIds,
+        ratings: ["G", "R15", "R18", "R18G"],
       },
     },
   })
+
+  console.log(recommendedIds)
+  console.log(videoWorks)
 
   const workList =
     videoWorks?.works.filter((_, index) => index % 2 === 0) ?? null

@@ -9,6 +9,8 @@ import { config } from "@/config"
 export const getRecommendedWorkIds = async (
   userId: string,
   style?: "real" | "semireal" | "illust" | "sensitive",
+  type?: "image" | "video" | "column" | "novel",
+  rating?: "G",
 ): Promise<string[]> => {
   const formData = new FormData()
 
@@ -19,6 +21,8 @@ export const getRecommendedWorkIds = async (
   const payload = {
     id: userId,
     ...(style && { style }),
+    ...(type && { type }),
+    ...(rating && { rating }),
   }
 
   try {

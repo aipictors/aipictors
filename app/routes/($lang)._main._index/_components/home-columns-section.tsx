@@ -9,8 +9,9 @@ import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
+import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 
 type Props = {
   title: string
@@ -22,14 +23,36 @@ type Props = {
 export const HomeColumnsSection = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  const [recommendedIds, setRecommendedIds] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchRecommendedIds = async () => {
+      const userId = authContext.userId ?? "-1"
+
+      try {
+        const ids = await getRecommendedWorkIds(
+          userId,
+          undefined,
+          "column",
+          "G",
+        )
+        setRecommendedIds(ids)
+      } catch (error) {
+        console.error("Error fetching recommended work IDs:", error)
+      }
+    }
+
+    fetchRecommendedIds()
+  }, [authContext.userId])
+
   const { data: novelWorks } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
       limit: 64,
       where: {
-        workType: "COLUMN",
-        ratings: ["G"],
+        ids: recommendedIds,
+        ratings: ["G", "R15", "R18", "R18G"],
       },
     },
   })
