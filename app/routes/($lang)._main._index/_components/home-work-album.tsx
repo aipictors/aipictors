@@ -46,7 +46,7 @@ export function HomeWorkAlbum({
         <Link to={`/users/${userId}`}>
           <div className="flex items-center space-x-2">
             <img src={userIcon} alt="" className="h-4 w-4 rounded-full" />
-            <span className="text-sm text-white">{userName}</span>
+            <span className="text-nowrap text-sm text-white">{userName}</span>
           </div>
         </Link>
       </div>
