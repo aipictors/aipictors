@@ -26,13 +26,29 @@ export const HomeWorksRecommendedSection = () => {
 
   useEffect(() => {
     const fetchRecommendedIds = async () => {
-      const userId = appContext.userId ?? "-1"
+      if (recommendedIds.length === 0) {
+        if (appContext.isNotLoggedIn) {
+          const userId = "-1"
 
-      try {
-        const ids = await getRecommendedWorkIds(userId)
-        setRecommendedIds(ids)
-      } catch (error) {
-        console.error("Error fetching recommended work IDs:", error)
+          try {
+            const ids = await getRecommendedWorkIds(userId, undefined, "image")
+            setRecommendedIds(ids)
+          } catch (error) {
+            console.error("Error fetching recommended work IDs:", error)
+          }
+          return
+        }
+        if (appContext.isLoggedIn) {
+          const userId = appContext.userId
+
+          try {
+            const ids = await getRecommendedWorkIds(userId, undefined, "image")
+            setRecommendedIds(ids)
+          } catch (error) {
+            console.error("Error fetching recommended work IDs:", error)
+          }
+          return
+        }
       }
     }
 

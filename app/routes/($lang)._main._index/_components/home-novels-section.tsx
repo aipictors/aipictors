@@ -27,13 +27,20 @@ export const HomeNovelsSection = (props: Props) => {
 
   useEffect(() => {
     const fetchRecommendedIds = async () => {
-      const userId = authContext.userId ?? "-1"
+      if (!authContext.isNotLoading) {
+        const userId = authContext.userId ?? "-1"
 
-      try {
-        const ids = await getRecommendedWorkIds(userId, undefined, "novel", "G")
-        setRecommendedIds(ids)
-      } catch (error) {
-        console.error("Error fetching recommended work IDs:", error)
+        try {
+          const ids = await getRecommendedWorkIds(
+            userId,
+            undefined,
+            "novel",
+            "G",
+          )
+          setRecommendedIds(ids)
+        } catch (error) {
+          console.error("Error fetching recommended work IDs:", error)
+        }
       }
     }
 

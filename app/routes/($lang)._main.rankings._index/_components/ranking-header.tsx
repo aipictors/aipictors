@@ -17,15 +17,6 @@ export const RankingHeader = (props: Props) => {
             <p>{`${props.year}年${props.month}月`}</p>
             <ChevronRightIcon />
           </div>
-          {/* <Tabs isFitted variant="line">
-            <TabPanels>
-              <TabList mb="1em">
-                <Tab>{"デイリー"}</Tab>
-                <Tab>{"ウィークリー"}</Tab>
-                <Tab>{"マンスリー"}</Tab>
-              </TabList>
-            </TabPanels>
-          </Tabs> */}
         </div>
       </div>
     </div>

@@ -46,9 +46,6 @@ export const HomeVideosSection = (props: Props) => {
     },
   })
 
-  console.log(recommendedIds)
-  console.log(videoWorks)
-
   const workList =
     videoWorks?.works.filter((_, index) => index % 2 === 0) ?? null
 
