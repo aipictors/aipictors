@@ -6,7 +6,10 @@ import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 
-export const HomeWorksWithLoggedIn = () => {
+/**
+ * ユーザからの推薦作品
+ */
+export const HomeWorksUsersRecommendedSection = () => {
   const appContext = useContext(AuthContext)
 
   if (appContext.isLoading) {
@@ -22,18 +25,6 @@ export const HomeWorksWithLoggedIn = () => {
     return null
   }
 
-  // おすすめ作品
-  const { data: suggestedWorkResp } = useSuspenseQuery(worksQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      offset: 0,
-      limit: 80,
-      where: {
-        ratings: ["G"],
-      },
-    },
-  })
-
   // 推薦作品
   const { data: recommendedWorksResp } = useSuspenseQuery(worksQuery, {
     skip: appContext.isLoading,
@@ -47,20 +38,12 @@ export const HomeWorksWithLoggedIn = () => {
     },
   })
 
-  const suggestedWorks = [...(suggestedWorkResp?.works || [])]
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 16)
-
-  const recommendedWorks = [...(recommendedWorksResp?.works || [])]
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 16)
+  const suggestedWorks = recommendedWorksResp?.works ?? []
 
   const sections = [
-    // ランダムに24作品
-    { title: "おすすめ", works: suggestedWorks, tooltip: "" },
     {
       title: "ユーザからの推薦",
-      works: recommendedWorks,
+      works: suggestedWorks,
       tooltip: "",
     },
   ]

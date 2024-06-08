@@ -18,10 +18,6 @@ export const RankingCard = (props: Props) => (
     <img src={props.imageURL ?? ""} alt={props.title ?? "no title"} />
     <div className="flex flex-col">
       <p className="text-sm">{props.title ?? ""}</p>
-      {/* <UserAvatarLink
-        userName={props.work.user.name}
-        userIconImageURL={props.work.user.iconImage?.downloadURL ?? null}
-      /> */}
     </div>
   </Card>
 )

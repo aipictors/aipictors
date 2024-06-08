@@ -6,31 +6,46 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/_components/ui/tooltip"
+import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import type { WorkAwardsQuery } from "@/_graphql/__generated__/graphql"
-import { RiQuestionLine } from "@remixicon/react"
-
+import { AuthContext } from "@/_contexts/auth-context"
+import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { useQuery } from "@apollo/client/index"
+import { useContext } from "react"
 type Props = {
-  works: NonNullable<WorkAwardsQuery["workAwards"]> | null
   title: string
-  tooltip?: string
 }
 
 /**
  * ランキング作品一覧
  */
 export const HomeAwardWorkSection = (props: Props) => {
-  if (props.works === null) {
+  const authContext = useContext(AuthContext)
+
+  // ランキング
+  // 前日のランキングを取得
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const { data: workAwardsResp } = useQuery(workAwardsQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 8,
+      where: {
+        year: yesterday.getFullYear(),
+        month: yesterday.getMonth() + 1,
+        day: yesterday.getDate() - 1,
+      },
+    },
+  })
+
+  const workList = workAwardsResp?.workAwards ?? null
+
+  if (workList === null) {
     return null
   }
 
-  const works = props.works.map((work) => ({
+  const works = workList.map((work) => ({
     id: work.work.id,
     src: work.work.smallThumbnailImageURL,
     width: work.work.smallThumbnailImageWidth,
@@ -40,25 +55,15 @@ export const HomeAwardWorkSection = (props: Props) => {
     userId: work.work.user.id,
     userIcon: work.work.user.iconImage?.downloadURL,
     userName: work.work.user.name,
+    title: work.work.title,
+    isLiked: work.work.isLiked,
   }))
 
   return (
-    <section className="space-y-4">
+    <section className="relative space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
-          {props.tooltip && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <RiQuestionLine className="inline h-6 w-auto" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{props.tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
         </h2>
         <Button variant={"secondary"} size={"sm"}>
           {"すべて見る"}
@@ -87,13 +92,16 @@ export const HomeAwardWorkSection = (props: Props) => {
                     size={56}
                     targetWorkId={work.workId}
                     targetWorkOwnerUserId={work.userId}
-                    defaultLiked={false}
+                    defaultLiked={work.isLiked}
                     defaultLikedCount={0}
                     isBackgroundNone={true}
                     strokeWidth={2}
                   />
                 </div>
               </div>
+              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+                {work.title}
+              </p>
               <UserNameBadge
                 userId={work.userId}
                 userIconImageURL={work.userIcon}

@@ -268,6 +268,8 @@ export const config = {
       "https://www.aipictors.com/wp-content/themes/AISite/generation-check.php",
     getRecommendedWorkIdsByWorkId:
       "https://www.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
+    getRecommendedIds:
+      "https://www.aipictors.com/wp-content/themes/AISite/recommended-ids.php",
   },
   /**
    * ワードプレスリンク

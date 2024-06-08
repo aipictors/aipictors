@@ -1,25 +1,21 @@
 import { AppPage } from "@/_components/app/app-page"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
+import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
+import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
+import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
-import { HomeWorksWithLoggedIn } from "@/routes/($lang)._main._index/_components/home-works-with-logged-in"
+import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
+import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
-
-// TODO: 正式に公開するときはキャッシュを有効にする
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "max-age=0, s-maxage=0",
-  }
-}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -78,26 +74,6 @@ export async function loader() {
     },
   })
 
-  // ランキング
-  const workAwardsResp = await client.query({
-    query: workAwardsQuery,
-    variables: {
-      offset: 0,
-      limit: 8,
-      where: {
-        year: new Date().getFullYear(),
-        month: new Date().getMonth(),
-        day: new Date().getDate() - 1,
-      },
-    },
-  })
-
-  console.log({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth(),
-    day: new Date().getDate() - 1,
-  })
-
   // おすすめタグ一覧
   // タグからランダムに8つ取得
   const tags = await fetch(
@@ -128,7 +104,6 @@ export async function loader() {
   return json({
     suggestedWorkResp: suggestedWorkResp.data.works,
     recommendedWorks: recommendedWorksResp.data.works,
-    workAwards: workAwardsResp.data.workAwards,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
   })
@@ -137,20 +112,15 @@ export async function loader() {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
-  console.log(data)
-
   return (
-    <AppPage className="space-y-4">
+    <AppPage className="space-y-6">
       <HomeBanners />
       {data && (
         <>
           <Suspense>
             <HomeTagList hotTags={data.hotTags} />
           </Suspense>
-          <HomeAwardWorkSection
-            title={"前日ランキング"}
-            works={data.workAwards}
-          />
+          <HomeWorksRecommendedSection />
           <Suspense
             fallback={
               <>
@@ -158,9 +128,21 @@ export default function Index() {
               </>
             }
           >
-            <HomeWorksWithLoggedIn />
+            <HomeAwardWorkSection title={"前日ランキング"} />
+          </Suspense>
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeWorksUsersRecommendedSection />
           </Suspense>
           <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+          <HomeNovelsSection title={"小説"} />
+          <HomeVideosSection title={"動画"} />
+          <HomeColumnsSection title={"コラム"} />
         </>
       )}
     </AppPage>
