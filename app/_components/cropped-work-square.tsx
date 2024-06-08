@@ -12,22 +12,51 @@ type Props = {
  * 四角形で作品をクロップして表示するコンポーネント
  */
 export const CroppedWorkSquare = (props: Props) => {
-  const isLandscape = props.imageWidth > props.imageHeight
+  const getThumbnailPos = (
+    src: number,
+    width: number,
+    height: number,
+  ): string => {
+    let result = ""
+    if (width < height) {
+      result = "translateY("
+    } else {
+      result = "translateX("
+    }
 
-  // transform: matrix(1, 0, 0, 1, 0, -9.59896);
-  const transform = isLandscape
-    ? `matrix(1, 0, 0, 1, 0, ${props.thumbnailImagePosition} 0)`
-    : `matrix(1, 0, 0, 1, 0, ${props.thumbnailImagePosition})`
+    if (src !== undefined && src !== null) {
+      result = `${result + src}%`
+    } else {
+      if (width === height) {
+        result = `${result}0%`
+      } else {
+        result = `${result}-5%`
+      }
+    }
+
+    result = `${result})`
+    return result
+  }
+
+  const transform = getThumbnailPos(
+    props.thumbnailImagePosition,
+    props.imageWidth,
+    props.imageHeight,
+  )
 
   const size = () => {
     if (props.size === "sm") {
-      return isLandscape ? "h-20 w-auto" : "h-auto w-20"
+      return props.imageWidth > props.imageHeight
+        ? "h-20 w-auto"
+        : "h-auto w-20"
     }
     if (props.size === "md") {
-      return isLandscape ? "h-32 w-auto" : "h-auto w-32"
+      return props.imageWidth > props.imageHeight
+        ? "h-32 w-auto"
+        : "h-auto w-32"
     }
 
-    return isLandscape ? "h-40 w-auto" : "h-auto w-40"
+    return props.imageWidth > props.imageHeight ? "h-40 w-auto" : "h-auto w-40"
   }
 
   const wrapSize = () => {
@@ -41,21 +70,16 @@ export const CroppedWorkSquare = (props: Props) => {
     return "h-40 w-40"
   }
 
-  // 16進数で背景を取得する
   const backgroundColor = () => {
-    // 1位は金色16進数
     if (props.ranking === 1) {
       return "#d6ba49"
     }
-    // 2位は銀色16進数
     if (props.ranking === 2) {
       return "#858585"
     }
-    // 3位は銅色16進数
     if (props.ranking === 3) {
       return "#c8a17e"
     }
-    // それ以外は透明
     return "#00000052"
   }
 

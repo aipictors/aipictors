@@ -3,7 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 type Props = {
   year: number
   month: number
-  day: number
+  day?: number
 }
 
 export const RankingHeader = (props: Props) => {

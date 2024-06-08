@@ -1,8 +1,8 @@
 import { AppPage } from "@/_components/app/app-page"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
-import { RankingHeader } from "@/routes/($lang)._main.awards._index/_components/ranking-header"
-import { RankingWorkList } from "@/routes/($lang)._main.awards._index/_components/ranking-work-list"
+import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
+import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -32,7 +32,7 @@ export async function loader(props: LoaderFunctionArgs) {
     query: workAwardsQuery,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: 200,
       where: {
         year: year,
         month: month,

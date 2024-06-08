@@ -59,15 +59,22 @@ export const HomeAwardWorkSection = (props: Props) => {
     isLiked: work.work.isLiked,
   }))
 
+  const yesterdayStr = `${yesterday.getFullYear()}/${
+    yesterday.getMonth() + 1
+  }/${yesterday.getDate()}`
+
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
         </h2>
-        <Button variant={"secondary"} size={"sm"}>
-          {"すべて見る"}
-        </Button>
+        {/* 昨日の日付 // /2024/05/01 */}
+        <a href={`rankings/${yesterdayStr}`}>
+          <Button variant={"secondary"} size={"sm"}>
+            {"すべて見る"}
+          </Button>
+        </a>
       </div>
 
       <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
