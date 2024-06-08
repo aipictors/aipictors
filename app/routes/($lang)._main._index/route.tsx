@@ -120,7 +120,6 @@ export default function Index() {
           <Suspense>
             <HomeTagList hotTags={data.hotTags} />
           </Suspense>
-          <HomeWorksRecommendedSection />
           <Suspense
             fallback={
               <>
@@ -130,6 +129,9 @@ export default function Index() {
           >
             <HomeAwardWorkSection title={"前日ランキング"} />
           </Suspense>
+          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+
+          <HomeWorksRecommendedSection />
           <Suspense
             fallback={
               <>
@@ -139,7 +141,6 @@ export default function Index() {
           >
             <HomeWorksUsersRecommendedSection />
           </Suspense>
-          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
           <HomeNovelsSection title={"小説"} />
           <HomeVideosSection title={"動画"} />
           <HomeColumnsSection title={"コラム"} />
