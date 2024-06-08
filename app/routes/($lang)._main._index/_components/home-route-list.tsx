@@ -12,11 +12,9 @@ import {
   RiYoutubeLine,
 } from "@remixicon/react"
 import {
-  AlertTriangleIcon,
   AwardIcon,
   BookImageIcon,
   BoxIcon,
-  CameraIcon,
   FolderIcon,
   GemIcon,
   HomeIcon,
@@ -88,26 +86,12 @@ export const HomeRouteList = () => {
         href={"/works/2.5d"}
         icon={BookImageIcon}
       >
-        {"セミリアル"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/works/3d"}
-        icon={CameraIcon}
-      >
         {"フォト"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
         href={"/models"}
         icon={BoxIcon}
-      >
-        {"モデル"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/sensitive"}
-        icon={AlertTriangleIcon}
       >
         {"センシティブ"}
       </HomeNavigationButton>
