@@ -92,6 +92,12 @@ export async function loader() {
     },
   })
 
+  console.log({
+    year: new Date().getFullYear(),
+    month: new Date().getMonth(),
+    day: new Date().getDate() - 1,
+  })
+
   // おすすめタグ一覧
   // タグからランダムに8つ取得
   const tags = await fetch(
@@ -131,31 +137,32 @@ export async function loader() {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
-  const sections = [
-    {
-      title: "ユーザからの推薦",
-      works: data?.workAwards,
-      tooltip: "",
-    },
-  ]
+  console.log(data)
 
   return (
     <AppPage className="space-y-4">
       <HomeBanners />
-      <Suspense>
-        <HomeTagList hotTags={data.hotTags} />
-      </Suspense>
-      <HomeAwardWorkSection title={"前日ランキング"} works={data.workAwards} />
-      <Suspense
-        fallback={
-          <>
-            <HomeWorkDummies />
-          </>
-        }
-      >
-        <HomeWorksWithLoggedIn />
-      </Suspense>
-      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+      {data && (
+        <>
+          <Suspense>
+            <HomeTagList hotTags={data.hotTags} />
+          </Suspense>
+          <HomeAwardWorkSection
+            title={"前日ランキング"}
+            works={data.workAwards}
+          />
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeWorksWithLoggedIn />
+          </Suspense>
+          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+        </>
+      )}
     </AppPage>
   )
 }

@@ -22,7 +22,13 @@ export function CharacterCard(props: Props) {
 
   const onCopyPrompt = () => {
     navigator.clipboard.writeText(props.prompt)
-    toast("プロンプトをコピーしました")
+    toast("プロンプトをクリップボードにコピーしました")
+  }
+
+  const onMoveToGeneration = () => {
+    window.location.href = props.negativePrompts
+      ? `/generation?prompts=${props.prompt}&negativeprompts=${props.negativePrompts}`
+      : `/generation?prompts=${props.prompt}`
   }
 
   return (
@@ -44,13 +50,23 @@ export function CharacterCard(props: Props) {
             />
           </Card>
         </a>
-        <Button
-          onClick={onCopyPrompt}
-          variant={"outline"}
-          className="m-4 ml-0 font-bold text-lg"
-        >
-          プロンプトをコピー
-        </Button>
+        <div className="flex items-center gap-x-2">
+          <Button
+            onClick={onCopyPrompt}
+            variant={"outline"}
+            className="m-4 ml-0 font-bold text-lg"
+          >
+            クリップボードコピー
+          </Button>
+          <Button
+            onClick={onMoveToGeneration}
+            variant={"outline"}
+            className="m-4 ml-0 font-bold text-lg"
+          >
+            生成機で生成
+          </Button>
+        </div>
+
         <a href={props.xlink} target="_blank" rel="noopener noreferrer">
           <div className="mt-2 mb-2 flex items-center">
             <RiTwitterXFill className="mr-2 h-4 w-4" />

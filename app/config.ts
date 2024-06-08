@@ -266,6 +266,8 @@ export const config = {
       "https://www.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
     generationCheck:
       "https://www.aipictors.com/wp-content/themes/AISite/generation-check.php",
+    getRecommendedWorkIdsByWorkId:
+      "https://www.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
   },
   /**
    * ワードプレスリンク

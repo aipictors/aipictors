@@ -17,15 +17,12 @@ export const HomeGenerationBanner = () => {
     },
   })
 
-  // ランダムで3つ
-  const randomOneWork =
-    worksResp?.works[Math.floor(Math.random() * worksResp?.works.length)]
+  // ランダムで3つを重複なしで選択
+  const works = worksResp?.works || []
+  const shuffledWorks = [...works].sort(() => 0.5 - Math.random())
+  const selectedWorks = shuffledWorks.slice(0, 3)
 
-  const randomTwoWork =
-    worksResp?.works[Math.floor(Math.random() * worksResp?.works.length)]
-
-  const randomThreeWork =
-    worksResp?.works[Math.floor(Math.random() * worksResp?.works.length)]
+  const [randomOneWork, randomTwoWork, randomThreeWork] = selectedWorks
 
   return (
     <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
@@ -43,33 +40,39 @@ export const HomeGenerationBanner = () => {
         </a>
       </div>
       <div className="ml-2 flex">
-        <a href={`/generation?work=${randomOneWork.id}`}>
-          <div className="h-32 w-32 overflow-hidden">
-            <img
-              src={randomOneWork.smallThumbnailImageURL}
-              alt="Generation Banner"
-              className="h-32 w-32 object-cover transition-all hover:scale-110"
-            />
-          </div>
-        </a>
-        <a className="" href={`/generation?work=${randomTwoWork.id}`}>
-          <div className="h-32 w-32 overflow-hidden">
-            <img
-              src={randomTwoWork.smallThumbnailImageURL}
-              alt="Generation Banner"
-              className="h-32 w-32 object-cover transition-all hover:scale-110"
-            />
-          </div>
-        </a>
-        <a className="" href={`/generation?work=${randomTwoWork.id}`}>
-          <div className="h-32 w-32 overflow-hidden">
-            <img
-              src={randomThreeWork.smallThumbnailImageURL}
-              alt="Generation Banner"
-              className="h-32 w-32 object-cover transition-all hover:scale-110"
-            />
-          </div>
-        </a>
+        {randomOneWork && (
+          <a href={`/generation?work=${randomOneWork.id}`}>
+            <div className="h-32 w-32 overflow-hidden">
+              <img
+                src={randomOneWork.smallThumbnailImageURL}
+                alt="Generation Banner"
+                className="h-32 w-32 object-cover transition-all hover:scale-110"
+              />
+            </div>
+          </a>
+        )}
+        {randomTwoWork && (
+          <a href={`/generation?work=${randomTwoWork.id}`}>
+            <div className="h-32 w-32 overflow-hidden">
+              <img
+                src={randomTwoWork.smallThumbnailImageURL}
+                alt="Generation Banner"
+                className="h-32 w-32 object-cover transition-all hover:scale-110"
+              />
+            </div>
+          </a>
+        )}
+        {randomThreeWork && (
+          <a href={`/generation?work=${randomThreeWork.id}`}>
+            <div className="h-32 w-32 overflow-hidden">
+              <img
+                src={randomThreeWork.smallThumbnailImageURL}
+                alt="Generation Banner"
+                className="h-32 w-32 object-cover transition-all hover:scale-110"
+              />
+            </div>
+          </a>
+        )}
       </div>
     </div>
   )
