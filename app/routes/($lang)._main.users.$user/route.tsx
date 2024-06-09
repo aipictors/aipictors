@@ -86,8 +86,8 @@ export default function UserLayout() {
               </div>
             </div>
           )}
-          <div className="absolute h-64 w-full bg-neutral-900 md:h-24" />
-          <div className="relative m-auto h-64 w-full bg-neutral-900 md:h-24 md:max-w-[1200px]">
+          <div className="absolute h-64 w-full bg-neutral-100 md:h-24 dark:bg-neutral-900" />
+          <div className="relative m-auto h-64 w-full bg-neutral-100 md:h-24 md:max-w-[1200px] dark:bg-neutral-900">
             <div className="absolute top-8 right-0 hidden md:block">
               <div className="flex items-center space-x-2">
                 <Button>フォローする</Button>
