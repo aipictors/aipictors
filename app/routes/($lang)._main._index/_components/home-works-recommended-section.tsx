@@ -4,7 +4,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
 /**
@@ -56,7 +56,7 @@ export const HomeWorksRecommendedSection = () => {
   }, [appContext.userId])
 
   // おすすめ作品
-  const { data: suggestedWorkResp } = useQuery(worksQuery, {
+  const { data: suggestedWorkResp } = useSuspenseQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,

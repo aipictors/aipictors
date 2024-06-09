@@ -10,7 +10,7 @@ import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
@@ -45,7 +45,7 @@ export const HomeColumnsSection = (props: Props) => {
     fetchRecommendedIds()
   }, [authContext.userId])
 
-  const { data: novelWorks } = useQuery(worksQuery, {
+  const { data: novelWorks } = useSuspenseQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -88,11 +88,7 @@ export const HomeColumnsSection = (props: Props) => {
         <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
         </h2>
-        {/* <Button variant={"secondary"} size={"sm"}>
-          {"すべて見る"}
-        </Button> */}
       </div>
-
       <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
         <CarouselContent>
           {works.map((work, index) => (

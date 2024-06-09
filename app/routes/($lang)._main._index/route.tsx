@@ -1,4 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
+import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
@@ -95,6 +96,18 @@ export async function loader() {
 
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 8)
 
+  const date = new Date()
+  const { data: themeResp } = await client.query({
+    query: dailyThemeQuery,
+    variables: {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
+      day: date.getDate(), // getDate()は月の日にちを返す
+      offset: 0,
+      limit: 0,
+    },
+  })
+
   // コレクション
   const hotTagsResp = await client.query({
     query: hotTagsQuery,
@@ -104,6 +117,7 @@ export async function loader() {
   return json({
     suggestedWorkResp: suggestedWorkResp.data.works,
     recommendedWorks: recommendedWorksResp.data.works,
+    themeResp: themeResp.dailyTheme,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
   })
@@ -114,36 +128,71 @@ export default function Index() {
 
   return (
     <AppPage className="space-y-6">
-      <HomeBanners />
+      <Suspense fallback={<HomeWorkDummies />}>
+        <HomeBanners />
+      </Suspense>
       {data && (
         <>
-          <Suspense>
-            <HomeTagList hotTags={data.hotTags} />
+          <HomeTagList
+            themeTitle={data.themeResp?.title}
+            hotTags={data.hotTags}
+          />
+          <Suspense fallback={<HomeWorkDummies />}>
+            <HomeAwardWorkSection title={"前日ランキング"} />
+          </Suspense>
+          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeWorksRecommendedSection />
           </Suspense>
           <Suspense
             fallback={
               <>
                 <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeAwardWorkSection title={"前日ランキング"} />
-          </Suspense>
-          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-
-          <HomeWorksRecommendedSection />
-          <Suspense
-            fallback={
-              <>
+                <HomeWorkDummies />
                 <HomeWorkDummies />
               </>
             }
           >
             <HomeWorksUsersRecommendedSection />
           </Suspense>
-          <HomeNovelsSection title={"小説"} />
-          <HomeVideosSection title={"動画"} />
-          <HomeColumnsSection title={"コラム"} />
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeNovelsSection title={"小説"} />
+          </Suspense>
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeVideosSection title={"動画"} />
+          </Suspense>
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeColumnsSection title={"コラム"} />
+          </Suspense>
         </>
       )}
     </AppPage>

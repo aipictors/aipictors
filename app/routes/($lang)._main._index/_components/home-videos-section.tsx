@@ -4,7 +4,7 @@ import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
@@ -34,7 +34,7 @@ export const HomeVideosSection = (props: Props) => {
     fetchRecommendedIds()
   }, [authContext.userId])
 
-  const { data: videoWorks } = useQuery(worksQuery, {
+  const { data: videoWorks } = useSuspenseQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,

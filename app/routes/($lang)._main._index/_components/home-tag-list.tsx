@@ -4,42 +4,26 @@ import {
   CarouselItem,
 } from "@/_components/ui/carousel"
 import type { HotTagsQuery } from "@/_graphql/__generated__/graphql"
-import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { TagButton } from "@/routes/($lang)._main._index/_components/tag-button"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { useState } from "react"
 
 type Props = {
   hotTags: HotTagsQuery["hotTags"]
+  themeTitle?: string
 }
 
 /**
  * ホーム上部に表示するタグ一覧
  */
 export const HomeTagList = (props: Props) => {
-  const [date, setDate] = useState(new Date())
-
-  const { data: worksResp } = useSuspenseQuery(dailyThemeQuery, {
-    variables: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
-      day: date.getDate(), // getDate()は月の日にちを返す
-      offset: 0,
-      limit: 0,
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const theme = worksResp?.dailyTheme?.title ?? ""
-
-  const themeId = worksResp?.dailyTheme?.id ?? ""
-
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>
         <CarouselItem className="basis-auto" key={-1}>
-          {theme && (
-            <TagButton link={`${theme}`} name={`今日のお題「${theme}」`} />
+          {props.themeTitle && (
+            <TagButton
+              link={`${props.themeTitle}`}
+              name={`今日のお題「${props.themeTitle}」`}
+            />
           )}
         </CarouselItem>
 

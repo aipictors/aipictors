@@ -1,5 +1,3 @@
-import { Badge } from "@/_components/ui/badge"
-
 type Props = {
   workId: string
   imageUrl: string
@@ -29,14 +27,14 @@ export const NovelWorkPreviewItem = (props: Props) => {
         <div className="h-16 overflow-hidden text-ellipsis text-wrap text-gray-500 text-xs">
           {props.text}
         </div>
-        <div className="mt-1 flex flex-wrap space-x-1">
+        {/* <div className="mt-1 flex flex-wrap space-x-1">
           {props.tags.map((tag, index: number) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             <Badge variant={"secondary"} key={index} className="text-xs">
               {tag}
             </Badge>
           ))}
-        </div>
+        </div> */}
       </div>
     </a>
   )
