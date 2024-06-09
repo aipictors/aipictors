@@ -110,7 +110,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             </a>
           </div>
           <MenuItemLink
-            href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
+            href={`/users/${authContext.login}`}
             icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
             label="マイページ"
           />

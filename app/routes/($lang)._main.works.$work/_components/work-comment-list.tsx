@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import type { WorkCommentsQuery } from "@/_graphql/__generated__/graphql"
 import { StickerDialog } from "@/routes/($lang)._main.works.$work/_components/sticker-dialog"
@@ -12,6 +11,7 @@ import { useBoolean } from "usehooks-ts"
 import { useMutation } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 
 type Props = {
   workId: string
@@ -187,11 +187,10 @@ export const WorkCommentList = (props: Props) => {
             <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
             <AvatarFallback />
           </Avatar>
-          <Input
+          <AutoResizeTextarea
             onChange={(event) => {
               setComment(event.target.value)
             }}
-            type="text"
             value={comment}
             placeholder="コメントする"
           />

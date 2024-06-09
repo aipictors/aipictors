@@ -1,4 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
+import { Card } from "@/_components/ui/card"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
@@ -54,12 +55,12 @@ export default function UserLayout() {
 
   return (
     <AppPage>
-      <div className="flex w-full flex-col justify-center">
+      <Card className="flex w-full flex-col justify-center">
         <UserProfile user={data.user} />
         <main className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={{ user: params.user }} />
         </main>
-      </div>
+      </Card>
     </AppPage>
   )
 }

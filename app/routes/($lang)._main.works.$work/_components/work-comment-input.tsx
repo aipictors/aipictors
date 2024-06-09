@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
@@ -10,6 +9,7 @@ import { createResponseCommentMutation } from "@/_graphql/mutations/create-respo
 import { StickerDialog } from "@/routes/($lang)._main.works.$work/_components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 
 type Props = {
   targetCommentId: string
@@ -87,11 +87,10 @@ export const ReplyCommentInput = (props: Props) => {
           <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
           <AvatarFallback />
         </Avatar>
-        <Input
+        <AutoResizeTextarea
           onChange={(event) => {
             setComment(event.target.value)
           }}
-          type="text"
           placeholder="コメントする"
         />
         <div>

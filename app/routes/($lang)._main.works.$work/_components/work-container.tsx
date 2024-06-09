@@ -12,6 +12,8 @@ import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-us
 import { Suspense } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/work-tags-works"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
+import { useMediaQuery } from "usehooks-ts"
+import { config } from "@/config"
 
 type Props = {
   work: NonNullable<WorkQuery>["work"]
@@ -45,6 +47,8 @@ export const WorkContainer = (props: Props) => {
   // ランダムにタグをひとつ
   const randomTag = tags[Math.floor(Math.random() * tags.length)]
 
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <div
       className="max-w-[100%] overflow-hidden"
@@ -53,15 +57,15 @@ export const WorkContainer = (props: Props) => {
       }}
     >
       <div className="flex w-full overflow-hidden p-0 md:p-4">
-        <div className="flex flex-col items-center justify-center overflow-hidden">
+        <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full max-w-screen-lg">
             <Suspense fallback={<AppLoadingPage />}>
               <WorkArticle work={work} />
             </Suspense>
             <WorkRelatedList works={relatedWorks} />
-            <Suspense fallback={<AppLoadingPage />}>
+            {/* <Suspense fallback={<AppLoadingPage />}>
               <WorkCommentList workId={work.id} comments={props.comments} />
-            </Suspense>
+            </Suspense> */}
             <div className="mt-2 block md:mt-0 lg:hidden">
               <Suspense>
                 <WorkUser
@@ -75,9 +79,26 @@ export const WorkContainer = (props: Props) => {
                 />
               </Suspense>
             </div>
+
+            <section className="max-w-[1400px] space-y-4">
+              <div className="flex justify-between">
+                <h2 className="items-center space-x-2 font-bold text-md">
+                  {"関連"}
+                </h2>
+              </div>
+              <Suspense fallback={<AppLoadingPage />}>
+                <WorkTagsWorks tagName={randomTag} />
+              </Suspense>
+              <div className="flex justify-between">
+                <h2 className="items-center space-x-2 font-bold text-md">
+                  {"新着"}
+                </h2>
+              </div>
+              <ResponsivePhotoWorksAlbum works={props.newWorks} />
+            </section>
           </div>
         </div>
-        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
+        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-md">
           <div className="mt-2 md:mt-0">
             <Suspense>
               <WorkUser
@@ -92,21 +113,11 @@ export const WorkContainer = (props: Props) => {
             </Suspense>
           </div>
           <WorkNextAndPrevious work={work} />
+          <Suspense fallback={<AppLoadingPage />}>
+            <WorkCommentList workId={work.id} comments={props.comments} />
+          </Suspense>
         </div>
       </div>
-
-      <section className="max-w-[1400px] space-y-4">
-        <div className="flex justify-between">
-          <h2 className="items-center space-x-2 font-bold text-md">{"関連"}</h2>
-        </div>
-        <Suspense fallback={<AppLoadingPage />}>
-          <WorkTagsWorks tagName={randomTag} />
-        </Suspense>
-        <div className="flex justify-between">
-          <h2 className="items-center space-x-2 font-bold text-md">{"新着"}</h2>
-        </div>
-        <ResponsivePhotoWorksAlbum works={props.newWorks} />
-      </section>
     </div>
   )
 }

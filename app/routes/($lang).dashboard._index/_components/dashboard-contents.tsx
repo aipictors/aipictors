@@ -146,7 +146,12 @@ export const DashboardContents = (props: Props) => {
 
   return (
     <>
-      <div className="w-full">
+      <div
+        className="container m-auto w-full"
+        style={{
+          margin: "0 auto",
+        }}
+      >
         <div>
           <p className="font-bold text-xl">ダッシュボード</p>
           <Tabs
