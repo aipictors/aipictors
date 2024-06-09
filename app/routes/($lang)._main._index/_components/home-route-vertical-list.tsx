@@ -1,11 +1,10 @@
-import { useEffect, useState, useContext } from "react"
+import { useEffect, useState } from "react"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
-import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import {
@@ -22,7 +21,6 @@ import {
 } from "lucide-react"
 
 export const HomeRouteVerticalList = () => {
-  const authContext = useContext(AuthContext)
   const [isScrollingUp, setIsScrollingUp] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 
