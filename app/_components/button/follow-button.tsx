@@ -8,6 +8,7 @@ import { LoginDialogButton } from "@/_components/login-dialog-button"
 type Props = {
   targetUserId: string
   isFollow: boolean
+  className?: string
 }
 
 /**
@@ -29,7 +30,8 @@ export const FollowButton = (props: Props) => {
             type="button"
             onClick={() => {}}
             className={
-              "h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80"
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              `h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
             }
           >
             {"フォローする"}
@@ -90,7 +92,11 @@ export const FollowButton = (props: Props) => {
       className={`h-9 rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500${
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         " "
-      }${isUnFollowing ? "opacity-20" : "hover:opacity-30"}`}
+      }${
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        isUnFollowing ? "opacity-20" : "hover:opacity-30"
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      } ${props.className}`}
     >
       {"フォロー中"}
     </button>
@@ -102,7 +108,11 @@ export const FollowButton = (props: Props) => {
       className={`h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500${
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         " "
-      }${isFollowing ? "opacity-20" : "hover:opacity-80"}`}
+      }${
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        isFollowing ? "opacity-20" : "hover:opacity-80"
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      } ${props.className}`}
     >
       {"フォローする"}
     </button>

@@ -3,11 +3,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 type UserProfileAvatarProps = {
   alt: string
   src?: string
+  size?: "sm" | "md" | "lg"
 }
 
-export const UserProfileAvatar = ({ alt, src }: UserProfileAvatarProps) => {
+export const UserProfileAvatar = ({
+  alt,
+  src,
+  size = "md",
+}: UserProfileAvatarProps) => {
+  const getSize = (size: "sm" | "md" | "lg") => {
+    switch (size) {
+      case "sm":
+        return "h-16 w-16"
+      case "md":
+        return "h-20 w-20"
+      case "lg":
+        return "h-32 w-32"
+      default:
+        return "h-20 w-20"
+    }
+  }
+
   return (
-    <Avatar className="h-20 w-20 border-2">
+    <Avatar
+      className={`${
+        getSize(size)
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+      } border-2`}
+    >
       <AvatarImage alt={alt} src={src} />
       <AvatarFallback />
     </Avatar>
