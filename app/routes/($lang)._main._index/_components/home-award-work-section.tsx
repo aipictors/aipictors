@@ -32,7 +32,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: 10,
+      limit: 20,
       where: {
         year: yesterday.getFullYear(),
         month: yesterday.getMonth() + 1,

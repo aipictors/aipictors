@@ -75,7 +75,7 @@ export const HomeRouteVerticalList = () => {
             <CarouselItem className="basis-1/1 xl:basis-1/8">
               <HomeNavigationButton
                 isDisabled={config.isReleaseMode}
-                href={"/awards"}
+                href={"/rankings"}
                 icon={AwardIcon}
               >
                 {"ランキング"}

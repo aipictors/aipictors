@@ -21,7 +21,7 @@ export const SensitiveRouteList = () => {
       <HomeNavigationButton href={"/sensitive/themes"} icon={LightbulbIcon}>
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/awards"} icon={AwardIcon}>
+      <HomeNavigationButton href={"/sensitive/rankings"} icon={AwardIcon}>
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive/albums"} icon={LibraryBigIcon}>
