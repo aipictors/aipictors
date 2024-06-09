@@ -14,7 +14,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
     <header className="relative">
       <div
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={"absolute z-10  top-[-96px]"}
+        className={"absolute z-10 top-[160px] md:top-[228px]"}
       >
         <div className="mr-auto flex items-center gap-4 p-4 md:p-8">
           <UserProfileAvatar

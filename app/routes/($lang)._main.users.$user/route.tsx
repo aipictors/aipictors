@@ -73,19 +73,22 @@ export default function UserLayout() {
                   boxShadow: "0px 0px 20px rgba(0,0,0,0.5)",
                 }}
               />
-              <img
-                className="absolute top-0 left-0 hidden h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-0 transition-opacity duration-500 md:block md:blur-xl"
-                // style={{ inset: "20px" }}
-                src={data.user.headerImageUrl}
-                alt=""
-              />
-              <div className="absolute bottom-0 left-8 z-20">
-                <UserProfileNameIcon user={data.user} />
+              <div className="relative m-auto w-[1200px]">
+                <img
+                  className="absolute top-0 left-0 hidden h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-0 transition-opacity duration-500 md:block md:blur-xl"
+                  // style={{ inset: "20px" }}
+                  src={data.user.headerImageUrl}
+                  alt=""
+                />
+                <div className="absolute bottom-0 left-8 z-20">
+                  <UserProfileNameIcon user={data.user} />
+                </div>
               </div>
             </div>
           )}
-          <div className="relative h-64 w-full bg-neutral-900 md:h-24">
-            <div className="absolute top-8 right-2 hidden md:block">
+          <div className="absolute h-64 w-full bg-neutral-900 md:h-24" />
+          <div className="relative m-auto h-64 w-full bg-neutral-900 md:h-24 md:max-w-[1200px]">
+            <div className="absolute top-8 right-0 hidden md:block">
               <div className="flex items-center space-x-2">
                 <Button>フォローする</Button>
                 <Button variant={"secondary"}>支援する</Button>
