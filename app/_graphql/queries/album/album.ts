@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
+import { graphql } from "gql.tada"
 
-export const albumQuery = gql(`
-  query Album($id: ID!) {
+export const albumQuery = graphql(
+  `query Album($id: ID!) {
     album(id: $id) {
       id
       title
@@ -19,5 +20,6 @@ export const albumQuery = gql(`
         downloadURL
       }
     }
-  }
-`)
+  }`,
+  [workUserFieldsFragment],
+)

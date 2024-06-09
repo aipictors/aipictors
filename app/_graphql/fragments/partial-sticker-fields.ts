@@ -1,12 +1,12 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialStickerFieldsFragment = gql(`
-  fragment PartialStickerFields on StickerNode {
+export const partialStickerFieldsFragment = graphql(
+  `fragment PartialStickerFields on StickerNode @_unmask {
     id
     title
     imageUrl
     downloadsCount
     usesCount
     likesCount
-  }
-`)
+  }`,
+)

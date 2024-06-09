@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { commentFieldsFragment } from "@/_graphql/fragments/comment-fields"
+import { graphql } from "gql.tada"
 
-export const workCommentsQuery = gql(`
-  query WorkComments($workId: ID!) {
+export const workCommentsQuery = graphql(
+  `query WorkComments($workId: ID!) {
     work(id: $workId) {
       id
       comments(offset: 0, limit: 128) {
@@ -11,5 +12,6 @@ export const workCommentsQuery = gql(`
         }
       }
     }
-  }
-`)
+  }`,
+  [commentFieldsFragment],
+)

@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const updateAccountLoginMutation = gql(`
-  mutation UpdateAccountLogin($input: UpdateAccountLoginInput!) {
+export const updateAccountLoginMutation = graphql(
+  `mutation UpdateAccountLogin($input: UpdateAccountLoginInput!) {
     updateAccountLogin(input: $input) {
       id
       login
     }
-  }
-`)
+  }`,
+)

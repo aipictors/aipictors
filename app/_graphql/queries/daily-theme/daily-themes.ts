@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const dailyThemesQuery = gql(`
-  query DailyThemes(
+export const dailyThemesQuery = graphql(
+  `query DailyThemes(
     $offset: Int!
     $limit: Int!
     $where: DailyThemesWhereInput!
@@ -18,5 +19,6 @@ export const dailyThemesQuery = gql(`
         ...PartialWorkFields
       }
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

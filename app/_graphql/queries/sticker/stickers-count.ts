@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * スタンプ総数
  */
-export const stickersCountQuery = gql(`
-  query StickersCount($where: StickersWhereInput) {
+export const stickersCountQuery = graphql(
+  `query StickersCount($where: StickersWhereInput) {
     stickersCount(where: $where)
-  }
-`)
+  }`,
+)

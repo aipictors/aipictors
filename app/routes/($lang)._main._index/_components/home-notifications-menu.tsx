@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import type { NotificationType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { HomeNotificationCommentsTabs } from "@/routes/($lang)._main._index/_components/home-notifications-comments-tabs"
 import { HomeNotificationsContents } from "@/routes/($lang)._main._index/_components/home-notifications-contents"
 import { BellIcon } from "lucide-react"
@@ -16,7 +16,7 @@ import { Suspense, useState } from "react"
  * ヘッダーのお知らせメニュー
  */
 export const HomeNotificationsMenu = () => {
-  const tabValues: NotificationType[] = [
+  const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "LIKED_WORK",
     "WORK_COMMENT",
     "WORK_AWARD",
@@ -27,10 +27,11 @@ export const HomeNotificationsMenu = () => {
 
   const defaultTab = tabValues[0]
 
-  const [activeTab, setActiveTab] = useState<NotificationType>(defaultTab)
+  const [activeTab, setActiveTab] =
+    useState<IntrospectionEnum<"NotificationType">>(defaultTab)
 
   const handleTabClick = (value: string) => {
-    setActiveTab(value as NotificationType)
+    setActiveTab(value as IntrospectionEnum<"NotificationType">)
   }
 
   return (

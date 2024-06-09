@@ -1,9 +1,9 @@
 import { Badge } from "@/_components/ui/badge"
 import { Separator } from "@/_components/ui/separator"
 import {} from "@/_components/ui/table"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
 
 type Props = {
   works: {
@@ -15,7 +15,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
 }

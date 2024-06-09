@@ -1,12 +1,12 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * LINE認証URL
  */
-export const verificationUrlQuery = gql(`
-  query VerificationUrl {
+export const verificationUrlQuery = graphql(
+  `query VerificationUrl {
     viewer {
-        verificationUrl
+      verificationUrl
     }
-  }
-`)
+  }`,
+)

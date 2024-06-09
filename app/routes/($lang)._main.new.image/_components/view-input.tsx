@@ -1,9 +1,9 @@
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  accessType: AccessType
-  setAccessType: (value: AccessType) => void
+  accessType: IntrospectionEnum<"AccessType">
+  setAccessType: (value: IntrospectionEnum<"AccessType">) => void
 }
 
 /**
@@ -18,7 +18,7 @@ export const ViewInput = (props: Props) => {
           <RadioGroup
             value={props.accessType}
             onValueChange={(value) => {
-              props.setAccessType(value as AccessType)
+              props.setAccessType(value as IntrospectionEnum<"AccessType">)
             }}
             className="flex flex-wrap space-x-0 md:space-x-4"
           >

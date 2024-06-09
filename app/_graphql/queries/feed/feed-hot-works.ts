@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialFeedWorkFieldsFragment } from "@/_graphql/fragments/partial-feed-work-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
-export const feedHotWorksQuery = gql(`
-  query FeedHotWorks {
+export const feedHotWorksQuery = graphql(
+  `query FeedHotWorks {
     hotWorks {
       ...PartialFeedWorkFields
       user {
@@ -13,5 +15,6 @@ export const feedHotWorksQuery = gql(`
       isLiked
       isInCollection
     }
-  }
-`)
+  }`,
+  [partialFeedWorkFieldsFragment, partialUserFieldsFragment],
+)

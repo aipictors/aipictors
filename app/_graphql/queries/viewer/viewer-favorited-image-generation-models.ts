@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザの画像生成タスク
  */
-export const viewerFavoritedImageGenerationModelsQuery = gql(`
-  query ViewerFavoritedImageGenerationModels {
+export const viewerFavoritedImageGenerationModelsQuery = graphql(
+  `query ViewerFavoritedImageGenerationModels {
     viewer {
       favoritedImageGenerationModels {
         id
@@ -12,5 +12,5 @@ export const viewerFavoritedImageGenerationModelsQuery = gql(`
         type
       }
     }
-  }
-`)
+  }`,
+)

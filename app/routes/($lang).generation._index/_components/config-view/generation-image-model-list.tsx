@@ -7,19 +7,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_components/ui/select"
-import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { cn } from "@/_lib/cn"
 import { removeDuplicates } from "@/_utils/remove-duplicates"
 import { config } from "@/config"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
 import { toCategoryName } from "@/routes/($lang).generation._index/_utils/to-category-name"
+import type { ResultOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  models: ImageModelsQuery["imageModels"]
+  models: ResultOf<typeof imageModelsQuery>["imageModels"]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean

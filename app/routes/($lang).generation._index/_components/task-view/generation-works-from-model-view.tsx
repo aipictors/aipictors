@@ -1,5 +1,5 @@
-import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { worksQuery } from "@/_graphql/queries/work/works"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationWorkList } from "@/routes/($lang).generation._index/_components/task-view/generation-work-list"
 import { GenerationWorkListActions } from "@/routes/($lang).generation._index/_components/task-view/generation-work-list-actions"
@@ -20,7 +20,8 @@ export const GenerationWorkListModelView = () => {
 
   const [word, setWord] = useState("")
 
-  const [sortType, setSortType] = useState<WorkOrderBy>("LIKES_COUNT")
+  const [sortType, setSortType] =
+    useState<IntrospectionEnum<"WorkOrderBy">>("LIKES_COUNT")
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value

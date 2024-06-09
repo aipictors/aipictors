@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
+import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
+import { graphql } from "gql.tada"
 
-export const workQuery = gql(`
-  query Work($id: ID!) {
+export const workQuery = graphql(
+  `query Work($id: ID!) {
     work(id: $id) {
       id
       title
@@ -91,5 +93,6 @@ export const workQuery = gql(`
       monthlyRanking
       relatedUrl
     }
-  }
-`)
+  }`,
+  [userFieldsFragment, subWorkFieldsFragment],
+)

@@ -1,8 +1,9 @@
 import { Switch } from "@/_components/ui/switch"
-import type { ImageModelQuery } from "@/_graphql/__generated__/graphql"
+import type { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  imageModel: ImageModelQuery["imageModel"]
+  imageModel: ResultOf<typeof imageModelQuery>["imageModel"]
 }
 
 export const ModelHeader = (props: Props) => {

@@ -1,12 +1,12 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const aiModelFieldsFragment = gql(`
-  fragment AiModelFields on AiModelNode {
+export const aiModelFieldsFragment = graphql(
+  `fragment AiModelFields on AiModelNode @_unmask  {
     id
     name
     type
     generationModelId
     workModelId
     thumbnailImageURL
-  }
-`)
+  }`,
+)

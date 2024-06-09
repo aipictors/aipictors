@@ -6,11 +6,10 @@ import {
   TableBody,
 } from "@/_components/ui/table"
 import type { SortType } from "@/_types/sort-type"
-import {} from "lucide-react"
-import type { AlbumOrderBy } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AlbumsListTableRow } from "@/routes/($lang).dashboard._index/_components/albums-list-table-row"
 import { AlbumsListColumn } from "@/routes/($lang).dashboard._index/_components/albums-list-column"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   albums: {
@@ -22,7 +21,7 @@ type Props = {
     createdAt: string
   }[]
   sort: SortType
-  orderBy: AlbumOrderBy
+  orderBy: IntrospectionEnum<"AlbumOrderBy">
   onClickTitleSortButton: () => void
   onClickDateSortButton: () => void
 }

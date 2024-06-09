@@ -1,14 +1,16 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザのスタンプ
  */
-export const viewerUserStickersQuery = gql(`
-  query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy) {
+export const viewerUserStickersQuery = graphql(
+  `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy) {
     viewer {
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy) {
         ...PartialStickerFields
       }
     }
-  }
-`)
+  }`,
+  [partialStickerFieldsFragment],
+)

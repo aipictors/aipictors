@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createWorkCommentMutation = gql(`
-  mutation CreateWorkComment($input: CreateWorkCommentInput!) {
+export const createWorkCommentMutation = graphql(
+  `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const userQuery = gql(`
-  query User(
+export const userQuery = graphql(
+  `query User(
     $userId: ID!,
     $worksOffset: Int!,
     $worksLimit: Int!,
@@ -73,5 +74,6 @@ export const userQuery = gql(`
       biography
       enBiography
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

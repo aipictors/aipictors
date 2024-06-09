@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialPromotionFieldsFragment } from "@/_graphql/fragments/partial-promotion-fields"
+import { graphql } from "gql.tada"
 
-export const promotionsQuery = gql(`
-  query Promotions($offset: Int!, $limit: Int!) {
+export const promotionsQuery = graphql(
+  `query Promotions($offset: Int!, $limit: Int!) {
     promotions(offset: $offset, limit: $limit) {
       ...PartialPromotionFields
     }
-  }
-`)
+  }`,
+  [partialPromotionFieldsFragment],
+)

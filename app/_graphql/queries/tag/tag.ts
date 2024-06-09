@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const tagQuery = gql(`
-  query Tag($name: String!) {
+export const tagQuery = graphql(
+  `query Tag($name: String!) {
     tag(name: $name) {
       id
       name
@@ -9,5 +9,5 @@ export const tagQuery = gql(`
       isWatched
       isMuted
     }
-  }
-`)
+  }`,
+)

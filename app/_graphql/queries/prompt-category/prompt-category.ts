@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const promptCategoriesQuery = gql(`
-  query PromptCategories {
+export const promptCategoriesQuery = graphql(
+  `query PromptCategories {
     promptCategories {
       id
       name
@@ -11,5 +11,5 @@ export const promptCategoriesQuery = gql(`
         words
       }
     }
-  }
-`)
+  }`,
+)

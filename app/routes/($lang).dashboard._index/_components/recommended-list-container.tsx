@@ -1,4 +1,3 @@
-import type {} from "@/_graphql/__generated__/graphql"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"

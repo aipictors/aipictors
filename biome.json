@@ -1,12 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.7.0/schema.json",
+  "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["**/__generated__/**", "storybook-static/**"]
+    "ignore": ["app/graphql-env.d.ts", "storybook-static/**"]
   },
   "linter": {
     "rules": {

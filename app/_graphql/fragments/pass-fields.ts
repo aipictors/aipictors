@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const passFieldsFragment = gql(`
-  fragment PassFields on PassNode {
+export const passFieldsFragment = graphql(
+  `fragment PassFields on PassNode @_unmask {
     id
     type
     payment {
@@ -16,5 +16,5 @@ export const passFieldsFragment = gql(`
     trialPeriodEnd
     createdAt
     price
-  }
-`)
+  }`,
+)

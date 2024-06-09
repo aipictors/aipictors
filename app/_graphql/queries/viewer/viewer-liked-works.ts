@@ -1,14 +1,16 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザのいいねした作品
  */
-export const viewerLikedWorksQuery = gql(`
-  query ViewerLikedWorks($offset: Int!, $limit: Int!) {
+export const viewerLikedWorksQuery = graphql(
+  `query ViewerLikedWorks($offset: Int!, $limit: Int!) {
     viewer {
       likedWorks(offset: $offset, limit: $limit) {
         ...PartialWorkFields
       }
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

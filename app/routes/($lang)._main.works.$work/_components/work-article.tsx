@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
-import type { WorkQuery } from "@/_graphql/__generated__/graphql"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
@@ -10,9 +9,11 @@ import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$w
 import { WorkActionContainer } from "@/routes/($lang)._main.works.$work/_components/work-action-container"
 import { Suspense } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
+import type { workQuery } from "@/_graphql/queries/work/work"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  work: NonNullable<WorkQuery["work"]>
+  work: NonNullable<ResultOf<typeof workQuery>["work"]>
 }
 
 /**

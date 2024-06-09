@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const updateAccountWebFcmTokenMutation = gql(`
-  mutation UpdateAccountWebFcmToken($input: UpdateAccountWebFcmTokenInput!) {
+export const updateAccountWebFcmTokenMutation = graphql(
+  `mutation UpdateAccountWebFcmToken($input: UpdateAccountWebFcmTokenInput!) {
     updateAccountWebFcmToken(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

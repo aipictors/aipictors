@@ -19,9 +19,9 @@ import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { useMutation } from "@apollo/client/index"
 import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
-import type { StickerGenre } from "@/_graphql/__generated__/graphql"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   onAddedSicker?: () => void
@@ -112,7 +112,9 @@ export const AddStickerDialog = (props: Props) => {
         variables: {
           input: {
             title: isPublic ? title : null,
-            genre: isPublic ? (genre as StickerGenre) : null,
+            genre: isPublic
+              ? (genre as IntrospectionEnum<"StickerGenre">)
+              : null,
             categories: isPublic ? [tag] : null,
             imageUrl: uploadedImageUrl,
             accessType: isPublic ? "PUBLIC" : "PRIVATE",

@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
+import { graphql } from "gql.tada"
 
-export const commentFieldsFragment = gql(`
-  fragment CommentFields on CommentNode {
+export const commentFieldsFragment = graphql(
+  `fragment CommentFields on CommentNode @_unmask  {
     id
     createdAt
     text
@@ -18,5 +19,6 @@ export const commentFieldsFragment = gql(`
       downloadsCount
       accessType
     }
-  }
-`)
+  }`,
+  [workUserFieldsFragment],
+)

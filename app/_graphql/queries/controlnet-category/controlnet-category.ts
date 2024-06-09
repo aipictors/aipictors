@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const controlNetCategoriesQuery = gql(`
-  query ControlNetCategories {
+export const controlNetCategoriesQuery = graphql(
+  `query ControlNetCategories {
     controlNetCategories {
       id
       name
@@ -16,5 +16,5 @@ export const controlNetCategoriesQuery = gql(`
         thumbnailImageUrl
       }
     }
-  }
-`)
+  }`,
+)

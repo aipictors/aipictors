@@ -1,11 +1,12 @@
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { worksQuery } from "@/_graphql/queries/work/works"
 import { config } from "@/config"
 import { HomeWorkVideoAlbum } from "@/routes/($lang)._main._index/_components/home-work-video-album"
+import type { ResultOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]> | null
+  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
 }
 
 /**

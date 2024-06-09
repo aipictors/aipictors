@@ -1,14 +1,15 @@
 import { Button } from "@/_components/ui/button"
-import type { DailyThemesQuery } from "@/_graphql/__generated__/graphql"
+import type { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { ThemeListItem } from "@/routes/($lang)._main.themes._index/_components/theme-list-item"
 import { createCalendarCells } from "@/routes/($lang)._main.themes._index/_utils/create-calendar-cells"
 import { useNavigate } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 type Props = {
   year: number
   month: number
-  dailyThemes: DailyThemesQuery["dailyThemes"]
+  dailyThemes: ResultOf<typeof dailyThemesQuery>["dailyThemes"]
 }
 
 export const ThemeList = (props: Props) => {

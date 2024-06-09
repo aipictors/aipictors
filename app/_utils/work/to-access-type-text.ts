@@ -1,10 +1,10 @@
-import type { AccessType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 /**
  * 作品の公開状態の文言を返す
  * @param
  */
-export const toAccessTypeText = (type: AccessType) => {
+export const toAccessTypeText = (type: IntrospectionEnum<"AccessType">) => {
   switch (type) {
     case "PUBLIC":
       return "公開"

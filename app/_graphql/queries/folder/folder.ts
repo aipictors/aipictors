@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
+import { graphql } from "gql.tada"
 
-export const folderQuery = gql(`
-  query Folder($id: ID!) {
+export const folderQuery = graphql(
+  `query Folder($id: ID!) {
     folder(id: $id) {
       id
       nanoid
@@ -18,5 +19,6 @@ export const folderQuery = gql(`
       rating
       thumbnailImageURL
     }
-  }
-`)
+  }`,
+  [workUserFieldsFragment],
+)

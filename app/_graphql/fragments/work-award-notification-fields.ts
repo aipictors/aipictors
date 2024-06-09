@@ -1,12 +1,14 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const workAwardNotificationFieldsFragment = gql(`
-  fragment WorkAwardNotificationFields on WorkAwardNotificationNode {
+export const workAwardNotificationFieldsFragment = graphql(
+  `fragment WorkAwardNotificationFields on WorkAwardNotificationNode @_unmask {
     id
     createdAt
     message
     work {
       ...PartialWorkFields
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

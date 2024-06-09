@@ -8,15 +8,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
+import type { ResultOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  models: ImageModelsQuery["imageModels"]
+  models: ResultOf<typeof imageModelsQuery>["imageModels"]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean

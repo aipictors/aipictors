@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const imageGenerationReservedTaskFieldsFragment = gql(`
-  fragment ImageGenerationReservedTaskFields on ImageGenerationReservedTaskNode {
+export const imageGenerationReservedTaskFieldsFragment = graphql(
+  `fragment ImageGenerationReservedTaskFields on ImageGenerationReservedTaskNode @_unmask {
     id
     createdAt
     isDeleted
@@ -41,5 +41,5 @@ export const imageGenerationReservedTaskFieldsFragment = gql(`
     controlNetModel
     controlNetSaveDetectedMap
     controlNetHrOption
-  }
-`)
+  }`,
+)

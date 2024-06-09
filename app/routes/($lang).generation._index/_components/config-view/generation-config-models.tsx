@@ -1,12 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { GenerationModelListButton } from "@/routes/($lang).generation._index/_components/config-view/generation-model-list-button"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
+import type { ResultOf } from "gql.tada"
 import { CheckIcon } from "lucide-react"
 
 type Props = {
-  models: ImageModelsQuery["imageModels"]
+  models: ResultOf<typeof imageModelsQuery>["imageModels"]
   currentModelId: string
   favoritedModelIds: number[]
   /**

@@ -5,11 +5,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_components/ui/select"
-import type { ImageStyle } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  imageStyle: ImageStyle
-  setImageStyle: (value: ImageStyle) => void
+  imageStyle: IntrospectionEnum<"ImageStyle">
+  setImageStyle: (value: IntrospectionEnum<"ImageStyle">) => void
 }
 
 /**
@@ -24,7 +24,7 @@ export const TasteInput = (props: Props) => {
           <Select
             value={props.imageStyle}
             onValueChange={(value) => {
-              props.setImageStyle(value as ImageStyle)
+              props.setImageStyle(value as IntrospectionEnum<"ImageStyle">)
             }}
           >
             <SelectTrigger className="w-full">

@@ -1,6 +1,6 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createMessageMutation = gql(`
+export const createMessageMutation = graphql(`
   mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
       ...MessageFields

@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createPassCheckoutSessionMutation = gql(`
-  mutation CreatePassCheckoutSession($input: CreatePassCheckoutSessionInput!) {
+export const createPassCheckoutSessionMutation = graphql(
+  `mutation CreatePassCheckoutSession($input: CreatePassCheckoutSessionInput!) {
     createPassCheckoutSession(input: $input)
-  }
-`)
+  }`,
+)

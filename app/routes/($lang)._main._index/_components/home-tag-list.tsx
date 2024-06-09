@@ -3,11 +3,12 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
-import type { HotTagsQuery } from "@/_graphql/__generated__/graphql"
+import type { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { TagButton } from "@/routes/($lang)._main._index/_components/tag-button"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  hotTags: HotTagsQuery["hotTags"]
+  hotTags: ResultOf<typeof hotTagsQuery>["hotTags"]
   themeTitle?: string
 }
 

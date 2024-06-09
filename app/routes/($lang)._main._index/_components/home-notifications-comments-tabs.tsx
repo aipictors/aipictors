@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import type { NotificationType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { HomeNotificationCommentsContents } from "@/routes/($lang)._main._index/_components/home-notifications-comments-contents"
 import { useState } from "react"
 
@@ -8,17 +8,21 @@ import { useState } from "react"
  * ヘッダーのお知らせメニューのコメントタブ
  */
 export const HomeNotificationCommentsTabs = () => {
-  const tabValues: NotificationType[] = ["WORK_COMMENT", "COMMENT_REPLY"]
+  const tabValues: IntrospectionEnum<"NotificationType">[] = [
+    "WORK_COMMENT",
+    "COMMENT_REPLY",
+  ]
 
   const tabLabel = ["コメント", "返信"]
 
   const defaultTab = tabValues[0]
 
-  const [activeTab, setActiveTab] = useState<NotificationType>(defaultTab)
+  const [activeTab, setActiveTab] =
+    useState<IntrospectionEnum<"NotificationType">>(defaultTab)
 
   // TabTriggerがクリックされたときにactiveTabを更新
   const handleTabClick = (value: string) => {
-    setActiveTab(value as NotificationType)
+    setActiveTab(value as IntrospectionEnum<"NotificationType">)
   }
 
   return (

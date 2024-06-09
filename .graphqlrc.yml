@@ -1,5 +1,0 @@
-schema: "https://aipics.fly.dev"
-documents:
-  - "app/_graphql/fragments/*.ts"
-  - "app/_graphql/mutations/*.ts"
-  - "app/_graphql/queries/*.ts"

@@ -47,17 +47,13 @@ import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
 import { createWorkMutation } from "@/_graphql/mutations/create-work"
-import type {
-  AccessType,
-  ImageStyle,
-  Rating,
-} from "@/_graphql/__generated__/graphql"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 /**
  * 新規作品フォーム
@@ -194,11 +190,14 @@ export const NewImageForm = () => {
 
   const [isAd, setIsAd] = useState(false)
 
-  const [ratingRestriction, setRatingRestriction] = useState<Rating>("G")
+  const [ratingRestriction, setRatingRestriction] =
+    useState<IntrospectionEnum<"Rating">>("G")
 
-  const [accessType, setAccessType] = useState<AccessType>("PUBLIC")
+  const [accessType, setAccessType] =
+    useState<IntrospectionEnum<"AccessType">>("PUBLIC")
 
-  const [imageStyle, setImageStyle] = useState<ImageStyle>("ILLUSTRATION")
+  const [imageStyle, setImageStyle] =
+    useState<IntrospectionEnum<"ImageStyle">>("ILLUSTRATION")
 
   const [aiUsed, setAiUsed] = useState("1")
 

@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
+import { graphql } from "gql.tada"
 
-export const updateRatingImageGenerationModelMutation = gql(`
-  mutation UpdateRatingImageGenerationModel($input: UpdateRatingImageGenerationModelInput!) {
+export const updateRatingImageGenerationModelMutation = graphql(
+  `mutation UpdateRatingImageGenerationModel($input: UpdateRatingImageGenerationModelInput!) {
     updateRatingImageGenerationModel(input: $input) {
       ...UserSettingFields
     }
-  }
-`)
+  }`,
+  [userSettingFieldsFragment],
+)

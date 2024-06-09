@@ -1,11 +1,11 @@
-import type { NotificationType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { NotificationListContents } from "@/routes/($lang)._main.notifications/_components/notification-list-contents"
 import { useState } from "react"
 
 export const NotificationList = () => {
   const [page, setPage] = useState(0)
 
-  const tabValues: NotificationType[] = [
+  const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "LIKED_WORK",
     "WORK_COMMENT",
     "COMMENT_REPLY",

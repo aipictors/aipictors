@@ -1,8 +1,9 @@
-import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { Link } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  imageModels: ImageModelsQuery["imageModels"]
+  imageModels: ResultOf<typeof imageModelsQuery>["imageModels"]
 }
 
 export const ImageModelList = (props: Props) => {

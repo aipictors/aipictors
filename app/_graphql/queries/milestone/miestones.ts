@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const milestonesQuery = gql(`
-  query Milestones($repository: String!) {
+export const milestonesQuery = graphql(
+  `query Milestones($repository: String!) {
     milestones(where: {repository: $repository}) {
       id
       title
@@ -11,5 +11,5 @@ export const milestonesQuery = gql(`
       isDone
       dueDate
     }
-  }
-`)
+  }`,
+)

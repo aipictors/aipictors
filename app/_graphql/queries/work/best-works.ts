@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const bestWorksQuery = gql(`
-  query BestWorks {
+export const bestWorksQuery = graphql(
+  `query BestWorks {
     bestWorks(where: {}) {
       ...PartialWorkFields
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

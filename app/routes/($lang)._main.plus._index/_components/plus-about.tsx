@@ -1,5 +1,5 @@
-import type { PassType } from "@/_graphql/__generated__/graphql"
 import { createPassCheckoutSessionMutation } from "@/_graphql/mutations/create-pass-checkout-session"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { config } from "@/config"
 import { PassPlanList } from "@/routes/($lang)._main.plus._index/_components/pass-plan-list"
 import { useMutation } from "@apollo/client/index"
@@ -16,7 +16,7 @@ export const PlusAbout = (props: Props) => {
     createPassCheckoutSessionMutation,
   )
 
-  const onSelect = async (passType: PassType) => {
+  const onSelect = async (passType: IntrospectionEnum<"PassType">) => {
     try {
       logEvent(getAnalytics(), config.logEvent.select_item, {
         item_list_id: passType,

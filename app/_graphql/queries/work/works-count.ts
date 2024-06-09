@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const worksCountQuery = gql(`
-  query WorksCount($where: WorksWhereInput) {
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
-  }
-`)
+  }`,
+)

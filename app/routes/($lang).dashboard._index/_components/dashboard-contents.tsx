@@ -6,13 +6,6 @@ import type { DashboardContentType } from "@/routes/($lang).dashboard._index/_ty
 import type { SortType } from "@/_types/sort-type"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
-import type {
-  AccessType,
-  AlbumOrderBy,
-  AlbumRating,
-  Rating,
-  WorkOrderBy,
-} from "@/_graphql/__generated__/graphql"
 import { WorksListContainer } from "@/routes/($lang).dashboard._index/_components/works-list-container"
 import { WorksSetting } from "@/routes/($lang).dashboard._index/_components/works-settings"
 import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_components/albums-list-container"
@@ -23,6 +16,7 @@ import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_com
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
 import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -40,24 +34,27 @@ export const DashboardContents = (props: Props) => {
     React.useState<DashboardContentType>(props.dashboardContentType)
 
   const [WorkOrderby, setWorkOrderby] =
-    React.useState<WorkOrderBy>("DATE_CREATED")
+    React.useState<IntrospectionEnum<"WorkOrderBy">>("DATE_CREATED")
 
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
     React.useState<SortType>("DESC")
 
   const [AlbumOrderby, setAlbumOrderby] =
-    React.useState<AlbumOrderBy>("DATE_CREATED")
+    React.useState<IntrospectionEnum<"AlbumOrderBy">>("DATE_CREATED")
 
   const [albumOrderDeskAsc, setAlbumOrderDeskAsc] =
     React.useState<SortType>("DESC")
 
   const authContext = useContext(AuthContext)
 
-  const [accessType, setAccessType] = React.useState<AccessType | null>(null)
+  const [accessType, setAccessType] =
+    React.useState<IntrospectionEnum<"AccessType"> | null>(null)
 
-  const [rating, setRating] = React.useState<Rating | null>(null)
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(null)
 
-  const [albumRating, setAlbumRating] = React.useState<AlbumRating | null>(null)
+  const [albumRating, setAlbumRating] =
+    React.useState<IntrospectionEnum<"AlbumRating"> | null>(null)
 
   const [workTabType, setWorkTabType] = React.useState<WorkTabType | null>(
     "WORK",

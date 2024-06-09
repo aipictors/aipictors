@@ -1,5 +1,5 @@
 import { TableRow, TableCell } from "@/_components/ui/table"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }
 }

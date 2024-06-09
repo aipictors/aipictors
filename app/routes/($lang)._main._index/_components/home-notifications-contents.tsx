@@ -2,20 +2,15 @@ import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
-import type {
-  FollowNotificationNode,
-  LikedWorkNotificationNode,
-  NotificationType,
-  WorkAwardNotificationNode,
-} from "@/_graphql/__generated__/graphql"
 import { HomeNotificationsContentLikedItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-liked-item"
 import { toDateText } from "@/_utils/to-date-text"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { HomeNotificationsContentAwardItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-award-item"
 import { HomeNotificationsContentFollowedItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-followed-item"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  type: NotificationType
+  type: IntrospectionEnum<"NotificationType">
 }
 
 /**
@@ -55,63 +50,56 @@ export const HomeNotificationsContents = (props: Props) => {
       <ScrollArea className="h-96 overflow-y-auto">
         <div className="max-w-96 space-y-2 overflow-hidden p-2">
           {props.type === "LIKED_WORK" &&
-            (notificationList as LikedWorkNotificationNode[])?.map(
-              (notification) => {
-                // Add type assertion for notificationList
-                return (
-                  <HomeNotificationsContentLikedItem
-                    key={notification.id}
-                    workId={notification.work?.id ?? ""}
-                    thumbnailUrl={
-                      notification.work?.smallThumbnailImageURL ?? ""
-                    }
-                    iconUrl={
-                      notification.user?.iconUrl ??
-                      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
-                    }
-                    title={notification.work?.title ?? ""}
-                    userName={notification.user?.name ?? ""}
-                    createdAt={toDateText(notification.createdAt) ?? ""}
-                  />
-                )
-              },
-            )}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            (notificationList as any[])?.map((notification) => {
+              // Add type assertion for notificationList
+              return (
+                <HomeNotificationsContentLikedItem
+                  key={notification.id}
+                  workId={notification.work?.id ?? ""}
+                  thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
+                  iconUrl={
+                    notification.user?.iconUrl ??
+                    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
+                  }
+                  title={notification.work?.title ?? ""}
+                  userName={notification.user?.name ?? ""}
+                  createdAt={toDateText(notification.createdAt) ?? ""}
+                />
+              )
+            })}
           {props.type === "WORK_AWARD" &&
-            (notificationList as WorkAwardNotificationNode[])?.map(
-              (notification) => {
-                // Add type assertion for notificationList
-                return (
-                  <HomeNotificationsContentAwardItem
-                    key={notification.id}
-                    workId={notification.work?.id ?? ""}
-                    thumbnailUrl={
-                      notification.work?.smallThumbnailImageURL ?? ""
-                    }
-                    message={notification.message ?? ""}
-                    createdAt={toDateText(notification.createdAt) ?? ""}
-                  />
-                )
-              },
-            )}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            (notificationList as any[])?.map((notification) => {
+              // Add type assertion for notificationList
+              return (
+                <HomeNotificationsContentAwardItem
+                  key={notification.id}
+                  workId={notification.work?.id ?? ""}
+                  thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
+                  message={notification.message ?? ""}
+                  createdAt={toDateText(notification.createdAt) ?? ""}
+                />
+              )
+            })}
           {props.type === "FOLLOW" &&
-            (notificationList as FollowNotificationNode[])?.map(
-              (notification) => {
-                // Add type assertion for notificationList
-                return (
-                  <HomeNotificationsContentFollowedItem
-                    key={notification.id}
-                    isFollow={notification.user?.isFollowee ?? false}
-                    userId={notification.user?.id ?? ""}
-                    iconUrl={
-                      notification.user?.iconImage?.downloadURL ??
-                      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
-                    }
-                    userName={notification.user?.name ?? ""}
-                    createdAt={toDateText(notification.createdAt) ?? ""}
-                  />
-                )
-              },
-            )}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            (notificationList as any[])?.map((notification) => {
+              // Add type assertion for notificationList
+              return (
+                <HomeNotificationsContentFollowedItem
+                  key={notification.id}
+                  isFollow={notification.user?.isFollowee ?? false}
+                  userId={notification.user?.id ?? ""}
+                  iconUrl={
+                    notification.user?.iconImage?.downloadURL ??
+                    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
+                  }
+                  userName={notification.user?.name ?? ""}
+                  createdAt={toDateText(notification.createdAt) ?? ""}
+                />
+              )
+            })}
         </div>
       </ScrollArea>
     </>

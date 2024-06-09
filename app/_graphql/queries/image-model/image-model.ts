@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const imageModelQuery = gql(`
-  query ImageModel($id: ID!) {
+export const imageModelQuery = graphql(
+  `query ImageModel($id: ID!) {
     imageModel(id: $id) {
       id
       name
@@ -15,5 +15,5 @@ export const imageModelQuery = gql(`
       thumbnailImageURL
       type
     }
-  }
-`)
+  }`,
+)

@@ -1,10 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
-import type {
-  AccessType,
-  Rating,
-  WorkOrderBy,
-} from "@/_graphql/__generated__/graphql"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
@@ -13,17 +7,19 @@ import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
 
 type Props = {
   page: number
   sort: SortType
-  orderBy: WorkOrderBy
-  accessType: AccessType | null
-  rating: Rating | null
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  accessType: IntrospectionEnum<"AccessType"> | null
+  rating: IntrospectionEnum<"Rating"> | null
   setWorksMaxCount: (worksMaxCount: number) => void
   setWorkTabType: (workTabType: WorkTabType | null) => void
-  setAccessType: (accessType: AccessType | null) => void
-  setRating: (rating: Rating | null) => void
+  setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
   setPage: (page: number) => void
   onClickTitleSortButton: () => void

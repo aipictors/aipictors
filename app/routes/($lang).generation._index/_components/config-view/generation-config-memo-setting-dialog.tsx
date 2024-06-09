@@ -5,14 +5,14 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/_components/ui/dialog"
-import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 import { GenerationConfigMemoList } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-list"
 import { GenerationConfigMemoOperationParts } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-operation-parts"
 
 type Props = {
   isOpen: boolean
   onClose: () => void
-  memos: ImageGenerationMemoNode[] | undefined
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  memos: any[] | undefined
   refetch: () => void
 }
 

@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { graphql } from "gql.tada"
 
-export const viewerCurrentPassQuery = gql(`
-  query ViewerCurrentPass {
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
     viewer {
       user {
         id
@@ -12,5 +13,6 @@ export const viewerCurrentPassQuery = gql(`
         ...PassFields
       }
     }
-  }
-`)
+  }`,
+  [passFieldsFragment],
+)

@@ -2,7 +2,7 @@ import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { Toggle } from "@/_components/ui/toggle"
-import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { config } from "@/config"
 import { GenerationTaskPreviewModeButton } from "@/routes/($lang).generation._index/_components/task-view/generation-task-preview-mode-button"
 import { GenerationWorkActionDropdownMenu } from "@/routes/($lang).generation._index/_components/task-view/generation-work-action-dropdown-menu"
@@ -13,11 +13,11 @@ import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   thumbnailSize: number
-  sortType: WorkOrderBy
+  sortType: IntrospectionEnum<"WorkOrderBy">
   showHistoryExpandButton: boolean
   setThumbnailSize(size: number): void
   onTogglePreviewMode(): void
-  onChangeSortType(sortType: WorkOrderBy): void
+  onChangeSortType(sortType: IntrospectionEnum<"WorkOrderBy">): void
   onChangeWord(word: string): void
 }
 

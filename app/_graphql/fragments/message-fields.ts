@@ -1,11 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const messageFieldsFragment = gql(`
-  fragment MessageFields on MessageNode {
+export const messageFieldsFragment = graphql(
+  `fragment MessageFields on MessageNode @_unmask {
     id
     createdAt
     text
     isRead
     isViewer
-  }
-`)
+  }`,
+)

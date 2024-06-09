@@ -7,10 +7,11 @@ import {
 } from "@/_components/ui/carousel"
 import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { worksQuery } from "@/_graphql/queries/work/works"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]> | null
+  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
   isRanking?: boolean
 }
 

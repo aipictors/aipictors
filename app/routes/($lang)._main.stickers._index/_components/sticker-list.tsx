@@ -1,8 +1,9 @@
-import type { StickersQuery } from "@/_graphql/__generated__/graphql"
+import type { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  stickers: StickersQuery["stickers"]
+  stickers: ResultOf<typeof stickersQuery>["stickers"]
 }
 
 export const StickerList = (props: Props) => {

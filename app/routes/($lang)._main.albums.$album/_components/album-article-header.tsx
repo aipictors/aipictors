@@ -1,8 +1,9 @@
-import type { AlbumQuery } from "@/_graphql/__generated__/graphql"
+import type { albumQuery } from "@/_graphql/queries/album/album"
+import type { ResultOf } from "gql.tada"
 import { ShareIcon } from "lucide-react"
 
 type Props = {
-  album: NonNullable<AlbumQuery["album"]>
+  album: NonNullable<ResultOf<typeof albumQuery>["album"]>
 }
 
 export const AlbumArticleHeader = (props: Props) => {

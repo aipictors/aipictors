@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialUserFieldsFragment = gql(`
-  fragment PartialUserFields on UserNode {
+export const partialUserFieldsFragment = graphql(
+  `fragment PartialUserFields on UserNode @_unmask {
     id
     login
     name
@@ -12,5 +12,5 @@ export const partialUserFieldsFragment = gql(`
     isFollowee
     isFollower
     iconUrl
-  }
-`)
+  }`,
+)

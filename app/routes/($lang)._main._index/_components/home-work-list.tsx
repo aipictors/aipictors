@@ -1,9 +1,10 @@
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { worksQuery } from "@/_graphql/queries/work/works"
 import { WorkCard } from "@/routes/($lang)._main.works._index/_components/work-card"
 import { Link } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  works: WorksQuery["works"]
+  works: ResultOf<typeof worksQuery>["works"]
 }
 
 export const HomeWorkList = (props: Props) => {

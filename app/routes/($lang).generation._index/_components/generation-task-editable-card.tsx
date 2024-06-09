@@ -1,7 +1,6 @@
 import { PrivateImage } from "@/_components/private-image"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
-import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
@@ -19,6 +18,8 @@ import { GenerationTaskZoomUpButton } from "@/routes/($lang).generation._index/_
 import { GenerationTaskRatingButton } from "@/routes/($lang).generation._index/_components/generation-task-rating-button"
 import { GenerationTaskDeleteButton } from "@/routes/($lang).generation._index/_components/generation-task-delete-button"
 import { GenerationTaskProtectedButton } from "@/routes/($lang).generation._index/_components/generation-task-protected-button"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   taskId: string
@@ -29,7 +30,7 @@ type Props = {
   isProtected: boolean
   optionButtonSize: number
   isSelectDisabled: boolean
-  task: ImageGenerationTaskFieldsFragment
+  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
   isPreviewByHover?: boolean
   userToken: string
   onClick?(): void

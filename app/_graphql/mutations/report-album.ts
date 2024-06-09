@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const reportAlbumMutation = gql(`
-  mutation ReportAlbum($input: ReportAlbumInput!) {
+export const reportAlbumMutation = graphql(
+  `mutation ReportAlbum($input: ReportAlbumInput!) {
     reportAlbum(input: $input)
-  }
-`)
+  }`,
+)

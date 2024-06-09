@@ -1,9 +1,9 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import type { AlbumOrderBy } from "@/_graphql/__generated__/graphql"
 import { AlbumsListTable } from "@/routes/($lang).dashboard._index/_components/albums-list-table"
 import { AlbumsSpList } from "@/routes/($lang).dashboard._index/_components/albums-sp-list"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   albums: {
@@ -15,7 +15,7 @@ type Props = {
     createdAt: string
   }[]
   sort: SortType
-  orderBy: AlbumOrderBy
+  orderBy: IntrospectionEnum<"AlbumOrderBy">
   onClickTitleSortButton: () => void
   onClickDateSortButton: () => void
 }

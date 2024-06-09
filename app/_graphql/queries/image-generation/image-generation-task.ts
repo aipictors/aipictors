@@ -1,12 +1,14 @@
-import { gql } from "@/_graphql/__generated__"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import { graphql } from "gql.tada"
 
 /**
  * 画像生成のタスク
  */
-export const imageGenerationTaskQuery = gql(`
-  query ImageGenerationTask($id: ID!) {
+export const imageGenerationTaskQuery = graphql(
+  `query ImageGenerationTask($id: ID!) {
     imageGenerationTask(id: $id) {
       ...ImageGenerationTaskFields
     }
-}
-`)
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

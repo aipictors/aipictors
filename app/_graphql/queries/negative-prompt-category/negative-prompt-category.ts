@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const negativePromptCategoriesQuery = gql(`
-  query NegativePromptCategories {
+export const negativePromptCategoriesQuery = graphql(
+  `query NegativePromptCategories {
     negativePromptCategories {
       id
       name
@@ -11,5 +11,5 @@ export const negativePromptCategoriesQuery = gql(`
         words
       }
     }
-  }
-`)
+  }`,
+)

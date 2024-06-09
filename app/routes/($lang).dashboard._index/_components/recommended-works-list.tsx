@@ -1,8 +1,8 @@
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
 import { RecommendedWorksListTable } from "@/routes/($lang).dashboard._index/_components/recommended-works-list-table"
 import { RecommendedWorksSpList } from "@/routes/($lang).dashboard._index/_components/recommended-works-sp-list"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   works: {
@@ -14,7 +14,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
 }

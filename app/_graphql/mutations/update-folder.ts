@@ -1,11 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const updateFolderMutation = gql(`
-  mutation UpdateFolder($input: UpdateFolderInput!) {
+export const updateFolderMutation = graphql(
+  `mutation UpdateFolder($input: UpdateFolderInput!) {
     updateFolder(input: $input) {
       id
       title
       description
     }
-  }
-`)
+  }`,
+)

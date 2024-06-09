@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザの画像生成タスク
  */
-export const viewerImageGenerationStatusQuery = gql(`
-  query ViewerImageGenerationStatus {
+export const viewerImageGenerationStatusQuery = graphql(
+  `query ViewerImageGenerationStatus {
     imageGenerationEngineStatus {
       normalTasksCount
       standardTasksCount
@@ -22,5 +22,5 @@ export const viewerImageGenerationStatusQuery = gql(`
       availableImageGenerationLoraModelsCount
       availableConsecutiveImageGenerationsCount
     }
-  }
-`)
+  }`,
+)

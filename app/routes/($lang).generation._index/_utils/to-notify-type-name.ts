@@ -1,6 +1,8 @@
-import type { NotificationType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
-export const toNotificationTypeName = (type: NotificationType | null) => {
+export const toNotificationTypeName = (
+  type: IntrospectionEnum<"NotificationType"> | null,
+) => {
   if (type === "LIKED_WORK") {
     return "いいね"
   }

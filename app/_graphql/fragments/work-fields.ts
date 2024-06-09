@@ -1,8 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const workFieldsFragment = gql(`
-  fragment WorkFields on WorkNode {
+export const workFieldsFragment = graphql(
+  `fragment WorkFields on WorkNode @_unmask {
     id
     title
-  }
-`)
+  }`,
+)

@@ -1,8 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import type {
-  AlbumOrderBy,
-  AlbumRating,
-} from "@/_graphql/__generated__/graphql"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
@@ -11,13 +7,14 @@ import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AlbumsList } from "@/routes/($lang).dashboard._index/_components/albums-list"
 import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   page: number
   sort: SortType
-  orderBy: AlbumOrderBy
+  orderBy: IntrospectionEnum<"AlbumOrderBy">
   albumsMaxCount: number
-  rating: AlbumRating | null
+  rating: IntrospectionEnum<"AlbumRating"> | null
   setAlbumPage: (page: number) => void
   onClickAlbumTitleSortButton: () => void
   onClickAlbumDateSortButton: () => void

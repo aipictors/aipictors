@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { graphql } from "gql.tada"
 
-export const whiteListTagsQuery = gql(`
-  query WhiteListTags($where: WhiteListTagsInput!) {
+export const whiteListTagsQuery = graphql(
+  `query WhiteListTags($where: WhiteListTagsInput!) {
     whiteListTags(where: $where) {
       ...PartialTagFields
     }
-  }
-`)
+  }`,
+  [partialTagFieldsFragment],
+)

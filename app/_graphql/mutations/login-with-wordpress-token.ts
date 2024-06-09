@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const loginWithWordPressTokenMutation = gql(`
-  mutation LoginWithWordPressToken($input: LoginWithWordPressTokenInput!) {
+export const loginWithWordPressTokenMutation = graphql(
+  `mutation LoginWithWordPressToken($input: LoginWithWordPressTokenInput!) {
     loginWithWordPressToken(input: $input) {
       token
     }
-  }
-`)
+  }`,
+)

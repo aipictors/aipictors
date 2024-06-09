@@ -1,7 +1,7 @@
-import type { PassType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  passType: PassType
+  passType: IntrospectionEnum<"PassType">
 }
 
 export const PassBenefitList = (props: Props) => {
