@@ -63,25 +63,6 @@ export async function loader() {
     },
   })
 
-  // 生成された作品
-  const generatedWorksResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 40,
-      where: {
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
-        // 直近1か月の作品
-        afterCreatedAt: new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
-        ratings: ["G"],
-        isFeatured: true,
-      },
-    },
-  })
-
   // 推薦作品
   const recommendedWorksResp = await client.query({
     query: worksQuery,
@@ -137,7 +118,6 @@ export async function loader() {
   return json({
     suggestedWorkResp: suggestedWorkResp.data.works,
     recommendedWorks: recommendedWorksResp.data.works,
-    generatedWorksResp: generatedWorksResp.data.works,
     themeResp: themeResp.dailyTheme,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
@@ -158,7 +138,16 @@ export default function Index() {
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
           />
-          <HomeWorksGeneratedSection works={data.generatedWorksResp} />
+          <Suspense
+            fallback={
+              <>
+                <HomeWorkDummies />
+                <HomeWorkDummies />
+              </>
+            }
+          >
+            <HomeWorksGeneratedSection />
+          </Suspense>
           <Suspense fallback={<HomeWorkDummies />}>
             <HomeAwardWorkSection title={"前日ランキング"} />
           </Suspense>
