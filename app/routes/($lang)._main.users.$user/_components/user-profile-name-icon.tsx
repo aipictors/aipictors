@@ -23,8 +23,8 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
             size={isDesktop ? "lg" : "md"}
           />
           <div className="hidden md:block">
-            <h1 className="font-bold text-2xl">{props.user.name}</h1>
-            <h2 className="font-bold text-sm opacity-50">
+            <h1 className="font-bold text-2xl text-white">{props.user.name}</h1>
+            <h2 className="font-bold text-sm text-white opacity-50">
               @{props.user.login}
             </h2>
             <div className="flex">
