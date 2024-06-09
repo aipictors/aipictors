@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const popularWorksQuery = gql(`
-  query PopularWorks {
+export const popularWorksQuery = graphql(
+  `query PopularWorks {
     popularWorks(where: {}) {
       ...PartialWorkFields
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

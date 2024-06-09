@@ -1,8 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialTagFieldsFragment = gql(`
-  fragment PartialTagFields on TagNode {
+export const partialTagFieldsFragment = graphql(
+  `fragment PartialTagFields on TagNode @_unmask {
     id
     name
-  }
-`)
+  }`,
+)

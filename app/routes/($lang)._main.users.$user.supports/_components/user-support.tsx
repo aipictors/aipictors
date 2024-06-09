@@ -1,8 +1,9 @@
 import { Button } from "@/_components/ui/button"
-import type { UserQuery } from "@/_graphql/__generated__/graphql"
+import type { userQuery } from "@/_graphql/queries/user/user"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  user: NonNullable<UserQuery["user"]>
+  user: NonNullable<ResultOf<typeof userQuery>["user"]>
   userIconImageURL: string | null
   userName: string
 }

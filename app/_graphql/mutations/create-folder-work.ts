@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createFolderWorkMutation = gql(`
-  mutation CreateFolderWork($input: CreateFolderWorkInput!) {
+export const createFolderWorkMutation = graphql(
+  `mutation CreateFolderWork($input: CreateFolderWorkInput!) {
     createFolderWork(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

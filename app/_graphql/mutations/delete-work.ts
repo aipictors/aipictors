@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const deleteWorkMutation = gql(`
-  mutation DeleteWork($input: DeleteWorkInput!) {
+export const deleteWorkMutation = graphql(
+  `mutation DeleteWork($input: DeleteWorkInput!) {
     deleteWork(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

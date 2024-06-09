@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const promotionQuery = gql(`
-  query Promotion($id: ID!) {
+export const promotionQuery = graphql(
+  `query Promotion($id: ID!) {
     promotion(id: $id) {
       id
       title
@@ -11,5 +11,5 @@ export const promotionQuery = gql(`
       startDateTime
       endDateTime
     }
-  }
-`)
+  }`,
+)

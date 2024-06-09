@@ -4,11 +4,7 @@ import { useMediaQuery } from "usehooks-ts"
 import { WorksSpList } from "@/routes/($lang).dashboard._index/_components/works-sp-list"
 import { WorksListTable } from "@/routes/($lang).dashboard._index/_components/works-list-table"
 import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
-import type {
-  AccessType,
-  Rating,
-  WorkOrderBy,
-} from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   works: {
@@ -20,16 +16,16 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
   sort: SortType
-  orderBy: WorkOrderBy
-  accessType: AccessType | null
-  rating: Rating | null
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  accessType: IntrospectionEnum<"AccessType"> | null
+  rating: IntrospectionEnum<"Rating"> | null
   setWorkTabType: (workTabType: WorkTabType | null) => void
-  setAccessType: (accessType: AccessType | null) => void
-  setRating: (rating: Rating | null) => void
+  setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
   onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void

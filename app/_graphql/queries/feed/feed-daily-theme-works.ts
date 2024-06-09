@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialFeedWorkFieldsFragment } from "@/_graphql/fragments/partial-feed-work-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
-export const feedDailyThemeWorksQuery = gql(`
-  query FeedDailyThemeWorks(
+export const feedDailyThemeWorksQuery = graphql(
+  `query FeedDailyThemeWorks(
     $year: Int!
     $month: Int!
     $day: Int!
@@ -23,5 +25,6 @@ export const feedDailyThemeWorksQuery = gql(`
         isInCollection
       }
     }
-  }
-`)
+  }`,
+  [partialFeedWorkFieldsFragment, partialUserFieldsFragment],
+)

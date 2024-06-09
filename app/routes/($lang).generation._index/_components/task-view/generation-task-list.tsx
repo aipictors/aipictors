@@ -1,6 +1,6 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { ViewerImageGenerationTasksQuery } from "@/_graphql/__generated__/graphql"
+import type { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -10,6 +10,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
+import type { ResultOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
@@ -25,7 +26,7 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
-  tasks: ViewerImageGenerationTasksQuery
+  tasks: ResultOf<typeof viewerImageGenerationTasksQuery>
   userToken: string
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void

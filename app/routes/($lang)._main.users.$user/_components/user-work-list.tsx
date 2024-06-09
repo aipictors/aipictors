@@ -1,10 +1,11 @@
 import { Switch } from "@/_components/ui/switch"
-import type { UserWorksQuery } from "@/_graphql/__generated__/graphql"
+import type { userWorksQuery } from "@/_graphql/queries/user/user-works"
 import { WorkCard } from "@/routes/($lang)._main.works._index/_components/work-card"
 import { Link } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<UserWorksQuery["user"]>["works"]
+  works: NonNullable<ResultOf<typeof userWorksQuery>["user"]>["works"]
 }
 
 export const UserWorkList = (props: Props) => {

@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialAlbumFieldsFragment = gql(`
-  fragment PartialAlbumFields on AlbumNode {
+export const partialAlbumFieldsFragment = graphql(
+  `fragment PartialAlbumFields on AlbumNode @_unmask {
     id
     title
     isSensitive
@@ -27,5 +27,5 @@ export const partialAlbumFieldsFragment = gql(`
     createdAt
     slug
     userId
-  }
-`)
+  }`,
+)

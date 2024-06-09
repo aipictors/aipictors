@@ -1,12 +1,12 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * LINEユーザidの取得
  */
-export const viewerLineUserIdQuery = gql(`
-  query viewerLineUserId {
+export const viewerLineUserIdQuery = graphql(
+  `query viewerLineUserId {
     viewer {
       lineUserId
     }
-  }
-`)
+  }`,
+)

@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "graphql-codegen-esm --config codegen.ts && tsc --noEmit && remix vite:build",
+    "build": "tsc --noEmit && remix vite:build",
     "deploy": "bun run build && wrangler pages deploy",
-    "dev": "graphql-codegen-esm --config codegen.ts && remix vite:dev",
-    "build:graphql": "graphql-codegen-esm --config codegen.ts",
+    "dev": "remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit",
     "refactor": "biome check --apply-unsafe app",
@@ -74,6 +73,7 @@
     "fflate": "^0.8.2",
     "firebase": "^10.10.0",
     "google-libphonenumber": "^3.2.34",
+    "gql.tada": "^1.7.5",
     "graphql": "^16.8.1",
     "immer": "^10.0.4",
     "isbot": "^5",
@@ -106,10 +106,9 @@
     "zenn-markdown-html": "^0.1.153"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.7",
     "@biomejs/biome": "^1.7.0",
     "@cloudflare/workers-types": "^4.20240405.0",
-    "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "4.2.5",
     "@million/lint": "latest",
     "@remix-run/cloudflare-pages": "^2.8.1",
     "@remix-run/dev": "^2.8.1",
@@ -135,7 +134,7 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "latest",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.4.5",
+    "typescript": "^5.4.5",
     "vite": "^5.2.9",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^3.50.0"

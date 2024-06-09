@@ -1,12 +1,12 @@
 import { TableRow, TableCell } from "@/_components/ui/table"
 import { Loader2Icon, PencilIcon, TrashIcon } from "lucide-react"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
 import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   work: {
@@ -18,7 +18,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }
 }
@@ -59,7 +59,6 @@ export const WorksListTableRow = (props: Props) => {
   return (
     <>
       {!isHidden && (
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
         <TableRow
           style={{
             opacity: isDeleted ? 0 : 1,

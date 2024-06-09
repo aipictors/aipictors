@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const muteUserMutation = gql(`
-  mutation MuteUser($input: MuteUserInput!) {
+export const muteUserMutation = graphql(
+  `mutation MuteUser($input: MuteUserInput!) {
     muteUser(input: $input) {
       id
       isMuted
     }
-  }
-`)
+  }`,
+)

@@ -1,15 +1,16 @@
 import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback } from "@/_components/ui/avatar"
 import { Card, CardContent } from "@/_components/ui/card"
-import type { AlbumQuery } from "@/_graphql/__generated__/graphql"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
+import type { ResultOf } from "gql.tada"
+import type { albumQuery } from "@/_graphql/queries/album/album"
 
 type Props = {
-  album: NonNullable<AlbumQuery["album"]>
+  album: NonNullable<ResultOf<typeof albumQuery>["album"]>
 }
 
 export const AlbumWorkDescription = (props: Props) => {

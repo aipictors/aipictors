@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
-import type { WorkCommentsQuery } from "@/_graphql/__generated__/graphql"
 import { StickerDialog } from "@/routes/($lang)._main.works.$work/_components/sticker-dialog"
 import { WorkComment } from "@/routes/($lang)._main.works.$work/_components/work-comment"
 import { WorkCommentResponse } from "@/routes/($lang)._main.works.$work/_components/work-comment-response"
@@ -12,10 +11,12 @@ import { useMutation } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
+import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
   workId: string
-  comments: NonNullable<WorkCommentsQuery["work"]>["comments"]
+  comments: NonNullable<ResultOf<typeof workCommentsQuery>["work"]>["comments"]
 }
 
 // コメント

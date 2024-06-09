@@ -1,9 +1,10 @@
-import type { UserStickersQuery } from "@/_graphql/__generated__/graphql"
+import type { userStickersQuery } from "@/_graphql/queries/user/user-stickers"
 import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
 import { Link } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  stickers: NonNullable<UserStickersQuery["user"]>["stickers"]
+  stickers: NonNullable<ResultOf<typeof userStickersQuery>["user"]>["stickers"]
 }
 
 export const UserStickerList = (props: Props) => {

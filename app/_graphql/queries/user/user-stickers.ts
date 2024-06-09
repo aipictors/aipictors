@@ -1,12 +1,14 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
+import { graphql } from "gql.tada"
 
-export const userStickersQuery = gql(`
-  query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
+export const userStickersQuery = graphql(
+  `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id
       stickers(offset: $offset, limit: $limit) {
         ...PartialStickerFields
       }
     }
-  }
-`)
+  }`,
+  [partialStickerFieldsFragment],
+)

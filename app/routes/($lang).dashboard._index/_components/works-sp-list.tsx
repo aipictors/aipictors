@@ -10,7 +10,7 @@ import {
   MessageCircle,
   PencilIcon,
 } from "lucide-react"
-import type { AccessType, WorkOrderBy } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   works: {
@@ -22,11 +22,11 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
   sort: SortType
-  orderBy: WorkOrderBy
+  orderBy: IntrospectionEnum<"WorkOrderBy">
 }
 
 /**

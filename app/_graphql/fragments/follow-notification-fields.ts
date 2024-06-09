@@ -1,11 +1,13 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
-export const followNotificationFieldsFragment = gql(`
-  fragment FollowNotificationFields on FollowNotificationNode {
+export const followNotificationFieldsFragment = graphql(
+  `fragment FollowNotificationFields on FollowNotificationNode @_unmask {
     id
     createdAt
     user {
       ...PartialUserFields
     }
-  }
-`)
+  }`,
+  [partialUserFieldsFragment],
+)

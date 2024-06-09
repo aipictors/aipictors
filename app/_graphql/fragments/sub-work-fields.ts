@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const subWorkFieldsFragment = gql(`
-  fragment SubWorkFields on SubWorkNode {
+export const subWorkFieldsFragment = graphql(
+  `fragment SubWorkFields on SubWorkNode @_unmask {
     id
     image {
       id
@@ -11,5 +11,5 @@ export const subWorkFieldsFragment = gql(`
       id
       downloadURL
     }
-  }
-`)
+  }`,
+)

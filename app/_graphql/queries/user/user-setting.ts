@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
+import { graphql } from "gql.tada"
 
-export const userSettingQuery = gql(`
-  query UserSetting {
+export const userSettingQuery = graphql(
+  `query UserSetting {
     userSetting {
       ...UserSettingFields
     }
-  }
-`)
+  }`,
+  [userSettingFieldsFragment],
+)

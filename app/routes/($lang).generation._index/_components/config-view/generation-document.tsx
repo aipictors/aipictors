@@ -7,11 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/_components/ui/table"
-import type { ImageModelsQuery } from "@/_graphql/__generated__/graphql"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
   markdownText: string
-  models: ImageModelsQuery["imageModels"]
+  models: ResultOf<typeof imageModelsQuery>["imageModels"]
 }
 
 export const GenerationDocument = (props: Props) => {

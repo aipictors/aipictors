@@ -1,10 +1,11 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Skeleton } from "@/_components/ui/skeleton"
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { worksQuery } from "@/_graphql/queries/work/works"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation._index/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/routes/($lang).generation._index/_components/generation-work-card "
+import type { ResultOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -12,7 +13,7 @@ type Props = {
   loading: boolean
   onCancel?(): void
   thumbnailSize: number
-  works: WorksQuery | undefined
+  works: ResultOf<typeof worksQuery> | undefined
   isPreviewByHover: boolean
 }
 

@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const followUserMutation = gql(`
-  mutation FollowUser($input: FollowUserInput!) {
+export const followUserMutation = graphql(
+  `mutation FollowUser($input: FollowUserInput!) {
     followUser(input: $input) {
       id
       isFollowee
     }
-  }
-`)
+  }`,
+)

@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialFeedWorkFieldsFragment = gql(`
-  fragment PartialFeedWorkFields on WorkNode {
+export const partialFeedWorkFieldsFragment = graphql(
+  `fragment PartialFeedWorkFields on WorkNode @_unmask {
     id
     title
     likesCount
@@ -9,5 +9,5 @@ export const partialFeedWorkFieldsFragment = gql(`
     createdAt
     imageAspectRatio
     imageURL
-  }
-`)
+  }`,
+)

@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const albumsCountQuery = gql(`
-  query AlbumsCount($where: AlbumsWhereInput) {
+export const albumsCountQuery = graphql(
+  `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
-  }
-`)
+  }`,
+)

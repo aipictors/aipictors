@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
+import { messageThreadFieldsFragment } from "@/_graphql/fragments/message-thread-fields"
+import { graphql } from "gql.tada"
 
-export const messageThreadMessagesQuery = gql(`
-  query MessageThreadMessages($threadId: ID!, $offset: Int!, $limit: Int!) {
+export const messageThreadMessagesQuery = graphql(
+  `query MessageThreadMessages($threadId: ID!, $offset: Int!, $limit: Int!) {
     viewer {
       messageThread(threadId: $threadId) {
         id
@@ -11,5 +13,6 @@ export const messageThreadMessagesQuery = gql(`
         }
       }
     }
-  }
-`)
+  }`,
+  [messageThreadFieldsFragment, messageFieldsFragment],
+)

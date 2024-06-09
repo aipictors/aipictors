@@ -1,6 +1,6 @@
-import type { PassType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
-export const toPassName = (passType: PassType) => {
+export const toPassName = (passType: IntrospectionEnum<"PassType">) => {
   if (passType === "LITE") {
     return "ライトプラン"
   }

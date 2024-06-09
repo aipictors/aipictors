@@ -5,7 +5,6 @@ import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Separator } from "@/_components/ui/separator"
 import { Skeleton } from "@/_components/ui/skeleton"
-import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { cn } from "@/_lib/cn"
 import { GenerationImageDialogButton } from "@/routes/($lang).generation._index/_components/generation-image-dialog-button"
 import { GenerationMenuButton } from "@/routes/($lang).generation._index/_components/generation-menu-button"
@@ -33,9 +32,11 @@ import { StarRating } from "@/routes/($lang).generation._index/_components/task-
 import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 import { CopyButton } from "@/routes/($lang).generation._index/_components/copy-button"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
+import type { FragmentOf } from "gql.tada"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 
 type Props = {
-  task: ImageGenerationTaskFieldsFragment
+  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
   isScroll: boolean
   isDisplayImageListButton: boolean
   isListFullSize: boolean

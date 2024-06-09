@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザ
  */
-export const viewerUserQuery = gql(`
-  query ViewerUser {
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
     viewer {
       user {
         id
@@ -36,5 +36,5 @@ export const viewerUserQuery = gql(`
         createdBookmarksCount
       }
     }
-  }
-`)
+  }`,
+)

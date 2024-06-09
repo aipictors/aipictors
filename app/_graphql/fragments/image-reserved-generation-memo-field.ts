@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const imageGenerationMemoFieldsFragment = gql(`
-  fragment ImageGenerationMemoFields on ImageGenerationMemoNode {
+export const imageGenerationMemoFieldsFragment = graphql(
+  `fragment ImageGenerationMemoFields on ImageGenerationMemoNode @_unmask {
     id
     nanoid
     userId
@@ -24,5 +24,5 @@ export const imageGenerationMemoFieldsFragment = gql(`
     height
     isDeleted
     createdAt
-  }
-`)
+  }`,
+)

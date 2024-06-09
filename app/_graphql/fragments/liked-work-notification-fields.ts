@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const likedWorkNotificationFieldsFragment = gql(`
-  fragment LikedWorkNotificationFields on LikedWorkNotificationNode {
+export const likedWorkNotificationFieldsFragment = graphql(
+  `fragment LikedWorkNotificationFields on LikedWorkNotificationNode @_unmask {
     id
     createdAt
     isAnonymous
@@ -11,5 +13,6 @@ export const likedWorkNotificationFieldsFragment = gql(`
     user {
       ...PartialUserFields
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment, partialUserFieldsFragment],
+)

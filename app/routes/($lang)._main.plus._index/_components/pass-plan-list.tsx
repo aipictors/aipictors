@@ -1,5 +1,5 @@
-import type { PassType } from "@/_graphql/__generated__/graphql"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { PassPlanDescription } from "@/routes/($lang)._main.plus._index/_components/pass-plan-description"
 import { toPassFeatures } from "@/routes/($lang)._main.plus._index/_utils/to-pass-features"
 import { useSuspenseQuery } from "@apollo/client/index"
@@ -8,7 +8,7 @@ type Props = {
   isLoading: boolean
   showUpgradePlansOnly?: boolean
   hideSubmitButton?: boolean
-  onSelect(passType: PassType): Promise<void>
+  onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
 }
 
 export const PassPlanList = (props: Props) => {
@@ -19,8 +19,8 @@ export const PassPlanList = (props: Props) => {
   }
 
   const isUpgradeOrEqualPlan = (
-    currentPlan: PassType | undefined,
-    targetPlan: PassType,
+    currentPlan: IntrospectionEnum<"PassType"> | undefined,
+    targetPlan: IntrospectionEnum<"PassType">,
   ) => {
     if (currentPlan === undefined) {
       return true

@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const likedWorksSummaryNotificationFieldsFragment = gql(`
-  fragment LikedWorksSummaryNotificationFields on LikedWorksSummaryNotificationNode {
+export const likedWorksSummaryNotificationFieldsFragment = graphql(
+  `fragment LikedWorksSummaryNotificationFields on LikedWorksSummaryNotificationNode @_unmask {
     id
     createdAt
     message
-  }
-`)
+  }`,
+)

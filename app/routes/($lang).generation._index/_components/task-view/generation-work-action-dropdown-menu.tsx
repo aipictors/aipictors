@@ -12,14 +12,14 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { Slider } from "@/_components/ui/slider"
-import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {
   thumbnailSize: number
-  sortType: WorkOrderBy
+  sortType: IntrospectionEnum<"WorkOrderBy">
   onChange(size: number): void
-  onChangeSortType(sortType: WorkOrderBy): void
+  onChangeSortType(sortType: IntrospectionEnum<"WorkOrderBy">): void
 }
 
 /**

@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import { Textarea } from "@/_components/ui/textarea"
-import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 import { deleteImageGenerationMemoMutation } from "@/_graphql/mutations/delete-image-generation-memo"
 import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-image-generation-memo"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
@@ -23,7 +22,8 @@ import { toast } from "sonner"
 type Props = {
   onClose: () => void
   refetchMemos: () => void
-  memo: ImageGenerationMemoNode
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  memo: any
 }
 
 /**

@@ -8,13 +8,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import type { ImageLoraModelsQuery } from "@/_graphql/__generated__/graphql"
+import type { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { LoraImageModelList } from "@/routes/($lang).generation._index/_components/config-view/lora-image-model-list"
+import type { ResultOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
-  models: ImageLoraModelsQuery["imageLoraModels"]
+  models: ResultOf<typeof imageLoraModelsQuery>["imageLoraModels"]
   selectedModelNames: string[]
   availableImageGenerationMaxTasksCount: number
   onSelect(name: string, isAdded: boolean): void

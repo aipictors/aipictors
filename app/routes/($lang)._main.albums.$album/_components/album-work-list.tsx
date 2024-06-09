@@ -1,8 +1,9 @@
-import type { AlbumWorksQuery } from "@/_graphql/__generated__/graphql"
+import type { albumWorksQuery } from "@/_graphql/queries/album/album-works"
 import { AlbumWork } from "@/routes/($lang)._main.albums.$album/_components/album-work"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  albumWorks: NonNullable<AlbumWorksQuery["album"]>["works"]
+  albumWorks: NonNullable<ResultOf<typeof albumWorksQuery>["album"]>["works"]
 }
 
 export const AlbumWorkList = (props: Props) => {

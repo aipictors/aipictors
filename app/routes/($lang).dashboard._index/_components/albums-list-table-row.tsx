@@ -53,7 +53,6 @@ export const AlbumsListTableRow = (props: Props) => {
   return (
     <>
       {!isHidden && (
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
         <TableRow
           style={{
             opacity: isDeleted ? 0 : 1,

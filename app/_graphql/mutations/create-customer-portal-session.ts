@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createCustomerPortalSessionMutation = gql(`
-  mutation CreateCustomerPortalSession {
+export const createCustomerPortalSessionMutation = graphql(
+  `mutation CreateCustomerPortalSession {
     createCustomerPortalSession
-  }
-`)
+  }`,
+)

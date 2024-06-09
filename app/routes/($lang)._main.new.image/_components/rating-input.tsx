@@ -1,9 +1,9 @@
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
-import type { Rating } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  rating: Rating
-  setRating: (value: Rating) => void
+  rating: IntrospectionEnum<"Rating">
+  setRating: (value: IntrospectionEnum<"Rating">) => void
 }
 
 /**
@@ -18,7 +18,7 @@ export const RatingInput = (props: Props) => {
           <RadioGroup
             value={props.rating}
             onValueChange={(value) => {
-              props.setRating(value as Rating)
+              props.setRating(value as IntrospectionEnum<"Rating">)
             }}
             className="flex flex-wrap space-x-0 text-sm md:space-x-4"
           >

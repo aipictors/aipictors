@@ -2,12 +2,12 @@ import { ChevronDown, ChevronUp } from "lucide-react"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/_components/ui/drawer"
 import type { SortType } from "@/_types/sort-type"
 import { SortListSelector } from "@/_components/sort-list-selector"
-import type { WorkOrderBy } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   nowSort: SortType
-  allOrderBy: WorkOrderBy[]
-  nowOrderBy: WorkOrderBy
+  allOrderBy: IntrospectionEnum<"WorkOrderBy">[]
+  nowOrderBy: IntrospectionEnum<"WorkOrderBy">
   setSort: (sort: SortType) => void
   onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void
@@ -22,7 +22,7 @@ type Props = {
  * 作品一覧
  */
 export const WorksListSortableSetting = (props: Props) => {
-  const getLabel = (nowOrderBy: WorkOrderBy) => {
+  const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
     switch (nowOrderBy) {
       case "LIKES_COUNT":
         return "いいね！順"

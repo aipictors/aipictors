@@ -1,11 +1,9 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import type {
-  ImageLoraModelsQuery,
-  ImageModelsQuery,
-  PromptCategoriesQuery,
-  NegativePromptCategoriesQuery,
-  ControlNetCategoriesQuery,
-} from "@/_graphql/__generated__/graphql"
+import type { controlNetCategoriesQuery } from "@/_graphql/queries/controlnet-category/controlnet-category"
+import type { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import type { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
+import type { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
@@ -13,15 +11,20 @@ import { checkInGenerationProgressStatus } from "@/_utils/check-in-generation-pr
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
 import { useQuery } from "@apollo/client/index"
+import type { ResultOf } from "gql.tada"
 import { useContext, useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
-  promptCategories: PromptCategoriesQuery["promptCategories"]
-  negativePromptCategories: NegativePromptCategoriesQuery["negativePromptCategories"]
-  controlNetCategories: ControlNetCategoriesQuery["controlNetCategories"]
-  imageModels: ImageModelsQuery["imageModels"]
-  imageLoraModels: ImageLoraModelsQuery["imageLoraModels"]
+  promptCategories: ResultOf<typeof promptCategoriesQuery>["promptCategories"]
+  negativePromptCategories: ResultOf<
+    typeof negativePromptCategoriesQuery
+  >["negativePromptCategories"]
+  controlNetCategories: ResultOf<
+    typeof controlNetCategoriesQuery
+  >["controlNetCategories"]
+  imageModels: ResultOf<typeof imageModelsQuery>["imageModels"]
+  imageLoraModels: ResultOf<typeof imageLoraModelsQuery>["imageLoraModels"]
 }
 
 /**

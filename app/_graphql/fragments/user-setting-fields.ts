@@ -1,10 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const userSettingFieldsFragment = gql(`
-  fragment UserSettingFields on UserSettingNode {
+export const userSettingFieldsFragment = graphql(
+  `fragment UserSettingFields on UserSettingNode @_unmask {
     userId
     favoritedImageGenerationModelIds
     preferenceRating
     featurePromptonRequest
-  }
-`)
+  }`,
+)

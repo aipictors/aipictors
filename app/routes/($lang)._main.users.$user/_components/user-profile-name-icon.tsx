@@ -1,10 +1,11 @@
-import type { UserQuery } from "@/_graphql/__generated__/graphql"
+import type { userQuery } from "@/_graphql/queries/user/user"
 import { config } from "@/config"
 import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
+import type { ResultOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
 type UserProfileProps = {
-  user: NonNullable<UserQuery["user"]>
+  user: NonNullable<ResultOf<typeof userQuery>["user"]>
 }
 
 export const UserProfileNameIcon = (props: UserProfileProps) => {

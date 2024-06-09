@@ -1,10 +1,11 @@
 import { FollowButton } from "@/_components/button/follow-button"
-import type { UserQuery } from "@/_graphql/__generated__/graphql"
 import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
 import UserProfileInfo from "./user-profile-info"
+import type { userQuery } from "@/_graphql/queries/user/user"
+import type { ResultOf } from "gql.tada"
 
 type UserProfileProps = {
-  user: NonNullable<UserQuery["user"]>
+  user: NonNullable<ResultOf<typeof userQuery>["user"]>
 }
 
 const UserProfile = (props: UserProfileProps) => {

@@ -1,11 +1,11 @@
 import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 import { GenerationConfigMemoItem } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-item"
 import { useEffect, useState } from "react"
 
 type Props = {
-  memos: ImageGenerationMemoNode[] | undefined
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  memos: any[] | undefined
   refetchMemos: () => void
 }
 
@@ -49,7 +49,7 @@ export const GenerationConfigMemoList = (props: Props) => {
       />
       <ScrollArea className="h-full max-h-96 p-4">
         {filterModels.map(
-          (memo: ImageGenerationMemoNode) =>
+          (memo) =>
             // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
             memo && (
               <GenerationConfigMemoItem

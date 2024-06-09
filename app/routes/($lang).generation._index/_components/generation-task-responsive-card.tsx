@@ -1,4 +1,3 @@
-import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { config } from "@/config"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -7,9 +6,11 @@ import { GenerationTaskDialogButton } from "@/routes/($lang).generation._index/_
 import { ReservedGenerationLinkCard } from "@/routes/($lang).generation._index/_components/reserved-generation-link-card"
 import { ErrorBoundary } from "react-error-boundary"
 import { useMediaQuery } from "usehooks-ts"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  task: ImageGenerationTaskFieldsFragment
+  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
   taskIds?: string[]
   estimatedSeconds?: number
   selectedTaskIds: string[]

@@ -1,8 +1,4 @@
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
-import type {
-  ImageGenerationSizeType,
-  ImageGenerationType,
-} from "@/_graphql/__generated__/graphql"
 import { createImageGenerationTaskReservedMutation } from "@/_graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-image-generation-terms"
@@ -26,6 +22,7 @@ import { useQuery } from "@apollo/client/index"
 import { viewerLineUserIdQuery } from "@/_graphql/queries/viewer/viewer-line-user-id"
 import { AuthContext } from "@/_contexts/auth-context"
 import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   termsText: string
@@ -116,7 +113,8 @@ export function GenerationSubmissionView(props: Props) {
       scale: context.config.scale,
       sampler: context.config.sampler,
       clipSkip: context.config.clipSkip,
-      sizeType: context.config.sizeType as ImageGenerationSizeType,
+      sizeType: context.config
+        .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
       type: generationType,
       i2iFileUrl: i2iFileUrl,
       t2tImageUrl: i2iFileUrl,
@@ -445,7 +443,8 @@ export function GenerationSubmissionView(props: Props) {
               scale: context.config.scale,
               sampler: context.config.sampler,
               clipSkip: context.config.clipSkip,
-              sizeType: context.config.sizeType as ImageGenerationSizeType,
+              sizeType: context.config
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
               type: "TEXT_TO_IMAGE",
               controlNetImageUrl: controlNetImageUrl,
               controlNetWeight: context.config.controlNetWeight
@@ -471,8 +470,9 @@ export function GenerationSubmissionView(props: Props) {
               scale: context.config.scale,
               sampler: context.config.sampler,
               clipSkip: context.config.clipSkip,
-              sizeType: context.config.sizeType as ImageGenerationSizeType,
-              type: generationType as ImageGenerationType,
+              sizeType: context.config
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              type: generationType as IntrospectionEnum<"ImageGenerationType">,
               t2tImageUrl: i2iFileUrl,
               t2tDenoisingStrengthSize:
                 context.config.i2iDenoisingStrengthSize.toString(),

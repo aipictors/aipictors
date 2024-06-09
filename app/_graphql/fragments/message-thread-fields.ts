@@ -1,7 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
-export const messageThreadFieldsFragment = gql(`
-  fragment MessageThreadFields on MessageThreadNode {
+export const messageThreadFieldsFragment = graphql(
+  `fragment MessageThreadFields on MessageThreadNode @_unmask {
     id
     updatedAt
     recipient {
@@ -13,5 +15,6 @@ export const messageThreadFieldsFragment = gql(`
         ...PartialUserFields
       }
     }
-  }
-`)
+  }`,
+  [partialUserFieldsFragment, messageFieldsFragment],
+)

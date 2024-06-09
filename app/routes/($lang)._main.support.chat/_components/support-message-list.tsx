@@ -1,12 +1,15 @@
-import type { ViewerSupportMessagesQuery } from "@/_graphql/__generated__/graphql"
+import type { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-support-messages"
 import { RecipientMessage } from "@/routes/($lang)._main.support.chat/_components/recipient-message"
 import { SenderMessage } from "@/routes/($lang)._main.support.chat/_components/sender-message"
+import type { ResultOf } from "gql.tada"
 
 import { useEffect, useRef } from "react"
 
 type Props = {
   recipientIconImageURL: string
-  messages: NonNullable<ViewerSupportMessagesQuery["viewer"]>["supportMessages"]
+  messages: NonNullable<
+    ResultOf<typeof viewerSupportMessagesQuery>["viewer"]
+  >["supportMessages"]
 }
 
 export const SupportMessageList = (props: Props) => {

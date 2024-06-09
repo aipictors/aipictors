@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { imageGenerationMemoFieldsFragment } from "@/_graphql/fragments/image-reserved-generation-memo-field"
+import { graphql } from "gql.tada"
 
-export const updateImageGenerationMemoMutation = gql(`
-  mutation UpdateImageGenerationTask($input: UpdateImageGenerationMemoInput!) {
+export const updateImageGenerationMemoMutation = graphql(
+  `mutation UpdateImageGenerationTask($input: UpdateImageGenerationMemoInput!) {
     updateImageGenerationMemo(input: $input) {
       ...ImageGenerationMemoFields
     }
-  }
-`)
+  }`,
+  [imageGenerationMemoFieldsFragment],
+)

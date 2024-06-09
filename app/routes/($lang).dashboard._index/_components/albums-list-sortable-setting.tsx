@@ -2,12 +2,12 @@ import { ChevronDown, ChevronUp } from "lucide-react"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/_components/ui/drawer"
 import type { SortType } from "@/_types/sort-type"
 import { SortListSelector } from "@/_components/sort-list-selector"
-import type { AlbumOrderBy } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   nowSort: SortType
-  allOrderBy: AlbumOrderBy[]
-  nowOrderBy: AlbumOrderBy
+  allOrderBy: IntrospectionEnum<"AlbumOrderBy">[]
+  nowOrderBy: IntrospectionEnum<"AlbumOrderBy">
   setSort: (sort: SortType) => void
   onClickAlbumTitleSortButton: () => void
   onClickAlbumDateSortButton: () => void
@@ -17,7 +17,7 @@ type Props = {
  * シリーズソート
  */
 export const AlbumsListSortableSetting = (props: Props) => {
-  const getLabel = (nowOrderBy: AlbumOrderBy) => {
+  const getLabel = (nowOrderBy: IntrospectionEnum<"AlbumOrderBy">) => {
     switch (nowOrderBy) {
       case "DATE_CREATED":
         return "日付順"

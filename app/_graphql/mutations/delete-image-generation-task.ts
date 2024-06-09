@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import { graphql } from "gql.tada"
 
-export const deleteImageGenerationTaskMutation = gql(`
-  mutation DeleteImageGenerationTask($input: DeleteImageGenerationTaskInput!) {
+export const deleteImageGenerationTaskMutation = graphql(
+  `mutation DeleteImageGenerationTask($input: DeleteImageGenerationTaskInput!) {
     deleteImageGenerationTask(input: $input) {
       ...ImageGenerationTaskFields
     }
-  }
-`)
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

@@ -11,23 +11,20 @@ import {
 } from "@/_components/ui/select"
 import { useState } from "react"
 import { WorksListFilterSettingButton } from "@/routes/($lang).dashboard._index/_components/works-list-filter-setting-button"
-import type {
-  AlbumOrderBy,
-  AlbumRating,
-} from "@/_graphql/__generated__/graphql"
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
 import { AlbumsListSortableSetting } from "@/routes/($lang).dashboard._index/_components/albums-list-sortable-setting"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   workTabType: WorkTabType | null
   sort: SortType
-  orderBy: AlbumOrderBy
-  rating: AlbumRating | null
+  orderBy: IntrospectionEnum<"AlbumOrderBy">
+  rating: IntrospectionEnum<"AlbumRating"> | null
   sumWorksCount: number
   sumAlbumsCount: number
   setWorkTabType: (workTabType: WorkTabType | null) => void
-  setRating: (rating: AlbumRating | null) => void
+  setRating: (rating: IntrospectionEnum<"AlbumRating"> | null) => void
   setSort: (sort: SortType) => void
   onClickAlbumTitleSortButton: () => void
   onClickAlbumDateSortButton: () => void
@@ -45,7 +42,10 @@ export const AlbumsSetting = (props: Props) => {
 
   const [opacity, setOpacity] = useState(0)
 
-  const allSortType = ["DATE_CREATED", "NAME"] as AlbumOrderBy[]
+  const allSortType = [
+    "DATE_CREATED",
+    "NAME",
+  ] as IntrospectionEnum<"AlbumOrderBy">[]
 
   const onToggleFilterButton = () => {
     if (isFilterOpen) {
@@ -92,7 +92,7 @@ export const AlbumsSetting = (props: Props) => {
                     props.setRating(null)
                     return
                   }
-                  props.setRating(value as AlbumRating)
+                  props.setRating(value as IntrospectionEnum<"AlbumRating">)
                 }}
               >
                 <SelectTrigger>

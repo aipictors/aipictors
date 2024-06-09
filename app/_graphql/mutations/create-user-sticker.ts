@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const createUserStickerMutation = gql(`
-  mutation CreateUserSticker($input: CreateUserStickerInput!) {
+export const createUserStickerMutation = graphql(
+  `mutation CreateUserSticker($input: CreateUserStickerInput!) {
     createUserSticker(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

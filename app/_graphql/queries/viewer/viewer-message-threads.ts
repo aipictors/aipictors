@@ -1,14 +1,16 @@
-import { gql } from "@/_graphql/__generated__"
+import { messageThreadFieldsFragment } from "@/_graphql/fragments/message-thread-fields"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザのメッセージ
  */
-export const viewerMessageThreadsQuery = gql(`
-  query ViewerMessageThreads($offset: Int!, $limit: Int!) {
+export const viewerMessageThreadsQuery = graphql(
+  `query ViewerMessageThreads($offset: Int!, $limit: Int!) {
     viewer {
       messageThreads(offset: $offset, limit: $limit) {
         ...MessageThreadFields
       }
     }
-  }
-`)
+  }`,
+  [messageThreadFieldsFragment],
+)

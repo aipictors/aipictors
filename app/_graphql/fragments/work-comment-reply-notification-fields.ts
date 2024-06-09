@@ -1,7 +1,10 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const workCommentReplyNotificationFieldsFragment = gql(`
-  fragment WorkCommentReplyNotificationFields on WorkCommentReplyNotificationNode {
+export const workCommentReplyNotificationFieldsFragment = graphql(
+  `fragment WorkCommentReplyNotificationFields on WorkCommentReplyNotificationNode @_unmask {
     id
     createdAt
     message
@@ -14,5 +17,10 @@ export const workCommentReplyNotificationFieldsFragment = gql(`
     sticker {
       ...PartialStickerFields
     }
-  }
-`)
+  }`,
+  [
+    partialWorkFieldsFragment,
+    partialUserFieldsFragment,
+    partialStickerFieldsFragment,
+  ],
+)

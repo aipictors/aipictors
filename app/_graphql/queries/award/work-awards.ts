@@ -1,7 +1,8 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const workAwardsQuery = gql(`
-  query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+export const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
       id
       index
@@ -10,5 +11,6 @@ export const workAwardsQuery = gql(`
         ...PartialWorkFields
       }
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

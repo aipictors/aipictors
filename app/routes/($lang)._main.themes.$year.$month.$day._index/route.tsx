@@ -1,5 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
-import { DailyThemesDocument as dailyThemesQuery } from "@/_graphql/__generated__/graphql"
+import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"

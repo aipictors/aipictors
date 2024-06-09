@@ -9,7 +9,6 @@ import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { Button } from "@/_components/ui/button"
 import { SelectCreatedWorksDialog } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useMutation } from "@apollo/client/index"
@@ -17,6 +16,8 @@ import { createAlbumMutation } from "@/_graphql/mutations/create-album"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import type { ResultOf } from "gql.tada"
+import type { worksQuery } from "@/_graphql/queries/work/works"
 
 type Props = {
   children: React.ReactNode
@@ -39,7 +40,9 @@ export const CreateAlbumDialog = (props: Props) => {
 
   const [description, setDescription] = useState<string>("")
 
-  const [selectedWorks, setSelectedWorks] = useState<WorksQuery["works"]>([])
+  const [selectedWorks, setSelectedWorks] = useState<
+    ResultOf<typeof worksQuery>["works"]
+  >([])
 
   const [isCreating, setIsCreating] = useState<boolean>(false)
 

@@ -5,10 +5,9 @@ import {
   TableHead,
   TableBody,
 } from "@/_components/ui/table"
-import {} from "lucide-react"
-import type { AccessType } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { RecommendedWorksListTableRow } from "@/routes/($lang).dashboard._index/_components/recommended-works-list-table-row"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   works: {
@@ -20,7 +19,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
 }

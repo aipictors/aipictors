@@ -1,24 +1,35 @@
-import type {
-  ImageLoraModelsQuery,
-  ImageModelsQuery,
-  PromptCategoriesQuery,
-  NegativePromptCategoriesQuery,
-  ViewerCurrentPassQuery,
-  ViewerImageGenerationStatusQuery,
-  ControlNetCategoriesQuery,
-} from "@/_graphql/__generated__/graphql"
+import type { controlNetCategoriesQuery } from "@/_graphql/queries/controlnet-category/controlnet-category"
+import type { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
+import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
+import type { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
+import type { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
+import type { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import type { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
+import type { ResultOf } from "gql.tada"
 import { createContext } from "react"
 
 type Context = {
-  promptCategories: PromptCategoriesQuery["promptCategories"]
-  negativePromptCategories: NegativePromptCategoriesQuery["negativePromptCategories"]
-  controlNetCategories: ControlNetCategoriesQuery["controlNetCategories"]
-  models: ImageModelsQuery["imageModels"]
-  loraModels: ImageLoraModelsQuery["imageLoraModels"]
-  user: NonNullable<ViewerCurrentPassQuery["viewer"]>["user"] | null
-  currentPass: NonNullable<ViewerCurrentPassQuery["viewer"]>["currentPass"]
-  engineStatus: ViewerImageGenerationStatusQuery["imageGenerationEngineStatus"]
-  viewer: NonNullable<ViewerImageGenerationStatusQuery["viewer"]>
+  promptCategories: ResultOf<typeof promptCategoriesQuery>["promptCategories"]
+  negativePromptCategories: ResultOf<
+    typeof negativePromptCategoriesQuery
+  >["negativePromptCategories"]
+  controlNetCategories: ResultOf<
+    typeof controlNetCategoriesQuery
+  >["controlNetCategories"]
+  models: ResultOf<typeof imageModelsQuery>["imageModels"]
+  loraModels: ResultOf<typeof imageLoraModelsQuery>["imageLoraModels"]
+  user:
+    | NonNullable<ResultOf<typeof viewerCurrentPassQuery>["viewer"]>["user"]
+    | null
+  currentPass: NonNullable<
+    ResultOf<typeof viewerCurrentPassQuery>["viewer"]
+  >["currentPass"]
+  engineStatus: ResultOf<
+    typeof viewerImageGenerationStatusQuery
+  >["imageGenerationEngineStatus"]
+  viewer: NonNullable<
+    ResultOf<typeof viewerImageGenerationStatusQuery>["viewer"]
+  >
 }
 
 export const GenerationQueryContext = createContext<Context>({

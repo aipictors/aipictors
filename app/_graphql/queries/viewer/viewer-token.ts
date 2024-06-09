@@ -1,12 +1,12 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザの画像生成タスク
  */
-export const viewerTokenQuery = gql(`
-    query ViewerToken {
-        viewer {
-            token
-        }
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
     }
-`)
+  }`,
+)

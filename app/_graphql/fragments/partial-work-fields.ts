@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialWorkFieldsFragment = gql(`
-  fragment PartialWorkFields on WorkNode {
+export const partialWorkFieldsFragment = graphql(
+  `fragment PartialWorkFields on WorkNode @_unmask {
     id
     title
     accessType
@@ -22,11 +22,6 @@ export const partialWorkFieldsFragment = gql(`
     negativePrompt
     isLiked
     thumbnailImagePosition
-    description
-    url,
-    tags {
-      name
-    }
     user {
       id
       name
@@ -37,5 +32,5 @@ export const partialWorkFieldsFragment = gql(`
         type
       }
     }
-  }
-`)
+  }`,
+)

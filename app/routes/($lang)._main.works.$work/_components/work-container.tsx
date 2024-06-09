@@ -1,8 +1,3 @@
-import type {
-  WorkCommentsQuery,
-  WorkQuery,
-  WorksQuery,
-} from "@/_graphql/__generated__/graphql"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
@@ -14,12 +9,16 @@ import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/wo
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 import { useMediaQuery } from "usehooks-ts"
 import { config } from "@/config"
+import type { workQuery } from "@/_graphql/queries/work/work"
+import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
+import type { worksQuery } from "@/_graphql/queries/work/works"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  work: NonNullable<WorkQuery>["work"]
+  work: NonNullable<ResultOf<typeof workQuery>>["work"]
   // tagWorksResp: NonNullable<WorksQuery>["works"]
-  newWorks: NonNullable<WorksQuery>["works"]
-  comments: NonNullable<WorkCommentsQuery["work"]>["comments"]
+  newWorks: NonNullable<ResultOf<typeof worksQuery>>["works"]
+  comments: NonNullable<ResultOf<typeof workCommentsQuery>["work"]>["comments"]
 }
 
 /**

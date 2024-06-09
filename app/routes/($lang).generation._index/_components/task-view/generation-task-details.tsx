@@ -1,15 +1,11 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
-import type {
-  ImageGenerationSizeType,
-  ImageGenerationStatus,
-  ImageGenerationType,
-} from "@/_graphql/__generated__/graphql"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view"
 import { Suspense, useContext } from "react"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 /**
  * 画像生成履歴の詳細
@@ -35,11 +31,12 @@ export const GenerationTaskDetails = () => {
             <GenerationTaskSheetView
               task={{
                 ...imageGenerationTask,
-                status: imageGenerationTask.status as ImageGenerationStatus,
+                status:
+                  imageGenerationTask.status as IntrospectionEnum<"ImageGenerationStatus">,
                 sizeType:
-                  imageGenerationTask.sizeType as ImageGenerationSizeType,
+                  imageGenerationTask.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
                 generationType:
-                  imageGenerationTask.generationType as ImageGenerationType,
+                  imageGenerationTask.generationType as IntrospectionEnum<"ImageGenerationType">,
               }}
             />
           )}

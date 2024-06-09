@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const imageReservedGenerationTaskFieldsFragment = gql(`
-  fragment ImageReservedGenerationTaskFields on ImageGenerationReservedTaskNode {
+export const imageReservedGenerationTaskFieldsFragment = graphql(
+  `fragment ImageReservedGenerationTaskFields on ImageGenerationReservedTaskNode @_unmask {
     id
     prompt
     negativePrompt
@@ -27,5 +27,5 @@ export const imageReservedGenerationTaskFieldsFragment = gql(`
     token
     nanoid
     upscaleSize
-  }
-`)
+  }`,
+)

@@ -6,9 +6,9 @@ import { ToggleGroup, ToggleGroupItem } from "@/_components/ui/toggle-group"
 import { Button } from "@/_components/ui/button"
 import React from "react"
 import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-setting"
-import type { PreferenceRating } from "@/_graphql/__generated__/graphql"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
@@ -34,7 +34,7 @@ export const SettingRestrictionForm = () => {
     await updateUserSetting({
       variables: {
         input: {
-          preferenceRating: rating as PreferenceRating,
+          preferenceRating: rating as IntrospectionEnum<"PreferenceRating">,
         },
       },
     })

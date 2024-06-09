@@ -6,12 +6,12 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { ImageGenerationMemoNode } from "@/_graphql/__generated__/graphql"
 import { GenerationConfigMemoUpdateContent } from "@/routes/($lang).generation._index/_components/config-view/generation-config-memo-update-contents"
 import { useState } from "react"
 
 type Props = {
-  memo: ImageGenerationMemoNode
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  memo: any
   refetchMemos: () => void
 }
 

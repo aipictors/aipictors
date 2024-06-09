@@ -7,10 +7,9 @@ import {
 } from "@/_components/ui/table"
 import { WorksListColumn } from "@/routes/($lang).dashboard._index/_components/works-list-column"
 import type { SortType } from "@/_types/sort-type"
-import {} from "lucide-react"
-import type { AccessType, WorkOrderBy } from "@/_graphql/__generated__/graphql"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { WorksListTableRow } from "@/routes/($lang).dashboard._index/_components/works-list-table-row"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   works: {
@@ -22,11 +21,11 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
-    accessType: AccessType
+    accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
   sort: SortType
-  orderBy: WorkOrderBy
+  orderBy: IntrospectionEnum<"WorkOrderBy">
   onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void
   onClickBookmarkSortButton: () => void

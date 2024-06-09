@@ -6,12 +6,14 @@ import {
   SelectItem,
 } from "@/_components/ui/select"
 import { useState } from "react"
-import type { NotificationType } from "@/_graphql/__generated__/graphql"
 import { toNotificationTypeName } from "@/routes/($lang).generation._index/_utils/to-notify-type-name"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  notificationType: NotificationType | null
-  setNotificationType: (type: NotificationType | null) => void
+  notificationType: IntrospectionEnum<"NotificationType"> | null
+  setNotificationType: (
+    type: IntrospectionEnum<"NotificationType"> | null,
+  ) => void
 }
 
 /**
@@ -46,7 +48,9 @@ export const NotificationListSetting = (props: Props) => {
                 props.setNotificationType(null)
                 return
               }
-              props.setNotificationType(value as NotificationType)
+              props.setNotificationType(
+                value as IntrospectionEnum<"NotificationType">,
+              )
             }}
           >
             <SelectTrigger>

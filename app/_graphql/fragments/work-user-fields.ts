@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const workUserFieldsFragment = gql(`
-  fragment WorkUserFields on UserNode {
+export const workUserFieldsFragment = graphql(
+  `fragment WorkUserFields on UserNode @_unmask {
     id
     name
     login
@@ -9,5 +9,5 @@ export const workUserFieldsFragment = gql(`
       id
       downloadURL
     }
-  }
-`)
+  }`,
+)

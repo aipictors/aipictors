@@ -1,14 +1,16 @@
-import { gql } from "@/_graphql/__generated__"
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
+import { graphql } from "gql.tada"
 
 /**
  * ログイン中のユーザのシリーズのサポートメッセージ
  */
-export const viewerSupportMessagesQuery = gql(`
-  query ViewerSupportMessages($offset: Int!, $limit: Int!) {
+export const viewerSupportMessagesQuery = graphql(
+  `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       supportMessages(offset: $offset, limit: $limit) {
         ...MessageFields
       }
     }
-  }
-`)
+  }`,
+  [messageFieldsFragment],
+)

@@ -6,12 +6,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import type { worksQuery } from "@/_graphql/queries/work/works"
 import { HomeCroppedWorkList } from "@/routes/($lang)._main._index/_components/home-cropped-work-list"
 import { RiQuestionLine } from "@remixicon/react"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<WorksQuery["works"]> | null
+  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
   title: string
   tooltip?: string
   link?: string

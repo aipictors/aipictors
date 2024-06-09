@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
-import { UpdateAccountPasswordDocument } from "@/_graphql/__generated__/graphql"
+import { updateAccountPasswordMutation } from "@/_graphql/mutations/update-account-password"
 import { ApolloError, useMutation } from "@apollo/client/index"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
@@ -15,7 +15,7 @@ export const AccountPasswordForm = () => {
 
   const [showNewPassword, setShowNewPassword] = useState(false)
 
-  const [mutation, { loading }] = useMutation(UpdateAccountPasswordDocument)
+  const [mutation, { loading }] = useMutation(updateAccountPasswordMutation)
 
   const handleSubmit = async () => {
     try {

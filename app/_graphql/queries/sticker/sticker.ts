@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const stickerQuery = gql(`
-  query Sticker($id: ID!) {
+export const stickerQuery = graphql(
+  `query Sticker($id: ID!) {
     sticker(id: $id) {
       id
       createdAt
@@ -19,5 +19,5 @@ export const stickerQuery = gql(`
       likesCount
       usesCount
     }
-  }
-`)
+  }`,
+)

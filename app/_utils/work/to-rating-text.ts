@@ -1,10 +1,10 @@
-import type { Rating } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 /**
  * 作品の年齢制限の文言を返す
  * @param
  */
-export const toRatingText = (type: Rating) => {
+export const toRatingText = (type: IntrospectionEnum<"Rating">) => {
   switch (type) {
     case "G":
       return "G"

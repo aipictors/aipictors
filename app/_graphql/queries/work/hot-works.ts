@@ -1,9 +1,11 @@
-import { gql } from "@/_graphql/__generated__"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
-export const hotWorksQuery = gql(`
-  query HotWorks {
+export const hotWorksQuery = graphql(
+  `query HotWorks {
     hotWorks {
       ...PartialWorkFields
     }
-  }
-`)
+  }`,
+  [partialWorkFieldsFragment],
+)

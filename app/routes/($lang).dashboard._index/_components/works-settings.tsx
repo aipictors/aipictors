@@ -13,25 +13,21 @@ import {
 import { useState } from "react"
 import { WorksListFilterSettingButton } from "@/routes/($lang).dashboard._index/_components/works-list-filter-setting-button"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
-import type {
-  AccessType,
-  Rating,
-  WorkOrderBy,
-} from "@/_graphql/__generated__/graphql"
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   workTabType: WorkTabType | null
   sort: SortType
-  orderBy: WorkOrderBy
-  accessType: AccessType | null
-  rating: Rating | null
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  accessType: IntrospectionEnum<"AccessType"> | null
+  rating: IntrospectionEnum<"Rating"> | null
   sumWorksCount: number
   sumAlbumsCount: number
   setWorkTabType: (workTabType: WorkTabType | null) => void
-  setAccessType: (accessType: AccessType | null) => void
-  setRating: (rating: Rating | null) => void
+  setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
   onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void
@@ -61,7 +57,7 @@ export const WorksSetting = (props: Props) => {
     "VIEWS_COUNT",
     "DATE_CREATED",
     "NAME",
-  ] as WorkOrderBy[]
+  ] as IntrospectionEnum<"WorkOrderBy">[]
 
   const onToggleFilterButton = () => {
     if (isFilterOpen) {
@@ -108,7 +104,7 @@ export const WorksSetting = (props: Props) => {
                     props.setAccessType(null)
                     return
                   }
-                  props.setAccessType(value as AccessType)
+                  props.setAccessType(value as IntrospectionEnum<"AccessType">)
                 }}
               >
                 <SelectTrigger>
@@ -136,7 +132,7 @@ export const WorksSetting = (props: Props) => {
                     props.setRating(null)
                     return
                   }
-                  props.setRating(value as Rating)
+                  props.setRating(value as IntrospectionEnum<"Rating">)
                 }}
               >
                 <SelectTrigger>

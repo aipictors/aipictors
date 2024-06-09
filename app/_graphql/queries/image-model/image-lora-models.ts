@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const imageLoraModelsQuery = gql(`
-  query ImageLoraModels {
+export const imageLoraModelsQuery = graphql(
+  `query ImageLoraModels {
     imageLoraModels {
       id
       name
@@ -12,5 +12,5 @@ export const imageLoraModelsQuery = gql(`
       thumbnailImageURL
       genre
     }
-  }
-`)
+  }`,
+)

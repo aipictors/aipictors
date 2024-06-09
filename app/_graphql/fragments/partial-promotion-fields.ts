@@ -1,7 +1,7 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const partialPromotionFieldsFragment = gql(`
-  fragment PartialPromotionFields on PromotionNode {
+export const partialPromotionFieldsFragment = graphql(
+  `fragment PartialPromotionFields on PromotionNode @_unmask {
     id
     title
     description
@@ -9,5 +9,5 @@ export const partialPromotionFieldsFragment = gql(`
     pageURL
     startDateTime
     endDateTime
-  }
-`)
+  }`,
+)

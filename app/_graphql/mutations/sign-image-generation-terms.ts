@@ -1,9 +1,9 @@
-import { gql } from "@/_graphql/__generated__"
+import { graphql } from "gql.tada"
 
-export const signImageGenerationTermsMutation = gql(`
-  mutation SignImageGenerationTerms($input: SignImageGenerationTermsInput!) {
+export const signImageGenerationTermsMutation = graphql(
+  `mutation SignImageGenerationTerms($input: SignImageGenerationTermsInput!) {
     signImageGenerationTerms(input: $input) {
       id
     }
-  }
-`)
+  }`,
+)

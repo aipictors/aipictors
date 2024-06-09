@@ -1,4 +1,3 @@
-import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
 import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
 import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
@@ -19,9 +18,11 @@ import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
+import type { ResultOf } from "gql.tada"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 
 type Props = {
-  task: ImageGenerationTaskFieldsFragment
+  task: ResultOf<typeof imageGenerationTaskFieldsFragment>
   isReferenceLink?: boolean
   isScroll?: boolean
   setShowInPaintDialog?: (show: boolean) => void

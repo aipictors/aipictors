@@ -1,7 +1,6 @@
 import { useContext, useState } from "react"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import { Button } from "@/_components/ui/button"
-import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
@@ -11,11 +10,12 @@ import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import React from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
   children?: React.ReactNode
-  selectedWorks: WorksQuery["works"]
-  setSelectedWorks: (works: WorksQuery["works"]) => void
+  selectedWorks: ResultOf<typeof worksQuery>["works"]
+  setSelectedWorks: (works: ResultOf<typeof worksQuery>["works"]) => void
 }
 
 /**
@@ -59,7 +59,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
 
-  const handleWorkClick = (work: WorksQuery["works"][0]) => {
+  const handleWorkClick = (work: ResultOf<typeof worksQuery>["works"][0]) => {
     if (props.selectedWorks.some((w) => w.id === work.id)) {
       props.setSelectedWorks(
         props.selectedWorks.filter((w) => w.id !== work.id),
@@ -69,7 +69,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
     }
   }
 
-  const renderWorks = (worksToRender: WorksQuery["works"]) => {
+  const renderWorks = (worksToRender: ResultOf<typeof worksQuery>["works"]) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}

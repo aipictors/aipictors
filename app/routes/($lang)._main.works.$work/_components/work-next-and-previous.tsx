@@ -5,11 +5,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
-import type { WorkQuery } from "@/_graphql/__generated__/graphql"
+import type { workQuery } from "@/_graphql/queries/work/work"
+import type { ResultOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {
-  work: WorkQuery["work"]
+  work: ResultOf<typeof workQuery>["work"]
 }
 
 export const WorkNextAndPrevious = (props: Props) => {
@@ -76,7 +77,10 @@ export const WorkNextAndPrevious = (props: Props) => {
   )
 }
 
-function keyDownHandler(e: KeyboardEvent, work: WorkQuery["work"]): void {
+function keyDownHandler(
+  e: KeyboardEvent,
+  work: ResultOf<typeof workQuery>["work"],
+): void {
   if (typeof window !== "undefined" && work !== null) {
     if (e.code === "KeyQ" && work.nextWork) {
       window.location.href = `/works/${work.nextWork.id}`

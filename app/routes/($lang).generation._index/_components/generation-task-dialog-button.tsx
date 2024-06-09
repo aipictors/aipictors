@@ -1,5 +1,4 @@
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
-import type { ImageGenerationTaskFieldsFragment } from "@/_graphql/__generated__/graphql"
 import { InPaintingDialog } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-dialog"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -7,9 +6,11 @@ import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_
 import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view"
 import { useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  task: ImageGenerationTaskFieldsFragment
+  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
   taskIds?: string[]
   sizeType: number
   userToken: string

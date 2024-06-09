@@ -1,7 +1,7 @@
-import type { PassType } from "@/_graphql/__generated__/graphql"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { config } from "@/config"
 
-export const toPassFeatures = (passType: PassType) => {
+export const toPassFeatures = (passType: IntrospectionEnum<"PassType">) => {
   if (passType === "LITE") {
     return [
       `1日に${config.passFeature.imageGenerationsCount.lite}枚の生成`,
