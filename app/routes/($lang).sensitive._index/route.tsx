@@ -137,7 +137,7 @@ export default function SensitivePage() {
             hotTags={data.hotTags}
           />
           <Suspense fallback={<HomeWorkDummies />}>
-            <HomeAwardWorkSection title={"前日ランキング"} />
+            <HomeAwardWorkSection title={"前日ランキング"} isSensitive={true} />
           </Suspense>
           <HomeTagsSection title={"人気タグ"} tags={data.tags} />
           <Suspense
