@@ -22,19 +22,13 @@ export const NovelWorkPreviewItem = (props: Props) => {
           className={"w-full max-w-40 rounded md:max-w-none"}
         />
       </div>
-      <div className="mt-2 max-h-48 w-48 space-y-2 overflow-hidden text-ellipsis md:w-64">
-        <div className="overflow-hidden font-bold text-sm">{props.title}</div>
+      <div className="mt-2 h-24 w-48 space-y-2 overflow-hidden text-ellipsis md:w-64">
+        <div className="h-6 overflow-hidden font-bold text-sm">
+          {props.title}
+        </div>
         <div className="h-16 overflow-hidden text-ellipsis text-wrap text-gray-500 text-xs">
           {props.text}
         </div>
-        {/* <div className="mt-1 flex flex-wrap space-x-1">
-          {props.tags.map((tag, index: number) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <Badge variant={"secondary"} key={index} className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div> */}
       </div>
     </a>
   )

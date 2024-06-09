@@ -53,8 +53,8 @@ export const LikeButton = ({
                 : "relative flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
             }
             style={{
-              width: text ? "auto" : `${size}px`,
-              height: `${size}px`,
+              width: text ? "auto" : `${size - (isBackgroundNone ? 8 : 0)}px`,
+              height: `${size - (isBackgroundNone ? 8 : 0)}px`,
               paddingLeft: text ? `${size}px` : "0",
             }}
             onClick={() => {}}
@@ -165,8 +165,8 @@ export const LikeButton = ({
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
       } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
       style={{
-        width: text ? "auto" : `${size}px`,
-        height: `${size}px`,
+        width: text ? "auto" : `${size - (isBackgroundNone ? 8 : 0)}px`,
+        height: `${size - (isBackgroundNone ? 8 : 0)}px`,
       }}
       onClick={handleOnClick}
       type="button"
@@ -187,7 +187,7 @@ export const LikeButton = ({
         <Heart
           className={cn(
             isLiked
-              ? "fill-pink-400 text-pink-400"
+              ? "fill-rose-500 text-rose-500"
               : isBackgroundNone
                 ? "fill-white text-black dark:text-white"
                 : "fill-transparent text-black dark:text-white",

@@ -44,26 +44,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const ratingText = rating ? toRatingText(rating) : "G"
 
-  // 関連するタグの作品を取得
-  const tags = workResp.data.work.tagNames
-
-  // ランダムにタグをひとつ
-  const randomTag = tags[Math.floor(Math.random() * tags.length)]
-
-  const { data: tagWorksResp } = await client.query({
-    query: worksQuery,
-    variables: {
-      limit: 40,
-      offset: 0,
-      where: {
-        ratings: [ratingText],
-        tagNames: [randomTag],
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
-      },
-    },
-  })
-
   const { data: worksResp } = await client.query({
     query: worksQuery,
     variables: {
@@ -79,7 +59,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     work: workResp.data.work,
-    tagWorksResp: tagWorksResp.works,
+    // tagWorksResp: tagWorksResp.works,
     newWorks: worksResp.works,
     workComments: workCommentsResp.data.work.comments,
   })
@@ -98,7 +78,7 @@ export default function Work() {
     <Suspense>
       <WorkContainer
         work={data.work}
-        tagWorksResp={data.tagWorksResp}
+        // tagWorksResp={data.tagWorksResp}
         newWorks={data.newWorks}
         comments={data.workComments}
       />

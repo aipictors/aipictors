@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react"
 
 type Props = {
   title: string
+  isSensitive?: boolean
 }
 
 /**
@@ -24,7 +25,12 @@ export const HomeVideosSection = (props: Props) => {
       const userId = authContext.userId ?? "-1"
 
       try {
-        const ids = await getRecommendedWorkIds(userId, undefined, "video", "G")
+        const ids = await getRecommendedWorkIds(
+          userId,
+          undefined,
+          "video",
+          props.isSensitive ? "R18" : "G",
+        )
         setRecommendedIds(ids)
       } catch (error) {
         console.error("Error fetching recommended work IDs:", error)

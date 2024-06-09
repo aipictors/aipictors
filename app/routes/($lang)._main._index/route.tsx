@@ -11,6 +11,7 @@ import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
+import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
@@ -58,6 +59,25 @@ export async function loader() {
           Date.now() - 7 * 24 * 60 * 60 * 1000,
         ).toDateString(),
         ratings: ["G"],
+      },
+    },
+  })
+
+  // 生成された作品
+  const generatedWorksResp = await client.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 40,
+      where: {
+        orderBy: "LIKES_COUNT",
+        sort: "DESC",
+        // 直近1か月の作品
+        afterCreatedAt: new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000,
+        ).toDateString(),
+        ratings: ["G"],
+        isFeatured: true,
       },
     },
   })
@@ -117,6 +137,7 @@ export async function loader() {
   return json({
     suggestedWorkResp: suggestedWorkResp.data.works,
     recommendedWorks: recommendedWorksResp.data.works,
+    generatedWorksResp: generatedWorksResp.data.works,
     themeResp: themeResp.dailyTheme,
     hotTags: hotTagsResp.data.hotTags,
     tags: randomTags,
@@ -137,6 +158,7 @@ export default function Index() {
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
           />
+          <HomeWorksGeneratedSection works={data.generatedWorksResp} />
           <Suspense fallback={<HomeWorkDummies />}>
             <HomeAwardWorkSection title={"前日ランキング"} />
           </Suspense>

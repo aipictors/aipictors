@@ -6,10 +6,14 @@ import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 
+type Props = {
+  isSensitive?: boolean
+}
+
 /**
  * ユーザからの推薦作品
  */
-export const HomeWorksUsersRecommendedSection = () => {
+export const HomeWorksUsersRecommendedSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   if (appContext.isLoading) {
@@ -33,7 +37,7 @@ export const HomeWorksUsersRecommendedSection = () => {
       limit: 80,
       where: {
         isRecommended: true,
-        ratings: ["G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
       },
     },
   })

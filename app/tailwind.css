@@ -93,7 +93,7 @@ html {
  * いいねボタンのアニメーション
  * @see https://inari-tech.net/components/like-button
  */
-.like-animation {
+ .like-animation {
   animation: heart-beat 0.4s ease forwards;
 }
 

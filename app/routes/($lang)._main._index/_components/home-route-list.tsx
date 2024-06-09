@@ -90,7 +90,7 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
-        href={"/models"}
+        href={"/sensitive"}
         icon={BoxIcon}
       >
         {"センシティブ"}

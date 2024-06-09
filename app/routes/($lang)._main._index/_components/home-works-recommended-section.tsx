@@ -7,10 +7,14 @@ import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
+type Props = {
+  isSensitive?: boolean
+}
+
 /**
  * おすすめ作品セクション
  */
-export const HomeWorksRecommendedSection = () => {
+export const HomeWorksRecommendedSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   if (appContext.isLoading) {
@@ -31,7 +35,12 @@ export const HomeWorksRecommendedSection = () => {
           const userId = "-1"
 
           try {
-            const ids = await getRecommendedWorkIds(userId, undefined, "image")
+            const ids = await getRecommendedWorkIds(
+              userId,
+              undefined,
+              "image",
+              props.isSensitive ? "R18" : "G",
+            )
             setRecommendedIds(ids)
           } catch (error) {
             console.error("Error fetching recommended work IDs:", error)
@@ -42,7 +51,12 @@ export const HomeWorksRecommendedSection = () => {
           const userId = appContext.userId
 
           try {
-            const ids = await getRecommendedWorkIds(userId, undefined, "image")
+            const ids = await getRecommendedWorkIds(
+              userId,
+              undefined,
+              "image",
+              props.isSensitive ? "R18" : "G",
+            )
             setRecommendedIds(ids)
           } catch (error) {
             console.error("Error fetching recommended work IDs:", error)
@@ -63,6 +77,7 @@ export const HomeWorksRecommendedSection = () => {
       limit: 32,
       where: {
         ids: recommendedIds,
+        ...(props.isSensitive && { ratings: ["R18", "R18G"] }),
       },
     },
   })

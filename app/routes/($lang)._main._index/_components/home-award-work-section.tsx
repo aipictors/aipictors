@@ -30,11 +30,12 @@ export const HomeAwardWorkSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: 8,
+      limit: 10,
       where: {
         year: yesterday.getFullYear(),
         month: yesterday.getMonth() + 1,
         day: yesterday.getDate() - 1,
+        isSensitive: true,
       },
     },
   })
@@ -103,6 +104,7 @@ export const HomeAwardWorkSection = (props: Props) => {
                     defaultLikedCount={0}
                     isBackgroundNone={true}
                     strokeWidth={2}
+                    isParticle={true}
                   />
                 </div>
               </div>

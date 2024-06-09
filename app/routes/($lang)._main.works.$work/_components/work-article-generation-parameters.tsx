@@ -114,37 +114,43 @@ export const WorkArticleGenerationParameters = (props: Props) => {
               <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
                 <div className="p-4">
                   <div className="flex flex-wrap justify-between">
-                    <div className="flex">
-                      <span className="text-center text-sm opacity-50">
+                    <div className="flex md:block">
+                      <span className="block text-center text-sm opacity-50">
                         Steps
                       </span>
-                      <span className="text-center text-lg">{props.steps}</span>
+                      <span className="block text-center text-lg">
+                        {props.steps}
+                      </span>
                     </div>
-                    <div className="flex">
-                      <span className="text-center text-sm opacity-50">
+                    <div className="flex md:block">
+                      <span className="block text-center text-sm opacity-50">
                         Scale
                       </span>
-                      <span className="text-center text-lg">{props.scale}</span>
+                      <span className="block text-center text-lg">
+                        {props.scale}
+                      </span>
                     </div>
-                    <div className="flex">
-                      <span className="text-center text-sm opacity-50">
+                    <div className="flex md:block">
+                      <span className="block text-center text-sm opacity-50">
                         Seed
                       </span>
-                      <span className="text-center text-lg">{props.seed}</span>
+                      <span className="block text-center text-lg">
+                        {props.seed}
+                      </span>
                     </div>
-                    <div className="flex">
-                      <span className="text-center text-sm opacity-50">
+                    <div className="flex md:block">
+                      <span className="block text-center text-sm opacity-50">
                         Sampler
                       </span>
-                      <span className="text-center text-lg">
+                      <span className="block text-center text-lg">
                         {props.sampler}
                       </span>
                     </div>
-                    <div className="flex">
-                      <span className="text-center text-sm opacity-50">
+                    <div className="flex md:block">
+                      <span className="block text-center text-sm opacity-50">
                         Strength
                       </span>
-                      <span className="text-center text-lg">
+                      <span className="block text-center text-lg">
                         {props.strength}
                       </span>
                     </div>

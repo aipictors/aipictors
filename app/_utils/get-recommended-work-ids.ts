@@ -10,7 +10,7 @@ export const getRecommendedWorkIds = async (
   userId: string,
   style?: "real" | "semireal" | "illust" | "sensitive",
   type?: "image" | "video" | "column" | "novel",
-  rating?: "G",
+  rating?: "G" | "R18",
 ): Promise<string[]> => {
   const formData = new FormData()
 

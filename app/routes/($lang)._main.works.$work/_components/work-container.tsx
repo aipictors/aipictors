@@ -10,12 +10,12 @@ import { WorkNextAndPrevious } from "@/routes/($lang)._main.works.$work/_compone
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
 import { Suspense } from "react"
-import PhotoAlbum from "react-photo-album"
-import { WorkAlbum } from "@/_components/work-album"
+import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/work-tags-works"
+import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 
 type Props = {
   work: NonNullable<WorkQuery>["work"]
-  tagWorksResp: NonNullable<WorksQuery>["works"]
+  // tagWorksResp: NonNullable<WorksQuery>["works"]
   newWorks: NonNullable<WorksQuery>["works"]
   comments: NonNullable<WorkCommentsQuery["work"]>["comments"]
 }
@@ -40,33 +40,10 @@ export const WorkContainer = (props: Props) => {
     isLiked: false,
   }))
 
-  const newPhotos = props.newWorks.map((work) => ({
-    src: work.largeThumbnailImageURL,
-    width: work.largeThumbnailImageWidth,
-    height: work.largeThumbnailImageHeight,
-    workId: work.id, // 各作品のID
-    userId: work.user.id, // 作品の所有者のID
-    userIcon:
-      work.user?.iconImage?.downloadURL ??
-      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
-    userName: work.user.name, // 作品の所有者の名前
-    workOwnerUserId: work.user.id,
-    isLiked: work.isLiked,
-  }))
+  const tags = props.work?.tagNames ?? []
 
-  const tagPhotos = props.tagWorksResp.map((work) => ({
-    src: work.largeThumbnailImageURL,
-    width: work.largeThumbnailImageWidth,
-    height: work.largeThumbnailImageHeight,
-    workId: work.id, // 各作品のID
-    userId: work.user.id, // 作品の所有者のID
-    userIcon:
-      work.user?.iconImage?.downloadURL ??
-      "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
-    userName: work.user.name, // 作品の所有者の名前
-    workOwnerUserId: work.user.id,
-    isLiked: work.isLiked,
-  }))
+  // ランダムにタグをひとつ
+  const randomTag = tags[Math.floor(Math.random() * tags.length)]
 
   return (
     <div className="flex w-full overflow-hidden p-0 md:p-4">
@@ -98,56 +75,15 @@ export const WorkContainer = (props: Props) => {
                 {"関連"}
               </h2>
             </div>
-            <PhotoAlbum
-              layout="rows"
-              columns={3}
-              photos={newPhotos}
-              renderPhoto={(photoProps) => (
-                // @ts-ignore 後で考える
-                <WorkAlbum
-                  {...photoProps}
-                  userId={photoProps.photo.userId}
-                  userName={photoProps.photo.userName}
-                  userIcon={photoProps.photo.userIcon}
-                  workId={photoProps.photo.workId}
-                  workOwnerUserId={photoProps.photo.workOwnerUserId}
-                  isLiked={photoProps.photo.isLiked}
-                  isShowLikeButton={false}
-                />
-              )}
-              defaultContainerWidth={1200}
-              sizes={{
-                size: "calc(100vw - 240px)",
-                sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-              }}
-            />
-            {/* <div className="flex justify-between">
+            <Suspense fallback={<AppLoadingPage />}>
+              <WorkTagsWorks tagName={randomTag} />
+            </Suspense>
+            <div className="flex justify-between">
               <h2 className="items-center space-x-2 font-bold text-md">
                 {"新着"}
               </h2>
             </div>
-            <PhotoAlbum
-              layout="rows"
-              columns={3}
-              photos={tagPhotos}
-              renderPhoto={(photoProps) => (
-                // @ts-ignore 後で考える
-                <WorkAlbum
-                  {...photoProps}
-                  userId={photoProps.photo.userId}
-                  userName={photoProps.photo.userName}
-                  userIcon={photoProps.photo.userIcon}
-                  workId={photoProps.photo.workId}
-                  workOwnerUserId={photoProps.photo.workOwnerUserId}
-                  isLiked={photoProps.photo.isLiked}
-                />
-              )}
-              defaultContainerWidth={1200}
-              sizes={{
-                size: "calc(100vw - 240px)",
-                sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-              }}
-            /> */}
+            <ResponsivePhotoWorksAlbum works={props.newWorks} />
           </section>
         </div>
       </div>

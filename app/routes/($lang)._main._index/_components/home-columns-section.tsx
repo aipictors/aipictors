@@ -15,6 +15,7 @@ import { useContext, useEffect, useState } from "react"
 
 type Props = {
   title: string
+  isSensitive?: boolean
 }
 
 /**
@@ -34,7 +35,7 @@ export const HomeColumnsSection = (props: Props) => {
           userId,
           undefined,
           "column",
-          "G",
+          props.isSensitive ? "R18" : "G",
         )
         setRecommendedIds(ids)
       } catch (error) {
