@@ -9,8 +9,9 @@ type Props = {
 export const HomeWorkList = (props: Props) => {
   return (
     <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
-      {props.works?.map((work) => (
-        <li key={work.id}>
+      {props.works?.map((work, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        <li key={index}>
           <Link to={`/works/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}

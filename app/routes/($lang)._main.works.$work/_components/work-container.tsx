@@ -46,17 +46,55 @@ export const WorkContainer = (props: Props) => {
   const randomTag = tags[Math.floor(Math.random() * tags.length)]
 
   return (
-    <div className="flex w-full overflow-hidden p-0 md:p-4">
-      <div className="flex flex-col items-center justify-center overflow-hidden">
-        <div className="mx-auto w-full max-w-screen-lg">
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorkArticle work={work} />
-          </Suspense>
-          <WorkRelatedList works={relatedWorks} />
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorkCommentList workId={work.id} comments={props.comments} />
-          </Suspense>
-          <div className="mt-2 block md:mt-0 lg:hidden">
+    <div
+      className="max-w-[100%]"
+      style={{
+        margin: "auto",
+      }}
+    >
+      <div className="flex w-full overflow-hidden p-0 md:p-4">
+        <div className="flex flex-col items-center justify-center overflow-hidden">
+          <div className="mx-auto w-full max-w-screen-lg">
+            <Suspense fallback={<AppLoadingPage />}>
+              <WorkArticle work={work} />
+            </Suspense>
+            <WorkRelatedList works={relatedWorks} />
+            <Suspense fallback={<AppLoadingPage />}>
+              <WorkCommentList workId={work.id} comments={props.comments} />
+            </Suspense>
+            <div className="mt-2 block md:mt-0 lg:hidden">
+              <Suspense>
+                <WorkUser
+                  userId={work.user.id}
+                  userName={work.user.name}
+                  userIconImageURL={work.user.iconImage?.downloadURL}
+                  userFollowersCount={work.user.followersCount}
+                  userBiography={work.user.biography}
+                  userPromptonId={work.user.promptonUser?.id}
+                  userWorksCount={work.user.worksCount}
+                />
+              </Suspense>
+            </div>
+            <section className="space-y-4">
+              <div className="flex justify-between">
+                <h2 className="items-center space-x-2 font-bold text-md">
+                  {"関連"}
+                </h2>
+              </div>
+              <Suspense fallback={<AppLoadingPage />}>
+                <WorkTagsWorks tagName={randomTag} />
+              </Suspense>
+              <div className="flex justify-between">
+                <h2 className="items-center space-x-2 font-bold text-md">
+                  {"新着"}
+                </h2>
+              </div>
+              <ResponsivePhotoWorksAlbum works={props.newWorks} />
+            </section>
+          </div>
+        </div>
+        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
+          <div className="mt-2 md:mt-0">
             <Suspense>
               <WorkUser
                 userId={work.user.id}
@@ -69,39 +107,8 @@ export const WorkContainer = (props: Props) => {
               />
             </Suspense>
           </div>
-          <section className="space-y-4">
-            <div className="flex justify-between">
-              <h2 className="items-center space-x-2 font-bold text-md">
-                {"関連"}
-              </h2>
-            </div>
-            <Suspense fallback={<AppLoadingPage />}>
-              <WorkTagsWorks tagName={randomTag} />
-            </Suspense>
-            <div className="flex justify-between">
-              <h2 className="items-center space-x-2 font-bold text-md">
-                {"新着"}
-              </h2>
-            </div>
-            <ResponsivePhotoWorksAlbum works={props.newWorks} />
-          </section>
+          <WorkNextAndPrevious work={work} />
         </div>
-      </div>
-      <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
-        <div className="mt-2 md:mt-0">
-          <Suspense>
-            <WorkUser
-              userId={work.user.id}
-              userName={work.user.name}
-              userIconImageURL={work.user.iconImage?.downloadURL}
-              userFollowersCount={work.user.followersCount}
-              userBiography={work.user.biography}
-              userPromptonId={work.user.promptonUser?.id}
-              userWorksCount={work.user.worksCount}
-            />
-          </Suspense>
-        </div>
-        <WorkNextAndPrevious work={work} />
       </div>
     </div>
   )

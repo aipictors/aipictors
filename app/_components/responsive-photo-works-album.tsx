@@ -51,7 +51,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           workTitle={photoProps.photo.title}
         />
       )}
-      defaultContainerWidth={1200}
+      defaultContainerWidth={640}
       sizes={{
         size: "calc(100vw - 240px)",
         sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],

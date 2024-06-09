@@ -2,10 +2,12 @@ import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
+import { config } from "@/config"
 import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
+import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   isSensitive?: boolean
@@ -84,18 +86,15 @@ export const HomeWorksRecommendedSection = (props: Props) => {
 
   const suggestedWorks = [...(suggestedWorkResp?.works || [])]
 
-  const sections = [{ title: "おすすめ", works: suggestedWorks, tooltip: "" }]
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <>
-      {sections.map((section) => (
-        <HomeWorkSection
-          key={section.title}
-          title={section.title}
-          tooltip={section.tooltip ? section.tooltip : undefined}
-          works={section.works ?? null}
-        />
-      ))}
+      <HomeWorkSection
+        title={"おすすめ"}
+        works={suggestedWorks}
+        isCropped={!isDesktop}
+      />
     </>
   )
 }

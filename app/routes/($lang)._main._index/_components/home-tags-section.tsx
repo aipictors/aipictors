@@ -30,8 +30,9 @@ export const HomeTagsSection = (props: Props) => {
         onMouseLeave={plugin.current.reset}
       >
         <CarouselContent>
-          {props.tags?.map((tag) => (
-            <CarouselItem className="basis-auto" key={tag.name}>
+          {props.tags?.map((tag, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            <CarouselItem className="basis-auto" key={index}>
               <a className="relative" href={`/tags/${tag.name}`}>
                 <img
                   className="h-[240px] w-[196px] rounded-md bg-white object-cover object-center transition-opacity duration-200 ease-in-out"

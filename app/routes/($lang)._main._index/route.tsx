@@ -153,7 +153,7 @@ export default function Index() {
         <HomeBanners />
       </Suspense>
       {data && (
-        <>
+        <div className="space-y-8 p-4">
           <HomeTagList
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
@@ -215,7 +215,7 @@ export default function Index() {
           >
             <HomeColumnsSection title={"コラム"} />
           </Suspense>
-        </>
+        </div>
       )}
     </AppPage>
   )

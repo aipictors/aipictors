@@ -56,7 +56,7 @@ export const HomeFooter = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {"© 2023 Aipictors.com"}
+          {"© 2024 Aipictors.com"}
         </a>
       </div>
     </footer>

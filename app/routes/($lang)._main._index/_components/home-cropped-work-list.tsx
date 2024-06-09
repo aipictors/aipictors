@@ -1,6 +1,5 @@
 import { CroppedWorkSquare } from "@/_components/cropped-work-square"
 import { LikeButton } from "@/_components/like-button"
-import { Button } from "@/_components/ui/button"
 import {
   Carousel,
   CarouselContent,
@@ -8,78 +7,37 @@ import {
 } from "@/_components/ui/carousel"
 import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import { AuthContext } from "@/_contexts/auth-context"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
-import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import type { WorksQuery } from "@/_graphql/__generated__/graphql"
 
 type Props = {
-  title: string
-  isSensitive?: boolean
+  works: NonNullable<WorksQuery["works"]> | null
+  isRanking?: boolean
 }
 
 /**
- * ランキング作品一覧
+ * クロップ済み作品一覧
  */
-export const HomeAwardWorkSection = (props: Props) => {
-  const authContext = useContext(AuthContext)
-
-  // ランキング
-  // 前日のランキングを取得
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const { data: workAwardsResp } = useQuery(workAwardsQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      offset: 0,
-      limit: 10,
-      where: {
-        year: yesterday.getFullYear(),
-        month: yesterday.getMonth() + 1,
-        day: yesterday.getDate() - 1,
-        isSensitive: props.isSensitive ?? false,
-      },
-    },
-  })
-
-  const workList = workAwardsResp?.workAwards ?? null
-
-  if (workList === null) {
+export const HomeCroppedWorkList = (props: Props) => {
+  if (props.works === null || props.works.length === 0) {
     return null
   }
 
-  const works = workList.map((work) => ({
-    id: work.work.id,
-    src: work.work.smallThumbnailImageURL,
-    width: work.work.smallThumbnailImageWidth,
-    height: work.work.smallThumbnailImageHeight,
-    workId: work.work.id,
-    thumbnailImagePosition: work.work.thumbnailImagePosition,
-    userId: work.work.user.id,
-    userIcon: work.work.user.iconImage?.downloadURL,
-    userName: work.work.user.name,
-    title: work.work.title,
-    isLiked: work.work.isLiked,
+  const works = props.works.map((work) => ({
+    id: work.id,
+    src: work.smallThumbnailImageURL,
+    width: work.smallThumbnailImageWidth,
+    height: work.smallThumbnailImageHeight,
+    workId: work.id,
+    thumbnailImagePosition: work.thumbnailImagePosition,
+    userId: work.user.id,
+    userIcon: work.user.iconImage?.downloadURL,
+    userName: work.user.name,
+    title: work.title,
+    isLiked: work.isLiked,
   }))
-
-  const yesterdayStr = `${yesterday.getFullYear()}/${
-    yesterday.getMonth() + 1
-  }/${yesterday.getDate()}`
 
   return (
     <section className="relative space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
-          {props.title}
-        </h2>
-        {/* 昨日の日付 // /2024/05/01 */}
-        <a href={`rankings/${yesterdayStr}`}>
-          <Button variant={"secondary"} size={"sm"}>
-            {"すべて見る"}
-          </Button>
-        </a>
-      </div>
-
       <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
         <CarouselContent>
           {works.map((work, index) => (
@@ -90,18 +48,18 @@ export const HomeAwardWorkSection = (props: Props) => {
             >
               <div className="relative">
                 <CroppedWorkSquare
-                  workId={work.workId}
+                  workId={work.id}
                   imageUrl={work.src}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                   size="lg"
                   imageWidth={work.width}
                   imageHeight={work.height}
-                  ranking={index + 1}
+                  ranking={props.isRanking ? index + 1 : undefined}
                 />
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
                     size={56}
-                    targetWorkId={work.workId}
+                    targetWorkId={work.id}
                     targetWorkOwnerUserId={work.userId}
                     defaultLiked={work.isLiked}
                     defaultLikedCount={0}

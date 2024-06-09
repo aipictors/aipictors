@@ -30,8 +30,8 @@ export const WorkImageThumbnailCarousel: React.FC<
           // 選択された画像かどうかを判定し、対応するスタイルを適用
           const isSelected = imageURL === selectedImage
           const imageClassName = isSelected
-            ? "w-40 h-16 cursor-pointer object-cover border-2 border-clear-bright-blue"
-            : "w-40 h-16 cursor-pointer object-cover border-2 border-transparent"
+            ? "w-40 h-16 cursor-pointer object-cover border-2 border-clear-bright-blue m-auto"
+            : "w-40 h-16 cursor-pointer object-cover border-2 border-transparent m-auto"
 
           return (
             <CarouselItem

@@ -60,11 +60,7 @@ export const HomeColumnsSection = (props: Props) => {
 
   const workList = novelWorks?.works ?? null
 
-  if (workList === null) {
-    return null
-  }
-
-  const workResults = workList.map((work) => ({
+  const workResults = workList?.map((work) => ({
     id: work.id,
     src: work.smallThumbnailImageURL,
     width: work.smallThumbnailImageWidth,
@@ -81,7 +77,7 @@ export const HomeColumnsSection = (props: Props) => {
   }))
 
   // ランダムに24作品を選ぶ
-  const works = workResults.filter((_, index) => index % 2 === 0)
+  const works = workResults?.filter((_, index) => index % 2 === 0)
 
   return (
     <section className="relative space-y-4">
@@ -92,9 +88,10 @@ export const HomeColumnsSection = (props: Props) => {
       </div>
       <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
         <CarouselContent>
-          {works.map((work, index) => (
+          {works?.map((work, index) => (
             <CarouselItem
-              key={work.id}
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              key={index}
               className="relative basis-1/3.5 space-y-2"
             >
               <div className="relative">

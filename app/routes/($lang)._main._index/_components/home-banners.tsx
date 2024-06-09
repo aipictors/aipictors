@@ -14,7 +14,7 @@ import { HomeGenerationBanner } from "@/routes/($lang)._main._index/_components/
 export const HomeBanners = () => {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
-      <CarouselContent>
+      <CarouselContent className="m-auto max-w-[1200px]">
         <CarouselItem className="basis-1/1 xl:basis-1/2">
           <HomeGenerationBanner />
         </CarouselItem>

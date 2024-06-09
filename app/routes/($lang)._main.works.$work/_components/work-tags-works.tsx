@@ -1,8 +1,8 @@
 import { useContext } from "react"
-import { ResponsivePhotoVideoWorksAlbum } from "@/_components/responsive-photo-video-works-album"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
+import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 
 type Props = {
   tagName: string
@@ -27,5 +27,5 @@ export const WorkTagsWorks = (props: Props) => {
 
   const tagWork = suggestedWorkResp?.works ?? null
 
-  return <ResponsivePhotoVideoWorksAlbum works={tagWork} />
+  return <ResponsivePhotoWorksAlbum works={tagWork} />
 }

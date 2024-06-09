@@ -55,10 +55,6 @@ export const HomeVideosSection = (props: Props) => {
   const workList =
     videoWorks?.works.filter((_, index) => index % 2 === 0) ?? null
 
-  if (workList === null) {
-    return null
-  }
-
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">

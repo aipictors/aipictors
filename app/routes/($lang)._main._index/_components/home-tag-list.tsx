@@ -18,7 +18,7 @@ export const HomeTagList = (props: Props) => {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>
-        <CarouselItem className="basis-auto" key={-1}>
+        <CarouselItem className="basis-auto">
           {props.themeTitle && (
             <TagButton
               link={`${props.themeTitle}`}

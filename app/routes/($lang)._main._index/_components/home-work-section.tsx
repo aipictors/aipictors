@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { WorksQuery } from "@/_graphql/__generated__/graphql"
+import { HomeCroppedWorkList } from "@/routes/($lang)._main._index/_components/home-cropped-work-list"
 import { RiQuestionLine } from "@remixicon/react"
 
 type Props = {
@@ -14,13 +15,10 @@ type Props = {
   title: string
   tooltip?: string
   link?: string
+  isCropped?: boolean
 }
 
 export const HomeWorkSection = (props: Props) => {
-  if (props.works === null || props.works.length === 0) {
-    return null
-  }
-
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -47,7 +45,11 @@ export const HomeWorkSection = (props: Props) => {
           </a>
         )}
       </div>
-      <ResponsivePhotoWorksAlbum works={props.works} />
+      {props.isCropped ? (
+        <HomeCroppedWorkList works={props.works} />
+      ) : (
+        <ResponsivePhotoWorksAlbum works={props.works} />
+      )}
     </section>
   )
 }
