@@ -47,7 +47,7 @@ export const WorkContainer = (props: Props) => {
 
   return (
     <div
-      className="max-w-[100%]"
+      className="max-w-[100%] overflow-hidden"
       style={{
         margin: "auto",
       }}
@@ -75,22 +75,6 @@ export const WorkContainer = (props: Props) => {
                 />
               </Suspense>
             </div>
-            <section className="space-y-4">
-              <div className="flex justify-between">
-                <h2 className="items-center space-x-2 font-bold text-md">
-                  {"関連"}
-                </h2>
-              </div>
-              <Suspense fallback={<AppLoadingPage />}>
-                <WorkTagsWorks tagName={randomTag} />
-              </Suspense>
-              <div className="flex justify-between">
-                <h2 className="items-center space-x-2 font-bold text-md">
-                  {"新着"}
-                </h2>
-              </div>
-              <ResponsivePhotoWorksAlbum works={props.newWorks} />
-            </section>
           </div>
         </div>
         <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-xs">
@@ -110,6 +94,19 @@ export const WorkContainer = (props: Props) => {
           <WorkNextAndPrevious work={work} />
         </div>
       </div>
+
+      <section className="space-y-4 max-w-[1400px]">
+        <div className="flex justify-between">
+          <h2 className="items-center space-x-2 font-bold text-md">{"関連"}</h2>
+        </div>
+        <Suspense fallback={<AppLoadingPage />}>
+          <WorkTagsWorks tagName={randomTag} />
+        </Suspense>
+        <div className="flex justify-between">
+          <h2 className="items-center space-x-2 font-bold text-md">{"新着"}</h2>
+        </div>
+        <ResponsivePhotoWorksAlbum works={props.newWorks} />
+      </section>
     </div>
   )
 }
