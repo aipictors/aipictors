@@ -46,7 +46,7 @@ export const HomeRouteVerticalList = () => {
   return (
     <div
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`bg-card w-full z-10 fixed top-16 ${
+      className={`bg-card w-full z-10 fixed top-18 pb-2 ${
         !isScrollingUp ? "hidden" : ""
       }`}
     >
