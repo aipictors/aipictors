@@ -49,7 +49,7 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
-        href={"/awards"}
+        href={"/rankings"}
         icon={AwardIcon}
       >
         {"ランキング"}

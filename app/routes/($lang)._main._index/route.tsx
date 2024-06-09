@@ -114,7 +114,7 @@ export async function loader() {
     tag.thumbnailUrl = `https://www.aipictors.com/wp-content/uploads/${tag.thumbnailUrl}`
   }
 
-  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 8)
+  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
   const date = new Date()
   const { data: themeResp } = await client.query({
