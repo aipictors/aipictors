@@ -95,7 +95,7 @@ export const WorkContainer = (props: Props) => {
         </div>
       </div>
 
-      <section className="space-y-4 max-w-[1400px]">
+      <section className="max-w-[1400px] space-y-4">
         <div className="flex justify-between">
           <h2 className="items-center space-x-2 font-bold text-md">{"関連"}</h2>
         </div>
