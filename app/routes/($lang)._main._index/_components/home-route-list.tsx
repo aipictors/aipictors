@@ -88,11 +88,7 @@ export const HomeRouteList = () => {
       >
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/sensitive"}
-        icon={BoxIcon}
-      >
+      <HomeNavigationButton href={"/sensitive"} icon={BoxIcon}>
         {"センシティブ"}
       </HomeNavigationButton>
       {authContext.isNotLoading && (

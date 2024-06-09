@@ -12,8 +12,10 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
+
 type Props = {
   title: string
+  isSensitive?: boolean
 }
 
 /**
@@ -35,7 +37,7 @@ export const HomeAwardWorkSection = (props: Props) => {
         year: yesterday.getFullYear(),
         month: yesterday.getMonth() + 1,
         day: yesterday.getDate() - 1,
-        isSensitive: true,
+        isSensitive: props.isSensitive ?? false,
       },
     },
   })
