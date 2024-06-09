@@ -63,9 +63,9 @@ export const WorkContainer = (props: Props) => {
               <WorkArticle work={work} />
             </Suspense>
             <WorkRelatedList works={relatedWorks} />
-            {/* <Suspense fallback={<AppLoadingPage />}>
+            <Suspense fallback={<AppLoadingPage />}>
               <WorkCommentList workId={work.id} comments={props.comments} />
-            </Suspense> */}
+            </Suspense>
             <div className="mt-2 block md:mt-0 lg:hidden">
               <Suspense>
                 <WorkUser
