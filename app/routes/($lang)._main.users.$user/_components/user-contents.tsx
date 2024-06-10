@@ -2,6 +2,7 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import type { userQuery } from "@/_graphql/queries/user/user"
 import { UserAlbumsContents } from "@/routes/($lang)._main.users.$user/_components/user-albums-contents"
 import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_components/user-contents-cotainer"
+import { UserFoldersContents } from "@/routes/($lang)._main.users.$user/_components/user-folders-contents"
 import { UserPickupContents } from "@/routes/($lang)._main.users.$user/_components/user-pickup-contents"
 import { UserTabs } from "@/routes/($lang)._main.users.$user/_components/user-tabs"
 import { UserWorksContents } from "@/routes/($lang)._main.users.$user/_components/user-works-contents "
@@ -24,6 +25,8 @@ export const UserContents = (props: Props) => {
   const [videoPage, setVideoPage] = useState(0)
 
   const [albumsPage, setAlbumsPage] = useState(0)
+
+  const [foldersPage, setFoldersPage] = useState(0)
 
   return (
     <div className="p-4">
@@ -81,6 +84,16 @@ export const UserContents = (props: Props) => {
               userId={props.user.id}
               page={albumsPage}
               setPage={setAlbumsPage}
+              orderBy="DATE_CREATED"
+              rating={null}
+              sort="DESC"
+            />
+          )}
+          {activeTab === "コレクション" && (
+            <UserFoldersContents
+              userId={props.user.id}
+              page={foldersPage}
+              setPage={setFoldersPage}
               orderBy="DATE_CREATED"
               rating={null}
               sort="DESC"

@@ -1,6 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
+import { foldersCountQuery } from "@/_graphql/queries/folder/folders-count"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -85,6 +86,17 @@ export const UserTabs = (props: Props) => {
 
   const albumsCount = albumsCountResp.data?.albumsCount ?? 0
 
+  const folderCountResp = useSuspenseQuery(foldersCountQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      where: {
+        userId: authContext.userId,
+      },
+    },
+  })
+
+  const foldersCount = folderCountResp.data?.foldersCount ?? 0
+
   const tabList = () => {
     return [
       "ポートフォリオ",
@@ -93,7 +105,7 @@ export const UserTabs = (props: Props) => {
       ...(columnsCount > 0 ? [`コラム(${columnsCount})`] : []),
       ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
       ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
-      `コレクション(${novelsCount})`,
+      ...(foldersCount > 0 ? [`コレクション(${foldersCount})`] : []),
       `スタンプ(${novelsCount})`,
     ]
   }
