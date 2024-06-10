@@ -1,7 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
-import { EventUserTag } from "@/routes/($lang).events.wakiaiai2/_components/event-user-tag"
+import { EventUserTag } from "@/routes/($lang).events.wakiaiai3/_components/event-user-tag"
 import type { EventUser } from "@/routes/($lang).events/_types/event-user"
 import { RiTwitterXLine } from "@remixicon/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
