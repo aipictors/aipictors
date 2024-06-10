@@ -29,13 +29,15 @@ export const StickerDialog = (props: Props) => {
 
   const [type, setType] = useState("CREATED")
 
+  const maxStickersPage = 120
+
   const { data: stickers = null, refetch } = useSuspenseQuery(
     viewerUserStickersQuery,
     {
       skip: appContext.isLoading,
       variables: {
-        limit: 64,
-        offset: createdSortStickerPage * 64,
+        limit: maxStickersPage,
+        offset: createdSortStickerPage * maxStickersPage,
         orderBy: "DATE_CREATED",
       },
     },
@@ -53,7 +55,7 @@ export const StickerDialog = (props: Props) => {
     {
       skip: appContext.isLoading,
       variables: {
-        limit: 64,
+        limit: maxStickersPage,
         offset: 0,
         orderBy: "DATE_USED",
       },
@@ -134,7 +136,7 @@ export const StickerDialog = (props: Props) => {
         {type === "CREATED" && (
           <div className="mt-1 mb-1">
             <ResponsivePagination
-              perPage={64}
+              perPage={maxStickersPage}
               maxCount={maxCount}
               currentPage={createdSortStickerPage}
               onPageChange={(page: number) => {

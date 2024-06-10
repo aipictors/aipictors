@@ -2,14 +2,18 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppPage } from "@/_components/app/app-page"
 import { FollowButton } from "@/_components/button/follow-button"
 import { Button } from "@/_components/ui/button"
+import { WorkSortSetting } from "@/_components/work-sort-setting"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_components/user-contents-cotainer"
 import { UserProfileNameIcon } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
+import React from "react"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -59,6 +63,12 @@ export default function UserLayout() {
   const data = useLoaderData<typeof loader>()
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const [WorkOrderby, setWorkOrderby] =
+    React.useState<IntrospectionEnum<"WorkOrderBy">>("DATE_CREATED")
+
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
+    React.useState<SortType>("DESC")
 
   // top center / contain no-repeat
   return (
@@ -115,6 +125,12 @@ export default function UserLayout() {
         </div>
         <div className="p-4">
           <p className="mt-4 text-left font-bold text-xl">ポートフォリオ</p>
+          <WorkSortSetting
+            nowSort={WorkOrderby}
+            setSort={setWorkOrderby}
+            nowOrder={worksOrderDeskAsc}
+            setOrder={setWorksOrderDeskAsc}
+          />
           <Suspense fallback={<AppLoadingPage />}>
             <UserContentsContainer
               userId={data.user.id}
@@ -122,9 +138,6 @@ export default function UserLayout() {
             />
           </Suspense>
         </div>
-        {/* <div className="px-4 py-6 md:px-6 lg:py-16">
-          <UserTabs params={{ user: params.user }} />
-        </div> */}
       </div>
     </AppPage>
   )
