@@ -1,4 +1,5 @@
 import type { userQuery } from "@/_graphql/queries/user/user"
+import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
 import { config } from "@/config"
 import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
 import type { ResultOf } from "gql.tada"
@@ -10,6 +11,8 @@ type UserProfileProps = {
 
 export const UserProfileNameIcon = (props: UserProfileProps) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  console.log("UserProfileNameIcon", props.user.receivedLikesCount)
 
   return (
     <header className="relative">
@@ -31,7 +34,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
             <div className="flex">
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  {props.user.followersCount}
+                  {toOmissionNumberText(props.user.followersCount)}
                 </div>
                 <div className="white mt-4 text-md opacity-50">
                   {"フォロワー"}
@@ -39,7 +42,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
               </div>
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  {props.user.worksCount}
+                  {toOmissionNumberText(props.user.receivedLikesCount)}
                 </div>
                 <div className="white mt-4 text-md opacity-50">{"いいね"}</div>
               </div>
@@ -54,13 +57,13 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
         <div className="flex md:hidden">
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {props.user.followersCount}
+              {toOmissionNumberText(props.user.followersCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">{"フォロワー"}</div>
           </div>
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {props.user.worksCount}
+              {toOmissionNumberText(props.user.receivedLikesCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">{"いいね"}</div>
           </div>

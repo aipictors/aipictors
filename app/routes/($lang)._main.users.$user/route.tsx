@@ -5,6 +5,7 @@ import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
+import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_components/user-contents-cotainer"
 import { UserProfileNameIcon } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
@@ -75,7 +76,7 @@ export default function UserLayout() {
               />
               <div className="relative m-auto w-[1200px]">
                 <img
-                  className="absolute top-0 left-0 hidden h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-0 transition-opacity duration-500 md:block md:blur-xl"
+                  className="absolute top-0 left-0 hidden h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-0 transition-opacity duration-500 md:block md:blur-[120px]"
                   // style={{ inset: "20px" }}
                   src={data.user.headerImageUrl}
                   alt=""
@@ -114,7 +115,11 @@ export default function UserLayout() {
           </div> */}
         </div>
         <div className="p-4">
-          <p className="mt-4 text-left font-bold text-lg">ポートフォリオ</p>
+          <p className="mt-4 text-left font-bold text-xl">ポートフォリオ</p>
+          <UserContentsContainer
+            userId={data.user.id}
+            userLogin={data.user.login}
+          />
         </div>
         {/* <div className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={{ user: params.user }} />

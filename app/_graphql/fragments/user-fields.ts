@@ -25,5 +25,8 @@ export const userFieldsFragment = graphql(
     isFollowee
     headerImageUrl
     biography
+    receivedLikesCount
+    createdLikesCount
+    createdBookmarksCount
   }`,
 )
