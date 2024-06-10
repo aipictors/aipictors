@@ -1,55 +1,121 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { useLocation } from "@remix-run/react"
-import { useState } from "react"
+import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
+import { AuthContext } from "@/_contexts/auth-context"
+import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
+import { worksCountQuery } from "@/_graphql/queries/work/works-count"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { useContext } from "react"
 
 type Props = {
-  params: { user: string }
+  activeTab: string
+  setActiveTab: (value: string) => void
 }
 
 export const UserTabs = (props: Props) => {
-  const { pathname } = useLocation()
-
-  const tabValues = [
-    "画像",
-    "小説",
-    "コラム",
-    "シリーズ",
-    "コレクション",
-    "スタンプ",
-    "支援応援",
-  ]
-
-  const [activeTab, setActiveTab] = useState("画像") // 初期値を設定
-
   // TabTriggerがクリックされたときにactiveTabを更新
   const handleTabClick = (value: string) => {
-    setActiveTab(value)
+    props.setActiveTab(value)
+  }
+
+  const authContext = useContext(AuthContext)
+
+  const worksCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+        workType: "WORK",
+      },
+    },
+  })
+
+  const worksCount = worksCountResp.data?.worksCount ?? 0
+
+  const novelsCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+        workType: "NOVEL",
+      },
+    },
+  })
+
+  const novelsCount = novelsCountResp.data?.worksCount ?? 0
+
+  const columnsCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+        workType: "COLUMN",
+      },
+    },
+  })
+
+  const columnsCount = columnsCountResp.data?.worksCount ?? 0
+
+  const videosCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+        workType: "VIDEO",
+      },
+    },
+  })
+
+  const videosCount = videosCountResp.data?.worksCount ?? 0
+
+  const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      where: {
+        ownerUserId: authContext.userId,
+        isSensitiveAndAllRating: true,
+        isSensitive: true,
+        needInspected: false,
+        needsThumbnailImage: false,
+      },
+    },
+  })
+
+  const albumsCount = albumsCountResp.data?.albumsCount ?? 0
+
+  const tabList = () => {
+    return [
+      "ポートフォリオ",
+      ...(worksCount > 0 ? [`画像(${worksCount})`] : []),
+      ...(novelsCount > 0 ? [`小説(${novelsCount})`] : []),
+      ...(columnsCount > 0 ? [`コラム(${columnsCount})`] : []),
+      ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
+      ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
+      `コレクション(${novelsCount})`,
+      `スタンプ(${novelsCount})`,
+    ]
+  }
+
+  // 括弧書きを消す
+  const removeParentheses = (str: string) => {
+    return str.replace(/\(([^)]+)\)/, "")
   }
 
   return (
     <Tabs defaultValue="画像">
       <TabsList className="border-b">
-        {tabValues.map((tabValue) => (
+        {tabList().map((tabValue) => (
           <TabsTrigger
-            key={tabValue}
-            value={tabValue}
-            onClick={() => handleTabClick(tabValue)}
+            key={removeParentheses(tabValue)}
+            value={removeParentheses(tabValue)}
+            onClick={() => handleTabClick(removeParentheses(tabValue))}
           >
             {tabValue}
           </TabsTrigger>
         ))}
       </TabsList>
-      <TabsContent value={activeTab}>
-        {activeTab === "画像" && <div>{activeTab} </div>}
-        {activeTab === "小説" && <div>{activeTab}</div>}
-        {/* {activeTab === "小説" && <UserAlbumsPage params={props.params} />} */}
-        {activeTab === "コラム" && <div>{activeTab}</div>}
-        {activeTab === "シリーズ" && <div>{activeTab}</div>}
-        {activeTab === "コレクション" && <div>{activeTab}</div>}
-        {activeTab === "スタンプ" && <div>{activeTab}</div>}
-        {/* {activeTab === "支援応援" && <UserSupportsPage params={props.params} />} */}
-        {activeTab === "支援応援" && <div>{activeTab}</div>}
-      </TabsContent>
     </Tabs>
   )
 }

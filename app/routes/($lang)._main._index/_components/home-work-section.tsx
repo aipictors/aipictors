@@ -17,6 +17,7 @@ type Props = {
   tooltip?: string
   link?: string
   isCropped?: boolean
+  targetRowHeight?: number
 }
 
 export const HomeWorkSection = (props: Props) => {
@@ -49,7 +50,10 @@ export const HomeWorkSection = (props: Props) => {
       {props.isCropped ? (
         <HomeCroppedWorkList works={props.works} />
       ) : (
-        <ResponsivePhotoWorksAlbum works={props.works} />
+        <ResponsivePhotoWorksAlbum
+          works={props.works}
+          targetRowHeight={props.targetRowHeight}
+        />
       )}
     </section>
   )

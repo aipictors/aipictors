@@ -71,6 +71,12 @@ export const userQuery = graphql(
           ...PartialWorkFields
         }
       }
+      featuredSensitiveWorks {
+        ...PartialWorkFields
+      }
+      featuredWorks {
+        ...PartialWorkFields
+      }
       biography
       enBiography
     }

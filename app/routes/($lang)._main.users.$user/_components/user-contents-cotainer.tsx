@@ -134,37 +134,34 @@ export const UserContentsContainer = (props: Props) => {
       {worksCountResp.data?.worksCount !== 0 && (
         <HomeWorkSection
           works={works}
-          title={`作品(${
+          title={`人気作品(${
             worksCountResp.data?.worksCount
               ? worksCountResp.data?.worksCount
               : "-"
           })`}
           isCropped={!isDesktop}
-          link={`/users${props.userLogin}/works`}
         />
       )}
       {novelWorksCountResp.data?.worksCount !== 0 && (
         <HomeNovelsWorksSection
           works={novelWorks}
-          title={`小説(${
+          title={`人気小説(${
             novelWorksCountResp.data?.worksCount
               ? novelWorksCountResp.data?.worksCount
               : "-"
           })`}
           isCropped={!isDesktop}
-          link={`/users${props.userLogin}/novels`}
         />
       )}
       {columnWorksCountResp.data?.worksCount !== 0 && (
         <HomeNovelsWorksSection
           works={columnWorks}
-          title={`コラム(${
+          title={`人気コラム(${
             columnWorksCountResp.data?.worksCount
               ? columnWorksCountResp.data?.worksCount
               : "-"
           })`}
           isCropped={!isDesktop}
-          link={`/users${props.userLogin}/columns`}
         />
       )}
 
@@ -177,7 +174,6 @@ export const UserContentsContainer = (props: Props) => {
               : "-"
           })`}
           isCropped={!isDesktop}
-          link={`/users${props.userLogin}/videos`}
         />
       )}
     </div>

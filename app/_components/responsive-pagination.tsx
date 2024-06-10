@@ -1,11 +1,9 @@
+import { Button } from "@/_components/ui/button"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/_components/ui/pagination"
 
 type Props = {
@@ -42,23 +40,27 @@ export const ResponsivePagination = ({
 
   return (
     <Pagination>
-      <PaginationContent>
+      <PaginationContent className="flex items-center">
         {/* Prevボタン */}
         {currentPageIndex !== 0 && (
           <PaginationItem>
-            <PaginationPrevious
-              to="#"
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <Button
+              variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex - 1)}
-            />
+            >
+              {"Prev"}
+            </Button>
           </PaginationItem>
         )}
         {/* 先頭ページ */}
         {currentPageIndex > 1 && pageCount > 2 && (
           <>
             <PaginationItem>
-              <PaginationLink to="#" onClick={() => handlePageChange(1)}>
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+              <Button variant={"secondary"} onClick={() => handlePageChange(1)}>
                 {1}
-              </PaginationLink>
+              </Button>
             </PaginationItem>{" "}
             <PaginationEllipsis />
           </>
@@ -66,37 +68,37 @@ export const ResponsivePagination = ({
         {/* 前ページ */}
         {currentPageIndex > 0 && (
           <PaginationItem>
-            <PaginationLink
-              to="#"
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <Button
+              variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex - 1)}
             >
               {currentPageIndex - 1 + 1}
-            </PaginationLink>
+            </Button>
           </PaginationItem>
         )}
         {/* 現在のページ */}
         <PaginationItem>
-          <PaginationLink
+          <Button
             className={
               isActiveButtonStyle
                 ? "bg-black text-white dark:bg-white dark:hover:bg-white hover:bg-black dark:text-black hover:text-white"
                 : ""
             }
-            to="#"
-            isActive
           >
             {currentPageIndex + 1}
-          </PaginationLink>
+          </Button>
         </PaginationItem>
         {/* 次のページ */}
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
-            <PaginationLink
-              to="#"
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <Button
+              variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex + 1)}
             >
               {currentPageIndex + 1 + 1}
-            </PaginationLink>
+            </Button>
           </PaginationItem>
         )}
         {/* 末尾ページ */}
@@ -104,25 +106,29 @@ export const ResponsivePagination = ({
           <>
             <PaginationEllipsis />{" "}
             <PaginationItem>
-              <PaginationLink
-                to="#"
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+              <Button
+                variant={"secondary"}
                 onClick={() => handlePageChange(pageCount - 1)}
               >
                 {pageCount}
-              </PaginationLink>
+              </Button>
             </PaginationItem>
           </>
         )}
         {/* Nextボタン */}
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
-            <PaginationNext
-              to="#"
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <Button
+              variant={"secondary"}
               onClick={(e) => {
                 e.preventDefault()
                 handlePageChange(currentPageIndex + 1)
               }}
-            />
+            >
+              {"Next"}
+            </Button>
           </PaginationItem>
         )}
       </PaginationContent>

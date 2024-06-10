@@ -1,20 +1,17 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppPage } from "@/_components/app/app-page"
 import { FollowButton } from "@/_components/button/follow-button"
 import { Button } from "@/_components/ui/button"
-import { WorkSortSetting } from "@/_components/work-sort-setting"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
-import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_components/user-contents-cotainer"
+import { UserContents } from "@/routes/($lang)._main.users.$user/_components/user-contents"
 import { UserProfileNameIcon } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
-import React from "react"
-import { Suspense } from "react"
+import React, { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -70,6 +67,8 @@ export default function UserLayout() {
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
     React.useState<SortType>("DESC")
 
+  const [activeTab, setActiveTab] = useState("画像") // 初期値を設定
+
   // top center / contain no-repeat
   return (
     <AppPage>
@@ -123,21 +122,7 @@ export default function UserLayout() {
             </div>
           </div>
         </div>
-        <div className="p-4">
-          <p className="mt-4 text-left font-bold text-xl">ポートフォリオ</p>
-          <WorkSortSetting
-            nowSort={WorkOrderby}
-            setSort={setWorkOrderby}
-            nowOrder={worksOrderDeskAsc}
-            setOrder={setWorksOrderDeskAsc}
-          />
-          <Suspense fallback={<AppLoadingPage />}>
-            <UserContentsContainer
-              userId={data.user.id}
-              userLogin={data.user.login}
-            />
-          </Suspense>
-        </div>
+        <UserContents user={data.user} />
       </div>
     </AppPage>
   )
