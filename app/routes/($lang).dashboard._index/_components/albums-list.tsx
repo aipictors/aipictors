@@ -21,7 +21,7 @@ type Props = {
 }
 
 /**
- * 作品一覧
+ * シリーズ一覧
  */
 export const AlbumsList = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
