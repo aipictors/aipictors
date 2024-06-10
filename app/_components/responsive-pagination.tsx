@@ -13,6 +13,7 @@ type Props = {
   perPage: number // ページあたりの表示数
   currentPage: number
   onPageChange: (page: number) => void
+  isActiveButtonStyle?: boolean
 }
 
 /**
@@ -23,6 +24,7 @@ export const ResponsivePagination = ({
   perPage,
   currentPage,
   onPageChange,
+  isActiveButtonStyle,
 }: Props) => {
   const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
 
@@ -74,7 +76,15 @@ export const ResponsivePagination = ({
         )}
         {/* 現在のページ */}
         <PaginationItem>
-          <PaginationLink to="#" isActive>
+          <PaginationLink
+            className={
+              isActiveButtonStyle
+                ? "bg-black text-white dark:bg-white dark:hover:bg-white hover:bg-black dark:text-black hover:text-white"
+                : ""
+            }
+            to="#"
+            isActive
+          >
             {currentPageIndex + 1}
           </PaginationLink>
         </PaginationItem>

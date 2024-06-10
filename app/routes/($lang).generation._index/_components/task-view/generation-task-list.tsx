@@ -218,6 +218,7 @@ export const GenerationTaskList = (props: Props) => {
             onPageChange={(page: number) => {
               props.setCurrentPage(page)
             }}
+            isActiveButtonStyle={true}
           />
         )}
       </div>
