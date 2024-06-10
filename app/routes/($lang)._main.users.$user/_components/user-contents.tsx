@@ -4,6 +4,7 @@ import { UserAlbumsContents } from "@/routes/($lang)._main.users.$user/_componen
 import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_components/user-contents-cotainer"
 import { UserFoldersContents } from "@/routes/($lang)._main.users.$user/_components/user-folders-contents"
 import { UserPickupContents } from "@/routes/($lang)._main.users.$user/_components/user-pickup-contents"
+import { UserStickersContents } from "@/routes/($lang)._main.users.$user/_components/user-stickers-contents"
 import { UserTabs } from "@/routes/($lang)._main.users.$user/_components/user-tabs"
 import { UserWorksContents } from "@/routes/($lang)._main.users.$user/_components/user-works-contents "
 import type { ResultOf } from "gql.tada"
@@ -27,6 +28,8 @@ export const UserContents = (props: Props) => {
   const [albumsPage, setAlbumsPage] = useState(0)
 
   const [foldersPage, setFoldersPage] = useState(0)
+
+  const [stickersPage, setStickersPage] = useState(0)
 
   return (
     <div className="p-4">
@@ -92,11 +95,18 @@ export const UserContents = (props: Props) => {
           {activeTab === "コレクション" && (
             <UserFoldersContents
               userId={props.user.id}
-              page={foldersPage}
+              page={stickersPage}
               setPage={setFoldersPage}
               orderBy="DATE_CREATED"
               rating={null}
               sort="DESC"
+            />
+          )}
+          {activeTab === "スタンプ" && (
+            <UserStickersContents
+              userId={props.user.id}
+              page={foldersPage}
+              setPage={setStickersPage}
             />
           )}
         </Suspense>

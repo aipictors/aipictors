@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { foldersCountQuery } from "@/_graphql/queries/folder/folders-count"
+import { stickersCountQuery } from "@/_graphql/queries/sticker/stickers-count"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -97,6 +98,17 @@ export const UserTabs = (props: Props) => {
 
   const foldersCount = folderCountResp.data?.foldersCount ?? 0
 
+  const stickersCountResp = useSuspenseQuery(stickersCountQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      where: {
+        creatorUserId: authContext.userId,
+      },
+    },
+  })
+
+  const stickersCount = stickersCountResp.data?.stickersCount ?? 0
+
   const tabList = () => {
     return [
       "ポートフォリオ",
@@ -106,7 +118,7 @@ export const UserTabs = (props: Props) => {
       ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
       ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
       ...(foldersCount > 0 ? [`コレクション(${foldersCount})`] : []),
-      `スタンプ(${novelsCount})`,
+      ...(stickersCount > 0 ? [`スタンプ(${stickersCount})`] : []),
     ]
   }
 
