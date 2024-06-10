@@ -103,7 +103,21 @@ export default function UserLayout() {
             <div className="absolute top-8 right-0 hidden md:block">
               <div className="flex items-center space-x-2">
                 <Button>フォローする</Button>
-                <Button variant={"secondary"}>支援する</Button>
+                {/* <Button variant={"secondary"}>支援する</Button> */}
+                {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+                <button className="flex items-center px-4 py-2 bg-gradient-to-r from-orange-400 via-pink-500 to-blue-500 text-white rounded-full shadow-lg focus:outline-none">
+                  <span className="bg-white bg-opacity-30 p-2 rounded-full mr-2">
+                    {/* You can use any icon library like FontAwesome, Material Icons, etc. */}
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 12c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c-2.673 0-8 1.336-8 4v2h16v-2c0-2.664-5.327-4-8-4z" />
+                    </svg>
+                  </span>
+                  <span className="font-bold">支援する</span>
+                </button>
               </div>
             </div>
 
