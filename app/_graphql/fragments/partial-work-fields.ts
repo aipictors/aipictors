@@ -22,6 +22,11 @@ export const partialWorkFieldsFragment = graphql(
     negativePrompt
     isLiked
     thumbnailImagePosition
+    description
+    url
+    tags {
+      name
+    }
     user {
       id
       name

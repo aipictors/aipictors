@@ -28,5 +28,8 @@ export const userFieldsFragment = graphql(
     receivedLikesCount
     createdLikesCount
     createdBookmarksCount
+    promptonUser {
+      id
+    }
   }`,
 )

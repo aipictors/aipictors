@@ -1,3 +1,4 @@
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AppPage } from "@/_components/app/app-page"
 import { FollowButton } from "@/_components/button/follow-button"
 import { Button } from "@/_components/ui/button"
@@ -9,6 +10,7 @@ import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_compo
 import { UserProfileNameIcon } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
+import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -110,16 +112,15 @@ export default function UserLayout() {
               </Button>
             </div>
           </div>
-          {/* <div className="absolute bottom-[-96px] left-0 z-20 w-full">
-            <UserProfile user={data.user} />
-          </div> */}
         </div>
         <div className="p-4">
           <p className="mt-4 text-left font-bold text-xl">ポートフォリオ</p>
-          <UserContentsContainer
-            userId={data.user.id}
-            userLogin={data.user.login}
-          />
+          <Suspense fallback={<AppLoadingPage />}>
+            <UserContentsContainer
+              userId={data.user.id}
+              userLogin={data.user.login}
+            />
+          </Suspense>
         </div>
         {/* <div className="px-4 py-6 md:px-6 lg:py-16">
           <UserTabs params={{ user: params.user }} />

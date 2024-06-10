@@ -1,9 +1,9 @@
-import { ResponsivePhotoVideoWorksAlbum } from "@/_components/responsive-photo-video-works-album"
 import {} from "@/_components/ui/carousel"
 import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
+import { HomeVideosWorksSection } from "@/routes/($lang)._main._index/_components/home-video-works-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
@@ -55,15 +55,5 @@ export const HomeVideosSection = (props: Props) => {
   const workList =
     videoWorks?.works.filter((_, index) => index % 2 === 0) ?? null
 
-  return (
-    <section className="relative space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
-          {props.title}
-        </h2>
-      </div>
-
-      <ResponsivePhotoVideoWorksAlbum works={workList} />
-    </section>
-  )
+  return <HomeVideosWorksSection works={workList} title={props.title} />
 }

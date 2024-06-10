@@ -2,6 +2,8 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { config } from "@/config"
+import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
+import { HomeVideosWorksSection } from "@/routes/($lang)._main._index/_components/home-video-works-section"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -15,6 +17,7 @@ type Props = {
 export const UserContentsContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  // 人気画像作品
   const { data: workRes } = useSuspenseQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
@@ -23,6 +26,7 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         userId: props.userId,
         ratings: ["G", "R15", "R18", "R18G"],
+        orderBy: "LIKES_COUNT",
       },
     },
   })
@@ -37,16 +41,145 @@ export const UserContentsContainer = (props: Props) => {
     },
   })
 
+  // 人気小説作品
+  const { data: novelWorkRes } = useSuspenseQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: props.userId,
+        workType: "NOVEL",
+        ratings: ["G", "R15", "R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+      },
+    },
+  })
+
+  const novelWorksCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        workType: "NOVEL",
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+      },
+    },
+  })
+
+  // 人気コラム作品
+  const { data: columnWorkRes } = useSuspenseQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: props.userId,
+        workType: "COLUMN",
+        ratings: ["G", "R15", "R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+      },
+    },
+  })
+
+  const columnWorksCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        workType: "COLUMN",
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+      },
+    },
+  })
+
+  // 人気動画作品
+  const { data: videoWorkRes } = useSuspenseQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: props.userId,
+        workType: "VIDEO",
+        ratings: ["G", "R15", "R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+      },
+    },
+  })
+
+  const videoWorksCountResp = useSuspenseQuery(worksCountQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      where: {
+        workType: "VIDEO",
+        userId: authContext.userId,
+        ratings: ["G", "R15", "R18", "R18G"],
+      },
+    },
+  })
+
   const works = [...(workRes?.works || [])]
+
+  const novelWorks = [...(novelWorkRes?.works || [])]
+
+  const columnWorks = [...(columnWorkRes?.works || [])]
+
+  const videoWorks = [...(videoWorkRes?.works || [])]
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
-    <HomeWorkSection
-      works={works}
-      title={`作品(${worksCountResp.data?.worksCount})`}
-      isCropped={!isDesktop}
-      link={`/users${props.userLogin}/works`}
-    />
+    <div className="space-y-4">
+      {worksCountResp.data?.worksCount !== 0 && (
+        <HomeWorkSection
+          works={works}
+          title={`作品(${
+            worksCountResp.data?.worksCount
+              ? worksCountResp.data?.worksCount
+              : "-"
+          })`}
+          isCropped={!isDesktop}
+          link={`/users${props.userLogin}/works`}
+        />
+      )}
+      {novelWorksCountResp.data?.worksCount !== 0 && (
+        <HomeNovelsWorksSection
+          works={novelWorks}
+          title={`小説(${
+            novelWorksCountResp.data?.worksCount
+              ? novelWorksCountResp.data?.worksCount
+              : "-"
+          })`}
+          isCropped={!isDesktop}
+          link={`/users${props.userLogin}/novels`}
+        />
+      )}
+      {columnWorksCountResp.data?.worksCount !== 0 && (
+        <HomeNovelsWorksSection
+          works={columnWorks}
+          title={`コラム(${
+            columnWorksCountResp.data?.worksCount
+              ? columnWorksCountResp.data?.worksCount
+              : "-"
+          })`}
+          isCropped={!isDesktop}
+          link={`/users${props.userLogin}/columns`}
+        />
+      )}
+
+      {videoWorksCountResp.data?.worksCount !== 0 && (
+        <HomeVideosWorksSection
+          works={videoWorks}
+          title={`動画(${
+            videoWorksCountResp.data?.worksCount
+              ? videoWorksCountResp.data?.worksCount
+              : "-"
+          })`}
+          isCropped={!isDesktop}
+          link={`/users${props.userLogin}/videos`}
+        />
+      )}
+    </div>
   )
 }

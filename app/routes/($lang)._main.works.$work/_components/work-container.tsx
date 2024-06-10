@@ -87,9 +87,11 @@ export const WorkContainer = (props: Props) => {
                   {"関連"}
                 </h2>
               </div>
-              <Suspense fallback={<AppLoadingPage />}>
-                <WorkTagsWorks tagName={randomTag} />
-              </Suspense>
+              {randomTag && (
+                <Suspense fallback={<AppLoadingPage />}>
+                  <WorkTagsWorks tagName={randomTag} />
+                </Suspense>
+              )}
               <div className="flex justify-between">
                 <h2 className="items-center space-x-2 font-bold text-md">
                   {"新着"}
