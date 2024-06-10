@@ -69,7 +69,7 @@
     "embla-carousel": "8.0.2",
     "embla-carousel-autoplay": "8.0.2",
     "embla-carousel-react": "8.0.2",
-    "embla-carousel-wheel-gestures": "8.0.0-rc05",
+    "embla-carousel-wheel-gestures": "8.0.1",
     "fflate": "^0.8.2",
     "firebase": "^10.10.0",
     "google-libphonenumber": "^3.2.34",
