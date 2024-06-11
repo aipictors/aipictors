@@ -54,6 +54,7 @@ export const UserHomeMain = (props: Props) => {
               <PromptonRequestColorfulButton
                 rounded="rounded-md"
                 promptonId={props.user.promptonUser.id}
+                targetUserId={props.user.id}
               />
             )}
         </div>
@@ -72,6 +73,7 @@ export const UserHomeMain = (props: Props) => {
                 rounded="rounded-full"
                 promptonId={props.user.promptonUser.id}
                 hideIcon={true}
+                targetUserId={props.user.id}
               />
             </div>
           )}

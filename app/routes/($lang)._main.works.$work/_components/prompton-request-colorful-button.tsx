@@ -1,15 +1,24 @@
+import { AuthContext } from "@/_contexts/auth-context"
 import { GiftIcon } from "lucide-react"
+import { useContext } from "react"
 
 type Props = {
   promptonId: string
   rounded?: "rounded" | "rounded-md" | "rounded-full"
   hideIcon?: boolean
+  targetUserId: string
 }
 
 /**
  * 投稿者への支援ボタン
  */
 export const PromptonRequestColorfulButton = (props: Props) => {
+  const authContext = useContext(AuthContext)
+
+  if (authContext.userId === props.targetUserId) {
+    return null
+  }
+
   const onClick = () => {
     window.open(`https://prompton.io/aipic/${props.promptonId}`, "_blank")
   }
