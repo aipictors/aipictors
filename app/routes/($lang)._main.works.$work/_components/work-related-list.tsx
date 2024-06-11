@@ -8,6 +8,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/_components/ui/carousel"
 import { Separator } from "@/_components/ui/separator"
 
@@ -29,8 +31,9 @@ type Props = {
 export function WorkRelatedList(props: Props) {
   return (
     <div className="relative space-y-4 pt-2">
-      <Carousel opts={{ dragFree: true }}>
+      <Carousel>
         <CarouselContent>
+          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
           {props.works.map((work) => (
             <CarouselItem
               key={work.id}
@@ -62,7 +65,10 @@ export function WorkRelatedList(props: Props) {
           <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
           <div className="relative basis-1/3.5 space-y-2" />
         </CarouselContent>
+        <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-white to-transparent dark:from-black dark:to-transparent" />
+        <CarouselPrevious className="absolute left-0" />
         <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
+        <CarouselNext className="absolute right-0" />
       </Carousel>
       <Separator />
     </div>

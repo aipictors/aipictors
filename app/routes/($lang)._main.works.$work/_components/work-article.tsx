@@ -3,7 +3,6 @@ import { Button } from "@/_components/ui/button"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
-import { Link } from "@remix-run/react"
 import {} from "@/_components/ui/tabs"
 import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$work/_components/work-article-generation-parameters"
 import { WorkActionContainer } from "@/routes/($lang)._main.works.$work/_components/work-action-container"
@@ -96,13 +95,16 @@ export const WorkArticle = (props: Props) => {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Avatar>
-              <Link to={`/users/${props.work.user.login}`}>
+            <a
+              className="flex items-center space-x-2"
+              href={`/users/${props.work.user.login}`}
+            >
+              <Avatar>
                 <AvatarImage src={props.work.user.iconImage?.downloadURL} />
                 <AvatarFallback />
-              </Link>
-            </Avatar>
-            <span>{props.work.user.name}</span>
+              </Avatar>
+              <span>{props.work.user.name}</span>
+            </a>
             {props.work.user.promptonUser && (
               <PromptonRequestButton
                 promptonId={props.work.user.promptonUser.id}

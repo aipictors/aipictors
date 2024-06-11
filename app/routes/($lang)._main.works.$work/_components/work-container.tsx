@@ -71,6 +71,7 @@ export const WorkContainer = (props: Props) => {
               <Suspense>
                 <WorkUser
                   userId={work.user.id}
+                  userLogin={work.user.login}
                   userName={work.user.name}
                   userIconImageURL={work.user.iconImage?.downloadURL}
                   userFollowersCount={work.user.followersCount}
@@ -107,6 +108,7 @@ export const WorkContainer = (props: Props) => {
               <WorkUser
                 userId={work.user.id}
                 userName={work.user.name}
+                userLogin={work.user.login}
                 userIconImageURL={work.user.iconImage?.downloadURL}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography}

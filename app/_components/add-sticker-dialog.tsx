@@ -191,6 +191,7 @@ export const AddStickerDialog = (props: Props) => {
                 onChange={(event) => {
                   setTitle(event.target.value)
                 }}
+                value={title}
                 placeholder="タイトル"
               />
               <p>ジャンル</p>

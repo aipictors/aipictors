@@ -14,6 +14,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 
 type Props = {
   userId: string
+  userLogin: string
   userName: string
   userIconImageURL?: string
   userFollowersCount: number
@@ -49,11 +50,15 @@ export const WorkUser = (props: Props) => {
     <Card>
       <CardHeader>
         <CardTitle className="gap-x-2 p-4">
-          <Avatar className="m-auto h-auto w-24">
-            <AvatarImage src={props.userIconImageURL} alt="" />
-            <AvatarFallback />
-          </Avatar>
-          <p className="mt-2 text-center font-bold text-md">{props.userName}</p>
+          <a href={`/users/${props.userLogin}`}>
+            <Avatar className="m-auto h-auto w-24">
+              <AvatarImage src={props.userIconImageURL} alt="" />
+              <AvatarFallback />
+            </Avatar>
+            <p className="mt-2 text-center font-bold text-md">
+              {props.userName}
+            </p>
+          </a>
         </CardTitle>
         <div className="m-auto flex items-center space-x-1">
           <div className="flex items-center space-x-1">
