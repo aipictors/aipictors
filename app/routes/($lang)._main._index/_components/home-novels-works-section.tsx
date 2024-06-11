@@ -43,6 +43,10 @@ export const HomeNovelsWorksSection = (props: Props) => {
 
   const works = workResults
 
+  if (works.length === 0) {
+    return null
+  }
+
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
