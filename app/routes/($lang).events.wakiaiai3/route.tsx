@@ -146,12 +146,12 @@ export const meta: MetaFunction = () => {
     },
     {
       property: "og:title",
-      content: "和気あいAI2 - 愛知県AIイラスト展示即売会",
+      content: "和気あいAI3 - 愛知県AIイラスト展示即売会",
     },
     {
       property: "og:description",
       content:
-        "2024年4月13日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第二回！",
+        "2024年10月19日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
     },
     {
       property: "og:image",
@@ -160,12 +160,12 @@ export const meta: MetaFunction = () => {
     },
     {
       name: "twitter:title",
-      content: "和気あいAI2 - 愛知県AIイラスト展示即売会",
+      content: "和気あいAI3 - 愛知県AIイラスト展示即売会",
     },
     {
       name: "twitter:description",
       content:
-        "2024年4月13日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第二回！",
+        "2024年10月19日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
     },
   ]
 }
