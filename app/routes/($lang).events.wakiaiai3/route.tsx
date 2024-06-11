@@ -117,8 +117,8 @@ export default function EventWakiaiai3() {
         ))}
       </div>
 
-      <footer className="bg-gray-200 p-4 text-center">
-        <p className="mt-2 text-gray-600 text-sm">
+      <footer className="bg-gray-200 p-4 text-center dark:bg-gray-800">
+        <p className="mt-2 text-gray-600 text-sm dark:text-white">
           © 2024 和気あいAI. All rights reserved.
         </p>
         <div className="mt-4">
