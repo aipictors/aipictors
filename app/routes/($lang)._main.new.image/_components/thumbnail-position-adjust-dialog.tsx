@@ -212,9 +212,10 @@ export const ThumbnailPositionAdjustDialog = (props: Props) => {
               draggable={false}
               src={`${props.thumbnailBase64}`}
               alt="Thumbnail"
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`absolute ${
-                props.isThumbnailLandscape ? "h-full" : "w-full"
+              className={`${
+                props.isThumbnailLandscape
+                  ? "absolute h-full"
+                  : "absolute w-full"
               }`}
               style={{
                 transform: `translate(${translate.x}%, ${translate.y}%)`,
