@@ -1,13 +1,13 @@
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { cn } from "@/_lib/cn"
-import { eventUsers } from "@/routes/($lang).events.wakiaiai2/_assets/event-users"
-import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai2/_components/event-creator-card"
-import { EventImage } from "@/routes/($lang).events.wakiaiai2/_components/event-image"
+import { eventUsers } from "@/routes/($lang).events.wakiaiai3/_assets/event-users"
+import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai3/_components/event-creator-card"
+import { EventImage } from "@/routes/($lang).events.wakiaiai3/_components/event-image"
 import type { MetaFunction } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
-export default function EventWakiaiai2() {
+export default function EventWakiaiai3() {
   const length = Math.floor(eventUsers.length / 3)
 
   const aUsers = eventUsers.filter((_, index) => {
@@ -27,29 +27,33 @@ export default function EventWakiaiai2() {
       <div className="flex flex-col items-center md:flex-row">
         <div className="flex flex-grow-3">
           <EventImage
-            alt={"和気あいAI"}
+            alt={"和気あいAI3"}
             imageURL={
-              "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_top.webp?alt=media&token=678241ea-c5de-4cf4-992c-e0bb081f4cc7"
+              "https://www.aipictors.com/wp-content/uploads/2023/07/XVzvtp28cfh6CQaMT9Rk0yJFA4rsgN.webp"
             }
           />
         </div>
         <div className="w-full flex-2 space-y-8 py-8 md:px-4">
           <div className="space-y-4">
             <h2 className="font-bold text-green-500 text-lg">
-              {"2024年4月13日（土）"}
+              {"2024年10月19日（土）"}
             </h2>
             <h1 className={"font-bold text-4xl text-green-500"}>
-              {"和気あいAI２"}
+              {"和気あいAI３"}
             </h1>
           </div>
           <p className="leading-relaxed">
             {
-              "東海地方唯一の、生成AIを利用したイラストの展示やグッズ等の展示・即売会、第二回"
+              "全国一アットホームな生成AIを利用したイラストの展示やグッズ等の展示・即売会、第三回"
             }
           </p>
-          <a href="/events/wakiaiai3" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://forms.gle/zqJGK1XV6uhAqY5G7"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Button variant={"outline"} className="m-4 font-bold text-lg">
-              和気あいAI3開催決定
+              和気あいAI3展示・出展募集中
               <MousePointerClickIcon className="ml-2" />
             </Button>
           </a>
@@ -58,12 +62,12 @@ export default function EventWakiaiai2() {
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
         <Card>
           <CardHeader>
-            <CardTitle>{"4月13日（土） 10時〜16時"}</CardTitle>
+            <CardTitle>{"10月19日（土） 10時〜16時"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
               {
-                "一般参加は無料！本イベントは、主に画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。"
+                "一般参加は無料！本イベントは、画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。屋外のイベントですので、どなたでもお気軽に立ち寄ることができます！"
               }
             </p>
           </CardContent>
@@ -113,8 +117,8 @@ export default function EventWakiaiai2() {
         ))}
       </div>
 
-      <footer className="bg-gray-200 dark:bg-gray-800 p-4 text-center">
-        <p className="mt-2 text-gray-600 dark:text-white text-sm">
+      <footer className="bg-gray-200 p-4 text-center dark:bg-gray-800">
+        <p className="mt-2 text-gray-600 text-sm dark:text-white">
           © 2024 和気あいAI. All rights reserved.
         </p>
         <div className="mt-4">
@@ -135,7 +139,7 @@ export default function EventWakiaiai2() {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "和気あいAI2 - 愛知県AIイラスト展示即売会" },
+    { title: "和気あいAI3- 愛知県AIイラスト展示即売会" },
     {
       description:
         "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
