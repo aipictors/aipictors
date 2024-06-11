@@ -79,6 +79,9 @@ export const userQuery = graphql(
       }
       biography
       enBiography
+      promptonUser {
+        id
+      }
     }
   }`,
   [partialWorkFieldsFragment],
