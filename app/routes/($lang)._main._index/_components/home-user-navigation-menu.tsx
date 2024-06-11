@@ -59,6 +59,8 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const followCount = data?.viewer?.user?.followCount ?? 0
 
+  const headerImageUrl = data?.viewer?.user.headerImage?.downloadURL ?? ""
+
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
 
@@ -87,10 +89,15 @@ export const HomeUserNavigationMenu = (props: Props) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <div>
-          <div className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800">
-            <a
-              href={`https://www.aipictors.com/users/?id=${authContext.userId}`}
-            >
+          <div
+            className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
+            style={{
+              backgroundImage: `url(${headerImageUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <a href={`/users/${authContext.login}`}>
               <Avatar className="cursor-pointer">
                 <AvatarImage src={authContext.avatarPhotoURL ?? undefined} />
                 <AvatarFallback />
