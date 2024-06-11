@@ -4,11 +4,14 @@ import { useMutation } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
+import { cn } from "@/_lib/cn"
 
 type Props = {
   targetUserId: string
   isFollow: boolean
   className?: string
+  triggerChildren?: React.ReactNode
+  unFollowTriggerChildren?: React.ReactNode
 }
 
 /**
@@ -16,6 +19,32 @@ type Props = {
  */
 export const FollowButton = (props: Props) => {
   const authContext = useContext(AuthContext)
+
+  const triggerNode = props.triggerChildren ?? (
+    <button
+      type="button"
+      onClick={() => {}}
+      className={
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        `h-9 w-full rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
+      }
+    >
+      {"フォローする"}
+    </button>
+  )
+
+  const unFollowTriggerNode = props.unFollowTriggerChildren ?? (
+    <button
+      type="button"
+      onClick={() => {}}
+      className={
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        `h-9 w-full rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
+      }
+    >
+      {"フォロー中"}
+    </button>
+  )
 
   /* 未ログイン */
   if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -25,18 +54,7 @@ export const FollowButton = (props: Props) => {
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
         description={"ユーザフォローして投稿を確認してみましょう！"}
-        triggerChildren={
-          <button
-            type="button"
-            onClick={() => {}}
-            className={
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              `h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
-            }
-          >
-            {"フォローする"}
-          </button>
-        }
+        triggerChildren={triggerNode}
       />
     )
   }
@@ -84,37 +102,26 @@ export const FollowButton = (props: Props) => {
   }
 
   return isFollow ? (
-    <button
-      type="button"
-      onClick={onUnFollow}
-      disabled={isUnFollowing}
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`h-9 rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        " "
-      }${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        isUnFollowing ? "opacity-20" : "hover:opacity-30"
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } ${props.className}`}
+    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+    <div
+      onClick={() => {
+        if (isFollowing || isUnFollowing) return
+        onUnFollow()
+      }}
+      className={cn(isFollowing || isUnFollowing ? "opacity-80" : "")}
     >
-      {"フォロー中"}
-    </button>
+      {unFollowTriggerNode}
+    </div>
   ) : (
-    <button
-      type="button"
-      onClick={onFollow}
-      disabled={isFollowing}
-      className={`h-9 rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        " "
-      }${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        isFollowing ? "opacity-20" : "hover:opacity-80"
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } ${props.className}`}
+    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+    <div
+      onClick={() => {
+        if (isFollowing || isUnFollowing) return
+        onFollow()
+      }}
+      className={cn(isFollowing || isUnFollowing ? "opacity-80" : "")}
     >
-      {"フォローする"}
-    </button>
+      {triggerNode}
+    </div>
   )
 }

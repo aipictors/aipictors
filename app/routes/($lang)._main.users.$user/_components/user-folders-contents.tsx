@@ -26,7 +26,7 @@ export const UserFoldersContents = (props: Props) => {
       offset: 16 * props.page,
       limit: 16,
       where: {
-        userId: authContext.userId,
+        userId: props.userId,
       },
     },
   })
@@ -37,7 +37,7 @@ export const UserFoldersContents = (props: Props) => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       where: {
-        userId: authContext.userId,
+        userId: props.userId,
       },
     },
   })

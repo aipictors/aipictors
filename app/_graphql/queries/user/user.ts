@@ -79,6 +79,11 @@ export const userQuery = graphql(
       }
       biography
       enBiography
+      instagramAccountId
+      twitterAccountId
+      githubAccountId
+      siteURL
+      mailAddress
       promptonUser {
         id
       }

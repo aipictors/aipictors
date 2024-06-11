@@ -1,6 +1,7 @@
 import type { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { config } from "@/config"
 import type { ResultOf } from "gql.tada"
+import { Download, MessageCircle } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -21,19 +22,29 @@ export const ResponsiveStickersList = (props: Props) => {
   return (
     <div className="flex flex-wrap">
       {props.stickers.map((sticker) => (
-        <div
-          key={sticker.id}
-          className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-24 md:w-40"
-        >
+        <div key={sticker.id} className="m-2 rounded-md">
           <a
             href={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
-            className="relative"
+            className="relative p-1 hover:opacity-80"
           >
             <img
-              className="m-auto h-24 w-24"
+              className="m-auto max-w-32"
               src={sticker.imageUrl ?? ""}
               alt={sticker.title}
             />
+            <div className="h-24 max-w-32 space-y-2 overflow-hidden rounded-md">
+              <span className="text-ellipsis text-nowrap text-sm">
+                {sticker.title}
+              </span>
+              <div className="flex items-center">
+                <MessageCircle size={16} />
+                <span>{sticker.usesCount}</span>
+              </div>
+              <div className="flex items-center">
+                <Download />
+                <span>{sticker.downloadsCount}</span>
+              </div>
+            </div>
           </a>
         </div>
       ))}

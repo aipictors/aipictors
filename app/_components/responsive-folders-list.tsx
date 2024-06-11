@@ -17,6 +17,7 @@ export const ResponsiveFoldersList = (props: Props) => {
   }
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   return (
     <div className="flex flex-wrap">
       {props.folders.map((folder) => (

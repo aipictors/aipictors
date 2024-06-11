@@ -21,7 +21,7 @@ export const UserStickersContents = (props: Props) => {
       offset: 16 * props.page,
       limit: 16,
       where: {
-        creatorUserId: authContext.userId,
+        creatorUserId: props.userId,
       },
     },
   })
@@ -32,7 +32,7 @@ export const UserStickersContents = (props: Props) => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       where: {
-        creatorUserId: authContext.userId,
+        creatorUserId: props.userId,
       },
     },
   })

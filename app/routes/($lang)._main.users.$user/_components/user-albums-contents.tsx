@@ -26,7 +26,7 @@ export const UserAlbumsContents = (props: Props) => {
       offset: 16 * props.page,
       limit: 16,
       where: {
-        ownerUserId: authContext.userId,
+        ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
         isSensitive: props.rating !== "G",
         needInspected: false,
@@ -43,7 +43,7 @@ export const UserAlbumsContents = (props: Props) => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       where: {
-        ownerUserId: authContext.userId,
+        ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
         isSensitive: props.rating !== "G",
         needInspected: false,

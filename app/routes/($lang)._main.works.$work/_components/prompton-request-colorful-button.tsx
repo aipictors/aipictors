@@ -23,8 +23,8 @@ export const PromptonRequestColorfulButton = (props: Props) => {
     >
       <div className="m-auto flex items-center">
         {props.hideIcon !== true && (
-          <span className="mr-2 rounded-full bg-white bg-opacity-30 p-1">
-            <GiftIcon className="w-4" />
+          <span className="rounded-full bg-white bg-opacity-30 p-1">
+            <GiftIcon className="h-4 w-4" />
           </span>
         )}
         <span className="font-bold">チップを送る</span>

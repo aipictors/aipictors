@@ -36,7 +36,7 @@ export const UserWorksContents = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       where: {
-        userId: authContext.userId,
+        userId: props.userId,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: props.workType,
       },
@@ -46,6 +46,8 @@ export const UserWorksContents = (props: Props) => {
   const works = workRes?.works ?? []
 
   const maxCount = worksCountResp.data?.worksCount ?? 0
+
+  console.log("works", maxCount)
 
   return (
     <>
