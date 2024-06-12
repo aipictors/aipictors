@@ -6,18 +6,16 @@ import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
 import { Suspense } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/work-tags-works"
-import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 import { useMediaQuery } from "usehooks-ts"
 import { config } from "@/config"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
-import type { worksQuery } from "@/_graphql/queries/work/works"
 import type { ResultOf } from "gql.tada"
+import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]
   // tagWorksResp: NonNullable<WorksQuery>["works"]
-  newWorks: NonNullable<ResultOf<typeof worksQuery>>["works"]
   comments: NonNullable<ResultOf<typeof workCommentsQuery>["work"]>["comments"]
 }
 
@@ -83,22 +81,29 @@ export const WorkContainer = (props: Props) => {
             </div>
 
             <section className="max-w-[1400px] space-y-4">
-              <div className="flex justify-between">
-                <h2 className="items-center space-x-2 font-bold text-md">
-                  {"関連"}
-                </h2>
-              </div>
-              {randomTag && (
+              {randomTag ? (
+                <>
+                  <div className="flex justify-between">
+                    <h2 className="items-center space-x-2 font-bold text-md">
+                      {"おすすめ"}
+                    </h2>
+                  </div>
+                  <Suspense fallback={<AppLoadingPage />}>
+                    <WorkTagsWorks
+                      tagName={randomTag}
+                      rating={work.rating ?? "G"}
+                    />
+                  </Suspense>
+                </>
+              ) : (
                 <Suspense fallback={<AppLoadingPage />}>
-                  <WorkTagsWorks tagName={randomTag} />
+                  <HomeWorksRecommendedSection
+                    isSensitive={
+                      work.rating === "R18" || work.rating === "R18G"
+                    }
+                  />
                 </Suspense>
               )}
-              <div className="flex justify-between">
-                <h2 className="items-center space-x-2 font-bold text-md">
-                  {"新着"}
-                </h2>
-              </div>
-              <ResponsivePhotoWorksAlbum works={props.newWorks} />
             </section>
           </div>
         </div>

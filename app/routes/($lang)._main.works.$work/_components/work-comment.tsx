@@ -55,7 +55,7 @@ export const WorkComment = (props: Props) => {
   return (
     <>
       <div className="flex items-start space-x-4">
-        <a href={`https://aipictors.com/users/${props.userId}`}>
+        <a href={`/users/${props.userId}`}>
           <Avatar>
             <AvatarImage
               className="w-12 rounded-full"
@@ -66,7 +66,7 @@ export const WorkComment = (props: Props) => {
           </Avatar>
         </a>
         <div>
-          <a href={`https://aipictors.com/users/${props.userId}`}>
+          <a href={`/users/${props.userId}`}>
             <span>{props.userName}</span>
           </a>
           {props.text && (

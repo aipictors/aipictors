@@ -71,7 +71,7 @@ export const ContributorCard = (props: Props) => {
               {props.user.aipictorsId !== null &&
                 props.user.aipictorsId !== "" && (
                   <a
-                    href={`https://aipictors.com/users/${props.user.aipictorsId}`}
+                    href={`/users/${props.user.aipictorsId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

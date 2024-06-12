@@ -6,6 +6,7 @@ import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-
 
 type Props = {
   tagName: string
+  rating: "G" | "R15" | "R18" | "R18G"
 }
 
 /**
@@ -21,6 +22,7 @@ export const WorkTagsWorks = (props: Props) => {
       limit: 32,
       where: {
         tagNames: [props.tagName],
+        ratings: [props.rating],
       },
     },
   })

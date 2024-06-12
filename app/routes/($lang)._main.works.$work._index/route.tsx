@@ -1,7 +1,6 @@
 import { ParamsError } from "@/_errors/params-error"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorkContainer } from "@/routes/($lang)._main.works.$work/_components/work-container"
@@ -44,23 +43,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const ratingText = rating ? toRatingText(rating) : "G"
 
-  const { data: worksResp } = await client.query({
-    query: worksQuery,
-    variables: {
-      limit: 40,
-      offset: 0,
-      where: {
-        ratings: [ratingText],
-        orderBy: "DATE_CREATED",
-        sort: "DESC",
-      },
-    },
-  })
-
   return json({
     work: workResp.data.work,
-    // tagWorksResp: tagWorksResp.works,
-    newWorks: worksResp.works,
     workComments: workCommentsResp.data.work.comments,
   })
 }
@@ -76,12 +60,7 @@ export default function Work() {
 
   return (
     <Suspense>
-      <WorkContainer
-        work={data.work}
-        // tagWorksResp={data.tagWorksResp}
-        newWorks={data.newWorks}
-        comments={data.workComments}
-      />
+      <WorkContainer work={data.work} comments={data.workComments} />
     </Suspense>
   )
 }
