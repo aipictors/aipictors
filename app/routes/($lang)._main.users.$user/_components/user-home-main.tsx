@@ -45,7 +45,9 @@ export const UserHomeMain = (props: Props) => {
           <FollowButton
             targetUserId={props.user.id}
             isFollow={isFollow}
-            triggerChildren={<Button>フォローする</Button>}
+            triggerChildren={
+              <Button className="font-bold">フォローする</Button>
+            }
             unFollowTriggerChildren={
               <Button variant={"secondary"}>フォロー中</Button>
             }

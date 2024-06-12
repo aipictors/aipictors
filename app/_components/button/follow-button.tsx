@@ -26,7 +26,7 @@ export const FollowButton = (props: Props) => {
       onClick={() => {}}
       className={
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-8 w-full rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
+        `h-8 w-full font-bold rounded-2xl bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
       }
     >
       {"フォローする"}
@@ -39,7 +39,7 @@ export const FollowButton = (props: Props) => {
       onClick={() => {}}
       className={
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-8 w-full rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
+        `h-8 w-full font-bold rounded-2xl bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
       }
     >
       {"フォロー中"}
