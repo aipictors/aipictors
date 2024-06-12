@@ -6,7 +6,6 @@ import {
   BookmarkXIcon,
   ImageIcon,
   MedalIcon,
-  SettingsIcon,
   UserXIcon,
 } from "lucide-react"
 
@@ -30,6 +29,9 @@ export const SettingsRouteList = () => {
       >
         {"表示コンテンツ"}
       </HomeNavigationButton>
+      <HomeNavigationButton href={"/settings/profile"} icon={ImageIcon}>
+        {"プロフィール"}
+      </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/muted/users"} icon={UserXIcon}>
         {"ユーザミュート"}
       </HomeNavigationButton>
@@ -42,13 +44,6 @@ export const SettingsRouteList = () => {
         icon={MedalIcon}
       >
         {"支援リクエスト"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/settings/interface"}
-        icon={SettingsIcon}
-      >
-        {"UIカスタム"}
       </HomeNavigationButton>
     </div>
   )

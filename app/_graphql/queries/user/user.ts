@@ -34,6 +34,7 @@ export const userQuery = graphql(
         id
         downloadURL
       }
+      iconUrl
       headerImage {
         id
         downloadURL

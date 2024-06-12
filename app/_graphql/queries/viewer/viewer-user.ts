@@ -18,6 +18,7 @@ export const viewerUserQuery = graphql(
           id
           downloadURL
         }
+        iconUrl
         headerImage {
           id
           downloadURL

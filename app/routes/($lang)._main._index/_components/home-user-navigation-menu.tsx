@@ -61,6 +61,8 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const headerImageUrl = data?.viewer?.user.headerImage?.downloadURL ?? ""
 
+  const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
 
@@ -83,7 +85,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={authContext.avatarPhotoURL ?? undefined} />
+          <AvatarImage src={iconUrl ?? undefined} />
           <AvatarFallback />
         </Avatar>
       </DropdownMenuTrigger>
@@ -99,7 +101,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
           >
             <a href={`/users/${authContext.login}`}>
               <Avatar className="cursor-pointer">
-                <AvatarImage src={authContext.avatarPhotoURL ?? undefined} />
+                <AvatarImage src={iconUrl ?? undefined} />
                 <AvatarFallback />
               </Avatar>
             </a>

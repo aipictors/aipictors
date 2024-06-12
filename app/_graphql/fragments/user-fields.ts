@@ -16,6 +16,7 @@ export const userFieldsFragment = graphql(
       id
       downloadURL
     }
+    iconUrl
     headerImage {
       id
       downloadURL

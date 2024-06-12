@@ -6,6 +6,7 @@ import type { ResultOf } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { ProfileEditDialog } from "@/_components/profile-edit-dialog"
 
 type Props = {
   user: NonNullable<ResultOf<typeof userQuery>["user"]>
@@ -38,7 +39,7 @@ export const UserHomeMain = (props: Props) => {
   const isFollow = userInfo?.user?.isFollowee ?? false
 
   return (
-    <div className="relative m-auto h-64 w-full bg-neutral-100 md:h-24 md:max-w-[1200px] dark:bg-neutral-900">
+    <div className="relative m-auto h-64 w-full bg-neutral-100 md:h-24 dark:bg-neutral-900">
       <div className="absolute top-8 right-0 hidden md:block">
         <div className="flex items-center space-x-2">
           <FollowButton
@@ -57,15 +58,26 @@ export const UserHomeMain = (props: Props) => {
                 targetUserId={props.user.id}
               />
             )}
+          {authContext.userId === props.user.id && (
+            <ProfileEditDialog
+              triggerChildren={
+                <Button className="absolute top-4 right-4">
+                  プロフィール編集
+                </Button>
+              }
+            />
+          )}
         </div>
       </div>
 
       <div className="absolute top-40 left-0 block w-[100%] px-8 md:hidden">
-        <FollowButton
-          className="mb-2 w-[100%] rounded-full"
-          targetUserId={"2"}
-          isFollow={isFollow}
-        />
+        {authContext.userId !== props.user.id && (
+          <FollowButton
+            className="mb-2 w-[100%] rounded-full"
+            targetUserId={"2"}
+            isFollow={isFollow}
+          />
+        )}
         {props.user.promptonUser !== null &&
           props.user.promptonUser.id !== null && (
             <div className={"block w-[100%] rounded-full"}>
@@ -77,6 +89,13 @@ export const UserHomeMain = (props: Props) => {
               />
             </div>
           )}
+        {authContext.userId === props.user.id && (
+          <ProfileEditDialog
+            triggerChildren={
+              <Button className="w-full rounded-full">プロフィール編集</Button>
+            }
+          />
+        )}
       </div>
     </div>
   )

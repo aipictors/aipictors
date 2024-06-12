@@ -12,8 +12,6 @@ type UserProfileProps = {
 export const UserProfileNameIcon = (props: UserProfileProps) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
-  console.log("UserProfileNameIcon", props.user.receivedLikesCount)
-
   return (
     <header className="relative">
       <div
@@ -23,7 +21,10 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
         <div className="mr-auto flex items-center gap-4 p-4 md:p-8">
           <UserProfileAvatar
             alt={props.user.name}
-            src={props.user.iconImage?.downloadURL}
+            src={
+              props.user.iconUrl ??
+              "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
+            }
             size={isDesktop ? "lg" : "md"}
           />
           <div className="hidden md:block">
@@ -49,6 +50,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
             </div>
           </div>
         </div>
+
         <div className="block md:hidden">
           <h1 className="font-bold text-2xl">{props.user.name}</h1>
           <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>

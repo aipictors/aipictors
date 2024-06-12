@@ -11,11 +11,14 @@ import React from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import type { ResultOf } from "gql.tada"
+import { toast } from "sonner"
 
 type Props = {
   children?: React.ReactNode
   selectedWorks: ResultOf<typeof worksQuery>["works"]
   setSelectedWorks: (works: ResultOf<typeof worksQuery>["works"]) => void
+  limit?: number
+  isSensitve?: boolean
 }
 
 /**
@@ -39,6 +42,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
+        isSensitive: props.isSensitve,
       },
     },
   })
@@ -48,6 +52,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
     variables: {
       where: {
         userId: appContext.userId,
+        isSensitive: props.isSensitve,
       },
     },
   })
@@ -65,7 +70,11 @@ export const SelectCreatedWorksDialog = (props: Props) => {
         props.selectedWorks.filter((w) => w.id !== work.id),
       )
     } else {
-      props.setSelectedWorks([...props.selectedWorks, work])
+      if (!props.limit || props.selectedWorks.length < props.limit) {
+        props.setSelectedWorks([...props.selectedWorks, work])
+      } else {
+        toast(`選択できる作品数は${props.limit}つまでです。`)
+      }
     }
   }
 
@@ -116,7 +125,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
         </p>
       )}
 
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap items-center">
         {props.selectedWorks.slice(0, 7).map((work) => (
           <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
             <img
