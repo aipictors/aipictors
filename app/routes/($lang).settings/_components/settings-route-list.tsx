@@ -43,7 +43,7 @@ export const SettingsRouteList = () => {
         href={"/settings/request"}
         icon={MedalIcon}
       >
-        {"支援リクエスト"}
+        {"チップを受け取る"}
       </HomeNavigationButton>
     </div>
   )
