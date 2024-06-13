@@ -16,13 +16,9 @@ import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-prof
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
-import { object, string } from "valibot"
 import { Label } from "@/_components/ui/label"
-
-const profileSchema = object({
-  nickname: string(),
-})
-
+import { Input } from "@/_components/ui/input"
+import { Link } from "@remix-run/react"
 /**
  * プロフィール設定フォーム
  */
@@ -129,227 +125,212 @@ export const SettingProfileForm = () => {
   }
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="justify-between">
-          <div className="relative">
-            {userInfo?.headerImageUrl ? (
+    <div className="space-y-4">
+      <div className="justify-between">
+        <div className="relative">
+          {userInfo?.headerImageUrl ? (
+            <img
+              className="h-auto w-full object-cover"
+              src={headerImage ? headerImage : userInfo?.headerImageUrl}
+              alt="header"
+            />
+          ) : (
+            <div className="h-40 w-full bg-gray-700" />
+          )}
+          <div className="absolute bottom-[-24px] left-2 h-32 w-32">
+            {userInfo?.iconUrl ? (
               <img
-                className="h-auto w-full object-cover"
-                src={headerImage ? headerImage : userInfo?.headerImageUrl}
+                className="absolute h-32 w-32 rounded-full border-2"
+                src={profileImage ? profileImage : userInfo?.iconUrl}
                 alt="header"
               />
             ) : (
-              <div className="h-40 w-full bg-gray-700" />
+              <div className="h-32 w-32 rounded-full border-2 bg-gray-700" />
             )}
-            <div className="absolute bottom-[-24px] left-2 h-32 w-32">
-              {userInfo?.iconUrl ? (
-                <img
-                  className="absolute h-32 w-32 rounded-full border-2"
-                  src={profileImage ? profileImage : userInfo?.iconUrl}
-                  alt="header"
-                />
-              ) : (
-                <div className="h-32 w-32 rounded-full border-2 bg-gray-700" />
-              )}
-
-              <CropImageField
-                isHidePreviewImage={false}
-                cropWidth={240}
-                cropHeight={240}
-                onDeleteImage={() => {
-                  setProfileImage("")
-                }}
-                onCropToBase64={setProfileImage}
-                fileExtension={"webp"}
-              >
-                <Button
-                  className="absolute top-0 right-0 h-8 w-8 rounded-full p-0"
-                  variant={"secondary"}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </CropImageField>
-            </div>
 
             <CropImageField
               isHidePreviewImage={false}
-              cropWidth={1200}
-              cropHeight={627}
+              cropWidth={240}
+              cropHeight={240}
               onDeleteImage={() => {
-                setHeaderImage("")
+                setProfileImage("")
               }}
-              onCropToBase64={setHeaderImage}
+              onCropToBase64={setProfileImage}
               fileExtension={"webp"}
             >
               <Button
-                className="absolute top-1 right-1 h-8 w-8 rounded-full p-0"
+                className="absolute top-0 right-0 h-8 w-8 rounded-full p-0"
                 variant={"secondary"}
               >
                 <Pencil className="h-4 w-4" />
               </Button>
             </CropImageField>
           </div>
-          <p className="mt-8">
-            プロフィール画像やヘッダー画像にR-18画像は掲載できません。
-          </p>
-        </div>
 
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="nickname">{"ニックネーム"}</Label>
-          <input
-            type="text"
-            id="nickname"
-            maxLength={32}
-            minLength={1}
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="rounded-md border px-2 py-1"
-            defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="profile">{"プロフィール"}</Label>
-          <AutoResizeTextarea
-            id="profile"
-            className="rounded-md border px-2 py-1"
-            maxLength={320}
-            value={profile}
-            onChange={(e) => setProfile(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="enProfile">{"英語プロフィール"}</Label>
-          <AutoResizeTextarea
-            id="enProfile"
-            className="rounded-md border px-2 py-1"
-            maxLength={640}
-            value={enProfile}
-            onChange={(e) => setEnProfile(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="website">{"Webサイト"}</Label>
-          <input
-            type="text"
-            id="website"
-            className="rounded-md border px-2 py-1"
-            value={website}
-            maxLength={1000}
-            onChange={(e) => setWebsite(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="instagram">{"Instagram"}</Label>
-          <input
-            type="text"
-            id="instagram"
-            className="rounded-md border px-2 py-1"
-            value={instagram}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setInstagram(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="twitter">{"X(旧Twitter)"}</Label>
-          <input
-            type="text"
-            id="twitter"
-            className="rounded-md border px-2 py-1"
-            value={twitter}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setTwitter(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="github">{"Github"}</Label>
-          <input
-            type="text"
-            id="github"
-            className="rounded-md border px-2 py-1"
-            value={github}
-            placeholder={"@"}
-            maxLength={255}
-            onChange={(e) => setGithub(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="email">{"メールアドレス"}</Label>
-          <input
-            type="text"
-            id="email"
-            className="rounded-md border px-2 py-1"
-            value={mail}
-            placeholder={""}
-            maxLength={320}
-            onChange={(e) => setMail(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="pickup">{"ピックアップ ※最大3つ"}</Label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
-              selectedWorks={selectedPickupWorks}
-              setSelectedWorks={setSelectedPickupWorks}
-              limit={3}
+          <CropImageField
+            isHidePreviewImage={false}
+            cropWidth={1200}
+            cropHeight={627}
+            onDeleteImage={() => {
+              setHeaderImage("")
+            }}
+            onCropToBase64={setHeaderImage}
+            fileExtension={"webp"}
+          >
+            <Button
+              className="absolute top-1 right-1 h-8 w-8 rounded-full p-0"
+              variant={"secondary"}
             >
-              <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedWorksDialog>
-          </Suspense>
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </CropImageField>
         </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <Label htmlFor="sensitive-pickup">
-            {"センシティブピックアップ ※最大3つ"}
-          </Label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
-              selectedWorks={selectedPickupSensitiveWorks}
-              setSelectedWorks={setSelectedPickupSensitiveWorks}
-              limit={3}
-              isSensitve={true}
-            >
-              <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedWorksDialog>
-          </Suspense>
-        </div>
-        <Separator />
-        <Button
-          disabled={isUpdating}
-          onClick={onSubmit}
-          className="ml-auto block w-24"
-        >
-          {isUpdating ? (
-            <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
-          ) : (
-            <p>{"更新する"}</p>
-          )}
-        </Button>
-        <Separator />
-        <a className="m-auto block" href="/account/login">
-          <Button className="m-auto block" variant={"secondary"}>
-            ログイン情報を変更する
-          </Button>
-        </a>
+        <p className="mt-8">
+          {"アイコンやヘッダー画像にR-18画像は掲載できません。"}
+        </p>
       </div>
-    </>
+
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="nickname">{"ニックネーム"}</Label>
+        <Input
+          type="text"
+          id="nickname"
+          maxLength={32}
+          minLength={1}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="profile">{"プロフィール"}</Label>
+        <AutoResizeTextarea
+          id="profile"
+          className="rounded-md border px-2 py-1"
+          maxLength={320}
+          value={profile}
+          onChange={(e) => setProfile(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="enProfile">{"英語プロフィール"}</Label>
+        <AutoResizeTextarea
+          id="enProfile"
+          className="rounded-md border px-2 py-1"
+          maxLength={640}
+          value={enProfile}
+          onChange={(e) => setEnProfile(e.target.value)}
+        />
+      </div>
+
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="website">{"Webサイト"}</Label>
+        <Input
+          type="url"
+          id="website"
+          value={website}
+          maxLength={1000}
+          placeholder="https://example.com"
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="instagram">{"Instagram"}</Label>
+        <Input
+          type="text"
+          id="instagram"
+          value={instagram}
+          placeholder={"@"}
+          maxLength={255}
+          onChange={(e) => setInstagram(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="twitter">{"X(旧Twitter)"}</Label>
+        <Input
+          type="text"
+          id="twitter"
+          value={twitter}
+          placeholder={"@"}
+          maxLength={255}
+          onChange={(e) => setTwitter(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="github">{"Github"}</Label>
+        <Input
+          type="text"
+          id="github"
+          value={github}
+          placeholder={"ユーザー名"}
+          maxLength={255}
+          onChange={(e) => setGithub(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="email">{"メールアドレス"}</Label>
+        <Input
+          type="email"
+          id="email"
+          value={mail}
+          placeholder={"user@example.com"}
+          maxLength={320}
+          onChange={(e) => setMail(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="pickup">{"ピックアップ ※最大3つ"}</Label>
+        <Suspense fallback={<AppLoadingPage />}>
+          <SelectCreatedWorksDialog
+            selectedWorks={selectedPickupWorks}
+            setSelectedWorks={setSelectedPickupWorks}
+            limit={3}
+          >
+            <div className="border-2 border-transparent p-1">
+              <Button className="h-16 w-16" size={"icon"} variant={"secondary"}>
+                <PlusIcon />
+              </Button>
+            </div>
+          </SelectCreatedWorksDialog>
+        </Suspense>
+      </div>
+      <div className="flex flex-col justify-between space-y-2">
+        <Label htmlFor="sensitive-pickup">
+          {"センシティブピックアップ ※最大3つ"}
+        </Label>
+        <Suspense fallback={<AppLoadingPage />}>
+          <SelectCreatedWorksDialog
+            selectedWorks={selectedPickupSensitiveWorks}
+            setSelectedWorks={setSelectedPickupSensitiveWorks}
+            limit={3}
+            isSensitve={true}
+          >
+            <div className="border-2 border-transparent p-1">
+              <Button className="h-16 w-16" size={"icon"} variant={"secondary"}>
+                <PlusIcon />
+              </Button>
+            </div>
+          </SelectCreatedWorksDialog>
+        </Suspense>
+      </div>
+      <Separator />
+      <Button
+        disabled={isUpdating}
+        onClick={onSubmit}
+        className="ml-auto block w-24"
+      >
+        {isUpdating ? (
+          <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+        ) : (
+          <p>{"更新する"}</p>
+        )}
+      </Button>
+      <Separator />
+      <Link to="/account/login" className="m-auto block">
+        <Button className="m-auto block" variant={"secondary"}>
+          ログイン情報を変更する
+        </Button>
+      </Link>
+    </div>
   )
 }
