@@ -16,6 +16,12 @@ import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-prof
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
+import { object, string } from "valibot"
+import { Label } from "@/_components/ui/label"
+
+const profileSchema = object({
+  nickname: string(),
+})
 
 /**
  * プロフィール設定フォーム
@@ -190,12 +196,7 @@ export const SettingProfileForm = () => {
         </div>
 
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="nickname"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"ニックネーム"}
-          </label>
+          <Label htmlFor="nickname">{"ニックネーム"}</Label>
           <input
             type="text"
             id="nickname"
@@ -208,12 +209,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="profile"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"プロフィール"}
-          </label>
+          <Label htmlFor="profile">{"プロフィール"}</Label>
           <AutoResizeTextarea
             id="profile"
             className="rounded-md border px-2 py-1"
@@ -223,12 +219,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="enProfile"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"英語プロフィール"}
-          </label>
+          <Label htmlFor="enProfile">{"英語プロフィール"}</Label>
           <AutoResizeTextarea
             id="enProfile"
             className="rounded-md border px-2 py-1"
@@ -239,12 +230,7 @@ export const SettingProfileForm = () => {
         </div>
 
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="website"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"Webサイト"}
-          </label>
+          <Label htmlFor="website">{"Webサイト"}</Label>
           <input
             type="text"
             id="website"
@@ -255,12 +241,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="instagram"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"Instagram"}
-          </label>
+          <Label htmlFor="instagram">{"Instagram"}</Label>
           <input
             type="text"
             id="instagram"
@@ -272,12 +253,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="twitter"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"X(旧Twitter)"}
-          </label>
+          <Label htmlFor="twitter">{"X(旧Twitter)"}</Label>
           <input
             type="text"
             id="twitter"
@@ -289,12 +265,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="github"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"Github"}
-          </label>
+          <Label htmlFor="github">{"Github"}</Label>
           <input
             type="text"
             id="github"
@@ -306,15 +277,10 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="mail"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"メールアドレス"}
-          </label>
+          <Label htmlFor="email">{"メールアドレス"}</Label>
           <input
             type="text"
-            id="mail"
+            id="email"
             className="rounded-md border px-2 py-1"
             value={mail}
             placeholder={""}
@@ -323,12 +289,7 @@ export const SettingProfileForm = () => {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"ピックアップ ※最大3つ"}
-          </label>
+          <Label htmlFor="pickup">{"ピックアップ ※最大3つ"}</Label>
           <Suspense fallback={<AppLoadingPage />}>
             <SelectCreatedWorksDialog
               selectedWorks={selectedPickupWorks}
@@ -348,12 +309,9 @@ export const SettingProfileForm = () => {
           </Suspense>
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="sensitive-pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
+          <Label htmlFor="sensitive-pickup">
             {"センシティブピックアップ ※最大3つ"}
-          </label>
+          </Label>
           <Suspense fallback={<AppLoadingPage />}>
             <SelectCreatedWorksDialog
               selectedWorks={selectedPickupSensitiveWorks}
