@@ -303,7 +303,7 @@ export const SettingProfileForm = () => {
             selectedWorks={selectedPickupSensitiveWorks}
             setSelectedWorks={setSelectedPickupSensitiveWorks}
             limit={3}
-            isSensitve={true}
+            isSensitive={true}
           >
             <div className="border-2 border-transparent p-1">
               <Button className="h-16 w-16" size={"icon"} variant={"secondary"}>
