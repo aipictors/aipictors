@@ -271,7 +271,7 @@ export const EditImageForm = (props: Props) => {
 
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
-  const [uploadedWorkNanoid, setUploadedWorkNanoid] = useState("")
+  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
 
   const [base64Cache, setBase64Cache] = useState<{ [key: string]: string }>({})
 
@@ -601,10 +601,12 @@ export const EditImageForm = (props: Props) => {
           },
         })
 
+        console.log(uploadedWork.data?.updateWork.uuid)
+
         if (uploadedWork.data?.updateWork) {
           setUploadedWorkId(uploadedWork.data.updateWork.id)
           if (uploadedWork.data.updateWork.accessType === "LIMITED") {
-            setUploadedWorkNanoid(uploadedWork.data.updateWork.nanoid ?? "")
+            setUploadedWorkUuid(uploadedWork.data.updateWork.uuid ?? "")
           }
         }
       }
@@ -675,11 +677,10 @@ export const EditImageForm = (props: Props) => {
             },
           },
         })
-
         if (uploadedWork.data?.updateWork) {
           setUploadedWorkId(uploadedWork.data.updateWork.id)
           if (uploadedWork.data.updateWork.accessType === "LIMITED") {
-            setUploadedWorkNanoid(uploadedWork.data.updateWork.nanoid ?? "")
+            setUploadedWorkUuid(uploadedWork.data.updateWork.uuid ?? "")
           }
         }
       }
@@ -1013,7 +1014,7 @@ export const EditImageForm = (props: Props) => {
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
-        nanoid={uploadedWorkNanoid}
+        uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 

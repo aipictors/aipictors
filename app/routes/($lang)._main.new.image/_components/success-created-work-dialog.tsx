@@ -8,7 +8,7 @@ type Props = {
   isOpen: boolean
   imageBase64: string
   workId: string
-  nanoid: string
+  uuid: string
   shareTags: string[]
 }
 
@@ -65,8 +65,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           if (!isOpen) {
             // ページ遷移
             if (typeof window !== "undefined") {
-              if (props.nanoid !== "") {
-                window.location.href = `https://aipictors.com/works/${props.nanoid}`
+              if (props.uuid !== "") {
+                window.location.href = `https://aipictors.com/works/${props.uuid}`
               } else {
                 window.location.href = `https://aipictors.com/works/${props.workId}`
               }
@@ -87,8 +87,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             />
             <a
               href={
-                props.nanoid !== ""
-                  ? `https://aipictors.com/works/${props.nanoid}`
+                props.uuid !== ""
+                  ? `https://aipictors.com/works/${props.uuid}`
                   : `https://aipictors.com/works/${props.workId}`
               }
             >
@@ -105,8 +105,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             <XIntent
               text={`${props.title}\n`}
               url={`${
-                props.nanoid !== ""
-                  ? `https://aipictors.com/works/${props.nanoid}`
+                props.uuid !== ""
+                  ? `https://aipictors.com/works/${props.uuid}`
                   : `https://aipictors.com/works/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
@@ -115,8 +115,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <Button
             onClick={() => {
               if (typeof window !== "undefined") {
-                if (props.nanoid !== "") {
-                  window.location.href = `https://aipictors.com/works/${props.nanoid}`
+                if (props.uuid !== "") {
+                  window.location.href = `https://aipictors.com/works/${props.uuid}`
                 } else {
                   window.location.href = `https://aipictors.com/works/${props.workId}`
                 }

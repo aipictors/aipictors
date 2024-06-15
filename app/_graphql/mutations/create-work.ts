@@ -7,6 +7,7 @@ export const createWorkMutation = graphql(
       title
       accessType
       nanoid
+      uuid
     }
   }`,
 )

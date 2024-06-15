@@ -229,7 +229,7 @@ export const NewImageForm = () => {
 
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
-  const [uploadedWorkNanoid, setUploadedWorkNanoid] = useState("")
+  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
@@ -459,7 +459,7 @@ export const NewImageForm = () => {
         if (work.data?.createWork) {
           setUploadedWorkId(work.data?.createWork.id)
           if (work.data?.createWork.accessType === "LIMITED") {
-            setUploadedWorkNanoid(work.data?.createWork.nanoid ?? "")
+            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
       }
@@ -525,7 +525,7 @@ export const NewImageForm = () => {
         if (work.data?.createWork) {
           setUploadedWorkId(work.data?.createWork.id)
           if (work.data?.createWork.accessType === "LIMITED") {
-            setUploadedWorkNanoid(work.data?.createWork.nanoid ?? "")
+            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
       }
@@ -821,7 +821,7 @@ export const NewImageForm = () => {
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
-        nanoid={uploadedWorkNanoid}
+        uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 

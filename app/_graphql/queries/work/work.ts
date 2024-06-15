@@ -104,6 +104,7 @@ export const workQuery = graphql(
       weeklyRanking
       monthlyRanking
       relatedUrl
+      nanoid
     }
   }`,
   [userFieldsFragment, subWorkFieldsFragment],

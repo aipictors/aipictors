@@ -9,6 +9,7 @@ export const updateWorkMutation = graphql(
       rating
       accessType
       nanoid
+      uuid
     }
   }`,
 )
