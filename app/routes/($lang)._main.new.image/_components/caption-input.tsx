@@ -6,6 +6,7 @@ import {} from "@dnd-kit/sortable"
 
 type Props = {
   label?: string
+  caption?: string
   setCaption: (value: string) => void
 }
 
@@ -24,6 +25,7 @@ export const CaptionInput = (props: Props) => {
             onChange={(event) => {
               props.setCaption(event.target.value)
             }}
+            value={props.caption}
             maxLength={3000}
             placeholder={props.label ? props.label : "キャプション"}
             className="w-full"

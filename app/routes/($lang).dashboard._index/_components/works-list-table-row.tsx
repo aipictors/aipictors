@@ -80,7 +80,7 @@ export const WorksListTableRow = (props: Props) => {
             </a>
           </TableCell>
           <TableCell>
-            <a href={`https://aipictors.com/edit-work/?id=${props.work.id}`}>
+            <a href={`/works/${props.work.id}/edit`}>
               <PencilIcon />
             </a>
           </TableCell>

@@ -76,7 +76,7 @@ export const WorksSpList = (props: Props) => {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              <a href={`https://aipictors.com/edit-work/?id=${work.id}`}>
+              <a href={`/works/${work.id}/edit`}>
                 <PencilIcon />
               </a>
             </div>

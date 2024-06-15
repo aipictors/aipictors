@@ -18,7 +18,7 @@ export default async function getResizedImg(
   imageSrc: string,
   width: number,
   height: number,
-  fileExtension?: string,
+  fileExtension = "webp",
 ): Promise<string> {
   const image = await createImage(imageSrc)
   const canvas = document.createElement("canvas")
@@ -35,13 +35,13 @@ export default async function getResizedImg(
   // 画像をキャンバスに描画（リサイズ）
   ctx.drawImage(image, 0, 0, width, height)
 
-  // canvasを画像に変換
+  // canvasを画像に変換してBase64形式で返す
   return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (file) => {
-        if (file !== null) resolve(URL.createObjectURL(file))
-      },
-      `image/${fileExtension ?? "png"}`,
-    )
+    try {
+      const base64 = canvas.toDataURL(`image/${fileExtension ?? "png"}`)
+      resolve(base64)
+    } catch (error) {
+      reject(new Error("Failed to convert canvas to Base64"))
+    }
   })
 }

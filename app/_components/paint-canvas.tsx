@@ -37,6 +37,7 @@ interface IProps {
   onSubmit?(value: string): void
   onClose?(): void
   setBackImageBase64?(value: string): void
+  extension?: string // 保存する拡張子
 }
 
 // Canvas 描画状態を保存するためのインターフェース
@@ -62,6 +63,7 @@ const PaintCanvas: React.FC<IProps> = ({
   isPadding,
   imageBase64,
   backImageBase64,
+  extension,
   onChangeBrushImageBase64,
   onChangeSetDrawing,
   onChangeCompositionCanvasBase64,
@@ -742,7 +744,9 @@ const PaintCanvas: React.FC<IProps> = ({
                   }
 
                   // 合成したキャンバスからDataURLを取得
-                  const dataUrl = compositeCanvas.toDataURL()
+                  const dataUrl = compositeCanvas.toDataURL(
+                    `image/${extension ?? "webp"}`,
+                  )
 
                   // onSubmit関数を呼び出し、DataURLを渡す
                   onSubmit(dataUrl)

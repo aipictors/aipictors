@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
 import { ArrowLeftRightIcon } from "lucide-react"
@@ -21,7 +22,7 @@ export const HomeNotificationsContentFollowedItem = (props: Props) => {
         href={`/users/${props.userId}`}
       >
         <img
-          src={props.iconUrl}
+          src={IconUrl(props.iconUrl)}
           alt="thumbnail"
           className="h-8 w-8 rounded-full object-cover"
         />

@@ -45,7 +45,6 @@ import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
-import { uploadPublicVideo } from "@/_utils/upload-public-video"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
@@ -191,6 +190,8 @@ export const EditImageForm = (props: Props) => {
 
   const [themeId, setThemeId] = useState(work?.work?.dailyTheme?.id ?? "")
 
+  const [editTargetImageUrl, setEditTargetImageUrl] = useState("")
+
   const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
 
   const [albumId, setAlbumId] = useState(work?.work?.album?.id ?? "")
@@ -292,7 +293,7 @@ export const EditImageForm = (props: Props) => {
     setThumbnailBase64(work?.work?.largeThumbnailImageURL ?? "")
     setOgpBase64(work?.work?.ogpThumbnailImageUrl ?? "")
 
-    // 現在時刻よりも未来の時刻なら予約投稿の日付と時間をセット
+    // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
     if (work?.work?.createdAt) {
       const reservedDate = new Date(work?.work?.createdAt)
       const now = new Date()
@@ -333,25 +334,11 @@ export const EditImageForm = (props: Props) => {
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
+    setEditTargetImageUrl("")
   }
 
   const [updateWork, { loading: isUpdatedLoading }] =
     useMutation(updateWorkMutation)
-
-  const uploadVideo = async () => {
-    if (authContext.userId === null || videoFile === null) {
-      return ""
-    }
-
-    const videoFileName = `${createRandomString(30)}.mp4`
-
-    const videoUrl = await uploadPublicVideo(
-      videoFile,
-      videoFileName,
-      authContext.userId,
-    )
-    return videoUrl
-  }
 
   const uploadImages = async () => {
     if (authContext.userId === null) {
@@ -364,11 +351,9 @@ export const EditImageForm = (props: Props) => {
       images.map(async (image) => {
         const imageFileName = `${createRandomString(30)}.webp`
 
-        const imageUrl = await uploadPublicImage(
-          image,
-          imageFileName,
-          authContext.userId,
-        )
+        const imageUrl = image.startsWith("https://")
+          ? image
+          : await uploadPublicImage(image, imageFileName, authContext.userId)
         return imageUrl
       }),
     )
@@ -379,11 +364,11 @@ export const EditImageForm = (props: Props) => {
   const successUploadedProcess = () => {
     setIsCreatingWork(false)
     setIsCreatedWork(true)
-    toast("作品を投稿しました")
+    toast("作品を更新しました")
   }
 
   /**
-   * 投稿処理
+   * 更新処理
    * @returns
    */
   const onPost = async () => {
@@ -429,12 +414,12 @@ export const EditImageForm = (props: Props) => {
         return
       }
 
-      // 予約投稿の時間は日付と時間両方の入力が必要
+      // 予約更新の時間は日付と時間両方の入力が必要
       if (
         (reservationDate !== "" && reservationTime === "") ||
         (reservationDate === "" && reservationTime !== "")
       ) {
-        toast("予約投稿の時間を入力してください")
+        toast("予約更新の時間を入力してください")
         return
       }
 
@@ -444,42 +429,63 @@ export const EditImageForm = (props: Props) => {
       }
 
       // サムネイルを作成してアップロード
-      const smallThumbnail = isThumbnailLandscape
-        ? await resizeImage(thumbnailBase64, 400, 0, "webp")
-        : await resizeImage(thumbnailBase64, 0, 400, "webp")
-      const largeThumbnail = isThumbnailLandscape
-        ? await resizeImage(thumbnailBase64, 600, 0, "webp")
-        : await resizeImage(thumbnailBase64, 0, 600, "webp")
+      const smallThumbnail = thumbnailBase64.startsWith("https://")
+        ? null
+        : isThumbnailLandscape
+          ? await resizeImage(thumbnailBase64, 400, 0, "webp")
+          : await resizeImage(thumbnailBase64, 0, 400, "webp")
+      const largeThumbnail = thumbnailBase64.startsWith("https://")
+        ? null
+        : isThumbnailLandscape
+          ? await resizeImage(thumbnailBase64, 600, 0, "webp")
+          : await resizeImage(thumbnailBase64, 0, 600, "webp")
       const smallThumbnailFileName = `${createRandomString(30)}.webp`
       const largeThumbnailFileName = `${createRandomString(30)}.webp`
       const ogpImageFileName = `${createRandomString(30)}.webp`
-      const smallThumbnailUrl = await uploadPublicImage(
-        smallThumbnail.base64,
-        smallThumbnailFileName,
-        authContext.userId,
-      )
-      if (smallThumbnailUrl === "") {
+      const smallThumbnailUrl =
+        thumbnailBase64.startsWith("https://") || smallThumbnail === null
+          ? work?.work?.smallThumbnailImageURL
+          : await uploadPublicImage(
+              smallThumbnail.base64,
+              smallThumbnailFileName,
+              authContext.userId,
+            )
+
+      console.log(work?.work?.smallThumbnailImageURL)
+
+      if (smallThumbnailUrl === "" || smallThumbnailUrl === undefined) {
         toast("サムネイルのアップロードに失敗しました")
         return
       }
 
       uploadedImageUrls.push(smallThumbnailUrl)
-      const largeThumbnailUrl = await uploadPublicImage(
-        largeThumbnail.base64,
-        largeThumbnailFileName,
-        authContext.userId,
-      )
-      if (largeThumbnailUrl === "") {
+      const largeThumbnailUrl =
+        thumbnailBase64.startsWith("https://") || largeThumbnail === null
+          ? work?.work?.largeThumbnailImageURL
+          : await uploadPublicImage(
+              largeThumbnail.base64,
+              largeThumbnailFileName,
+              authContext.userId,
+            )
+      if (largeThumbnailUrl === "" || largeThumbnailUrl === undefined) {
         toast("サムネイルのアップロードに失敗しました")
         return
       }
       uploadedImageUrls.push(largeThumbnailUrl)
-      const ogpBase64Url = await uploadPublicImage(
-        ogpBase64,
-        ogpImageFileName,
-        authContext.userId,
-      )
-      if (ogpBase64Url === "") {
+      const ogpBase64Url =
+        ogpBase64 === "" || ogpBase64.startsWith("https://")
+          ? work?.work?.ogpThumbnailImageUrl
+          : await uploadPublicImage(
+              ogpBase64,
+              ogpImageFileName,
+              authContext.userId,
+            )
+      if (
+        work?.work?.ogpThumbnailImageUrl !== null &&
+        (ogpBase64Url === "" ||
+          ogpBase64Url === undefined ||
+          ogpBase64Url === null)
+      ) {
         toast("サムネイルのアップロードに失敗しました")
         return
       }
@@ -498,13 +504,9 @@ export const EditImageForm = (props: Props) => {
 
       // 動画もしくは画像をアップロード
       if (videoFile) {
-        const videoUrl = await uploadVideo()
-        if (videoUrl === "") {
-          toast("動画のアップロードに失敗しました")
-          return
-        }
+        const videoUrl = work?.work?.url ?? ""
 
-        const work = await updateWork({
+        const uploadedWork = await updateWork({
           variables: {
             input: {
               id: props.workId,
@@ -541,11 +543,19 @@ export const EditImageForm = (props: Props) => {
               accessType: accessType,
               imageUrls: [largeThumbnailFileName],
               smallThumbnailImageURL: smallThumbnailUrl,
-              smallThumbnailImageWidth: smallThumbnail.width,
-              smallThumbnailImageHeight: smallThumbnail.height,
+              smallThumbnailImageWidth: smallThumbnail
+                ? smallThumbnail.width
+                : work?.work?.smallThumbnailImageWidth ?? 0,
+              smallThumbnailImageHeight: smallThumbnail
+                ? smallThumbnail.height
+                : work?.work?.smallThumbnailImageHeight ?? 0,
               largeThumbnailImageURL: largeThumbnailUrl,
-              largeThumbnailImageWidth: largeThumbnail.width,
-              largeThumbnailImageHeight: largeThumbnail.height,
+              largeThumbnailImageWidth: largeThumbnail
+                ? largeThumbnail.width
+                : work?.work?.largeThumbnailImageWidth ?? 0,
+              largeThumbnailImageHeight: largeThumbnail
+                ? largeThumbnail.height
+                : work?.work?.largeThumbnailImageHeight ?? 0,
               videoUrl: videoUrl,
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
@@ -554,8 +564,8 @@ export const EditImageForm = (props: Props) => {
           },
         })
 
-        if (work.data?.updateWork) {
-          setUploadedWorkId(work.data.updateWork.id)
+        if (uploadedWork.data?.updateWork) {
+          setUploadedWorkId(uploadedWork.data.updateWork.id)
         }
       }
 
@@ -565,7 +575,7 @@ export const EditImageForm = (props: Props) => {
           toast("画像のアップロードに失敗しました")
           return
         }
-        const work = await updateWork({
+        const uploadedWork = await updateWork({
           variables: {
             input: {
               id: props.workId,
@@ -602,11 +612,19 @@ export const EditImageForm = (props: Props) => {
               accessType: accessType,
               imageUrls: imageUrls,
               smallThumbnailImageURL: smallThumbnailUrl,
-              smallThumbnailImageWidth: smallThumbnail.width,
-              smallThumbnailImageHeight: smallThumbnail.height,
+              smallThumbnailImageWidth: smallThumbnail
+                ? smallThumbnail.width
+                : work?.work?.smallThumbnailImageWidth ?? 0,
+              smallThumbnailImageHeight: smallThumbnail
+                ? smallThumbnail.height
+                : work?.work?.smallThumbnailImageHeight ?? 0,
               largeThumbnailImageURL: largeThumbnailUrl,
-              largeThumbnailImageWidth: largeThumbnail.width,
-              largeThumbnailImageHeight: largeThumbnail.height,
+              largeThumbnailImageWidth: largeThumbnail
+                ? largeThumbnail.width
+                : work?.work?.largeThumbnailImageWidth ?? 0,
+              largeThumbnailImageHeight: largeThumbnail
+                ? largeThumbnail.height
+                : work?.work?.largeThumbnailImageHeight ?? 0,
               videoUrl: "",
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
@@ -615,8 +633,8 @@ export const EditImageForm = (props: Props) => {
           },
         })
 
-        if (work.data?.updateWork) {
-          setUploadedWorkId(work.data.updateWork.id)
+        if (uploadedWork.data?.updateWork) {
+          setUploadedWorkId(uploadedWork.data.updateWork.id)
         }
       }
 
@@ -628,7 +646,9 @@ export const EditImageForm = (props: Props) => {
       // 失敗したらアップロードした画像は削除する
       // biome-ignore lint/complexity/noForEach: <explanation>
       uploadedImageUrls.forEach(async (url) => {
-        await deleteUploadedImage(url)
+        if (url) {
+          await deleteUploadedImage(url)
+        }
       })
     } finally {
       setIsCreatingWork(false)
@@ -708,9 +728,10 @@ export const EditImageForm = (props: Props) => {
                       [content]: base64,
                     }))
                   }
+                  setEditTargetImageUrl(content)
                   return
                 }
-
+                setEditTargetImageUrl(content)
                 setEditTargetImageBase64(content)
               }}
               onChangeItems={setItems}
@@ -749,7 +770,7 @@ export const EditImageForm = (props: Props) => {
 
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} value={title} />
-            <CaptionInput setCaption={setCaption} />
+            <CaptionInput caption={caption} setCaption={setCaption} />
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
@@ -758,9 +779,14 @@ export const EditImageForm = (props: Props) => {
                   </Button>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
-                  <TitleInput label={"英語タイトル"} onChange={setEnTitle} />
+                  <TitleInput
+                    value={enTitle}
+                    label={"英語タイトル"}
+                    onChange={setEnTitle}
+                  />
                   <CaptionInput
                     label={"英語キャプション"}
+                    caption={enCaption}
                     setCaption={setEnCaption}
                   />
                 </AccordionContent>
@@ -859,6 +885,7 @@ export const EditImageForm = (props: Props) => {
                 }}
                 title={theme?.dailyTheme?.title ?? ""}
                 isLoading={themeLoading}
+                isChecked={themeId === theme?.dailyTheme?.id}
               />
             )}
             <TagsInput
@@ -892,7 +919,7 @@ export const EditImageForm = (props: Props) => {
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
           <Button className="w-full" type="submit" onClick={onPost}>
-            投稿
+            更新
           </Button>
         </div>
       </div>
@@ -909,9 +936,9 @@ export const EditImageForm = (props: Props) => {
             onSubmit={(base64) => {
               setItems((prev) =>
                 prev.map((item) =>
-                  item.content === editTargetImageBase64 ||
+                  item.content === editTargetImageUrl ||
                   (item.content.startsWith("https://") &&
-                    base64Cache[item.content] !== editTargetImageBase64)
+                    item.content === editTargetImageUrl)
                     ? { ...item, content: base64 }
                     : item,
                 ),
@@ -921,9 +948,9 @@ export const EditImageForm = (props: Props) => {
 
               // もし先頭のアイテムを書き換えたならサムネイル更新
               if (
-                items[0].content === editTargetImageBase64 ||
+                items[0].content === editTargetImageUrl ||
                 (items[0].content.startsWith("https://") &&
-                  base64Cache[items[0].content] !== editTargetImageBase64)
+                  items[0].content !== editTargetImageUrl)
               ) {
                 setThumbnailBase64(base64)
               }

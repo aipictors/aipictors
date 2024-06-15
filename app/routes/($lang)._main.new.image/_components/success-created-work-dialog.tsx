@@ -88,7 +88,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               />
             </a>
           </div>
-          <p className="text-center font-bold">作品が投稿されました</p>
+          <p className="text-center font-bold">作品が更新されました</p>
           <p className="text-center text-sm opacity-80">この作品をシェアする</p>
           <div className="w-full">
             <XIntent
