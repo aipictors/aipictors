@@ -32,5 +32,6 @@ export const partialWorkFieldsFragment = graphql(
       name
       iconUrl
     }
+    uuid
   }`,
 )

@@ -27,6 +27,7 @@ export const RecommendedListContainer = () => {
       where: {
         isRecommended: true,
         recommendedWorksUserId: authContext.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R18G", "R15", "R18"],
       },
     },

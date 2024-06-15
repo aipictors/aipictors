@@ -9,6 +9,7 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 type Props = {
   works: {
     id: string
+    uuid: string
     title: string
     thumbnailImageUrl: string
     likesCount: number

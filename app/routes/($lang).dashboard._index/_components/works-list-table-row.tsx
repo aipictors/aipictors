@@ -7,10 +7,12 @@ import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { Link } from "@remix-run/react"
 
 type Props = {
   work: {
     id: string
+    uuid: string
     title: string
     thumbnailImageUrl: string
     likesCount: number
@@ -66,23 +68,39 @@ export const WorksListTableRow = (props: Props) => {
           }}
         >
           <TableCell className="font-medium">
-            <a href={`/works/${props.work.id}`}>
-              <div className="w-32">{props.work.title}</div>
-            </a>
+            {props.work.accessType === "LIMITED" ? (
+              <Link to={`/works/${props.work.uuid}`}>
+                <div className="w-32">{props.work.title}</div>
+              </Link>
+            ) : (
+              <Link to={`/works/${props.work.id}`}>
+                <div className="w-32">{props.work.title}</div>
+              </Link>
+            )}
           </TableCell>
           <TableCell>
-            <a href={`/works/${props.work.id}`}>
-              <img
-                src={props.work.thumbnailImageUrl}
-                alt="thumbnail"
-                className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
-              />
-            </a>
+            {props.work.accessType === "LIMITED" ? (
+              <Link to={`/works/${props.work.uuid}`}>
+                <img
+                  src={props.work.thumbnailImageUrl}
+                  alt="thumbnail"
+                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                />{" "}
+              </Link>
+            ) : (
+              <Link to={`/works/${props.work.id}`}>
+                <img
+                  src={props.work.thumbnailImageUrl}
+                  alt="thumbnail"
+                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                />{" "}
+              </Link>
+            )}
           </TableCell>
           <TableCell>
-            <a href={`/works/${props.work.id}/edit`}>
+            <Link to={`/works/${props.work.id}/edit`}>
               <PencilIcon />
-            </a>
+            </Link>
           </TableCell>
           <TableCell>{props.work.likesCount}</TableCell>
           <TableCell>

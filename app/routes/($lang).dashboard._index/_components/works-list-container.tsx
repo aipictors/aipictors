@@ -105,6 +105,7 @@ export const WorksListContainer = (props: Props) => {
         works={
           works?.map((work) => ({
             id: work.id,
+            uuid: work.uuid ?? "",
             title: work.title,
             thumbnailImageUrl: work.smallThumbnailImageURL,
             likesCount: work.likesCount,
