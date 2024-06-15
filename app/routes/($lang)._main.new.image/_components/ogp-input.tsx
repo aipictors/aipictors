@@ -1,4 +1,5 @@
 import { OgpDialog } from "@/routes/($lang)._main.new.image/_components/ogp-dialog"
+import { useEffect, useState } from "react"
 
 type Props = {
   imageBase64: string
@@ -13,6 +14,18 @@ export const OgpInput = (props: Props) => {
   const defaultImageUrl =
     "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/none-select-og.jpg"
 
+  const [displayImage, setDisplayImage] = useState<string>("")
+
+  useEffect(() => {
+    if (props.ogpBase64) {
+      setDisplayImage(props.ogpBase64)
+    } else {
+      if (displayImage === "") {
+        setDisplayImage(defaultImageUrl)
+      }
+    }
+  }, [props.ogpBase64])
+
   return (
     <>
       <OgpDialog
@@ -24,7 +37,7 @@ export const OgpInput = (props: Props) => {
             <div className="m-4">
               <img
                 alt="adjust-thumbnail"
-                src={props.ogpBase64 ? props.ogpBase64 : defaultImageUrl}
+                src={displayImage}
                 className={"max-w-24 rounded-md"}
               />
             </div>
