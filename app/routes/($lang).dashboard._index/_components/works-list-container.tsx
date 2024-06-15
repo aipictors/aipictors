@@ -106,7 +106,7 @@ export const WorksListContainer = (props: Props) => {
             title: work.title,
             thumbnailImageUrl: work.smallThumbnailImageURL,
             likesCount: work.likesCount,
-            bookmarksCount: 0,
+            bookmarksCount: work.bookmarksCount ?? 0,
             commentsCount: work.commentsCount ?? 0,
             viewsCount: work.viewsCount,
             accessType: work.accessType,
