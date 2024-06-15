@@ -59,7 +59,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const followCount = data?.viewer?.user?.followCount ?? 0
 
-  const headerImageUrl = data?.viewer?.user.headerImage?.downloadURL ?? ""
+  const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
 

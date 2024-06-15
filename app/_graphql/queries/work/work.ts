@@ -13,6 +13,8 @@ export const workQuery = graphql(
       rating
       description
       isSensitive
+      enTitle
+      enDescription
       imageURL
       largeThumbnailImageURL
       largeThumbnailImageWidth
@@ -40,6 +42,11 @@ export const workQuery = graphql(
           smallThumbnailImageHeight
           thumbnailImagePosition
         }
+      }
+      album {
+        id
+        title
+        description
       }
       dailyTheme {
         id
@@ -70,11 +77,14 @@ export const workQuery = graphql(
       model
       modelHash
       generationModelId
+      workModelId
       isTagEditable
+      isCommentsEditable
       isLiked
       isInCollection
       isPromotion
       isGeneration
+      ogpThumbnailImageUrl
       prompt
       negativePrompt
       seed
@@ -87,6 +97,7 @@ export const workQuery = graphql(
       otherGenerationParams
       pngInfo
       style
+      url
       updatedAt
       dailyRanking
       weeklyRanking

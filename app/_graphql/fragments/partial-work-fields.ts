@@ -31,11 +31,6 @@ export const partialWorkFieldsFragment = graphql(
       id
       name
       iconUrl
-      iconImage {
-        downloadURL
-        id
-        type
-      }
     }
   }`,
 )

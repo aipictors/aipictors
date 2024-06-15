@@ -1,4 +1,5 @@
 import { CroppedWorkSquare } from "@/_components/cropped-work-square"
+import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { Button } from "@/_components/ui/button"
 import {
@@ -56,7 +57,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     workId: work.work.id,
     thumbnailImagePosition: work.work.thumbnailImagePosition,
     userId: work.work.user.id,
-    userIcon: work.work.user.iconImage?.downloadURL,
+    userIcon: work.work.user.iconUrl,
     userName: work.work.user.name,
     title: work.work.title,
     isLiked: work.work.isLiked,
@@ -116,7 +117,7 @@ export const HomeAwardWorkSection = (props: Props) => {
               </p>
               <UserNameBadge
                 userId={work.userId}
-                userIconImageURL={work.userIcon}
+                userIconImageURL={IconUrl(work.userIcon)}
                 name={work.userName}
                 width={"lg"}
               />

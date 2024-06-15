@@ -10,10 +10,7 @@ export const feedWorkFieldsFragment = graphql(
       id
       name
       login
-      iconImage {
-        id
-        downloadURL
-      }
+      iconUrl
     }
     createdAt
     likesCount

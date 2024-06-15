@@ -1,6 +1,5 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
-import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 import { WorkNextAndPrevious } from "@/routes/($lang)._main.works.$work/_components/work-next-and-previous"
 import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
@@ -12,10 +11,11 @@ import type { workQuery } from "@/_graphql/queries/work/work"
 import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
+import { IconUrl } from "@/_components/icon-url"
+import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]
-  // tagWorksResp: NonNullable<WorksQuery>["works"]
   comments: NonNullable<ResultOf<typeof workCommentsQuery>["work"]>["comments"]
 }
 
@@ -40,10 +40,8 @@ export const WorkContainer = (props: Props) => {
   }))
 
   const tags = props.work?.tagNames ?? []
-
-  // ランダムにタグをひとつ
-  const randomTag = tags[Math.floor(Math.random() * tags.length)]
-
+  const randomTag =
+    tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
@@ -60,18 +58,13 @@ export const WorkContainer = (props: Props) => {
               <WorkArticle work={work} />
             </Suspense>
             <WorkRelatedList works={relatedWorks} />
-            {!isDesktop && (
-              <Suspense fallback={<AppLoadingPage />}>
-                <WorkCommentList workId={work.id} comments={props.comments} />
-              </Suspense>
-            )}
             <div className="mt-2 block md:mt-0 lg:hidden">
               <Suspense>
                 <WorkUser
                   userId={work.user.id}
                   userLogin={work.user.login}
                   userName={work.user.name}
-                  userIconImageURL={work.user.iconImage?.downloadURL}
+                  userIconImageURL={IconUrl(work.user.iconUrl)}
                   userFollowersCount={work.user.followersCount}
                   userBiography={work.user.biography}
                   userPromptonId={work.user.promptonUser?.id}
@@ -114,7 +107,7 @@ export const WorkContainer = (props: Props) => {
                 userId={work.user.id}
                 userName={work.user.name}
                 userLogin={work.user.login}
-                userIconImageURL={work.user.iconImage?.downloadURL}
+                userIconImageURL={IconUrl(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography}
                 userPromptonId={work.user.promptonUser?.id}

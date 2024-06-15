@@ -41,7 +41,7 @@ export const AlbumWorkDescription = (props: Props) => {
           <div className="flex">
             <Avatar>
               <AvatarImage
-                src={props.album.thumbnailImage?.downloadURL ?? ""}
+                src={props.album.thumbnailImageURL ?? ""}
                 alt={props.album.title}
               />
               <AvatarFallback />

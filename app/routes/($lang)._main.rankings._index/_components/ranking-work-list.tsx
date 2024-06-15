@@ -1,4 +1,5 @@
 import { CroppedWorkSquare } from "@/_components/cropped-work-square"
+import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import type { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
@@ -49,7 +50,7 @@ export const RankingWorkList = (props: Props) => {
             </p>
             <UserNameBadge
               userId={workItem.work.user.id}
-              userIconImageURL={workItem.work.user.iconImage?.downloadURL}
+              userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
               name={workItem.work.user.name}
               width={"lg"}
             />

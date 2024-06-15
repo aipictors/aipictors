@@ -37,7 +37,7 @@ export const HomeNotificationCommentsContents = (props: Props) => {
               key={notification.id}
               workId={notification.work?.id ?? ""}
               thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               stickerUrl={notification.sticker?.imageUrl ?? ""}
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
@@ -55,7 +55,7 @@ export const HomeNotificationCommentsContents = (props: Props) => {
               ownerUserId={notification.user?.id ?? ""}
               workId={notification.work?.id ?? ""}
               thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               stickerUrl={notification.sticker?.imageUrl ?? ""}
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}

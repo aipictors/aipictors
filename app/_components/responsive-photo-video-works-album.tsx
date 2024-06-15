@@ -26,7 +26,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
     workId: work.id, // 各作品のID
     userId: work.user.id, // 作品の所有者のID
     userIcon:
-      work.user?.iconImage?.downloadURL ??
+      work.user?.iconUrl ??
       "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg", // 作品の所有者のアイコン
     userName: work.user.name, // 作品の所有者の名前
     workOwnerUserId: work.user.id,

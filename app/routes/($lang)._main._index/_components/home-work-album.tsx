@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
@@ -45,7 +46,11 @@ export function HomeWorkAlbum({
         </Link>
         <Link to={`/users/${userId}`}>
           <div className="flex items-center space-x-2">
-            <img src={userIcon} alt="" className="h-4 w-4 rounded-full" />
+            <img
+              src={IconUrl(userIcon)}
+              alt=""
+              className="h-4 w-4 rounded-full"
+            />
             <span className="text-nowrap text-sm text-white">{userName}</span>
           </div>
         </Link>

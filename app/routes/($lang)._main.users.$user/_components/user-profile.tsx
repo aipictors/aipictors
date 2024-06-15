@@ -3,6 +3,7 @@ import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_component
 import UserProfileInfo from "./user-profile-info"
 import type { userQuery } from "@/_graphql/queries/user/user"
 import type { ResultOf } from "gql.tada"
+import { IconUrl } from "@/_components/icon-url"
 
 type UserProfileProps = {
   user: NonNullable<ResultOf<typeof userQuery>["user"]>
@@ -15,7 +16,7 @@ const UserProfile = (props: UserProfileProps) => {
         <div className="flex items-center gap-4">
           <UserProfileAvatar
             alt={props.user.name}
-            src={props.user.iconImage?.downloadURL}
+            src={IconUrl(props.user.iconUrl)}
           />
           <UserProfileInfo
             name={props.user.name}

@@ -5,9 +5,6 @@ export const workUserFieldsFragment = graphql(
     id
     name
     login
-    iconImage {
-      id
-      downloadURL
-    }
+    iconUrl
   }`,
 )

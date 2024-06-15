@@ -17,6 +17,7 @@ type Props = {
   indexList: number[] // 画像の並び順
   items: TSortableItem[] // 画像のリスト
   videoFile: File | null // 動画ファイル
+  isOnlyMove?: boolean // 移動可能のみかどうか（削除、追加不可能）
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   setThumbnailBase64?: (thumbnailBase64: string) => void
@@ -123,6 +124,10 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
       "video/mp4": [".mp4", ".MP4", ".Mp4"],
     },
     onDrop: (acceptedFiles) => {
+      if (props.isOnlyMove) {
+        return
+      }
+
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         // 動画が選択された場合は画像一覧をリセットして、動画をセットする
@@ -226,6 +231,7 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
     onDropAccepted: () => {
       setIsHovered(false)
     },
+    disabled: props.isOnlyMove,
   })
 
   return (
@@ -237,8 +243,8 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
-        <input id="images_input" {...getInputProps()} />
-        {props.items.length === 0 && (
+        {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
+        {props.items.length === 0 && !props.isOnlyMove && (
           <>
             <div className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white">
               {" "}
@@ -251,10 +257,12 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         <VideoItem
           videoFile={props.videoFile}
           onDelete={() => {
-            props.onVideoChange(null)
-            props.onChangeItems([])
-            if (props.onChangeIndexList) {
-              props.onChangeIndexList([])
+            if (!props.isOnlyMove) {
+              props.onVideoChange(null)
+              props.onChangeItems([])
+              if (props.onChangeIndexList) {
+                props.onChangeIndexList([])
+              }
             }
           }}
         />
@@ -262,8 +270,8 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
 
       <SortableItems
         items={props.items}
+        isDeletable={!props.isOnlyMove}
         setItems={props.setItems}
-        // setIndexList={props.setIndexList}
         setIndexList={props.setIndexList}
         optionalButton={
           <Button
@@ -280,20 +288,18 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
           }
         }}
         dummyEnableDragItem={
-          props.items.length !== 0 && (
+          props.items.length !== 0 &&
+          !props.isOnlyMove && (
             // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
             <div
-              onClick={
-                // ファイル選択
-                () => {
-                  const inputElement = document.getElementById(
-                    "images_input",
-                  ) as HTMLInputElement
-                  if (inputElement) {
-                    inputElement.click()
-                  }
+              onClick={() => {
+                const inputElement = document.getElementById(
+                  "images_input",
+                ) as HTMLInputElement
+                if (inputElement) {
+                  inputElement.click()
                 }
-              }
+              }}
               className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-600 dark:bg-gray-700 hover:opacity-80"
             >
               <PlusIcon className="h-12 w-12" />

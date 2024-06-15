@@ -10,6 +10,7 @@ import { Suspense } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { ResultOf } from "gql.tada"
+import { IconUrl } from "@/_components/icon-url"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -24,7 +25,7 @@ export const WorkArticle = (props: Props) => {
       <WorkImageView
         workImageURL={props.work.imageURL}
         subWorkImageURLs={props.work.subWorks.map((subWork) => {
-          return subWork.image.downloadURL
+          return subWork.imageUrl ?? ""
         })}
       />
       <section className="mt-4 space-y-4">
@@ -100,12 +101,12 @@ export const WorkArticle = (props: Props) => {
               href={`/users/${props.work.user.login}`}
             >
               <Avatar>
-                <AvatarImage src={props.work.user.iconImage?.downloadURL} />
+                <AvatarImage src={IconUrl(props.work.user.iconUrl)} />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>
             </a>
-            {props.work.user.promptonUser && (
+            {props.work.user.promptonUser?.id && (
               <PromptonRequestButton
                 promptonId={props.work.user.promptonUser.id}
               />

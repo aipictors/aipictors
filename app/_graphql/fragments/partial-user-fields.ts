@@ -5,10 +5,7 @@ export const partialUserFieldsFragment = graphql(
     id
     login
     name
-    iconImage {
-      id
-      downloadURL
-    }
+    iconUrl
     isFollowee
     isFollower
     iconUrl

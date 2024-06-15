@@ -9,10 +9,7 @@ type Props = {
 export const AlbumArticleHeader = (props: Props) => {
   return (
     <div className="flex flex-col">
-      <img
-        src={props.album.thumbnailImage?.downloadURL}
-        alt={props.album.title}
-      />
+      <img src={props.album.thumbnailImageURL ?? ""} alt={props.album.title} />
       <div className="flex">
         <p>{props.album.title}</p>
         <ShareIcon>{"Twitterでシェア"}</ShareIcon>

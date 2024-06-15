@@ -36,6 +36,12 @@ export const ViewInput = (props: Props) => {
             </div>
             <div className="mb-2 w-1/3 md:w-auto">
               <div className="flex items-center space-x-2">
+                <RadioGroupItem value="LIMITED" id="view-limited" />
+                <label htmlFor="view-limited">{"限定公開"}</label>
+              </div>
+            </div>
+            <div className="mb-2 w-1/3 md:w-auto">
+              <div className="flex items-center space-x-2">
                 <RadioGroupItem value="DRAFT" id="view-draft" />
                 <label htmlFor="view-draft">{"下書き"}</label>
               </div>

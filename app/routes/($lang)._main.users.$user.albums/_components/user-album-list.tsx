@@ -18,7 +18,7 @@ export const UserAlbumList = (props: Props) => {
       <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
         {props.albums.map((album) => (
           <Link key={album.id} to={`/albums/${album.id}`}>
-            <WorkCard imageURL={album.thumbnailImage?.downloadURL} />
+            <WorkCard imageURL={album.thumbnailImageURL ?? ""} />
           </Link>
         ))}
       </ul>

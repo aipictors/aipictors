@@ -12,15 +12,8 @@ export const userFieldsFragment = graphql(
     awardsCount
     followersCount
     worksCount
-    iconImage {
-      id
-      downloadURL
-    }
     iconUrl
-    headerImage {
-      id
-      downloadURL
-    }
+    headerImageUrl
     webFcmToken
     isFollower
     isFollowee

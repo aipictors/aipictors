@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
@@ -44,7 +45,7 @@ export const MessageThreadList = () => {
                 <div className="flex w-full items-center gap-x-4">
                   <Avatar>
                     <AvatarImage
-                      src={messageThread.recipient.iconImage?.downloadURL}
+                      src={IconUrl(messageThread.recipient.iconUrl)}
                     />
                     <AvatarFallback />
                   </Avatar>

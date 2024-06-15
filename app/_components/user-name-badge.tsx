@@ -1,3 +1,5 @@
+import { IconUrl } from "@/_components/icon-url"
+
 type Props = {
   userId: string
   name: string
@@ -29,10 +31,7 @@ export const UserNameBadge = (props: Props) => {
       <img
         alt="user icon"
         className="h-4 w-4 rounded-full"
-        src={
-          props.userIconImageURL ??
-          "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
-        }
+        src={IconUrl(props.userIconImageURL)}
       />
       <p
         // biome-ignore lint/nursery/useSortedClasses: <explanation>

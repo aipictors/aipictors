@@ -15,10 +15,7 @@ export const albumQuery = graphql(
       }
       createdAt
       isSensitive
-      thumbnailImage {
-        id
-        downloadURL
-      }
+      thumbnailImageURL
     }
   }`,
   [workUserFieldsFragment],

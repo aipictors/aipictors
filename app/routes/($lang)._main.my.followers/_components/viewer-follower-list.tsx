@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { Alert, AlertTitle } from "@/_components/ui/alert"
 import { AuthContext } from "@/_contexts/auth-context"
 import { userFollowersQuery } from "@/_graphql/queries/user/user-followers"
@@ -40,7 +41,7 @@ export const ViewerFollowerList = () => {
             <FolloweeListItem
               key={follower.id}
               name={follower.name}
-              imageURL={follower.iconImage?.downloadURL}
+              imageURL={IconUrl(follower.iconUrl)}
             />
           ))}
         </div>

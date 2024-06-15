@@ -123,7 +123,7 @@ export const SortableItems = (props: Props) => {
           {props.items.map((item) => (
             <SortableItem
               onDelete={deleteIndex}
-              isDeletable={true}
+              isDeletable={props.isDeletable}
               key={item.id}
               item={item}
               optionalButton={props.optionalButton}
