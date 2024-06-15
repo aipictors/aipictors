@@ -29,6 +29,7 @@ export const UserTabs = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: "WORK",
       },
@@ -42,6 +43,7 @@ export const UserTabs = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: "NOVEL",
       },
@@ -55,6 +57,7 @@ export const UserTabs = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: "COLUMN",
       },
@@ -68,6 +71,7 @@ export const UserTabs = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: "VIDEO",
       },
