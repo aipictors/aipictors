@@ -59,6 +59,7 @@ export const WorksListContainer = (props: Props) => {
           orderBy: props.orderBy,
           sort: props.sort,
           isIncludePrivate: true,
+          isNowCreatedAt: true,
           ...(props.accessType !== null && {
             accessTypes: [props.accessType],
           }),
@@ -79,6 +80,7 @@ export const WorksListContainer = (props: Props) => {
           orderBy: props.orderBy,
           sort: props.sort,
           isIncludePrivate: true,
+          isNowCreatedAt: true,
           ...(props.accessType !== null && {
             accessTypes: [props.accessType],
           }),

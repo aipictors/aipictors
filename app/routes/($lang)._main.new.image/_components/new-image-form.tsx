@@ -449,6 +449,9 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
