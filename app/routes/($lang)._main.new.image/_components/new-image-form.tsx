@@ -229,6 +229,8 @@ export const NewImageForm = () => {
 
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
+  const [uploadedWorkNanoid, setUploadedWorkNanoid] = useState("")
+
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
   }
@@ -452,7 +454,10 @@ export const NewImageForm = () => {
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data.createWork.id)
+          setUploadedWorkId(work.data?.createWork.id)
+          if (work.data?.createWork.accessType === "LIMITED") {
+            setUploadedWorkNanoid(work.data?.createWork.nanoid ?? "")
+          }
         }
       }
 
@@ -507,12 +512,18 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data.createWork.id)
+          setUploadedWorkId(work.data?.createWork.id)
+          if (work.data?.createWork.accessType === "LIMITED") {
+            setUploadedWorkNanoid(work.data?.createWork.nanoid ?? "")
+          }
         }
       }
 
@@ -807,6 +818,7 @@ export const NewImageForm = () => {
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
+        nanoid={uploadedWorkNanoid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 

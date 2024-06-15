@@ -6,6 +6,9 @@ export const updateWorkMutation = graphql(
       id
       title
       description
+      rating
+      accessType
+      nanoid
     }
   }`,
 )

@@ -87,6 +87,7 @@ export const workQuery = graphql(
       ogpThumbnailImageUrl
       prompt
       negativePrompt
+      noise
       seed
       steps
       sampler

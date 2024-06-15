@@ -271,6 +271,8 @@ export const EditImageForm = (props: Props) => {
 
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
+  const [uploadedWorkNanoid, setUploadedWorkNanoid] = useState("")
+
   const [base64Cache, setBase64Cache] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
@@ -292,6 +294,38 @@ export const EditImageForm = (props: Props) => {
     setIsSetGenerationParams(work?.work?.isGeneration)
     setThumbnailBase64(work?.work?.largeThumbnailImageURL ?? "")
     setOgpBase64(work?.work?.ogpThumbnailImageUrl ?? "")
+
+    // 生成情報
+    if (
+      work?.work?.prompt ||
+      work?.work?.negativePrompt ||
+      work?.work?.seed ||
+      work?.work?.sampler ||
+      work?.work?.strength ||
+      work?.work?.noise ||
+      work?.work?.model ||
+      work?.work?.modelHash ||
+      work?.work?.pngInfo
+    ) {
+      setPngInfo({
+        src: work?.work?.pngInfo ?? "",
+        params: {
+          prompt: work?.work?.prompt ?? "",
+          negativePrompt: work?.work?.negativePrompt ?? "",
+          seed: work?.work?.seed?.toString() ?? "",
+          sampler: work?.work?.sampler ?? "",
+          strength: work?.work?.strength ?? "",
+          noise: work?.work?.noise ?? "",
+          model: work?.work?.model ?? "",
+          modelHash: work?.work?.modelHash ?? "",
+          steps: work?.work?.steps ? work?.work?.steps.toString() : "",
+          scale: work?.work?.scale ? work?.work?.scale.toString() : "",
+          vae: "",
+        },
+      })
+    }
+
+    console.log("work?.work?.prompt", work?.work?.prompt)
 
     // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
     if (work?.work?.createdAt) {
@@ -560,12 +594,18 @@ export const EditImageForm = (props: Props) => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
 
         if (uploadedWork.data?.updateWork) {
           setUploadedWorkId(uploadedWork.data.updateWork.id)
+          if (uploadedWork.data.updateWork.accessType === "LIMITED") {
+            setUploadedWorkNanoid(uploadedWork.data.updateWork.nanoid ?? "")
+          }
         }
       }
 
@@ -629,12 +669,18 @@ export const EditImageForm = (props: Props) => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
 
         if (uploadedWork.data?.updateWork) {
           setUploadedWorkId(uploadedWork.data.updateWork.id)
+          if (uploadedWork.data.updateWork.accessType === "LIMITED") {
+            setUploadedWorkNanoid(uploadedWork.data.updateWork.nanoid ?? "")
+          }
         }
       }
 
@@ -967,6 +1013,7 @@ export const EditImageForm = (props: Props) => {
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
+        nanoid={uploadedWorkNanoid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 

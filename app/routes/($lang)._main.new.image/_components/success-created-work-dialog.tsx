@@ -8,6 +8,7 @@ type Props = {
   isOpen: boolean
   imageBase64: string
   workId: string
+  nanoid: string
   shareTags: string[]
 }
 
@@ -64,7 +65,11 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           if (!isOpen) {
             // ページ遷移
             if (typeof window !== "undefined") {
-              window.location.href = `https://aipictors.com/works/${props.workId}`
+              if (props.nanoid !== "") {
+                window.location.href = `https://aipictors.com/works/${props.nanoid}`
+              } else {
+                window.location.href = `https://aipictors.com/works/${props.workId}`
+              }
             }
           }
         }}
@@ -80,7 +85,13 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               }}
               className="relative h-40 w-full"
             />
-            <a href={`https://aipictors.com/works/${props.workId}`}>
+            <a
+              href={
+                props.nanoid !== ""
+                  ? `https://aipictors.com/works/${props.nanoid}`
+                  : `https://aipictors.com/works/${props.workId}`
+              }
+            >
               <img
                 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
                 src={props.imageBase64}
@@ -93,14 +104,22 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <div className="w-full">
             <XIntent
               text={`${props.title}\n`}
-              url={`${`https://aipictors.com/works/${props.workId}`}\n`}
+              url={`${
+                props.nanoid !== ""
+                  ? `https://aipictors.com/works/${props.nanoid}`
+                  : `https://aipictors.com/works/${props.workId}`
+              }\n`}
               hashtags={props.shareTags}
             />
           </div>
           <Button
             onClick={() => {
               if (typeof window !== "undefined") {
-                window.location.href = `https://aipictors.com/works/${props.workId}`
+                if (props.nanoid !== "") {
+                  window.location.href = `https://aipictors.com/works/${props.nanoid}`
+                } else {
+                  window.location.href = `https://aipictors.com/works/${props.workId}`
+                }
               }
             }}
             className="mt-2"
