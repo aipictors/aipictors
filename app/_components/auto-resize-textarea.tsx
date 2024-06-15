@@ -23,6 +23,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
         if (typeof ref === "function") {
           ref(node)
         } else if (ref) {
+          // `ref` がオブジェクトであれば current プロパティを設定
           ;(ref as React.MutableRefObject<HTMLTextAreaElement | null>).current =
             node
         }
