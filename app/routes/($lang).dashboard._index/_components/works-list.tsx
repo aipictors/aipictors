@@ -18,6 +18,7 @@ type Props = {
     viewsCount: number
     createdAt: string
     accessType: IntrospectionEnum<"AccessType">
+    workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean
   }[]
   sort: SortType
@@ -35,6 +36,7 @@ type Props = {
   onClickViewSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
 }
 
 /**
@@ -68,6 +70,7 @@ export const WorksList = (props: Props) => {
           onClickViewSortButton={props.onClickViewSortButton}
           onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
           onClickDateSortButton={props.onClickDateSortButton}
+          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
         />
       ) : (
         <WorksSpList

@@ -26,10 +26,11 @@ export const ResponsivePagination = ({
 }: Props) => {
   const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
 
-  const currentPageIndex = currentPage > pageCount ? pageCount : currentPage
+  const currentPageIndex =
+    currentPage >= pageCount ? pageCount - 1 : currentPage
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 0 && newPage <= pageCount) {
+    if (newPage >= 0 && newPage < pageCount) {
       onPageChange(newPage)
     }
   }
@@ -44,7 +45,6 @@ export const ResponsivePagination = ({
         {/* Prevボタン */}
         {currentPageIndex !== 0 && (
           <PaginationItem>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <Button
               variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex - 1)}
@@ -57,8 +57,7 @@ export const ResponsivePagination = ({
         {currentPageIndex > 1 && pageCount > 2 && (
           <>
             <PaginationItem>
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <Button variant={"secondary"} onClick={() => handlePageChange(1)}>
+              <Button variant={"secondary"} onClick={() => handlePageChange(0)}>
                 {1}
               </Button>
             </PaginationItem>{" "}
@@ -68,12 +67,11 @@ export const ResponsivePagination = ({
         {/* 前ページ */}
         {currentPageIndex > 0 && (
           <PaginationItem>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <Button
               variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex - 1)}
             >
-              {currentPageIndex - 1 + 1}
+              {currentPageIndex}
             </Button>
           </PaginationItem>
         )}
@@ -92,12 +90,11 @@ export const ResponsivePagination = ({
         {/* 次のページ */}
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <Button
               variant={"secondary"}
               onClick={() => handlePageChange(currentPageIndex + 1)}
             >
-              {currentPageIndex + 1 + 1}
+              {currentPageIndex + 2}
             </Button>
           </PaginationItem>
         )}
@@ -106,7 +103,6 @@ export const ResponsivePagination = ({
           <>
             <PaginationEllipsis />{" "}
             <PaginationItem>
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
               <Button
                 variant={"secondary"}
                 onClick={() => handlePageChange(pageCount - 1)}
@@ -119,7 +115,6 @@ export const ResponsivePagination = ({
         {/* Nextボタン */}
         {currentPageIndex + 1 !== pageCount && (
           <PaginationItem>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <Button
               variant={"secondary"}
               onClick={(e) => {

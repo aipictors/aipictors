@@ -18,6 +18,7 @@ export const partialWorkFieldsFragment = graphql(
     largeThumbnailImageURL
     largeThumbnailImageHeight
     largeThumbnailImageWidth
+    type
     prompt
     negativePrompt
     isLiked

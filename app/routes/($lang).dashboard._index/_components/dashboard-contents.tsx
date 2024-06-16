@@ -50,6 +50,9 @@ export const DashboardContents = (props: Props) => {
   const [accessType, setAccessType] =
     React.useState<IntrospectionEnum<"AccessType"> | null>(null)
 
+  const [workType, setWorkType] =
+    React.useState<IntrospectionEnum<"WorkType"> | null>(null)
+
   const [rating, setRating] =
     React.useState<IntrospectionEnum<"Rating"> | null>(null)
 
@@ -104,6 +107,11 @@ export const DashboardContents = (props: Props) => {
 
   const onClickDateSortButton = () => {
     setWorkOrderby("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickWorkTypeSortButton = () => {
+    setWorkOrderby("WORK_TYPE")
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
@@ -203,6 +211,7 @@ export const DashboardContents = (props: Props) => {
                   sumWorksCount={worksMaxCount}
                   sumAlbumsCount={albumsMaxCount}
                   accessType={accessType}
+                  workType={workType}
                   rating={rating}
                   onClickTitleSortButton={onClickTitleSortButton}
                   onClickLikeSortButton={onClickLikeSortButton}
@@ -211,8 +220,10 @@ export const DashboardContents = (props: Props) => {
                   onClickViewSortButton={onClickViewSortButton}
                   onClickAccessTypeSortButton={onClickAccessTypeSortButton}
                   onClickDateSortButton={onClickDateSortButton}
+                  onClickWorkTypeSortButton={onClickWorkTypeSortButton}
                   setWorkTabType={setWorkTabType}
                   setAccessType={setAccessType}
+                  setWorkType={setWorkType}
                   setRating={setRating}
                   setSort={setWorksOrderDeskAsc}
                 />
@@ -220,6 +231,7 @@ export const DashboardContents = (props: Props) => {
                   <WorksListContainer
                     page={page}
                     accessType={accessType}
+                    workType={workType}
                     rating={rating}
                     sort={worksOrderDeskAsc}
                     orderBy={WorkOrderby}
@@ -236,6 +248,7 @@ export const DashboardContents = (props: Props) => {
                     onClickViewSortButton={onClickViewSortButton}
                     onClickAccessTypeSortButton={onClickAccessTypeSortButton}
                     onClickDateSortButton={onClickDateSortButton}
+                    onClickWorkTypeSortButton={onClickWorkTypeSortButton}
                     albumsCountRefetch={albumsCountRefetch}
                   />
                 </Suspense>

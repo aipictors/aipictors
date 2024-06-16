@@ -8,6 +8,7 @@ import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { Link } from "@remix-run/react"
+import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
   work: {
@@ -21,6 +22,7 @@ type Props = {
     viewsCount: number
     createdAt: string
     accessType: IntrospectionEnum<"AccessType">
+    workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean
   }
 }
@@ -57,6 +59,8 @@ export const WorksListTableRow = (props: Props) => {
   }, [isDeleted])
 
   const [isHidden, setIsHidden] = useState(false)
+
+  console.log(props.work.workType)
 
   return (
     <>
@@ -108,6 +112,7 @@ export const WorksListTableRow = (props: Props) => {
           </TableCell>
           <TableCell>{props.work.commentsCount}</TableCell>
           <TableCell>{props.work.viewsCount}</TableCell>
+          <TableCell>{toWorkTypeText(props.work.workType)}</TableCell>
           <TableCell>{toAccessTypeText(props.work.accessType)}</TableCell>
           <TableCell>
             {isLoadingDeleteWork ? (

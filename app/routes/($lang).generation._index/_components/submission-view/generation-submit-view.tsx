@@ -319,7 +319,7 @@ export function GenerationSubmissionView(props: Props) {
 
     const ng = await checkNgPrompts(
       context.config.promptText,
-      context.config.negativePromptText,
+      `${context.config.negativePromptText}, nsfw, nude`,
       model.name,
       userId,
     )
