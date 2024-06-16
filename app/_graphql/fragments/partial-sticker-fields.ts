@@ -8,5 +8,6 @@ export const partialStickerFieldsFragment = graphql(
     downloadsCount
     usesCount
     likesCount
+    accessType
   }`,
 )

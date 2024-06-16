@@ -15,6 +15,7 @@ export const stickerQuery = graphql(
       downloadsCount
       likesCount
       usesCount
+      accessType
     }
   }`,
 )

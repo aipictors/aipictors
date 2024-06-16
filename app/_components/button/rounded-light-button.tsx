@@ -14,7 +14,7 @@ export function RoundedLightButton(props: Props) {
       onClick={props.onClick}
       type="button"
       disabled={props.disabled}
-      className={`flex items-center justify-center rounded-full p-1 pr-2 pl-4 text-sm duration-200 hover:opacity-80${
+      className={`flex items-center justify-center rounded-full p-1 pl-2 text-sm duration-200 hover:opacity-80${
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         props.isActive ? " bg-zinc-100 dark:bg-zinc-800" : " bg-transparent"
       }`}

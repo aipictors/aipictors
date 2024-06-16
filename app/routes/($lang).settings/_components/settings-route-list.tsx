@@ -6,6 +6,7 @@ import {
   BookmarkXIcon,
   ImageIcon,
   MedalIcon,
+  StickerIcon,
   UserXIcon,
 } from "lucide-react"
 
@@ -37,6 +38,13 @@ export const SettingsRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/muted/tags"} icon={BookmarkXIcon}>
         {"タグミュート"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/settings/sticker"}
+        icon={StickerIcon}
+      >
+        {"スタンプ"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
