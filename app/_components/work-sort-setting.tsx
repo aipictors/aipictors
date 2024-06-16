@@ -57,6 +57,11 @@ export const WorkSortSetting = (props: Props) => {
     props.setOrder(props.nowOrder === "ASC" ? "DESC" : "ASC")
   }
 
+  const onClickWorkTypeSortButton = () => {
+    props.setSort("WORK_TYPE")
+    props.setOrder(props.nowOrder === "ASC" ? "DESC" : "ASC")
+  }
+
   return (
     <WorksListSortableSetting
       nowSort={props.nowOrder}
@@ -70,6 +75,7 @@ export const WorkSortSetting = (props: Props) => {
       onClickViewSortButton={onClickViewSortButton}
       onClickAccessTypeSortButton={onClickAccessTypeSortButton}
       onClickDateSortButton={onClickDateSortButton}
+      onClickWorkTypeSortButton={onClickWorkTypeSortButton}
     />
   )
 }
