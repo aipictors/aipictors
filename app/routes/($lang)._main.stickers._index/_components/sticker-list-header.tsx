@@ -1,7 +1,4 @@
-import { Button } from "@/_components/ui/button"
-import { config } from "@/config"
 import { AddStickerModal } from "@/routes/($lang)._main.stickers._index/_components/add-sticker-modal"
-import { PlusIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
 
 export const StickerListHeader = () => {
@@ -17,18 +14,6 @@ export const StickerListHeader = () => {
           }
         </p>
       </section>
-      {config.isDevelopmentMode && (
-        <section className="flex items-center space-x-4">
-          <Button aria-label="previous month" onClick={onOpen}>
-            <span>自分で作ったスタンプを公開する</span>
-            <PlusIcon className="ml-2 w-4" />
-          </Button>
-          {/* <Button aria-label="previous month" variant={"ghost"}>
-            <Plus fontSize={"mr-2"} />
-            {"スタンプを作る"}
-          </Button> */}
-        </section>
-      )}
       <AddStickerModal isOpen={isOpen} onClose={onClose} />
     </>
   )

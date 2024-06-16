@@ -11,6 +11,7 @@ export const stickerQuery = graphql(
         name
         iconUrl
       }
+      userId
       imageUrl
       downloadsCount
       likesCount

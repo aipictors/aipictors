@@ -126,18 +126,33 @@ export const MyStickersList = () => {
         </RoundedLightButton>
       </div>
       <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
-        {stickers?.viewer?.userStickers?.map((sticker) => (
-          <StickerChangeAccessTypeDialog
-            key={sticker.id}
-            title={sticker.title}
-            stickerId={sticker.id}
-            imageUrl={sticker.imageUrl ?? ""}
-            accessType={sticker.accessType === "PUBLIC" ? "PUBLIC" : "PRIVATE"}
-            onAccessTypeChange={() => {
-              reactStickers()
-              reactStickersCount()
-            }}
-          >
+        {stickers?.viewer?.userStickers?.map((sticker) =>
+          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          stickerStatus !== "DOWNLOADED" ? (
+            <StickerChangeAccessTypeDialog
+              key={sticker.id}
+              title={sticker.title}
+              stickerId={sticker.id}
+              imageUrl={sticker.imageUrl ?? ""}
+              accessType={
+                sticker.accessType === "PUBLIC" ? "PUBLIC" : "PRIVATE"
+              }
+              onAccessTypeChange={() => {
+                reactStickers()
+                reactStickersCount()
+              }}
+            >
+              <StickerButton
+                key={sticker.id}
+                imageUrl={sticker.imageUrl ?? ""}
+                title={sticker.title}
+                onClick={() => {}}
+                onDelete={() => {
+                  onDelete(sticker.id)
+                }}
+              />
+            </StickerChangeAccessTypeDialog>
+          ) : (
             <StickerButton
               key={sticker.id}
               imageUrl={sticker.imageUrl ?? ""}
@@ -147,8 +162,8 @@ export const MyStickersList = () => {
                 onDelete(sticker.id)
               }}
             />
-          </StickerChangeAccessTypeDialog>
-        ))}
+          ),
+        )}
       </div>
       <div className="mt-1 mb-1">
         <ResponsivePagination
