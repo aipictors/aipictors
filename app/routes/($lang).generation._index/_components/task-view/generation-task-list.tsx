@@ -207,7 +207,7 @@ export const GenerationTaskList = (props: Props) => {
       <div className="p-2 pb-32 md:pb-4">
         {props.protect !== 1 && (
           <ResponsivePagination
-            perPage={props.rating === 0 || props.rating === -1 ? 32 : 800}
+            perPage={props.rating === 0 || props.rating === -1 ? 56 : 800}
             maxCount={
               (props.protect === 0 || props.protect === -1) &&
               (props.rating === 0 || props.rating === -1)

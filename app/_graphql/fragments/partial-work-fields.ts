@@ -6,6 +6,7 @@ export const partialWorkFieldsFragment = graphql(
     title
     accessType
     adminAccessType
+    type
     likesCount
     commentsCount
     bookmarksCount

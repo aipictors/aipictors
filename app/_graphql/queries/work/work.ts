@@ -8,6 +8,7 @@ export const workQuery = graphql(
       id
       title
       accessType
+      type
       adminAccessType
       promptAccessType
       rating
@@ -99,6 +100,7 @@ export const workQuery = graphql(
       pngInfo
       style
       url
+      html
       updatedAt
       dailyRanking
       weeklyRanking
