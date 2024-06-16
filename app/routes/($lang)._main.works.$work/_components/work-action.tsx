@@ -14,6 +14,7 @@ type Props = {
   defaultLiked: boolean
   targetWorkId: string
   targetWorkOwnerUserId: string
+  isHideEditButton: boolean
 }
 
 /**
@@ -41,10 +42,12 @@ export const WorkAction = (props: Props) => {
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
         />
-        <WorkEditorButton
-          targetWorkId={props.targetWorkId}
-          targetWorkOwnerUserId={props.targetWorkOwnerUserId}
-        />
+        {!props.isHideEditButton && (
+          <WorkEditorButton
+            targetWorkId={props.targetWorkId}
+            targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+          />
+        )}
         <Button aria-label={"フォルダに追加"} size={"icon"} variant="secondary">
           <FolderIcon />
         </Button>

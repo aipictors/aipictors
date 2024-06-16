@@ -22,6 +22,7 @@ import { Loader2Icon } from "lucide-react"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 
 type Props = {
   onAddedSicker?: () => void
@@ -95,19 +96,19 @@ export const AddStickerDialog = (props: Props) => {
 
     const imageFileName = `${createRandomString(30)}.webp`
 
+    // 画像をアップロードする処理
+    const uploadedImageUrl = await uploadPublicImage(
+      imageBase64,
+      imageFileName,
+      authContext.userId,
+    )
+
+    if (uploadedImageUrl === "") {
+      toast("画像のアップロードに失敗しました")
+      return
+    }
+
     try {
-      // 画像をアップロードする処理
-      const uploadedImageUrl = await uploadPublicImage(
-        imageBase64,
-        imageFileName,
-        authContext.userId,
-      )
-
-      if (uploadedImageUrl === "") {
-        toast("画像のアップロードに失敗しました")
-        return
-      }
-
       const newSticker = await createSticker({
         variables: {
           input: {
@@ -145,6 +146,7 @@ export const AddStickerDialog = (props: Props) => {
       if (error instanceof Error) {
         toast(error.message)
       }
+      await deleteUploadedImage(uploadedImageUrl)
     }
   }
 

@@ -29,6 +29,9 @@ export const WorkActionContainer = (props: Props) => {
 
   const isLiked = data?.work?.isLiked ?? false
 
+  const isHideEditButton =
+    data?.work?.type === "COLUMN" || data?.work?.type === "NOVEL"
+
   return (
     <WorkAction
       workLikesCount={props.workLikesCount}
@@ -37,6 +40,7 @@ export const WorkActionContainer = (props: Props) => {
       defaultLiked={isLiked}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+      isHideEditButton={isHideEditButton}
     />
   )
 }

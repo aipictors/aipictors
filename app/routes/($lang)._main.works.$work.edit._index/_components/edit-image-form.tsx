@@ -55,6 +55,7 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
 import { updateWorkMutation } from "@/_graphql/mutations/update-work"
+import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
   workId: string
@@ -244,8 +245,6 @@ export const EditImageForm = (props: Props) => {
       content: subWork.imageUrl ?? "",
     })),
   ])
-
-  console.log("items", items)
 
   const [indexList, setIndexList] = useState<number[]>([])
 
@@ -537,9 +536,8 @@ export const EditImageForm = (props: Props) => {
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
 
       // 動画もしくは画像をアップロード
-      if (videoFile) {
-        const videoUrl = work?.work?.url ?? ""
-
+      const videoUrl = work?.work?.url ?? ""
+      if (videoUrl) {
         const uploadedWork = await updateWork({
           variables: {
             input: {
@@ -667,7 +665,7 @@ export const EditImageForm = (props: Props) => {
               largeThumbnailImageHeight: largeThumbnail
                 ? largeThumbnail.height
                 : work?.work?.largeThumbnailImageHeight ?? 0,
-              videoUrl: "",
+              videoUrl: videoUrl,
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
@@ -712,6 +710,20 @@ export const EditImageForm = (props: Props) => {
     <>
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
+          {/* 種別表記 */}
+          <div className="p-2">
+            <div className="flex items-center space-x-2">
+              <div className="font-bold text-lg">
+                {toWorkTypeText(
+                  (work?.work?.type as "WORK" | "COLUMN" | "NOVEL" | "VIDEO") ??
+                    "WORK",
+                )}
+                {"作品編集"}
+                {work?.work?.type === "VIDEO" &&
+                  "（動画自体は変更できません。）"}
+              </div>
+            </div>
+          </div>
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center pb-2 bg-gray-800 ${
@@ -746,6 +758,7 @@ export const EditImageForm = (props: Props) => {
                 </div>
               </div>
             )}
+
             <DraggableImagesAndVideoInput
               isOnlyMove={true}
               indexList={indexList}
