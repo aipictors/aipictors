@@ -60,12 +60,12 @@ export const AlbumsListTableRow = (props: Props) => {
           }}
         >
           <TableCell className="font-medium">
-            <a href={`${props.album.userId}/series/${props.album.slug}`}>
+            <a href={`${props.album.userId}/albums/${props.album.slug}`}>
               <div className="w-32">{props.album.title}</div>
             </a>
           </TableCell>
           <TableCell>
-            <a href={`${props.album.userId}/series/${props.album.slug}`}>
+            <a href={`${props.album.userId}/albums/${props.album.slug}`}>
               <img
                 src={props.album.thumbnailImageUrl}
                 alt="thumbnail"

@@ -80,7 +80,7 @@ export function HomeWorkVideoAlbum({
           </Badge>
         </div>
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[16%] flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
         <Link className="w-48" to={`/works/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}

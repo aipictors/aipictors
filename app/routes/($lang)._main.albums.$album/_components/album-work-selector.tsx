@@ -1,12 +1,8 @@
-import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import type { albumQuery } from "@/_graphql/queries/album/album"
 import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
-import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
-import { PlusIcon } from "lucide-react"
-import { useState } from "react"
 
 type Props = {
   album: NonNullable<ResultOf<typeof albumQuery>["album"]>
@@ -18,10 +14,6 @@ type Props = {
 }
 
 export const AlbumArticleHeader = (props: Props) => {
-  const workIds = props.album.workIds.map((work) => work.toString())
-
-  const [selectedWorks, setSelectedWorks] = useState<string[]>(workIds)
-
   return (
     <Card className="flex flex-col items-center p-4">
       <img
@@ -51,18 +43,6 @@ export const AlbumArticleHeader = (props: Props) => {
       <div className="mt-4 text-center">
         <p>{props.album.description}</p>
       </div>
-      {props.userId === props.album.user.id && (
-        <SelectCreatedWorksDialogWithIds
-          selectedWorkIds={selectedWorks}
-          setSelectedWorkIds={setSelectedWorks}
-        >
-          <div className="border-2 border-transparent p-1">
-            <Button className="h-16 w-16" size={"icon"} variant={"secondary"}>
-              <PlusIcon />
-            </Button>
-          </div>
-        </SelectCreatedWorksDialogWithIds>
-      )}
     </Card>
   )
 }

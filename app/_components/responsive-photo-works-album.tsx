@@ -8,6 +8,7 @@ import { useMediaQuery } from "usehooks-ts"
 type Props = {
   works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
   targetRowHeight?: number
+  direction?: "rows" | "columns"
 }
 
 /**
@@ -37,7 +38,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
 
   return (
     <PhotoAlbum
-      layout={isDesktop ? "rows" : "columns"}
+      layout={
+        !props.direction ? (isDesktop ? "rows" : "columns") : props.direction
+      }
       columns={2}
       photos={photos}
       renderPhoto={(photoProps) => (

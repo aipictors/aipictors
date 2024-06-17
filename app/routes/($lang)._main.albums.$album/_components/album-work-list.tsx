@@ -1,21 +1,42 @@
+import { ResponsivePagination } from "@/_components/responsive-pagination"
+import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 import type { albumWorksQuery } from "@/_graphql/queries/album/album-works"
-import { AlbumWork } from "@/routes/($lang)._main.albums.$album/_components/album-work"
 import type { ResultOf } from "gql.tada"
+import { useState } from "react"
 
 type Props = {
   albumWorks: NonNullable<ResultOf<typeof albumWorksQuery>["album"]>["works"]
+  maxCount: number
 }
 
 export const AlbumWorkList = (props: Props) => {
+  if (props.albumWorks === null || props.albumWorks.length === 0) {
+    return (
+      <div className="text-center">
+        <p>作品がありません</p>
+      </div>
+    )
+  }
+
+  const [page, setPage] = useState(0)
+
   return (
-    <div className="flex flex-col">
-      <AlbumWork
-        albumWorks={props.albumWorks}
-        title={props.albumWorks[0]?.title ?? "Untitled"}
-        thumbnailImageUrl={props.albumWorks[0]?.largeThumbnailImageURL ?? ""}
-        likesCount={props.albumWorks[0]?.likesCount ?? 0}
-        createdAt={props.albumWorks[0]?.createdAt ?? 0}
+    <>
+      <ResponsivePhotoWorksAlbum
+        direction="columns"
+        works={props.albumWorks}
+        targetRowHeight={320}
       />
-    </div>
+      <div className="mt-1 mb-1">
+        <ResponsivePagination
+          perPage={32}
+          maxCount={props.maxCount}
+          currentPage={page}
+          onPageChange={(page: number) => {
+            setPage(page)
+          }}
+        />
+      </div>
+    </>
   )
 }

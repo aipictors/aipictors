@@ -1,9 +1,9 @@
 import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { graphql } from "gql.tada"
 
-export const albumQuery = graphql(
-  `query Album($id: ID!) {
-    album(id: $id) {
+export const userAlbumQuery = graphql(
+  `query userAlbum($where: UserAlbumWhereInput) {
+    userAlbum( where: $where) {
       id
       title
       description

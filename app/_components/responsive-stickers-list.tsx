@@ -41,7 +41,7 @@ export const ResponsiveStickersList = (props: Props) => {
                 <span>{sticker.usesCount}</span>
               </div>
               <div className="flex items-center">
-                <Download />
+                <Download size={16} />
                 <span>{sticker.downloadsCount}</span>
               </div>
             </div>
