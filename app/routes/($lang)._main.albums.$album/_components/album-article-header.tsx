@@ -1,3 +1,4 @@
+import { CropImageField } from "@/_components/crop-image-field"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import type { albumQuery } from "@/_graphql/queries/album/album"
@@ -5,7 +6,7 @@ import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-act
 import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
-import { PlusIcon } from "lucide-react"
+import { Pencil, PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 type Props = {
@@ -22,13 +23,41 @@ export const AlbumArticleHeader = (props: Props) => {
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(workIds)
 
+  const [headerImageUrl, setHeaderImageUrl] = useState(props.thumbnail ?? "")
+
   return (
     <Card className="flex flex-col items-center p-4">
-      <img
-        src={props.thumbnail ?? ""}
-        alt={props.album.title}
-        className="w-full rounded-md object-cover"
-      />
+      <div className="relative">
+        <img
+          src={headerImageUrl}
+          alt={props.album.title}
+          className="w-full rounded-md object-cover"
+        />
+        {props.userId === props.album.user.id && (
+          <>
+            <p className="font-bold text-sm">
+              ※ センシティブなカバー画像は設定しないようにお願い致します。
+            </p>
+            <CropImageField
+              isHidePreviewImage={false}
+              cropWidth={455}
+              cropHeight={237}
+              onDeleteImage={() => {
+                setHeaderImageUrl("")
+              }}
+              onCropToBase64={setHeaderImageUrl}
+              fileExtension={"webp"}
+            >
+              <Button
+                className="absolute right-1 bottom-1 h-12 w-12 rounded-full p-0"
+                variant={"secondary"}
+              >
+                <Pencil className="h-8 w-8" />
+              </Button>
+            </CropImageField>
+          </>
+        )}
+      </div>
       <div className="mt-4 flex flex-col items-center">
         <Link to={`/users/${props.userLogin}`}>
           <div className="flex max-w-32 items-center overflow-hidden">

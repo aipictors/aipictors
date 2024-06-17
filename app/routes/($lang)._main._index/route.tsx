@@ -1,4 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
+import { HeaderDevelopBanner } from "@/_components/header-develop-banner"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
@@ -128,84 +129,87 @@ export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage className="space-y-6">
-      <Suspense fallback={<HomeWorkDummies />}>
-        <HomeBanners />
-      </Suspense>
-      {data && (
-        <div className="space-y-8 p-4">
-          <HomeTagList
-            themeTitle={data.themeResp?.title}
-            hotTags={data.hotTags}
-          />
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksGeneratedSection />
-          </Suspense>
-          <Suspense fallback={<HomeWorkDummies />}>
-            <HomeAwardWorkSection title={"前日ランキング"} />
-          </Suspense>
-          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksRecommendedSection />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksUsersRecommendedSection />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeNovelsSection title={"小説"} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeVideosSection title={"動画"} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeColumnsSection title={"コラム"} />
-          </Suspense>
-        </div>
-      )}
-    </AppPage>
+    <>
+      <HeaderDevelopBanner />
+      <AppPage className="space-y-6">
+        <Suspense fallback={<HomeWorkDummies />}>
+          <HomeBanners />
+        </Suspense>
+        {data && (
+          <div className="space-y-8 p-4">
+            <HomeTagList
+              themeTitle={data.themeResp?.title}
+              hotTags={data.hotTags}
+            />
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeWorksGeneratedSection />
+            </Suspense>
+            <Suspense fallback={<HomeWorkDummies />}>
+              <HomeAwardWorkSection title={"前日ランキング"} />
+            </Suspense>
+            <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeWorksRecommendedSection />
+            </Suspense>
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeWorksUsersRecommendedSection />
+            </Suspense>
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeNovelsSection title={"小説"} />
+            </Suspense>
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeVideosSection title={"動画"} />
+            </Suspense>
+            <Suspense
+              fallback={
+                <>
+                  <HomeWorkDummies />
+                  <HomeWorkDummies />
+                </>
+              }
+            >
+              <HomeColumnsSection title={"コラム"} />
+            </Suspense>
+          </div>
+        )}
+      </AppPage>
+    </>
   )
 }
