@@ -25,27 +25,29 @@ export const ResponsiveAlbumsList = (props: Props) => {
           key={album.id}
           className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-24 md:w-40"
         >
-          <Link
-            to={`/${album.user.login}/albums/${album.slug}`}
-            className="relative"
-          >
-            <img
-              className="h-16 w-32 object-cover transition-all md:h-24 md:w-40 hover:scale-110"
-              src={
-                album.thumbnailImageURL
-                  ? album.thumbnailImageURL
-                  : album.works.length > 0
-                    ? album.works[0].smallThumbnailImageURL
-                    : ""
-              }
-              alt={album.title}
-            />
-            <div className="absolute right-0 bottom-0 left-0 box-border flex h-8 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
-              <p className="absolute bottom-1 left-1 text-white">
-                {album.title}
-              </p>
-            </div>
-          </Link>
+          <div className="box-border flex flex-col justify-end">
+            <Link
+              to={`/${album.user.login}/albums/${album.slug}`}
+              className="relative"
+            >
+              <img
+                className="h-16 w-32 object-cover transition-all md:h-24 md:w-40 hover:scale-110"
+                src={
+                  album.thumbnailImageURL
+                    ? album.thumbnailImageURL
+                    : album.works.length > 0
+                      ? album.works[0].smallThumbnailImageURL
+                      : ""
+                }
+                alt={album.title}
+              />
+              <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+                <p className="absolute bottom-1 left-1 text-white">
+                  {album.title}
+                </p>
+              </div>
+            </Link>
+          </div>
         </div>
       ))}
     </div>
