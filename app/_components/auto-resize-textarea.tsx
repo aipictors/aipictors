@@ -20,6 +20,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
 
     const combinedRef = useCallback(
       (node: HTMLTextAreaElement) => {
+        // `ref` が関数であれば呼び出す
         if (typeof ref === "function") {
           ref(node)
         } else if (ref) {
@@ -32,6 +33,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
       [ref],
     )
 
+    // 高さを調整する関数
     const adjustHeight = useCallback((element: HTMLTextAreaElement | null) => {
       if (element) {
         element.style.height = "auto"
@@ -41,6 +43,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
       }
     }, [])
 
+    // テキストエリアの内容が変わった際に高さを調整する処理
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       adjustHeight(e.target)
     }
