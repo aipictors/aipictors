@@ -2,18 +2,15 @@ import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { Separator } from "@/_components/ui/separator"
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
-import { fetchImage } from "@/_utils/fetch-image-object-url"
 import { uploadImage } from "@/_utils/upload-image"
 import { InPaintingSetting } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-setting"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { useMutation } from "@apollo/client/index"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import type { Props } from "./in-painting-image-form"
-import { config } from "@/config"
 
 /**
  * インペイント用のフォーム
@@ -29,17 +26,6 @@ export const InPaintingImageForm = (props: Props) => {
   ) {
     throw new Error()
   }
-
-  const { data } = useSuspenseQuery({
-    queryKey: [props.taskId],
-    queryFn() {
-      return fetchImage(
-        `${config.wordpressEndpoint.privateImage}?token=${encodeURIComponent(
-          props.token,
-        )}&name=${props.fileName}`,
-      )
-    },
-  })
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
@@ -110,7 +96,7 @@ export const InPaintingImageForm = (props: Props) => {
       return
     }
     try {
-      const srcImageBase64 = await createBase64FromImageURL(data)
+      const srcImageBase64 = await createBase64FromImageURL(props.imageUrl)
       if (srcImageBase64 === "" || srcImageBase64 === undefined) {
         toast(
           "画像の読み込みに失敗しました、しばらくしてから再度実行してください。",

@@ -9,7 +9,7 @@ type Props = {
   onClose(): void
   taskId: string
   token: string
-  fileName: string
+  imageUrl: string
   userNanoid: string | null
   configSeed: number
   configSteps: number
@@ -182,7 +182,7 @@ export const InPaintingDialog = (props: Props) => {
         <FullScreenContainer onClose={props.onClose} enabledScroll={isDrawing}>
           <div className="h-[100%] w-[80%]">
             <PrivateImagePaintCanvas
-              fileName={props.fileName}
+              fileName={props.imageUrl}
               token={props.token}
               onChangeBrushImageBase64={(value) => {
                 setMaskBase64(value)
@@ -196,7 +196,7 @@ export const InPaintingDialog = (props: Props) => {
           <InPaintingImageForm
             taskId={props.taskId}
             token={props.token}
-            fileName={props.fileName}
+            imageUrl={props.imageUrl}
             userNanoid={props.userNanoid}
             configSeed={props.configSeed}
             configSteps={props.configSteps}

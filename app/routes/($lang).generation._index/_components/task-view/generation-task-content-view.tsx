@@ -1,4 +1,3 @@
-import { PrivateImage } from "@/_components/private-image"
 import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
@@ -48,16 +47,13 @@ export const GenerationTaskContentPreview = () => {
       <Card className="flex h-[100vh] w-auto flex-col">
         <div className="m-auto max-h-[100vh]">
           {imageGenerationTask.status === "DONE" &&
-            imageGenerationTask.imageFileName &&
-            imageGenerationTask.thumbnailImageFileName && (
-              <PrivateImage
+            imageGenerationTask.imageUrl &&
+            imageGenerationTask.thumbnailUrl && (
+              <img
                 // biome-ignore lint/nursery/useSortedClasses: <explanation>
                 className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
-                taskId={imageGenerationTask.id}
-                token={userToken}
+                src={imageGenerationTask.imageUrl}
                 alt={"-"}
-                fileName={imageGenerationTask.imageFileName}
-                thumbnailFileName={imageGenerationTask.thumbnailImageFileName}
               />
             )}
           {imageGenerationTask.status === "RESERVED" && <p>{"予約生成中"}</p>}

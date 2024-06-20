@@ -1,4 +1,3 @@
-import { PrivateImage } from "@/_components/private-image"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
@@ -161,7 +160,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
     )
   }
 
-  if (!props.task.imageFileName) {
+  if (!props.task.imageUrl) {
     return (
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}
@@ -194,15 +193,18 @@ export const GenerationTaskEditableCard = (props: Props) => {
         isSelected={props.isSelected}
         isDisabled={props.isSelectDisabled}
       >
-        {props.task.imageFileName && props.task.thumbnailImageFileName ? (
-          <PrivateImage
+        {props.task.imageUrl !== "" &&
+        props.task.thumbnailUrl !== "" &&
+        props.task.thumbnailUrl !== null ? (
+          <img
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`m-auto generation-image-${props.taskNanoid}`}
-            token={props.userToken}
-            taskId={props.taskId}
-            isThumbnail={context.config.taskListThumbnailType === "light"}
-            fileName={props.task.imageFileName}
-            thumbnailFileName={props.task.thumbnailImageFileName}
+            src={
+              context.config.taskListThumbnailType === "light"
+                ? props.task.thumbnailUrl
+                : props.task.imageUrl
+            }
+            data-original={props.task.imageUrl}
             alt={"-"}
           />
         ) : (
@@ -212,15 +214,15 @@ export const GenerationTaskEditableCard = (props: Props) => {
       {/* 拡大ボタン */}
       {isDesktop &&
         isHovered &&
-        props.task.imageFileName &&
-        props.task.thumbnailImageFileName && (
+        props.task.imageUrl &&
+        props.task.thumbnailUrl && (
           <GenerationTaskZoomUpButton
             taskId={props.taskId}
             token={props.userToken}
             size={optionButtonSize(props.optionButtonSize)}
             setIsHovered={setIsHovered}
-            imageFileName={props.task.imageFileName}
-            thumbnailImageFileName={props.task.thumbnailImageFileName}
+            imageUrl={props.task.imageUrl}
+            thumbnailUrl={props.task.thumbnailUrl}
           />
         )}
       {/* お気に入りボタン */}

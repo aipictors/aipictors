@@ -1,5 +1,4 @@
 import PaintCanvas from "@/_components/paint-canvas"
-import { config } from "@/config"
 import { useEffect, useState } from "react"
 
 type Props = {
@@ -15,19 +14,14 @@ export const PrivateImagePaintCanvas = (props: Props) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(
-          `${config.wordpressEndpoint.privateImage}?token=${encodeURIComponent(
-            props.token,
-          )}&name=${props.fileName}`,
-        )
+        const response = await fetch(props.fileName)
         if (!response.ok) {
-          throw new Error("Failed to fetch image")
+          throw new Error("Network response was not ok")
         }
         const blob = await response.blob()
         const reader = new FileReader()
-        reader.onload = () => {
+        reader.onloadend = () => {
           const base64Data = reader.result
-          // 取得したBase64データをセットする
           if (base64Data) {
             setBase64Image(base64Data as string)
           }
@@ -39,7 +33,7 @@ export const PrivateImagePaintCanvas = (props: Props) => {
     }
 
     fetchImage()
-  }, [])
+  }, [props.fileName])
 
   return (
     <PaintCanvas

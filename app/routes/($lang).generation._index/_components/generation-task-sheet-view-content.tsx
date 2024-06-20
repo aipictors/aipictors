@@ -1,5 +1,4 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { PrivateImage } from "@/_components/private-image"
 import { SwipeArea } from "@/_components/swipe-area"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
@@ -58,7 +57,7 @@ type Props = {
   onPrevTask(): void
   setRating: (value: number) => void
   setShowInPaintDialog: (value: boolean) => void
-  saveGenerationImage(userToken: string, fileName: string): void
+  saveGenerationImage(fileName: string): void
   toggleProtectedImage(taskId: string): void
   copyGeneration(generationParameters: GenerationParameters): void
   copyUrl(nanoid: string): void
@@ -161,27 +160,23 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         />
                       }
                     >
-                      {props.task.imageFileName &&
-                      props.task.thumbnailImageFileName &&
+                      {props.task.imageUrl &&
+                      props.task.thumbnailUrl &&
                       userToken ? (
                         <GenerationImageDialogButton
                           taskId={props.task.id}
                           userToken={userToken}
-                          fileName={props.task.imageFileName}
-                          thumbnailFileName={props.task.thumbnailImageFileName}
+                          imageUrl={props.task.imageUrl}
+                          thumbnailUrl={props.task.thumbnailUrl}
                         >
-                          <PrivateImage
+                          <img
                             className={"m-auto max-h-96"}
-                            taskId={props.task.id}
-                            token={userToken}
-                            isThumbnail={
+                            src={
                               context.config.taskListThumbnailType === "light"
+                                ? props.task.thumbnailUrl
+                                : props.task.imageUrl
                             }
                             alt={"-"}
-                            fileName={props.task.imageFileName}
-                            thumbnailFileName={
-                              props.task.thumbnailImageFileName
-                            }
                           />
                         </GenerationImageDialogButton>
                       ) : (
@@ -199,19 +194,14 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       }
                     >
                       {userToken &&
-                        props.task.imageFileName &&
-                        props.task.thumbnailImageFileName && (
-                          <PrivateImage
+                        props.task.imageUrl &&
+                        props.task.thumbnailUrl && (
+                          <img
                             // biome-ignore lint/nursery/useSortedClasses: <explanation>
                             className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
-                            taskId={props.task.id}
-                            token={userToken}
-                            isThumbnail={false}
                             alt={"-"}
-                            fileName={props.task.imageFileName}
-                            thumbnailFileName={
-                              props.task.thumbnailImageFileName ?? ""
-                            }
+                            src={props.task.imageUrl}
+                            data-original={props.task.imageUrl}
                           />
                         )}
                     </Suspense>
@@ -283,14 +273,14 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   }
                   icon={ClipboardCopy}
                 />
-                {props.task?.imageFileName && (
+                {props.task?.imageUrl && (
                   <GenerationMenuButton
                     title={"画像を保存する"}
                     onClick={() =>
                       userToken &&
                       props.saveGenerationImage(
                         userToken,
-                        props.task.imageFileName ?? "",
+                        props.task.imageUrl ?? "",
                       )
                     }
                     icon={ArrowDownToLine}
@@ -448,13 +438,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
           )}
         </div>
       </ScrollArea>
-      {props.task.imageFileName && userToken && (
+      {props.task.imageUrl && userToken && (
         <InPaintingDialog
           isOpen={props.showInPaintDialog}
           onClose={() => props.setShowInPaintDialog(false)}
           taskId={props.task.id}
           token={userToken}
-          fileName={props.task.imageFileName}
+          imageUrl={props.task.imageUrl}
           userNanoid={props.userNanoid}
           configSeed={props.task.seed}
           configSteps={props.task.steps}
