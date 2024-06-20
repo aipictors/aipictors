@@ -117,6 +117,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
       ? props.task.upscaleSize
       : 1
   const width = props.generationSize.width * upscaleSize
+
   const height = props.generationSize.height * upscaleSize
 
   const userToken = context.config.currentUserToken
