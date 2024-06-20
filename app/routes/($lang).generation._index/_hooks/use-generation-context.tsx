@@ -475,6 +475,7 @@ export const useGenerationContext = () => {
       .changeControlNetControlMode(null)
       .changeControlNetWeight(null)
       .changeGenerationCount(1)
+      .changePage(0)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
