@@ -48,6 +48,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
       adjustHeight(e.target)
     }
 
+    // refが設定されたときやvalueが変わったときに高さを調整
     useEffect(() => {
       if (textAreaRef.current && prevValueRef.current !== String(value)) {
         adjustHeight(textAreaRef.current)
