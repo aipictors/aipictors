@@ -19,7 +19,7 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
 export async function getCroppedImage(
   imageSrc: string,
   pixelCrop: Area,
-  fileExtension?: string,
+  fileExtension = "webp",
 ): Promise<string> {
   const image = await createImage(imageSrc)
   const canvas = document.createElement("canvas")
@@ -51,13 +51,13 @@ export async function getCroppedImage(
   // 抽出した画像データをcanvasの左隅に貼り付け
   ctx.putImageData(data, 0, 0)
 
-  // canvasを画像に変換
+  // canvasを画像に変換してBase64形式で返す
   return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (file) => {
-        if (file !== null) resolve(URL.createObjectURL(file))
-      },
-      `image/${fileExtension ?? "png"}`,
-    )
+    try {
+      const base64 = canvas.toDataURL(`image/${fileExtension ?? "png"}`)
+      resolve(base64)
+    } catch (error) {
+      reject(new Error("Failed to convert canvas to Base64"))
+    }
   })
 }

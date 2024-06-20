@@ -63,7 +63,7 @@ export const AlbumsSpListItem = (props: Props) => {
             }}
           >
             <a
-              href={`${props.album.userId}/series/${props.album.slug}`}
+              href={`${props.album.userId}/albums/${props.album.slug}`}
               className="mr-2"
             >
               <img
@@ -74,7 +74,7 @@ export const AlbumsSpListItem = (props: Props) => {
             </a>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <a href={`${props.album.userId}/series/${props.album.slug}`}>
+                <a href={`${props.album.userId}/albums/${props.album.slug}`}>
                   <div className="w-full font-bold">{props.album.title}</div>
                 </a>
                 <div className="text-sm opacity-80">

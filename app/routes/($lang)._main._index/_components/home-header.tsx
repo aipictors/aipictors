@@ -92,17 +92,6 @@ const HomeHeader = (props: Props) => {
           >
             <Button variant={"secondary"}>{"投稿"}</Button>
           </Link>
-          {/* {config.isReleaseMode ? (
-          <Button variant={"secondary"} disabled size={"icon"}>
-            <FolderIcon className="w-4" />
-          </Button>
-        ) : (
-          <Link href={"/viewer/albums"}>
-            <Button variant={"secondary"} size={"icon"}>
-              <FolderIcon className="w-4" />
-            </Button>
-          </Link>
-        )} */}
           {authContext.isLoggedIn && <HomeNotificationsMenu />}
           <Suspense>
             {authContext.isLoggedIn && (

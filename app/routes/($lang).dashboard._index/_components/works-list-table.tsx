@@ -14,6 +14,7 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 type Props = {
   works: {
     id: string
+    uuid: string
     title: string
     thumbnailImageUrl: string
     likesCount: number
@@ -22,6 +23,7 @@ type Props = {
     viewsCount: number
     createdAt: string
     accessType: IntrospectionEnum<"AccessType">
+    workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean
   }[]
   sort: SortType
@@ -31,6 +33,7 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
+  onClickWorkTypeSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
 }
@@ -90,6 +93,15 @@ export const WorksListTable = (props: Props) => {
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
                   onClick={props.onClickViewSortButton}
+                />
+              </TableHead>
+              <TableHead>
+                <WorksListColumn
+                  label="種別"
+                  orderBy="WORK_TYPE"
+                  nowOrderBy={props.orderBy}
+                  sort={props.sort}
+                  onClick={props.onClickWorkTypeSortButton}
                 />
               </TableHead>
               <TableHead>

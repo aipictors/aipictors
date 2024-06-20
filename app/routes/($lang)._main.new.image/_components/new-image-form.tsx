@@ -229,6 +229,8 @@ export const NewImageForm = () => {
 
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
+  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
+
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
   }
@@ -447,12 +449,18 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data.createWork.id)
+          setUploadedWorkId(work.data?.createWork.id)
+          if (work.data?.createWork.accessType === "LIMITED") {
+            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
+          }
         }
       }
 
@@ -507,12 +515,18 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
+              accessGenerationType: isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
             },
           },
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data.createWork.id)
+          setUploadedWorkId(work.data?.createWork.id)
+          if (work.data?.createWork.accessType === "LIMITED") {
+            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
+          }
         }
       }
 
@@ -807,6 +821,7 @@ export const NewImageForm = () => {
         title={title}
         imageBase64={thumbnailBase64}
         workId={uploadedWorkId}
+        uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 

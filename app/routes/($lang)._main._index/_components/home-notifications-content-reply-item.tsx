@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
 
@@ -25,7 +26,7 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
         <>
           <a href={`/users/${props.ownerUserId}`}>
             <img
-              src={props.iconUrl}
+              src={IconUrl(props.iconUrl)}
               alt="thumbnail"
               className="h-8 w-8 rounded-full object-cover"
             />

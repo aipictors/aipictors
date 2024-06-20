@@ -5,6 +5,7 @@ import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
+import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 
@@ -58,6 +59,9 @@ export const UserAlbumsContents = (props: Props) => {
 
   return (
     <>
+      {authContext.userId === props.userId && (
+        <WorksSeriesAddButton refetch={refetch} />
+      )}
       <ResponsiveAlbumsList albums={albums} />
       <div className="mt-1 mb-1">
         <ResponsivePagination

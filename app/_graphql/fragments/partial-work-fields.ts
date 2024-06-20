@@ -6,6 +6,7 @@ export const partialWorkFieldsFragment = graphql(
     title
     accessType
     adminAccessType
+    type
     likesCount
     commentsCount
     bookmarksCount
@@ -18,6 +19,7 @@ export const partialWorkFieldsFragment = graphql(
     largeThumbnailImageURL
     largeThumbnailImageHeight
     largeThumbnailImageWidth
+    type
     prompt
     negativePrompt
     isLiked
@@ -31,11 +33,7 @@ export const partialWorkFieldsFragment = graphql(
       id
       name
       iconUrl
-      iconImage {
-        downloadURL
-        id
-        type
-      }
     }
+    uuid
   }`,
 )

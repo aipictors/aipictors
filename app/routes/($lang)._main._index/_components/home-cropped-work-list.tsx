@@ -1,4 +1,5 @@
 import { CroppedWorkSquare } from "@/_components/cropped-work-square"
+import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import {
   Carousel,
@@ -31,7 +32,7 @@ export const HomeCroppedWorkList = (props: Props) => {
     workId: work.id,
     thumbnailImagePosition: work.thumbnailImagePosition,
     userId: work.user.id,
-    userIcon: work.user.iconImage?.downloadURL,
+    userIcon: work.user.iconUrl,
     userName: work.user.name,
     title: work.title,
     isLiked: work.isLiked,
@@ -75,7 +76,7 @@ export const HomeCroppedWorkList = (props: Props) => {
               </p>
               <UserNameBadge
                 userId={work.userId}
-                userIconImageURL={work.userIcon}
+                userIconImageURL={IconUrl(work.userIcon)}
                 name={work.userName}
                 width={"lg"}
               />

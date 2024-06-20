@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
 import { AuthContext } from "@/_contexts/auth-context"
-import { config } from "@/config"
 import {
   CoffeeIcon,
   GemIcon,
@@ -59,7 +58,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const followCount = data?.viewer?.user?.followCount ?? 0
 
-  const headerImageUrl = data?.viewer?.user.headerImage?.downloadURL ?? ""
+  const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
 
@@ -162,13 +161,11 @@ export const HomeUserNavigationMenu = (props: Props) => {
             icon={<GemIcon className="mr-2 inline-block w-4" />}
             label="Aipictors+"
           />
-          {config.isDevelopmentMode && (
-            <MenuItemLink
-              href="/settings/notification"
-              icon={<SettingsIcon className="mr-2 inline-block w-4" />}
-              label="設定"
-            />
-          )}
+          <MenuItemLink
+            href="/settings/notification"
+            icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+            label="設定"
+          />
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               {getThemeIcon()}

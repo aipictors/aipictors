@@ -11,6 +11,7 @@ import {
   PencilIcon,
 } from "lucide-react"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
   works: {
@@ -22,6 +23,7 @@ type Props = {
     commentsCount: number
     viewsCount: number
     createdAt: string
+    workType: IntrospectionEnum<"WorkType">
     accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
   }[]
@@ -51,9 +53,14 @@ export const WorksSpList = (props: Props) => {
                 <a href={`/works/${work.id}`}>
                   <div className="w-full font-bold">{work.title}</div>
                 </a>
-                <Badge variant={"secondary"}>
-                  {toAccessTypeText(work.accessType)}
-                </Badge>
+                <div className="space-x-2">
+                  <Badge variant={"secondary"}>
+                    {toAccessTypeText(work.accessType)}
+                  </Badge>
+                  <Badge variant={"secondary"}>
+                    {toWorkTypeText(work.workType)}
+                  </Badge>
+                </div>
                 <div className="text-sm opacity-80">{work.createdAt}</div>
               </div>
               <div className="flex w-full items-center justify-between">
@@ -76,9 +83,12 @@ export const WorksSpList = (props: Props) => {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              <a href={`https://aipictors.com/edit-work/?id=${work.id}`}>
-                <PencilIcon />
-              </a>
+              {work.workType === "WORK" ||
+                (work.workType === "VIDEO" && (
+                  <a href={`/works/${work.id}/edit`}>
+                    <PencilIcon />
+                  </a>
+                ))}
             </div>
           </div>
           <Separator />

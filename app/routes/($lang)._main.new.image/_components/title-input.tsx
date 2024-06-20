@@ -7,6 +7,7 @@ import {} from "@dnd-kit/sortable"
 type Props = {
   label?: string
   onChange: (value: string) => void
+  value?: string
 }
 
 /**
@@ -24,6 +25,7 @@ export const TitleInput = (props: Props) => {
             onChange={(event) => {
               props.onChange(event.target.value)
             }}
+            value={props.value}
             minLength={1}
             maxLength={120}
             required

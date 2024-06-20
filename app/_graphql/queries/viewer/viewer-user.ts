@@ -14,15 +14,8 @@ export const viewerUserQuery = graphql(
         awardsCount
         followersCount
         followCount
-        iconImage {
-          id
-          downloadURL
-        }
         iconUrl
-        headerImage {
-          id
-          downloadURL
-        }
+        headerImageUrl
         webFcmToken
         generatedCount
         promptonUser {

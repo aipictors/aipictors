@@ -54,18 +54,20 @@ export const SortableItem = ({ item, ...props }: Props) => {
       >
         <ImageItem item={item} />
       </div>
-      <Button
-        className="absolute top-2 right-2 h-6 w-6 md:h-8 md:w-8"
-        size={"icon"}
-        onClick={() => {
-          if (props.onDelete) {
-            props.onDelete(item.id)
-          }
-          // setIsDeleted(true)
-        }}
-      >
-        <XIcon className="h-4 w-4 md:h-6 md:w-6" />
-      </Button>
+      {props.isDeletable && (
+        <Button
+          className="absolute top-2 right-2 h-6 w-6 md:h-8 md:w-8"
+          size={"icon"}
+          onClick={() => {
+            if (props.onDelete) {
+              props.onDelete(item.id)
+            }
+            // setIsDeleted(true)
+          }}
+        >
+          <XIcon className="h-4 w-4 md:h-6 md:w-6" />
+        </Button>
+      )}
       {props.optionalButton && (
         // biome-ignore lint/complexity/useOptionalChain: <explanation>
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>

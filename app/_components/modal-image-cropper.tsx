@@ -1,5 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
+import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
 import { getCroppedImage } from "@/_utils/get-cropped-image"
 import getResizedImg from "@/_utils/get-resized-image"
 import { useState } from "react"
@@ -47,18 +48,41 @@ export const ImageCropperModal = (props: Props) => {
    * 切り抜き処理
    */
   const onSubmit = async () => {
-    const croppedImage = await getCroppedImage(
-      props.src,
-      croppedAreaPixels,
-      props.fileExtension,
-    )
-    const resizedImage = await getResizedImg(
-      croppedImage,
-      props.cropWidth,
-      props.cropHeight,
-      props.fileExtension,
-    )
-    props.onCrop(resizedImage)
+    if (props.src.startsWith("https://")) {
+      const base64 = await getBase64FromAipictorsUrl(props.src)
+      const dataUrl = `data:image/webp;base64,${base64}`
+
+      const croppedImage = await getCroppedImage(
+        dataUrl,
+        croppedAreaPixels,
+        props.fileExtension,
+      )
+
+      const resizedImage = await getResizedImg(
+        croppedImage,
+        props.cropWidth,
+        props.cropHeight,
+        props.fileExtension,
+      )
+
+      props.onCrop(resizedImage)
+    } else {
+      const croppedImage = await getCroppedImage(
+        props.src,
+        croppedAreaPixels,
+        props.fileExtension,
+      )
+
+      const resizedImage = await getResizedImg(
+        croppedImage,
+        props.cropWidth,
+        props.cropHeight,
+        props.fileExtension,
+      )
+
+      props.onCrop(resizedImage)
+    }
+
     props.onClose()
   }
 

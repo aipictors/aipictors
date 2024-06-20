@@ -30,15 +30,8 @@ export const userQuery = graphql(
       followCount
       followersCount
       worksCount
-      iconImage {
-        id
-        downloadURL
-      }
       iconUrl
-      headerImage {
-        id
-        downloadURL
-      }
+      headerImageUrl
       webFcmToken
       isFollower
       isFollowee

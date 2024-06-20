@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { AuthContext } from "@/_contexts/auth-context"
 import { muteUserMutation } from "@/_graphql/mutations/mute-user"
 import { viewerMutedUsersQuery } from "@/_graphql/queries/viewer/viewer-muted-users"
@@ -38,7 +39,7 @@ export const MutedUserList = () => {
           <MutedUser
             key={user.id}
             name={user.name}
-            iconImageURL={user.iconImage?.downloadURL ?? null}
+            iconImageURL={IconUrl(user.iconUrl)}
             onClick={() => handleUnmute(user.id)}
           />
         ))}

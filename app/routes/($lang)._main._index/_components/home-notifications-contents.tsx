@@ -92,7 +92,7 @@ export const HomeNotificationsContents = (props: Props) => {
                   isFollow={notification.user?.isFollowee ?? false}
                   userId={notification.user?.id ?? ""}
                   iconUrl={
-                    notification.user?.iconImage?.downloadURL ??
+                    notification.user?.iconUrl ??
                     "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
                   }
                   userName={notification.user?.name ?? ""}

@@ -1,3 +1,4 @@
+import { HeaderDevelopBanner } from "@/_components/header-develop-banner"
 import { ParamsError } from "@/_errors/params-error"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
@@ -60,6 +61,7 @@ export default function Work() {
 
   return (
     <Suspense>
+      <HeaderDevelopBanner />
       <WorkContainer work={data.work} comments={data.workComments} />
     </Suspense>
   )

@@ -16,17 +16,20 @@ import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import { toRatingText } from "@/_utils/work/to-rating-text"
 import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
   workTabType: WorkTabType | null
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
+  workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   sumWorksCount: number
   sumAlbumsCount: number
   setWorkTabType: (workTabType: WorkTabType | null) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
+  setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
   onClickTitleSortButton: () => void
@@ -36,6 +39,7 @@ type Props = {
   onClickViewSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
 }
 
 /**
@@ -97,6 +101,7 @@ export const WorksSetting = (props: Props) => {
             }}
           >
             <div className="flex space-x-4">
+              {/* 公開範囲 */}
               <Select
                 value={props.accessType ? props.accessType : ""}
                 onValueChange={(value) => {
@@ -125,6 +130,36 @@ export const WorksSetting = (props: Props) => {
                   <SelectItem value="DRAFT">{"下書き"}</SelectItem>
                 </SelectContent>
               </Select>
+              {/* 作品種別 */}
+              <Select
+                value={props.workType ? props.workType : ""}
+                onValueChange={(value) => {
+                  if (value === "ALL") {
+                    props.setWorkType(null)
+                    return
+                  }
+                  props.setWorkType(value as IntrospectionEnum<"WorkType">)
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      props.workType
+                        ? toWorkTypeText(props.workType)
+                        : "すべての種別"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">{"すべての種別"}</SelectItem>
+                  <SelectItem value="WORK">{"画像"}</SelectItem>
+                  <SelectItem value="VIDEO">{"動画"}</SelectItem>
+                  <SelectItem value="NOVEL">{"小説"}</SelectItem>
+                  <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* 年齢制限 */}
               <Select
                 value={props.rating ? props.rating : ""}
                 onValueChange={(value) => {
@@ -168,6 +203,7 @@ export const WorksSetting = (props: Props) => {
             onClickViewSortButton={props.onClickViewSortButton}
             onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
             onClickDateSortButton={props.onClickDateSortButton}
+            onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
           />
         )}
       </div>

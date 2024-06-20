@@ -5,6 +5,9 @@ export const createWorkMutation = graphql(
     createWork(input: $input) {
       id
       title
+      accessType
+      nanoid
+      uuid
     }
   }`,
 )

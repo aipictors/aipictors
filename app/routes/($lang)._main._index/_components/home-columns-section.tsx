@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
 import {
@@ -68,7 +69,7 @@ export const HomeColumnsSection = (props: Props) => {
     workId: work.id,
     thumbnailImagePosition: work.thumbnailImagePosition,
     userId: work.user.id,
-    userIcon: work.user.iconImage?.downloadURL,
+    userIcon: work.user.iconUrl,
     userName: work.user.name,
     title: work.title,
     isLiked: work.isLiked,
@@ -105,7 +106,7 @@ export const HomeColumnsSection = (props: Props) => {
               </div>
               <UserNameBadge
                 userId={work.userId}
-                userIconImageURL={work.userIcon}
+                userIconImageURL={IconUrl(work.userIcon)}
                 name={work.userName}
                 width={"lg"}
               />

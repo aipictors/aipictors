@@ -16,6 +16,7 @@ type Props = {
   onClickViewSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
 }
 
 /**
@@ -126,6 +127,18 @@ export const WorksListSortableSetting = (props: Props) => {
     }
   }
 
+  const onClickWorkTypeSortButton = () => {
+    if (props.nowOrderBy === "WORK_TYPE") {
+      if (props.nowSort === "ASC") {
+        props.setSort("DESC")
+      } else {
+        props.setSort("ASC")
+      }
+    } else {
+      props.onClickWorkTypeSortButton()
+    }
+  }
+
   return (
     <>
       <Drawer>
@@ -169,6 +182,12 @@ export const WorksListSortableSetting = (props: Props) => {
                 sortType: "NAME",
                 label: "タイトル順",
                 callback: onClickTitleSortButton,
+              },
+              {
+                sort: "ASC",
+                sortType: "WORK_TYPE",
+                label: "種別順",
+                callback: onClickWorkTypeSortButton,
               },
               {
                 sort: "ASC",

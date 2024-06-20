@@ -7,10 +7,6 @@ export const partialAlbumFieldsFragment = graphql(
     isSensitive
     likesCount
     viewsCount
-    thumbnailImage {
-      id
-      downloadURL
-    }
     thumbnailImageURL
     description
     works(limit: $limit, offset: $offset) {

@@ -20,7 +20,7 @@ import {
   StampIcon,
 } from "lucide-react"
 
-export const HomeRouteVerticalList = () => {
+export const HomeRouteList = () => {
   const [isScrollingUp, setIsScrollingUp] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 

@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { messageThreadMessagesQuery } from "@/_graphql/queries/message/message-thread-messages"
 import { SupportMessageList } from "@/routes/($lang)._main.support.chat/_components/support-message-list"
 import { useSuspenseQuery } from "@apollo/client/index"
@@ -30,9 +31,9 @@ export function ChatMessageListContent(props: Props) {
   return (
     <SupportMessageList
       messages={messages}
-      recipientIconImageURL={
-        data?.viewer?.messageThread?.recipient.iconImage?.downloadURL ?? ""
-      }
+      recipientIconImageURL={IconUrl(
+        data?.viewer?.messageThread?.recipient.iconUrl,
+      )}
     />
   )
 }

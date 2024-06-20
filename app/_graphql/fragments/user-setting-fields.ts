@@ -6,5 +6,8 @@ export const userSettingFieldsFragment = graphql(
     favoritedImageGenerationModelIds
     preferenceRating
     featurePromptonRequest
+    isAnonymousLike
+    isAnonymousSensitiveLike
+    isNotifyComment
   }`,
 )

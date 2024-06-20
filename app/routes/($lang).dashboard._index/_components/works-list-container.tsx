@@ -15,6 +15,7 @@ type Props = {
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
+  workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   setWorksMaxCount: (worksMaxCount: number) => void
   setWorkTabType: (workTabType: WorkTabType | null) => void
@@ -29,6 +30,7 @@ type Props = {
   onClickViewSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
   albumsCountRefetch: () => void
 }
 
@@ -59,8 +61,12 @@ export const WorksListContainer = (props: Props) => {
           orderBy: props.orderBy,
           sort: props.sort,
           isIncludePrivate: true,
+          isNowCreatedAt: true,
           ...(props.accessType !== null && {
             accessTypes: [props.accessType],
+          }),
+          ...(props.workType !== null && {
+            workTypes: [props.workType],
           }),
           ...(props.rating !== null && {
             ratings: [props.rating],
@@ -79,8 +85,12 @@ export const WorksListContainer = (props: Props) => {
           orderBy: props.orderBy,
           sort: props.sort,
           isIncludePrivate: true,
+          isNowCreatedAt: true,
           ...(props.accessType !== null && {
             accessTypes: [props.accessType],
+          }),
+          ...(props.workType !== null && {
+            workTypes: [props.workType],
           }),
           ...(props.rating !== null && {
             ratings: [props.rating],
@@ -103,14 +113,16 @@ export const WorksListContainer = (props: Props) => {
         works={
           works?.map((work) => ({
             id: work.id,
+            uuid: work.uuid ?? "",
             title: work.title,
             thumbnailImageUrl: work.smallThumbnailImageURL,
             likesCount: work.likesCount,
-            bookmarksCount: 0,
+            bookmarksCount: work.bookmarksCount ?? 0,
             commentsCount: work.commentsCount ?? 0,
             viewsCount: work.viewsCount,
             accessType: work.accessType,
             createdAt: toDateTimeText(work.createdAt),
+            workType: work.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
             isTagEditable: work.isTagEditable,
           })) ?? []
         }
@@ -129,6 +141,7 @@ export const WorksListContainer = (props: Props) => {
         onClickViewSortButton={props.onClickViewSortButton}
         onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
         onClickDateSortButton={props.onClickDateSortButton}
+        onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
       />
       <div className="mt-4 mb-8">
         <ResponsivePagination

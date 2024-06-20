@@ -5,6 +5,7 @@ import { SharePopover } from "./work-action-share"
 import { LikeButton } from "@/_components/like-button"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/routes/($lang).generation._index/_utils/download-image-file"
+import { WorkEditorButton } from "@/routes/($lang)._main.works.$work/_components/work-editor-button"
 
 type Props = {
   title?: string
@@ -13,6 +14,7 @@ type Props = {
   defaultLiked: boolean
   targetWorkId: string
   targetWorkOwnerUserId: string
+  isHideEditButton: boolean
 }
 
 /**
@@ -40,6 +42,12 @@ export const WorkAction = (props: Props) => {
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
         />
+        {!props.isHideEditButton && (
+          <WorkEditorButton
+            targetWorkId={props.targetWorkId}
+            targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+          />
+        )}
         <Button aria-label={"フォルダに追加"} size={"icon"} variant="secondary">
           <FolderIcon />
         </Button>

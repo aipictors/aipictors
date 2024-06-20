@@ -7,10 +7,13 @@ import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { Link } from "@remix-run/react"
+import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
   work: {
     id: string
+    uuid: string
     title: string
     thumbnailImageUrl: string
     likesCount: number
@@ -19,6 +22,7 @@ type Props = {
     viewsCount: number
     createdAt: string
     accessType: IntrospectionEnum<"AccessType">
+    workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean
   }
 }
@@ -56,6 +60,8 @@ export const WorksListTableRow = (props: Props) => {
 
   const [isHidden, setIsHidden] = useState(false)
 
+  console.log(props.work.workType)
+
   return (
     <>
       {!isHidden && (
@@ -66,23 +72,42 @@ export const WorksListTableRow = (props: Props) => {
           }}
         >
           <TableCell className="font-medium">
-            <a href={`/works/${props.work.id}`}>
-              <div className="w-32">{props.work.title}</div>
-            </a>
+            {props.work.accessType === "LIMITED" ? (
+              <Link to={`/works/${props.work.uuid}`}>
+                <div className="w-32">{props.work.title}</div>
+              </Link>
+            ) : (
+              <Link to={`/works/${props.work.id}`}>
+                <div className="w-32">{props.work.title}</div>
+              </Link>
+            )}
           </TableCell>
           <TableCell>
-            <a href={`/works/${props.work.id}`}>
-              <img
-                src={props.work.thumbnailImageUrl}
-                alt="thumbnail"
-                className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
-              />
-            </a>
+            {props.work.accessType === "LIMITED" ? (
+              <Link to={`/works/${props.work.uuid}`}>
+                <img
+                  src={props.work.thumbnailImageUrl}
+                  alt="thumbnail"
+                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                />{" "}
+              </Link>
+            ) : (
+              <Link to={`/works/${props.work.id}`}>
+                <img
+                  src={props.work.thumbnailImageUrl}
+                  alt="thumbnail"
+                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                />{" "}
+              </Link>
+            )}
           </TableCell>
           <TableCell>
-            <a href={`https://aipictors.com/edit-work/?id=${props.work.id}`}>
-              <PencilIcon />
-            </a>
+            {props.work.workType === "WORK" ||
+              (props.work.workType === "VIDEO" && (
+                <Link to={`/works/${props.work.id}/edit`}>
+                  <PencilIcon />
+                </Link>
+              ))}
           </TableCell>
           <TableCell>{props.work.likesCount}</TableCell>
           <TableCell>
@@ -90,6 +115,7 @@ export const WorksListTableRow = (props: Props) => {
           </TableCell>
           <TableCell>{props.work.commentsCount}</TableCell>
           <TableCell>{props.work.viewsCount}</TableCell>
+          <TableCell>{toWorkTypeText(props.work.workType)}</TableCell>
           <TableCell>{toAccessTypeText(props.work.accessType)}</TableCell>
           <TableCell>
             {isLoadingDeleteWork ? (

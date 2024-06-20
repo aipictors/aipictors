@@ -1,3 +1,4 @@
+import { OmissionNumber } from "@/_components/omission-number"
 import type { userQuery } from "@/_graphql/queries/user/user"
 import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
 import { config } from "@/config"
@@ -35,7 +36,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
             <div className="flex">
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  {toOmissionNumberText(props.user.followersCount)}
+                  <OmissionNumber number={props.user.followersCount} />
                 </div>
                 <div className="white mt-4 text-md opacity-50">
                   {"フォロワー"}
@@ -43,7 +44,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
               </div>
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  {toOmissionNumberText(props.user.receivedLikesCount)}
+                  <OmissionNumber number={props.user.receivedLikesCount} />
                 </div>
                 <div className="white mt-4 text-md opacity-50">{"いいね"}</div>
               </div>

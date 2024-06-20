@@ -53,7 +53,7 @@ export default function UserSupports() {
 
   return (
     <UserSupport
-      userIconImageURL={data.user.iconImage?.downloadURL ?? null}
+      userIconImageURL={data.user.iconUrl ?? null}
       userName={data.user.name}
     />
   )

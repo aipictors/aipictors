@@ -8,11 +8,14 @@ export const workQuery = graphql(
       id
       title
       accessType
+      type
       adminAccessType
       promptAccessType
       rating
       description
       isSensitive
+      enTitle
+      enDescription
       imageURL
       largeThumbnailImageURL
       largeThumbnailImageWidth
@@ -40,6 +43,11 @@ export const workQuery = graphql(
           smallThumbnailImageHeight
           thumbnailImagePosition
         }
+      }
+      album {
+        id
+        title
+        description
       }
       dailyTheme {
         id
@@ -70,13 +78,17 @@ export const workQuery = graphql(
       model
       modelHash
       generationModelId
+      workModelId
       isTagEditable
+      isCommentsEditable
       isLiked
       isInCollection
       isPromotion
       isGeneration
+      ogpThumbnailImageUrl
       prompt
       negativePrompt
+      noise
       seed
       steps
       sampler
@@ -87,11 +99,14 @@ export const workQuery = graphql(
       otherGenerationParams
       pngInfo
       style
+      url
+      html
       updatedAt
       dailyRanking
       weeklyRanking
       monthlyRanking
       relatedUrl
+      nanoid
     }
   }`,
   [userFieldsFragment, subWorkFieldsFragment],

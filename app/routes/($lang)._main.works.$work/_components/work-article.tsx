@@ -10,6 +10,9 @@ import { Suspense } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { ResultOf } from "gql.tada"
+import { IconUrl } from "@/_components/icon-url"
+import { WorkHtmlView } from "@/routes/($lang)._main.works.$work/_components/work-html-view"
+import { WorkVideoView } from "@/routes/($lang)._main.works.$work/_components/work-video-view"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -19,14 +22,33 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkArticle = (props: Props) => {
+  console.log(props.work)
+
   return (
     <article className="flex flex-col">
-      <WorkImageView
-        workImageURL={props.work.imageURL}
-        subWorkImageURLs={props.work.subWorks.map((subWork) => {
-          return subWork.image.downloadURL
-        })}
-      />
+      {props.work.type === "WORK" && (
+        <WorkImageView
+          workImageURL={props.work.imageURL}
+          subWorkImageURLs={props.work.subWorks.map((subWork) => {
+            return subWork.imageUrl ?? ""
+          })}
+        />
+      )}
+      {props.work.type === "VIDEO" && (
+        <WorkVideoView videoUrl={props.work.url ?? ""} />
+      )}
+      {props.work.type === "COLUMN" && (
+        <WorkHtmlView
+          thumbnailUrl={props.work.imageURL}
+          html={props.work.html ?? ""}
+        />
+      )}
+      {props.work.type === "NOVEL" && (
+        <WorkHtmlView
+          thumbnailUrl={props.work.imageURL}
+          html={props.work.html ?? ""}
+        />
+      )}
       <section className="mt-4 space-y-4">
         {props.work.isGeneration && (
           <a href={`/generation?work=${props.work.id}`}>
@@ -100,12 +122,12 @@ export const WorkArticle = (props: Props) => {
               href={`/users/${props.work.user.login}`}
             >
               <Avatar>
-                <AvatarImage src={props.work.user.iconImage?.downloadURL} />
+                <AvatarImage src={IconUrl(props.work.user.iconUrl)} />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>
             </a>
-            {props.work.user.promptonUser && (
+            {props.work.user.promptonUser?.id && (
               <PromptonRequestButton
                 promptonId={props.work.user.promptonUser.id}
               />

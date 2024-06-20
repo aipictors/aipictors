@@ -9,15 +9,14 @@ export const stickerQuery = graphql(
       user {
         id
         name
-        iconImage {
-          id
-          downloadURL
-        }
+        iconUrl
       }
+      userId
       imageUrl
       downloadsCount
       likesCount
       usesCount
+      accessType
     }
   }`,
 )

@@ -1,6 +1,17 @@
-import { NewImageForm } from "@/routes/($lang)._main.new.image/_components/new-image-form"
+import { ParamsError } from "@/_errors/params-error"
+import { EditImageForm } from "@/routes/($lang)._main.works.$work.edit._index/_components/edit-image-form"
+import { useParams } from "@remix-run/react"
+import { Suspense } from "react"
 
-export default function NewImage() {
+export default function EditImage() {
+  const params = useParams()
+
+  console.log(params)
+
+  if (params.work === undefined) {
+    throw new ParamsError()
+  }
+
   return (
     <div
       className="container"
@@ -8,7 +19,9 @@ export default function NewImage() {
         margin: "0 auto",
       }}
     >
-      <NewImageForm />
+      <Suspense>
+        <EditImageForm workId={params.work} />
+      </Suspense>
     </div>
   )
 }

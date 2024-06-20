@@ -1,3 +1,4 @@
+import { IconUrl } from "@/_components/icon-url"
 import { AuthContext } from "@/_contexts/auth-context"
 import type { userQuery } from "@/_graphql/queries/user/user"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
@@ -68,7 +69,7 @@ export const UserHome = (props: UserProfileProps) => {
               <div className="relative m-auto w-[1200px]">
                 <img
                   className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-                  src={props.user.iconImage?.downloadURL}
+                  src={IconUrl(props.user.iconUrl)}
                   alt=""
                 />
                 <div className="absolute bottom-0 left-8 z-20">

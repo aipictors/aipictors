@@ -48,8 +48,14 @@ export default function SensitiveAlbumPage() {
     <AppPage>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader album={data.album} />
-          <AlbumWorkList albumWorks={data.albumWorks} />
+          <AlbumArticleHeader
+            album={data.album}
+            userLogin={""}
+            userId={""}
+            userName={""}
+            userProfileImageURL={""}
+          />
+          <AlbumWorkList albumWorks={data.albumWorks} maxCount={0} />
         </div>
         <AlbumWorkDescription album={data.album} />
       </article>

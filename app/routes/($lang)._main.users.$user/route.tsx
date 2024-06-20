@@ -1,4 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
+import { HeaderDevelopBanner } from "@/_components/header-develop-banner"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
@@ -53,10 +54,13 @@ export default function UserLayout() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
-      <Suspense>
-        <UserHome user={data.user} userId={params.user} />
-      </Suspense>
-    </AppPage>
+    <>
+      <HeaderDevelopBanner />
+      <AppPage>
+        <Suspense>
+          <UserHome user={data.user} userId={params.user} />
+        </Suspense>
+      </AppPage>
+    </>
   )
 }

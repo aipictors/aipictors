@@ -8,6 +8,7 @@ type Props = {
   isOpen: boolean
   imageBase64: string
   workId: string
+  uuid: string
   shareTags: string[]
 }
 
@@ -64,7 +65,11 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           if (!isOpen) {
             // ページ遷移
             if (typeof window !== "undefined") {
-              window.location.href = `https://aipictors.com/works/${props.workId}`
+              if (props.uuid !== "") {
+                window.location.href = `https://aipictors.com/works/${props.uuid}`
+              } else {
+                window.location.href = `https://aipictors.com/works/${props.workId}`
+              }
             }
           }
         }}
@@ -80,7 +85,13 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               }}
               className="relative h-40 w-full"
             />
-            <a href={`https://aipictors.com/works/${props.workId}`}>
+            <a
+              href={
+                props.uuid !== ""
+                  ? `https://aipictors.com/works/${props.uuid}`
+                  : `https://aipictors.com/works/${props.workId}`
+              }
+            >
               <img
                 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
                 src={props.imageBase64}
@@ -88,19 +99,27 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               />
             </a>
           </div>
-          <p className="text-center font-bold">作品が投稿されました</p>
+          <p className="text-center font-bold">作品が更新されました</p>
           <p className="text-center text-sm opacity-80">この作品をシェアする</p>
           <div className="w-full">
             <XIntent
               text={`${props.title}\n`}
-              url={`${`https://aipictors.com/works/${props.workId}`}\n`}
+              url={`${
+                props.uuid !== ""
+                  ? `https://aipictors.com/works/${props.uuid}`
+                  : `https://aipictors.com/works/${props.workId}`
+              }\n`}
               hashtags={props.shareTags}
             />
           </div>
           <Button
             onClick={() => {
               if (typeof window !== "undefined") {
-                window.location.href = `https://aipictors.com/works/${props.workId}`
+                if (props.uuid !== "") {
+                  window.location.href = `https://aipictors.com/works/${props.uuid}`
+                } else {
+                  window.location.href = `https://aipictors.com/works/${props.workId}`
+                }
               }
             }}
             className="mt-2"

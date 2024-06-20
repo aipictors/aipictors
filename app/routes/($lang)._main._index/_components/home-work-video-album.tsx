@@ -5,6 +5,7 @@ import { useRef } from "react"
 import { Badge } from "@/_components/ui/badge"
 import { useMediaQuery } from "usehooks-ts"
 import { config } from "@/config"
+import { IconUrl } from "@/_components/icon-url"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
   userId: string
@@ -79,7 +80,7 @@ export function HomeWorkVideoAlbum({
           </Badge>
         </div>
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[16%] flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
         <Link className="w-48" to={`/works/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}
@@ -87,7 +88,11 @@ export function HomeWorkVideoAlbum({
         </Link>
         <Link to={`/users/${userId}`}>
           <div className="flex items-center space-x-2">
-            <img src={userIcon} alt="" className="h-4 w-4 rounded-full" />
+            <img
+              src={IconUrl(userIcon)}
+              alt=""
+              className="h-4 w-4 rounded-full"
+            />
             <span className="text-sm text-white">{userName}</span>
           </div>
         </Link>

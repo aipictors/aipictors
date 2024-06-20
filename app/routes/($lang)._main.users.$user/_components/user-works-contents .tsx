@@ -25,6 +25,7 @@ export const UserWorksContents = (props: Props) => {
       limit: 32,
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         orderBy: "DATE_CREATED",
         workType: props.workType,
@@ -37,6 +38,7 @@ export const UserWorksContents = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isNowCreatedAt: true,
         ratings: ["G", "R15", "R18", "R18G"],
         workType: props.workType,
       },

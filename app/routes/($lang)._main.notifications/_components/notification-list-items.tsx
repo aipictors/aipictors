@@ -42,7 +42,7 @@ export const NotificationListItems = (props: Props) => {
               key={notification.id}
               workId={notification.work?.id ?? ""}
               thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               stickerUrl={notification.sticker?.imageUrl ?? ""}
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
@@ -60,7 +60,7 @@ export const NotificationListItems = (props: Props) => {
               ownerUserId={notification.user?.id ?? ""}
               workId={notification.work?.id ?? ""}
               thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               stickerUrl={notification.sticker?.imageUrl ?? ""}
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
@@ -77,7 +77,7 @@ export const NotificationListItems = (props: Props) => {
               key={notification.id}
               workId={notification.work?.id ?? ""}
               thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               userName={notification.user?.name ?? ""}
               createdAt={toDateText(notification.createdAt) ?? ""}
               title={notification.work?.title ?? ""}
@@ -107,7 +107,7 @@ export const NotificationListItems = (props: Props) => {
               key={notification.id}
               isFollow={notification.user?.isFollowee ?? false}
               userId={notification.user?.id ?? ""}
-              iconUrl={notification.user?.iconImage?.downloadURL ?? ""}
+              iconUrl={notification.user?.iconUrl ?? ""}
               userName={notification.user?.name ?? ""}
               createdAt={toDateText(notification.createdAt) ?? ""}
             />

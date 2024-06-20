@@ -7,12 +7,14 @@ import { WorkCommentResponse } from "@/routes/($lang)._main.works.$work/_compone
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
+import { IconUrl } from "@/_components/icon-url"
+import { userQuery } from "@/_graphql/queries/user/user"
 
 type Props = {
   workId: string
@@ -27,9 +29,7 @@ type Comment = {
   user: {
     id: string
     name: string
-    iconImage: {
-      downloadURL: string
-    }
+    iconUrl: string
   }
   sticker: {
     image: {
@@ -47,9 +47,7 @@ type ReplyComment = {
   user: {
     id: string
     name: string
-    iconImage: {
-      downloadURL: string
-    }
+    iconUrl: string
   }
   sticker: {
     image: {
@@ -89,6 +87,30 @@ export const WorkCommentList = (props: Props) => {
     (comment) => !hideCommentIds.includes(comment.id),
   )
 
+  const authContext = useContext(AuthContext)
+
+  const userResp = useSuspenseQuery(userQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      userId: authContext.userId ?? "0",
+      worksWhere: {},
+      followeesWorksWhere: {},
+      followersWorksWhere: {},
+      worksOffset: 0,
+      worksLimit: 0,
+      followeesOffset: 0,
+      followeesLimit: 0,
+      followeesWorksOffset: 0,
+      followeesWorksLimit: 0,
+      followersOffset: 0,
+      followersLimit: 0,
+      followersWorksOffset: 0,
+      followersWorksLimit: 0,
+    },
+  })
+
+  const userIcon = userResp?.data?.user?.iconUrl
+
   // 表示する新しく追加したコメント
   const showNewComments = newComments?.filter(
     (comment) => !hideCommentIds.includes(comment.id),
@@ -111,6 +133,7 @@ export const WorkCommentList = (props: Props) => {
     stickerId: string,
     stickerImageURL: string,
     targetWorkId: string,
+    iconUrl: string | null | undefined = null,
   ) => {
     try {
       if (targetWorkId !== undefined) {
@@ -134,9 +157,7 @@ export const WorkCommentList = (props: Props) => {
             user: {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
-              iconImage: {
-                downloadURL: appContext.avatarPhotoURL ?? "",
-              },
+              iconUrl: IconUrl(iconUrl),
             },
             sticker: {
               image: {
@@ -174,7 +195,7 @@ export const WorkCommentList = (props: Props) => {
       return
     }
 
-    sendComment(inputComment, "-1", "", props.workId)
+    sendComment(inputComment, "-1", "", props.workId, userIcon)
   }
 
   return (
@@ -220,7 +241,7 @@ export const WorkCommentList = (props: Props) => {
                     createdAt={comment.createdAt}
                     stickerImageURL={comment.sticker?.image?.downloadURL}
                     text={comment.text}
-                    userIconImageURL={comment.user?.iconImage?.downloadURL}
+                    userIconImageURL={IconUrl(userIcon)}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -239,9 +260,7 @@ export const WorkCommentList = (props: Props) => {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconImage: {
-                              downloadURL: appContext.avatarPhotoURL ?? "",
-                            },
+                            iconUrl: IconUrl(userIcon),
                           },
                           sticker: {
                             image: {
@@ -271,7 +290,7 @@ export const WorkCommentList = (props: Props) => {
                 stickerAccessType={comment.sticker?.accessType}
                 isStickerDownloadable={comment.sticker?.isDownloaded}
                 text={comment.text}
-                userIconImageURL={comment.user?.iconImage?.downloadURL}
+                userIconImageURL={IconUrl(comment.user?.iconUrl)}
                 userName={comment.user?.name}
                 commentId={comment.id}
                 onDeleteComment={() => onDeleteComment(comment.id)}
@@ -291,9 +310,7 @@ export const WorkCommentList = (props: Props) => {
                       user: {
                         id: appContext.userId ?? "",
                         name: appContext.displayName ?? "",
-                        iconImage: {
-                          downloadURL: appContext.avatarPhotoURL ?? "",
-                        },
+                        iconUrl: IconUrl(userIcon),
                       },
                       sticker: {
                         image: {
@@ -318,10 +335,10 @@ export const WorkCommentList = (props: Props) => {
                     stickerImageURL={reply.sticker?.imageUrl ?? ""}
                     stickerTitle={reply.sticker?.title}
                     stickerId={reply.sticker?.id}
-                    stickerAccessType={comment.sticker?.accessType}
+                    stickerAccessType={reply.sticker?.accessType}
                     isStickerDownloadable={reply.sticker?.isDownloaded}
                     text={reply.text}
-                    userIconImageURL={reply.user?.iconImage?.downloadURL}
+                    userIconImageURL={IconUrl(reply.user?.iconUrl)}
                     userName={reply.user?.name}
                     replyId={reply.id}
                     onDeleteComment={() => {
@@ -343,9 +360,7 @@ export const WorkCommentList = (props: Props) => {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconImage: {
-                              downloadURL: appContext.avatarPhotoURL ?? "",
-                            },
+                            iconUrl: IconUrl(userIcon),
                           },
                           sticker: {
                             image: {
@@ -370,7 +385,7 @@ export const WorkCommentList = (props: Props) => {
                       createdAt={newReply.createdAt}
                       stickerImageURL={newReply.sticker?.image?.downloadURL}
                       text={newReply.text}
-                      userIconImageURL={newReply.user?.iconImage?.downloadURL}
+                      userIconImageURL={IconUrl(newReply.user?.iconUrl)}
                       userName={newReply.user?.name}
                       replyId={newReply.id}
                       onDeleteComment={() => {
