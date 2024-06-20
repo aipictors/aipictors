@@ -278,10 +278,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     title={"画像を保存する"}
                     onClick={() =>
                       userToken &&
-                      props.saveGenerationImage(
-                        userToken,
-                        props.task.imageUrl ?? "",
-                      )
+                      props.saveGenerationImage(props.task.imageUrl ?? "")
                     }
                     icon={ArrowDownToLine}
                   />
