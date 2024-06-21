@@ -134,7 +134,7 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "latest",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "vite": "^5.2.9",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^3.50.0"
