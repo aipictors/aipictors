@@ -56,7 +56,7 @@
     "@remix-run/cloudflare": "^2.9.2",
     "@remix-run/react": "^2.9.2",
     "@remixicon/react": "^4.2.0",
-    "@sentry/browser": "^7.110.1",
+    "@sentry/browser": "^8.10.0",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-table": "^8.17.3",
     "@tensorflow/tfjs": "^4.17.0",
