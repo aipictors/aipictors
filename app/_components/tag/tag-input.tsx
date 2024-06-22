@@ -250,7 +250,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           />
         ) : null}
         {enableAutocomplete ? (
-          <div className="w-full max-w-[450px]">
+          <div className="w-full">
             <Autocomplete
               tags={tags}
               setTags={setTags}

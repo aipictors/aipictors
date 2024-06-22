@@ -79,7 +79,7 @@ export const SettingRequestForm = () => {
 
   return (
     <div className="space-y-4">
-      <p>{`チップを受けるには累計いいね数が20必要です（現在：現在 ${toOmissionNumberText(
+      <p>{`サポートを受けるには累計いいね数が20必要です（現在：現在 ${toOmissionNumberText(
         receivedLikesCount,
       )}）`}</p>
       {receivedLikesCount >= 20 ? (
@@ -110,7 +110,7 @@ export const SettingRequestForm = () => {
               <div className="flex">
                 <div className="flex w-full items-center justify-between">
                   <Label htmlFor="airplane-mode">
-                    {"チップの送信を許可する"}
+                    {"サポートの送信を許可する"}
                   </Label>
                   <Switch
                     onCheckedChange={setFeatureCheck}
@@ -136,7 +136,7 @@ export const SettingRequestForm = () => {
       ) : (
         <div className="flex">
           <div className="flex w-full justify-between">
-            <Label>{"チップの送信を許可する"}</Label>
+            <Label>{"サポートの送信を許可する"}</Label>
             <Switch disabled id="airplane-mode" />
           </div>
         </div>

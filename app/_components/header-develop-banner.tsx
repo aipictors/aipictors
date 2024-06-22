@@ -1,16 +1,28 @@
-import { Alert, AlertTitle, AlertDescription } from "@/_components/ui/alert"
-import {} from "@/_components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/_components/ui/alert"
 import { Link } from "@remix-run/react"
 
-export const HeaderDevelopBanner = () => {
+type Props = {
+  type: "BUG" | "WARNING" | "INFO"
+  message: string
+  fallbackURL: string
+  date: string
+}
+
+export const ConstructionAlert: React.FC<Props> = (props: Props) => {
   return (
-    <Link to={"https://www.aipictors.com"}>
-      <Alert variant="destructive" className="border-2">
-        <AlertTitle>{"こちらは開発中のベータ版です。"}</AlertTitle>
+    <Link to={props.fallbackURL}>
+      <Alert className="border-2">
+        <AlertTitle>
+          {props.type === "BUG"
+            ? "バグ"
+            : props.type === "WARNING"
+              ? "警告"
+              : "情報"}
+        </AlertTitle>
         <AlertDescription>
-          {
-            "正常に動作しない可能性があります。現行のサイトはこちらをクリックしてください。"
-          }
+          {`${props.message}`}
+          元のバージョンはこちらをクリックしてください。
+          {`${props.date}までに完了予定です。`}
         </AlertDescription>
       </Alert>
     </Link>

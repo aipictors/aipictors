@@ -1,5 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
-import { HeaderDevelopBanner } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/header-develop-banner"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"
@@ -136,7 +136,12 @@ export default function Index() {
    */
   return (
     <AppPage>
-      <HeaderDevelopBanner />
+      <ConstructionAlert
+        type="WARNING"
+        message="このページは現在開発中です。不具合が起きる可能性があります。"
+        fallbackURL="https://www.aipictors.com/"
+        date={"2024-07-30"}
+      />
       <Suspense fallback={<HomeWorkDummies />}>
         <HomeBanners />
       </Suspense>

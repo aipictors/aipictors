@@ -28,7 +28,10 @@ import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-
 import { AuthContext } from "@/_contexts/auth-context"
 import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
 import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
-import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
+import {
+  getExtractInfoFromPNG,
+  type PNGInfo,
+} from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
@@ -545,6 +548,28 @@ export const NewImageForm = () => {
     }
   }
 
+  const onInputPngInfo = () => {
+    // ファイル選択をさせて、開いた画像からPNG情報を取得してセットする
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/png"
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) {
+        return
+      }
+      const pngInfo = await getExtractInfoFromPNG(file)
+      if (pngInfo.src !== "") {
+        setPngInfo(pngInfo)
+        toast("PNG情報を取得しました")
+        return
+      }
+      setPngInfo(null)
+      toast("PNG情報を取得できませんでした")
+    }
+    input.click()
+  }
+
   useEffect(() => {
     if (items.map((item) => item.content).length === 0) {
       setPngInfo(null)
@@ -635,7 +660,9 @@ export const NewImageForm = () => {
               ogpBase64={ogpBase64}
             />
           )}
-
+          <Button onClick={onInputPngInfo} className="m-2 ml-auto block">
+            PNG情報のみ読み込み
+          </Button>
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
@@ -751,10 +778,16 @@ export const NewImageForm = () => {
               />
             )}
             <TagsInput
-              whiteListTags={whiteTags}
+              whiteListTags={whiteTags.filter(
+                (tag) => !tags.map((tag) => tag.text).includes(tag.text),
+              )}
               tags={tags}
               setTags={setTags}
-              recommendedTags={recommendedTags ?? []}
+              recommendedTags={
+                recommendedTags?.filter(
+                  (tag) => !tags.map((tag) => tag.text).includes(tag.text),
+                ) ?? []
+              }
             />
 
             {recommendedTagsLoading && (
