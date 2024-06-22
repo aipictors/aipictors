@@ -65,6 +65,9 @@ export async function loader() {
   })
 
   // 推薦作品
+  /**
+   * TODO_2024_07 クエリを統合する
+   */
   const recommendedWorksResp = await client.query({
     query: worksQuery,
     variables: {
@@ -128,6 +131,9 @@ export async function loader() {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
+  /**
+   * TODO_2024_07 Suspenseを減らす
+   */
   return (
     <>
       <HeaderDevelopBanner />
