@@ -1,63 +1,81 @@
-import { cn } from "@/_lib/cn"
+import { Separator } from "@/_components/ui/separator"
+import { Link } from "@remix-run/react"
+import {
+  RiDiscordLine,
+  RiThreadsLine,
+  RiTwitterXLine,
+  RiYoutubeLine,
+} from "@remixicon/react"
 
 /**
  * フッター
  */
 export const HomeFooter = () => {
   return (
-    <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
-      <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">
-        <div className="flex gap-x-4">
+    <footer className="py-6 md:px-8 md:py-0">
+      <div className="flex items-center justify-between md:h-24 md:flex-row">
+        <div className="flex h-5 items-center space-x-4 text-sm">
           <a
             href={"https://www.aipictors.com/terms/"}
-            className="text-sm"
+            className="underline underline-offset-4"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"利用規約"}
           </a>
+          <Separator orientation="vertical" />
           <a
             href={"https://www.aipictors.com/privacy/"}
-            className="text-sm"
+            className="underline underline-offset-4"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"プライバシーポリシー"}
           </a>
-        </div>
-        <div className="flex gap-x-4">
+          <Separator orientation="vertical" />
           <a
             href={"https://www.aipictors.com/company/"}
-            className="text-sm"
+            className="underline underline-offset-4"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"運営会社"}
           </a>
+          <Separator orientation="vertical" />
           <a
             href={"https://www.aipictors.com/commercialtransaction/"}
-            className="text-sm"
+            className="underline underline-offset-4"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"特定商取引法に基づく表記"}
           </a>
         </div>
-      </div>
-      <p className="text-sm">
-        {
-          "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。10万以上の沢山のAIコンテンツが投稿されています！無料AIイラスト、グラビア生成機も搭載されています！"
-        }
-      </p>
-      <div>
-        <a
-          href={"https://www.aipictors.com"}
+        <div className="absolute items-center justify-center space-x-4">
+          <Link to="https://twitter.com/Aipictors">
+            <RiTwitterXLine />
+          </Link>
+          <Separator orientation="vertical" />
+          <Link to={"https://discord.gg/CsSbTHYY"}>
+            <RiDiscordLine />
+          </Link>
+          <Separator orientation="vertical" />
+          <Link to={"https://www.threads.net/@aipictors"}>
+            <RiThreadsLine />
+          </Link>
+          <Separator orientation="vertical" />
+          <Link to={"https://www.youtube.com/@aipictors"}>
+            <RiYoutubeLine />
+          </Link>
+        </div>
+        <Link
+          to="https://www.aipictors.com"
           className="font-bold text-sm"
           target="_blank"
           rel="noopener noreferrer"
         >
           {"© 2024 Aipictors.com"}
-        </a>
+        </Link>
       </div>
     </footer>
   )

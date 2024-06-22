@@ -4,7 +4,6 @@ import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
-import { Link } from "@remix-run/react"
 import {
   RiDiscordLine,
   RiThreadsLine,
@@ -146,29 +145,6 @@ export const HomeRouteList = () => {
       >
         {"YouTube"}
       </HomeNavigationButton>
-      <div className="py-2">
-        <Separator />
-      </div>
-      <div className="flex flex-col space-y-2 pl-3">
-        <Link to={"/about"} className={"text-xs"}>
-          {"このサイトについて"}
-        </Link>
-        <Link to={"/about/us"} className={"text-xs"}>
-          {"運営会社"}
-        </Link>
-        <Link to={"/terms"} className={"text-xs"}>
-          {"利用規約"}
-        </Link>
-        <Link to={"/privacy"} className={"text-xs"}>
-          {"プライバシーポリシー"}
-        </Link>
-        <Link
-          className={"text-xs"}
-          to={"/specified-commercial-transaction-act"}
-        >
-          {"特定商取引法に基づく表記"}
-        </Link>
-      </div>
     </div>
   )
 }

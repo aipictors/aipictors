@@ -1,5 +1,5 @@
 import "react-photo-view/dist/react-photo-view.css"
-import "@fontsource-variable/noto-sans-jp"
+import "@fontsource-variable/m-plus-2"
 
 import { AppAnalytics } from "@/_components/app/app-analytics"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
@@ -22,7 +22,7 @@ import { ThemeProvider } from "next-themes"
 import { Suspense } from "react"
 import { Toaster } from "@/_components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
-import notoSansJPWoff2 from "@fontsource-variable/noto-sans-jp/files/noto-sans-jp-latin-wght-normal.woff2?url"
+import mPlus2Woff2 from "@fontsource-variable/m-plus-2/files/m-plus-2-latin-wght-normal.woff2?url"
 import styles from "@/tailwind.css?url"
 import { AppErrorPage } from "@/_components/app/app-error-page"
 import { ProgressBar } from "@/_components/progress-bar"
@@ -36,7 +36,7 @@ export const links: LinksFunction = () => {
       rel: "preload",
       as: "font",
       type: "font/woff2",
-      href: notoSansJPWoff2,
+      href: mPlus2Woff2,
       crossOrigin: "anonymous",
     },
   ]
