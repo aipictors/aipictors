@@ -1,5 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
-import { ConstructionAlert } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"

@@ -11,7 +11,7 @@ import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
-import { ConstructionAlert } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/construction-alert"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]

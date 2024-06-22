@@ -1,5 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
-import { ConstructionAlert } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
 import { worksQuery } from "@/_graphql/queries/work/works"

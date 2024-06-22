@@ -10,7 +10,7 @@ export function AppColumnLayout(props: Props) {
   return (
     <div
       className={cn(
-        "container max-w-max",
+        "container",
         "flex items-start",
         "relative gap-x-0 space-x-0 md:gap-x-1",
         { "max-w-none": props.isFullWidth },

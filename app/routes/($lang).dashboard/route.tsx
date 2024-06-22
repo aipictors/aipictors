@@ -1,6 +1,6 @@
 import { AppAside } from "@/_components/app/app-aside"
 import { AppColumnLayout } from "@/_components/app/app-column-layout"
-import { ConstructionAlert } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
@@ -19,12 +19,14 @@ export default function DashboardLayout() {
   return (
     <>
       <HomeHeader />
-      <ConstructionAlert
-        type="WARNING"
-        message="このページは現在開発中です。不具合が起きる可能性があります。"
-        fallbackURL={`https://www.aipictors.com/dashboard?id=${authContext.userId}`}
-        date={"2024-07-30"}
-      />
+      <div className="pb-2">
+        <ConstructionAlert
+          type="WARNING"
+          message="このページは現在開発中です。不具合が起きる可能性があります。"
+          fallbackURL={`https://www.aipictors.com/dashboard?id=${authContext.userId}`}
+          date={"2024-07-30"}
+        />
+      </div>
       <AppColumnLayout>
         <AppAside>
           <HomeRouteList />
