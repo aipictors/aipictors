@@ -60,7 +60,7 @@ export const WorkContainer = (props: Props) => {
       </div>
       <div className="flex w-full overflow-hidden p-0 md:p-4">
         <div className="flex flex-col items-center overflow-hidden">
-          <div className="mx-auto w-full max-w-screen-lg">
+          <div className="mx-auto w-full max-w-screen-lg space-y-2">
             <Suspense fallback={<AppLoadingPage />}>
               <WorkArticle work={work} />
             </Suspense>

@@ -6,7 +6,6 @@ import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
 import { GenerationSubmitOperationParts } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-operation-parts"
-import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { checkNgPrompts } from "@/routes/($lang).generation._index/_utils/check-ng-prompts"
@@ -499,7 +498,7 @@ export function GenerationSubmissionView(props: Props) {
       toast("画面更新して再度お試し下さい。")
       return
     }
-    await activeImageGeneration({ nanoid: context.user.nanoid })
+    // await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   /**

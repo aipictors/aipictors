@@ -1,4 +1,3 @@
-import {} from "@/_components/ui/tooltip"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import {
   Carousel,

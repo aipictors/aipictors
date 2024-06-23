@@ -9,7 +9,6 @@ import { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/view
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { checkInGenerationProgressStatus } from "@/_utils/check-in-generation-progress-status"
 import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
-import { activeImageGeneration } from "@/routes/($lang).generation._index/_functions/active-image-generation"
 import { useQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { useContext, useEffect } from "react"
@@ -43,10 +42,10 @@ export const GenerationQueryProvider = (props: Props) => {
 
   const userNanoid = viewer?.viewer?.user.nanoid ?? null
 
-  useEffect(() => {
-    if (userNanoid === null) return
-    activeImageGeneration({ nanoid: userNanoid })
-  }, [userNanoid])
+  // useEffect(() => {
+  //   if (userNanoid === null) return
+  //   activeImageGeneration({ nanoid: userNanoid })
+  // }, [userNanoid])
 
   const isTimeout = useFocusTimeout()
 

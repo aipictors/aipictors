@@ -25,6 +25,7 @@ export const workQuery = graphql(
       smallThumbnailImageHeight
       thumbnailImagePosition
       user {
+        id
         promptonUser {
           id
         }
@@ -43,6 +44,12 @@ export const workQuery = graphql(
           smallThumbnailImageHeight
           thumbnailImagePosition
         }
+      }
+      likedUsers(offset: 0, limit: 32) {
+        id
+        name
+        iconUrl
+        login
       }
       album {
         id
@@ -82,6 +89,7 @@ export const workQuery = graphql(
       isTagEditable
       isCommentsEditable
       isLiked
+      isBookmarked
       isInCollection
       isPromotion
       isGeneration

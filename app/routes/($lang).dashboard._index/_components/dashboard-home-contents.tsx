@@ -13,6 +13,8 @@ export const DashboardHomeContents = () => {
     skip: appContext.isLoading,
   })
 
+  console.log(data)
+
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
