@@ -1,4 +1,5 @@
 import { Badge } from "@/_components/ui/badge"
+import { Link } from "@remix-run/react"
 
 type Props = {
   workId: string
@@ -13,8 +14,8 @@ type Props = {
  */
 export const NovelWorkPreviewItem = (props: Props) => {
   return (
-    <a
-      href={`/works/${props.workId}`}
+    <Link
+      to={`/works/${props.workId}`}
       className="relative transition-all duration-300 ease-in-out hover:opacity-80"
     >
       <div className={"relative overflow-hidden rounded"}>
@@ -38,6 +39,6 @@ export const NovelWorkPreviewItem = (props: Props) => {
           ))}
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

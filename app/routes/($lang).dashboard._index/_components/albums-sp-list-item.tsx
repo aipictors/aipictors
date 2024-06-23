@@ -6,6 +6,7 @@ import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
+import { Link } from "@remix-run/react"
 
 type Props = {
   album: {
@@ -62,8 +63,8 @@ export const AlbumsSpListItem = (props: Props) => {
               transition: "opacity 1s ease-out",
             }}
           >
-            <a
-              href={`${props.album.userId}/albums/${props.album.slug}`}
+            <Link
+              to={`${props.album.userId}/albums/${props.album.slug}`}
               className="mr-2"
             >
               <img
@@ -71,12 +72,12 @@ export const AlbumsSpListItem = (props: Props) => {
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
-            </a>
+            </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <a href={`${props.album.userId}/albums/${props.album.slug}`}>
+                <Link to={`${props.album.userId}/albums/${props.album.slug}`}>
                   <div className="w-full font-bold">{props.album.title}</div>
-                </a>
+                </Link>
                 <div className="text-sm opacity-80">
                   {props.album.createdAt}
                 </div>

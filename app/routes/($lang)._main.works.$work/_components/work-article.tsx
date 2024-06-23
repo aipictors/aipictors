@@ -21,6 +21,7 @@ import { Heart } from "lucide-react"
 import { Separator } from "@/_components/ui/separator"
 import { viewerBookmarkFolderIdQuery } from "@/_graphql/queries/viewer/viewer-bookmark-folder-id"
 import { useQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -65,11 +66,11 @@ export const WorkArticle = (props: Props) => {
       )}
       <section className="mt-4 space-y-4">
         {props.work.isGeneration && (
-          <a href={`/generation?work=${props.work.id}`}>
+          <Link to={`/generation?work=${props.work.id}`}>
             <Button variant={"secondary"} className="w-full">
               参照生成する
             </Button>
-          </a>
+          </Link>
         )}
         <Suspense>
           <WorkActionContainer
@@ -115,11 +116,11 @@ export const WorkArticle = (props: Props) => {
 
           <span className="text-sm">
             {"使用モデル名:"}
-            <a
-              href={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+            <Link
+              to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
             >
               {props.work.model}
-            </a>
+            </Link>
           </span>
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
@@ -136,11 +137,11 @@ export const WorkArticle = (props: Props) => {
           {props.work.dailyTheme && (
             <div className="flex items-center">
               <span className="text-sm">{"参加お題:"}</span>
-              <a
-                href={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+              <Link
+                to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >
                 <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
-              </a>
+              </Link>
             </div>
           )}
           <WorkArticleTags tagNames={props.work.tagNames} />
@@ -162,16 +163,16 @@ export const WorkArticle = (props: Props) => {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <a
+            <Link
               className="flex items-center space-x-2"
-              href={`/users/${props.work.user.login}`}
+              to={`/users/${props.work.user.login}`}
             >
               <Avatar>
                 <AvatarImage src={IconUrl(props.work.user.iconUrl)} />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>
-            </a>
+            </Link>
             {props.work.user.promptonUser?.id !== undefined && (
               <PromptonRequestButton
                 promptonId={props.work.user.promptonUser.id}

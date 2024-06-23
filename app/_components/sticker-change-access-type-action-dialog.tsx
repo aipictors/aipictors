@@ -13,6 +13,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { changeUserStickerAccessTypeMutation } from "@/_graphql/mutations/change-user-sticker-access-type"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { useMutation } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
 import React, { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -80,16 +81,16 @@ export const StickerChangeAccessTypeActionDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>スタンプを公開する</DialogTitle>
         </DialogHeader>
-        <a
+        <Link
           className="m-auto w-24"
-          href={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+          to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
         >
           <img
             className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
             src={props.imageUrl}
             alt={props.title}
           />
-        </a>
+        </Link>
         <div className="space-y-2">
           <p className="mt-2">タイトル</p>
           <Input

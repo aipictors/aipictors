@@ -1,6 +1,7 @@
 import { IconUrl } from "@/_components/icon-url"
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
+import { Link } from "@remix-run/react"
 
 type Props = {
   ownerUserId: string
@@ -19,18 +20,18 @@ type Props = {
 export const HomeNotificationsContentReplyItem = (props: Props) => {
   return (
     <>
-      <a
-        href={`/works/${props.workId}`}
+      <Link
+        to={`/works/${props.workId}`}
         className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <>
-          <a href={`/users/${props.ownerUserId}`}>
+          <Link to={`/users/${props.ownerUserId}`}>
             <img
               src={IconUrl(props.iconUrl)}
               alt="thumbnail"
               className="h-8 w-8 rounded-full object-cover"
             />
-          </a>
+          </Link>
           <div className="ml-2 w-full max-w-64 overflow-hidden">
             <p className="text-ellipsis">
               {props.userName}さんが返信しました
@@ -55,7 +56,7 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
             />
           </div>
         </>
-      </a>
+      </Link>
     </>
   )
 }

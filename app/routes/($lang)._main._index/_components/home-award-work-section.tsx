@@ -7,6 +7,7 @@ import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { useQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import { useContext } from "react"
 
 type Props = {
@@ -69,11 +70,11 @@ export const HomeAwardWorkSection = (props: Props) => {
           {props.title}
         </h2>
         {/* 昨日の日付 // /2024/05/01 */}
-        <a href={`rankings/${yesterdayStr}`}>
+        <Link to={`rankings/${yesterdayStr}`}>
           <Button variant={"secondary"} size={"sm"}>
             {"すべて見る"}
           </Button>
-        </a>
+        </Link>
       </div>
 
       <CarouselWithGradation

@@ -1,5 +1,6 @@
 import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/_components/ui/avatar"
+import { Link } from "@remix-run/react"
 
 type Props = {
   userId: string
@@ -27,7 +28,7 @@ export const FollowingUserItem = (props: Props) => {
   return (
     <div className="flex">
       <div className="mr-4 flex">
-        <a href={`/users/${props.userId}`}>
+        <Link to={`/users/${props.userId}`}>
           <Avatar className="mt-2 mr-2">
             <AvatarImage
               src={props.userIconImageURL ?? ""}
@@ -35,7 +36,7 @@ export const FollowingUserItem = (props: Props) => {
             />
             <AvatarFallback />
           </Avatar>
-        </a>
+        </Link>
         <div className="w-48">
           <p className="mb-1 font-bold text-md">{props.userName}</p>
           <p className="mb-2 text-sm opacity-80">
@@ -52,7 +53,7 @@ export const FollowingUserItem = (props: Props) => {
       <div className="flex space-x-2">
         {props.works.map((work, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <a href={`/works/${work.id}`} key={index}>
+          <Link to={`/works/${work.id}`} key={index}>
             <div className="h-32 w-32 rounded-md">
               <img
                 className="h-32 w-32 object-cover"
@@ -61,7 +62,7 @@ export const FollowingUserItem = (props: Props) => {
                 src={work.thumbnailImageUrl}
               />
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react"
+
 type Props = {
   workId: string
   imageUrl: string
@@ -11,8 +13,8 @@ type Props = {
  */
 export const NovelWorkPreviewItem = (props: Props) => {
   return (
-    <a
-      href={`/works/${props.workId}`}
+    <Link
+      to={`/works/${props.workId}`}
       className="relative transition-all duration-300 ease-in-out hover:opacity-80"
     >
       <div className={"relative overflow-hidden rounded"}>
@@ -30,6 +32,6 @@ export const NovelWorkPreviewItem = (props: Props) => {
           {props.text}
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

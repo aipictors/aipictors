@@ -1,5 +1,6 @@
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
+import { Link } from "@remix-run/react"
 
 type Props = {
   workId: string
@@ -14,8 +15,8 @@ type Props = {
 export const HomeNotificationsContentAwardItem = (props: Props) => {
   return (
     <>
-      <a
-        href={`/works/${props.workId}`}
+      <Link
+        to={`/works/${props.workId}`}
         className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <>
@@ -31,7 +32,7 @@ export const HomeNotificationsContentAwardItem = (props: Props) => {
             <p className="text-sm opacity-80">{props.createdAt}</p>
           </div>
         </>
-      </a>
+      </Link>
     </>
   )
 }

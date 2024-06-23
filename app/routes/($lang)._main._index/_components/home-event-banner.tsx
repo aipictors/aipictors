@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react"
+
 /**
  * ホームのイベントバナー
  */
@@ -9,12 +11,12 @@ export const HomeEventBanner = () => {
         <p className="font-semibold text-sm">
           AI IDOLプロジェクトを応援してみよう！
         </p>
-        <a href="https://beta.aipictors.com/events/ai-idol-project">
+        <Link to="https://beta.aipictors.com/events/ai-idol-project">
           {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
           <button className="m-auto mt-2 mb-2 w-32 rounded-full bg-blue-500 px-4 py-1 text-white">
             詳細
           </button>
-        </a>
+        </Link>
       </div>
       <div className="ml-4 h-32 w-96 overflow-hidden">
         <img

@@ -8,6 +8,7 @@ import { useQuery } from "@apollo/client/index"
 import { verificationUrlQuery } from "@/_graphql/queries/viewer/viewer-varification-url"
 import { useEffect, useState } from "react"
 import { LineLoggedInButton } from "@/_components/button/line-logged-in-button"
+import { Link } from "@remix-run/react"
 
 type Props = {
   isOpen: boolean
@@ -66,8 +67,8 @@ export const VerificationDialog = (props: Props) => {
               <>
                 <p>認証が失敗いたしました。</p>
                 <p>しばらくしてから再度お試しください。</p>
-                <a
-                  href={verificationUrl}
+                <Link
+                  to={verificationUrl ?? ""}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -77,14 +78,14 @@ export const VerificationDialog = (props: Props) => {
                       text={"LINEでログインしてアカウント認証"}
                     />
                   </div>
-                </a>
+                </Link>
                 <p>Aipictors+に加入する場合は認証不要です。</p>
-                <a href="/plus">
+                <Link to="/plus">
                   <img
                     src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-plus-plans-lists_%20.png"
                     alt="aipictors-plus"
                   />
-                </a>
+                </Link>
               </>
             )}
             {!props.verificationResult && (
@@ -98,8 +99,8 @@ export const VerificationDialog = (props: Props) => {
                 <p className="text-left text-sm">
                   認証情報は本人確認のみに使用し、他の用途では一切使用されません。
                 </p>
-                <a
-                  href={verificationUrl}
+                <Link
+                  to={verificationUrl ?? ""}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -109,16 +110,16 @@ export const VerificationDialog = (props: Props) => {
                       text={"LINEでログインしてアカウント認証"}
                     />
                   </div>
-                </a>
+                </Link>
                 <p className="text-left">
                   Aipictors+に加入する場合は認証不要です。
                 </p>
-                <a href="/plus">
+                <Link to="/plus">
                   <img
                     src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-plus-plans-lists_%20.png"
                     alt="aipictors-plus"
                   />
-                </a>
+                </Link>
               </>
             )}
           </DialogHeader>

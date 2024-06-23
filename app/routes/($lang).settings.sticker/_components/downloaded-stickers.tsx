@@ -12,6 +12,7 @@ import { Loader2Icon } from "lucide-react"
 import React, { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
+import { Link } from "@remix-run/react"
 
 export const SettingRequestForm = () => {
   const authContext = useContext(AuthContext)
@@ -91,13 +92,13 @@ export const SettingRequestForm = () => {
             <div className="flex">
               <div className="flex w-full items-center justify-between">
                 <Label>{"口座連携する"}</Label>
-                <a
-                  href={`https://prompton.io/integration?token=${viewerUserToken}`}
+                <Link
+                  to={`https://prompton.io/integration?token=${viewerUserToken}`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Button>{"連携"}</Button>
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -145,11 +146,11 @@ export const SettingRequestForm = () => {
         </div>
       )}
       {promptonUserId && (
-        <a href="https://prompton.io/viewer/requests">
+        <Link to="https://prompton.io/viewer/requests">
           <Button variant={"secondary"} className="mt-8 w-full">
             管理画面
           </Button>
-        </a>
+        </Link>
       )}
     </div>
   )

@@ -10,6 +10,7 @@ import {
 } from "@/_components/ui/dialog"
 import { changeUserStickerAccessTypeMutation } from "@/_graphql/mutations/change-user-sticker-access-type"
 import { useMutation } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import React from "react"
 import { toast } from "sonner"
 
@@ -58,16 +59,16 @@ export const StickerChangeAccessTypeDialog = (props: Props) => {
             alt={props.title}
           />
         ) : (
-          <a
+          <Link
             className="m-auto w-24"
-            href={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+            to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
           >
             <img
               className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
               src={props.imageUrl}
               alt={props.title}
             />
-          </a>
+          </Link>
         )}
         <DialogFooter>
           {accessType === "PRIVATE" ? (

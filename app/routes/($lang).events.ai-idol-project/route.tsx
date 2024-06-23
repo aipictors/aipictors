@@ -4,6 +4,7 @@ import { config } from "@/config"
 import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/_components/character-card"
 import { ImageSliderAnimation } from "@/routes/($lang).events.ai-idol-project/_components/image-slider-animation"
 import type { MetaFunction } from "@remix-run/cloudflare"
+import { Link } from "@remix-run/react"
 import { useMediaQuery } from "usehooks-ts"
 
 export default function EventAiIdolProject() {
@@ -126,9 +127,9 @@ export default function EventAiIdolProject() {
         AI IDOL
         PROJECTは、AIがアイドルとして活動することで、AIの可能性を広げることを目指しています。
       </p>
-      <a href="https://lit.link/aiidolproject" className="text-blue-500">
+      <Link to="https://lit.link/aiidolproject" className="text-blue-500">
         アイプロ関連サイトまとめ
-      </a>
+      </Link>
       <h2 className="mt-4 font-bold text-xl">企画内容</h2>
       <p className="mt-4 text-md">
         アイプロのそれぞれのAIアイドルのプロンプトを公開して生成機能で生成できるような投稿企画を開催いたします。

@@ -16,6 +16,7 @@ import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-prof
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
+import { Link } from "@remix-run/react"
 
 /**
  * プロフィール設定フォーム
@@ -389,11 +390,11 @@ export const SettingProfileForm = () => {
           )}
         </Button>
         <Separator />
-        <a className="m-auto block" href="/account/login">
+        <Link to="/account/login" className="m-auto block">
           <Button className="m-auto block" variant={"secondary"}>
             ログイン情報を変更する
           </Button>
-        </a>
+        </Link>
       </div>
     </>
   )

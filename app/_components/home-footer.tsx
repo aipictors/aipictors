@@ -1,4 +1,5 @@
 import { cn } from "@/_lib/cn"
+import { Link } from "@remix-run/react"
 
 /**
  * フッター
@@ -8,40 +9,40 @@ export const HomeFooter = () => {
     <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
       <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">
         <div className="flex gap-x-4">
-          <a
-            href={"https://www.aipictors.com/terms/"}
+          <Link
+            to={"https://www.aipictors.com/terms/"}
             className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"利用規約"}
-          </a>
-          <a
-            href={"https://www.aipictors.com/privacy/"}
+          </Link>
+          <Link
+            to={"https://www.aipictors.com/privacy/"}
             className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"プライバシーポリシー"}
-          </a>
+          </Link>
         </div>
         <div className="flex gap-x-4">
-          <a
-            href={"https://www.aipictors.com/company/"}
+          <Link
+            to={"https://www.aipictors.com/company/"}
             className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"運営会社"}
-          </a>
-          <a
-            href={"https://www.aipictors.com/commercialtransaction/"}
+          </Link>
+          <Link
+            to={"https://www.aipictors.com/commercialtransaction/"}
             className="text-sm"
             target="_blank"
             rel="noopener noreferrer"
           >
             {"特定商取引法に基づく表記"}
-          </a>
+          </Link>
         </div>
       </div>
       <p className="text-sm">
@@ -50,14 +51,14 @@ export const HomeFooter = () => {
         }
       </p>
       <div>
-        <a
-          href={"https://www.aipictors.com"}
+        <Link
+          to={"https://www.aipictors.com"}
           className="font-bold text-sm"
           target="_blank"
           rel="noopener noreferrer"
         >
           {"© 2024 Aipictors.com"}
-        </a>
+        </Link>
       </div>
     </footer>
   )

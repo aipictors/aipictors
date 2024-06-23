@@ -5,6 +5,7 @@ import { eventUsers } from "@/routes/($lang).events.wakiaiai/_assets/event-users
 import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai/_components/event-creator-card"
 import { EventImage } from "@/routes/($lang).events.wakiaiai/_components/event-image"
 import type { MetaFunction } from "@remix-run/cloudflare"
+import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 export default function EventWakiaiai() {
@@ -49,12 +50,16 @@ export default function EventWakiaiai() {
               "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会"
             }
           </p>
-          <a href="/events/wakiaiai2" target="_blank" rel="noopener noreferrer">
+          <Link
+            to="/events/wakiaiai2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Button variant={"outline"} className="m-4 font-bold text-lg">
               和気あいAI2開催決定
               <MousePointerClickIcon className="ml-2" />
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>

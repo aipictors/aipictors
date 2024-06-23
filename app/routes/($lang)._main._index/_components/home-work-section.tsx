@@ -8,6 +8,7 @@ import {
 } from "@/_components/ui/tooltip"
 import type { worksQuery } from "@/_graphql/queries/work/works"
 import { HomeCroppedWorkList } from "@/routes/($lang)._main._index/_components/home-cropped-work-list"
+import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
 import type { ResultOf } from "gql.tada"
 
@@ -40,11 +41,11 @@ export const HomeWorkSection = (props: Props) => {
           )}
         </h2>
         {props.link && (
-          <a href={props.link}>
+          <Link to={props.link}>
             <Button variant={"secondary"} size={"sm"}>
               {"すべて見る"}
             </Button>
-          </a>
+          </Link>
         )}
       </div>
       {props.isCropped ? (

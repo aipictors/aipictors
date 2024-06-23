@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
+import { Link } from "@remix-run/react"
 
 export const DashboardHomeContents = () => {
   const appContext = useContext(AuthContext)
@@ -98,9 +99,9 @@ export const DashboardHomeContents = () => {
               <DashboardHomeContentContainer title={"いいねランキングトップ3"}>
                 <div className="rounded-md p-4">
                   {works?.map((work, index) => (
-                    <a
+                    <Link
                       key={work.id}
-                      href={`/works/${work.id}`}
+                      to={`/works/${work.id}`}
                       // biome-ignore lint/nursery/useSortedClasses: <explanation>
                       className={`mb-4 flex items-center ${
                         index === 0 ? "relative" : ""
@@ -163,7 +164,7 @@ export const DashboardHomeContents = () => {
                           </div>
                         </div>
                       )}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </DashboardHomeContentContainer>

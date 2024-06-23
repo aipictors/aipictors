@@ -2,6 +2,7 @@ import { Button } from "@/_components/ui/button"
 import { contributors } from "@/routes/($lang)._main.contributors/_assets/contributors"
 import { ContributorCard } from "@/routes/($lang)._main.contributors/_components/contributors-card"
 import type { Contributor } from "@/routes/($lang)._main.contributors/_types/contributor"
+import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 /**
@@ -21,9 +22,9 @@ export const ContributorsView = () => {
                 }
                 className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
               />
-              <a
+              <Link
                 className="absolute right-4 bottom-4"
-                href={"https://beta.aipictors.com"}
+                to={"https://beta.aipictors.com"}
                 target={"_blank"}
                 rel={"noreferrer noopener"}
               >
@@ -31,7 +32,7 @@ export const ContributorsView = () => {
                   <MousePointerClickIcon />
                   <span className="ml-2">{"Aipictors"}</span>
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
           <div className="w-full flex-2 space-y-8 py-8 md:px-4">
@@ -51,8 +52,8 @@ export const ContributorsView = () => {
                 }
               </div>
             </div>
-            <a
-              href="https://beta.aipictors.com"
+            <Link
+              to="https://beta.aipictors.com"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -60,9 +61,9 @@ export const ContributorsView = () => {
                 Aipictors（β版）
                 <MousePointerClickIcon className="ml-2" />
               </Button>
-            </a>
-            <a
-              href="https://github.com/aipictors"
+            </Link>
+            <Link
+              to="https://github.com/aipictors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -70,9 +71,9 @@ export const ContributorsView = () => {
                 GitHub
                 <MousePointerClickIcon className="ml-2" />
               </Button>
-            </a>
-            <a
-              href="https://zenn.dev/p/aipics"
+            </Link>
+            <Link
+              to="https://zenn.dev/p/aipics"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -80,9 +81,9 @@ export const ContributorsView = () => {
                 Zenn
                 <MousePointerClickIcon className="ml-2" />
               </Button>
-            </a>
-            <a
-              href="https://discord.gg/aipictors"
+            </Link>
+            <Link
+              to="https://discord.gg/aipictors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -90,7 +91,7 @@ export const ContributorsView = () => {
                 Discordで開発に参加する
                 <MousePointerClickIcon className="ml-2" />
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
 

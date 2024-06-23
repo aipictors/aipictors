@@ -1,4 +1,5 @@
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import {
   RiFacebookBoxLine,
   RiGithubLine,
@@ -53,10 +54,10 @@ export const SnsIconLink = (props: Props) => {
   }
 
   return (
-    <a href={props.url} target="_blank" rel="noreferrer">
+    <Link to={props.url} target="_blank" rel="noreferrer">
       <Button variant={"secondary"} className="h-8 w-8 rounded-full p-1">
         {icon()}
       </Button>
-    </a>
+    </Link>
   )
 }
