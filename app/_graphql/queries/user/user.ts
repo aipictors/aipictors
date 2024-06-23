@@ -72,7 +72,6 @@ export const userQuery = graphql(
       bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
         ...PartialWorkFields
       }
-      bookmarkFolderId
       featuredSensitiveWorks {
         ...PartialWorkFields
       }

@@ -1,10 +1,10 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
-import { useSuspenseQuery } from "@apollo/client/index"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { BookmarkWorksList } from "@/routes/($lang).dashboard._index/_components/bookmark-works-list"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
+import { useQuery } from "@apollo/client/index"
 
 type Props = {
   page: number
@@ -26,7 +26,7 @@ export const BookmarkListContainer = (props: Props) => {
   ) {
     return null
   }
-  const { data: userResp, refetch } = useSuspenseQuery(userQuery, {
+  const { data: userResp, refetch } = useQuery(userQuery, {
     skip: authContext.isLoading,
     variables: {
       bookmarksOffset: 16 * props.page,

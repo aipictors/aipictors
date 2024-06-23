@@ -11,7 +11,7 @@ import { WorksSetting } from "@/routes/($lang).dashboard._index/_components/work
 import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_components/albums-list-container"
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
 import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
@@ -130,8 +130,9 @@ export const DashboardContents = (props: Props) => {
     setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const { data: albumsCountResp, refetch: albumsCountRefetch } =
-    useSuspenseQuery(albumsCountQuery, {
+  const { data: albumsCountResp, refetch: albumsCountRefetch } = useQuery(
+    albumsCountQuery,
+    {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
         where: {
@@ -142,18 +143,19 @@ export const DashboardContents = (props: Props) => {
           needsThumbnailImage: false,
         },
       },
-    })
+    },
+  )
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
 
-  const { data: pass } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const passData = pass?.viewer?.currentPass
 
   const isStandardOrPremium =
     passData?.type === "STANDARD" || passData?.type === "PREMIUM"
 
-  const { data: userResp, refetch } = useSuspenseQuery(userQuery, {
+  const { data: userResp, refetch } = useQuery(userQuery, {
     skip: authContext.isLoading,
     variables: {
       bookmarksOffset: 0,
