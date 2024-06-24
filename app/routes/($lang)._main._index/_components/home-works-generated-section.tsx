@@ -43,7 +43,6 @@ export const HomeWorksGeneratedSection = () => {
   return (
     <>
       <HomeWorkSection
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         title={"作品を選んで無料生成"}
         works={shuffledWorks}
         link="https://www.aipictors.com/search/?promptstatus=2&order=favorite"
