@@ -57,6 +57,7 @@ import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 
 /**
  * 新規作品フォーム
@@ -149,6 +150,20 @@ export const NewImageForm = () => {
       },
     },
   })
+
+  const { data: appEventsResp } = useQuery(appEventsQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 1,
+      where: {
+        startAt: new Date().toISOString(),
+        endAt: new Date().toISOString(),
+      },
+    },
+  })
+
+  console.log(appEventsResp)
 
   const optionAlbums = albums?.albums
     ? (albums?.albums.map((album) => ({
