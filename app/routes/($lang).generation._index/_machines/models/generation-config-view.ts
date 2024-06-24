@@ -8,8 +8,8 @@ export class GenerationConfig extends GenerationConfigState {
     if (regExpMatchArray === null) {
       return []
     }
-    return Array.from(regExpMatchArray).map((text) => {
-      return text.replace(/<lora:|>/g, "")
-    })
+    return Array.from(regExpMatchArray).map((text: unknown) => {
+      return (text as string).replace(/<lora:|>/g, "")
+    }) as string[]
   }
 }

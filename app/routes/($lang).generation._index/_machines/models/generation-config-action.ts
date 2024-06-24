@@ -197,8 +197,8 @@ export class GenerationConfigAction {
    * @returns
    */
   updateModelId(id: string, modelType: string) {
-    const modelIds = produce(this.state.modelIds, (draft) => {
-      const index = draft.findIndex((modelId) => {
+    const modelIds = produce(this.state.modelIds, (draft: string[]) => {
+      const index = draft.findIndex((modelId: string) => {
         return this.state.modelId === modelId
       })
       if (index === -1) return
@@ -282,8 +282,8 @@ export class GenerationConfigAction {
    * @returns
    */
   updateModelIdAndPrompt(id: string, modelType: string, promptText: string) {
-    const modelIds = produce(this.state.modelIds, (draft) => {
-      const index = draft.findIndex((modelId) => {
+    const modelIds = produce(this.state.modelIds, (draft: string[]) => {
+      const index = draft.findIndex((modelId: any) => {
         return this.state.modelId === modelId
       })
       if (index === -1) return
@@ -1000,8 +1000,8 @@ export class GenerationConfigAction {
     if (regExpMatchArray === null) {
       return []
     }
-    return Array.from(regExpMatchArray).map((text) => {
-      return text.replace(/<lora:|>/g, "")
-    })
+    return Array.from(regExpMatchArray).map((text: unknown) => {
+      return (text as string).replace(/<lora:|>/g, "")
+    }) as string[]
   }
 }

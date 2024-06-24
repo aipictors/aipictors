@@ -40,6 +40,8 @@ export const SettingProfileForm = () => {
       followersLimit: 0,
       followersWorksOffset: 0,
       followersWorksLimit: 0,
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
     },
     fetchPolicy: "cache-first",
   })

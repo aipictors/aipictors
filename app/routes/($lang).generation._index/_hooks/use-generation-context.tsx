@@ -623,9 +623,9 @@ export const useGenerationContext = () => {
       if (regExpMatchArray === null) {
         return []
       }
-      return Array.from(regExpMatchArray).map((text) => {
-        return text.replace(/<lora:|>/g, "")
-      })
+      return Array.from(regExpMatchArray).map((text: unknown) => {
+        return (text as string).replace(/<lora:|>/g, "")
+      }) as string[]
     },
     promptCategories: dataContext.promptCategories,
     negativePromptCategories: dataContext.negativePromptCategories,
