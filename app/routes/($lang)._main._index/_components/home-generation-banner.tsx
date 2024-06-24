@@ -1,5 +1,6 @@
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 
 /**
  * ホームの生成機バナー
@@ -32,16 +33,16 @@ export const HomeGenerationBanner = () => {
           <br />
           投稿できる！
         </p>
-        <a href="/generation">
+        <Link to="/generation">
           {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
           <button className="mt-2 mb-2 w-full rounded-full bg-blue-500 px-4 py-1 text-white">
             生成
           </button>
-        </a>
+        </Link>
       </div>
       <div className="ml-2 flex">
         {randomOneWork && (
-          <a href={`/generation?work=${randomOneWork.id}`}>
+          <Link to={`/generation?work=${randomOneWork.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
                 src={randomOneWork.smallThumbnailImageURL}
@@ -49,10 +50,10 @@ export const HomeGenerationBanner = () => {
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
             </div>
-          </a>
+          </Link>
         )}
         {randomTwoWork && (
-          <a href={`/generation?work=${randomTwoWork.id}`}>
+          <Link to={`/generation?work=${randomTwoWork.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
                 src={randomTwoWork.smallThumbnailImageURL}
@@ -60,10 +61,10 @@ export const HomeGenerationBanner = () => {
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
             </div>
-          </a>
+          </Link>
         )}
         {randomThreeWork && (
-          <a href={`/generation?work=${randomThreeWork.id}`}>
+          <Link to={`/generation?work=${randomThreeWork.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
                 src={randomThreeWork.smallThumbnailImageURL}
@@ -71,7 +72,7 @@ export const HomeGenerationBanner = () => {
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
             </div>
-          </a>
+          </Link>
         )}
       </div>
     </div>

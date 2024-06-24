@@ -42,7 +42,7 @@ export default function About() {
         <h2 className="py-2 font-bold text-md">ロゴ</h2>
         <p>
           {"当サービスのロゴをご利用の方は"}
-          <a href="https://www.aipictors.com/presskit/">こちら</a>
+          <Link to="https://www.aipictors.com/presskit/">こちら</Link>
           {"をご参照ください"}
         </p>
       </div>

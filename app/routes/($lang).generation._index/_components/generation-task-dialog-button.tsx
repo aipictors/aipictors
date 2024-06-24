@@ -61,14 +61,14 @@ export function GenerationTaskDialogButton(props: Props) {
         />
         {showInPaintDialog &&
           props.userToken &&
-          props.task.imageFileName &&
+          props.task.imageUrl &&
           userNanoid && (
             <InPaintingDialog
               isOpen={showInPaintDialog}
               onClose={() => setShowInPaintDialog(false)}
               taskId={props.task.id}
               token={props.userToken}
-              fileName={props.task.imageFileName}
+              imageUrl={props.task.imageUrl}
               userNanoid={userNanoid}
               configSeed={props.task.seed}
               configSteps={props.task.steps}

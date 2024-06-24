@@ -1,5 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
+import { Link } from "@remix-run/react"
 import { RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 
@@ -34,8 +35,8 @@ export function CharacterCard(props: Props) {
   return (
     <>
       <div className="mt-4 h-auto max-w-80 md:max-w-96">
-        <a
-          href={
+        <Link
+          to={
             props.negativePrompts
               ? `/generation?prompts=${props.prompt}&negativeprompts=${props.negativePrompts}`
               : `/generation?prompts=${props.prompt}`
@@ -49,7 +50,7 @@ export function CharacterCard(props: Props) {
               src={props.imageURL}
             />
           </Card>
-        </a>
+        </Link>
         <div className="flex items-center gap-x-2">
           <Button
             onClick={onCopyPrompt}
@@ -67,12 +68,12 @@ export function CharacterCard(props: Props) {
           </Button>
         </div>
 
-        <a href={props.xlink} target="_blank" rel="noopener noreferrer">
+        <Link to={props.xlink} target="_blank" rel="noopener noreferrer">
           <div className="mt-2 mb-2 flex items-center">
             <RiTwitterXFill className="mr-2 h-4 w-4" />
             <p className="text-left">@{props.xlink.split("/").pop()}</p>
           </div>
-        </a>
+        </Link>
         <p className="text-left opacity-80">{props.profile}</p>
       </div>
     </>

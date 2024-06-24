@@ -1,12 +1,7 @@
+import { CarouselWithGradation } from "@/_components/carousel-with-gradation"
 import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/_components/ui/carousel"
-import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
@@ -87,13 +82,12 @@ export const HomeColumnsSection = (props: Props) => {
           {props.title}
         </h2>
       </div>
-      <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
-        <CarouselContent>
-          {works?.map((work, index) => (
-            <CarouselItem
+      <CarouselWithGradation
+        items={
+          works?.map((work, index) => (
+            <div
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
-              className="relative basis-1/3.5 space-y-2"
             >
               <div className="relative">
                 <NovelWorkPreviewItem
@@ -121,12 +115,10 @@ export const HomeColumnsSection = (props: Props) => {
                   strokeWidth={2}
                 />
               </div>
-            </CarouselItem>
-          ))}
-          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
-        </CarouselContent>
-        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
-      </Carousel>
+            </div>
+          )) || []
+        }
+      />
     </section>
   )
 }

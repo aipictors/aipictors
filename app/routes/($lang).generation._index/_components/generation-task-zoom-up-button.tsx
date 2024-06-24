@@ -5,8 +5,8 @@ type Props = {
   taskId: string
   token: string
   size: number
-  imageFileName: string
-  thumbnailImageFileName: string
+  imageUrl: string
+  thumbnailUrl: string
   setIsHovered: (isHovered: boolean) => void
 }
 
@@ -19,8 +19,8 @@ export const GenerationTaskZoomUpButton = (props: Props) => {
       isAbsolute={true}
       taskId={props.taskId}
       userToken={props.token}
-      fileName={props.imageFileName}
-      thumbnailFileName={props.thumbnailImageFileName}
+      imageUrl={props.imageUrl}
+      thumbnailUrl={props.thumbnailUrl}
     >
       <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">
         <div

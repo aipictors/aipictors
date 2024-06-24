@@ -1,4 +1,5 @@
 import { IconUrl } from "@/_components/icon-url"
+import { Link } from "@remix-run/react"
 
 type Props = {
   userId: string
@@ -23,8 +24,8 @@ export const UserNameBadge = (props: Props) => {
   }
 
   return (
-    <a
-      href={`/users/${props.userId}`}
+    <Link
+      to={`/users/${props.userId}`}
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
       className={`flex items-center space-x-2 text-ellipsis overflow-hidden ${width()}`}
     >
@@ -39,6 +40,6 @@ export const UserNameBadge = (props: Props) => {
       >
         {props.name}
       </p>
-    </a>
+    </Link>
   )
 }

@@ -17,10 +17,14 @@ export const userQuery = graphql(
     $followersWorksOffset: Int!,
     $followersWorksLimit: Int!
     $followersWorksWhere: UserWorksWhereInput,
+    $bookmarksOffset: Int!,
+    $bookmarksLimit: Int!,
+    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
       biography
+      createdBookmarksCount
       login
       nanoid
       name
@@ -64,6 +68,9 @@ export const userQuery = graphql(
         works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
           ...PartialWorkFields
         }
+      }
+      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+        ...PartialWorkFields
       }
       featuredSensitiveWorks {
         ...PartialWorkFields

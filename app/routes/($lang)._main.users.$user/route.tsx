@@ -1,5 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
-import { HeaderDevelopBanner } from "@/_components/header-develop-banner"
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { ParamsError } from "@/_errors/params-error"
 import { userQuery } from "@/_graphql/queries/user/user"
 import { createClient } from "@/_lib/client"
@@ -22,6 +22,9 @@ export async function loader(props: LoaderFunctionArgs) {
       worksWhere: {},
       followeesWorksWhere: {},
       followersWorksWhere: {},
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
+      bookmarksWhere: {},
       worksOffset: 0,
       worksLimit: 0,
       followeesOffset: 0,
@@ -55,9 +58,14 @@ export default function UserLayout() {
 
   return (
     <>
-      <HeaderDevelopBanner />
       <AppPage>
         <Suspense>
+          <ConstructionAlert
+            type="WARNING"
+            message="このページは現在開発中です。不具合が起きる可能性があります。"
+            fallbackURL={`https://www.aipictors.com/users/${params.user}`}
+            date={"2024-07-30"}
+          />
           <UserHome user={data.user} userId={params.user} />
         </Suspense>
       </AppPage>

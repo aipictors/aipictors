@@ -1,4 +1,5 @@
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 type Props = {
@@ -16,9 +17,9 @@ export const EventImage = (props: Props) => {
         src={props.imageURL}
         className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
       />
-      <a
+      <Link
         className="absolute right-4 bottom-4"
-        href={props.linkURL}
+        to={props.linkURL}
         target={"_blank"}
         rel={"noreferrer noopener"}
       >
@@ -26,7 +27,7 @@ export const EventImage = (props: Props) => {
           <MousePointerClickIcon />
           <span className="ml-2">{props.linkTitle}</span>
         </Button>
-      </a>
+      </Link>
     </div>
   )
 }

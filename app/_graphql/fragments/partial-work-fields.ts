@@ -12,6 +12,7 @@ export const partialWorkFieldsFragment = graphql(
     bookmarksCount
     viewsCount
     createdAt
+    rating
     isTagEditable
     smallThumbnailImageURL
     smallThumbnailImageHeight

@@ -45,9 +45,7 @@ export const imageGenerationTaskFieldsFragment = graphql(
     controlNetSaveDetectedMap
     controlNetHrOption
     upscaleSize
-    imageFileName
-    thumbnailImageFileName
-    imageFileName
-    thumbnailImageFileName
+    imageUrl
+    thumbnailUrl
   }`,
 )

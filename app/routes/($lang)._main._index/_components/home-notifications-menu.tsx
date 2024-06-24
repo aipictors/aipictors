@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { HomeNotificationCommentsTabs } from "@/routes/($lang)._main._index/_components/home-notifications-comments-tabs"
 import { HomeNotificationsContents } from "@/routes/($lang)._main._index/_components/home-notifications-contents"
+import { Link } from "@remix-run/react"
 import { BellIcon } from "lucide-react"
 import { Suspense, useState } from "react"
 
@@ -76,7 +77,7 @@ export const HomeNotificationsMenu = () => {
         </div>
         {/* フッター部分 */}
         <div className="border-t pt-2 pb-2 pl-4">
-          <a href="/notifications">通知履歴</a>
+          <Link to="/notifications">通知履歴</Link>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

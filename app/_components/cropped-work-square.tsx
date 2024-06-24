@@ -1,3 +1,5 @@
+import { Link } from "@remix-run/react"
+
 type Props = {
   workId: string
   imageUrl: string
@@ -84,8 +86,8 @@ export const CroppedWorkSquare = (props: Props) => {
   }
 
   return (
-    <a
-      href={`/works/${props.workId}`}
+    <Link
+      to={`/works/${props.workId}`}
       className="relative transition-all duration-300 ease-in-out hover:opacity-80"
     >
       <div
@@ -110,6 +112,6 @@ export const CroppedWorkSquare = (props: Props) => {
           {props.ranking}
         </div>
       )}
-    </a>
+    </Link>
   )
 }

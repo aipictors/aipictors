@@ -3,6 +3,7 @@ import { Card } from "@/_components/ui/card"
 import { config } from "@/config"
 import { EventUserTag } from "@/routes/($lang).events.wakiaiai2/_components/event-user-tag"
 import type { EventUser } from "@/routes/($lang).events/_types/event-user"
+import { Link } from "@remix-run/react"
 import { RiTwitterXLine } from "@remixicon/react"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { ExternalLinkIcon, MousePointerClickIcon } from "lucide-react"
@@ -17,13 +18,13 @@ export const EventCreatorCard = (props: Props) => {
       <div className="flex space-x-2">
         <div className="h-40 w-40 min-w-fit">
           {/* TODO: 対応 */}
-          <a
+          <Link
             aria-label="Twitter"
             target="_blank"
             rel="noreferrer"
-            href={
+            to={
               props.user.twitterId === null
-                ? undefined
+                ? ""
                 : props.user.aipictorsId === null
                   ? `https://twitter.com/${props.user.twitterId}`
                   : `https://www.aipictors.com/user/?id=${props.user.aipictorsId}`
@@ -42,7 +43,7 @@ export const EventCreatorCard = (props: Props) => {
               className="h-full w-full rounded shadow-xl"
               style={{ height: "100%", objectFit: "contain" }}
             />
-          </a>
+          </Link>
         </div>
         <div className="flex h-full flex-col space-y-2 overflow-hidden px-2 pt-4 md:space-y-4 md:px-2">
           <div
@@ -58,19 +59,19 @@ export const EventCreatorCard = (props: Props) => {
           </div>
           <div className="flex space-x-2" style={{ height: "auto" }}>
             {props.user.twitterId !== null && (
-              <a
-                href={`https://twitter.com/${props.user.twitterId}`}
+              <Link
+                to={`https://twitter.com/${props.user.twitterId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button size={"icon"} variant={"outline"}>
                   <RiTwitterXLine />
                 </Button>
-              </a>
+              </Link>
             )}
             {props.user.siteURL !== null && props.user.siteTitle !== null && (
-              <a
-                href={props.user.siteURL}
+              <Link
+                to={props.user.siteURL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -78,18 +79,18 @@ export const EventCreatorCard = (props: Props) => {
                   <MousePointerClickIcon className="mr-2" />
                   {props.user.siteTitle}
                 </Button>
-              </a>
+              </Link>
             )}
             {props.user.siteURL !== null && props.user.siteTitle === null && (
-              <a
-                href={props.user.siteURL}
+              <Link
+                to={props.user.siteURL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button variant={"outline"}>
                   <ExternalLinkIcon />
                 </Button>
-              </a>
+              </Link>
             )}
           </div>
         </div>

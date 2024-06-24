@@ -91,11 +91,13 @@ export const AlbumArticleEditorDialog = (props: Props) => {
         </DialogHeader>
         <>
           <div className="relative">
-            <img
-              src={headerImageUrl}
-              alt={props.album.title}
-              className="w-full rounded-md object-cover"
-            />
+            <div className="m-auto h-40 w-72 overflow-hidden rounded-md">
+              <img
+                src={headerImageUrl}
+                alt={props.album.title}
+                className="h-full w-full rounded-md object-cover object-center"
+              />
+            </div>
             <p className="font-bold text-sm">
               ※ センシティブなカバー画像は設定しないようにお願い致します。
             </p>

@@ -11,6 +11,7 @@ import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
+import { Link } from "@remix-run/react"
 
 type Props = {
   userId: string
@@ -50,7 +51,7 @@ export const WorkUser = (props: Props) => {
     <Card>
       <CardHeader>
         <CardTitle className="gap-x-2 p-4">
-          <a href={`/users/${props.userLogin}`}>
+          <Link to={`/users/${props.userLogin}`}>
             <Avatar className="m-auto h-auto w-24">
               <AvatarImage src={props.userIconImageURL} alt="" />
               <AvatarFallback />
@@ -58,7 +59,7 @@ export const WorkUser = (props: Props) => {
             <p className="mt-2 text-center font-bold text-md">
               {props.userName}
             </p>
-          </a>
+          </Link>
         </CardTitle>
         <div className="m-auto flex items-center space-x-1">
           <div className="flex items-center space-x-1">

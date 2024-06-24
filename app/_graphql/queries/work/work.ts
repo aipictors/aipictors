@@ -6,6 +6,7 @@ export const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id
+      isMyRecommended
       title
       accessType
       type
@@ -25,6 +26,7 @@ export const workQuery = graphql(
       smallThumbnailImageHeight
       thumbnailImagePosition
       user {
+        id
         promptonUser {
           id
         }
@@ -43,6 +45,12 @@ export const workQuery = graphql(
           smallThumbnailImageHeight
           thumbnailImagePosition
         }
+      }
+      likedUsers(offset: 0, limit: 32) {
+        id
+        name
+        iconUrl
+        login
       }
       album {
         id
@@ -82,6 +90,7 @@ export const workQuery = graphql(
       isTagEditable
       isCommentsEditable
       isLiked
+      isBookmarked
       isInCollection
       isPromotion
       isGeneration

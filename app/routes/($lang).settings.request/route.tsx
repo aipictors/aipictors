@@ -5,7 +5,7 @@ export default function SettingRequest() {
   return (
     <AppPageCenter>
       <div className="w-full space-y-8">
-        <h1 className="font-bold text-2xl">{"チップを受け取る"}</h1>
+        <h1 className="font-bold text-2xl">{"サポートを受け取る"}</h1>
         <div className="space-y-4">
           <SettingRequestForm />
         </div>

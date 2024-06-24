@@ -26,8 +26,8 @@ export default function BlendAi() {
           <p className="leading-relaxed">
             {"デルタもん生成をして投稿・シェアしてみましょう！"}
           </p>
-          <a
-            href="https://blendai.jp/contents"
+          <Link
+            to="https://blendai.jp/contents"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -35,9 +35,9 @@ export default function BlendAi() {
               デルタもんについて
               <MousePointerClickIcon className="ml-2" />
             </Button>
-          </a>
-          <a
-            href="https://www.aipictors.com/"
+          </Link>
+          <Link
+            to="https://www.aipictors.com/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -45,7 +45,7 @@ export default function BlendAi() {
               Aipictors
               <MousePointerClickIcon className="ml-2" />
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
 

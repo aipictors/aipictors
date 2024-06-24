@@ -1,5 +1,3 @@
-import {} from "@/_components/ui/carousel"
-import {} from "@/_components/ui/tooltip"
 import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"

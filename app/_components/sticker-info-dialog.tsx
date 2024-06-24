@@ -9,6 +9,7 @@ import {
 } from "@/_components/ui/dialog"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { useMutation } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import { Loader2Icon } from "lucide-react"
 import React from "react"
 
@@ -48,16 +49,16 @@ export const StickerInfoDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>タイトル：{props.title}</DialogTitle>
         </DialogHeader>
-        <a
+        <Link
           className="m-auto w-24"
-          href={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+          to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
         >
           <img
             className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
             src={props.imageUrl}
             alt={props.title}
           />
-        </a>
+        </Link>
         <DialogFooter>
           {!isDownloaded ? (
             <Button className="w-full" onClick={onDownload}>

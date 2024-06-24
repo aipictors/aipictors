@@ -1,6 +1,7 @@
 import { IconUrl } from "@/_components/icon-url"
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
+import { Link } from "@remix-run/react"
 
 type Props = {
   workId: string
@@ -18,8 +19,8 @@ type Props = {
 export const HomeNotificationsContentCommentedItem = (props: Props) => {
   return (
     <>
-      <a
-        href={`/works/${props.workId}`}
+      <Link
+        to={`/works/${props.workId}`}
         className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <>
@@ -52,7 +53,7 @@ export const HomeNotificationsContentCommentedItem = (props: Props) => {
             />
           </div>
         </>
-      </a>
+      </Link>
     </>
   )
 }

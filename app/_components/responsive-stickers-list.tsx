@@ -1,5 +1,6 @@
 import type { stickersQuery } from "@/_graphql/queries/sticker/stickers"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
@@ -23,8 +24,8 @@ export const ResponsiveStickersList = (props: Props) => {
     <div className="flex flex-wrap">
       {props.stickers.map((sticker) => (
         <div key={sticker.id} className="m-2 rounded-md">
-          <a
-            href={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
+          <Link
+            to={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
             className="relative p-1 hover:opacity-80"
           >
             <img
@@ -45,7 +46,7 @@ export const ResponsiveStickersList = (props: Props) => {
                 <span>{sticker.downloadsCount}</span>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
       ))}
     </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import type { Contributor } from "@/routes/($lang)._main.contributors/_types/contributor"
+import { Link } from "@remix-run/react"
 import { RiTwitterXLine } from "@remixicon/react"
 import { HomeIcon } from "lucide-react"
 
@@ -17,13 +18,13 @@ export const ContributorCard = (props: Props) => {
       <Card className="relative z-10 h-full">
         <div className="flex space-x-2 p-2">
           <div className="h-40 w-40 min-w-fit">
-            <a
+            <Link
               aria-label="Twitter"
               target="_blank"
               rel="noreferrer"
-              href={
+              to={
                 props.user.xId === null && props.user.aipictorsId === null
-                  ? undefined
+                  ? ""
                   : props.user.aipictorsId === null
                     ? `https://x.com/${props.user.xId}`
                     : `https://www.aipictors.com/users/${props.user.aipictorsId}`
@@ -36,7 +37,7 @@ export const ContributorCard = (props: Props) => {
                 className="h-24 w-24 rounded shadow-xl md:h-full md:w-full"
                 style={{ height: "100%", objectFit: "contain" }}
               />
-            </a>
+            </Link>
           </div>
           <div className="flex h-full flex-col space-y-2 overflow-hidden px-2 pt-4 md:space-y-4 md:px-2">
             <div className="min-w-0 flex-1 space-y-2 sm:space-y-4">
@@ -47,31 +48,31 @@ export const ContributorCard = (props: Props) => {
             </div>
             <div className="flex h-auto space-x-2">
               {props.user.homeUrl !== null && (
-                <a
-                  href={props.user.homeUrl}
+                <Link
+                  to={props.user.homeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <Button size={"icon"} variant={"outline"}>
                     <HomeIcon />
                   </Button>
-                </a>
+                </Link>
               )}
               {props.user.xId !== null && (
-                <a
-                  href={`https://x.com/${props.user.xId}`}
+                <Link
+                  to={`https://x.com/${props.user.xId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <Button size={"icon"} variant={"outline"}>
                     <RiTwitterXLine />
                   </Button>
-                </a>
+                </Link>
               )}
               {props.user.aipictorsId !== null &&
                 props.user.aipictorsId !== "" && (
-                  <a
-                    href={`/users/${props.user.aipictorsId}`}
+                  <Link
+                    to={`/users/${props.user.aipictorsId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -85,7 +86,7 @@ export const ContributorCard = (props: Props) => {
                         height={32}
                       />
                     </Button>
-                  </a>
+                  </Link>
                 )}
             </div>
           </div>

@@ -8,6 +8,7 @@ import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import React from "react"
 import { ReplyCommentInput } from "@/routes/($lang)._main.works.$work/_components/work-comment-input"
 import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
+import { Link } from "@remix-run/react"
 
 type Props = {
   isMine: boolean
@@ -56,7 +57,7 @@ export const WorkCommentResponse = (props: Props) => {
   return (
     <>
       <div className="flex items-start space-x-4 pl-16">
-        <a href={`/users/${props.userId}`}>
+        <Link to={`/users/${props.userId}`}>
           <Avatar>
             <AvatarImage
               className="w-12 rounded-full"
@@ -65,22 +66,22 @@ export const WorkCommentResponse = (props: Props) => {
             />
             <AvatarFallback />
           </Avatar>
-        </a>
+        </Link>
         <div className="space-y-0">
-          <a href={`/users/${props.userId}`}>
+          <Link to={`/users/${props.userId}`}>
             <p>{props.userName}</p>
-          </a>
+          </Link>
           <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
             {props.text}
           </p>
 
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
-            <a
+            <Link
               className="block w-24"
-              href={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+              to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
             >
               <img className="w-24 py-2" alt="" src={props.stickerImageURL} />
-            </a>
+            </Link>
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img className="w-24 py-2" alt="" src={props.stickerImageURL} />

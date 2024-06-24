@@ -64,22 +64,6 @@ export const copyUrl = (taskId: string) => {
 }
 
 /**
- * 生成履歴の画像を保存する
- * @param token
- */
-export const saveGenerationImage = async (
-  userToken: string,
-  fileName: string,
-) => {
-  const image = await createImageFileFromUrl({
-    url: `https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php?token=${encodeURIComponent(
-      userToken,
-    )}&name=${fileName}`,
-  })
-  downloadImageFile(image)
-}
-
-/**
  * 履歴一覧の履歴シートの中に表示する履歴情報
  */
 export function GenerationTaskSheetView(props: Props) {
@@ -90,6 +74,19 @@ export function GenerationTaskSheetView(props: Props) {
       awaitRefetchQueries: true,
     },
   )
+
+  /**
+   * 生成履歴の画像を保存する
+   * @param token
+   */
+  const saveGenerationImage = async (fileName: string) => {
+    if (props.task.imageUrl) {
+      const image = await createImageFileFromUrl({
+        url: props.task.imageUrl,
+      })
+      downloadImageFile(image)
+    }
+  }
 
   const context = useGenerationContext()
 

@@ -12,6 +12,7 @@ export const albumQuery = graphql(
         isFollowee
         isFollowee
         isMuted
+        nanoid
       }
       createdAt
       isSensitive

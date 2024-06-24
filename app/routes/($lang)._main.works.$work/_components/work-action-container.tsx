@@ -12,6 +12,7 @@ type Props = {
   workLikesCount: number
   targetWorkId: string
   targetWorkOwnerUserId: string
+  bookmarkFolderId: string | null
 }
 
 /**
@@ -29,8 +30,12 @@ export const WorkActionContainer = (props: Props) => {
 
   const isLiked = data?.work?.isLiked ?? false
 
+  const isBookmarked = data?.work?.isBookmarked ?? false
+
   const isHideEditButton =
     data?.work?.type === "COLUMN" || data?.work?.type === "NOVEL"
+
+  console.log(data?.work?.isMyRecommended)
 
   return (
     <WorkAction
@@ -38,9 +43,12 @@ export const WorkActionContainer = (props: Props) => {
       title={props.title}
       imageUrl={props.imageUrl}
       defaultLiked={isLiked}
+      defaultBookmarked={isBookmarked}
+      bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={isHideEditButton}
+      isRecommended={data?.work?.isMyRecommended ?? false}
     />
   )
 }

@@ -33,6 +33,7 @@ import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { MenuItemLink } from "@/routes/($lang)._main._index/_components/menu-item-link"
+import { Link } from "@remix-run/react"
 
 type Props = {
   onLogout(): void
@@ -98,24 +99,24 @@ export const HomeUserNavigationMenu = (props: Props) => {
               backgroundPosition: "center",
             }}
           >
-            <a href={`/users/${authContext.login}`}>
+            <Link to={`/users/${authContext.login}`}>
               <Avatar className="cursor-pointer">
                 <AvatarImage src={iconUrl ?? undefined} />
                 <AvatarFallback />
               </Avatar>
-            </a>
+            </Link>
           </div>
         </div>
         <div className="p-1">
           <div className="flex items-center gap-x-2 p-2">
-            <a className="w-16" href="/following">
+            <Link to="/following" className="w-16">
               <p>{followCount}</p>
               <p className="text-xs opacity-80">{"フォロー中"}</p>
-            </a>
-            <a className="w-16" href="/followers">
+            </Link>
+            <Link to="/followers" className="w-16">
               <p>{followerCount}</p>
               <p className="text-xs opacity-80">{"フォロワー"}</p>
-            </a>
+            </Link>
           </div>
           <MenuItemLink
             href={`/users/${authContext.login}`}

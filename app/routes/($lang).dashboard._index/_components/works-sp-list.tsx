@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
+import { Link } from "@remix-run/react"
 
 type Props = {
   works: {
@@ -41,18 +42,18 @@ export const WorksSpList = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index}>
           <div className="mt-2 mb-2 flex">
-            <a href={`/works/${work.id}`} className="mr-2">
+            <Link to={`/works/${work.id}`} className="mr-2">
               <img
                 src={work.thumbnailImageUrl}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
-            </a>
+            </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <a href={`/works/${work.id}`}>
+                <Link to={`/works/${work.id}`}>
                   <div className="w-full font-bold">{work.title}</div>
-                </a>
+                </Link>
                 <div className="space-x-2">
                   <Badge variant={"secondary"}>
                     {toAccessTypeText(work.accessType)}
@@ -85,9 +86,9 @@ export const WorksSpList = (props: Props) => {
             <div className="flex w-16 justify-center">
               {work.workType === "WORK" ||
                 (work.workType === "VIDEO" && (
-                  <a href={`/works/${work.id}/edit`}>
+                  <Link to={`/works/${work.id}/edit`}>
                     <PencilIcon />
-                  </a>
+                  </Link>
                 ))}
             </div>
           </div>

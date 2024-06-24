@@ -1,6 +1,7 @@
 import { IconUrl } from "@/_components/icon-url"
 import {} from "@/_components/ui/dropdown-menu"
 import {} from "@/_components/ui/tabs"
+import { Link } from "@remix-run/react"
 import { ArrowLeftRightIcon } from "lucide-react"
 
 type Props = {
@@ -17,9 +18,9 @@ type Props = {
 export const HomeNotificationsContentFollowedItem = (props: Props) => {
   return (
     <>
-      <a
+      <Link
         className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
-        href={`/users/${props.userId}`}
+        to={`/users/${props.userId}`}
       >
         <img
           src={IconUrl(props.iconUrl)}
@@ -37,7 +38,7 @@ export const HomeNotificationsContentFollowedItem = (props: Props) => {
             <ArrowLeftRightIcon className="h-6 w-6 text-zinc-500" />
           </>
         )}
-      </a>
+      </Link>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { Button } from "@/_components/ui/button"
+import { Link } from "@remix-run/react"
 import { RiTwitterXLine } from "@remixicon/react"
 import { type HTMLProps, forwardRef } from "react"
 
@@ -30,16 +31,16 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
 
     return (
       <Button className="flex items-center gap-2" variant="outline" asChild>
-        <a
+        <Link
           ref={forwardedRef}
-          href={_url.toString()}
+          to={_url.toString()}
           target="_blank"
           rel="noopener noreferrer"
           {...intrinsicProps}
         >
           <RiTwitterXLine />
           Xで共有する
-        </a>
+        </Link>
       </Button>
     )
   },

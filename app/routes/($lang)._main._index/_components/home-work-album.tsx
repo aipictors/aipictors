@@ -11,6 +11,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
   workTitle: string
   workOwnerUserId: string
   isLiked: boolean
+  isMosaic?: boolean
 }
 
 export function HomeWorkAlbum({
@@ -23,14 +24,16 @@ export function HomeWorkAlbum({
   workTitle,
   workOwnerUserId,
   isLiked,
+  isMosaic,
 }: HomeWorkAlbumProps) {
   return (
     <div
-      className="transition-all hover:opacity-80"
+      className="overflow-hidden transition-all hover:opacity-80"
       style={{ ...wrapperStyle, position: "relative" }}
     >
       <Link to={`/works/${workId}`}>
         <img
+          style={{ filter: isMosaic ? "blur(24px)" : "none" }}
           src={photo.src}
           // @ts-ignore
           placeholder={"blurDataURL" in photo ? "blur" : ""}
@@ -38,8 +41,8 @@ export function HomeWorkAlbum({
           className={"rounded"}
         />
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[16%] flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
-        <Link className="w-48" to={`/works/${workId}`}>
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[32%] flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+        <Link className="w-48 font-bold" to={`/works/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}
           </p>
@@ -51,7 +54,9 @@ export function HomeWorkAlbum({
               alt=""
               className="h-4 w-4 rounded-full"
             />
-            <span className="text-nowrap text-sm text-white">{userName}</span>
+            <span className="text-nowrap font-bold text-sm text-white">
+              {userName}
+            </span>
           </div>
         </Link>
       </div>

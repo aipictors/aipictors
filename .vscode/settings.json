@@ -74,5 +74,17 @@
     "tailwindcss"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
+  "todo-tree.general.tags": ["TODO", "TODO_2024_06", "TODO_2024_07"],
+  "todo-tree.highlights.customHighlight": {
+    "TODO_2024_06": {
+      "foreground": "red",
+      "iconColour": "red"
+    },
+    "TODO_2024_07": {
+      "foreground": "red",
+      "iconColour": "red"
+    }
+  }
 }

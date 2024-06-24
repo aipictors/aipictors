@@ -12,6 +12,7 @@ import { Loader2Icon } from "lucide-react"
 import React, { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
+import { Link } from "@remix-run/react"
 
 export const SettingRequestForm = () => {
   const authContext = useContext(AuthContext)
@@ -27,6 +28,9 @@ export const SettingRequestForm = () => {
       worksWhere: {},
       followeesWorksWhere: {},
       followersWorksWhere: {},
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
+      bookmarksWhere: {},
       worksOffset: 0,
       worksLimit: 0,
       followeesOffset: 0,
@@ -79,7 +83,7 @@ export const SettingRequestForm = () => {
 
   return (
     <div className="space-y-4">
-      <p>{`チップを受けるには累計いいね数が20必要です（現在：現在 ${toOmissionNumberText(
+      <p>{`サポートを受けるには累計いいね数が20必要です（現在：現在 ${toOmissionNumberText(
         receivedLikesCount,
       )}）`}</p>
       {receivedLikesCount >= 20 ? (
@@ -88,13 +92,13 @@ export const SettingRequestForm = () => {
             <div className="flex">
               <div className="flex w-full items-center justify-between">
                 <Label>{"口座連携する"}</Label>
-                <a
-                  href={`https://prompton.io/integration?token=${viewerUserToken}`}
+                <Link
+                  to={`https://prompton.io/integration?token=${viewerUserToken}`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Button>{"連携"}</Button>
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -110,7 +114,7 @@ export const SettingRequestForm = () => {
               <div className="flex">
                 <div className="flex w-full items-center justify-between">
                   <Label htmlFor="airplane-mode">
-                    {"チップの送信を許可する"}
+                    {"サポートの送信を許可する"}
                   </Label>
                   <Switch
                     onCheckedChange={setFeatureCheck}
@@ -136,17 +140,17 @@ export const SettingRequestForm = () => {
       ) : (
         <div className="flex">
           <div className="flex w-full justify-between">
-            <Label>{"チップの送信を許可する"}</Label>
+            <Label>{"サポートの送信を許可する"}</Label>
             <Switch disabled id="airplane-mode" />
           </div>
         </div>
       )}
       {promptonUserId && (
-        <a href="https://prompton.io/viewer/requests">
+        <Link to="https://prompton.io/viewer/requests">
           <Button variant={"secondary"} className="mt-8 w-full">
             管理画面
           </Button>
-        </a>
+        </Link>
       )}
     </div>
   )

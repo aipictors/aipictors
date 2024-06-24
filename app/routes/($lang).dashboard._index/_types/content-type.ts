@@ -1,1 +1,1 @@
-export type DashboardContentType = "HOME" | "WORK" | "RECOMMEND"
+export type DashboardContentType = "HOME" | "WORK" | "RECOMMEND" | "BOOKMARK"

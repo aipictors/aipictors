@@ -7,7 +7,7 @@ import { WorkCommentResponse } from "@/routes/($lang)._main.works.$work/_compone
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
@@ -89,13 +89,16 @@ export const WorkCommentList = (props: Props) => {
 
   const authContext = useContext(AuthContext)
 
-  const userResp = useSuspenseQuery(userQuery, {
+  const userResp = useQuery(userQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId ?? "0",
       worksWhere: {},
       followeesWorksWhere: {},
       followersWorksWhere: {},
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
+      bookmarksWhere: {},
       worksOffset: 0,
       worksLimit: 0,
       followeesOffset: 0,

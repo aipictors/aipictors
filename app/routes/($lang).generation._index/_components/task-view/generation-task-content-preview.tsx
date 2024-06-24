@@ -1,4 +1,3 @@
-import { PrivateImage } from "@/_components/private-image"
 import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
@@ -30,18 +29,19 @@ export const GenerationTaskContentPreview = () => {
   return (
     <>
       <Card className="flex h-[100vh] w-auto flex-col">
-        {imageGenerationTask?.imageFileName &&
-        imageGenerationTask.thumbnailImageFileName &&
+        {imageGenerationTask?.imageUrl &&
+        imageGenerationTask.thumbnailUrl &&
         userToken ? (
           <div className="m-auto max-h-[100vh]">
-            <PrivateImage
+            <img
               // biome-ignore lint/nursery/useSortedClasses: <explanation>
               className={`max-h-[64vh] generation-image-${imageGenerationTask.id}`}
-              taskId={imageGenerationTask.id}
-              token={userToken}
-              isThumbnail={context.config.taskListThumbnailType === "light"}
-              fileName={imageGenerationTask.imageFileName}
-              thumbnailFileName={imageGenerationTask.thumbnailImageFileName}
+              src={
+                context.config.taskListThumbnailType === "light"
+                  ? imageGenerationTask.thumbnailUrl
+                  : imageGenerationTask.imageUrl
+              }
+              data-original={imageGenerationTask.imageUrl}
               alt={"-"}
             />
             <div className="m-auto mb-1">

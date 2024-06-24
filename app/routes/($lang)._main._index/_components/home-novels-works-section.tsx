@@ -1,12 +1,7 @@
+import { CarouselWithGradation } from "@/_components/carousel-with-gradation"
 import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/_components/ui/carousel"
-import {} from "@/_components/ui/tooltip"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import type { worksQuery } from "@/_graphql/queries/work/works"
 import type { ResultOf } from "gql.tada"
@@ -59,45 +54,39 @@ export const HomeNovelsWorksSection = (props: Props) => {
         </Button> */}
       </div>
 
-      <Carousel className="relative" opts={{ dragFree: true, loop: false }}>
-        <CarouselContent>
-          {works.map((work, index) => (
-            <CarouselItem
-              key={work.id}
-              className="relative basis-1/3.5 space-y-2"
-            >
-              <div className="relative">
-                <NovelWorkPreviewItem
-                  workId={work.id}
-                  imageUrl={work.src}
-                  title={work.title}
-                  text={work.text ?? ""}
-                  tags={[]}
-                />
-              </div>
-              <UserNameBadge
-                userId={work.userId}
-                userIconImageURL={IconUrl(work.userIcon)}
-                name={work.userName}
-                width={"lg"}
+      <CarouselWithGradation
+        items={works.map((work, index) => (
+          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          <div>
+            <div className="relative">
+              <NovelWorkPreviewItem
+                workId={work.id}
+                imageUrl={work.src}
+                title={work.title}
+                text={work.text ?? ""}
+                tags={[]}
               />
-              <div className="absolute right-0 bottom-0">
-                <LikeButton
-                  size={56}
-                  targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.userId}
-                  defaultLiked={work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                />
-              </div>
-            </CarouselItem>
-          ))}
-          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
-        </CarouselContent>
-        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
-      </Carousel>
+            </div>
+            <UserNameBadge
+              userId={work.userId}
+              userIconImageURL={IconUrl(work.userIcon)}
+              name={work.userName}
+              width={"lg"}
+            />
+            <div className="absolute right-0 bottom-0">
+              <LikeButton
+                size={56}
+                targetWorkId={work.id}
+                targetWorkOwnerUserId={work.userId}
+                defaultLiked={work.isLiked}
+                defaultLikedCount={0}
+                isBackgroundNone={true}
+                strokeWidth={2}
+              />
+            </div>
+          </div>
+        ))}
+      />
     </section>
   )
 }

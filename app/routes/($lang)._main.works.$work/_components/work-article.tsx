@@ -3,16 +3,25 @@ import { Button } from "@/_components/ui/button"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { PromptonRequestButton } from "@/routes/($lang)._main.works.$work/_components/prompton-request-button"
 import { WorkImageView } from "@/routes/($lang)._main.works.$work/_components/work-image-view"
-import {} from "@/_components/ui/tabs"
 import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.works.$work/_components/work-article-generation-parameters"
 import { WorkActionContainer } from "@/routes/($lang)._main.works.$work/_components/work-action-container"
-import { Suspense } from "react"
+import { Suspense, useContext } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.works.$work/_components/work-article-tags"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { ResultOf } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
 import { WorkHtmlView } from "@/routes/($lang)._main.works.$work/_components/work-html-view"
 import { WorkVideoView } from "@/routes/($lang)._main.works.$work/_components/work-video-view"
+import { AuthContext } from "@/_contexts/auth-context"
+import {} from "@/_components/ui/carousel"
+import { WorkLikedUser } from "@/routes/($lang)._main.works.$work/_components/work-liked-user"
+import { CarouselWithGradation } from "@/_components/carousel-with-gradation"
+import { ToggleContent } from "@/_components/toggle-content"
+import { Heart } from "lucide-react"
+import { Separator } from "@/_components/ui/separator"
+import { viewerBookmarkFolderIdQuery } from "@/_graphql/queries/viewer/viewer-bookmark-folder-id"
+import { useQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -22,7 +31,13 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkArticle = (props: Props) => {
-  console.log(props.work)
+  const appContext = useContext(AuthContext)
+
+  const { data, refetch } = useQuery(viewerBookmarkFolderIdQuery, {
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
+  })
+
+  const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
   return (
     <article className="flex flex-col">
@@ -51,11 +66,11 @@ export const WorkArticle = (props: Props) => {
       )}
       <section className="mt-4 space-y-4">
         {props.work.isGeneration && (
-          <a href={`/generation?work=${props.work.id}`}>
+          <Link to={`/generation?work=${props.work.id}`}>
             <Button variant={"secondary"} className="w-full">
               参照生成する
             </Button>
-          </a>
+          </Link>
         )}
         <Suspense>
           <WorkActionContainer
@@ -63,18 +78,49 @@ export const WorkArticle = (props: Props) => {
             title={props.work.title}
             imageUrl={props.work.imageURL}
             targetWorkId={props.work.id}
+            bookmarkFolderId={bookmarkFolderId}
             targetWorkOwnerUserId={props.work.user.id}
           />
         </Suspense>
         <h1 className="font-bold text-lg">{props.work.title}</h1>
         <div className="flex flex-col space-y-2">
+          {/* いいねしたユーザ一覧 */}
+          {appContext.userId === props.work.user.id && (
+            <ToggleContent
+              trigger={
+                <div className="flex items-center space-x-2">
+                  <Heart
+                    className={"fill-white text-black dark:text-white"}
+                    size={16}
+                    strokeWidth={1}
+                  />
+                  <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
+                </div>
+              }
+            >
+              <div>
+                <Separator className="mt-2 mb-2" />
+                <CarouselWithGradation
+                  items={props.work.likedUsers.map((user) => (
+                    <WorkLikedUser
+                      key={user.id}
+                      name={user.name}
+                      iconUrl={user.iconUrl}
+                      login={user.login}
+                    />
+                  ))}
+                />
+              </div>
+            </ToggleContent>
+          )}
+
           <span className="text-sm">
             {"使用モデル名:"}
-            <a
-              href={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+            <Link
+              to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
             >
               {props.work.model}
-            </a>
+            </Link>
           </span>
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
@@ -91,11 +137,11 @@ export const WorkArticle = (props: Props) => {
           {props.work.dailyTheme && (
             <div className="flex items-center">
               <span className="text-sm">{"参加お題:"}</span>
-              <a
-                href={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+              <Link
+                to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >
                 <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
-              </a>
+              </Link>
             </div>
           )}
           <WorkArticleTags tagNames={props.work.tagNames} />
@@ -117,17 +163,17 @@ export const WorkArticle = (props: Props) => {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <a
+            <Link
               className="flex items-center space-x-2"
-              href={`/users/${props.work.user.login}`}
+              to={`/users/${props.work.user.login}`}
             >
               <Avatar>
                 <AvatarImage src={IconUrl(props.work.user.iconUrl)} />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>
-            </a>
-            {props.work.user.promptonUser?.id && (
+            </Link>
+            {props.work.user.promptonUser?.id !== undefined && (
               <PromptonRequestButton
                 promptonId={props.work.user.promptonUser.id}
               />

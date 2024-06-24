@@ -1,4 +1,3 @@
-import {} from "@/_components/ui/tooltip"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import {
   Carousel,
@@ -7,6 +6,7 @@ import {
 } from "@/_components/ui/carousel"
 import React from "react"
 import Autoplay from "embla-carousel-autoplay"
+import { Link } from "@remix-run/react"
 
 type Props = {
   title?: string
@@ -33,7 +33,7 @@ export const HomeTagsSection = (props: Props) => {
           {props.tags?.map((tag, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             <CarouselItem className="basis-auto" key={index}>
-              <a className="relative" href={`/tags/${tag.name}`}>
+              <Link className="relative" to={`/tags/${tag.name}`}>
                 <img
                   className="h-[240px] w-[196px] rounded-md bg-white object-cover object-center transition-opacity duration-200 ease-in-out"
                   src={tag.thumbnailUrl}
@@ -42,7 +42,7 @@ export const HomeTagsSection = (props: Props) => {
                 <div className="absolute right-0 bottom-0 left-0 box-border flex h-32 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
                   <p className="text-white">{`#${tag.name}`}</p>
                 </div>
-              </a>
+              </Link>
             </CarouselItem>
           ))}
         </CarouselContent>

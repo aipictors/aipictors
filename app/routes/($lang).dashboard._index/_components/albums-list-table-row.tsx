@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { deleteAlbumMutation } from "@/_graphql/mutations/delete-album"
+import { Link } from "@remix-run/react"
 
 type Props = {
   album: {
@@ -60,18 +61,18 @@ export const AlbumsListTableRow = (props: Props) => {
           }}
         >
           <TableCell className="font-medium">
-            <a href={`${props.album.userId}/albums/${props.album.slug}`}>
+            <Link to={`${props.album.userId}/albums/${props.album.slug}`}>
               <div className="w-32">{props.album.title}</div>
-            </a>
+            </Link>
           </TableCell>
           <TableCell>
-            <a href={`${props.album.userId}/albums/${props.album.slug}`}>
+            <Link to={`${props.album.userId}/albums/${props.album.slug}`}>
               <img
                 src={props.album.thumbnailImageUrl}
                 alt="thumbnail"
                 className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
               />
-            </a>
+            </Link>
           </TableCell>
           <TableCell>
             {isLoadingDeleteAlbum ? (

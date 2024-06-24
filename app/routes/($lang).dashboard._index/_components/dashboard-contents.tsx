@@ -11,12 +11,14 @@ import { WorksSetting } from "@/routes/($lang).dashboard._index/_components/work
 import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_components/albums-list-container"
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
 import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
 import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { BookmarkListContainer } from "@/routes/($lang).dashboard._index/_components/bookmark-list-container"
+import { userQuery } from "@/_graphql/queries/user/user"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -29,6 +31,8 @@ export const DashboardContents = (props: Props) => {
   const [page, setPage] = React.useState(0)
 
   const [albumPage, setAlbumPage] = React.useState(0)
+
+  const [bookmarkPage, setBookmarkPage] = React.useState(0)
 
   const [dashBoardContentType, setDashBoardContentType] =
     React.useState<DashboardContentType>(props.dashboardContentType)
@@ -126,8 +130,9 @@ export const DashboardContents = (props: Props) => {
     setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const { data: albumsCountResp, refetch: albumsCountRefetch } =
-    useSuspenseQuery(albumsCountQuery, {
+  const { data: albumsCountResp, refetch: albumsCountRefetch } = useQuery(
+    albumsCountQuery,
+    {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
         where: {
@@ -138,16 +143,41 @@ export const DashboardContents = (props: Props) => {
           needsThumbnailImage: false,
         },
       },
-    })
+    },
+  )
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
 
-  const { data: pass } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const passData = pass?.viewer?.currentPass
 
   const isStandardOrPremium =
     passData?.type === "STANDARD" || passData?.type === "PREMIUM"
+
+  const { data: userResp, refetch } = useQuery(userQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
+      userId: decodeURIComponent(authContext.userId),
+      worksWhere: {},
+      followeesWorksWhere: {},
+      followersWorksWhere: {},
+      worksOffset: 0,
+      worksLimit: 0,
+      followeesOffset: 0,
+      followeesLimit: 0,
+      followeesWorksOffset: 0,
+      followeesWorksLimit: 0,
+      followersOffset: 0,
+      followersLimit: 0,
+      followersWorksOffset: 0,
+      followersWorksLimit: 0,
+    },
+  })
+
+  const bookmarkMaxCount = userResp?.user?.createdBookmarksCount ?? 0
 
   return (
     <>
@@ -191,6 +221,15 @@ export const DashboardContents = (props: Props) => {
                 value="RECOMMEND"
               >
                 推薦
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setDashBoardContentType("BOOKMARK")
+                }}
+                className="w-full"
+                value="BOOKMARK"
+              >
+                ブックマーク
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -291,6 +330,17 @@ export const DashboardContents = (props: Props) => {
               <RecommendedListContainer />
             </Suspense>
             {!isStandardOrPremium && <RecommendedBanner />}
+          </>
+        )}
+        {dashBoardContentType === "BOOKMARK" && (
+          <>
+            <Suspense fallback={<AppLoadingPage />}>
+              <BookmarkListContainer
+                page={bookmarkPage}
+                maxCount={bookmarkMaxCount}
+                setPage={setBookmarkPage}
+              />
+            </Suspense>
           </>
         )}
       </div>

@@ -1,5 +1,6 @@
 import type { foldersQuery } from "@/_graphql/queries/folder/folders"
 import { config } from "@/config"
+import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -26,7 +27,7 @@ export const ResponsiveFoldersList = (props: Props) => {
           className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-24 md:w-40"
         >
           <div className="box-border flex flex-col justify-end">
-            <a href={`/collections/${folder.id}`} className="relative">
+            <Link to={`/collections/${folder.id}`} className="relative">
               <img
                 className="h-16 w-32 object-cover transition-all md:h-24 md:w-40 hover:scale-110"
                 src={folder.thumbnailImageURL ? folder.thumbnailImageURL : ""}
@@ -37,7 +38,7 @@ export const ResponsiveFoldersList = (props: Props) => {
                   {folder.title}
                 </p>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       ))}

@@ -1,7 +1,7 @@
 export type Props = {
   taskId: string
   token: string
-  fileName: string
+  imageUrl: string
   userNanoid: string | null
   configSeed: number
   configSteps: number

@@ -2,7 +2,7 @@ import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
 import { graphql } from "gql.tada"
 
 /**
- * ログイン中のユーザのシリーズのサポートメッセージ
+ * ログイン中のユーザのシリーズのメッセージ
  */
 export const viewerSupportMessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {

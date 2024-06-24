@@ -6,5 +6,6 @@ export const workUserFieldsFragment = graphql(
     name
     login
     iconUrl
+    nanoid
   }`,
 )

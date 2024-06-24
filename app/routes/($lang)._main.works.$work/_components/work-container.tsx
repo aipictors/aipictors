@@ -5,14 +5,13 @@ import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/
 import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
 import { Suspense } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/work-tags-works"
-import { useMediaQuery } from "usehooks-ts"
-import { config } from "@/config"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
+import { ConstructionAlert } from "@/_components/construction-alert"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]
@@ -40,9 +39,9 @@ export const WorkContainer = (props: Props) => {
   }))
 
   const tags = props.work?.tagNames ?? []
+
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <div
@@ -51,9 +50,17 @@ export const WorkContainer = (props: Props) => {
         margin: "auto",
       }}
     >
+      <div className="px-0 py-2 md:px-4">
+        <ConstructionAlert
+          type="WARNING"
+          message="このページは現在開発中です。不具合が起きる可能性があります。"
+          fallbackURL={`https://www.aipictors.com/works/${work.id}`}
+          date={"2024-07-30"}
+        />
+      </div>
       <div className="flex w-full overflow-hidden p-0 md:p-4">
         <div className="flex flex-col items-center overflow-hidden">
-          <div className="mx-auto w-full max-w-screen-lg">
+          <div className="mx-auto w-full max-w-screen-lg space-y-2">
             <Suspense fallback={<AppLoadingPage />}>
               <WorkArticle work={work} />
             </Suspense>

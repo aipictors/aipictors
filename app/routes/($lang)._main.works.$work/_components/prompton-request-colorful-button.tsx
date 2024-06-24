@@ -36,7 +36,7 @@ export const PromptonRequestColorfulButton = (props: Props) => {
             <GiftIcon className="h-4 w-4" />
           </span>
         )}
-        <span className="font-bold">チップを送る</span>
+        <span className="font-bold">サポートする</span>
       </div>
     </button>
   )

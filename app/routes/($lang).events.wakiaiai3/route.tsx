@@ -4,7 +4,7 @@ import { cn } from "@/_lib/cn"
 import { eventUsers } from "@/routes/($lang).events.wakiaiai3/_assets/event-users"
 import { EventCreatorCard } from "@/routes/($lang).events.wakiaiai3/_components/event-creator-card"
 import { EventImage } from "@/routes/($lang).events.wakiaiai3/_components/event-image"
-import type { MetaFunction } from "@remix-run/react"
+import { Link, type MetaFunction } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 
 export default function EventWakiaiai3() {
@@ -47,8 +47,8 @@ export default function EventWakiaiai3() {
               "全国一アットホームな生成AIを利用したイラストの展示やグッズ等の展示・即売会、第三回"
             }
           </p>
-          <a
-            href="https://forms.gle/zqJGK1XV6uhAqY5G7"
+          <Link
+            to="https://forms.gle/zqJGK1XV6uhAqY5G7"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -56,7 +56,7 @@ export default function EventWakiaiai3() {
               和気あいAI3展示・出展募集中
               <MousePointerClickIcon className="ml-2" />
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
@@ -122,15 +122,18 @@ export default function EventWakiaiai3() {
           © 2024 和気あいAI. All rights reserved.
         </p>
         <div className="mt-4">
-          <a href="https://twitter.com/waki_ai_ai_kot" className="mx-2 text-sm">
+          <Link
+            to="https://twitter.com/waki_ai_ai_kot"
+            className="mx-2 text-sm"
+          >
             X（Twitter）
-          </a>
-          <a
-            href="mailto:kotoba.no.aya.2022@gmail.com"
+          </Link>
+          <Link
+            to="mailto:kotoba.no.aya.2022@gmail.com"
             className="mx-2 text-sm"
           >
             主催Mail
-          </a>
+          </Link>
         </div>
       </footer>
     </div>

@@ -34,7 +34,7 @@ export const TagList: React.FC<TagListProps> = ({
 
   return (
     <div
-      className={cn("max-w-[450px] rounded-md", {
+      className={cn("rounded-md", {
         "flex flex-wrap gap-2": direction === "row",
         "flex flex-col gap-2": direction === "column",
       })}

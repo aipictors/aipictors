@@ -1,6 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
+import { Link } from "@remix-run/react"
 import { useEffect } from "react"
 
 type Props = {
@@ -85,8 +86,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               }}
               className="relative h-40 w-full"
             />
-            <a
-              href={
+            <Link
+              to={
                 props.uuid !== ""
                   ? `https://aipictors.com/works/${props.uuid}`
                   : `https://aipictors.com/works/${props.workId}`
@@ -97,7 +98,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
                 src={props.imageBase64}
                 alt="work-image"
               />
-            </a>
+            </Link>
           </div>
           <p className="text-center font-bold">作品が更新されました</p>
           <p className="text-center text-sm opacity-80">この作品をシェアする</p>

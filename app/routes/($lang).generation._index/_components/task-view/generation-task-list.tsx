@@ -110,13 +110,13 @@ export const GenerationTaskList = (props: Props) => {
   }
 
   const inProgressTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.imageFileName && task.status === "DONE"))
+    if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
       return false
     return task.status === "IN_PROGRESS" || task.status === "RESERVED"
   })
 
   const activeTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.imageFileName && task.status === "DONE"))
+    if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
       return false
     return (
       task.status === "PENDING" ||
