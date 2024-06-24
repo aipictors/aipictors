@@ -16,7 +16,6 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
     const [textAreaHeight, setTextAreaHeight] = useState("auto")
 
     const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
-
     const prevValueRef = useRef<string | undefined>(undefined)
 
     const combinedRef = useCallback(
@@ -70,9 +69,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
           height: textAreaHeight,
         }}
         onChange={(e) => {
-          if (props.onChange) {
-            props.onChange(e)
-          }
+          props.onChange?.(e)
           handleInput(e)
         }}
         onInput={handleInput}

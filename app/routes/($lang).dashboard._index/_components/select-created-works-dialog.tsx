@@ -18,7 +18,7 @@ type Props = {
   selectedWorks: ResultOf<typeof worksQuery>["works"]
   setSelectedWorks: (works: ResultOf<typeof worksQuery>["works"]) => void
   limit?: number
-  isSensitve?: boolean
+  isSensitive?: boolean
 }
 
 /**
@@ -42,7 +42,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
-        isSensitive: props.isSensitve,
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -52,7 +52,7 @@ export const SelectCreatedWorksDialog = (props: Props) => {
     variables: {
       where: {
         userId: appContext.userId,
-        isSensitive: props.isSensitve,
+        isSensitive: props.isSensitive,
       },
     },
   })

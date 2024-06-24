@@ -18,6 +18,14 @@ type Props = {
   onClickSearchModelWorks(id: string, name: string): void
 }
 
+interface Model {
+  id: string
+  thumbnailImageURL?: string
+  displayName?: string
+  type: string
+  prompts: string[]
+}
+
 /**
  * エディタの設定
  */
@@ -32,14 +40,14 @@ export const GenerationConfigModels = (props: Props) => {
     ? [
         Number(props.currentModelId),
         ...context.config.modelIds.filter(
-          (id) => Number(id) !== Number(props.currentModelId),
+          (id: string) => Number(id) !== Number(props.currentModelId),
         ),
       ]
     : context.config.modelIds
 
   // 表示する一覧を追加
   const currentModels = currentModelIds
-    .map((modelId) => {
+    .map((modelId: string) => {
       return context.models.find((model) => {
         return Number(model.id) === Number(modelId)
       })
@@ -112,7 +120,7 @@ export const GenerationConfigModels = (props: Props) => {
         </TabsList>
         <TabsContent value="normal">
           <div className="flex flex-col space-y-2">
-            {currentModels.map((model) => (
+            {currentModels.map((model: Model) => (
               <div className="relative" key={model?.id}>
                 <ConfigModelButton
                   imageURL={model?.thumbnailImageURL ?? ""}

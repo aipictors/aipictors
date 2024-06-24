@@ -16,7 +16,6 @@ import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-prof
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
-import { Link } from "@remix-run/react"
 
 /**
  * プロフィール設定フォーム
@@ -31,9 +30,6 @@ export const SettingProfileForm = () => {
       worksWhere: {},
       followeesWorksWhere: {},
       followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {},
       worksOffset: 0,
       worksLimit: 0,
       followeesOffset: 0,
@@ -363,7 +359,7 @@ export const SettingProfileForm = () => {
               selectedWorks={selectedPickupSensitiveWorks}
               setSelectedWorks={setSelectedPickupSensitiveWorks}
               limit={3}
-              isSensitve={true}
+              isSensitive={true}
             >
               <div className="border-2 border-transparent p-1">
                 <Button
@@ -390,11 +386,11 @@ export const SettingProfileForm = () => {
           )}
         </Button>
         <Separator />
-        <Link to="/account/login" className="m-auto block">
+        <a className="m-auto block" href="/account/login">
           <Button className="m-auto block" variant={"secondary"}>
             ログイン情報を変更する
           </Button>
-        </Link>
+        </a>
       </div>
     </>
   )
