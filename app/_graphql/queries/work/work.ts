@@ -6,6 +6,7 @@ export const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id
+      isMyRecommended
       title
       accessType
       type

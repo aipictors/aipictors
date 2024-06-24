@@ -1,6 +1,6 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
-import { useMutation, useQuery } from "@apollo/client/index"
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import { ToggleGroup, ToggleGroupItem } from "@/_components/ui/toggle-group"
 import { Button } from "@/_components/ui/button"
@@ -9,6 +9,10 @@ import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-sett
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { viewerIsBlurSensitiveImageQuery } from "@/_graphql/queries/viewer/viewer-is-blur-sensitive-image"
+import { Separator } from "@/_components/ui/separator"
+import { Label } from "@/_components/ui/label"
+import { Switch } from "@/_components/ui/switch"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
@@ -30,11 +34,26 @@ export const SettingRestrictionForm = () => {
     updateUserSettingMutation,
   )
 
+  const { data: isBlurResp, refetch: tokenRefetch } = useSuspenseQuery(
+    viewerIsBlurSensitiveImageQuery,
+  )
+
+  const isBlurDefault = isBlurResp?.viewer?.isBlurSensitiveImage
+
+  const [isBlur, setIsBlur] = React.useState(isBlurDefault)
+
   const onSave = async () => {
     await updateUserSetting({
       variables: {
         input: {
           preferenceRating: rating as IntrospectionEnum<"PreferenceRating">,
+        },
+      },
+    })
+    await updateUserSetting({
+      variables: {
+        input: {
+          isBlurSensitiveImage: isBlur,
         },
       },
     })
@@ -47,10 +66,12 @@ export const SettingRestrictionForm = () => {
     const nowRating = preferenceRating ? preferenceRating : "R18"
 
     setRating(nowRating)
+
+    setIsBlur(isBlurDefault)
   }, [userSetting])
 
   return (
-    <>
+    <div className="space-y-4">
       <div className="space-y-4">
         <ToggleGroup
           className="justify-start space-x-1"
@@ -72,6 +93,18 @@ export const SettingRestrictionForm = () => {
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
+      <Separator />
+      <div className="flex">
+        <div className="flex w-full items-center justify-between">
+          <Label htmlFor="airplane-mode">{"センシティブ画像をぼかす"}</Label>
+          <Switch
+            onCheckedChange={setIsBlur}
+            checked={isBlur}
+            id="airplane-mode"
+          />
+        </div>
+      </div>
+
       <Button
         disabled={isUpdatingUserSetting}
         onClick={onSave}
@@ -83,6 +116,6 @@ export const SettingRestrictionForm = () => {
           <span>{"保存"}</span>
         )}
       </Button>
-    </>
+    </div>
   )
 }

@@ -10,6 +10,7 @@ import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "@/routes/($lang)._main.works.$work/_components/work-action-bookmark"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
+import { RecommendButton } from "@/_components/recommend-button"
 
 type Props = {
   title?: string
@@ -21,6 +22,7 @@ type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
   isHideEditButton: boolean
+  isRecommended: boolean
 }
 
 /**
@@ -49,6 +51,11 @@ export const WorkAction = (props: Props) => {
           targetWorkId={props.targetWorkId}
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+        />
+        <RecommendButton
+          workId={props.targetWorkId}
+          ownerUserId={props.targetWorkOwnerUserId}
+          isRecommended={props.isRecommended}
         />
         {!props.isHideEditButton && (
           <WorkEditorButton
