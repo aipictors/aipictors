@@ -1,5 +1,3 @@
-import { config } from "@/config"
-
 /**
  * 画像アップロード
  * @param image base64形式の画像
@@ -20,17 +18,17 @@ export const uploadPublicImage = async (
   formData.append("id", id)
 
   try {
-    const endpoint = config.wordpressEndpoint.uploadPublicImage
+    // const endpoint = config.wordpressEndpoint.uploadPublicImage
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      body: formData,
-    })
-    if (response.ok) {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      const responseData = (await response.json()) as any
-      return responseData.url
-    }
+    // const response = await fetch(endpoint, {
+    //   method: "POST",
+    //   body: formData,
+    // })
+    // if (response.ok) {
+    //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    //   const responseData = (await response.json()) as any
+    //   return responseData.url
+    // }
     throw new Error()
   } catch (error) {
     // captureException(error)

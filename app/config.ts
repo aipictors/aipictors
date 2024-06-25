@@ -258,8 +258,6 @@ export const config = {
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
     uploadPublicImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-public-image.php",
-    uploadImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/upload-public-image.php",
     uploadPublicVideo:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-public-video.php",
     deleteUploadedImage:

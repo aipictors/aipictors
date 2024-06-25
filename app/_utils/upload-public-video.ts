@@ -1,5 +1,3 @@
-import { config } from "@/config"
-
 /**
  * 画像アップロード
  * @param file Blob形式のファイル
@@ -18,18 +16,18 @@ export const uploadPublicVideo = async (
   formData.append("file", file, name)
 
   try {
-    const endpoint = config.wordpressEndpoint.uploadPublicVideo
+    // const endpoint = config.wordpressEndpoint.uploadPublicVideo
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      body: formData,
-    })
+    // const response = await fetch(endpoint, {
+    //   method: "POST",
+    //   body: formData,
+    // })
 
-    if (response.ok) {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-      const responseData = (await response.json()) as any
-      return responseData.url
-    }
+    // if (response.ok) {
+    //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    //   const responseData = (await response.json()) as any
+    //   return responseData.url
+    // }
     throw new Error("Upload failed")
   } catch (error) {
     // captureException(error)
