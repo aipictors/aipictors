@@ -47,12 +47,13 @@ export const GenerationConfigModels = (props: Props) => {
 
   // 表示する一覧を追加
   const currentModels = currentModelIds
-    .map((modelId: string) => {
+    .map((modelId) => {
       return context.models.find((model) => {
         return Number(model.id) === Number(modelId)
       })
     })
     .slice(0, 3)
+    .filter((model) => model !== undefined) as Model[]
 
   // 直近で使用したお気に入り一覧
   // 既に表示されているモデルの中に選択中のモデルがあれば並び替えしない
@@ -102,10 +103,6 @@ export const GenerationConfigModels = (props: Props) => {
 
     return input
   }
-
-  const currentModel = context.models.find((model) => {
-    return model.id === context.config.modelId
-  })
 
   return (
     <>
