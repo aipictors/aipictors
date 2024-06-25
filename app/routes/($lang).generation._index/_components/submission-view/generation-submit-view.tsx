@@ -488,11 +488,7 @@ export function GenerationSubmissionView(props: Props) {
       }
     })
     // タスクの作成後も呼び出す必要がある
-    if (isDesktop) {
-      toast("タスク作成をリクエストしました")
-    } else {
-      toast("タスク作成をリクエストしました", { position: "top-center" })
-    }
+    toast("タスク作成をリクエストしました", { position: "top-center" })
     await Promise.all(promises)
     if (typeof context.user?.nanoid !== "string") {
       toast("画面更新して再度お試し下さい。")
