@@ -1,9 +1,7 @@
-import { AuthContext } from "@/_contexts/auth-context"
 import type { worksQuery } from "@/_graphql/queries/work/works"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import type { ResultOf } from "gql.tada"
-import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -14,8 +12,6 @@ type Props = {
 }
 
 export const UserPickupContents = (props: Props) => {
-  const authContext = useContext(AuthContext)
-
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (

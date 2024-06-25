@@ -84,12 +84,9 @@ export const WorksSpList = (props: Props) => {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              {work.workType === "WORK" ||
-                (work.workType === "VIDEO" && (
-                  <Link to={`/works/${work.id}/edit`}>
-                    <PencilIcon />
-                  </Link>
-                ))}
+              <Link to={`/works/${work.id}/edit`}>
+                <PencilIcon />
+              </Link>
             </div>
           </div>
           <Separator />

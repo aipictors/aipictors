@@ -10,8 +10,8 @@ import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
-import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 import { ConstructionAlert } from "@/_components/construction-alert"
+import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]
@@ -65,6 +65,9 @@ export const WorkContainer = (props: Props) => {
               <WorkArticle work={work} />
             </Suspense>
             <WorkRelatedList works={relatedWorks} />
+            <Suspense fallback={<AppLoadingPage />}>
+              <WorkCommentList workId={work.id} comments={props.comments} />
+            </Suspense>
             <div className="mt-2 block md:mt-0 lg:hidden">
               <Suspense>
                 <WorkUser
@@ -79,32 +82,6 @@ export const WorkContainer = (props: Props) => {
                 />
               </Suspense>
             </div>
-
-            <section className="max-w-[1400px] space-y-4">
-              {randomTag ? (
-                <>
-                  <div className="flex justify-between">
-                    <h2 className="items-center space-x-2 font-bold text-md">
-                      {"おすすめ"}
-                    </h2>
-                  </div>
-                  <Suspense fallback={<AppLoadingPage />}>
-                    <WorkTagsWorks
-                      tagName={randomTag}
-                      rating={work.rating ?? "G"}
-                    />
-                  </Suspense>
-                </>
-              ) : (
-                <Suspense fallback={<AppLoadingPage />}>
-                  <HomeWorksRecommendedSection
-                    isSensitive={
-                      work.rating === "R18" || work.rating === "R18G"
-                    }
-                  />
-                </Suspense>
-              )}
-            </section>
           </div>
         </div>
         <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-md">
@@ -123,11 +100,28 @@ export const WorkContainer = (props: Props) => {
             </Suspense>
           </div>
           <WorkNextAndPrevious work={work} />
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorkCommentList workId={work.id} comments={props.comments} />
-          </Suspense>
         </div>
       </div>
+      <section className="max-w-[1400px] space-y-4">
+        {randomTag ? (
+          <>
+            <div className="flex justify-between">
+              <h2 className="items-center space-x-2 font-bold text-md">
+                {"おすすめ"}
+              </h2>
+            </div>
+            <Suspense fallback={<AppLoadingPage />}>
+              <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
+            </Suspense>
+          </>
+        ) : (
+          <Suspense fallback={<AppLoadingPage />}>
+            <HomeWorksRecommendedSection
+              isSensitive={work.rating === "R18" || work.rating === "R18G"}
+            />
+          </Suspense>
+        )}
+      </section>
     </div>
   )
 }

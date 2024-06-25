@@ -102,12 +102,9 @@ export const WorksListTableRow = (props: Props) => {
             )}
           </TableCell>
           <TableCell>
-            {props.work.workType === "WORK" ||
-              (props.work.workType === "VIDEO" && (
-                <Link to={`/works/${props.work.id}/edit`}>
-                  <PencilIcon />
-                </Link>
-              ))}
+            <Link to={`/works/${props.work.id}/edit`}>
+              <PencilIcon />
+            </Link>
           </TableCell>
           <TableCell>{props.work.likesCount}</TableCell>
           <TableCell>

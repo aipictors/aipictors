@@ -28,7 +28,7 @@ export const SharePopover = (props: Props) => {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">イラストを共有する</h4>
+            <h4 className="font-medium leading-none">作品を共有する</h4>
           </div>
           <div className="grid gap-2">
             <CopyWorkUrlButton currentUrl={currentUrl} />

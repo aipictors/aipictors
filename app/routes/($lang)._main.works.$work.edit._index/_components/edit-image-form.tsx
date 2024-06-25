@@ -56,6 +56,8 @@ import { workQuery } from "@/_graphql/queries/work/work"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
 import { updateWorkMutation } from "@/_graphql/mutations/update-work"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
+import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
+import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 
 type Props = {
   workId: string
@@ -161,6 +163,26 @@ export const EditImageForm = (props: Props) => {
       },
     },
   })
+
+  const today = new Date().toISOString().split("T")[0] // YYYY-MM-DD 形式に変換
+
+  const workCreatedAt = work?.work?.createdAt.toString() ?? today
+
+  const { data: appEventsResp } = useQuery(appEventsQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 1,
+      where: {
+        startAt: workCreatedAt,
+        endAt: today,
+      },
+    },
+  })
+
+  const appEvents = appEventsResp?.appEvents.length
+    ? appEventsResp.appEvents[0]
+    : null
 
   const optionAlbums = albums?.albums
     ? (albums?.albums.map((album) => ({
@@ -948,6 +970,19 @@ export const EditImageForm = (props: Props) => {
                 isChecked={themeId === theme?.dailyTheme?.id}
               />
             )}
+
+            {appEvents && (
+              <EventInput
+                tags={tags}
+                setTags={setTags}
+                eventName={appEvents?.title ?? ""}
+                eventDescription={appEvents?.description ?? ""}
+                eventTag={appEvents?.tag ?? ""}
+                endAt={appEvents?.endAt ?? 0}
+                slug={appEvents?.slug ?? ""}
+              />
+            )}
+
             <TagsInput
               whiteListTags={whiteTags}
               tags={tags}
