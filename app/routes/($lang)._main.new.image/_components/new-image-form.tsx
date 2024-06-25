@@ -58,6 +58,7 @@ import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
+import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 
 /**
  * 新規作品フォーム
@@ -151,19 +152,22 @@ export const NewImageForm = () => {
     },
   })
 
+  const today = new Date().toISOString().split("T")[0] // YYYY-MM-DD 形式に変換
+
   const { data: appEventsResp } = useQuery(appEventsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
       limit: 1,
       where: {
-        startAt: new Date().toISOString(),
-        endAt: new Date().toISOString(),
+        startAt: today, // 今日の日付を使用
       },
     },
   })
 
-  console.log(appEventsResp)
+  const appEvents = appEventsResp?.appEvents.length
+    ? appEventsResp.appEvents[0]
+    : null
 
   const optionAlbums = albums?.albums
     ? (albums?.albums.map((album) => ({
@@ -792,6 +796,19 @@ export const NewImageForm = () => {
                 isLoading={themeLoading}
               />
             )}
+
+            {appEvents && (
+              <EventInput
+                tags={tags}
+                setTags={setTags}
+                eventName={appEvents?.title ?? ""}
+                eventDescription={appEvents?.description ?? ""}
+                eventTag={appEvents?.tag ?? ""}
+                endAt={appEvents?.endAt ?? 0}
+                slug={appEvents?.slug ?? ""}
+              />
+            )}
+
             <TagsInput
               whiteListTags={whiteTags.filter(
                 (tag) => !tags.map((tag) => tag.text).includes(tag.text),

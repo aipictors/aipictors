@@ -26,7 +26,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   children,
 }) => {
   return (
-    <Command className="min-w-[320px] border">
+    <Command className="border">
       {children}
       <CommandList>
         <CommandGroup heading="">
