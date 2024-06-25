@@ -283,7 +283,7 @@ export class GenerationConfigAction {
    */
   updateModelIdAndPrompt(id: string, modelType: string, promptText: string) {
     const modelIds = produce(this.state.modelIds, (draft: string[]) => {
-      const index = draft.findIndex((modelId: any) => {
+      const index = draft.findIndex((modelId: string) => {
         return this.state.modelId === modelId
       })
       if (index === -1) return
