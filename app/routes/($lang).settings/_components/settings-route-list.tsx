@@ -24,6 +24,9 @@ export const SettingsRouteList = () => {
       <HomeNavigationButton href={"/settings/profile"} icon={ImageIcon}>
         {"プロフィール"}
       </HomeNavigationButton>
+      <HomeNavigationButton href={"/account/login"} icon={ImageIcon}>
+        {"ID/パスワード"}
+      </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/muted/users"} icon={UserXIcon}>
         {"ユーザミュート"}
       </HomeNavigationButton>
