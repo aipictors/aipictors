@@ -26,7 +26,7 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
               props.user.iconUrl ??
               "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
             }
-            size={isDesktop ? "lg" : "md"}
+            size={"auto"}
           />
           <div className="hidden md:block">
             <h1 className="font-bold text-2xl text-white">{props.user.name}</h1>
