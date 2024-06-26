@@ -88,6 +88,7 @@ export const HomeColumnsSection = (props: Props) => {
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
+              className="rounded border-2 border-gray border-solid"
             >
               <div className="relative">
                 <NovelWorkPreviewItem
