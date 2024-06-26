@@ -50,9 +50,12 @@ export const UserHome = (props: UserProfileProps) => {
                   src={props.user.headerImageUrl}
                   alt=""
                 />
-                <div className="absolute bottom-0 left-8 z-20">
+                <div className="absolute bottom-0 left-8 z-30">
                   <UserProfileNameIcon user={props.user} />
                 </div>
+              </div>
+              <div className="absolute right-0 bottom-0 left-0 z-20 h-[25%] bg-gradient-to-t from-[rgba(0,0,0,0.30)] to-transparent p-4 pb-3">
+                &nbsp;
               </div>
             </div>
           ) : (

@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 type UserProfileAvatarProps = {
   alt: string
   src?: string
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "auto"
 }
 
 export const UserProfileAvatar = ({
@@ -11,7 +11,7 @@ export const UserProfileAvatar = ({
   src,
   size = "md",
 }: UserProfileAvatarProps) => {
-  const getSize = (size: "sm" | "md" | "lg") => {
+  const getSize = (size: "sm" | "md" | "lg" | "auto") => {
     switch (size) {
       case "sm":
         return "h-16 w-16"
@@ -19,6 +19,8 @@ export const UserProfileAvatar = ({
         return "h-20 w-20"
       case "lg":
         return "h-32 w-32"
+      case "auto":
+        return "h-20 w-20 md:h-32 md:w-32"
       default:
         return "h-20 w-20"
     }
