@@ -1,26 +1,18 @@
-import { worksQuery } from "@/_graphql/queries/work/works"
-import { useSuspenseQuery } from "@apollo/client/index"
+import type { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
 import { Link } from "@remix-run/react"
+import type { ResultOf } from "gql.tada"
+
+type Props = {
+  works: NonNullable<ResultOf<typeof homeQuery>["adWorks"]>
+}
 
 /**
  * ホームの生成機バナー
  */
-export const HomeGenerationBanner = () => {
-  const { data: worksResp } = useSuspenseQuery(worksQuery, {
-    variables: {
-      limit: 32,
-      offset: 0,
-      where: {
-        isFeatured: true,
-        ratings: ["G"],
-        orderBy: "LIKES_COUNT",
-      },
-    },
-  })
-
+export const HomeGenerationBanner = (props: Props) => {
   // ランダムで3つを重複なしで選択
-  const works = worksResp?.works || []
-  const shuffledWorks = [...works].sort(() => 0.5 - Math.random())
+  const works = props?.works || []
+  const shuffledWorks = [...works] // .sort(() => 0.5 - Math.random())
   const selectedWorks = shuffledWorks.slice(0, 3)
 
   const [randomOneWork, randomTwoWork, randomThreeWork] = selectedWorks

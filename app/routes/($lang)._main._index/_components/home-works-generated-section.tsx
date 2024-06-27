@@ -1,41 +1,23 @@
-import { AuthContext } from "@/_contexts/auth-context"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
-import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import type { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
+import type { ResultOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
+
+type Props = {
+  works: ResultOf<typeof homeQuery>["adWorks"]
+}
 
 /**
  * 生成された作品セクション
  */
-export const HomeWorksGeneratedSection = () => {
-  const appContext = useContext(AuthContext)
-
-  const worksResult = useQuery(worksQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      offset: 0,
-      limit: 40,
-      where: {
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
-        // 直近1か月の作品
-        createdAtAfter: new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
-        ratings: ["G"],
-        isFeatured: true,
-      },
-    },
-  })
-
-  const works = worksResult.data?.works
+export const HomeWorksGeneratedSection = (props: Props) => {
+  const works = props.works
 
   const suggestedWorks = [...(works || [])]
 
   const shuffledWorks = suggestedWorks
-    .sort(() => 0.5 - Math.random())
+    // .sort(() => 0.5 - Math.random())
     .slice(0, 16)
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)

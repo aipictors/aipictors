@@ -1,8 +1,5 @@
 import { AppPage } from "@/_components/app/app-page"
 import { ConstructionAlert } from "@/_components/construction-alert"
-import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
-import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
@@ -14,6 +11,7 @@ import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/hom
 import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
+import { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
@@ -44,37 +42,15 @@ export const meta: MetaFunction = () => {
 export async function loader() {
   const client = createClient()
 
-  // おすすめ作品
-  const suggestedWorkResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 80,
-      where: {
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
-        // 直近1週間の作品
-        createdAtAfter: new Date(
-          Date.now() - 7 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
-        ratings: ["G"],
-      },
-    },
-  })
+  const date = new Date()
 
-  // 推薦作品
-  /**
-   * TODO_2024_07 クエリを統合する
-   */
-  const recommendedWorksResp = await client.query({
-    query: worksQuery,
+  const homeQueryResp = await client.query({
+    query: homeQuery,
     variables: {
-      offset: 0,
-      limit: 54,
-      where: {
-        isRecommended: true,
-        ratings: ["G"],
-      },
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
     },
   })
 
@@ -99,29 +75,14 @@ export async function loader() {
 
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
-  const date = new Date()
-  const { data: themeResp } = await client.query({
-    query: dailyThemeQuery,
-    variables: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
-      day: date.getDate(), // getDate()は月の日にちを返す
-      offset: 0,
-      limit: 0,
-    },
-  })
-
-  // コレクション
-  const hotTagsResp = await client.query({
-    query: hotTagsQuery,
-    variables: {},
-  })
+  const adWorks = homeQueryResp.data.adWorks.toSorted(() => 0.5 - Math.random())
 
   return json({
-    suggestedWorkResp: suggestedWorkResp.data.works,
-    recommendedWorks: recommendedWorksResp.data.works,
-    themeResp: themeResp.dailyTheme,
-    hotTags: hotTagsResp.data.hotTags,
+    adWorks: adWorks,
+    suggestedWorkResp: homeQueryResp.data.works,
+    imageGenerationWorks: homeQueryResp.data.imageGenerationWorks,
+    themeResp: homeQueryResp.data.dailyTheme,
+    hotTags: homeQueryResp.data.hotTags,
     tags: randomTags,
   })
 }
@@ -140,14 +101,14 @@ export default function Index() {
         fallbackURL="https://www.aipictors.com/"
         date={"2024-07-30"}
       />
-      <HomeBanners />
+      <HomeBanners adWorks={data.adWorks} />
       {data && (
         <div className="space-y-8">
           <HomeTagList
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
           />
-          <HomeWorksGeneratedSection />
+          <HomeWorksGeneratedSection works={data.imageGenerationWorks} />
           <HomeAwardWorkSection title={"前日ランキング"} />
           <HomeTagsSection title={"人気タグ"} tags={data.tags} />
           <HomeWorksRecommendedSection />
