@@ -7,6 +7,7 @@ import { UserContentsContainer } from "@/routes/($lang)._main.users.$user/_compo
 import { UserFoldersContents } from "@/routes/($lang)._main.users.$user/_components/user-folders-contents"
 import { UserPickupContents } from "@/routes/($lang)._main.users.$user/_components/user-pickup-contents"
 import { UserStickersContents } from "@/routes/($lang)._main.users.$user/_components/user-stickers-contents"
+import { UserNovelsContents } from "@/routes/($lang)._main.users.$user.novels/_components/user-novels-contents"
 import { UserTabs } from "@/routes/($lang)._main.users.$user/_components/user-tabs"
 import { UserWorksContents } from "@/routes/($lang)._main.users.$user/_components/user-works-contents "
 import type { ResultOf } from "gql.tada"
@@ -92,7 +93,7 @@ export const UserContents = (props: Props) => {
             />
           )}
           {activeTab === "小説" && (
-            <UserWorksContents
+            <UserNovelsContents
               userId={props.user.id}
               page={novelPage}
               setPage={setNovelPage}
@@ -108,7 +109,7 @@ export const UserContents = (props: Props) => {
             />
           )}
           {activeTab === "コラム" && (
-            <UserWorksContents
+            <UserNovelsContents
               userId={props.user.id}
               page={columnPage}
               setPage={setColumnPage}
