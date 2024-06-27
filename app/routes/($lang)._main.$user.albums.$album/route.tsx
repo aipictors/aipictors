@@ -64,6 +64,8 @@ export default function albums() {
 
   const data = useLoaderData<typeof loader>()
 
+  console.log(data)
+
   const work = data.albumWorks.length > 0 ? data.albumWorks[0] : null
 
   const thumbnail = data.album.thumbnailImageURL
@@ -85,6 +87,7 @@ export default function albums() {
         </div>
       </article>
       <AlbumWorkList
+        albumId={data.album.id}
         albumWorks={data.albumWorks}
         maxCount={data.album.worksCount}
       />

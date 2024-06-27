@@ -11,14 +11,12 @@ import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/hom
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
-import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
-import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -142,81 +140,21 @@ export default function Index() {
         fallbackURL="https://www.aipictors.com/"
         date={"2024-07-30"}
       />
-      <Suspense fallback={<HomeWorkDummies />}>
-        <HomeBanners />
-      </Suspense>
+      <HomeBanners />
       {data && (
         <div className="space-y-8">
           <HomeTagList
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
           />
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksGeneratedSection />
-          </Suspense>
-          <Suspense fallback={<HomeWorkDummies />}>
-            <HomeAwardWorkSection title={"前日ランキング"} />
-          </Suspense>
+          <HomeWorksGeneratedSection />
+          <HomeAwardWorkSection title={"前日ランキング"} />
           <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksRecommendedSection />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksUsersRecommendedSection />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeNovelsSection title={"小説"} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeVideosSection title={"動画"} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeColumnsSection title={"コラム"} />
-          </Suspense>
+          <HomeWorksRecommendedSection />
+          <HomeWorksUsersRecommendedSection />
+          <HomeNovelsSection title={"小説"} />
+          <HomeVideosSection title={"動画"} />
+          <HomeColumnsSection title={"コラム"} />
         </div>
       )}
     </AppPage>

@@ -2,9 +2,8 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { config } from "@/config"
-import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -17,15 +16,6 @@ type Props = {
  */
 export const HomeWorksRecommendedSection = (props: Props) => {
   const appContext = useContext(AuthContext)
-
-  if (appContext.isLoading) {
-    return (
-      <>
-        <HomeWorkDummies />
-        <HomeWorkDummies />
-      </>
-    )
-  }
 
   const [recommendedIds, setRecommendedIds] = useState<string[]>([])
 
@@ -71,7 +61,7 @@ export const HomeWorksRecommendedSection = (props: Props) => {
   }, [appContext.userId])
 
   // おすすめ作品
-  const { data: suggestedWorkResp } = useSuspenseQuery(worksQuery, {
+  const { data: suggestedWorkResp } = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,

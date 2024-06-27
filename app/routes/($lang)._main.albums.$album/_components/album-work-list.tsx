@@ -1,10 +1,12 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
-import type { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { useSuspenseQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { useState } from "react"
 
 type Props = {
+  albumId: string
   albumWorks: NonNullable<ResultOf<typeof albumWorksQuery>["album"]>["works"]
   maxCount: number
 }
@@ -20,12 +22,23 @@ export const AlbumWorkList = (props: Props) => {
 
   const [page, setPage] = useState(0)
 
+  const { data } = useSuspenseQuery(albumWorksQuery, {
+    variables: {
+      albumId: props.albumId,
+      offset: 32 * page,
+      limit: 32,
+    },
+    fetchPolicy: "cache-first",
+  })
+
+  const albumWorks = data.album?.works ?? props.albumWorks
+
   return (
     <>
       <ResponsivePhotoWorksAlbum
-        direction="columns"
-        works={props.albumWorks}
-        targetRowHeight={320}
+        direction="rows"
+        works={albumWorks}
+        targetRowHeight={80}
       />
       <div className="mt-1 mb-1">
         <ResponsivePagination

@@ -2,7 +2,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
@@ -38,7 +38,7 @@ export const HomeNovelsSection = (props: Props) => {
     fetchRecommendedIds()
   }, [authContext.userId])
 
-  const { data: novelWorks } = useSuspenseQuery(worksQuery, {
+  const { data: novelWorks } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,

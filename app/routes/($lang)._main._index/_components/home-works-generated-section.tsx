@@ -2,7 +2,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -12,7 +12,7 @@ import { useMediaQuery } from "usehooks-ts"
 export const HomeWorksGeneratedSection = () => {
   const appContext = useContext(AuthContext)
 
-  const worksResult = useSuspenseQuery(worksQuery, {
+  const worksResult = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
