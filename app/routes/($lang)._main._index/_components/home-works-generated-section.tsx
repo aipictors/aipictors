@@ -3,7 +3,7 @@ import { worksQuery } from "@/_graphql/queries/work/works"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 /**
@@ -11,6 +11,14 @@ import { useMediaQuery } from "usehooks-ts"
  */
 export const HomeWorksGeneratedSection = () => {
   const appContext = useContext(AuthContext)
+
+  const createdAtAfter = useMemo(() => {
+    return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toDateString()
+  }, [])
+
+  const randomIndex = useMemo(() => {
+    return 0.5 - Math.random()
+  }, [])
 
   const worksResult = useQuery(worksQuery, {
     skip: appContext.isLoading,
@@ -21,9 +29,7 @@ export const HomeWorksGeneratedSection = () => {
         orderBy: "LIKES_COUNT",
         sort: "DESC",
         // 直近1か月の作品
-        createdAtAfter: new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
+        createdAtAfter: createdAtAfter,
         ratings: ["G"],
         isFeatured: true,
       },
@@ -32,11 +38,10 @@ export const HomeWorksGeneratedSection = () => {
 
   const works = worksResult.data?.works
 
-  const suggestedWorks = [...(works || [])]
-
-  const shuffledWorks = suggestedWorks
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 16)
+  const shuffledWorks = useMemo(() => {
+    const suggestedWorks = [...(works || [])]
+    return suggestedWorks.sort(() => randomIndex).slice(0, 16)
+  }, [works, randomIndex])
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
