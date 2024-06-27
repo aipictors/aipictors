@@ -44,7 +44,7 @@ export const UserStickersContents = (props: Props) => {
       <ResponsiveStickersList stickers={stickers} />
       <div className="mt-1 mb-1">
         <ResponsivePagination
-          perPage={32}
+          perPage={16}
           maxCount={stickersCount}
           currentPage={props.page}
           onPageChange={(page: number) => {

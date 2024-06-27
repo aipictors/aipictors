@@ -49,7 +49,7 @@ export const UserFoldersContents = (props: Props) => {
       <ResponsiveFoldersList folders={folders} />
       <div className="mt-1 mb-1">
         <ResponsivePagination
-          perPage={32}
+          perPage={16}
           maxCount={foldersCount}
           currentPage={props.page}
           onPageChange={(page: number) => {

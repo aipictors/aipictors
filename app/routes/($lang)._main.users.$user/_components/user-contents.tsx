@@ -129,7 +129,7 @@ export const UserContents = (props: Props) => {
           {activeTab === "コレクション" && (
             <UserFoldersContents
               userId={props.user.id}
-              page={stickersPage}
+              page={foldersPage}
               setPage={setFoldersPage}
               orderBy="DATE_CREATED"
               rating={null}
@@ -139,7 +139,7 @@ export const UserContents = (props: Props) => {
           {activeTab === "スタンプ" && (
             <UserStickersContents
               userId={props.user.id}
-              page={foldersPage}
+              page={stickersPage}
               setPage={setStickersPage}
             />
           )}

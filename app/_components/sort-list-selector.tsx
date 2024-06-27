@@ -9,18 +9,16 @@ type Props = {
 }
 
 export const SortListSelector = (props: Props) => {
-  // sortList.map((sort) => {
-
   return (
     <>
       <div className="p-4">
         {props.sortList.map((item, index) => (
-          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            key={index}
+            key={`${item.sortType}-${index}`}
             onClick={item.callback}
+            onKeyUp={item.callback}
+            onKeyDown={item.callback}
+            onKeyPress={item.callback}
             className="flex w-full cursor-pointer items-center p-4 transition-all dark:hover:bg-gray-800 hover:bg-gray-100"
           >
             {props.nowSortType === item.sortType ? (
@@ -28,10 +26,7 @@ export const SortListSelector = (props: Props) => {
             ) : (
               <div className="w-6" />
             )}
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-            <div>
-              <div className="m-2 flex items-center">{item.label}</div>
-            </div>
+            <div className="m-2 flex items-center">{item.label}</div>
             {props.nowSortType === item.sortType && (
               <div className="flex items-center">
                 {props.nowSort === "ASC" ? (

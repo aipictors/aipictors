@@ -65,7 +65,7 @@ export const UserAlbumsContents = (props: Props) => {
       <ResponsiveAlbumsList albums={albums} />
       <div className="mt-1 mb-1">
         <ResponsivePagination
-          perPage={32}
+          perPage={16}
           maxCount={albumsCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
