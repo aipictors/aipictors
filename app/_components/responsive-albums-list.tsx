@@ -23,7 +23,7 @@ export const ResponsiveAlbumsList = (props: Props) => {
       {props.albums.map((album) => (
         <div
           key={album.id}
-          className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-24 md:w-40"
+          className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
         >
           <div className="box-border flex flex-col justify-end">
             <Link
@@ -31,7 +31,7 @@ export const ResponsiveAlbumsList = (props: Props) => {
               className="relative"
             >
               <img
-                className="h-16 w-32 object-cover transition-all md:h-24 md:w-40 hover:scale-110"
+                className="h-16 w-32 object-cover transition-all md:h-32 md:w-64 hover:scale-110"
                 src={
                   album.thumbnailImageURL
                     ? album.thumbnailImageURL
