@@ -108,7 +108,7 @@ export default function Index() {
             themeTitle={data.themeResp?.title}
             hotTags={data.hotTags}
           />
-          <HomeWorksGeneratedSection works={data.imageGenerationWorks} />
+          <HomeWorksGeneratedSection />
           <HomeAwardWorkSection title={"前日ランキング"} />
           <HomeTagsSection title={"人気タグ"} tags={data.tags} />
           <HomeWorksRecommendedSection />

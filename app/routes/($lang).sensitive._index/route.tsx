@@ -4,7 +4,6 @@ import { hotSensitiveTagsQuery } from "@/_graphql/queries/tag/hot-sensitive-tags
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
-import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
 import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
@@ -127,9 +126,6 @@ export default function SensitivePage() {
 
   return (
     <AppPage className="space-y-6">
-      <Suspense fallback={<HomeWorkDummies />}>
-        <HomeBanners />
-      </Suspense>
       {data && (
         <>
           <HomeTagList
