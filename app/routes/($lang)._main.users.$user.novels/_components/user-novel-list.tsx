@@ -1,12 +1,9 @@
-import { config } from "@/config"
 import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import { PhotoAlbum } from "react-photo-album"
 import type { worksQuery } from "@/_graphql/queries/work/works"
 import type { ResultOf } from "gql.tada"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
@@ -41,10 +38,11 @@ export const UserNovelList = (props: Props) => {
 
   return (
     <section className="m-2">
-      <div className="flex-wrap space-y-4 justify-items-center">
+      <div className="flex-wrap justify-items-center space-y-4">
         {works.map((work) => (
-          <div key={work.id}
-            className="relative rounded border-2 border-gray border-solid ml-4 inline-block"
+          <div
+            key={work.id}
+            className="relative ml-4 inline-block rounded border-2 border-gray border-solid"
           >
             <NovelWorkPreviewItem
               workId={work.id}

@@ -70,7 +70,11 @@ export default function albums() {
             userName={""}
             userProfileImageURL={""}
           />
-          <AlbumWorkList albumWorks={data.albumWorks} maxCount={0} />
+          <AlbumWorkList
+            albumWorks={data.albumWorks}
+            maxCount={0}
+            albumId={data.album.id}
+          />
         </div>
         <AlbumWorkDescription album={data.album} />
       </article>

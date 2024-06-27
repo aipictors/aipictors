@@ -9,5 +9,5 @@ export default function UserNovels() {
     throw new ParamsError()
   }
 
-  return <UserNovelList />
+  return <UserNovelList works={null} />
 }
