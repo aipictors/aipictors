@@ -21,7 +21,7 @@ export const HomeWorksGeneratedSection = () => {
         orderBy: "LIKES_COUNT",
         sort: "DESC",
         // 直近1か月の作品
-        afterCreatedAt: new Date(
+        createdAtAfter: new Date(
           Date.now() - 30 * 24 * 60 * 60 * 1000,
         ).toDateString(),
         ratings: ["G"],

@@ -54,7 +54,7 @@ export async function loader() {
         orderBy: "LIKES_COUNT",
         sort: "DESC",
         // 直近1週間の作品
-        afterCreatedAt: new Date(
+        createdAtAfter: new Date(
           Date.now() - 7 * 24 * 60 * 60 * 1000,
         ).toDateString(),
         ratings: ["G"],
