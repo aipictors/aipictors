@@ -25,6 +25,7 @@ export const workQuery = graphql(
       smallThumbnailImageWidth
       smallThumbnailImageHeight
       thumbnailImagePosition
+      subWorksCount
       user {
         id
         promptonUser {
@@ -44,6 +45,7 @@ export const workQuery = graphql(
           smallThumbnailImageWidth
           smallThumbnailImageHeight
           thumbnailImagePosition
+          subWorksCount
         }
       }
       likedUsers(offset: 0, limit: 32) {

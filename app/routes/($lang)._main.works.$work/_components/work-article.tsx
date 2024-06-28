@@ -33,7 +33,7 @@ type Props = {
 export const WorkArticle = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data, refetch } = useQuery(viewerBookmarkFolderIdQuery, {
+  const { data } = useQuery(viewerBookmarkFolderIdQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 

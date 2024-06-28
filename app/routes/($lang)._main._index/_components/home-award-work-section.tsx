@@ -57,6 +57,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     userName: work.work.user.name,
     title: work.work.title,
     isLiked: work.work.isLiked,
+    subWorksCount: work.work.subWorksCount,
   }))
 
   const yesterdayStr = `${yesterday.getFullYear()}/${
@@ -85,6 +86,7 @@ export const HomeAwardWorkSection = (props: Props) => {
               <CroppedWorkSquare
                 workId={work.workId}
                 imageUrl={work.src}
+                subWorksCount={work.subWorksCount}
                 thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                 size="lg"
                 imageWidth={work.width}

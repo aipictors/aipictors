@@ -26,6 +26,7 @@ export const HomeCroppedWorkList = (props: Props) => {
     height: work.smallThumbnailImageHeight,
     workId: work.id,
     thumbnailImagePosition: work.thumbnailImagePosition,
+    subWorksCount: work.subWorksCount,
     userId: work.user.id,
     userIcon: work.user.iconUrl,
     userName: work.user.name,
@@ -41,6 +42,7 @@ export const HomeCroppedWorkList = (props: Props) => {
             <div className="relative">
               <CroppedWorkSquare
                 workId={work.id}
+                subWorksCount={work.subWorksCount}
                 imageUrl={work.src}
                 thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                 size="lg"

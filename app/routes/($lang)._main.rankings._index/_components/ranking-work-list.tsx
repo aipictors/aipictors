@@ -24,6 +24,7 @@ export const RankingWorkList = (props: Props) => {
             <div className="relative">
               <CroppedWorkSquare
                 workId={workItem.work.id}
+                subWorksCount={workItem.work.subWorksCount}
                 imageUrl={workItem.work.smallThumbnailImageURL}
                 thumbnailImagePosition={
                   workItem.work.thumbnailImagePosition ?? 0

@@ -27,6 +27,7 @@ export const partialWorkFieldsFragment = graphql(
     thumbnailImagePosition
     description
     url
+    subWorksCount
     tags {
       name
     }
