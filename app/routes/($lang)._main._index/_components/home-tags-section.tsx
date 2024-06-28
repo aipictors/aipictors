@@ -40,7 +40,7 @@ export const HomeTagsSection = (props: Props) => {
                     src={tag.thumbnailUrl}
                     alt={tag.name}
                   />
-                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-32 flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
                     <p className="text-white">{`#${tag.name}`}</p>
                   </div>
                 </Link>
