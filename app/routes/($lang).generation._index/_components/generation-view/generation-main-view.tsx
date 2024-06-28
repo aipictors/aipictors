@@ -35,7 +35,7 @@ export const GenerationMainView = (props: Props) => {
     return (
       <div className="flex flex-1 flex-col gap-2 overflow-hidden lg:flex-row">
         <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
-        <div className="flex flex-col gap-4 lg:min-w-64 xl:min-w-96 md:flex-row lg:flex-col">
+        <div className="flex flex-col gap-4 md:flex-row lg:min-w-64 lg:flex-col xl:min-w-96">
           <div className="flex-1 overflow-hidden">{props.promptEditor}</div>
           <div className="min-w-80 flex-1 overflow-hidden">
             {props.negativePromptEditor}
@@ -86,7 +86,7 @@ export const GenerationMainView = (props: Props) => {
       <ResizableHandle aria-setsize={1} withHandle />
       <ResizablePanelWithMemory
         id="generation-main"
-        className="flex flex-col gap-4 lg:min-w-40 xl:min-w-40 md:flex-row lg:flex-col"
+        className="flex flex-col gap-4 md:flex-row lg:min-w-40 lg:flex-col xl:min-w-40"
       >
         <ResizablePanelGroup direction="vertical">
           <ResizablePanelWithMemory id="generation-editor">

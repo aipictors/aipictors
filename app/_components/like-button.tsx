@@ -155,9 +155,7 @@ export const LikeButton = ({
   return (
     <button
       className={`${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
         isParticle ? "like-button " : ""
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
       }relative flex items-center justify-center rounded-md ${
         isBackgroundNone
           ? ""

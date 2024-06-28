@@ -10,12 +10,5 @@ type HomeWorkDummyProps = RenderPhotoProps & {
  * ホームの作品ダミー
  */
 export function HomeWorkDummy({ width, height }: HomeWorkDummyProps) {
-  return (
-    <Skeleton
-      className={`m-2 w-[${
-        width
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      }px] h-[${height}px]`}
-    />
-  )
+  return <Skeleton className={`m-2 w-[${width}px] h-[${height}px]`} />
 }

@@ -80,7 +80,7 @@ export const ResponsivePagination = ({
           <Button
             className={
               isActiveButtonStyle
-                ? "bg-black text-white dark:bg-white dark:hover:bg-white hover:bg-black dark:text-black hover:text-white"
+                ? "bg-black text-white hover:bg-black hover:text-white dark:bg-white dark:text-black dark:hover:bg-white"
                 : ""
             }
           >

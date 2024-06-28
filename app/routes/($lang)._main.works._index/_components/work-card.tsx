@@ -14,7 +14,7 @@ export function WorkCard(props: Props) {
 
   return (
     <img
-      className="w-full rounded-lg object-cover md:h-64 sm:h-auto xl:h-96"
+      className="w-full rounded-lg object-cover sm:h-auto md:h-64 xl:h-96"
       alt=""
       src={props.imageURL}
       width={props.imageWidth}

@@ -169,7 +169,7 @@ export const ImageModelsList = (props: Props) => {
               <p className="font-bold">{toCategoryName(item.category)}</p>
 
               {isDesktop && (
-                <div className="grid grid-cols-4 gap-2 2xl:grid-cols-8 lg:grid-cols-5 md:grid-cols-4 xl:grid-cols-6">
+                <div className="grid grid-cols-4 gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
                   {item.models.map((model) => (
                     <div className="relative" key={model.id}>
                       <ImageModelCard

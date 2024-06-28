@@ -157,7 +157,7 @@ export const UserTabs = (props: Props) => {
             <button
               key={removeParentheses(tabValue)}
               onClick={() => handleTabClick(removeParentheses(tabValue))}
-              className="rounded-md border border-gray-300 bg-white px-2 py-1 text-center font-medium text-gray-600 text-sm focus:text-gray-800 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="rounded-md border border-gray-300 bg-white px-2 py-1 text-center font-medium text-gray-600 text-sm hover:text-gray-800 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               {tabValue}
             </button>

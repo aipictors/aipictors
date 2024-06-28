@@ -35,7 +35,7 @@ export const NegativePromptsDialogContent = (props: Props) => {
 
   return (
     <>
-      <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
+      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader />
         <ScrollArea className="h-full max-h-[80vh] overflow-auto">
           <Accordion

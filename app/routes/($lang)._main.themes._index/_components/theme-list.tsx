@@ -62,7 +62,7 @@ export const ThemeList = (props: Props) => {
           <ChevronRightIcon className="text-lg" />
         </Button>
       </div>
-      <ul className="grid w-full grid-cols-2 space-y-2 pr-4 lg:grid-cols-7 md:grid-cols-4">
+      <ul className="grid w-full grid-cols-2 space-y-2 pr-4 md:grid-cols-4 lg:grid-cols-7">
         {blocks.map((block) => (
           <ThemeListItem
             key={block.id}

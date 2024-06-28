@@ -73,7 +73,6 @@ export const SortableItem = ({ item, ...props }: Props) => {
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div
           onClick={() => {
-            // biome-ignore lint/complexity/useOptionalChain: <explanation>
             if (props.onClickOptionButton) {
               props.onClickOptionButton(item.id)
             }
