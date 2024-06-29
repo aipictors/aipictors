@@ -1,8 +1,9 @@
+import { Button } from "@/_components/ui/button"
 import { AppPage } from "@/_components/app/app-page"
 import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import { Link, json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -60,10 +61,68 @@ export default function Theme() {
 
   const data = useLoaderData<typeof loader>()
 
+  const year = Number.parseInt(params.year)
+  const month = Number.parseInt(params.month)
+  const day = Number.parseInt(params.day)
+
+  const calculateDate = (
+    year: number,
+    month: number,
+    day: number,
+    offset: number,
+  ) => {
+    const date = new Date(year, month - 1, day)
+    date.setDate(date.getDate() + offset)
+    return date
+  }
+
+  const yesterday = calculateDate(year, month, day, -1)
+  const tomorrow = calculateDate(year, month, day, 1)
+
+  const dateLink = (date: Date) => {
+    return (
+      <Link
+        to={`/themes/${date.getFullYear()}/${
+          date.getMonth() + 1
+        }/${date.getDate()}`}
+      >
+        {date.getFullYear()}年 {date.getMonth() + 1}月 {date.getDate()}日
+      </Link>
+    )
+  }
+
+  const yesterdayLink = dateLink(yesterday)
+  const tomorrowLink = dateLink(tomorrow)
+
   return (
     <AppPage>
       <article>
-        <h1>{data.dailyTheme.title}</h1>
+        <h1>お題</h1>
+        <div className="m-4">
+          <p className="text-lg md:text-xl">"{data.dailyTheme.title}"</p>
+          <Button asChild={true} className="m-1">
+            <Link to={`/tags/${data.dailyTheme.title}`}>
+              タグの作品一覧を見る
+            </Link>
+          </Button>
+          <p>
+            <Link to={`/themes/${year}/${month}/`} className="underline">
+              {year}年 {month}月
+            </Link>
+            {day}日
+          </p>
+          <p>
+            昨日：
+            <Button asChild={true} className="m-1">
+              {yesterdayLink}
+            </Button>
+            <br />
+            明日：
+            <Button asChild={true} className="m-1">
+              {tomorrowLink}
+            </Button>
+          </p>
+        </div>
       </article>
     </AppPage>
   )
