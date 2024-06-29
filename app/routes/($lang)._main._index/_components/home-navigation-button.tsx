@@ -46,36 +46,30 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
 
     if (props.href.startsWith("http")) {
       return (
-        <Link
-          className="block"
-          to={props.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            className="w-full justify-start"
-          >
-            {props.icon && <props.icon className="mr-4 w-4" />}
-            <span>{props.children}</span>
-          </Button>
-        </Link>
+        <Button variant={"ghost"} size={"sm"} className="w-full justify-start">
+          <Link
+            className="block"
+            to={props.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          {props.icon && <props.icon className="mr-4 w-4" />}
+          <span>{props.children}</span>
+        </Button>
       )
     }
 
     return (
-      <Link className="block" to={props.href}>
-        <Button
-          variant={"ghost"}
-          className="w-full justify-start"
-          size={"sm"}
-          disabled={props.isDisabled}
-        >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
-        </Button>
-      </Link>
+      <Button
+        variant={"ghost"}
+        className="w-full justify-start"
+        size={"sm"}
+        disabled={props.isDisabled}
+      >
+        <Link className="block" to={props.href} />
+        {props.icon && <props.icon className="mr-4 w-4" />}
+        <span>{props.children}</span>
+      </Button>
     )
   },
 )
