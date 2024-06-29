@@ -16,12 +16,9 @@ export const ImagesPreview = (props: Props) => {
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
-  const prevTranslate = useRef({ x: 0, y: 0 })
   const startCoord = useRef({ x: 0, y: 0 })
+  const prevTranslate = useRef({ x: 0, y: 0 })
   const lastTap = useRef(0)
-
-  const initialTouchRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
-  const pinchDistanceRef = useRef<number>(0)
 
   const openPreview = () => {
     setIsOpen(true)
@@ -83,11 +80,33 @@ export const ImagesPreview = (props: Props) => {
       setIsDragging(true)
       startCoord.current = { x: e.clientX, y: e.clientY }
       prevTranslate.current = { ...translate }
+    } else {
+      startCoord.current = { x: e.clientX, y: e.clientY }
+      prevTranslate.current = { ...translate }
     }
   }
 
-  const handleMouseUp = () => {
-    setIsDragging(false)
+  const handleMouseUp: React.MouseEventHandler<HTMLImageElement> = (e) => {
+    if (isDragging) {
+      setIsDragging(false)
+    } else {
+      const deltaX = e.clientX - startCoord.current.x
+      const swipeDistance = Math.abs(deltaX)
+
+      if (swipeDistance > 50) {
+        // Adjust threshold as needed
+        if (deltaX < 0) {
+          nextImage()
+        } else {
+          prevImage()
+        }
+      } else {
+        openPreview()
+      }
+
+      // Reset translation
+      setTranslate({ x: 0, y: 0 })
+    }
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -102,50 +121,54 @@ export const ImagesPreview = (props: Props) => {
   }
 
   const handleTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
-    if (e.touches.length === 2) {
-      const touch1 = e.touches[0]
-      const touch2 = e.touches[1]
-      initialTouchRef.current = {
-        x: (touch1.clientX + touch2.clientX) / 2,
-        y: (touch1.clientY + touch2.clientY) / 2,
-      }
-      pinchDistanceRef.current = Math.hypot(
-        touch1.clientX - touch2.clientX,
-        touch1.clientY - touch2.clientY,
-      )
-    } else if (e.touches.length === 1 && scale !== 1) {
-      // Your existing single touch move logic here
+    if (scale !== 1) {
+      setIsDragging(true) // ドラッグ開始
     }
+    startCoord.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+    prevTranslate.current = { ...translate }
   }
 
   const handleTouchMove: React.TouchEventHandler<HTMLImageElement> = (e) => {
-    if (e.touches.length === 2 && scale !== 1) {
-      const touch1 = e.touches[0]
-      const touch2 = e.touches[1]
-      const currentPinchDistance = Math.hypot(
-        touch1.clientX - touch2.clientX,
-        touch1.clientY - touch2.clientY,
-      )
-      const scaleAmount = currentPinchDistance / pinchDistanceRef.current
-      setScale((prevScale) =>
-        Math.min(Math.max(0.1, prevScale * scaleAmount), 4),
-      )
+    e.preventDefault() // タッチスクロールのデフォルト動作を無効化
 
-      // Calculate translation based on the center of the pinch gesture
-      const currentTouch = {
-        x: (touch1.clientX + touch2.clientX) / 2,
-        y: (touch1.clientY + touch2.clientY) / 2,
-      }
-      const deltaX = currentTouch.x - initialTouchRef.current.x
-      const deltaY = currentTouch.y - initialTouchRef.current.y
+    if (isDragging) {
+      const deltaX = e.touches[0].clientX - startCoord.current.x
+      const deltaY = e.touches[0].clientY - startCoord.current.y
       setTranslate({
         x: prevTranslate.current.x + deltaX,
         y: prevTranslate.current.y + deltaY,
       })
+    }
+  }
 
-      pinchDistanceRef.current = currentPinchDistance
-    } else if (e.touches.length === 1 && scale !== 1) {
-      // Your existing single touch move logic here
+  const handleTouchEnd: React.TouchEventHandler<HTMLImageElement> = (e) => {
+    if (isDragging && e.changedTouches.length === 1 && scale === 1) {
+      setIsDragging(false) // ドラッグ終了
+      const deltaX = e.changedTouches[0].clientX - startCoord.current.x
+      const swipeDistance = Math.abs(deltaX)
+
+      if (swipeDistance > 50) {
+        if (deltaX < 0) {
+          nextImage()
+        } else {
+          prevImage()
+        }
+      }
+
+      setTranslate({ x: 0, y: 0 })
+    } else {
+      if (!isDragging) {
+        const deltaX = e.changedTouches[0].clientX - startCoord.current.x
+        const swipeDistance = Math.abs(deltaX)
+
+        if (swipeDistance > 50) {
+          if (deltaX < 0) {
+            nextImage()
+          } else {
+            prevImage()
+          }
+        }
+      }
     }
   }
 
@@ -201,20 +224,62 @@ export const ImagesPreview = (props: Props) => {
     }
   }
 
-  const displayedImage = props.imageURLs[props.currentIndex]
+  const handleMainTouchEnd: React.TouchEventHandler<HTMLDivElement> = (e) => {
+    const deltaX = e.changedTouches[0].clientX - startCoord.current.x
+    const deltaY = e.changedTouches[0].clientY - startCoord.current.y
+    const swipeDistance = Math.abs(deltaX)
+
+    if (swipeDistance > 50) {
+      // Adjust threshold as needed
+      if (deltaX < 0) {
+        nextImage()
+      } else {
+        prevImage()
+      }
+    }
+
+    // Reset translation
+    setTranslate({ x: 0, y: 0 })
+  }
+
+  const handleMainMouseDown = (e: React.MouseEvent) => {
+    startCoord.current = { x: e.clientX, y: e.clientY }
+    prevTranslate.current = { ...translate }
+  }
+
+  const handleMainMouseUp: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    const deltaX = e.clientX - startCoord.current.x
+    const swipeDistance = Math.abs(deltaX)
+
+    if (swipeDistance > 50) {
+      // Adjust threshold as needed
+      if (deltaX < 0) {
+        nextImage()
+      } else {
+        prevImage()
+      }
+    } else {
+      openPreview()
+    }
+
+    // Reset translation
+    setTranslate({ x: 0, y: 0 })
+  }
 
   return (
     <div>
       {/* Display thumbnail */}
       <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card object-contain">
         <div className="inline-block overflow-hidden text-center">
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
           <img
             className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
             draggable={false}
             alt="thumbnail"
             src={props.thumbnailUrl}
-            onClick={openPreview}
+            // onClick={openPreview}
+            onMouseUp={handleMainMouseUp}
+            onMouseDown={handleMainMouseDown}
+            onTouchEnd={handleMainTouchEnd}
             style={{ userSelect: "none" }}
           />
           {props.imageURLs.map((url, index) => (
@@ -260,10 +325,11 @@ export const ImagesPreview = (props: Props) => {
             onDoubleClick={handleDoubleClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
-            onTouchEnd={handleDoubleTap}
+            onTouchEnd={handleTouchEnd}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            onTouchEndCapture={handleDoubleTap}
           />
           <div className="absolute bottom-4 flex w-full justify-center">
             <Button
