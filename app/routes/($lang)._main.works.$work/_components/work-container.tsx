@@ -36,6 +36,7 @@ export const WorkContainer = (props: Props) => {
     id: work.id,
     userId: work.userId,
     isLiked: false,
+    subWorksCount: work.subWorksCount,
   }))
 
   const tags = props.work?.tagNames ?? []

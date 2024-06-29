@@ -52,8 +52,10 @@ export const WorkImageThumbnailCarousel: React.FC<
           )
         })}
       </CarouselContent>
-      <CarouselPrevious className="xl:invisible" />
-      <CarouselNext className="xl:invisible" />
+      <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-white to-transparent dark:from-black dark:to-transparent" />
+      <CarouselPrevious className="absolute left-0" />
+      <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
+      <CarouselNext className="absolute right-0" />
     </Carousel>
   )
 }

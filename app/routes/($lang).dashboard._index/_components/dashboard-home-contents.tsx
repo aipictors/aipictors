@@ -102,7 +102,6 @@ export const DashboardHomeContents = () => {
                     <Link
                       key={work.id}
                       to={`/works/${work.id}`}
-                      // biome-ignore lint/nursery/useSortedClasses: <explanation>
                       className={`mb-4 flex items-center ${
                         index === 0 ? "relative" : ""
                       }`}

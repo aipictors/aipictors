@@ -14,19 +14,15 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
 
   const shouldRenderCarousel = allImageURLs.length > 1
 
-  const [selectedImage, setSelectedImage] = useState<string>(allImageURLs[0])
-
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+  const [currentIndex, setCurrentIndex] = useState<number>(0)
 
   // 画像選択関数
   const handleSelectImage = (imageURL: string) => {
-    setSelectedImage(imageURL)
-    setSelectedImageIndex(allImageURLs.indexOf(imageURL))
+    setCurrentIndex(allImageURLs.indexOf(imageURL))
   }
 
   useEffect(() => {
-    setSelectedImage(allImageURLs[0])
-    setSelectedImageIndex(0)
+    setCurrentIndex(0)
   }, [workImageURL])
 
   // カルーセルのレンダリング
@@ -34,14 +30,15 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
     return (
       <div>
         <ImagesPreview
-          initIndex={selectedImageIndex}
-          thumbnailUrl={selectedImage}
+          thumbnailUrl={allImageURLs[currentIndex]}
           imageURLs={allImageURLs}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
         />
         <div className="p-2">
           <WorkImageThumbnailCarousel
             allImageURLs={allImageURLs}
-            selectedImage={selectedImage}
+            selectedImage={allImageURLs[currentIndex]}
             onSelectImage={handleSelectImage}
           />
         </div>
@@ -53,8 +50,8 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
     return (
       <div className="relative m-0 bg-gray-100 dark:bg-zinc-950">
         <ImagesPreview
-          initIndex={0}
-          imageClassName="m-auto h-auto w-auto object-contain xl:max-h-[80vh]"
+          currentIndex={0}
+          setCurrentIndex={() => {}}
           thumbnailUrl={workImageURL}
           imageURLs={[workImageURL]}
         />

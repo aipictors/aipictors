@@ -10,10 +10,7 @@ type Props = {
  */
 export function GenerationTaskContentImagePlaceHolder(props: Props) {
   return (
-    <Skeleton
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`${props.className} relative`}
-    >
+    <Skeleton className={`${props.className} relative`}>
       <Loader2Icon
         className={
           "dark:black absolute top-[50%] left-[48%] w-8 animate-spin text-black dark:text-white"

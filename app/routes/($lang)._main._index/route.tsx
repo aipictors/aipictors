@@ -75,7 +75,7 @@ export async function loader() {
 
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
-  const adWorks = homeQueryResp.data.adWorks.toSorted(() => 0.5 - Math.random())
+  const adWorks = homeQueryResp.data.adWorks
 
   return json({
     adWorks: adWorks,

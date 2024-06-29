@@ -127,7 +127,6 @@ export const MyStickersList = () => {
       </div>
       <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
         {stickers?.viewer?.userStickers?.map((sticker) =>
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
           stickerStatus !== "DOWNLOADED" ? (
             <StickerChangeAccessTypeDialog
               key={sticker.id}

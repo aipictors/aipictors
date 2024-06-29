@@ -31,7 +31,7 @@ export const ResponsiveAlbumsList = (props: Props) => {
               className="relative"
             >
               <img
-                className="h-16 w-32 object-cover transition-all md:h-32 md:w-64 hover:scale-110"
+                className="h-16 w-32 object-cover transition-all hover:scale-110 md:h-32 md:w-64"
                 src={
                   album.thumbnailImageURL
                     ? album.thumbnailImageURL

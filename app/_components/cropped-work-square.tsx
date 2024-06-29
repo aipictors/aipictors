@@ -8,6 +8,7 @@ type Props = {
   imageWidth: number
   imageHeight: number
   ranking?: number
+  subWorksCount?: number
 }
 
 /**
@@ -19,6 +20,8 @@ export const CroppedWorkSquare = (props: Props) => {
     width: number,
     height: number,
   ): string => {
+    console.log(props.subWorksCount)
+
     let result = ""
     if (width < height) {
       result = "translateY("
@@ -110,6 +113,16 @@ export const CroppedWorkSquare = (props: Props) => {
           style={{ backgroundColor: backgroundColor() }}
         >
           {props.ranking}
+        </div>
+      )}
+      {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
+        <div
+          className={
+            "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
+          }
+          style={{ backgroundColor: "#00000052" }}
+        >
+          {props.subWorksCount + 1}
         </div>
       )}
     </Link>

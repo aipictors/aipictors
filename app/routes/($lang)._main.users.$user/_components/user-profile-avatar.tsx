@@ -27,12 +27,7 @@ export const UserProfileAvatar = ({
   }
 
   return (
-    <Avatar
-      className={`${
-        getSize(size)
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } border-2`}
-    >
+    <Avatar className={`${getSize(size)} border-2`}>
       <AvatarImage alt={alt} src={src} />
       <AvatarFallback />
     </Avatar>

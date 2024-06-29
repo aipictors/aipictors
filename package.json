@@ -9,7 +9,7 @@
     "dev": "remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit --isolatedDeclarations",
-    "refactor": "biome check --apply-unsafe app",
+    "refactor": "biome check --write --unsafe .",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
     "postinstall": "lefthook install",
@@ -109,7 +109,7 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.7",
-    "@biomejs/biome": "^1.7.0",
+    "@biomejs/biome": "^1.8.3",
     "@cloudflare/workers-types": "^4.20240405.0",
     "@million/lint": "latest",
     "@remix-run/cloudflare-pages": "^2.8.1",

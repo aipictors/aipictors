@@ -50,7 +50,6 @@ export const GenerationConfigMemoList = (props: Props) => {
       <ScrollArea className="h-full max-h-96 p-4">
         {filterModels.map(
           (memo) =>
-            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
             memo && (
               <GenerationConfigMemoItem
                 memo={{

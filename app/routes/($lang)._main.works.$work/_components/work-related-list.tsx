@@ -17,6 +17,7 @@ type Props = {
     id: string
     userId: string
     isLiked: boolean
+    subWorksCount: number
   }[]
 }
 
@@ -31,6 +32,7 @@ export function WorkRelatedList(props: Props) {
           <div key={work.id} className="relative">
             <CroppedWorkSquare
               workId={work.id}
+              subWorksCount={work.subWorksCount}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
               size="md"

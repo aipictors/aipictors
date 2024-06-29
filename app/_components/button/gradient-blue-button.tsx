@@ -23,12 +23,9 @@ export function GradientBlueButton(props: Props) {
       className={`flex h-10 font-medium hover:opacity-80 duration-200 rounded-lg bg-gradient-to-tr from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-700 dark:to-fuchsia-800 p-1 text-white ${props.className}`}
     >
       <div
-        className={
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          `flex h-8 flex-1 justify-center rounded-md py-2 ${
-            props.isNoBackground ? "" : "bg-white"
-          }`
-        }
+        className={`flex h-8 flex-1 justify-center rounded-md py-2 ${
+          props.isNoBackground ? "" : "bg-white"
+        }`}
         style={{ WebkitTextStrokeColor: "#fff" }}
       >
         {props.children}

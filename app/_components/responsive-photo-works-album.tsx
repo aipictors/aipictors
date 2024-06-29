@@ -35,6 +35,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
     isLiked: work.isLiked,
     title: work.title,
     isSensitive: work.rating === "R18" || work.rating === "R18G",
+    subWorksCount: work.subWorksCount,
   }))
 
   return (
@@ -48,6 +49,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
         // @ts-ignore 後で考える
         <HomeWorkAlbum
           {...photoProps}
+          subWorksCount={photoProps.photo.subWorksCount}
           isMosaic={photoProps.photo.isSensitive}
           userId={photoProps.photo.userId}
           userName={photoProps.photo.userName}

@@ -81,7 +81,7 @@ export const GenerationModelListButton = (props: Props) => {
           {props.label ? props.label : "すべてのモデル"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="lg:max-w-screen-lg md:max-w-screen-md xl:max-w-screen-xl">
+      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle>{"モデルを選択"}</DialogTitle>
           <DialogDescription className="hidden md:block xl:block">

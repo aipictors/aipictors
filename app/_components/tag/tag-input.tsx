@@ -221,7 +221,6 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 
     return (
       <div
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
         className={`flex w-full gap-3 ${
           inputFieldPosition === "bottom"
             ? "flex-col"
