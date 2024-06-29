@@ -43,7 +43,7 @@ export function HomeWorkAlbum({
           className={"rounded"}
         />
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[32%] flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
         <Link className="w-48 font-bold" to={`/works/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}
