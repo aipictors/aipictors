@@ -35,13 +35,7 @@
 #       runner: go run
 
 pre-commit:
-  parallel: true
   commands:
     check:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
-      run: bunx biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
-
-pre-push:
-  commands:
-    tsc:
-      run:
+      run: bunx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} && git update-index --again
