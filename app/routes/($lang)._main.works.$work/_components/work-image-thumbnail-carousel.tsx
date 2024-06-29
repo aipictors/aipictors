@@ -52,9 +52,9 @@ export const WorkImageThumbnailCarousel: React.FC<
           )
         })}
       </CarouselContent>
-      <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-white to-transparent dark:from-black dark:to-transparent" />
+      <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-white to-transparent dark:from-card dark:to-transparent" />
       <CarouselPrevious className="absolute left-0" />
-      <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-black" />
+      <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-white dark:to-card" />
       <CarouselNext className="absolute right-0" />
     </Carousel>
   )
