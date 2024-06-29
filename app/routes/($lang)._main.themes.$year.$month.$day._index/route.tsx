@@ -64,10 +64,35 @@ export default function Theme() {
   const year = Number.parseInt(params.year)
   const month = Number.parseInt(params.month)
   const day = Number.parseInt(params.day)
-  const tomorrow = new Date(year, month - 1, day)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const yesterday = new Date(year, month - 1, day)
-  yesterday.setDate(yesterday.getDate() - 1)
+
+  const calculateDate = (
+    year: number,
+    month: number,
+    day: number,
+    offset: number,
+  ) => {
+    const date = new Date(year, month - 1, day)
+    date.setDate(date.getDate() + offset)
+    return date
+  }
+
+  const yesterday = calculateDate(year, month, day, -1)
+  const tomorrow = calculateDate(year, month, day, 1)
+
+  const dateLink = (date: Date) => {
+    return (
+      <Link
+        to={`/themes/${date.getFullYear()}/${
+          date.getMonth() + 1
+        }/${date.getDate()}`}
+      >
+        {date.getFullYear()}年 {date.getMonth() + 1}月 {date.getDate()}日
+      </Link>
+    )
+  }
+
+  const yesterdayLink = dateLink(yesterday)
+  const tomorrowLink = dateLink(tomorrow)
 
   return (
     <AppPage>
@@ -89,26 +114,12 @@ export default function Theme() {
           <p>
             昨日：
             <Button asChild={true} className="m-1">
-              <Link
-                to={`/themes/${yesterday.getFullYear()}/${
-                  yesterday.getMonth() + 1
-                }/${yesterday.getDate()}`}
-              >
-                {yesterday.getFullYear()}年 {yesterday.getMonth() + 1}月{" "}
-                {yesterday.getDate()}日
-              </Link>
+              {yesterdayLink}
             </Button>
             <br />
             明日：
             <Button asChild={true} className="m-1">
-              <Link
-                to={`/themes/${tomorrow.getFullYear()}/${
-                  tomorrow.getMonth() + 1
-                }/${tomorrow.getDate()}`}
-              >
-                {tomorrow.getFullYear()}年 {tomorrow.getMonth() + 1}月{" "}
-                {tomorrow.getDate()}日
-              </Link>
+              {tomorrowLink}
             </Button>
           </p>
         </div>
