@@ -93,7 +93,7 @@ export default {
        * 追加: カスタムフォントに使用
        */
       fontFamily: {
-        sans: ['"Noto Sans JP Variable"', ...fontFamily.sans],
+        sans: ['"M PLUS 2 Variable"', ...fontFamily.sans],
       },
       height: {
         /**
