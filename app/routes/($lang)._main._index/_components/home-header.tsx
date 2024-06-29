@@ -80,10 +80,10 @@ const HomeHeader = (props: Props) => {
               <Input placeholder={"作品を検索"} />
             </div>
           )}
-          <Button variant={"secondary"}>
+          <Button asChild variant={"secondary"}>
             <Link to={"/generation"}>{"生成"}</Link>
           </Button>
-          <Button variant={"secondary"}>
+          <Button asChild variant={"secondary"}>
             {" "}
             <Link
               to={

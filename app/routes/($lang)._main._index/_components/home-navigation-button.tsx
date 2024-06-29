@@ -46,7 +46,12 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
 
     if (props.href.startsWith("http")) {
       return (
-        <Button variant={"ghost"} size={"sm"} className="w-full justify-start">
+        <Button
+          asChild
+          variant={"ghost"}
+          size={"sm"}
+          className="w-full justify-start"
+        >
           <Link
             className="block"
             to={props.href}
@@ -61,6 +66,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
 
     return (
       <Button
+        asChild
         variant={"ghost"}
         className="w-full justify-start"
         size={"sm"}
