@@ -1,3 +1,4 @@
+import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
 import { ChevronLeft, ChevronRight, XIcon } from "lucide-react"
 import type React from "react"
@@ -267,90 +268,99 @@ export const ImagesPreview = (props: Props) => {
   }
 
   return (
-    <div>
-      {/* Display thumbnail */}
-      <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card object-contain">
-        <div className="inline-block overflow-hidden text-center">
-          <img
-            className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
-            draggable={false}
-            alt="thumbnail"
-            src={props.thumbnailUrl}
-            // onClick={openPreview}
-            onMouseUp={handleMainMouseUp}
-            onMouseDown={handleMainMouseDown}
-            onTouchEnd={handleMainTouchEnd}
-            style={{ userSelect: "none" }}
-          />
-          {props.imageURLs.map((url, index) => (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+    <div className="flex flex-col space-y-2">
+      {props.imageURLs.length > 1 && (
+        <Badge variant="secondary" className="relative m-auto opacity-50">
+          {props.currentIndex + 1} / {props.imageURLs.length}
+        </Badge>
+      )}
+      <div className="relative">
+        {/* Display thumbnail */}
+        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card object-contain">
+          <div className="inline-block overflow-hidden text-center">
             <img
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              key={index}
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain md:max-h-[72vh]"
+              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
               draggable={false}
-              alt={`thumbnail-${index}`}
-              src={url}
-              onClick={openPreview}
+              alt="thumbnail"
+              src={props.thumbnailUrl}
+              // onClick={openPreview}
+              onMouseUp={handleMainMouseUp}
+              onMouseDown={handleMainMouseDown}
+              onTouchEnd={handleMainTouchEnd}
               style={{ userSelect: "none" }}
             />
-          ))}
-        </div>
-      </div>
-      {/* Display full-screen preview */}
-      {isOpen && (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
-          onClick={handleBackgroundClick}
-        >
-          <Button
-            className="cursor absolute top-4 right-4 z-10"
-            onClick={closePreview}
-            size={"icon"}
-          >
-            <XIcon />
-          </Button>
-          <img
-            ref={imgRef}
-            src={props.imageURLs[props.currentIndex]}
-            alt={`image-${props.currentIndex}`}
-            className="cursor object-contain"
-            style={{
-              transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
-              transition: isDragging ? "none" : "transform 0.1s ease-out",
-              userSelect: "none",
-            }}
-            draggable={false}
-            onDoubleClick={handleDoubleClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            onTouchEndCapture={handleDoubleTap}
-          />
-          <div className="absolute bottom-4 flex w-full justify-center">
-            <Button
-              className="mr-4 transform rounded-full"
-              size={"icon"}
-              onClick={prevImage}
-              disabled={!(props.currentIndex > 0)}
-            >
-              <ChevronLeft />
-            </Button>
-            <Button
-              className="ml-4 transform rounded-full"
-              size={"icon"}
-              onClick={nextImage}
-              disabled={!(props.currentIndex < props.imageURLs.length - 1)}
-            >
-              <ChevronRight />
-            </Button>
+            {props.imageURLs.map((url, index) => (
+              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+              <img
+                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                key={index}
+                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain md:max-h-[72vh]"
+                draggable={false}
+                alt={`thumbnail-${index}`}
+                src={url}
+                onClick={openPreview}
+                style={{ userSelect: "none" }}
+              />
+            ))}
           </div>
         </div>
-      )}
+        {/* Display full-screen preview */}
+        {isOpen && (
+          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+          <div
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
+            onClick={handleBackgroundClick}
+          >
+            <Button
+              className="cursor absolute top-4 right-4 z-10"
+              onClick={closePreview}
+              size={"icon"}
+            >
+              <XIcon />
+            </Button>
+            <img
+              ref={imgRef}
+              src={props.imageURLs[props.currentIndex]}
+              alt={`image-${props.currentIndex}`}
+              className="cursor object-contain"
+              style={{
+                transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+                transition: isDragging ? "none" : "transform 0.1s ease-out",
+                userSelect: "none",
+              }}
+              draggable={false}
+              onDoubleClick={handleDoubleClick}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onTouchEndCapture={handleDoubleTap}
+            />
+            {props.imageURLs.length > 1 && (
+              <div className="absolute bottom-4 flex w-full justify-center">
+                <Button
+                  className="mr-4 transform rounded-full"
+                  size={"icon"}
+                  onClick={prevImage}
+                  disabled={!(props.currentIndex > 0)}
+                >
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  className="ml-4 transform rounded-full"
+                  size={"icon"}
+                  onClick={nextImage}
+                  disabled={!(props.currentIndex < props.imageURLs.length - 1)}
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
