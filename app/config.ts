@@ -245,6 +245,7 @@ export const config = {
    */
   query: {
     maxLimit: 800,
+    generationTasksMaxLimit: 200,
   },
   /**
    * ワードプレスエンドポイント

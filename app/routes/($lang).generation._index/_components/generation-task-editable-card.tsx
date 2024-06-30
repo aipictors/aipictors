@@ -17,8 +17,8 @@ import { GenerationTaskZoomUpButton } from "@/routes/($lang).generation._index/_
 import { GenerationTaskRatingButton } from "@/routes/($lang).generation._index/_components/generation-task-rating-button"
 import { GenerationTaskDeleteButton } from "@/routes/($lang).generation._index/_components/generation-task-delete-button"
 import { GenerationTaskProtectedButton } from "@/routes/($lang).generation._index/_components/generation-task-protected-button"
-import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { FragmentOf } from "gql.tada"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 
 type Props = {
   taskId: string

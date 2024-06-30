@@ -112,12 +112,6 @@ export const GenerationTaskList = (props: Props) => {
     toast("設定を復元しました")
   }
 
-  const inProgressTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
-      return false
-    return task.status === "IN_PROGRESS" || task.status === "RESERVED"
-  })
-
   const activeTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
       return false

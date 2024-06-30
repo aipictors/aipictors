@@ -71,8 +71,19 @@ export const GenerationTaskListView = (props: Props) => {
 
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
-      limit: config.query.maxLimit,
-      offset: 0,
+      limit:
+        props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+          ? 56
+          : config.query.maxLimit,
+      offset: page * 56,
+      where: {
+        ...(props.rating !== -1 && {
+          rating: props.rating,
+        }),
+        ...(props.protect !== -1 && {
+          isProtected: props.protect === 1,
+        }),
+      },
     },
     fetchPolicy: "cache-first",
   })
@@ -153,7 +164,7 @@ export const GenerationTaskListView = (props: Props) => {
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
       (results?.viewer?.imageGenerationResults
-        .map((task) => task.nanoid)
+        .map((result) => result.nanoid)
         .filter((id) => id !== null) as string[]) ?? [],
     )
     if (!props.isEditMode) {
