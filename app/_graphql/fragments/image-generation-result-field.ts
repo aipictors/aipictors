@@ -26,6 +26,7 @@ export const imageGenerationResultFieldsFragment = graphql(
     }
     vae
     nanoid
+    status
     estimatedSeconds
     controlNetControlMode
     controlNetEnabled

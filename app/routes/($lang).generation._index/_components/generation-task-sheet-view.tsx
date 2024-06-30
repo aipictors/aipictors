@@ -20,9 +20,12 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import type { ResultOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 
 type Props = {
-  task: ResultOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | ResultOf<typeof imageGenerationTaskFieldsFragment>
+    | ResultOf<typeof imageGenerationResultFieldsFragment>
   isReferenceLink?: boolean
   isScroll?: boolean
   setShowInPaintDialog?: (show: boolean) => void

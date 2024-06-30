@@ -47,28 +47,6 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const { data: results, refetch } = useQuery(
-    viewerImageGenerationResultsQuery,
-    {
-      variables: {
-        limit:
-          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-            ? 56
-            : config.query.maxLimit,
-        offset: page * 56,
-        where: {
-          ...(props.rating !== -1 && {
-            rating: props.rating,
-          }),
-          ...(props.protect !== -1 && {
-            isProtected: props.protect === 1,
-          }),
-        },
-      },
-      fetchPolicy: "cache-first",
-    },
-  )
-
   const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit:
@@ -87,6 +65,25 @@ export const GenerationTaskListView = (props: Props) => {
     },
     fetchPolicy: "cache-first",
   })
+
+  const { data: results, refetch } = useQuery(
+    viewerImageGenerationResultsQuery,
+    {
+      variables: {
+        limit: 0,
+        offset: page * 56 - (tasks?.viewer?.imageGenerationTasks?.length ?? 0),
+        where: {
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1,
+          }),
+        },
+      },
+      fetchPolicy: "cache-first",
+    },
+  )
 
   const queryData = useGenerationQuery()
 
@@ -164,6 +161,7 @@ export const GenerationTaskListView = (props: Props) => {
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
       (results?.viewer?.imageGenerationResults
+        .filter((result) => result.nanoid !== null)
         .map((result) => result.nanoid)
         .filter((id) => id !== null) as string[]) ?? [],
     )

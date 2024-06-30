@@ -33,9 +33,12 @@ import { CopyButton } from "@/routes/($lang).generation._index/_components/copy-
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import type { FragmentOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 
 type Props = {
-  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   isScroll: boolean
   isDisplayImageListButton: boolean
   isListFullSize: boolean

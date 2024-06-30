@@ -7,10 +7,13 @@ import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_com
 import { useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
-import type { FragmentOf } from "gql.tada"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import type { ResultOf } from "gql.tada"
 
 type Props = {
-  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | ResultOf<typeof imageGenerationTaskFieldsFragment>
+    | ResultOf<typeof imageGenerationResultFieldsFragment>
   taskIds?: string[]
   sizeType: number
   userToken: string

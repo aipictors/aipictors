@@ -19,6 +19,7 @@ import { GenerationTaskDeleteButton } from "@/routes/($lang).generation._index/_
 import { GenerationTaskProtectedButton } from "@/routes/($lang).generation._index/_components/generation-task-protected-button"
 import type { FragmentOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 
 type Props = {
   taskId: string
@@ -29,7 +30,9 @@ type Props = {
   isProtected: boolean
   optionButtonSize: number
   isSelectDisabled: boolean
-  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   isPreviewByHover?: boolean
   userToken: string
   onClick?(): void
