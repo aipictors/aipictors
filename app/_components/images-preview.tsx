@@ -281,6 +281,7 @@ export const ImagesPreview = (props: Props) => {
             <img
               className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
               draggable={false}
+              key={props.thumbnailUrl}
               alt="thumbnail"
               src={props.thumbnailUrl}
               // onClick={openPreview}

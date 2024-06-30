@@ -42,6 +42,7 @@ export const WorkImageThumbnailCarousel: React.FC<
               <img
                 className={imageClassName}
                 alt=""
+                key={imageURL}
                 src={imageURL}
                 onClick={() => onSelectImage(imageURL)}
                 onKeyUp={(event) => handleKeyPress(imageURL, event)}
