@@ -2,7 +2,7 @@ import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-
 import { graphql } from "gql.tada"
 
 export const deleteImageGenerationResultMutation = graphql(
-  `mutation deleteImageGenerationResult($input: deleteImageGenerationResultInput!) {
+  `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
     deleteImageGenerationResult(input: $input) {
       ...ImageGenerationResultFields
     }

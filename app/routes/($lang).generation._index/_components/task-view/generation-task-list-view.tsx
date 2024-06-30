@@ -1,3 +1,4 @@
+import { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { config } from "@/config"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
@@ -46,21 +47,32 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const { data: results, refetch } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit:
-        props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-          ? 56
-          : config.query.maxLimit,
-      offset: page * 56,
-      where: {
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
-        ...(props.protect !== -1 && {
-          isProtected: props.protect === 1,
-        }),
+  const { data: results, refetch } = useQuery(
+    viewerImageGenerationResultsQuery,
+    {
+      variables: {
+        limit:
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+            ? 56
+            : config.query.maxLimit,
+        offset: page * 56,
+        where: {
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1,
+          }),
+        },
       },
+      fetchPolicy: "cache-first",
+    },
+  )
+
+  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
+    variables: {
+      limit: config.query.maxLimit,
+      offset: 0,
     },
     fetchPolicy: "cache-first",
   })
@@ -140,7 +152,7 @@ export const GenerationTaskListView = (props: Props) => {
    */
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
-      (results?.viewer?.imageGenerationTasks
+      (results?.viewer?.imageGenerationResults
         .map((task) => task.nanoid)
         .filter((id) => id !== null) as string[]) ?? [],
     )
@@ -188,7 +200,7 @@ export const GenerationTaskListView = (props: Props) => {
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
       />
-      {results !== undefined && (
+      {tasks !== undefined && results !== undefined && (
         <GenerationTaskList
           currentPage={page}
           hidedTaskIds={hidedTaskIds}
@@ -197,7 +209,8 @@ export const GenerationTaskListView = (props: Props) => {
           isEditMode={props.isEditMode}
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
-          tasks={results}
+          results={results}
+          tasks={tasks}
           userToken={props.currentUserToken}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}
