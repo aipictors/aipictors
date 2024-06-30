@@ -12,7 +12,7 @@ import {
 export const SensitiveRouteList = () => {
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"https://www.aipictors.com"} icon={Undo2Icon}>
+      <HomeNavigationButton href={"/"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive"} icon={HomeIcon}>

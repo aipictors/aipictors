@@ -51,7 +51,7 @@ export const WorkContainer = (props: Props) => {
         margin: "auto",
       }}
     >
-      <div className="px-0 py-2 md:px-4">
+      <div className="px-0 py-2">
         <ConstructionAlert
           type="WARNING"
           title="このページは現在開発中です。不具合が起きる可能性があります。"
@@ -59,7 +59,7 @@ export const WorkContainer = (props: Props) => {
           date={"2024-07-30"}
         />
       </div>
-      <div className="flex w-full overflow-hidden p-0 md:p-4">
+      <div className="flex w-full overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full max-w-screen-lg space-y-2">
             <Suspense fallback={<AppLoadingPage />}>
