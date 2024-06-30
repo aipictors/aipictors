@@ -2,7 +2,7 @@ import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
+import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
@@ -61,7 +61,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
     useMutation(cancelImageGenerationReservedTaskMutation)
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
-    deleteImageGenerationTaskMutation,
+    deleteImageGenerationResultMutation,
   )
 
   /**

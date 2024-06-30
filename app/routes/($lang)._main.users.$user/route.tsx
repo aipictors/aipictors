@@ -62,7 +62,7 @@ export default function UserLayout() {
         <Suspense>
           <ConstructionAlert
             type="WARNING"
-            message="このページは現在開発中です。不具合が起きる可能性があります。"
+            title="このページは現在開発中です。不具合が起きる可能性があります。"
             fallbackURL={`https://www.aipictors.com/users/${params.user}`}
             date={"2024-07-30"}
           />

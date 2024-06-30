@@ -28,7 +28,7 @@ export default function SettingsLayout() {
       <HomeHeader title={"設定"} />
       <ConstructionAlert
         type="WARNING"
-        message="このページは現在開発中です。不具合が起きる可能性があります。"
+        title="このページは現在開発中です。不具合が起きる可能性があります。"
         fallbackURL={`https://www.aipictors.com/users?id=${authContext.userId}`}
         date={"2024-07-30"}
       />

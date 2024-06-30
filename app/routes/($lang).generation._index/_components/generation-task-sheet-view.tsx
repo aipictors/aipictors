@@ -1,6 +1,6 @@
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
-import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
-import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
+import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
+import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { config } from "@/config"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
@@ -68,7 +68,7 @@ export const copyUrl = (taskId: string) => {
  */
 export function GenerationTaskSheetView(props: Props) {
   const [mutation, { loading: isRatingLoading }] = useMutation(
-    updateRatingImageGenerationTaskMutation,
+    updateRatingImageGenerationResultMutation,
     {
       refetchQueries: [viewerImageGenerationTasksQuery],
       awaitRefetchQueries: true,
@@ -181,7 +181,7 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
-    deleteImageGenerationTaskMutation,
+    deleteImageGenerationResultMutation,
   )
 
   const onDelete = async () => {
@@ -200,7 +200,7 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const [protectTask, { loading: isProtectedLoading }] = useMutation(
-    updateProtectedImageGenerationTaskMutation,
+    updateProtectedImageGenerationResultMutation,
   )
 
   const toggleProtectedImage = async () => {

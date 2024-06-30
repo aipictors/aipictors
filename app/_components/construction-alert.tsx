@@ -3,7 +3,8 @@ import { Link } from "@remix-run/react"
 
 type Props = {
   type: "BUG" | "WARNING" | "INFO"
-  message: string
+  title: string
+  message?: string
   fallbackURL: string
   date: string
 }
@@ -16,12 +17,14 @@ export const ConstructionAlert: React.FC<Props> = (props: Props) => {
           {props.type === "BUG"
             ? "バグ"
             : props.type === "WARNING"
-              ? "警告"
+              ? "ご注意"
               : "情報"}
         </AlertTitle>
         <AlertDescription>
-          {`${props.message}`}
-          元のバージョンはこちらをクリックしてください。
+          {`${props.title}`}
+          {props.message
+            ? `: ${props.message}`
+            : "元のバージョンはこちらをクリックしてください。"}
           {`${props.date}までに完了予定です。`}
         </AlertDescription>
       </Alert>

@@ -1,4 +1,4 @@
-import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
+import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
 import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
@@ -17,7 +17,7 @@ type Props = {
  */
 export const GenerationTaskProtectedButton = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
-    updateProtectedImageGenerationTaskMutation,
+    updateProtectedImageGenerationResultMutation,
   )
   const changeProtected = async (taskId: string, isProtected: boolean) => {
     try {

@@ -54,7 +54,7 @@ export const WorkContainer = (props: Props) => {
       <div className="px-0 py-2 md:px-4">
         <ConstructionAlert
           type="WARNING"
-          message="このページは現在開発中です。不具合が起きる可能性があります。"
+          title="このページは現在開発中です。不具合が起きる可能性があります。"
           fallbackURL={`https://www.aipictors.com/works/${work.id}`}
           date={"2024-07-30"}
         />

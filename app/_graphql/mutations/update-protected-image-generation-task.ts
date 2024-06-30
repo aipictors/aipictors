@@ -1,11 +1,11 @@
-import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { graphql } from "gql.tada"
 
-export const updateProtectedImageGenerationTaskMutation = graphql(
-  `mutation UpdateProtectedImageGenerationTask($input: UpdateProtectedImageGenerationTaskInput!) {
-    updateProtectedImageGenerationTask(input: $input) {
-      ...ImageGenerationTaskFields
+export const updateProtectedImageGenerationResultMutation = graphql(
+  `mutation updateProtectedImageGenerationResult($input: UpdateProtectedImageGenerationResultInput!) {
+    updateProtectedImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
+  [imageGenerationResultFieldsFragment],
 )

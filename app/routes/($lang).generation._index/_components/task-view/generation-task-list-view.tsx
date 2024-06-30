@@ -46,7 +46,7 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
+  const { data: results, refetch } = useQuery(viewerImageGenerationTasksQuery, {
     variables: {
       limit:
         props.protect !== 1 && (props.rating === 0 || props.rating === -1)
@@ -140,7 +140,7 @@ export const GenerationTaskListView = (props: Props) => {
    */
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
-      (tasks?.viewer?.imageGenerationTasks
+      (results?.viewer?.imageGenerationTasks
         .map((task) => task.nanoid)
         .filter((id) => id !== null) as string[]) ?? [],
     )
@@ -188,7 +188,7 @@ export const GenerationTaskListView = (props: Props) => {
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
       />
-      {tasks !== undefined && (
+      {results !== undefined && (
         <GenerationTaskList
           currentPage={page}
           hidedTaskIds={hidedTaskIds}
@@ -197,7 +197,7 @@ export const GenerationTaskListView = (props: Props) => {
           isEditMode={props.isEditMode}
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
-          tasks={tasks}
+          tasks={results}
           userToken={props.currentUserToken}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}

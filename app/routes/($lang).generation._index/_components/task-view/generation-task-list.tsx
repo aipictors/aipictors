@@ -1,6 +1,6 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
+import type { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -26,7 +26,7 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
-  tasks: ResultOf<typeof viewerImageGenerationTasksQuery>
+  tasks: ResultOf<typeof viewerImageGenerationResultsQuery>
   userToken: string
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void

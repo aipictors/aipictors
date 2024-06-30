@@ -1,7 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Slider } from "@/_components/ui/slider"
 import { Toggle } from "@/_components/ui/toggle"
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
+import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
 import { config } from "@/config"
 import { GenerationTasksDeleteButton } from "@/routes/($lang).generation._index/_components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "@/routes/($lang).generation._index/_components/task-view/generation-image-download-button"
@@ -50,7 +50,7 @@ type Props = {
  * 履歴の操作
  */
 export const GenerationTaskListActions = (props: Props) => {
-  const [deleteTask] = useMutation(deleteImageGenerationTaskMutation)
+  const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
 
   const [isAllSelected, setIsAllSelected] = useState(false)
 
