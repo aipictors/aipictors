@@ -69,21 +69,10 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
-  const currentResults = props.results.viewer?.imageGenerationResults ?? []
-
-  /**
-   * フィルターしたレーティングが０のタスク（一部）
-   */
-  const currentRatingZeroTasks =
-    props.rating === 0
-      ? imageGenerationTasks.filter((task) => {
-          return (
-            task.rating === 0 &&
-            task.nanoid &&
-            !props.hidedTaskIds.includes(task.nanoid)
-          )
-        })
-      : []
+  const currentResults =
+    props.results.viewer?.imageGenerationResults.filter((task) => {
+      return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
+    }) ?? []
 
   const onDelete = (taskId: string) => {
     props.setHidedTaskIds([...props.hidedTaskIds, ...taskId.split(",")])
