@@ -22,7 +22,7 @@ jobs:
       url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
       - name: cache node modules
         id: cache-node_modules
         uses: actions/cache/restore@v4
