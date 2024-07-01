@@ -40,13 +40,6 @@ export const GenerationQueryProvider = (props: Props) => {
   const { data: status, refetch: refetchViewerImageGenerationStatus } =
     useQuery(viewerImageGenerationStatusQuery)
 
-  const userNanoid = viewer?.viewer?.user.nanoid ?? null
-
-  // useEffect(() => {
-  //   if (userNanoid === null) return
-  //   activeImageGeneration({ nanoid: userNanoid })
-  // }, [userNanoid])
-
   const isTimeout = useFocusTimeout()
 
   const inProgressImageGenerationTasksCount =

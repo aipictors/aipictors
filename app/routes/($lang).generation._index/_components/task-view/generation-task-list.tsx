@@ -71,8 +71,6 @@ export const GenerationTaskList = (props: Props) => {
 
   const currentResults = props.results.viewer?.imageGenerationResults ?? []
 
-  console.log(currentResults)
-
   /**
    * フィルターしたレーティングが０のタスク（一部）
    */
@@ -127,6 +125,16 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
+  const activeResults = currentResults.filter((result) => {
+    if (!result.imageUrl && result.status === "DONE") return false
+    return (
+      result.status === "PENDING" ||
+      result.status === "IN_PROGRESS" ||
+      result.status === "DONE" ||
+      result.status === "RESERVED"
+    )
+  })
+
   const onSelectTask = (taskId: string | null, status?: string) => {
     if (status !== "DONE") {
       toast("選択できない履歴です")
@@ -154,8 +162,10 @@ export const GenerationTaskList = (props: Props) => {
 
   const componentTasks = activeTasks
 
+  const combinedTasks = [...componentTasks, ...activeResults]
+
   // 左右の作品へ遷移するときに使用するnanoidのリスト
-  const taskIdList = componentTasks
+  const taskIdList = combinedTasks
     .filter((task) => task.status === "DONE" && task.nanoid)
     .map((task) => task.id)
 
@@ -178,7 +188,7 @@ export const GenerationTaskList = (props: Props) => {
             "grid-cols-10": props.thumbnailSize === 10,
           })}
         >
-          {componentTasks.map((task) => (
+          {combinedTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
               <Suspense fallback={<FallbackTaskCard />}>
                 <GenerationTaskCard
@@ -194,32 +204,6 @@ export const GenerationTaskList = (props: Props) => {
                   selectedTaskIds={props.selectedTaskIds}
                   userToken={props.userToken}
                   onClick={() => onSelectTask(task.nanoid, task.status)}
-                  onCancel={props.onCancel}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                  onDelete={onDelete}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-          {currentResults.map((result) => (
-            <ErrorBoundary key={result.id} fallback={<ErrorResultCard />}>
-              <Suspense fallback={<FallbackTaskCard />}>
-                <GenerationTaskCard
-                  task={result}
-                  taskIds={taskIdList}
-                  taskContentPositionType={props.taskContentPositionType}
-                  isEditMode={props.isEditMode}
-                  isPreviewByHover={props.isPreviewMode}
-                  isSelected={props.selectedTaskIds.includes(
-                    result.nanoid ?? "",
-                  )}
-                  sizeType={props.thumbnailSize}
-                  isDialog={state === "HISTORY_LIST_FULL"}
-                  rating={props.rating}
-                  selectedTaskIds={props.selectedTaskIds}
-                  userToken={props.userToken}
-                  onClick={() => onSelectTask(result.nanoid)}
                   onCancel={props.onCancel}
                   onRestore={onRestore}
                   onSelectTask={onSelectTask}

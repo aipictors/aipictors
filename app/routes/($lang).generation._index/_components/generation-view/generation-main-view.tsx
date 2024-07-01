@@ -79,7 +79,7 @@ export const GenerationMainView = (props: Props) => {
         type="INFO"
         title="情報"
         message="メンテナンスのため一時的に動作が不安定になる可能性があります。"
-        date="2023-06-30"
+        date="2023-07-01"
         fallbackURL={""}
       />
       <ResizablePanelGroup

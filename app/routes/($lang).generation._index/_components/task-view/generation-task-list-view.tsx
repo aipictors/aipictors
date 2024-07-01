@@ -47,31 +47,15 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const { data: tasks } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit:
-        props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-          ? 56
-          : config.query.maxLimit,
-      offset: page * 56,
-      where: {
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
-        ...(props.protect !== -1 && {
-          isProtected: props.protect === 1,
-        }),
-      },
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const { data: results, refetch } = useQuery(
-    viewerImageGenerationResultsQuery,
+  const { data: tasks, refetch: taskRefetch } = useQuery(
+    viewerImageGenerationTasksQuery,
     {
       variables: {
-        limit: 0,
-        offset: page * 56 - (tasks?.viewer?.imageGenerationTasks?.length ?? 0),
+        limit:
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+            ? 56
+            : config.query.maxLimit,
+        offset: page * 56,
         where: {
           ...(props.rating !== -1 && {
             rating: props.rating,
@@ -85,10 +69,35 @@ export const GenerationTaskListView = (props: Props) => {
     },
   )
 
+  const { data: results, refetch: resultRefetch } = useQuery(
+    viewerImageGenerationResultsQuery,
+    {
+      variables: {
+        limit:
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+            ? 56
+            : config.query.maxLimit,
+        offset: Math.max(
+          0,
+          page * 56 - (tasks?.viewer?.imageGenerationTasks?.length ?? 0),
+        ),
+        where: {
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1,
+          }),
+        },
+      },
+    },
+  )
+
   const queryData = useGenerationQuery()
 
   useEffect(() => {
-    refetch()
+    taskRefetch()
+    resultRefetch()
   }, [
     queryData.viewer.inProgressImageGenerationTasksCount ||
       queryData.viewer.inProgressImageGenerationReservedTasksCount,

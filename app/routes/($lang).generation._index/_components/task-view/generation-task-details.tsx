@@ -6,6 +6,7 @@ import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/
 import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/_components/generation-task-sheet-view"
 import { Suspense, useContext } from "react"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
 /**
  * 画像生成履歴の詳細
@@ -23,6 +24,10 @@ export const GenerationTaskDetails = () => {
     context.config.viewTaskId,
   )
 
+  const imageGenerationResult = useCachedImageGenerationResult(
+    context.config.viewTaskId,
+  )
+
   return (
     <>
       <ScrollArea className="absolute pb-64 md:pb-8">
@@ -37,6 +42,19 @@ export const GenerationTaskDetails = () => {
                   imageGenerationTask.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
                 generationType:
                   imageGenerationTask.generationType as IntrospectionEnum<"ImageGenerationType">,
+              }}
+            />
+          )}
+          {imageGenerationResult && (
+            <GenerationTaskSheetView
+              task={{
+                ...imageGenerationResult,
+                status:
+                  imageGenerationResult.status as IntrospectionEnum<"ImageGenerationStatus">,
+                sizeType:
+                  imageGenerationResult.sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                generationType:
+                  imageGenerationResult.generationType as IntrospectionEnum<"ImageGenerationType">,
               }}
             />
           )}
