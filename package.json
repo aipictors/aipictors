@@ -25,7 +25,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@fontsource-variable/m-plus-2": "^5.0.17",
-    "@marsidev/react-turnstile": "^0.5.4",
+    "@marsidev/react-turnstile": "^0.7.1",
     "@napi-rs/canvas": "^0.1.52",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
