@@ -89,13 +89,10 @@ export const CroppedWorkSquare = (props: Props) => {
   }
 
   return (
-    <Link
-      to={`/works/${props.workId}`}
-      className="relative transition-all duration-300 ease-in-out hover:opacity-80"
-    >
-      <div
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={`rounded ${wrapSize()} overflow-hidden relative`}
+    <div className="inline-box relative">
+      <Link
+        to={`/works/${props.workId}`}
+        className="transition-all duration-300 ease-in-out hover:opacity-80"
       >
         <img
           src={props.imageUrl}
@@ -108,24 +105,38 @@ export const CroppedWorkSquare = (props: Props) => {
       </div>
       {props.ranking && (
         <div
-          className={
-            "absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
-          }
-          style={{ backgroundColor: backgroundColor() }}
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          className={`rounded ${wrapSize()} overflow-hidden relative`}
         >
-          {props.ranking}
+          <img
+            src={props.imageUrl}
+            alt=""
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`rounded max-w-none ${size()}`}
+            style={{ transform: transform }}
+          />
         </div>
-      )}
-      {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-        <div
-          className={
-            "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
-          }
-          style={{ backgroundColor: "#00000052" }}
-        >
-          {props.subWorksCount + 1}
-        </div>
-      )}
-    </Link>
+        {props.ranking && (
+          <div
+            className={
+              "absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
+            }
+            style={{ backgroundColor: backgroundColor() }}
+          >
+            {props.ranking}
+          </div>
+        )}
+        {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
+          <div
+            className={
+              "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
+            }
+            style={{ backgroundColor: "#00000052" }}
+          >
+            {props.subWorksCount + 1}
+          </div>
+        )}
+      </Link>
+    </div>
   )
 }
