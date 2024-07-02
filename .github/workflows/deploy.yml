@@ -19,9 +19,10 @@ jobs:
     needs: call-workflow-test
     environment:
       name: ${{ github.ref_name == 'main' && 'Production' || 'Preview' }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
       - name: cache node modules
         id: cache-node_modules
         uses: actions/cache/restore@v4
@@ -32,7 +33,7 @@ jobs:
         run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
       - name: build
         run: bun remix vite:build
-      - name: deploy(prod)
+      - name: deploy
         id: cloudflare-wrangler
         uses: cloudflare/wrangler-action@v3
         with:
