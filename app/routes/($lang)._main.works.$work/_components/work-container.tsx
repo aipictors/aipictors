@@ -10,7 +10,6 @@ import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
-import { ConstructionAlert } from "@/_components/construction-alert"
 import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
 
 type Props = {
@@ -46,22 +45,14 @@ export const WorkContainer = (props: Props) => {
 
   return (
     <div
-      className="max-w-[100%] overflow-hidden"
+      className="max-w-[100%] space-y-4 overflow-hidden"
       style={{
         margin: "auto",
       }}
     >
-      <div className="px-0 py-2">
-        <ConstructionAlert
-          type="WARNING"
-          title="このページは現在開発中です。不具合が起きる可能性があります。"
-          fallbackURL={`https://www.aipictors.com/works/${work.id}`}
-          date={"2024-07-30"}
-        />
-      </div>
-      <div className="flex w-full overflow-hidden">
+      <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
-          <div className="mx-auto w-full max-w-screen-lg space-y-2">
+          <div className="mx-auto w-full max-w-[1400px] space-y-2">
             <Suspense fallback={<AppLoadingPage />}>
               <WorkArticle work={work} />
             </Suspense>
@@ -85,7 +76,7 @@ export const WorkContainer = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-md">
+        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-80">
           <div className="mt-2 md:mt-0">
             <Suspense>
               <WorkUser
@@ -103,7 +94,7 @@ export const WorkContainer = (props: Props) => {
           <WorkNextAndPrevious work={work} />
         </div>
       </div>
-      <section className="max-w-[1400px] space-y-4">
+      <section className="m-auto max-w-[1600px] space-y-4">
         {randomTag ? (
           <>
             <div className="flex justify-between">

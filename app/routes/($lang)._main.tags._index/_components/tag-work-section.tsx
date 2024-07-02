@@ -32,7 +32,7 @@ export const TagWorkSection = (props: Props) => {
           // @ts-ignore 後で考える
           <HomeWorkAlbum {...photoProps} workId={photoProps.photo.workId} />
         )}
-        defaultContainerWidth={1200}
+        defaultContainerWidth={1600}
         sizes={{
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],

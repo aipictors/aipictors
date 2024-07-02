@@ -94,6 +94,16 @@ export const CroppedWorkSquare = (props: Props) => {
         to={`/works/${props.workId}`}
         className="transition-all duration-300 ease-in-out hover:opacity-80"
       >
+        <img
+          src={props.imageUrl}
+          alt=""
+          key={props.imageUrl}
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          className={`rounded max-w-none ${size()}`}
+          style={{ transform: transform }}
+        />
+      </div>
+      {props.ranking && (
         <div
           // biome-ignore lint/nursery/useSortedClasses: <explanation>
           className={`rounded ${wrapSize()} overflow-hidden relative`}

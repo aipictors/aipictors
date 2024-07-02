@@ -1,4 +1,3 @@
-import { ConstructionAlert } from "@/_components/construction-alert"
 import { ResizablePanelWithMemory } from "@/_components/resizable-panel-with-memory"
 import {
   ResizableHandle,
@@ -75,13 +74,6 @@ export const GenerationMainView = (props: Props) => {
 
   return (
     <>
-      <ConstructionAlert
-        type="INFO"
-        title="情報"
-        message="メンテナンスのため一時的に動作が不安定になる可能性があります。"
-        date="2024-07-01"
-        fallbackURL={""}
-      />
       <ResizablePanelGroup
         direction="horizontal"
         className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
