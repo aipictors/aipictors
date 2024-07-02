@@ -408,7 +408,7 @@ export const WorkCommentList = (props: Props) => {
             </div>
           ))}
           {/* もっと見るで確認できる既にコメント済みのコメント一覧 */}
-          {showCommentsAfterMore && (
+          {showCommentsAfterMore.length > 8 && (
             <AccordionTransition
               triggerChildren={
                 <Button className="w-full" variant={"secondary"}>

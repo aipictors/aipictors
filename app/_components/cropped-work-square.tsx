@@ -100,6 +100,7 @@ export const CroppedWorkSquare = (props: Props) => {
         <img
           src={props.imageUrl}
           alt=""
+          key={props.imageUrl}
           // biome-ignore lint/nursery/useSortedClasses: <explanation>
           className={`rounded max-w-none ${size()}`}
           style={{ transform: transform }}

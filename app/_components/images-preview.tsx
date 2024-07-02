@@ -282,7 +282,7 @@ export const ImagesPreview = (props: Props) => {
           )}
           <div className="inline-block overflow-hidden text-center">
             <img
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
+              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900"
               draggable={false}
               key={props.thumbnailUrl}
               alt="thumbnail"
