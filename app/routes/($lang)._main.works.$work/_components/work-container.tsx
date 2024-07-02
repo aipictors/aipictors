@@ -94,7 +94,7 @@ export const WorkContainer = (props: Props) => {
           <WorkNextAndPrevious work={work} />
         </div>
       </div>
-      <section className="m-auto max-w-[1600px] space-y-4">
+      <section className="m-auto space-y-4">
         {randomTag ? (
           <>
             <div className="flex justify-between">

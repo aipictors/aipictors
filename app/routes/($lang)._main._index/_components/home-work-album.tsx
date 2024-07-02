@@ -30,17 +30,17 @@ export function HomeWorkAlbum({
 }: HomeWorkAlbumProps) {
   return (
     <div
-      className="overflow-hidden transition-all hover:opacity-80"
+      className="cursor overflow-hidden rounded transition-all"
       style={{ ...wrapperStyle, position: "relative" }}
     >
-      <Link to={`/works/${workId}`}>
+      <Link to={`/works/${workId}`} className="group">
         <img
           style={{ filter: isMosaic ? "blur(24px)" : "none" }}
           src={photo.src}
           // @ts-ignore
           placeholder={"blurDataURL" in photo ? "blur" : ""}
           alt={""}
-          className={"rounded"}
+          className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
       <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">

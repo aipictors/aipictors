@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { useState } from "react"
 
 type Props = {
   workId: string
@@ -15,6 +16,8 @@ type Props = {
  * 四角形で作品をクロップして表示するコンポーネント
  */
 export const CroppedWorkSquare = (props: Props) => {
+  const [isHovered, setIsHovered] = useState(false)
+
   const getThumbnailPos = (
     src: number,
     width: number,
@@ -92,9 +95,11 @@ export const CroppedWorkSquare = (props: Props) => {
     <div className="inline-box relative">
       <Link
         to={`/works/${props.workId}`}
-        className="transition-all duration-300 ease-in-out hover:opacity-80"
+        className="transition-all duration-300 ease-in-out"
       >
         <div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           // biome-ignore lint/nursery/useSortedClasses: <explanation>
           className={`rounded ${wrapSize()} overflow-hidden relative`}
         >
@@ -103,8 +108,10 @@ export const CroppedWorkSquare = (props: Props) => {
             alt=""
             key={props.imageUrl}
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`rounded max-w-none ${size()}`}
-            style={{ transform: transform }}
+            className={`rounded max-w-none ${size()} transition-transform duration-300 ease-in-out`}
+            style={{
+              transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
+            }}
           />
         </div>
         {props.ranking && (

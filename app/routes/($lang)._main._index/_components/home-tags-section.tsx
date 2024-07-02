@@ -33,14 +33,14 @@ export const HomeTagsSection = (props: Props) => {
           {props.tags?.map((tag, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             <CarouselItem className="basis-auto" key={index}>
-              <div className="relative">
-                <Link to={`/tags/${tag.name}`}>
+              <div className="group relative overflow-hidden rounded-md">
+                <Link to={`/tags/${tag.name}`} className="rounded-md">
                   <img
-                    className="h-[240px] w-[196px] rounded-md bg-white object-cover object-center transition-opacity duration-200 ease-in-out"
+                    className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
                     src={tag.thumbnailUrl}
                     alt={tag.name}
                   />
-                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
                     <p className="text-white">{`#${tag.name}`}</p>
                   </div>
                 </Link>
