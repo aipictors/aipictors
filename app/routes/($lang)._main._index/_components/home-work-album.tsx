@@ -2,6 +2,7 @@ import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
+import { useState } from "react"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
   userId: string
@@ -28,6 +29,8 @@ export function HomeWorkAlbum({
   isMosaic,
   subWorksCount,
 }: HomeWorkAlbumProps) {
+  const [isLoaded, setIsLoaded] = useState(false)
+
   return (
     <div
       className="cursor overflow-hidden rounded transition-all"
@@ -35,11 +38,13 @@ export function HomeWorkAlbum({
     >
       <Link to={`/works/${workId}`} className="group">
         <img
-          style={{ filter: isMosaic ? "blur(24px)" : "none" }}
+          style={{
+            filter: isMosaic || !isLoaded ? "blur(24px)" : "none",
+            transition: "filter 0.3s ease-in-out",
+          }}
           src={photo.src}
-          // @ts-ignore
-          placeholder={"blurDataURL" in photo ? "blur" : ""}
-          alt={""}
+          onLoad={() => setIsLoaded(true)}
+          alt={workTitle}
           className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
@@ -53,7 +58,7 @@ export function HomeWorkAlbum({
           <div className="flex items-center space-x-2">
             <img
               src={IconUrl(userIcon)}
-              alt=""
+              alt={userName}
               className="h-4 w-4 rounded-full"
             />
             <span className="text-nowrap font-bold text-sm text-white">
