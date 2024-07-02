@@ -1,6 +1,4 @@
 import { AppAside } from "@/_components/app/app-aside"
-import { AppColumnLayout } from "@/_components/app/app-column-layout"
-import { ConstructionAlert } from "@/_components/construction-alert"
 import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
@@ -19,21 +17,13 @@ export default function DashboardLayout() {
   return (
     <>
       <HomeHeader />
-      <div className="pb-2">
-        <ConstructionAlert
-          type="WARNING"
-          title="このページは現在開発中です。不具合が起きる可能性があります。"
-          fallbackURL={`https://www.aipictors.com/dashboard?id=${authContext.userId}`}
-          date={"2024-07-30"}
-        />
-      </div>
-      <AppColumnLayout>
-        <AppAside>
-          <HomeRouteList />
-        </AppAside>
+      <AppAside>
+        <HomeRouteList />
+      </AppAside>
+      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-4 md:pl-52">
         <Outlet />
-      </AppColumnLayout>
-      <HomeFooter />
+        <HomeFooter />
+      </div>
     </>
   )
 }

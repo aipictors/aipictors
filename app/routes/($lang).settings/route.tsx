@@ -1,7 +1,6 @@
 import { AppAside } from "@/_components/app/app-aside"
-import { AppColumnLayout } from "@/_components/app/app-column-layout"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { ConstructionAlert } from "@/_components/construction-alert"
+import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { SettingsRouteList } from "@/routes/($lang).settings/_components/settings-route-list"
@@ -26,18 +25,13 @@ export default function SettingsLayout() {
   return (
     <>
       <HomeHeader title={"設定"} />
-      <ConstructionAlert
-        type="WARNING"
-        title="このページは現在開発中です。不具合が起きる可能性があります。"
-        fallbackURL={`https://www.aipictors.com/users?id=${authContext.userId}`}
-        date={"2024-07-30"}
-      />
-      <AppColumnLayout>
-        <AppAside>
-          <SettingsRouteList />
-        </AppAside>
+      <AppAside>
+        <SettingsRouteList />
+      </AppAside>
+      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-4 md:pl-52">
         <Outlet />
-      </AppColumnLayout>
+        <HomeFooter />
+      </div>
     </>
   )
 }

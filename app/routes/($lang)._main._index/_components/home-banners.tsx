@@ -20,7 +20,7 @@ type Props = {
 export const HomeBanners = (props: Props) => {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
-      <CarouselContent className="m-auto max-w-[1200px]">
+      <CarouselContent className="m-auto max-w-[1600px]">
         <CarouselItem className="basis-1/1 pl-0 xl:basis-1/2">
           <HomeGenerationBanner works={props.adWorks} />
         </CarouselItem>
