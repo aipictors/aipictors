@@ -15,13 +15,15 @@ export const NovelWorkPreviewItem = (props: Props) => {
   return (
     <Link
       to={`/works/${props.workId}`}
-      className="relative transition-all duration-300 ease-in-out hover:opacity-80"
+      className="group relative transition-all duration-300 ease-in-out"
     >
       <div className={"relative overflow-hidden rounded"}>
         <img
           src={props.imageUrl}
           alt="novel work preview"
-          className={"w-full max-w-40 rounded md:max-w-64"}
+          className={
+            "w-full max-w-40 rounded transition-transform duration-300 group-hover:scale-105 md:max-w-64"
+          }
         />
       </div>
       <div className="mt-2 h-24 w-40 space-y-2 overflow-hidden text-ellipsis md:w-64">

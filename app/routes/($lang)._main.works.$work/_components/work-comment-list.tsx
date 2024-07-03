@@ -228,7 +228,7 @@ export const WorkCommentList = (props: Props) => {
             placeholder="コメントする"
           />
           <div>
-            <Button size={"icon"} onClick={onOpen}>
+            <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
               <StampIcon />
             </Button>
           </div>
@@ -237,7 +237,9 @@ export const WorkCommentList = (props: Props) => {
               <Loader2Icon className={"animate-spin"} />
             </Button>
           ) : (
-            <Button onClick={onWorkComment}>{"送信"}</Button>
+            <Button variant={"secondary"} onClick={onWorkComment}>
+              {"送信"}
+            </Button>
           )}
         </div>
         <div className="space-y-8">

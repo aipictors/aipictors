@@ -77,10 +77,14 @@ export const WorkComment = (props: Props) => {
           )}
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="block w-24"
+              className="group block w-24 overflow-hidden"
               to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
             >
-              <img className="w-24 py-2" alt="" src={props.stickerImageURL} />
+              <img
+                className="w-24 py-2 transition-transform duration-300 group-hover:scale-105"
+                alt=""
+                src={props.stickerImageURL}
+              />
             </Link>
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (

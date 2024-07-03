@@ -28,8 +28,6 @@ export const WorkActionBookmark = (props: Props) => {
 
   const onCreateWorkBookmark = async () => {
     if (props.bookmarkFolderId) {
-      console.log("isBookmarked", isBookmarked)
-
       setIsBookmarked(!isBookmarked)
       try {
         if (!isBookmarked) {
@@ -76,7 +74,13 @@ export const WorkActionBookmark = (props: Props) => {
       {isCreatingFolderWork || isDeletingFolderWork ? (
         <Loader2Icon className="h-4 w-4 animate-spin" />
       ) : (
-        <FolderIcon className={isBookmarked ? "fill-black" : "fill-white"} />
+        <FolderIcon
+          className={
+            isBookmarked
+              ? "fill-black dark:fill-white"
+              : "fill-white dark:fill-black"
+          }
+        />
       )}
     </Button>
   )
