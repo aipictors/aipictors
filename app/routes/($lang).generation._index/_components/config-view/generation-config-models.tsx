@@ -142,8 +142,8 @@ export const GenerationConfigModels = (props: Props) => {
                   }}
                 />
                 {model?.id === props.currentModelId && (
-                  <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon className="p-1 text-white dark:text-black" />
+                  <div className="absolute top-1 left-1 rounded-full border-2 bg-foreground">
+                    <CheckIcon className="p-1 text-background" />
                   </div>
                 )}
               </div>
@@ -187,8 +187,8 @@ export const GenerationConfigModels = (props: Props) => {
                   }}
                 />
                 {model?.id === props.currentModelId && (
-                  <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-                    <CheckIcon className={"p-1 text-white dark:text-black"} />
+                  <div className="absolute top-1 left-1 rounded-full border-2 bg-foreground">
+                    <CheckIcon className={"p-1 text-background"} />
                   </div>
                 )}
               </div>

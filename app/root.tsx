@@ -89,6 +89,21 @@ export function Layout(props: Props) {
         <ThemeProvider
           attribute={"class"}
           defaultTheme={"system"}
+          themes={[
+            "system",
+            "dark",
+            "light",
+            "skyblue",
+            "summer",
+            "snow",
+            "winter",
+            "forest",
+            "autumn",
+            "sakura",
+            "spring",
+            "mikan",
+            "sunday",
+          ]}
           enableSystem
           disableTransitionOnChange
         >

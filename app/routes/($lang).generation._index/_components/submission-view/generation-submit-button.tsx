@@ -28,9 +28,7 @@ export function GenerationSubmitButton(props: Props) {
           : `${props.buttonActionCaption}(${props.generatingCount}/${maxGeneratingCount})`}
         {props.generatingCount > 0 && (
           <Loader2Icon
-            className={
-              "dark:black ml-2 w-4 animate-spin text-white dark:text-black"
-            }
+            className={"ml-2 w-4 animate-spin bg-transparent text-white"}
           />
         )}
       </div>

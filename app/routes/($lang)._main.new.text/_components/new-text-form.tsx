@@ -601,8 +601,8 @@ export const NewTextForm = () => {
 
   return (
     <>
-      <div className="relative w-[100%]">
-        <div className="mb-4 bg-gray-100 dark:bg-black">
+      <div className="relative w-[100%] bg-background">
+        <div className="mb-4 bg-monotone-100 dark:bg-black">
           <CropImageField
             isHidePreviewImage={thumbnailBase64 === ""}
             cropWidth={400}
@@ -727,7 +727,7 @@ export const NewTextForm = () => {
             <AdWorkInput isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
-        <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
+        <div className="sticky bottom-0 bg-background pb-2">
           <Button className="w-full" type="submit" onClick={onPost}>
             投稿
           </Button>

@@ -142,7 +142,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               props.onPrevTask()
             }}
           >
-            <div className="relative bg-gray-100 dark:bg-gray-900">
+            <div className="relative bg-monotone-100">
               {/* 前ボタン */}
               {canPrevTask() && (
                 <Button
@@ -214,7 +214,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               ) : (
                 <>
                   <p className="text-center">{"予約生成中"}</p>
-                  <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
+                  <div className="relative bg-monotone-100 p-8">
                     <Skeleton
                       className={"m-auto h-[400px] w-[400px] rounded-xl"}
                     />

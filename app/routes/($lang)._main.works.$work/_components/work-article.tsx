@@ -90,7 +90,7 @@ export const WorkArticle = (props: Props) => {
               trigger={
                 <div className="flex items-center space-x-2">
                   <Heart
-                    className={"fill-white text-black dark:text-white"}
+                    className={"fill-background text-foreground"}
                     size={16}
                     strokeWidth={1}
                   />

@@ -731,7 +731,7 @@ export const EditImageForm = (props: Props) => {
   return (
     <>
       <div className="relative w-[100%]">
-        <div className="mb-4 bg-gray-100 dark:bg-black">
+        <div className="mb-4 bg-monotone-100 dark:bg-black">
           {/* 種別表記 */}
           <div className="p-2">
             <div className="flex items-center space-x-2">
@@ -1012,7 +1012,7 @@ export const EditImageForm = (props: Props) => {
             <AdWorkInput isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
-        <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
+        <div className="sticky bottom-0 bg-background pb-2 dark:bg-black">
           <Button className="w-full" type="submit" onClick={onPost}>
             更新
           </Button>

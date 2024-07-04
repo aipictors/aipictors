@@ -17,7 +17,7 @@ export const HomeNotificationsContentAwardItem = (props: Props) => {
     <>
       <Link
         to={`/works/${props.workId}`}
-        className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+        className="flex items-center p-1 transition-all hover:bg-monotone-100"
       >
         <>
           <div className="h-12 w-12 overflow-hidden rounded-md">

@@ -13,7 +13,7 @@ export function GenerationTaskContentImagePlaceHolder(props: Props) {
     <Skeleton className={`${props.className} relative`}>
       <Loader2Icon
         className={
-          "dark:black absolute top-[50%] left-[48%] w-8 animate-spin text-black dark:text-white"
+          "absolute top-[50%] left-[48%] w-8 animate-spin bg-background text-foreground"
         }
       />
     </Skeleton>

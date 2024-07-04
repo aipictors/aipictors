@@ -92,7 +92,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
       <DropdownMenuContent>
         <div>
           <div
-            className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
+            className="w-full rounded-md bg-monotone-200 p-2"
             style={{
               backgroundImage: `url(${headerImageUrl})`,
               backgroundSize: "cover",
@@ -181,7 +181,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
                   onValueChange={(newTheme) => setTheme(newTheme)}
                 >
                   <DropdownMenuRadioItem value="system">
-                    デバイスのモードを使用する
+                    デバイスモード使用
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="light">
                     ライト
@@ -190,6 +190,11 @@ export const HomeUserNavigationMenu = (props: Props) => {
                     ダーク
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
+                <MenuItemLink
+                  href="/settings/color"
+                  icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+                  label="その他のカラー"
+                />
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>

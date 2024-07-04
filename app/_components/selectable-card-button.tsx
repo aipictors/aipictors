@@ -46,7 +46,7 @@ export function SelectableCardButton(props: Props) {
       {!props.isDisabled && (
         <div
           className={cn(
-            "absolute top-2 right-2 rounded-full border-2 bg-black dark:bg-white",
+            "absolute top-2 right-2 rounded-full border-2 bg-foreground",
             {
               "border-2 border-black border-solid opacity-50":
                 !props.isSelected,
@@ -54,7 +54,7 @@ export function SelectableCardButton(props: Props) {
           )}
         >
           {props.isSelected ? (
-            <CheckIcon className="p-1 text-white dark:text-black" />
+            <CheckIcon className="p-1 text-background" />
           ) : (
             <CheckIcon className="p-1 opacity-0" />
           )}

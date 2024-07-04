@@ -43,7 +43,7 @@ export const ImageModelCard = (props: Props) => {
     return input
   }
 
-  const classes = `flex relative cursor-pointer flex-col rounded-md border border-neutral-1100 bg-neutral-1100 transition-all hover:bg-gray-200 dark:hover:bg-gray-600 ${
+  const classes = `flex relative cursor-pointer flex-col rounded-md border border-neutral-1100 bg-neutral-1100 transition-all hover:bg-monotone-300 dark:hover:bg-monotone-600 ${
     props.isActive ? "border-2 border-blue-500" : ""
   }`
 

@@ -115,8 +115,8 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
             {truncateTitle(work.title, 8)}
           </div>
           {selectedWorks.some((w) => w.id === work.id) && (
-            <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-              <CheckIcon className="p-1 text-white dark:text-black" />
+            <div className="absolute top-1 left-1 rounded-full border-2 bg-foreground dark:bg-white">
+              <CheckIcon className="p-1 text-background dark:text-black" />
             </div>
           )}
         </div>
@@ -156,8 +156,8 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
             <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
               {truncateTitle(work.title, 8)}
             </div>
-            <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
-              <CheckIcon className="p-1 text-white dark:text-black" />
+            <div className="absolute top-1 left-1 rounded-full border-2 bg-foreground dark:bg-white">
+              <CheckIcon className="p-1 text-background dark:text-black" />
             </div>
           </div>
         ))}

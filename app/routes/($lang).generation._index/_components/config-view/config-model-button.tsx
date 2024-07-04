@@ -29,7 +29,7 @@ export const ConfigModelButton = (props: Props) => {
           // biome-ignore lint/style/useTemplate: <explanation>
           "h-auto w-full overflow-y-hidden p-2 " +
           (props.isSelected
-            ? "bg-zinc-300 text-black hover:bg-zinc-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-700"
+            ? "bg-monotone-300 text-foreground hover:bg-monotone-300"
             : "")
         }
         onClick={props.onClick}
