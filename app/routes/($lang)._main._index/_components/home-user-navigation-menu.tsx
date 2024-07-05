@@ -106,7 +106,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
   const mode = setMode(theme ? theme?.toString() : "system")
 
   const getThemeIcon = () => {
-    return theme?.indexOf("dark") !== -1 ? (
+    return theme?.endsWith("dark") ? (
       <MoonIcon className="mr-2 inline-block w-4" />
     ) : (
       <SunIcon className="mr-2 inline-block w-4" />
@@ -124,7 +124,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
       <DropdownMenuContent>
         <div>
           <div
-            className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800 p-2"
+            className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
             style={{
               backgroundImage: `url(${headerImageUrl})`,
               backgroundSize: "cover",

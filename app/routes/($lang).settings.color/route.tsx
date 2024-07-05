@@ -35,14 +35,11 @@ export default function SettingColor() {
       return
     }
     if (color === "none") {
-      setColorSchema("none")
       // "light" || "dark"
       setTheme(mode)
       return
     }
-    const theme = `${color}-${mode}`
-    setColorSchema(theme)
-    setTheme(theme)
+    setTheme(`${color}-${mode}`)
   }
   const setMode = (theme: string) => {
     if (theme === "system" || theme === "light" || theme === "dark") {
@@ -56,15 +53,15 @@ export default function SettingColor() {
     }
     return "system"
   }
-  const mode = setMode(theme ? theme?.toString() : "system")
+  const mode = setMode(theme ? theme : "system")
   const setColorSchema = (theme: string) => {
     if (theme === "system" || theme === "light" || theme === "dark") {
       return "none"
     }
-    const prefix = theme?.replace(/-(light|dark)/, "")
+    const prefix = theme.replace(/\-(light|dark)/, "")
     return prefix ?? "none"
   }
-  const colorSchema = setColorSchema(theme ? theme?.toString() : "none")
+  const colorSchema = setColorSchema(theme ? theme : "system")
   const themeRadio = (value: string, label: string) => {
     return (
       <div className="w-auto">
