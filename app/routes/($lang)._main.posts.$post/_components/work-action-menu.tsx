@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/_components/ui/popover"
-import { ReportDialog } from "@/routes/($lang)._main.works.$work/_components/report-dialog"
+import { ReportDialog } from "@/routes/($lang)._main.posts.$post/_components/report-dialog"
 import { DownloadIcon, MoreHorizontal } from "lucide-react"
 
 type Props = {

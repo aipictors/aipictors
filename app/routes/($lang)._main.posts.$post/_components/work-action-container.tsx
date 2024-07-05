@@ -1,5 +1,5 @@
 import {} from "@/_components/ui/avatar"
-import { WorkAction } from "@/routes/($lang)._main.works.$work/_components/work-action"
+import { WorkAction } from "@/routes/($lang)._main.posts.$post/_components/work-action"
 import {} from "@/_components/ui/tabs"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"

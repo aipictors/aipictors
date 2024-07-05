@@ -73,18 +73,18 @@ export const WorksListTableRow = (props: Props) => {
         >
           <TableCell className="font-medium">
             {props.work.accessType === "LIMITED" ? (
-              <Link to={`/works/${props.work.uuid}`}>
+              <Link to={`/posts/${props.work.uuid}`}>
                 <div className="w-32">{props.work.title}</div>
               </Link>
             ) : (
-              <Link to={`/works/${props.work.id}`}>
+              <Link to={`/posts/${props.work.id}`}>
                 <div className="w-32">{props.work.title}</div>
               </Link>
             )}
           </TableCell>
           <TableCell>
             {props.work.accessType === "LIMITED" ? (
-              <Link to={`/works/${props.work.uuid}`}>
+              <Link to={`/posts/${props.work.uuid}`}>
                 <img
                   src={props.work.thumbnailImageUrl}
                   alt="thumbnail"
@@ -92,7 +92,7 @@ export const WorksListTableRow = (props: Props) => {
                 />{" "}
               </Link>
             ) : (
-              <Link to={`/works/${props.work.id}`}>
+              <Link to={`/posts/${props.work.id}`}>
                 <img
                   src={props.work.thumbnailImageUrl}
                   alt="thumbnail"
@@ -102,7 +102,7 @@ export const WorksListTableRow = (props: Props) => {
             )}
           </TableCell>
           <TableCell>
-            <Link to={`/works/${props.work.id}/edit`}>
+            <Link to={`/posts/${props.work.id}/edit`}>
               <PencilIcon />
             </Link>
           </TableCell>

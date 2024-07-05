@@ -42,7 +42,7 @@ export const WorksSpList = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index}>
           <div className="mt-2 mb-2 flex">
-            <Link to={`/works/${work.id}`} className="mr-2">
+            <Link to={`/posts/${work.id}`} className="mr-2">
               <img
                 src={work.thumbnailImageUrl}
                 alt=""
@@ -51,7 +51,7 @@ export const WorksSpList = (props: Props) => {
             </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <Link to={`/works/${work.id}`}>
+                <Link to={`/posts/${work.id}`}>
                   <div className="w-full font-bold">{work.title}</div>
                 </Link>
                 <div className="space-x-2">
@@ -84,7 +84,7 @@ export const WorksSpList = (props: Props) => {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              <Link to={`/works/${work.id}/edit`}>
+              <Link to={`/posts/${work.id}/edit`}>
                 <PencilIcon />
               </Link>
             </div>

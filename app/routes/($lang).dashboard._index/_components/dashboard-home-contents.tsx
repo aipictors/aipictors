@@ -101,7 +101,7 @@ export const DashboardHomeContents = () => {
                   {works?.map((work, index) => (
                     <Link
                       key={work.id}
-                      to={`/works/${work.id}`}
+                      to={`/posts/${work.id}`}
                       className={`mb-4 flex items-center ${
                         index === 0 ? "relative" : ""
                       }`}

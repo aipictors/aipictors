@@ -1,4 +1,4 @@
-import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.works.$work/_components/work-image-thumbnail-carousel"
+import { WorkImageThumbnailCarousel } from "@/routes/($lang)._main.posts.$post/_components/work-image-thumbnail-carousel"
 import { useEffect, useState } from "react"
 import { ImagesPreview } from "@/_components/images-preview"
 

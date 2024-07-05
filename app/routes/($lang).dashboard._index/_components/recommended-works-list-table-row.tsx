@@ -26,12 +26,12 @@ export const RecommendedWorksListTableRow = (props: Props) => {
     <>
       <TableRow>
         <TableCell className="font-medium">
-          <Link to={`/works/${props.work.id}`}>
+          <Link to={`/posts/${props.work.id}`}>
             <div className="w-32">{props.work.title}</div>
           </Link>
         </TableCell>
         <TableCell>
-          <Link to={`/works/${props.work.id}`}>
+          <Link to={`/posts/${props.work.id}`}>
             <img
               src={props.work.thumbnailImageUrl}
               alt="thumbnail"

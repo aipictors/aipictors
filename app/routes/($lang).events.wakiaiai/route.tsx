@@ -32,7 +32,7 @@ export default function EventWakiaiai() {
             imageURL={
               "https://www.aipictors.com/wp-content/uploads/2023/07/XVzvtp28cfh6CQaMT9Rk0yJFA4rsgN.webp"
             }
-            linkURL={"https://www.aipictors.com/works/66168/"}
+            linkURL={"https://www.aipictors.com/posts/66168/"}
             linkTitle={"Aipictors"}
           />
         </div>
@@ -117,7 +117,7 @@ export default function EventWakiaiai() {
         imageURL={
           "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp"
         }
-        linkURL={"https://www.aipictors.com/works/66093/"}
+        linkURL={"https://www.aipictors.com/posts/66093/"}
         linkTitle={"Aipictors"}
       />
       <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
@@ -157,7 +157,7 @@ export default function EventWakiaiai() {
         imageURL={
           "https://www.aipictors.com/wp-content/uploads/2023/06/FDfUikjd67cARVC30vePmGJMn4zL81.webp"
         }
-        linkURL={"https://www.aipictors.com/works/59815/"}
+        linkURL={"https://www.aipictors.com/posts/59815/"}
         linkTitle={"Aipictors"}
       />
     </div>

@@ -1,5 +1,5 @@
 import { ParamsError } from "@/_errors/params-error"
-import { EditImageForm } from "@/routes/($lang)._main.works.$work.edit._index/_components/edit-image-form"
+import { EditImageForm } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form"
 import { useParams } from "@remix-run/react"
 import { Suspense } from "react"
 

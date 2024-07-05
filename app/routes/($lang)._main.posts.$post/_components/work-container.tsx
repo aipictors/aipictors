@@ -1,16 +1,16 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
-import { WorkNextAndPrevious } from "@/routes/($lang)._main.works.$work/_components/work-next-and-previous"
-import { WorkRelatedList } from "@/routes/($lang)._main.works.$work/_components/work-related-list"
-import { WorkUser } from "@/routes/($lang)._main.works.$work/_components/work-user"
+import { WorkArticle } from "@/routes/($lang)._main.posts.$post/_components/work-article"
+import { WorkNextAndPrevious } from "@/routes/($lang)._main.posts.$post/_components/work-next-and-previous"
+import { WorkRelatedList } from "@/routes/($lang)._main.posts.$post/_components/work-related-list"
+import { WorkUser } from "@/routes/($lang)._main.posts.$post/_components/work-user"
 import { Suspense } from "react"
-import { WorkTagsWorks } from "@/routes/($lang)._main.works.$work/_components/work-tags-works"
+import { WorkTagsWorks } from "@/routes/($lang)._main.posts.$post/_components/work-tags-works"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import type { ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
-import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
+import { WorkCommentList } from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]

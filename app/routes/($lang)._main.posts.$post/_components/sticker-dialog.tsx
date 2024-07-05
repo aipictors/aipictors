@@ -6,7 +6,7 @@ import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-s
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { StickerButton } from "@/routes/($lang)._main.works.$work/_components/sticker-button"
+import { StickerButton } from "@/routes/($lang)._main.posts.$post/_components/sticker-button"
 import { AddStickerButton } from "@/_components/add-sticker-button"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { viewerUserStickersCountQuery } from "@/_graphql/queries/viewer/viewer-user-stickers-count"

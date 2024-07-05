@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { workQuery } from "@/_graphql/queries/work/work"
-import { WorkAdSense } from "@/routes/($lang)._main.works.$work/_components/work-adcense"
+import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
 import type { ResultOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 
@@ -87,10 +87,10 @@ function keyDownHandler(
 ): void {
   if (typeof window !== "undefined" && work !== null) {
     if (e.code === "KeyQ" && work.nextWork) {
-      window.location.href = `/works/${work.nextWork.id}`
+      window.location.href = `/posts/${work.nextWork.id}`
     }
     if (e.code === "KeyE" && work.previousWork) {
-      window.location.href = `/works/${work.previousWork.id}`
+      window.location.href = `/posts/${work.previousWork.id}`
     }
   }
 }

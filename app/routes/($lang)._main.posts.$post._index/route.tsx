@@ -3,14 +3,14 @@ import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
 import { toRatingText } from "@/_utils/work/to-rating-text"
-import { WorkContainer } from "@/routes/($lang)._main.works.$work/_components/work-container"
+import { WorkContainer } from "@/routes/($lang)._main.posts.$post/_components/work-container"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { Suspense } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (props.params.work === undefined) {
+  if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
@@ -19,14 +19,14 @@ export async function loader(props: LoaderFunctionArgs) {
   const workResp = await client.query({
     query: workQuery,
     variables: {
-      id: props.params.work,
+      id: props.params.post,
     },
   })
 
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
-      workId: props.params.work,
+      workId: props.params.post,
     },
   })
 
@@ -52,7 +52,7 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Work() {
   const params = useParams()
 
-  if (params.work === undefined) {
+  if (params.post === undefined) {
     throw new ParamsError()
   }
 

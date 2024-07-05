@@ -3,7 +3,7 @@ import { ParamsError } from "@/_errors/params-error"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { createClient } from "@/_lib/client"
 import { CollectionArticle } from "@/routes/($lang)._main.collections.$collection/_components/collection-article"
-import { WorkList } from "@/routes/($lang)._main.works._index/_components/work-list"
+import { WorkList } from "@/routes/($lang)._main.posts._index/_components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 

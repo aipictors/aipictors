@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
-import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
+import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { useEffect } from "react"
 
@@ -67,9 +67,9 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             // ページ遷移
             if (typeof window !== "undefined") {
               if (props.uuid !== "") {
-                window.location.href = `https://aipictors.com/works/${props.uuid}`
+                window.location.href = `https://aipictors.com/posts/${props.uuid}`
               } else {
-                window.location.href = `https://aipictors.com/works/${props.workId}`
+                window.location.href = `https://aipictors.com/posts/${props.workId}`
               }
             }
           }
@@ -89,8 +89,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             <Link
               to={
                 props.uuid !== ""
-                  ? `https://aipictors.com/works/${props.uuid}`
-                  : `https://aipictors.com/works/${props.workId}`
+                  ? `https://aipictors.com/posts/${props.uuid}`
+                  : `https://aipictors.com/posts/${props.workId}`
               }
             >
               <img
@@ -107,8 +107,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               text={`${props.title}\n`}
               url={`${
                 props.uuid !== ""
-                  ? `https://aipictors.com/works/${props.uuid}`
-                  : `https://aipictors.com/works/${props.workId}`
+                  ? `https://aipictors.com/posts/${props.uuid}`
+                  : `https://aipictors.com/posts/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
             />
@@ -117,9 +117,9 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             onClick={() => {
               if (typeof window !== "undefined") {
                 if (props.uuid !== "") {
-                  window.location.href = `https://aipictors.com/works/${props.uuid}`
+                  window.location.href = `https://aipictors.com/posts/${props.uuid}`
                 } else {
-                  window.location.href = `https://aipictors.com/works/${props.workId}`
+                  window.location.href = `https://aipictors.com/posts/${props.workId}`
                 }
               }
             }}

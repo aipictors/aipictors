@@ -36,7 +36,7 @@ export function HomeWorkAlbum({
       className="cursor overflow-hidden rounded transition-all"
       style={{ ...wrapperStyle, position: "relative" }}
     >
-      <Link to={`/works/${workId}`} className="group">
+      <Link to={`/posts/${workId}`} className="group">
         <img
           style={{
             filter: isMosaic || !isLoaded ? "blur(24px)" : "none",
@@ -49,7 +49,7 @@ export function HomeWorkAlbum({
         />
       </Link>
       <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-        <Link className="w-48 font-bold" to={`/works/${workId}`}>
+        <Link className="w-48 font-bold" to={`/posts/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}
           </p>

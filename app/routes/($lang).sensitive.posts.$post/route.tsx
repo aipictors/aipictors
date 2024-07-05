@@ -2,8 +2,8 @@ import { ArticlePage } from "@/_components/page/article-page"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
 import { createClient } from "@/_lib/client"
-import { WorkArticle } from "@/routes/($lang)._main.works.$work/_components/work-article"
-import { WorkCommentList } from "@/routes/($lang)._main.works.$work/_components/work-comment-list"
+import { WorkArticle } from "@/routes/($lang)._main.posts.$post/_components/work-article"
+import { WorkCommentList } from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 
@@ -14,21 +14,21 @@ export const meta: MetaFunction = () => {
 export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
 
-  if (props.params.work === undefined) {
+  if (props.params.post === undefined) {
     throw new Response("Invalid work", { status: 400 })
   }
 
   const workResp = await client.query({
     query: workQuery,
     variables: {
-      id: props.params.work,
+      id: props.params.post,
     },
   })
 
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
-      workId: props.params.work,
+      workId: props.params.post,
     },
   })
 

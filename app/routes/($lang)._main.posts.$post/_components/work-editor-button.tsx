@@ -22,7 +22,7 @@ export const WorkEditorButton = (props: Props) => {
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
-        <Link to={`/works/${props.targetWorkId}/edit`}>
+        <Link to={`/posts/${props.targetWorkId}/edit`}>
           <Button className="space-x-2" aria-label={"編集"} variant="secondary">
             <PencilIcon width={16} />
             <p>編集</p>

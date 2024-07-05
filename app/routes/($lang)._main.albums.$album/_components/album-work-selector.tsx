@@ -1,6 +1,6 @@
 import { Card } from "@/_components/ui/card"
 import type { albumQuery } from "@/_graphql/queries/album/album"
-import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
+import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 

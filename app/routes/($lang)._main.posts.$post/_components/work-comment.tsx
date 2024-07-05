@@ -1,23 +1,22 @@
-import { AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import { Avatar } from "@radix-ui/react-avatar"
+import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { deleteCommentMutation } from "@/_graphql/mutations/delete-comment"
 import { useMutation } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
-import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import React from "react"
-import { ReplyCommentInput } from "@/routes/($lang)._main.works.$work/_components/work-comment-input"
+import { ReplyCommentInput } from "@/routes/($lang)._main.posts.$post/_components/work-comment-input"
 import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
 import { Link } from "@remix-run/react"
 
 type Props = {
+  userId: string
   isMine: boolean
   userIconImageURL?: string
   userName?: string
   text?: string
   createdAt: number
-  replyId: string
-  userId: string
+  commentId: string
   /* コメントで使われてるスタンプ情報 */
   stickerImageURL?: string
   stickerTitle?: string
@@ -25,7 +24,7 @@ type Props = {
   stickerAccessType?: string
   isStickerDownloadable?: boolean
   onDeleteComment: () => void
-  onReplyCompleted?: (
+  onReplyCompleted: (
     id: string,
     text: string,
     stickerId: string,
@@ -34,9 +33,9 @@ type Props = {
 }
 
 /**
- * 作品のコメントへの返信
+ * 作品へのコメント
  */
-export const WorkCommentResponse = (props: Props) => {
+export const WorkComment = (props: Props) => {
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(
     deleteCommentMutation,
   )
@@ -48,7 +47,7 @@ export const WorkCommentResponse = (props: Props) => {
     await deleteMutation({
       variables: {
         input: {
-          commentId: props.replyId,
+          commentId: props.commentId,
         },
       },
     })
@@ -56,7 +55,7 @@ export const WorkCommentResponse = (props: Props) => {
 
   return (
     <>
-      <div className="flex items-start space-x-4 pl-16">
+      <div className="flex items-start space-x-4">
         <Link to={`/users/${props.userId}`}>
           <Avatar>
             <AvatarImage
@@ -67,21 +66,22 @@ export const WorkCommentResponse = (props: Props) => {
             <AvatarFallback />
           </Avatar>
         </Link>
-        <div className="space-y-0">
+        <div>
           <Link to={`/users/${props.userId}`}>
-            <p>{props.userName}</p>
+            <span>{props.userName}</span>
           </Link>
-          <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
-            {props.text}
-          </p>
-
+          {props.text && (
+            <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
+              {props.text}
+            </p>
+          )}
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="group block w-24 overflow-hidden rounded-md"
+              className="group block w-24 overflow-hidden"
               to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
             >
               <img
-                className="w-24 overflow-hidden rounded-md py-2 transition-transform duration-300 group-hover:scale-105"
+                className="w-24 py-2 transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
               />
@@ -91,9 +91,9 @@ export const WorkCommentResponse = (props: Props) => {
             <img className="w-24 py-2" alt="" src={props.stickerImageURL} />
           )}
           <div className="flex space-x-2">
-            <p className="text-xs opacity-50">
+            <span className="text-xs opacity-50">
               {toDateTimeText(props.createdAt)}
-            </p>
+            </span>
             {props.isMine ? (
               <>
                 {isDeleteLoading ? (
@@ -133,16 +133,14 @@ export const WorkCommentResponse = (props: Props) => {
       </div>
       {!props.isMine && openReplyInput && (
         <ReplyCommentInput
-          targetCommentId={props.replyId}
+          targetCommentId={props.commentId}
           onReplyCompleted={(
             id: string,
             text: string,
-            stickerId,
+            stickerId: string,
             stickerImageURL: string,
           ) => {
-            if (props.onReplyCompleted) {
-              props.onReplyCompleted(id, text, stickerId, stickerImageURL)
-            }
+            props.onReplyCompleted(id, text, stickerId, stickerImageURL)
           }}
         />
       )}

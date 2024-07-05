@@ -110,7 +110,7 @@ export const HomeRouteList = () => {
             <CarouselItem className="basis-1/1 xl:basis-1/8">
               <HomeNavigationButton
                 isDisabled={config.isReleaseMode}
-                href={"/works/2d"}
+                href={"/posts/2d"}
                 icon={ImageIcon}
               >
                 {"イラスト"}
@@ -119,7 +119,7 @@ export const HomeRouteList = () => {
             <CarouselItem className="basis-1/1 xl:basis-1/8">
               <HomeNavigationButton
                 isDisabled={config.isReleaseMode}
-                href={"/works/2.5d"}
+                href={"/posts/2.5d"}
                 icon={BookImageIcon}
               >
                 {"フォト"}

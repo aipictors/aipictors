@@ -94,7 +94,7 @@ export const CroppedWorkSquare = (props: Props) => {
   return (
     <div className="inline-box relative">
       <Link
-        to={`/works/${props.workId}`}
+        to={`/posts/${props.workId}`}
         className="transition-all duration-300 ease-in-out"
       >
         <div
