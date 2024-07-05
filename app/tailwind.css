@@ -143,50 +143,51 @@
     --radius: 0.5rem;
   }
 
- .pink-light {
-  --background: 310 100% 95%;
-  --foreground: 310 5% 10%;
-  --card: 310 50% 90%;
-  --card-foreground: 310 5% 15%;
-  --popover: 310 100% 95%;
-  --popover-foreground: 310 100% 10%;
-  --primary: 310 95% 50%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 310 30% 81%;
-  --secondary-foreground: 0 0% 0%;
-  --muted: 272 30% 85%;
-  --muted-foreground: 310 5% 40%;
-  --accent: 272 30% 81%;
-  --accent-foreground: 310 5% 15%;
-  --destructive: 0 100% 50%;
-  --destructive-foreground: 310 5% 90%;
-  --border: 310 30% 81%;
-  --input: 310 30% 50%;
-  --ring: 310 95% 50%;
-  --radius: 0.5rem;
-}
- .pink-dark {
-  --background: 310 50% 10%;
-  --foreground: 310 5% 90%;
-  --card: 310 50% 10%;
-  --card-foreground: 310 5% 90%;
-  --popover: 310 50% 5%;
-  --popover-foreground: 310 5% 90%;
-  --primary: 310 95% 50%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 310 30% 20%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 272 30% 25%;
-  --muted-foreground: 310 5% 65%;
-  --accent: 272 30% 25%;
-  --accent-foreground: 310 5% 90%;
-  --destructive: 0 100% 50%;
-  --destructive-foreground: 310 5% 90%;
-  --border: 310 30% 50%;
-  --input: 310 30% 50%;
-  --ring: 310 95% 50%;
-  --radius: 0.5rem;
-}
+  .pink-light {
+    --background: 310 100% 97%;
+    --foreground: 310 5% 10%;
+    --card: 310 50% 92%;
+    --card-foreground: 310 5% 20%;
+    --popover: 310 100% 97%;
+    --popover-foreground: 310 5% 15%;
+    --primary: 310 95% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 310 40% 85%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 272 30% 90%;
+    --muted-foreground: 310 5% 50%;
+    --accent: 272 40% 85%;
+    --accent-foreground: 310 5% 20%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 310 5% 90%;
+    --border: 310 30% 85%;
+    --input: 310 30% 60%;
+    --ring: 310 95% 60%;
+    --radius: 0.5rem;
+  }
+
+  .pink-dark {
+    --background: 310 50% 15%;
+    --foreground: 310 100% 95%;
+    --card: 310 50% 20%;
+    --card-foreground: 310 100% 90%;
+    --popover: 310 50% 10%;
+    --popover-foreground: 310 100% 90%;
+    --primary: 310 95% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 310 40% 30%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 272 30% 35%;
+    --muted-foreground: 310 5% 80%;
+    --accent: 272 40% 35%;
+    --accent-foreground: 310 100% 90%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 310 100% 95%;
+    --border: 310 30% 60%;
+    --input: 310 30% 60%;
+    --ring: 310 95% 60%;
+    --radius: 0.5rem;
+  }
 
   .orange-light {
     --background: 34 100% 95%;
@@ -209,7 +210,7 @@
     --input: 34 30% 50%;
     --ring: 34 95% 50%;
     --radius: 0.5rem;
-  }
+}
 
   .orange-dark {
     --background: 34 50% 10%;
