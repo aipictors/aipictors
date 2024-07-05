@@ -34,6 +34,7 @@ import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import type { FragmentOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 
 type Props = {
   task:
@@ -436,6 +437,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 <div className="w-full space-y-1" />
               </div>
             </>
+          )}
+          <div className="py-2">
+            <Separator />
+          </div>
+          {props.task.completedAt && (
+            <div className="w-full space-y-1">
+              <p className="font-bold">{"生成日時"}</p>
+              <p>{toDateTimeText(props.task.completedAt)}</p>
+            </div>
           )}
         </div>
       </ScrollArea>
