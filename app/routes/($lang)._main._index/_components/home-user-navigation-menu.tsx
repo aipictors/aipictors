@@ -73,8 +73,40 @@ export const HomeUserNavigationMenu = (props: Props) => {
 
   const { theme, setTheme } = useTheme()
 
+  const setColorTheme = (newMode: string) => {
+    if (newMode === "system") {
+      setTheme(newMode)
+      return
+    }
+    if ((theme === "system" || theme === "dark") && newMode === "light") {
+      setTheme(newMode)
+      return
+    }
+    if ((theme === "system" || theme === "light") && newMode === "dark") {
+      setTheme(newMode)
+      return
+    }
+    // テーマ適用中→"blue-light"、"blue-dark"等同色でのダーク、ライト切り替え
+    const prefix = theme?.replace(/\-(light|dark)/, "-")
+    const colorPrefix = prefix ?? ""
+    setTheme(colorPrefix + newMode)
+  }
+  const setMode = (theme: string) => {
+    if (theme === "system" || theme === "light" || theme === "dark") {
+      return theme
+    }
+    if (theme.endsWith("-light")) {
+      return "light"
+    }
+    if (theme.endsWith("-dark")) {
+      return "dark"
+    }
+    return "system"
+  }
+  const mode = setMode(theme ? theme?.toString() : "system")
+
   const getThemeIcon = () => {
-    return theme === "dark" ? (
+    return theme?.endsWith("dark") ? (
       <MoonIcon className="mr-2 inline-block w-4" />
     ) : (
       <SunIcon className="mr-2 inline-block w-4" />
@@ -177,11 +209,13 @@ export const HomeUserNavigationMenu = (props: Props) => {
                 <DropdownMenuLabel>{"テーマ変更"}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
-                  value={theme}
-                  onValueChange={(newTheme) => setTheme(newTheme)}
+                  value={mode}
+                  onValueChange={(newMode) => {
+                    setColorTheme(newMode)
+                  }}
                 >
                   <DropdownMenuRadioItem value="system">
-                    デバイスのモードを使用する
+                    デバイスモード使用
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="light">
                     ライト
@@ -190,6 +224,11 @@ export const HomeUserNavigationMenu = (props: Props) => {
                     ダーク
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
+                <MenuItemLink
+                  href="/settings/color"
+                  icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+                  label="その他のカラー"
+                />
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
