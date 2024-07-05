@@ -1,5 +1,5 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import { imageGenerationTaskQuery } from "@/_graphql/queries/image-generation/image-generation-task"
+import { imageGenerationResultQuery } from "@/_graphql/queries/image-generation/image-generation-result"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
@@ -35,7 +35,7 @@ export const GenerationConfigRestoration = (props: Props) => {
   const { send } = GenerationConfigContext.useActorRef()
 
   const { data } = useSuspenseQuery(
-    imageGenerationTaskQuery,
+    imageGenerationResultQuery,
     authContext.isLoggedIn && ref !== null
       ? { variables: { id: ref } }
       : skipToken,
@@ -54,10 +54,10 @@ export const GenerationConfigRestoration = (props: Props) => {
       if (
         data !== null &&
         data !== undefined &&
-        data.imageGenerationTask !== null &&
-        data.imageGenerationTask !== undefined
+        data.imageGenerationResult !== null &&
+        data.imageGenerationResult !== undefined
       ) {
-        const task = data.imageGenerationTask
+        const task = data.imageGenerationResult
         context.updateSettings(
           task.model.id,
           task.steps,
@@ -120,7 +120,7 @@ export const GenerationConfigRestoration = (props: Props) => {
       toast("タスクの復元に失敗しました。")
       return
     }
-  }, [data?.imageGenerationTask.id])
+  }, [data?.imageGenerationResult.id])
 
   useEffect(() => {
     if (!promptText) return
