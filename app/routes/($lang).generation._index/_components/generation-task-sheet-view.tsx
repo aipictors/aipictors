@@ -21,6 +21,7 @@ import { useMediaQuery } from "usehooks-ts"
 import type { ResultOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
 type Props = {
   task:
@@ -314,9 +315,17 @@ export function GenerationTaskSheetView(props: Props) {
   const userNanoid = context.user?.nanoid ?? null
   if (userNanoid === null) return
 
+  const cachedImage = useCachedImageGenerationTask(
+    context.config.viewTaskId ?? "",
+  )
+
+  const cachedResultImage = useCachedImageGenerationResult(
+    context.config.viewTaskId ?? "",
+  )
+
   const imageGenerationTask =
     props.task.id !== context.config.viewTaskId
-      ? useCachedImageGenerationTask(context.config.viewTaskId ?? "")
+      ? cachedImage ?? cachedResultImage
       : props.task
 
   useEffect(() => {
