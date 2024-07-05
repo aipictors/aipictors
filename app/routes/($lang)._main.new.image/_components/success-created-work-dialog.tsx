@@ -67,9 +67,9 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             // ページ遷移
             if (typeof window !== "undefined") {
               if (props.uuid !== "") {
-                window.location.href = `https://aipictors.com/posts/${props.uuid}`
+                window.location.href = `/posts/${props.uuid}`
               } else {
-                window.location.href = `https://aipictors.com/posts/${props.workId}`
+                window.location.href = `/posts/${props.workId}`
               }
             }
           }
@@ -89,8 +89,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             <Link
               to={
                 props.uuid !== ""
-                  ? `https://aipictors.com/posts/${props.uuid}`
-                  : `https://aipictors.com/posts/${props.workId}`
+                  ? `/posts/${props.uuid}`
+                  : `/posts/${props.workId}`
               }
             >
               <img
@@ -107,8 +107,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               text={`${props.title}\n`}
               url={`${
                 props.uuid !== ""
-                  ? `https://aipictors.com/posts/${props.uuid}`
-                  : `https://aipictors.com/posts/${props.workId}`
+                  ? `/posts/${props.uuid}`
+                  : `/posts/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
             />
@@ -117,9 +117,9 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             onClick={() => {
               if (typeof window !== "undefined") {
                 if (props.uuid !== "") {
-                  window.location.href = `https://aipictors.com/posts/${props.uuid}`
+                  window.location.href = `/posts/${props.uuid}`
                 } else {
-                  window.location.href = `https://aipictors.com/posts/${props.workId}`
+                  window.location.href = `/posts/${props.workId}`
                 }
               }
             }}
