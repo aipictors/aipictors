@@ -34,7 +34,9 @@ export const GenerationConfigCount = (props: Props) => {
     <>
       <div className="gap-x-2">
         <div className="flex items-center gap-x-2">
-          <span className="text-nowrap font-bold">{"生成枚数"}</span>
+          <span className="text-nowrap font-bold">
+            {"生成枚数（予約生成）"}
+          </span>
           <CrossPlatformTooltip
             text={
               !isStandardOrPremium
