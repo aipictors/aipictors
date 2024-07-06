@@ -16,13 +16,14 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Input } from "@/_components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
 import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 
 type Props = {
   onAddedSicker?: () => void
@@ -46,6 +47,8 @@ export const AddStickerDialog = (props: Props) => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const [isPublic, setIsPublic] = useState(false)
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
   const [createSticker, { loading: isLoading }] = useMutation(
     createStickerMutation,
@@ -99,8 +102,7 @@ export const AddStickerDialog = (props: Props) => {
     // 画像をアップロードする処理
     const uploadedImageUrl = await uploadPublicImage(
       imageBase64,
-      imageFileName,
-      authContext.userId,
+      token?.viewer?.token,
     )
 
     if (uploadedImageUrl === "") {

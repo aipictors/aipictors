@@ -59,6 +59,7 @@ import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_compone
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 
 /**
  * 新規作品フォーム
@@ -66,9 +67,13 @@ import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-i
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
+  if (authContext.isLoading) return null
+
   if (!authContext || !authContext.userId) {
     return "ログインしてください"
   }
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
     variables: {
@@ -284,13 +289,7 @@ export const NewImageForm = () => {
 
     const imageUrls = await Promise.all(
       images.map(async (image) => {
-        const imageFileName = `${createRandomString(30)}.webp`
-
-        const imageUrl = await uploadPublicImage(
-          image,
-          imageFileName,
-          authContext.userId,
-        )
+        const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
         return imageUrl
       }),
     )
@@ -377,8 +376,7 @@ export const NewImageForm = () => {
       const ogpImageFileName = `${createRandomString(30)}.webp`
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        smallThumbnailFileName,
-        authContext.userId,
+        token?.viewer?.token,
       )
       if (smallThumbnailUrl === "") {
         toast("サムネイルのアップロードに失敗しました")
@@ -388,8 +386,7 @@ export const NewImageForm = () => {
       uploadedImageUrls.push(smallThumbnailUrl)
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        largeThumbnailFileName,
-        authContext.userId,
+        token?.viewer?.token,
       )
       if (largeThumbnailUrl === "") {
         toast("サムネイルのアップロードに失敗しました")
@@ -398,8 +395,7 @@ export const NewImageForm = () => {
       uploadedImageUrls.push(largeThumbnailUrl)
       const ogpBase64Url = await uploadPublicImage(
         ogpBase64,
-        ogpImageFileName,
-        authContext.userId,
+        token?.viewer?.token,
       )
       if (ogpBase64Url === "") {
         toast("サムネイルのアップロードに失敗しました")

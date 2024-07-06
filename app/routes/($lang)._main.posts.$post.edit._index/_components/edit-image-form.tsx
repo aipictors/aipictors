@@ -58,6 +58,7 @@ import { updateWorkMutation } from "@/_graphql/mutations/update-work"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 
 type Props = {
   workId: string
@@ -296,6 +297,8 @@ export const EditImageForm = (props: Props) => {
 
   const [base64Cache, setBase64Cache] = useState<{ [key: string]: string }>({})
 
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+
   useEffect(() => {
     setTitle(work?.work?.title ?? "")
     setEnTitle(work?.work?.enTitle ?? "")
@@ -408,7 +411,7 @@ export const EditImageForm = (props: Props) => {
 
         const imageUrl = image.startsWith("https://")
           ? image
-          : await uploadPublicImage(image, imageFileName, authContext.userId)
+          : await uploadPublicImage(image, token?.viewer?.token)
         return imageUrl
       }),
     )
@@ -500,11 +503,7 @@ export const EditImageForm = (props: Props) => {
       const smallThumbnailUrl =
         thumbnailBase64.startsWith("https://") || smallThumbnail === null
           ? work?.work?.smallThumbnailImageURL
-          : await uploadPublicImage(
-              smallThumbnail.base64,
-              smallThumbnailFileName,
-              authContext.userId,
-            )
+          : await uploadPublicImage(smallThumbnail.base64, token?.viewer?.token)
 
       console.log(work?.work?.smallThumbnailImageURL)
 
@@ -517,11 +516,7 @@ export const EditImageForm = (props: Props) => {
       const largeThumbnailUrl =
         thumbnailBase64.startsWith("https://") || largeThumbnail === null
           ? work?.work?.largeThumbnailImageURL
-          : await uploadPublicImage(
-              largeThumbnail.base64,
-              largeThumbnailFileName,
-              authContext.userId,
-            )
+          : await uploadPublicImage(largeThumbnail.base64, token?.viewer?.token)
       if (largeThumbnailUrl === "" || largeThumbnailUrl === undefined) {
         toast("サムネイルのアップロードに失敗しました")
         return
@@ -530,11 +525,7 @@ export const EditImageForm = (props: Props) => {
       const ogpBase64Url =
         ogpBase64 === "" || ogpBase64.startsWith("https://")
           ? work?.work?.ogpThumbnailImageUrl
-          : await uploadPublicImage(
-              ogpBase64,
-              ogpImageFileName,
-              authContext.userId,
-            )
+          : await uploadPublicImage(ogpBase64, token?.viewer?.token)
       if (
         work?.work?.ogpThumbnailImageUrl !== null &&
         (ogpBase64Url === "" ||

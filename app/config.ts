@@ -257,10 +257,6 @@ export const config = {
     www4: "https://www4.aipictors.com/index.php",
     uploadPrivateImage:
       "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
-    uploadPublicImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/upload-public-image.php",
-    uploadPublicVideo:
-      "https://www.aipictors.com/wp-content/themes/AISite/upload-public-video.php",
     deleteUploadedImage:
       "https://www.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
     generationCheck:
@@ -269,6 +265,9 @@ export const config = {
       "https://www.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
     getRecommendedIds:
       "https://www.aipictors.com/wp-content/themes/AISite/recommended-ids.php",
+  },
+  uploader: {
+    uploadImage: env.VITE_WORKERS_UPLOADER,
   },
   /**
    * ワードプレスリンク

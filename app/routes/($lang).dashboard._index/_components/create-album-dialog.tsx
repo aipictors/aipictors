@@ -11,13 +11,14 @@ import { SelectCreatedWorksDialog } from "@/routes/($lang).dashboard._index/_com
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { createAlbumMutation } from "@/_graphql/mutations/create-album"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import type { ResultOf } from "gql.tada"
 import type { worksQuery } from "@/_graphql/queries/work/works"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 
 type Props = {
   children: React.ReactNode
@@ -47,6 +48,8 @@ export const CreateAlbumDialog = (props: Props) => {
   const [isCreating, setIsCreating] = useState<boolean>(false)
 
   const [createAlbum] = useMutation(createAlbumMutation)
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
   const handleSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -110,8 +113,7 @@ export const CreateAlbumDialog = (props: Props) => {
 
         const thumbnailUrl = await uploadPublicImage(
           thumbnailImageBase64,
-          imageFileName,
-          appContext.userId,
+          token?.viewer?.token,
         )
 
         await createAlbum({

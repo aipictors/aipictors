@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import { changeUserStickerAccessTypeMutation } from "@/_graphql/mutations/change-user-sticker-access-type"
+import { updateStickerMutation } from "@/_graphql/mutations/update-sticker"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import React from "react"
@@ -27,11 +27,12 @@ type Props = {
  * スタンプ公開状態変更ダイアログ
  */
 export const StickerChangeAccessTypeDialog = (props: Props) => {
-  const [changeUserStickerAccessType, { loading: isChangeStickerAccessType }] =
-    useMutation(changeUserStickerAccessTypeMutation)
+  const [updateSticker, { loading: isChangeStickerAccessType }] = useMutation(
+    updateStickerMutation,
+  )
 
   const onChangePublic = async () => {
-    await changeUserStickerAccessType({
+    await updateSticker({
       variables: {
         input: {
           stickerId: props.stickerId,
