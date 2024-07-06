@@ -6,9 +6,7 @@ import { Suspense } from "react"
 export default function EditImage() {
   const params = useParams()
 
-  console.log(params)
-
-  if (params.work === undefined) {
+  if (params.post === undefined) {
     throw new ParamsError()
   }
 
@@ -20,7 +18,7 @@ export default function EditImage() {
       }}
     >
       <Suspense>
-        <EditImageForm workId={params.work} />
+        <EditImageForm workId={params.post} />
       </Suspense>
     </div>
   )

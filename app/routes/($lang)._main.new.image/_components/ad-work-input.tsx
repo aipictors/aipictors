@@ -30,7 +30,7 @@ export const AdWorkInput = (props: Props) => {
               checked={props.isChecked}
             />
             <label className="text-sm" htmlFor="ad-editable">
-              {"宣伝作品かどうか"}
+              {"宣伝作品に設定する"}
             </label>
           </div>
         </div>

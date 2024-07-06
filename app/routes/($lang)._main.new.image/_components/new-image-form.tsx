@@ -393,15 +393,12 @@ export const NewImageForm = () => {
         return
       }
       uploadedImageUrls.push(largeThumbnailUrl)
-      const ogpBase64Url = await uploadPublicImage(
-        ogpBase64,
-        token?.viewer?.token,
-      )
-      if (ogpBase64Url === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
+      const ogpBase64Url = ogpBase64
+        ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
+        : ""
+      if (ogpBase64Url !== "") {
+        uploadedImageUrls.push(ogpBase64Url)
       }
-      uploadedImageUrls.push(ogpBase64Url)
 
       // Int型にするために日付をミリ秒に変換
       const reservedAt =
@@ -699,7 +696,14 @@ export const NewImageForm = () => {
             </Accordion>
             <RatingInput
               rating={ratingRestriction}
-              setRating={setRatingRestriction}
+              setRating={(rating) => {
+                setRatingRestriction(rating)
+                if (rating === "R18" || rating === "R18G") {
+                  setIsSensitiveWhiteTags(true)
+                } else {
+                  setIsSensitiveWhiteTags(false)
+                }
+              }}
             />
             <ViewInput accessType={accessType} setAccessType={setAccessType} />
             <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />

@@ -62,17 +62,12 @@ export const EventInput = (props: Props) => {
           {/* イベント名と説明を表示 */}
           <Link
             to={`https://www.aipictors.com/events/${props.slug}`}
+            target="_blank"
             className="mt-2"
           >
             <h3 className="font-medium text-sm">{props.eventName}</h3>
-            {/* <p className="text-gray-600 text-sm">{props.eventDescription}</p> */}
+            <h4 className="font-medium text-xs">{props.eventDescription}</h4>
           </Link>
-          {/* 終了日時を表示 */}
-          {/* {props.endAt !== 0 && (
-            <p className="text-gray-500 text-sm">
-              終了日時: {formatDate(props.endAt)}
-            </p>
-          )} */}
         </div>
       </div>
     </>

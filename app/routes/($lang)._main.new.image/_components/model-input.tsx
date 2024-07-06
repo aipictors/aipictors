@@ -19,6 +19,17 @@ type Props = {
  * モデル入力
  */
 export const ModelInput = (props: Props) => {
+  // モデル名で並び替え
+  const displayModels = props.models.sort((a, b) => {
+    if (a.name < b.name) {
+      return -1
+    }
+    if (a.name > b.name) {
+      return 1
+    }
+    return 0
+  })
+
   return (
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
@@ -35,7 +46,7 @@ export const ModelInput = (props: Props) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {props.models.map((model) => (
+                {displayModels.map((model) => (
                   <SelectItem key={model.id} value={model.id}>
                     {model.name}
                   </SelectItem>

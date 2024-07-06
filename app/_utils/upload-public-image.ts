@@ -1,10 +1,5 @@
 import { config } from "@/config"
-import { z } from "zod"
-
-// レスポンススキーマの定義
-const responseSchema = z.object({
-  url: z.string().url(),
-})
+import { object, string, safeParse, nullable } from "valibot"
 
 /**
  * 画像アップロード
@@ -34,7 +29,7 @@ export const uploadPublicImage = async (
     const endpoint = config.uploader.uploadImage
 
     const response = await fetch(endpoint, {
-      method: "POST",
+      method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": type,
@@ -45,9 +40,21 @@ export const uploadPublicImage = async (
     if (response.ok) {
       const responseData = await response.json()
 
-      // Zodでレスポンスデータのバリデーションを実行
-      const parsedData = responseSchema.parse(responseData)
-      return parsedData.url
+      // Valibotでレスポンスデータのバリデーションを実行
+      const schema = object({
+        data: object({
+          fileId: string(),
+          url: string(),
+        }),
+        error: nullable(string()),
+      })
+
+      const validationResult = safeParse(schema, responseData)
+      if (!validationResult.success) {
+        throw new Error("Invalid response data")
+      }
+
+      return validationResult.output.data.url
     }
     throw new Error("Failed to upload image")
   } catch (error) {

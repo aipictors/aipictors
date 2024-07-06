@@ -386,15 +386,12 @@ export const NewTextForm = () => {
         return
       }
       uploadedImageUrls.push(largeThumbnailUrl)
-      const ogpBase64Url = await uploadPublicImage(
-        ogpBase64,
-        token?.viewer?.token,
-      )
-      if (ogpBase64Url === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
+      const ogpBase64Url = ogpBase64
+        ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
+        : ""
+      if (ogpBase64Url !== "") {
+        uploadedImageUrls.push(ogpBase64Url)
       }
-      uploadedImageUrls.push(ogpBase64Url)
 
       // Int型にするために日付をミリ秒に変換
       const reservedAt =
