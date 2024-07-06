@@ -61,6 +61,7 @@ import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 
 /**
  * 新規作品フォーム
@@ -258,6 +259,13 @@ export const NewImageForm = () => {
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
   const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
+
+  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
+    string[]
+  >([])
+
+  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
+    useState(false)
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isLoading,
@@ -609,7 +617,7 @@ export const NewImageForm = () => {
             }`}
           >
             {items.map((item) => item.content).length !== 0 && (
-              <div className="mb-4 bg-gray-700 p-1 pl-4 dark:bg-blend-darken">
+              <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
                 <div className="flex space-x-4 text-white">
                   <div className="flex">
                     {"イラスト"}
@@ -682,9 +690,24 @@ export const NewImageForm = () => {
               ogpBase64={ogpBase64}
             />
           )}
-          <Button onClick={onInputPngInfo} className="m-2 ml-auto block">
-            PNG情報のみ読み込み
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant={"secondary"}
+              onClick={onInputPngInfo}
+              className="m-2 ml-auto block"
+            >
+              PNG情報のみ読み込み
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={() => {
+                setIsOpenImageGenerationDialog(true)
+              }}
+              className="m-2 ml-auto block"
+            >
+              生成画像
+            </Button>
+          </div>
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
@@ -905,6 +928,33 @@ export const NewImageForm = () => {
       />
 
       <CreatingWorkDialog isOpen={isCreatingWork} />
+
+      <ImageGenerationSelectorDialog
+        isOpen={isOpenImageGenerationDialog}
+        setIsOpen={setIsOpenImageGenerationDialog}
+        onSubmitted={(selectedImage: string[], selectedIds: string[]) => {
+          setSelectedImageGenerationIds(selectedIds)
+          setItems((prev) => {
+            // 既存の items の URL のセットを作成
+            const existingUrls = new Set(prev.map((item) => item.content))
+
+            // 新しく追加する items のフィルタリング
+            const newItems = selectedImage
+              .filter((image) => !existingUrls.has(image))
+              .map((image) => ({
+                id: Math.floor(Math.random() * 10000),
+                content: image,
+              }))
+
+            // 既存の items に新しい items を追加
+            return [...prev, ...newItems]
+          })
+          setIsOpenImageGenerationDialog(false)
+          setSelectedImageGenerationIds([])
+        }}
+        selectedIds={selectedImageGenerationIds}
+        setSelectIds={setSelectedImageGenerationIds}
+      />
     </>
   )
 }
