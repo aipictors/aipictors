@@ -51,15 +51,13 @@ export const uploadPublicImage = async (
 
       const validationResult = safeParse(schema, responseData)
       if (!validationResult.success) {
-        throw new Error("Invalid response data")
+        throw new Error("画像のアップロードに失敗いたしました")
       }
 
       return validationResult.output.data.url
     }
-    throw new Error("Failed to upload image")
   } catch (error) {
-    console.error("Failed to upload image", error)
+    console.error(error)
   }
-
-  throw new Error("Failed to upload image after multiple attempts")
+  throw new Error("画像のアップロードに失敗いたしました")
 }
