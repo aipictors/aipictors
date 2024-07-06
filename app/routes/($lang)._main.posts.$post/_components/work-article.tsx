@@ -22,6 +22,8 @@ import { Separator } from "@/_components/ui/separator"
 import { viewerBookmarkFolderIdQuery } from "@/_graphql/queries/viewer/viewer-bookmark-folder-id"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { ConstructionAlert } from "@/_components/construction-alert"
+import { PostAccessTypeBanner } from "@/routes/($lang)._main.posts.$post/_components/post-acess-type-banner"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -40,7 +42,14 @@ export const WorkArticle = (props: Props) => {
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
   return (
-    <article className="flex flex-col">
+    <article className="flex flex-col space-y-2">
+      <ConstructionAlert
+        type="WARNING"
+        title="このページは現在開発中です。不具合が起きる可能性があります。"
+        fallbackURL={`https://www.aipictors.com/works${props.work.id}`}
+        date={"2024-07-30"}
+      />
+      <PostAccessTypeBanner postAccessType={props.work.accessType} />
       {props.work.type === "WORK" && (
         <WorkImageView
           workImageURL={props.work.imageURL}

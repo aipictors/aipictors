@@ -80,11 +80,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <div className="relative h-40 w-full">
             <div
               id="confetti-container"
-              style={{
-                overflow: "hidden",
-                backgroundColor: "#f3f4f6",
-              }}
-              className="relative h-40 w-full"
+              className="relative h-40 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900"
             />
             <Link
               to={
@@ -107,8 +103,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               text={`${props.title}\n`}
               url={`${
                 props.uuid !== ""
-                  ? `/posts/${props.uuid}`
-                  : `/posts/${props.workId}`
+                  ? `https://aipictors.com/works/${props.uuid}`
+                  : `https://aipictors.com/works/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
             />

@@ -40,7 +40,7 @@ export function HomeWorkAlbum({
         <img
           style={{
             filter: isMosaic || !isLoaded ? "blur(24px)" : "none",
-            transition: "filter 0.3s ease-in-out",
+            transition: "filter 0.3s ease-in-out transform 0.3s ease-in-out",
           }}
           src={photo.src}
           onLoad={() => setIsLoaded(true)}

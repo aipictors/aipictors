@@ -35,8 +35,6 @@ export const WorkActionContainer = (props: Props) => {
   const isHideEditButton =
     data?.work?.type === "COLUMN" || data?.work?.type === "NOVEL"
 
-  console.log(data?.work?.isMyRecommended)
-
   return (
     <WorkAction
       workLikesCount={props.workLikesCount}
