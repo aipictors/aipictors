@@ -36,7 +36,11 @@ export const RatingInput = (props: Props) => {
                 <RadioGroupItem value="R15" id="animal-check" />
                 <label htmlFor="animal-check">
                   {"R15（軽度な性的表現、水着など"}
-                  <Link to="/terms" className="text-clear-bright-blue">
+                  <Link
+                    target="_blank"
+                    to="/terms"
+                    className="text-clear-bright-blue"
+                  >
                     詳細
                   </Link>
                   {"）"}

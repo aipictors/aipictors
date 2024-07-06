@@ -60,6 +60,7 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 
 /**
  * 新規作品フォーム
@@ -257,6 +258,15 @@ export const NewImageForm = () => {
   const [uploadedWorkId, setUploadedWorkId] = useState("")
 
   const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const currentPassType = pass?.viewer?.currentPass?.type
+
+  const isSubscribed =
+    currentPassType === "STANDARD" || currentPassType === "PREMIUM"
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
@@ -841,7 +851,11 @@ export const NewImageForm = () => {
               }}
             />
             <RelatedLinkInput link={link} onChange={setLink} />
-            <AdWorkInput isChecked={isAd} onChange={setIsAd} />
+            <AdWorkInput
+              isSubscribed={isSubscribed}
+              isChecked={isAd}
+              onChange={setIsAd}
+            />
           </ScrollArea>
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">

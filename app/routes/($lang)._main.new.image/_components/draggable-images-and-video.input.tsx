@@ -70,12 +70,6 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         props.setThumbnailBase64("")
       }
     }
-
-    console.log(
-      "props.items",
-      props.items.map((item) => item.id),
-    )
-    console.log("props.indexList", props.indexList)
   }, [props.items])
 
   /**

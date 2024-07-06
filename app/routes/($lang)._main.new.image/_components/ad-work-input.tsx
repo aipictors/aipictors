@@ -1,9 +1,11 @@
 import { Checkbox } from "@/_components/ui/checkbox"
 import {} from "@/_components/ui/radio-group"
+import { Link } from "@remix-run/react"
 
 type Props = {
   isChecked?: boolean
   onChange: (value: boolean) => void
+  isSubscribed?: boolean
 }
 
 /**
@@ -21,18 +23,24 @@ export const AdWorkInput = (props: Props) => {
             <p>広告枠以外の宣伝は規約違反となります。</p>
             <p>一度設定した広告枠は取り消せません。</p>
           </div>
-          <div className="items-center space-x-2">
-            <Checkbox
-              onCheckedChange={(value: boolean) => {
-                props.onChange(value)
-              }}
-              id="ad-editable"
-              checked={props.isChecked}
-            />
-            <label className="text-sm" htmlFor="ad-editable">
-              {"宣伝作品に設定する"}
-            </label>
-          </div>
+          {props.isSubscribed ? (
+            <div className="items-center space-x-2">
+              <Checkbox
+                onCheckedChange={(value: boolean) => {
+                  props.onChange(value)
+                }}
+                id="ad-editable"
+                checked={props.isChecked}
+              />
+              <label className="text-sm" htmlFor="ad-editable">
+                {"宣伝作品に設定する"}
+              </label>
+            </div>
+          ) : (
+            <Link target="_blank" to="/plus">
+              推薦機能など特典を得れるAipictors+はこちら
+            </Link>
+          )}
         </div>
       </div>
     </>

@@ -55,6 +55,7 @@ import { CropImageField } from "@/_components/crop-image-field"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { OgpInputForText } from "@/routes/($lang)._main.new.image/_components/ogp-input-for-text"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 
 /**
  * 新規テキスト作品フォーム
@@ -249,7 +250,18 @@ export const NewTextForm = () => {
 
   const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const currentPassType = pass?.viewer?.currentPass?.type
+
+  const isSubscribed =
+    currentPassType === "STANDARD" || currentPassType === "PREMIUM"
 
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
@@ -715,7 +727,11 @@ export const NewTextForm = () => {
               }}
             />
             <RelatedLinkInput link={link} onChange={setLink} />
-            <AdWorkInput isChecked={isAd} onChange={setIsAd} />
+            <AdWorkInput
+              isSubscribed={isSubscribed}
+              isChecked={isAd}
+              onChange={setIsAd}
+            />
           </ScrollArea>
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">

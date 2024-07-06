@@ -4,7 +4,7 @@ import { NewImageForm } from "@/routes/($lang)._main.new.image/_components/new-i
 export default function NewImage() {
   return (
     <div
-      className="container w-[100vw] space-y-2"
+      className="container space-y-2"
       style={{
         margin: "0 auto",
       }}
