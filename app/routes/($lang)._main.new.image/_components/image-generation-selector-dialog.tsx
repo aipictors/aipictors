@@ -84,7 +84,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
             )}
           </div>
         </ScrollArea>
-        <div className="flex space-x-2">
+        <div className="ml-auto flex space-x-2">
           <Button
             variant={"secondary"}
             onClick={() => {
