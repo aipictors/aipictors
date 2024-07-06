@@ -27,7 +27,9 @@ export const BookmarkWorksListTableRow = (props: Props) => {
       <TableRow>
         <TableCell className="font-medium">
           <Link to={`/posts/${props.work.id}`}>
-            <div className="w-32">{props.work.title}</div>
+            <div className="w-32 overflow-hidden text-ellipsis">
+              {props.work.title}
+            </div>
           </Link>
         </TableCell>
         <TableCell>

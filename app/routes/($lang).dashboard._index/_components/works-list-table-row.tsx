@@ -74,11 +74,15 @@ export const WorksListTableRow = (props: Props) => {
           <TableCell className="font-medium">
             {props.work.accessType === "LIMITED" ? (
               <Link to={`/posts/${props.work.uuid}`}>
-                <div className="w-32">{props.work.title}</div>
+                <div className="w-32 overflow-hidden text-ellipsis">
+                  {props.work.title}
+                </div>
               </Link>
             ) : (
               <Link to={`/posts/${props.work.id}`}>
-                <div className="w-32">{props.work.title}</div>
+                <div className="w-32 overflow-hidden text-ellipsis">
+                  {props.work.title}
+                </div>
               </Link>
             )}
           </TableCell>

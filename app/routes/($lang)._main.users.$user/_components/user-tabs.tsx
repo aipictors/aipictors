@@ -124,7 +124,9 @@ export const UserTabs = (props: Props) => {
       ...(novelsCount > 0 ? [`小説(${novelsCount})`] : []),
       ...(columnsCount > 0 ? [`コラム(${columnsCount})`] : []),
       ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
-      ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
+      ...(albumsCount > 0 || authContext.userId === props.userId
+        ? [`シリーズ(${albumsCount})`]
+        : []),
       ...(foldersCount > 0 ? [`コレクション(${foldersCount})`] : []),
       ...(stickersCount > 0 ? [`スタンプ(${stickersCount})`] : []),
     ]

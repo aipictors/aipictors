@@ -62,6 +62,7 @@ import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-i
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
+import { config } from "@/config"
 
 /**
  * 新規作品フォーム
@@ -649,6 +650,7 @@ export const NewImageForm = () => {
               items={items}
               videoFile={videoFile}
               setItems={setItems}
+              maxItemsCount={config.post.maxImageCount}
               setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
               onVideoChange={(videoFile: File | null) => {
@@ -935,6 +937,14 @@ export const NewImageForm = () => {
         onSubmitted={(selectedImage: string[], selectedIds: string[]) => {
           setSelectedImageGenerationIds(selectedIds)
           setItems((prev) => {
+            if (
+              config.post.maxImageCount <
+              selectedImage.length + prev.length
+            ) {
+              toast(`最大${config.post.maxImageCount}までです`)
+              return [...prev]
+            }
+
             // 既存の items の URL のセットを作成
             const existingUrls = new Set(prev.map((item) => item.content))
 

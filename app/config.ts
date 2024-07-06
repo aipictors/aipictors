@@ -83,6 +83,12 @@ export const config = {
     },
   },
   /**
+   * 投稿の仕様
+   */
+  post: {
+    maxImageCount: 200,
+  },
+  /**
    * メディアクエリ
    */
   mediaQuery: {

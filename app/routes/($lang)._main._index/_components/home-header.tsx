@@ -83,13 +83,7 @@ const HomeHeader = (props: Props) => {
           <Link to={"/generation"}>
             <Button variant={"secondary"}>{"生成"}</Button>
           </Link>
-          <Link
-            to={
-              config.isDevelopmentMode
-                ? "/new/image"
-                : "https://aipictors.com/post"
-            }
-          >
+          <Link to={"/new/image"}>
             <Button variant={"secondary"}>{"投稿"}</Button>
           </Link>
           {authContext.isLoggedIn && <HomeNotificationsMenu />}

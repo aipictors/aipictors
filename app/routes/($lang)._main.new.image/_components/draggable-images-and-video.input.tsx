@@ -18,6 +18,7 @@ type Props = {
   items: TSortableItem[] // 画像のリスト
   videoFile: File | null // 動画ファイル
   isOnlyMove?: boolean // 移動可能のみかどうか（削除、追加不可能）
+  maxItemsCount?: number // 最大画像数
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   setThumbnailBase64?: (thumbnailBase64: string) => void
@@ -122,6 +123,11 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         return
       }
 
+      if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
+        toast(`最大${props.maxItemsCount}までです`)
+        return
+      }
+
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         // 動画が選択された場合は画像一覧をリセットして、動画をセットする
@@ -131,7 +137,6 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
             toast("動画のサイズは32MB以下にしてください")
             return
           }
-
           const video = document.createElement("video")
 
           video.src = URL.createObjectURL(file)
@@ -165,6 +170,14 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
             }
           }
         } else {
+          if (
+            props.maxItemsCount &&
+            props.maxItemsCount < props.items.length + 1
+          ) {
+            toast(`最大${props.maxItemsCount}までです`)
+            return
+          }
+
           props.onVideoChange(null)
 
           if (props.items.length === 0 && file.type === "image/png") {
