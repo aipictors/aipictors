@@ -60,8 +60,6 @@ export const WorksListTableRow = (props: Props) => {
 
   const [isHidden, setIsHidden] = useState(false)
 
-  console.log(props.work.workType)
-
   return (
     <>
       {!isHidden && (

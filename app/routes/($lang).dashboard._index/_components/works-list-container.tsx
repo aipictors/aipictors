@@ -61,7 +61,6 @@ export const WorksListContainer = (props: Props) => {
           orderBy: props.orderBy,
           sort: props.sort,
           isIncludePrivate: true,
-          isNowCreatedAt: true,
           ...(props.accessType !== null && {
             accessTypes: [props.accessType],
           }),
@@ -71,6 +70,7 @@ export const WorksListContainer = (props: Props) => {
           ...(props.rating !== null && {
             ratings: [props.rating],
           }),
+          createdAtAfter: new Date("1999/01/01").toISOString(),
         },
       },
     },
