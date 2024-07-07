@@ -277,11 +277,8 @@ export const NewTextForm = () => {
 
     const videoFileName = `${createRandomString(30)}.mp4`
 
-    const videoUrl = await uploadPublicVideo(
-      videoFile,
-      videoFileName,
-      authContext.userId,
-    )
+    const videoUrl = await uploadPublicVideo(videoFile, token?.viewer?.token)
+
     return videoUrl
   }
 
@@ -780,7 +777,7 @@ export const NewTextForm = () => {
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 
-      <CreatingWorkDialog isOpen={isCreatingWork} />
+      <CreatingWorkDialog progress={0} isOpen={isCreatingWork} />
     </>
   )
 }
