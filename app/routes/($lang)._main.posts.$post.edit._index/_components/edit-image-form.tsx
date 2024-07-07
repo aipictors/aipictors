@@ -353,8 +353,8 @@ export const EditImageForm = (props: Props) => {
 
     // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
     if (work?.work?.createdAt) {
-      const reservedDate = new Date(work?.work?.createdAt)
-      const now = new Date()
+      const reservedDate = new Date(work?.work?.createdAt * 1000 + 3600000 * 9)
+      const now = new Date(Date.now() + 3600000 * 9)
       if (reservedDate > now) {
         setReservationDate(reservedDate.toISOString().slice(0, 10))
         setReservationTime(reservedDate.toISOString().slice(11, 16))
@@ -554,7 +554,8 @@ export const EditImageForm = (props: Props) => {
 
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
       const mainImageSha256 = await sha256(thumbnailBase64)
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
