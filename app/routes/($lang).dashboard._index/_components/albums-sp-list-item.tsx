@@ -64,7 +64,7 @@ export const AlbumsSpListItem = (props: Props) => {
             }}
           >
             <Link
-              to={`${props.album.userId}/albums/${props.album.slug}`}
+              to={`/${props.album.userId}/albums/${props.album.slug}`}
               className="mr-2"
             >
               <img
@@ -75,7 +75,7 @@ export const AlbumsSpListItem = (props: Props) => {
             </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <Link to={`${props.album.userId}/albums/${props.album.slug}`}>
+                <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
                   <div className="w-full font-bold">{props.album.title}</div>
                 </Link>
                 <div className="text-sm opacity-80">

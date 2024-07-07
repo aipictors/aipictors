@@ -1,17 +1,16 @@
-import React, { useEffect } from "react"
+import { useEffect, useState, useContext } from "react"
 import { Heart } from "lucide-react"
 import { cn } from "@/_lib/cn"
-import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
-import { useMutation } from "@apollo/client/index"
 import { createWorkLikeMutation } from "@/_graphql/mutations/create-work-like"
 import { deleteWorkLikeMutation } from "@/_graphql/mutations/delete-work-like"
+import { useMutation } from "@apollo/client/index"
 
 type LikeButtonProps = {
   size?: number
   text?: string
-  onClick?: (arg0: boolean) => void
+  onClick?: (liked: boolean) => void
   defaultLiked?: boolean
   defaultLikedCount: number
   likedCount?: number
@@ -100,16 +99,13 @@ export const LikeButton = ({
 
   const width = Math.floor(size * 24)
 
-  const [isLiked, setIsLiked] = React.useState(false)
-
-  const [clicked, setClicked] = React.useState(false)
-
-  const [likedCount, setLikedCount] = React.useState(0)
+  const [isLiked, setIsLiked] = useState(defaultLiked)
+  const [likedCount, setLikedCount] = useState(defaultLikedCount)
 
   useEffect(() => {
     setIsLiked(defaultLiked)
     setLikedCount(defaultLikedCount)
-  }, [defaultLiked, defaultLikedCount])
+  }, [targetWorkId])
 
   const handleOnClick = async () => {
     if (onClick) {
@@ -118,6 +114,7 @@ export const LikeButton = ({
 
     try {
       if (!isLiked) {
+        setLikedCount((prevCount) => prevCount + 1)
         await createWorkLike({
           variables: {
             input: {
@@ -126,6 +123,7 @@ export const LikeButton = ({
           },
         })
       } else {
+        setLikedCount((prevCount) => prevCount - 1)
         await deleteWorkLike({
           variables: {
             input: {
@@ -134,17 +132,10 @@ export const LikeButton = ({
           },
         })
       }
-    } finally {
       setIsLiked(!isLiked)
-      setClicked(!clicked)
-      if (isLiked) {
-        setLikedCount(likedCount - 1)
-      } else {
-        setLikedCount(likedCount + 1)
-      }
+    } catch (error) {
+      console.error("Error updating like status", error)
     }
-
-    // if (!clicked) setClicked(true)
   }
 
   /* 自分自身の作品の場合はいいねボタンを表示しない */
@@ -189,7 +180,7 @@ export const LikeButton = ({
               : isBackgroundNone
                 ? "fill-white text-black dark:text-white"
                 : "fill-transparent text-black dark:text-white",
-            clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
+            isLiked ? "like-animation" : "like-animation-end",
           )}
           size={Math.floor(size / 2)}
           strokeWidth={strokeWidth}

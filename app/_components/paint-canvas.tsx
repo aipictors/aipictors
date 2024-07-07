@@ -716,7 +716,7 @@ const PaintCanvas: React.FC<IProps> = ({
           </div>
           {isShowSubmitButton && (
             <Button
-              className="absolute bottom-8 md:bottom-12"
+              className="absolute bottom-16 md:bottom-12"
               onClick={() => {
                 if (onSubmit) {
                   // キャンバスを合成する（brush、image、background）
@@ -759,7 +759,7 @@ const PaintCanvas: React.FC<IProps> = ({
               決定
             </Button>
           )}
-          <div className="absolute bottom-2 z-50 w-[72%] md:bottom-8">
+          <div className="absolute bottom-8 z-50 w-[72%] md:bottom-8">
             <Slider
               aria-label="slider-ex-2"
               defaultValue={[scale]}

@@ -407,8 +407,6 @@ export const EditImageForm = (props: Props) => {
 
     const imageUrls = await Promise.all(
       images.map(async (image) => {
-        const imageFileName = `${createRandomString(30)}.webp`
-
         const imageUrl = image.startsWith("https://")
           ? image
           : await uploadPublicImage(image, token?.viewer?.token)
@@ -425,6 +423,27 @@ export const EditImageForm = (props: Props) => {
     toast("作品を更新しました")
   }
 
+  // ステップごとの進捗割合を定義
+  const PROGRESS_STEPS = {
+    AUTH_CHECK: 5,
+    TITLE_CHECK: 10,
+    CAPTION_CHECK: 15,
+    EN_TITLE_CHECK: 20,
+    EN_CAPTION_CHECK: 25,
+    FILE_CHECK: 30,
+    RESERVATION_CHECK: 35,
+    THUMBNAIL_CHECK: 40,
+    THUMBNAIL_RESIZE: 50,
+    UPLOAD_THUMBNAILS: 60,
+    VIDEO_PROCESSING: 70,
+    IMAGE_PROCESSING: 70,
+    WORK_CREATION: 80,
+    SUCCESS: 100,
+    FAILURE: 0,
+  }
+
+  const [progress, setProgress] = useState(0)
+
   /**
    * 更新処理
    * @returns
@@ -433,36 +452,41 @@ export const EditImageForm = (props: Props) => {
     const uploadedImageUrls = []
     try {
       setIsCreatingWork(true)
+      setProgress(PROGRESS_STEPS.AUTH_CHECK)
 
       if (!authContext || !authContext.userId) {
         toast("ログインしてください")
         return
       }
+      setProgress(PROGRESS_STEPS.TITLE_CHECK)
 
       if (title === "") {
         toast("タイトルを入力してください")
         return
       }
-
       if (title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.CAPTION_CHECK)
 
       if (caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_TITLE_CHECK)
 
       if (enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_CAPTION_CHECK)
 
       if (enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.FILE_CHECK)
 
       if (
         videoFile === null &&
@@ -471,8 +495,8 @@ export const EditImageForm = (props: Props) => {
         toast("画像もしくは動画を選択してください")
         return
       }
+      setProgress(PROGRESS_STEPS.RESERVATION_CHECK)
 
-      // 予約更新の時間は日付と時間両方の入力が必要
       if (
         (reservationDate !== "" && reservationTime === "") ||
         (reservationDate === "" && reservationTime !== "")
@@ -480,13 +504,14 @@ export const EditImageForm = (props: Props) => {
         toast("予約更新の時間を入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.THUMBNAIL_CHECK)
 
       if (thumbnailBase64 === "") {
         toast("サムネイルを設定してください")
         return
       }
+      setProgress(PROGRESS_STEPS.THUMBNAIL_RESIZE)
 
-      // サムネイルを作成してアップロード
       const smallThumbnail = thumbnailBase64.startsWith("https://")
         ? null
         : isThumbnailLandscape
@@ -497,31 +522,21 @@ export const EditImageForm = (props: Props) => {
         : isThumbnailLandscape
           ? await resizeImage(thumbnailBase64, 600, 0, "webp")
           : await resizeImage(thumbnailBase64, 0, 600, "webp")
-      const smallThumbnailFileName = `${createRandomString(30)}.webp`
+      setProgress(PROGRESS_STEPS.UPLOAD_THUMBNAILS)
+
       const largeThumbnailFileName = `${createRandomString(30)}.webp`
-      const ogpImageFileName = `${createRandomString(30)}.webp`
       const smallThumbnailUrl =
         thumbnailBase64.startsWith("https://") || smallThumbnail === null
-          ? work?.work?.smallThumbnailImageURL
+          ? work?.work?.smallThumbnailImageURL ?? ""
           : await uploadPublicImage(smallThumbnail.base64, token?.viewer?.token)
-
-      console.log(work?.work?.smallThumbnailImageURL)
-
-      if (smallThumbnailUrl === "" || smallThumbnailUrl === undefined) {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
-
       uploadedImageUrls.push(smallThumbnailUrl)
+
       const largeThumbnailUrl =
         thumbnailBase64.startsWith("https://") || largeThumbnail === null
-          ? work?.work?.largeThumbnailImageURL
+          ? work?.work?.largeThumbnailImageURL ?? ""
           : await uploadPublicImage(largeThumbnail.base64, token?.viewer?.token)
-      if (largeThumbnailUrl === "" || largeThumbnailUrl === undefined) {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
       uploadedImageUrls.push(largeThumbnailUrl)
+
       const ogpBase64Url =
         ogpBase64 === "" || ogpBase64.startsWith("https://")
           ? work?.work?.ogpThumbnailImageUrl
@@ -537,18 +552,14 @@ export const EditImageForm = (props: Props) => {
       }
       uploadedImageUrls.push(ogpBase64Url)
 
-      // Int型にするために日付をミリ秒に変換
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
           ? new Date(`${reservationDate}T${reservationTime}`).getTime()
           : undefined
-
-      // トップ画像をSha256でハッシュ化
       const mainImageSha256 = await sha256(thumbnailBase64)
-
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
+      setProgress(PROGRESS_STEPS.VIDEO_PROCESSING)
 
-      // 動画もしくは画像をアップロード
       const videoUrl = work?.work?.url ?? ""
       if (videoUrl) {
         const uploadedWork = await updateWork({
@@ -612,14 +623,13 @@ export const EditImageForm = (props: Props) => {
           },
         })
 
-        console.log(uploadedWork.data?.updateWork.uuid)
-
         if (uploadedWork.data?.updateWork) {
           setUploadedWorkId(uploadedWork.data.updateWork.id)
           if (uploadedWork.data.updateWork.accessType === "LIMITED") {
             setUploadedWorkUuid(uploadedWork.data.updateWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       if (videoFile === null && items.length !== 0) {
@@ -694,20 +704,22 @@ export const EditImageForm = (props: Props) => {
             setUploadedWorkUuid(uploadedWork.data.updateWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       successUploadedProcess()
+      setProgress(PROGRESS_STEPS.SUCCESS)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      // 失敗したらアップロードした画像は削除する
       // biome-ignore lint/complexity/noForEach: <explanation>
       uploadedImageUrls.forEach(async (url) => {
         if (url) {
           await deleteUploadedImage(url)
         }
       })
+      setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
     } finally {
       setIsCreatingWork(false)
     }
@@ -1057,7 +1069,7 @@ export const EditImageForm = (props: Props) => {
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 
-      <CreatingWorkDialog isOpen={isCreatingWork} />
+      <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
     </>
   )
 }

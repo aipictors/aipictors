@@ -21,9 +21,9 @@ export const RatingInput = (props: Props) => {
             onValueChange={(value) => {
               props.setRating(value as IntrospectionEnum<"Rating">)
             }}
-            className="flex flex-wrap space-x-0 text-sm md:space-x-4"
+            className="flex flex-wrap space-x-0 text-sm"
           >
-            <div className="mb-2 w-1/3 md:w-auto">
+            <div className="mb-2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="G" id="person-check" />
                 <label htmlFor="person-check">

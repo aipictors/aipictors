@@ -6,7 +6,7 @@ type Props = {
   title: string
   message?: string
   fallbackURL: string
-  date: string
+  date?: string
 }
 
 export const ConstructionAlert: React.FC<Props> = (props: Props) => {
@@ -25,7 +25,9 @@ export const ConstructionAlert: React.FC<Props> = (props: Props) => {
           {props.message
             ? `: ${props.message}`
             : "元のバージョンはこちらをクリックしてください。"}
-          {`${props.date}までに完了予定です。`}
+          {props.date &&
+            props.type === "WARNING" &&
+            `(${props.date}までに完了予定です。)`}
         </AlertDescription>
       </Alert>
     </Link>

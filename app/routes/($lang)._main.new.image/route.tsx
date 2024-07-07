@@ -11,9 +11,8 @@ export default function NewImage() {
     >
       <ConstructionAlert
         type="WARNING"
-        title="このページは現在開発中です。不具合が起きる可能性があります。"
+        title="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
-        date="2024-07-30"
       />
       <NewImageForm />
     </div>

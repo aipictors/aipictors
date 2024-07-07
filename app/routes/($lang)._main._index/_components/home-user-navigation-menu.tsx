@@ -161,7 +161,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="ダッシュボード"
           />
           <MenuItemLink
-            href={"/dashboard/works"}
+            href={"/dashboard/posts"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label="自分の作品"
           />

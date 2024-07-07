@@ -288,14 +288,7 @@ export const NewImageForm = () => {
     if (authContext.userId === null || videoFile === null) {
       return ""
     }
-
-    const videoFileName = `${createRandomString(30)}.mp4`
-
-    const videoUrl = await uploadPublicVideo(
-      videoFile,
-      videoFileName,
-      authContext.userId,
-    )
+    const videoUrl = await uploadPublicVideo(videoFile, token?.viewer?.token)
     return videoUrl
   }
 
@@ -322,6 +315,25 @@ export const NewImageForm = () => {
     toast("作品を投稿しました")
   }
 
+  const PROGRESS_STEPS = {
+    AUTH_CHECK: 5,
+    TITLE_CHECK: 10,
+    CAPTION_CHECK: 15,
+    EN_TITLE_CHECK: 20,
+    EN_CAPTION_CHECK: 25,
+    FILE_CHECK: 30,
+    RESERVATION_CHECK: 35,
+    THUMBNAIL_RESIZE: 40,
+    UPLOAD_THUMBNAILS: 50,
+    VIDEO_PROCESSING: 60,
+    IMAGE_PROCESSING: 60,
+    WORK_CREATION: 80,
+    SUCCESS: 100,
+    FAILURE: 0,
+  }
+
+  const [progress, setProgress] = useState(0)
+
   /**
    * 投稿処理
    * @returns
@@ -330,36 +342,41 @@ export const NewImageForm = () => {
     const uploadedImageUrls = []
     try {
       setIsCreatingWork(true)
+      setProgress(PROGRESS_STEPS.AUTH_CHECK)
 
       if (!authContext || !authContext.userId) {
         toast("ログインしてください")
         return
       }
+      setProgress(PROGRESS_STEPS.TITLE_CHECK)
 
       if (title === "") {
         toast("タイトルを入力してください")
         return
       }
-
       if (title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.CAPTION_CHECK)
 
       if (caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_TITLE_CHECK)
 
       if (enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_CAPTION_CHECK)
 
       if (enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.FILE_CHECK)
 
       if (
         videoFile === null &&
@@ -368,8 +385,8 @@ export const NewImageForm = () => {
         toast("画像もしくは動画を選択してください")
         return
       }
+      setProgress(PROGRESS_STEPS.RESERVATION_CHECK)
 
-      // 予約投稿の時間は日付と時間両方の入力が必要
       if (
         (reservationDate !== "" && reservationTime === "") ||
         (reservationDate === "" && reservationTime !== "")
@@ -377,19 +394,16 @@ export const NewImageForm = () => {
         toast("予約投稿の時間を入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.THUMBNAIL_RESIZE)
 
-      if (thumbnailBase64 === "") {
-        toast("サムネイルを設定してください")
-        return
-      }
-
-      // サムネイルを作成してアップロード
       const smallThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 400, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 400, "webp")
       const largeThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 600, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 600, "webp")
+      setProgress(PROGRESS_STEPS.UPLOAD_THUMBNAILS)
+
       const smallThumbnailFileName = `${createRandomString(30)}.webp`
       const largeThumbnailFileName = `${createRandomString(30)}.webp`
       const ogpImageFileName = `${createRandomString(30)}.webp`
@@ -397,20 +411,11 @@ export const NewImageForm = () => {
         smallThumbnail.base64,
         token?.viewer?.token,
       )
-      if (smallThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
-
       uploadedImageUrls.push(smallThumbnailUrl)
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
         token?.viewer?.token,
       )
-      if (largeThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
       uploadedImageUrls.push(largeThumbnailUrl)
       const ogpBase64Url = ogpBase64
         ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
@@ -419,25 +424,16 @@ export const NewImageForm = () => {
         uploadedImageUrls.push(ogpBase64Url)
       }
 
-      // Int型にするために日付をミリ秒に変換
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
           ? new Date(`${reservationDate}T${reservationTime}`).getTime()
           : undefined
-
-      // トップ画像をSha256でハッシュ化
       const mainImageSha256 = await sha256(thumbnailBase64)
-
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
+      setProgress(PROGRESS_STEPS.VIDEO_PROCESSING)
 
-      // 動画もしくは画像をアップロード
       if (videoFile) {
         const videoUrl = await uploadVideo()
-        if (videoUrl === "") {
-          toast("動画のアップロードに失敗しました")
-          return
-        }
-
         const work = await createWork({
           variables: {
             input: {
@@ -496,6 +492,7 @@ export const NewImageForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       if (videoFile === null && items.length !== 0) {
@@ -562,18 +559,20 @@ export const NewImageForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       successUploadedProcess()
+      setProgress(PROGRESS_STEPS.SUCCESS)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      // 失敗したらアップロードした画像は削除する
       // biome-ignore lint/complexity/noForEach: <explanation>
       uploadedImageUrls.forEach(async (url) => {
         await deleteUploadedImage(url)
       })
+      setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
     } finally {
       setIsCreatingWork(false)
     }
@@ -929,7 +928,7 @@ export const NewImageForm = () => {
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
       />
 
-      <CreatingWorkDialog isOpen={isCreatingWork} />
+      <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
 
       <ImageGenerationSelectorDialog
         isOpen={isOpenImageGenerationDialog}
