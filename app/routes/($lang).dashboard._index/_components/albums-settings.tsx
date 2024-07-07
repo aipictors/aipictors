@@ -106,7 +106,7 @@ export const AlbumsSetting = (props: Props) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
-                  <SelectItem value="G">{"G"}</SelectItem>
+                  <SelectItem value="G">{"全年齢"}</SelectItem>
                   <SelectItem value="R18">{"R18"}</SelectItem>
                 </SelectContent>
               </Select>

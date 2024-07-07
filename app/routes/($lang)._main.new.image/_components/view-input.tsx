@@ -31,7 +31,7 @@ export const ViewInput = (props: Props) => {
             <div className="mb-2 w-1/2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="PRIVATE" id="view-archive" />
-                <label htmlFor="view-archive">{"アーカイブ"}</label>
+                <label htmlFor="view-archive">{"非公開"}</label>
               </div>
             </div>
             <div className="mb-2 w-1/2 md:w-auto">
