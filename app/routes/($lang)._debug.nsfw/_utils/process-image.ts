@@ -1,4 +1,4 @@
-import { InferenceSession, Tensor } from "onnxruntime-web"
+import { InferenceSession, Tensor } from "onnxruntime-web/webgpu"
 
 const modelUrls: Record<"nsfwjs", string> = {
   nsfwjs:
