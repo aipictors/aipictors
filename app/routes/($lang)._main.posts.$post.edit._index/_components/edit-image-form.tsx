@@ -55,7 +55,6 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
 import { updateWorkMutation } from "@/_graphql/mutations/update-work"
-import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
@@ -736,20 +735,6 @@ export const EditImageForm = (props: Props) => {
     <>
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
-          {/* 種別表記 */}
-          <div className="p-2">
-            <div className="flex items-center space-x-2">
-              <div className="font-bold text-lg">
-                {toWorkTypeText(
-                  (work?.work?.type as "WORK" | "COLUMN" | "NOVEL" | "VIDEO") ??
-                    "WORK",
-                )}
-                {"作品編集"}
-                {work?.work?.type === "VIDEO" &&
-                  "（動画自体は変更できません。）"}
-              </div>
-            </div>
-          </div>
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center pb-2 bg-gray-800 ${
