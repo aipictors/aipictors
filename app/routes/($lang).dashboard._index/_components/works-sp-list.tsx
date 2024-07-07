@@ -13,6 +13,7 @@ import {
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 import { Link } from "@remix-run/react"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 
 type Props = {
   works: {
@@ -23,10 +24,11 @@ type Props = {
     bookmarksCount: number
     commentsCount: number
     viewsCount: number
-    createdAt: string
+    createdAt: number
     workType: IntrospectionEnum<"WorkType">
     accessType: IntrospectionEnum<"AccessType">
     isTagEditable: boolean
+    uuid: string
   }[]
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
@@ -42,18 +44,44 @@ export const WorksSpList = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index}>
           <div className="mt-2 mb-2 flex">
-            <Link to={`/posts/${work.id}`} className="mr-2">
+            {new Date(work.createdAt * 1000).getTime() >
+            new Date().getTime() ? (
               <img
                 src={work.thumbnailImageUrl}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
-            </Link>
+            ) : work.accessType === "LIMITED" ? (
+              <Link to={`/posts/${work.uuid}`}>
+                <img
+                  src={work.thumbnailImageUrl}
+                  alt=""
+                  className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
+                />
+              </Link>
+            ) : (
+              <Link to={`/posts/${work.id}`}>
+                <img
+                  src={work.thumbnailImageUrl}
+                  alt=""
+                  className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
+                />
+              </Link>
+            )}
             <div className="w-full space-y-2">
-              <div className="w-full space-y-2">
-                <Link to={`/posts/${work.id}`}>
+              <div className="w-full max-w-40 space-y-2 overflow-hidden text-ellipsis">
+                {new Date(work.createdAt * 1000).getTime() >
+                new Date().getTime() ? (
                   <div className="w-full font-bold">{work.title}</div>
-                </Link>
+                ) : work.accessType === "LIMITED" ? (
+                  <Link to={`/posts/${work.uuid}`}>
+                    <div className="w-full font-bold">{work.title}</div>
+                  </Link>
+                ) : (
+                  <Link to={`/posts/${work.id}`}>
+                    <div className="w-full font-bold">{work.title}</div>
+                  </Link>
+                )}
                 <div className="space-x-2">
                   <Badge variant={"secondary"}>
                     {toAccessTypeText(work.accessType)}
@@ -62,7 +90,9 @@ export const WorksSpList = (props: Props) => {
                     {toWorkTypeText(work.workType)}
                   </Badge>
                 </div>
-                <div className="text-sm opacity-80">{work.createdAt}</div>
+                <div className="text-sm opacity-80">
+                  {toDateTimeText(work.createdAt)}
+                </div>
               </div>
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center">

@@ -9,6 +9,7 @@ import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { Link } from "@remix-run/react"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 
 type Props = {
   work: {
@@ -20,7 +21,7 @@ type Props = {
     bookmarksCount: number
     commentsCount: number
     viewsCount: number
-    createdAt: string
+    createdAt: number
     accessType: IntrospectionEnum<"AccessType">
     workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean
@@ -60,6 +61,8 @@ export const WorksListTableRow = (props: Props) => {
 
   const [isHidden, setIsHidden] = useState(false)
 
+  console.log(new Date())
+
   return (
     <>
       {!isHidden && (
@@ -70,7 +73,12 @@ export const WorksListTableRow = (props: Props) => {
           }}
         >
           <TableCell className="font-medium">
-            {props.work.accessType === "LIMITED" ? (
+            {new Date(props.work.createdAt * 1000).getTime() >
+            new Date().getTime() ? (
+              <div className="w-32 overflow-hidden text-ellipsis">
+                {props.work.title}
+              </div>
+            ) : props.work.accessType === "LIMITED" ? (
               <Link to={`/posts/${props.work.uuid}`}>
                 <div className="w-32 overflow-hidden text-ellipsis">
                   {props.work.title}
@@ -85,12 +93,19 @@ export const WorksListTableRow = (props: Props) => {
             )}
           </TableCell>
           <TableCell>
-            {props.work.accessType === "LIMITED" ? (
+            {new Date(props.work.createdAt * 1000).getTime() >
+            new Date().getTime() ? (
+              <img
+                src={props.work.thumbnailImageUrl}
+                alt="thumbnail"
+                className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
+              />
+            ) : props.work.accessType === "LIMITED" ? (
               <Link to={`/posts/${props.work.uuid}`}>
                 <img
                   src={props.work.thumbnailImageUrl}
                   alt="thumbnail"
-                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                  className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
                 />{" "}
               </Link>
             ) : (
@@ -98,7 +113,7 @@ export const WorksListTableRow = (props: Props) => {
                 <img
                   src={props.work.thumbnailImageUrl}
                   alt="thumbnail"
-                  className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
+                  className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
                 />{" "}
               </Link>
             )}
@@ -132,7 +147,7 @@ export const WorksListTableRow = (props: Props) => {
               </AppConfirmDialog>
             )}
           </TableCell>
-          <TableCell>{props.work.createdAt}</TableCell>
+          <TableCell>{toDateTimeText(props.work.createdAt)}</TableCell>
         </TableRow>
       )}
     </>

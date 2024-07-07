@@ -4,7 +4,6 @@ import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { worksQuery } from "@/_graphql/queries/work/works"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
-import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
@@ -121,7 +120,7 @@ export const WorksListContainer = (props: Props) => {
             commentsCount: work.commentsCount ?? 0,
             viewsCount: work.viewsCount,
             accessType: work.accessType,
-            createdAt: toDateTimeText(work.createdAt),
+            createdAt: work.createdAt,
             workType: work.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
             isTagEditable: work.isTagEditable,
           })) ?? []
