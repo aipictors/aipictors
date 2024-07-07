@@ -25,16 +25,16 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  if (workResp.data.work === null) {
+    throw new Response("Not found", { status: 404 })
+  }
+
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
       workId: props.params.post,
     },
   })
-
-  if (workResp.data.work === null) {
-    throw new Response("Not found", { status: 404 })
-  }
 
   if (workCommentsResp.data.work === null) {
     throw new Response("Not found", { status: 404 })
