@@ -11,7 +11,7 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - フォロワー一覧"
+  const metaTitle = "フォロワー一覧 - Aipictors"
 
   const metaDescription = "フォロワーのユーザ一覧です。"
 
