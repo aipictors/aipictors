@@ -1,30 +1,36 @@
-import { AppPage } from "@/_components/app/app-page"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+// Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
+import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "@/_lib/client"
+import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { AppPage } from "@/_components/app/app-page"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 
-export async function loader() {
+export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
 
-  const year = new Date().getFullYear()
+  const year = params.params.year
+    ? Number.parseInt(params.params.year)
+    : new Date().getFullYear()
+  const month = params.params.month
+    ? Number.parseInt(params.params.month)
+    : new Date().getMonth() + 1
+  const day = params.params.day ? Number.parseInt(params.params.day) : null
 
-  const month = new Date().getMonth() + 1
-
-  const day = new Date().getDate()
+  const variables = {
+    offset: 0,
+    limit: 200,
+    where: {
+      year: year,
+      month: month,
+      ...(day !== null && { day: day }),
+    },
+  }
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        year: year,
-        month: month,
-        day: day,
-      },
-    },
+    variables: variables,
   })
 
   return json({
