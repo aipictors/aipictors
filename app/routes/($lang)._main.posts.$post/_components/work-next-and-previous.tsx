@@ -6,9 +6,11 @@ import {
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
 import type { workQuery } from "@/_graphql/queries/work/work"
+import { config } from "@/config"
 import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
 import type { ResultOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
+import { useEffect } from "react"
 
 type Props = {
   work: ResultOf<typeof workQuery>["work"]
@@ -17,11 +19,28 @@ type Props = {
 export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
 
-  if (typeof document !== "undefined") {
-    document.addEventListener("keydown", (e: KeyboardEvent) =>
-      keyDownHandler(e, props.work),
-    )
-  }
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (typeof window !== "undefined") {
+        if (e.code === config.keyCodes.Q && props.work?.nextWork) {
+          window.location.href = `/posts/${props.work?.nextWork.id}`
+        }
+        if (e.code === config.keyCodes.E && props.work?.previousWork) {
+          window.location.href = `/posts/${props.work?.previousWork.id}`
+        }
+      }
+    }
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", keyDownHandler)
+    }
+
+    return () => {
+      if (typeof document !== "undefined") {
+        document.removeEventListener("keydown", keyDownHandler)
+      }
+    }
+  }, [props.work])
 
   return (
     <div className="invisible flex flex-col space-y-8 lg:visible">
@@ -79,18 +98,4 @@ export const WorkNextAndPrevious = (props: Props) => {
       <WorkAdSense />
     </div>
   )
-}
-
-function keyDownHandler(
-  e: KeyboardEvent,
-  work: ResultOf<typeof workQuery>["work"],
-): void {
-  if (typeof window !== "undefined" && work !== null) {
-    if (e.code === "KeyQ" && work.nextWork) {
-      window.location.href = `/posts/${work.nextWork.id}`
-    }
-    if (e.code === "KeyE" && work.previousWork) {
-      window.location.href = `/posts/${work.previousWork.id}`
-    }
-  }
 }

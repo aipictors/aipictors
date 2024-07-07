@@ -271,11 +271,11 @@ export function GenerationTaskSheetView(props: Props) {
       }
 
       // 左キーが押された場合は前のタスクへ
-      if (event.code === "ArrowLeft") {
+      if (event.code === config.keyCodes.ALLOW_LEFT) {
         onPrevTask()
       }
       // 右キーが押された場合は次のタスクへ
-      if (event.code === "ArrowRight") {
+      if (event.code === config.keyCodes.ALLOW_RIGHT) {
         onNextTask()
       }
     },
