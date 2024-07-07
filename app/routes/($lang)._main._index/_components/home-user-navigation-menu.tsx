@@ -124,15 +124,18 @@ export const HomeUserNavigationMenu = (props: Props) => {
       <DropdownMenuContent>
         <div>
           <div
-            className="w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
+            className="relative mb-4 h-16 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
             style={{
               backgroundImage: `url(${headerImageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
-            <Link to={`/users/${authContext.login}`}>
-              <Avatar className="cursor-pointer">
+            <Link
+              to={`/users/${authContext.login}`}
+              className="absolute bottom-[-16px]"
+            >
+              <Avatar className="cursor-pointer ">
                 <AvatarImage src={iconUrl ?? undefined} />
                 <AvatarFallback />
               </Avatar>

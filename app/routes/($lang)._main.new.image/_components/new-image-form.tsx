@@ -63,11 +63,29 @@ import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { config } from "@/config"
+import { useBeforeUnload } from "@remix-run/react"
 
 /**
  * 新規作品フォーム
  */
 export const NewImageForm = () => {
+  const [state, setState] = React.useState<boolean | null>(null)
+
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        // 変更がある場合のみ警告を表示
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage // 標準
+          return confirmationMessage // Chrome用
+        }
+      },
+      [state],
+    ),
+  )
+
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) return null
@@ -604,6 +622,7 @@ export const NewImageForm = () => {
     if (items.map((item) => item.content).length === 0) {
       setPngInfo(null)
     }
+    setState(true)
   }, [items])
 
   return (

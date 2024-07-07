@@ -1,5 +1,4 @@
 import { AppAside } from "@/_components/app/app-aside"
-import { AppColumnLayout } from "@/_components/app/app-column-layout"
 import { HomeFooter } from "@/_components/home-footer"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-route-list"
@@ -14,13 +13,13 @@ export default function RankingsLayout() {
   return (
     <>
       <HomeHeader />
-      <AppColumnLayout>
-        <AppAside>
-          <HomeRouteList />
-        </AppAside>
+      <AppAside>
+        <HomeRouteList />
+      </AppAside>
+      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-4 md:pl-52">
         <Outlet />
-      </AppColumnLayout>
-      <HomeFooter />
+        <HomeFooter />
+      </div>
     </>
   )
 }
