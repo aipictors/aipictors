@@ -945,6 +945,7 @@ export const NewImageForm = () => {
         workId={uploadedWorkId}
         uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
       />
 
       <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
