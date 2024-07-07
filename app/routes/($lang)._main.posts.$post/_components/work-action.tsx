@@ -73,7 +73,11 @@ export const WorkAction = (props: Props) => {
           </Suspense>
         )}
         <SharePopover title={props.title} />
-        <MenuPopover onDownload={onDownload} />
+        <MenuPopover
+          onDownload={onDownload}
+          isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}
+          postId={props.targetWorkId}
+        />
       </div>
     </div>
   )
