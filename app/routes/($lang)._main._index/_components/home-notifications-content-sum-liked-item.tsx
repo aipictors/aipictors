@@ -15,7 +15,7 @@ export const HomeNotificationsContentSumLikedItem = (props: Props) => {
     <>
       <div className="flex items-center p-1 transition-all">
         <HeartIcon className="mr-2 w-4" />
-        <div className="ml-2 w-full max-w-64 overflow-hidden">
+        <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">{props.message}</p>
         </div>
       </div>

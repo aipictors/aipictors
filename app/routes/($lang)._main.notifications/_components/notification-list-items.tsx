@@ -17,8 +17,8 @@ type Props = {
 export const NotificationListItems = (props: Props) => {
   const { data: notifications } = useSuspenseQuery(viewerNotificationsQuery, {
     variables: {
-      offset: props.page * 160,
-      limit: 160,
+      offset: props.page * 32,
+      limit: 32,
       where: {
         type: props.type !== null ? props.type : undefined,
       },
@@ -29,10 +29,8 @@ export const NotificationListItems = (props: Props) => {
 
   const notificationList = notifications?.viewer?.notifications
 
-  console.log(notificationList)
-
   return (
-    <div className="max-w-96 space-y-2 overflow-hidden p-2">
+    <div className="space-y-2 overflow-hidden p-2">
       {props.type === "WORK_COMMENT" &&
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         (notificationList as any[])?.map((notification) => {
@@ -47,6 +45,22 @@ export const NotificationListItems = (props: Props) => {
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
               createdAt={toDateText(notification.createdAt) ?? ""}
+              isReplied={notification.myReplies.length !== 0}
+              repliedItem={
+                notification.myReplies[0]
+                  ? {
+                      id: notification.myReplies[0].id,
+                      comment: notification.myReplies[0].message,
+                      user: {
+                        id: notification.myReplies[0].user.id,
+                        name: notification.myReplies[0].user.name,
+                        iconUrl: notification.myReplies[0].user.iconUrl,
+                      },
+                      stickerUrl:
+                        notification.myReplies[0].sticker?.imageUrl ?? "",
+                    }
+                  : null
+              }
             />
           )
         })}
