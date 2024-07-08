@@ -1,12 +1,13 @@
 import { AppPage } from "@/_components/app/app-page"
-import { albumQuery } from "@/_graphql/queries/album/album"
-import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { createClient } from "@/_lib/client"
 import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_components/album-article-header"
 import { AlbumWorkDescription } from "@/routes/($lang)._main.albums.$album/_components/album-work-description"
 import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.album === undefined) {
@@ -66,3 +67,39 @@ export default function SensitiveAlbumPage() {
     </AppPage>
   )
 }
+
+export const albumWorksQuery = graphql(
+  `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
+    album(id: $albumId) {
+      id
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const albumQuery = graphql(
+  `query Album($id: ID!) {
+    album(id: $id) {
+      id
+      title
+      description
+      user {
+        ...WorkUserFields
+        isFollowee
+        isFollowee
+        isMuted
+        nanoid
+      }
+      createdAt
+      isSensitive
+      thumbnailImageURL
+      slug
+      worksCount
+      workIds
+    }
+  }`,
+  [workUserFieldsFragment],
+)

@@ -1,11 +1,11 @@
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
-import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { foldersCountQuery } from "@/_graphql/queries/folder/folders-count"
 import { stickersCountQuery } from "@/_graphql/queries/sticker/stickers-count"
 import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { config } from "@/config"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -169,3 +169,9 @@ export const UserTabs = (props: Props) => {
     </div>
   )
 }
+
+export const albumsCountQuery = graphql(
+  `query AlbumsCount($where: AlbumsWhereInput) {
+    albumsCount(where: $where)
+  }`,
+)

@@ -71,7 +71,8 @@
     "process",
     "react-day-picker",
     "tailwind-merge",
-    "tailwindcss"
+    "tailwindcss",
+    "graphql"
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.enablePromptUseWorkspaceTsdk": true,

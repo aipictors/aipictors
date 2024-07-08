@@ -1,7 +1,7 @@
 import { AppPage } from "@/_components/app/app-page"
 import { IconUrl } from "@/_components/icon-url"
 import { ParamsError } from "@/_errors/params-error"
-import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { userAlbumQuery } from "@/_graphql/queries/album/user-album"
 import { createClient } from "@/_lib/client"
 import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_components/album-article-header"
@@ -9,6 +9,7 @@ import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.album === undefined || props.params.user === undefined) {
@@ -94,3 +95,15 @@ export default function albums() {
     </AppPage>
   )
 }
+
+export const albumWorksQuery = graphql(
+  `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
+    album(id: $albumId) {
+      id
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
