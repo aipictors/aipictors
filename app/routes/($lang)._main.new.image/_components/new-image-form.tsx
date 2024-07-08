@@ -631,7 +631,7 @@ export const NewImageForm = () => {
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`relative items-center pb-2 bg-gray-800 ${
+            className={`relative items-center bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
@@ -682,16 +682,6 @@ export const NewImageForm = () => {
               setOgpBase64={setOgpBase64}
               setIsThumbnailLandscape={setIsThumbnailLandscape}
             />
-            {!items.length && (
-              <div className="m-4 flex flex-col text-white">
-                <p className="text-center text-sm">
-                  JPEG、PNG、GIF、WEBP、BMP、MP4
-                </p>
-                <p className="text-center text-sm">
-                  1枚32MB以内、最大200枚、動画は32MB、12秒まで
-                </p>
-              </div>
-            )}
           </div>
           {thumbnailBase64 !== "" && (
             <ThumbnailPositionAdjustInput
