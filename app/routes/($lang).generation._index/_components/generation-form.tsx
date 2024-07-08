@@ -120,6 +120,7 @@ export const GenerationForm = (props: Props) => {
           links={<GenerationLinksView />}
         />
       }
+      menu={<GenerationConfigView />}
     />
   )
 }

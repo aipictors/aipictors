@@ -79,13 +79,6 @@ export const GenerationMainView = (props: Props) => {
         className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
       >
         <ResizablePanelWithMemory
-          id="generation-config"
-          className="lg:min-w-40 xl:min-w-40"
-        >
-          {props.config}
-        </ResizablePanelWithMemory>
-        <ResizableHandle aria-setsize={1} withHandle />
-        <ResizablePanelWithMemory
           id="generation-main"
           className="flex flex-col gap-4 md:flex-row lg:min-w-40 lg:flex-col xl:min-w-40"
         >
