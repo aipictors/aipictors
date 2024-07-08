@@ -44,7 +44,7 @@ export const FullScreenContainer = (props: Props) => {
     <div
       className={cn(
         `${props.enabledScroll ? "overflow-hidden" : ""}`,
-        "fixed top-0 left-0 z-50 h-[100vh] w-[100vw] bg-white dark:bg-black",
+        "fixed top-0 left-0 z-50 h-[100vh] w-[100vw] bg-background",
       )}
     >
       <div
