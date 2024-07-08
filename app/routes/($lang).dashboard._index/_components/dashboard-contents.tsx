@@ -10,7 +10,6 @@ import { WorksListContainer } from "@/routes/($lang).dashboard._index/_component
 import { WorksSetting } from "@/routes/($lang).dashboard._index/_components/works-settings"
 import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_components/albums-list-container"
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
-import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { useQuery } from "@apollo/client/index"
 import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
@@ -19,6 +18,7 @@ import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { BookmarkListContainer } from "@/routes/($lang).dashboard._index/_components/bookmark-list-container"
 import { userQuery } from "@/_graphql/queries/user/user"
+import { graphql } from "gql.tada"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -347,3 +347,9 @@ export const DashboardContents = (props: Props) => {
     </>
   )
 }
+
+export const albumsCountQuery = graphql(
+  `query AlbumsCount($where: AlbumsWhereInput) {
+    albumsCount(where: $where)
+  }`,
+)

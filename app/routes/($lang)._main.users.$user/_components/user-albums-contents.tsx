@@ -2,11 +2,11 @@ import { ResponsiveAlbumsList } from "@/_components/responsive-albums-list"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { AuthContext } from "@/_contexts/auth-context"
 import { albumsQuery } from "@/_graphql/queries/album/albums"
-import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
@@ -76,3 +76,9 @@ export const UserAlbumsContents = (props: Props) => {
     </>
   )
 }
+
+export const albumsCountQuery = graphql(
+  `query AlbumsCount($where: AlbumsWhereInput) {
+    albumsCount(where: $where)
+  }`,
+)

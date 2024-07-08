@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/_components/ui/card"
-import type { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { HeartIcon } from "lucide-react"
 
 type Props = {
@@ -33,3 +33,15 @@ export const AlbumWork = (props: Props) => {
     </Card>
   )
 }
+
+export const albumWorksQuery = graphql(
+  `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
+    album(id: $albumId) {
+      id
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -1,7 +1,8 @@
-import type { albumsQuery } from "@/_graphql/queries/album/albums"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { config } from "@/config"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -53,3 +54,15 @@ export const ResponsiveAlbumsList = (props: Props) => {
     </div>
   )
 }
+
+export const albumsQuery = graphql(
+  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
+    albums(offset: $offset, limit: $limit, where: $where) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+)

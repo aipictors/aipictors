@@ -6,8 +6,8 @@ import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
-import type { ResultOf } from "gql.tada"
-import type { albumQuery } from "@/_graphql/queries/album/album"
+import { graphql, type ResultOf } from "gql.tada"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 
 type Props = {
   album: NonNullable<ResultOf<typeof albumQuery>["album"]>
@@ -60,3 +60,27 @@ export const AlbumWorkDescription = (props: Props) => {
     </Card>
   )
 }
+
+export const albumQuery = graphql(
+  `query Album($id: ID!) {
+    album(id: $id) {
+      id
+      title
+      description
+      user {
+        ...WorkUserFields
+        isFollowee
+        isFollowee
+        isMuted
+        nanoid
+      }
+      createdAt
+      isSensitive
+      thumbnailImageURL
+      slug
+      worksCount
+      workIds
+    }
+  }`,
+  [workUserFieldsFragment],
+)
