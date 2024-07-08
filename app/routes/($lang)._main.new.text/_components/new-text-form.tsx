@@ -69,7 +69,7 @@ import { OgpInputForText } from "@/routes/($lang)._main.new.image/_components/og
 /**
  * 新規作品フォーム
  */
-export const NewImageForm = () => {
+export const NewTextForm = () => {
   const [state, setState] = React.useState<boolean | null>(null)
 
   useBeforeUnload(
