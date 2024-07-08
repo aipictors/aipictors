@@ -65,6 +65,7 @@ import { useBeforeUnload } from "@remix-run/react"
 import { CropImageField } from "@/_components/crop-image-field"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { OgpInputForText } from "@/routes/($lang)._main.new.image/_components/ogp-input-for-text"
+import { MarkdownEditor } from "@/routes/($lang)._main.new.text/_components/markdown-editor"
 
 /**
  * 新規作品フォーム
@@ -660,24 +661,10 @@ export const NewTextForm = () => {
               ogpBase64={ogpBase64}
             />
           )}
-          <div className="flex space-x-2">
-            <Button
-              variant={"secondary"}
-              onClick={onInputPngInfo}
-              className="m-2 ml-auto block"
-            >
-              PNG情報のみ読み込み
-            </Button>
-            <Button
-              variant={"secondary"}
-              onClick={() => {
-                setIsOpenImageGenerationDialog(true)
-              }}
-              className="m-2 ml-auto block"
-            >
-              生成画像
-            </Button>
-          </div>
+
+          {/* TODO: milkdownを使う */}
+          <MarkdownEditor />
+
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
