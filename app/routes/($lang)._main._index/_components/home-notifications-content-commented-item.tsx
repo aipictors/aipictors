@@ -23,12 +23,24 @@ type Props = {
     }
     stickerUrl: string
   } | null
+  stickerSize?: "lg" | "md" | "sm" | "xs"
+}
+
+const stickerSizeClasses = {
+  lg: "h-20 w-20 md:h-24 md:w-24",
+  md: "h-12 w-12",
+  sm: "h-8 w-8",
+  xs: "h-6 w-6",
 }
 
 /**
  * ヘッダーのコメントのお知らせ内容
  */
 export const HomeNotificationsContentCommentedItem = (props: Props) => {
+  const stickerClass = props.stickerSize
+    ? stickerSizeClasses[props.stickerSize]
+    : stickerSizeClasses.md
+
   return (
     <div className="space-y-2">
       <div className="flex flex-col space-y-1 border-b p-1">
@@ -57,7 +69,7 @@ export const HomeNotificationsContentCommentedItem = (props: Props) => {
                 <img
                   src={props.stickerUrl}
                   alt="sticker"
-                  className="h-12 w-12"
+                  className={`${stickerClass} object-cover`}
                 />
               )}
               <div className="flex items-center space-x-2">
@@ -91,21 +103,11 @@ export const HomeNotificationsContentCommentedItem = (props: Props) => {
                 </>
               )}
             </p>
-
-            <p className="text-ellipsis">
-              {props.repliedItem.comment && (
-                <>
-                  {"「"}
-                  {props.repliedItem.comment}
-                  {"」"}
-                </>
-              )}
-            </p>
             {props.repliedItem.stickerUrl && (
               <img
                 src={props.repliedItem.stickerUrl}
                 alt="sticker"
-                className="h-12 w-12"
+                className={`${stickerClass} object-cover`}
               />
             )}
           </div>

@@ -1,4 +1,4 @@
-import { config } from "@/config"
+import { KeyCodes } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useCallback, useEffect } from "react"
@@ -43,7 +43,7 @@ export const GenerationAsideView = (props: Props) => {
   const { send } = GenerationConfigContext.useActorRef()
 
   const handleEscapeKeyDown = useCallback((event: { keyCode: number }) => {
-    if (event.keyCode === config.keyCodes.ESCAPE) {
+    if (event.keyCode === KeyCodes.ESCAPE) {
       send({ type: "CLOSE_PREVIEW" })
     }
   }, [])

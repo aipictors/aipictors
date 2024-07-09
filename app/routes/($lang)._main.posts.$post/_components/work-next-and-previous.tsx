@@ -5,9 +5,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import type { workQuery } from "@/_graphql/queries/work/work"
-import { config } from "@/config"
 import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
+import { useQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"
@@ -19,13 +20,28 @@ type Props = {
 export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
 
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const passData = pass?.viewer?.currentPass
+
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
+      if (document !== undefined) {
+        const activeElement = document.activeElement
+        if (
+          activeElement &&
+          (activeElement.tagName.toLowerCase() === "input" ||
+            activeElement.tagName.toLowerCase() === "textarea")
+        ) {
+          return
+        }
+      }
+
       if (typeof window !== "undefined") {
-        if (e.code === config.keyCodes.Q && props.work?.nextWork) {
+        if (e.code === "KeyQ" && props.work?.nextWork) {
           window.location.href = `/posts/${props.work?.nextWork.id}`
         }
-        if (e.code === config.keyCodes.E && props.work?.previousWork) {
+        if (e.code === "KeyE" && props.work?.previousWork) {
           window.location.href = `/posts/${props.work?.previousWork.id}`
         }
       }
@@ -95,7 +111,10 @@ export const WorkNextAndPrevious = (props: Props) => {
           )}
         </div>
       </div>
-      <WorkAdSense />
+      {passData?.type !== "LITE" &&
+        passData?.type !== "STANDARD" &&
+        passData?.type !== "PREMIUM" &&
+        passData?.type !== "TWO_DAYS" && <WorkAdSense />}
     </div>
   )
 }

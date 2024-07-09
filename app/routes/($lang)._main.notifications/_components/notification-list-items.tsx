@@ -61,6 +61,7 @@ export const NotificationListItems = (props: Props) => {
                     }
                   : null
               }
+              stickerSize="lg"
             />
           )
         })}
@@ -79,6 +80,7 @@ export const NotificationListItems = (props: Props) => {
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
               createdAt={toDateText(notification.createdAt) ?? ""}
+              stickerSize="lg"
             />
           )
         })}
