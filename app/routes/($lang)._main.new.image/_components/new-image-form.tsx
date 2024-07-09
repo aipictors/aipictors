@@ -713,6 +713,17 @@ export const NewImageForm = () => {
     setState(true)
   }, [items])
 
+  const setRating = (
+    rating: React.SetStateAction<"G" | "R15" | "R18" | "R18G">,
+  ) => {
+    setRatingRestriction(rating)
+    if (rating === "R18" || rating === "R18G") {
+      setIsSensitiveWhiteTags(true)
+    } else {
+      setIsSensitiveWhiteTags(false)
+    }
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -825,17 +836,7 @@ export const NewImageForm = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <RatingInput
-              rating={ratingRestriction}
-              setRating={(rating) => {
-                setRatingRestriction(rating)
-                if (rating === "R18" || rating === "R18G") {
-                  setIsSensitiveWhiteTags(true)
-                } else {
-                  setIsSensitiveWhiteTags(false)
-                }
-              }}
-            />
+            <RatingInput rating={ratingRestriction} setRating={setRating} />
             <ViewInput accessType={accessType} setAccessType={setAccessType} />
             <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
             <ModelInput
