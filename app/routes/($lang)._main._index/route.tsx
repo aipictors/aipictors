@@ -6,6 +6,7 @@ import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
+import { homeGenerationBannerWorkFieldFragment } from "@/routes/($lang)._main._index/_components/home-generation-banner"
 import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
@@ -139,7 +140,7 @@ export const query = graphql(
         ratings: [G],
       }
     ) {
-      ...PartialWorkFields
+      ...HomeGenerationBannerWorkField
     }
     works: works(
       offset: 0,
@@ -182,5 +183,9 @@ export const query = graphql(
       }
     }
   }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
+  [
+    partialTagFieldsFragment,
+    partialWorkFieldsFragment,
+    homeGenerationBannerWorkFieldFragment,
+  ],
 )

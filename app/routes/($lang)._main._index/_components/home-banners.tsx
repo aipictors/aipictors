@@ -5,13 +5,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/_components/ui/carousel"
-import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeEventBanner } from "@/routes/($lang)._main._index/_components/home-event-banner"
-import { HomeGenerationBanner } from "@/routes/($lang)._main._index/_components/home-generation-banner"
+import {
+  HomeGenerationBanner,
+  type homeGenerationBannerWorkFieldFragment,
+} from "@/routes/($lang)._main._index/_components/home-generation-banner"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  adWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
+  adWorks: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
 }
 
 /**

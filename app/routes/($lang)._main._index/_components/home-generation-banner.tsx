@@ -1,9 +1,15 @@
-import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
+
+export const homeGenerationBannerWorkFieldFragment = graphql(
+  `fragment HomeGenerationBannerWorkField on WorkNode @_unmask {
+    id
+    smallThumbnailImageURL
+  }`,
+)
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
 }
 
 /**
