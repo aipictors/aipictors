@@ -71,6 +71,35 @@ import { useBeforeUnload } from "@remix-run/react"
 export const NewImageForm = () => {
   const [state, setState] = React.useState<boolean | null>(null)
 
+  const selectImageFromImageGeneration = (
+    selectedImage: string[],
+    selectedIds: string[],
+  ) => {
+    setSelectedImageGenerationIds(selectedIds)
+    setItems((prev) => {
+      if (config.post.maxImageCount < selectedImage.length + prev.length) {
+        toast(`最大${config.post.maxImageCount}までです`)
+        return [...prev]
+      }
+
+      // 既存の items の URL のセットを作成
+      const existingUrls = new Set(prev.map((item) => item.content))
+
+      // 新しく追加する items のフィルタリング
+      const newItems = selectedImage
+        .filter((image) => !existingUrls.has(image))
+        .map((image) => ({
+          id: Math.floor(Math.random() * 10000),
+          content: image,
+        }))
+
+      // 既存の items に新しい items を追加
+      return [...prev, ...newItems]
+    })
+    setIsOpenImageGenerationDialog(false)
+    setSelectedImageGenerationIds([])
+  }
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
@@ -92,6 +121,24 @@ export const NewImageForm = () => {
 
   if (!authContext || !authContext.userId) {
     return "ログインしてください"
+  }
+
+  const submitFromEditorCanvas = (base64: string) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.content === editTargetImageBase64
+          ? { ...item, content: base64 }
+          : item,
+      ),
+    )
+
+    // もし先頭のアイテムを書き換えたならサムネイル更新
+    if (items[0].content === editTargetImageBase64) {
+      setThumbnailBase64(base64)
+    }
+
+    setEditTargetImageBase64("")
+    setOgpBase64("")
   }
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
@@ -351,6 +398,47 @@ export const NewImageForm = () => {
   }
 
   const [progress, setProgress] = useState(0)
+
+  const onDateInput = (value: string) => {
+    setReservationDate(value)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
+    const threeDaysLater = new Date(today)
+    threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+
+    const changeDate = new Date(value)
+    changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
+
+    // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
+    if (changeDate >= today && changeDate <= threeDaysLater) {
+      setDate(changeDate)
+      setIsHideTheme(false)
+    } else {
+      setIsHideTheme(true)
+    }
+    setThemeId("")
+  }
+
+  const onChangeTheme = (value: boolean) => {
+    if (value) {
+      setThemeId(theme?.dailyTheme?.id ?? "")
+      // タグをセット
+      setTags([
+        ...tags,
+        {
+          id: 9999,
+          text: theme?.dailyTheme?.title,
+        } as unknown as Tag,
+      ])
+    } else {
+      setThemeId("")
+      // タグを削除
+      const newTags = tags.filter(
+        (tag) => tag.text !== theme?.dailyTheme?.title,
+      )
+      setTags(newTags)
+    }
+  }
 
   /**
    * 投稿処理
@@ -792,49 +880,12 @@ export const NewImageForm = () => {
             <DateInput
               date={reservationDate}
               time={reservationTime}
-              setDate={(value: string) => {
-                setReservationDate(value)
-                const today = new Date()
-                today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
-                const threeDaysLater = new Date(today)
-                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
-
-                const changeDate = new Date(value)
-                changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
-
-                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
-                if (changeDate >= today && changeDate <= threeDaysLater) {
-                  setDate(changeDate)
-                  setIsHideTheme(false)
-                } else {
-                  setIsHideTheme(true)
-                }
-                setThemeId("")
-              }}
+              setDate={onDateInput}
               setTime={setReservationTime}
             />
             {!isHideTheme && (
               <ThemeInput
-                onChange={(value: boolean) => {
-                  if (value) {
-                    setThemeId(theme?.dailyTheme?.id ?? "")
-                    // タグをセット
-                    setTags([
-                      ...tags,
-                      {
-                        id: 9999,
-                        text: theme?.dailyTheme?.title,
-                      } as unknown as Tag,
-                    ])
-                  } else {
-                    setThemeId("")
-                    // タグを削除
-                    const newTags = tags.filter(
-                      (tag) => tag.text !== theme?.dailyTheme?.title,
-                    )
-                    setTags(newTags)
-                  }
-                }}
+                onChange={onChangeTheme}
                 title={theme?.dailyTheme?.title ?? ""}
                 isLoading={themeLoading}
               />
@@ -907,23 +958,7 @@ export const NewImageForm = () => {
             imageUrl={editTargetImageBase64}
             isMosaicMode={true}
             isShowSubmitButton={true}
-            onSubmit={(base64) => {
-              setItems((prev) =>
-                prev.map((item) =>
-                  item.content === editTargetImageBase64
-                    ? { ...item, content: base64 }
-                    : item,
-                ),
-              )
-
-              // もし先頭のアイテムを書き換えたならサムネイル更新
-              if (items[0].content === editTargetImageBase64) {
-                setThumbnailBase64(base64)
-              }
-
-              setEditTargetImageBase64("")
-              setOgpBase64("")
-            }}
+            onSubmit={submitFromEditorCanvas}
           />
         </FullScreenContainer>
       )}
@@ -943,34 +978,7 @@ export const NewImageForm = () => {
       <ImageGenerationSelectorDialog
         isOpen={isOpenImageGenerationDialog}
         setIsOpen={setIsOpenImageGenerationDialog}
-        onSubmitted={(selectedImage: string[], selectedIds: string[]) => {
-          setSelectedImageGenerationIds(selectedIds)
-          setItems((prev) => {
-            if (
-              config.post.maxImageCount <
-              selectedImage.length + prev.length
-            ) {
-              toast(`最大${config.post.maxImageCount}までです`)
-              return [...prev]
-            }
-
-            // 既存の items の URL のセットを作成
-            const existingUrls = new Set(prev.map((item) => item.content))
-
-            // 新しく追加する items のフィルタリング
-            const newItems = selectedImage
-              .filter((image) => !existingUrls.has(image))
-              .map((image) => ({
-                id: Math.floor(Math.random() * 10000),
-                content: image,
-              }))
-
-            // 既存の items に新しい items を追加
-            return [...prev, ...newItems]
-          })
-          setIsOpenImageGenerationDialog(false)
-          setSelectedImageGenerationIds([])
-        }}
+        onSubmitted={selectImageFromImageGeneration}
         selectedIds={selectedImageGenerationIds}
         setSelectIds={setSelectedImageGenerationIds}
       />
