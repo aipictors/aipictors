@@ -1,9 +1,9 @@
-import type { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof homeQuery>["adWorks"]>
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
