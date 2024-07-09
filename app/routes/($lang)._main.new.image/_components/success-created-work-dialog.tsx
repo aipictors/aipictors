@@ -83,7 +83,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <div className="relative h-40 w-full">
             <div
               id="confetti-container"
-              className="relative h-40 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900"
+              className="relative h-40 w-full overflow-hidden bg-monotone-100 dark:bg-zinc-900"
             />
             {props.createdAt > new Date().getTime() ? (
               <Link to={"/dashboard/posts"}>

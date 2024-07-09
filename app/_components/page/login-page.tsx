@@ -107,7 +107,7 @@ export const LoginPage = () => {
           </div>
         </div>
         <div className="hidden h-full w-full flex-1 lg:block">
-          <Card className="h-full w-full bg-zinc-200 p-4 dark:bg-zinc-500">
+          <Card className="h-full w-full bg-monotone-200 p-4 dark:bg-zinc-500">
             <p className="text-sm">{"aipictors.com"}</p>
             <AppCanvas />
           </Card>

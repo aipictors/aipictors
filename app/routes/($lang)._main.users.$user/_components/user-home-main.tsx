@@ -42,7 +42,7 @@ export const UserHomeMain = (props: Props) => {
   const isFollow = userInfo?.user?.isFollowee ?? false
 
   return (
-    <div className="relative m-auto h-64 w-full bg-neutral-100 md:h-24 dark:bg-neutral-900">
+    <div className="relative m-auto h-64 w-full bg-monotone-50 md:h-24 dark:bg-neutral-900">
       <div className="absolute top-8 right-0 hidden md:block">
         <div className="flex items-center space-x-2">
           <FollowButton
