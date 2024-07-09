@@ -19,7 +19,7 @@ type Props = {
   videoFile: File | null // 動画ファイル
   isOnlyMove?: boolean // 移動可能のみかどうか（削除、追加不可能）
   maxItemsCount?: number // 最大画像数
-  setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
+  setItems: (items: TSortableItem[]) => void
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   setThumbnailBase64?: (thumbnailBase64: string) => void
   setOgpBase64?: (ogpBase64: string) => void

@@ -17,7 +17,7 @@ import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-inp
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 import { useMutation, useQuery } from "@apollo/client/index"
 import {} from "@dnd-kit/core"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
@@ -71,6 +71,29 @@ import { useBeforeUnload } from "@remix-run/react"
 export const NewImageForm = () => {
   const [state, setState] = React.useState<boolean | null>(null)
 
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        // 変更がある場合のみ警告を表示
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage // 標準
+          return confirmationMessage // Chrome用
+        }
+      },
+      [state],
+    ),
+  )
+
+  const authContext = useContext(AuthContext)
+
+  if (authContext.isLoading) return null
+
+  if (!authContext || !authContext.userId) {
+    return "ログインしてください"
+  }
+
   const selectImageFromImageGeneration = (
     selectedImage: string[],
     selectedIds: string[],
@@ -100,29 +123,6 @@ export const NewImageForm = () => {
     setSelectedImageGenerationIds([])
   }
 
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        // 変更がある場合のみ警告を表示
-        if (state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
-          event.returnValue = confirmationMessage // 標準
-          return confirmationMessage // Chrome用
-        }
-      },
-      [state],
-    ),
-  )
-
-  const authContext = useContext(AuthContext)
-
-  if (authContext.isLoading) return null
-
-  if (!authContext || !authContext.userId) {
-    return "ログインしてください"
-  }
-
   const submitFromEditorCanvas = (base64: string) => {
     setItems((prev) =>
       prev.map((item) =>
@@ -132,8 +132,8 @@ export const NewImageForm = () => {
       ),
     )
 
-    // もし先頭のアイテムを書き換えたならサムネイル更新
     if (items[0].content === editTargetImageBase64) {
+      // もし先頭のアイテムを書き換えたならサムネイル更新
       setThumbnailBase64(base64)
     }
 
@@ -141,7 +141,7 @@ export const NewImageForm = () => {
     setOgpBase64("")
   }
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+  const { data: token } = useQuery(viewerTokenQuery)
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
     variables: {
@@ -176,6 +176,8 @@ export const NewImageForm = () => {
   const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
 
   const [isDrawing, setIsDrawing] = React.useState(false)
+
+  const [isHovered, setIsHovered] = useState(false)
 
   const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
     variables: {
@@ -255,11 +257,6 @@ export const NewImageForm = () => {
         name: model.name,
       })) as AiModel[])
     : []
-
-  /**
-   * 画像の配列を保持する状態
-   */
-  const [isHovered, setIsHovered] = useState(false)
 
   const [title, setTitle] = useState("")
 
@@ -364,12 +361,12 @@ export const NewImageForm = () => {
 
     const images = items.map((item) => item.content)
 
-    const imageUrls = await Promise.all(
-      images.map(async (image) => {
-        const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
-        return imageUrl
-      }),
-    )
+    const uploadImages = images.map(async (image) => {
+      const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
+      return imageUrl
+    })
+
+    const imageUrls = await Promise.all(uploadImages)
 
     return imageUrls
   }
@@ -671,10 +668,10 @@ export const NewImageForm = () => {
       if (error instanceof Error) {
         toast(error.message)
       }
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      uploadedImageUrls.forEach(async (url) => {
-        await deleteUploadedImage(url)
+      const deleteImages = uploadedImageUrls.map((url) => {
+        return deleteUploadedImage(url)
       })
+      await Promise.all(deleteImages)
       setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
     } finally {
       setIsCreatingWork(false)
@@ -702,13 +699,6 @@ export const NewImageForm = () => {
     }
     input.click()
   }
-
-  useEffect(() => {
-    if (items.map((item) => item.content).length === 0) {
-      setPngInfo(null)
-    }
-    setState(true)
-  }, [items])
 
   const setRating = (
     rating: React.SetStateAction<"G" | "R15" | "R18" | "R18G">,
@@ -767,6 +757,14 @@ export const NewImageForm = () => {
     setIsOpenImageGenerationDialog(true)
   }
 
+  const onSetItems = (items: TSortableItem[]) => {
+    setItems(items)
+    if (items.map((item) => item.content).length === 0) {
+      setPngInfo(null)
+    }
+    setState(true)
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -789,7 +787,7 @@ export const NewImageForm = () => {
               indexList={indexList}
               items={items}
               videoFile={videoFile}
-              setItems={setItems}
+              setItems={onSetItems}
               maxItemsCount={config.post.maxImageCount}
               setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
