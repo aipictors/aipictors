@@ -724,6 +724,36 @@ export const NewImageForm = () => {
     }
   }
 
+  const recommendedNotUsedTags = () => {
+    return (
+      recommendedTags?.filter(
+        (tag) => !tags.map((tag) => tag.text).includes(tag.text),
+      ) ?? []
+    )
+  }
+
+  const selectedFilesSizeText = () => {
+    const totalBytes = items
+      .map((item) => item.content)
+      .reduce((acc, imageBase64) => {
+        const byteLength = new TextEncoder().encode(imageBase64).length
+        return acc + byteLength
+      }, 0)
+
+    if (totalBytes < 1024 * 1024) {
+      return `${(totalBytes / 1024).toFixed(2)} KB`
+    }
+    return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+  }
+
+  const selectedImagesCountText = () => {
+    return `イラスト${items.map((item) => item.content).length}枚`
+  }
+
+  const whiteListNotSelectedTags = whiteTags.filter(
+    (tag) => !tags.map((tag) => tag.text).includes(tag.text),
+  )
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -737,28 +767,8 @@ export const NewImageForm = () => {
             {items.map((item) => item.content).length !== 0 && (
               <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
                 <div className="flex space-x-4 text-white">
-                  <div className="flex">
-                    {"イラスト"}
-                    {items.map((item) => item.content).length.toString()}
-                    {"枚"}
-                  </div>
-                  <div className="flex">
-                    {(() => {
-                      const totalBytes = items
-                        .map((item) => item.content)
-                        .reduce((acc, imageBase64) => {
-                          const byteLength = new TextEncoder().encode(
-                            imageBase64,
-                          ).length
-                          return acc + byteLength
-                        }, 0)
-
-                      if (totalBytes < 1024 * 1024) {
-                        return `${(totalBytes / 1024).toFixed(2)} KB`
-                      }
-                      return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-                    })()}
-                  </div>
+                  <div className="flex">{selectedImagesCountText()}</div>
+                  <div className="flex">{selectedFilesSizeText()}</div>
                 </div>
               </div>
             )}
@@ -805,7 +815,7 @@ export const NewImageForm = () => {
               onClick={onInputPngInfo}
               className="m-2 ml-auto block"
             >
-              PNG情報のみ読み込み
+              {"PNG情報のみ読み込み"}
             </Button>
             <Button
               variant={"secondary"}
@@ -814,7 +824,7 @@ export const NewImageForm = () => {
               }}
               className="m-2 ml-auto block"
             >
-              生成画像
+              {"生成画像"}
             </Button>
           </div>
           <ScrollArea className="p-2">
@@ -857,7 +867,7 @@ export const NewImageForm = () => {
                   htmlFor="set-generation-check"
                   className="ml-2 font-medium text-sm"
                 >
-                  生成情報を公開する
+                  {"生成情報を公開する"}
                 </label>
               </div>
             )}
@@ -905,16 +915,10 @@ export const NewImageForm = () => {
             )}
 
             <TagsInput
-              whiteListTags={whiteTags.filter(
-                (tag) => !tags.map((tag) => tag.text).includes(tag.text),
-              )}
+              whiteListTags={whiteListNotSelectedTags}
               tags={tags}
               setTags={setTags}
-              recommendedTags={
-                recommendedTags?.filter(
-                  (tag) => !tags.map((tag) => tag.text).includes(tag.text),
-                ) ?? []
-              }
+              recommendedTags={recommendedNotUsedTags()}
             />
 
             {recommendedTagsLoading && (
@@ -931,9 +935,7 @@ export const NewImageForm = () => {
             <AlbumInput
               album={albumId}
               albums={optionAlbums}
-              setAlbumId={(value: string) => {
-                setAlbumId(value)
-              }}
+              setAlbumId={setAlbumId}
             />
             <RelatedLinkInput link={link} onChange={setLink} />
             <AdWorkInput
@@ -945,7 +947,7 @@ export const NewImageForm = () => {
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
           <Button className="w-full" type="submit" onClick={onPost}>
-            投稿
+            {"投稿"}
           </Button>
         </div>
       </div>
