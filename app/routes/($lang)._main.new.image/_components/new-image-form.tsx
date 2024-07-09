@@ -69,23 +69,6 @@ import { useBeforeUnload } from "@remix-run/react"
  * 新規作品フォーム
  */
 export const NewImageForm = () => {
-  const [state, setState] = React.useState<boolean | null>(null)
-
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        // 変更がある場合のみ警告を表示
-        if (state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
-          event.returnValue = confirmationMessage // 標準
-          return confirmationMessage // Chrome用
-        }
-      },
-      [state],
-    ),
-  )
-
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) return null
@@ -152,7 +135,93 @@ export const NewImageForm = () => {
     fetchPolicy: "cache-first",
   })
 
+  const [state, setState] = React.useState<boolean | null>(null)
+
   const [pngInfo, setPngInfo] = useState<PNGInfo | null>(null)
+
+  const [date, setDate] = useState(new Date())
+
+  const [isHideTheme, setIsHideTheme] = useState(false)
+
+  const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
+
+  const [isDrawing, setIsDrawing] = React.useState(false)
+
+  const [isHovered, setIsHovered] = useState(false)
+
+  const [title, setTitle] = useState("")
+
+  const [enTitle, setEnTitle] = useState("")
+
+  const [caption, setCaption] = useState("")
+
+  const [enCaption, setEnCaption] = useState("")
+
+  const [themeId, setThemeId] = useState("")
+
+  const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
+
+  const [albumId, setAlbumId] = useState("")
+
+  const [link, setLink] = useState("")
+
+  const [tags, setTags] = useState<Tag[]>([])
+
+  const [isTagEditable, setIsTagEditable] = useState(false)
+
+  const [isCommentsEditable, setIsCommentsEditable] = useState(false)
+
+  const [isAd, setIsAd] = useState(false)
+
+  const [ratingRestriction, setRatingRestriction] =
+    useState<IntrospectionEnum<"Rating">>("G")
+
+  const [accessType, setAccessType] =
+    useState<IntrospectionEnum<"AccessType">>("PUBLIC")
+
+  const [imageStyle, setImageStyle] =
+    useState<IntrospectionEnum<"ImageStyle">>("ILLUSTRATION")
+
+  const [aiUsed, setAiUsed] = useState("1")
+
+  const [reservationDate, setReservationDate] = useState("")
+
+  const [reservationTime, setReservationTime] = useState("")
+
+  const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
+
+  const [items, setItems] = useState<TSortableItem[]>([])
+
+  const [indexList, setIndexList] = useState<number[]>([])
+
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+
+  const [thumbnailBase64, setThumbnailBase64] = useState("")
+
+  const [ogpBase64, setOgpBase64] = useState("")
+
+  const [thumbnailPosX, setThumbnailPosX] = useState(0)
+
+  const [thumbnailPosY, setThumbnailPosY] = useState(0)
+
+  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false) // サムネイルが横長かどうか
+
+  const [isCreatedWork, setIsCreatedWork] = useState(false) // 作品作成が完了したかどうか
+
+  const [isCreatingWork, setIsCreatingWork] = useState(false) // 作品作成中かどうか
+
+  const [uploadedWorkId, setUploadedWorkId] = useState("")
+
+  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
+
+  const [progress, setProgress] = useState(0)
+
+  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
+    string[]
+  >([])
+
+  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
+    useState(false)
 
   const { data: recommendedTagsRet, loading: recommendedTagsLoading } =
     useQuery(recommendedTagsFromPromptsQuery, {
@@ -168,16 +237,6 @@ export const NewImageForm = () => {
         text: tag.name,
       }) as Tag,
   )
-
-  const [date, setDate] = useState(new Date())
-
-  const [isHideTheme, setIsHideTheme] = useState(false)
-
-  const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
-
-  const [isDrawing, setIsDrawing] = React.useState(false)
-
-  const [isHovered, setIsHovered] = useState(false)
 
   const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
     variables: {
@@ -258,78 +317,6 @@ export const NewImageForm = () => {
       })) as AiModel[])
     : []
 
-  const [title, setTitle] = useState("")
-
-  const [enTitle, setEnTitle] = useState("")
-
-  const [caption, setCaption] = useState("")
-
-  const [enCaption, setEnCaption] = useState("")
-
-  const [themeId, setThemeId] = useState("")
-
-  const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
-
-  const [albumId, setAlbumId] = useState("")
-
-  const [link, setLink] = useState("")
-
-  const [tags, setTags] = useState<Tag[]>([])
-
-  const [isTagEditable, setIsTagEditable] = useState(false)
-
-  const [isCommentsEditable, setIsCommentsEditable] = useState(false)
-
-  const [isAd, setIsAd] = useState(false)
-
-  const [ratingRestriction, setRatingRestriction] =
-    useState<IntrospectionEnum<"Rating">>("G")
-
-  const [accessType, setAccessType] =
-    useState<IntrospectionEnum<"AccessType">>("PUBLIC")
-
-  const [imageStyle, setImageStyle] =
-    useState<IntrospectionEnum<"ImageStyle">>("ILLUSTRATION")
-
-  const [aiUsed, setAiUsed] = useState("1")
-
-  const [reservationDate, setReservationDate] = useState("")
-
-  const [reservationTime, setReservationTime] = useState("")
-
-  const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
-
-  const [items, setItems] = useState<TSortableItem[]>([])
-
-  const [indexList, setIndexList] = useState<number[]>([])
-
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-
-  const [thumbnailBase64, setThumbnailBase64] = useState("")
-
-  const [ogpBase64, setOgpBase64] = useState("")
-
-  const [thumbnailPosX, setThumbnailPosX] = useState(0)
-
-  const [thumbnailPosY, setThumbnailPosY] = useState(0)
-
-  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false) // サムネイルが横長かどうか
-
-  const [isCreatedWork, setIsCreatedWork] = useState(false) // 作品作成が完了したかどうか
-
-  const [isCreatingWork, setIsCreatingWork] = useState(false) // 作品作成中かどうか
-
-  const [uploadedWorkId, setUploadedWorkId] = useState("")
-
-  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
-
-  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
-    string[]
-  >([])
-
-  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
-    useState(false)
-
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isLoading,
   })
@@ -394,7 +381,20 @@ export const NewImageForm = () => {
     FAILURE: 0,
   }
 
-  const [progress, setProgress] = useState(0)
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        // 変更がある場合のみ警告を表示
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage // 標準
+          return confirmationMessage // Chrome用
+        }
+      },
+      [state],
+    ),
+  )
 
   const onDateInput = (value: string) => {
     setReservationDate(value)
