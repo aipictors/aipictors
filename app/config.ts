@@ -300,14 +300,15 @@ export const config = {
    * 本番環境である
    */
   isReleaseMode: import.meta.env.MODE !== "development",
-  /**
-   * キーボードキーコード定義
-   */
-  keyCodes: {
-    Q: "KeyQ",
-    E: "KeyE",
-    ALLOW_LEFT: "ArrowLeft",
-    ALLOW_RIGHT: "ArrowRight",
-    ESCAPE: 27,
-  },
+}
+
+/**
+ * キーコードの型定義
+ */
+export enum KeyCodes {
+  Q = "KeyQ",
+  E = "KeyE",
+  ALLOW_LEFT = "ArrowLeft",
+  ALLOW_RIGHT = "ArrowRight",
+  ESCAPE = 27,
 }

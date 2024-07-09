@@ -1,7 +1,7 @@
 import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
 import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
 import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
-import { config } from "@/config"
+import { config, KeyCodes } from "@/config"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
@@ -270,11 +270,11 @@ export function GenerationTaskSheetView(props: Props) {
       }
 
       // 左キーが押された場合は前のタスクへ
-      if (event.code === config.keyCodes.ALLOW_LEFT) {
+      if (event.code === KeyCodes.ALLOW_LEFT) {
         onPrevTask()
       }
       // 右キーが押された場合は次のタスクへ
-      if (event.code === config.keyCodes.ALLOW_RIGHT) {
+      if (event.code === KeyCodes.ALLOW_RIGHT) {
         onNextTask()
       }
     },

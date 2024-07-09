@@ -14,8 +14,11 @@ export const PromptonRequestButton = (props: Props) => {
   }
 
   return (
-    <Button onClick={onClick} size={"icon"} variant={"secondary"} {...props}>
-      <GiftIcon className="w-4" />
+    <Button onClick={onClick} variant={"secondary"} {...props}>
+      <div className="flex items-center space-x-2">
+        <p>{"サポートする"}</p>
+        <GiftIcon className="w-4" />
+      </div>
     </Button>
   )
 }
