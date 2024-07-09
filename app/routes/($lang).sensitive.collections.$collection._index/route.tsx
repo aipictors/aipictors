@@ -1,9 +1,10 @@
 import { AppPage } from "@/_components/app/app-page"
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { CollectionArticle } from "@/routes/($lang)._main.collections.$collection/_components/collection-article"
 import { WorkList } from "@/routes/($lang)._main.posts._index/_components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader() {
   const client = createClient()
@@ -32,3 +33,12 @@ export default function SensitiveCollection() {
     </AppPage>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

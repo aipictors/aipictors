@@ -5,10 +5,10 @@ import {
   DialogTitle,
 } from "@/_components/ui/dialog"
 import { useQuery } from "@apollo/client/index"
-import { verificationUrlQuery } from "@/_graphql/queries/viewer/viewer-varification-url"
 import { useEffect, useState } from "react"
 import { LineLoggedInButton } from "@/_components/button/line-logged-in-button"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 type Props = {
   isOpen: boolean
@@ -128,3 +128,11 @@ export const VerificationDialog = (props: Props) => {
     </>
   )
 }
+
+export const verificationUrlQuery = graphql(
+  `query VerificationUrl {
+    viewer {
+      verificationUrl
+    }
+  }`,
+)

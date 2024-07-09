@@ -5,15 +5,12 @@ import RealTimeCanvas from "@/_components/realtime-canvas"
 import { Input } from "@/_components/ui/input"
 import { Slider } from "@/_components/ui/slider"
 import { AuthContext } from "@/_contexts/auth-context"
-import { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
-import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
-import { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
-import { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { createClient } from "@/_lib/client"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import React, { useEffect, useState } from "react"
 import { useContext } from "react"
 
@@ -294,3 +291,64 @@ export default function GenerationLayout() {
     </>
   )
 }
+
+export const imageLoraModelsQuery = graphql(
+  `query ImageLoraModels {
+    imageLoraModels {
+      id
+      name
+      description
+      license
+      prompts
+      slug
+      thumbnailImageURL
+      genre
+    }
+  }`,
+)
+
+export const imageModelsQuery = graphql(
+  `query ImageModels {
+    imageModels {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)
+
+export const negativePromptCategoriesQuery = graphql(
+  `query NegativePromptCategories {
+    negativePromptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)
+
+export const promptCategoriesQuery = graphql(
+  `query PromptCategories {
+    promptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)

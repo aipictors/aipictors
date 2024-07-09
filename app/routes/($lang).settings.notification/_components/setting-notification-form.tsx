@@ -2,10 +2,11 @@ import { Button } from "@/_components/ui/button"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
 import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-setting"
-import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
 import { SettingFcmForm } from "@/routes/($lang).settings.push-notification/_components/setting-fcm-form"
 import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -159,3 +160,12 @@ export const SettingNotificationForm = () => {
     </>
   )
 }
+
+export const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)

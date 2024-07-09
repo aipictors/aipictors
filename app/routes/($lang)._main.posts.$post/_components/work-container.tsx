@@ -5,12 +5,13 @@ import { WorkRelatedList } from "@/routes/($lang)._main.posts.$post/_components/
 import { WorkUser } from "@/routes/($lang)._main.posts.$post/_components/work-user"
 import { Suspense } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.posts.$post/_components/work-tags-works"
-import type { workQuery } from "@/_graphql/queries/work/work"
-import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
 import { WorkCommentList } from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
+import { commentFieldsFragment } from "@/_graphql/fragments/comment-fields"
+import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
+import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>>["work"]
@@ -117,3 +118,139 @@ export const WorkContainer = (props: Props) => {
     </div>
   )
 }
+
+export const workCommentsQuery = graphql(
+  `query WorkComments($workId: ID!) {
+    work(id: $workId) {
+      id
+      comments(offset: 0, limit: 128) {
+        ...CommentFields
+        responses(offset: 0, limit: 128) {
+          ...CommentFields
+        }
+      }
+    }
+  }`,
+  [commentFieldsFragment],
+)
+
+export const workQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      id
+      isMyRecommended
+      title
+      accessType
+      type
+      adminAccessType
+      promptAccessType
+      rating
+      description
+      isSensitive
+      enTitle
+      enDescription
+      imageURL
+      largeThumbnailImageURL
+      largeThumbnailImageWidth
+      largeThumbnailImageHeight
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
+      subWorksCount
+      user {
+        id
+        promptonUser {
+          id
+        }
+        ...UserFields
+        isFollower
+        isFollowee
+        isMuted
+        works(offset: 0, limit: 16) {
+          id
+          userId
+          largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
+          smallThumbnailImageURL
+          smallThumbnailImageWidth
+          smallThumbnailImageHeight
+          thumbnailImagePosition
+          subWorksCount
+        }
+      }
+      likedUsers(offset: 0, limit: 32) {
+        id
+        name
+        iconUrl
+        login
+      }
+      album {
+        id
+        title
+        description
+      }
+      dailyTheme {
+        id
+        title
+      }
+      tagNames
+      createdAt
+      likesCount
+      viewsCount
+      commentsCount
+      subWorks {
+        ...SubWorkFields
+      }
+      nextWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      previousWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      model
+      modelHash
+      generationModelId
+      workModelId
+      isTagEditable
+      isCommentsEditable
+      isLiked
+      isBookmarked
+      isInCollection
+      isPromotion
+      isGeneration
+      ogpThumbnailImageUrl
+      prompt
+      negativePrompt
+      noise
+      seed
+      steps
+      sampler
+      scale
+      strength
+      vae
+      clipSkip
+      otherGenerationParams
+      pngInfo
+      style
+      url
+      html
+      updatedAt
+      dailyRanking
+      weeklyRanking
+      monthlyRanking
+      relatedUrl
+      nanoid
+    }
+  }`,
+  [userFieldsFragment, subWorkFieldsFragment],
+)

@@ -1,6 +1,6 @@
 import { IconUrl } from "@/_components/icon-url"
 import { AuthContext } from "@/_contexts/auth-context"
-import type { userQuery } from "@/_graphql/queries/user/user"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
@@ -8,7 +8,7 @@ import { UserContents } from "@/routes/($lang)._main.users.$user/_components/use
 import { UserHomeMain } from "@/routes/($lang)._main.users.$user/_components/user-home-main"
 import { UserProfileNameIcon } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 import {} from "@apollo/client/index"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import React, { Suspense } from "react"
 import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
@@ -100,3 +100,95 @@ export const UserHome = (props: UserProfileProps) => {
     </div>
   )
 }
+
+export const userQuery = graphql(
+  `query User(
+    $userId: ID!,
+    $worksOffset: Int!,
+    $worksLimit: Int!,
+    $worksWhere: UserWorksWhereInput,
+    $followeesOffset: Int!,
+    $followeesLimit: Int!,
+    $followeesWorksOffset: Int!,
+    $followeesWorksLimit: Int!,
+    $followeesWorksWhere: UserWorksWhereInput,
+    $followersOffset: Int!,
+    $followersLimit: Int!,
+    $followersWorksOffset: Int!,
+    $followersWorksLimit: Int!
+    $followersWorksWhere: UserWorksWhereInput,
+    $bookmarksOffset: Int!,
+    $bookmarksLimit: Int!,
+    $bookmarksWhere: UserWorksWhereInput,
+  ) {
+    user(id: $userId) {
+      id
+      biography
+      createdBookmarksCount
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
+      isFollower
+      isFollowee
+      headerImageUrl
+      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
+        ...PartialWorkFields
+      }
+      followees(offset: $followeesOffset, limit: $followeesLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      followers(offset: $followersOffset, limit: $followersLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+        ...PartialWorkFields
+      }
+      featuredSensitiveWorks {
+        ...PartialWorkFields
+      }
+      featuredWorks {
+        ...PartialWorkFields
+      }
+      biography
+      enBiography
+      instagramAccountId
+      twitterAccountId
+      githubAccountId
+      siteURL
+      mailAddress
+      promptonUser {
+        id
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -1,8 +1,8 @@
 import { Switch } from "@/_components/ui/switch"
-import type { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { WorkCard } from "@/routes/($lang)._main.posts._index/_components/work-card"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   albums: NonNullable<ResultOf<typeof userAlbumsQuery>["user"]>["albums"]
@@ -25,3 +25,15 @@ export const UserAlbumList = (props: Props) => {
     </div>
   )
 }
+
+export const userAlbumsQuery = graphql(
+  `query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
+    user(id: $userId) {
+      id
+      albums(offset: $offset, limit: $limit) {
+        ...PartialAlbumFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment],
+)

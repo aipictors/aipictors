@@ -11,9 +11,8 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
 import { NegativePromptCategoryIcon } from "@/routes/($lang).generation._index/_components/negative-prompt-view/negative-prompt-category-icon"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   selectedNegativePromptIds: string[]
@@ -84,3 +83,17 @@ export const NegativePromptsDialogContent = (props: Props) => {
     </>
   )
 }
+
+export const negativePromptCategoriesQuery = graphql(
+  `query NegativePromptCategories {
+    negativePromptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)

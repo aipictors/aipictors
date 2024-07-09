@@ -1,8 +1,5 @@
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
-import { foldersCountQuery } from "@/_graphql/queries/folder/folders-count"
-import { stickersCountQuery } from "@/_graphql/queries/sticker/stickers-count"
-import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { config } from "@/config"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -173,5 +170,23 @@ export const UserTabs = (props: Props) => {
 export const albumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
+  }`,
+)
+
+export const foldersCountQuery = graphql(
+  `query FoldersCount($where: FoldersWhereInput) {
+    foldersCount(where: $where)
+  }`,
+)
+
+export const stickersCountQuery = graphql(
+  `query StickersCount($where: StickersWhereInput) {
+    stickersCount(where: $where)
+  }`,
+)
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
   }`,
 )

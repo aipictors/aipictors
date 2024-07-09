@@ -1,11 +1,12 @@
 import { ResponsiveFoldersList } from "@/_components/responsive-folders-list"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { AuthContext } from "@/_contexts/auth-context"
-import { foldersQuery } from "@/_graphql/queries/folder/folders"
-import { foldersCountQuery } from "@/_graphql/queries/folder/folders-count"
+import { partialFolderFieldsFragment } from "@/_graphql/fragments/partial-folder-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
@@ -60,3 +61,21 @@ export const UserFoldersContents = (props: Props) => {
     </>
   )
 }
+
+export const foldersCountQuery = graphql(
+  `query FoldersCount($where: FoldersWhereInput) {
+    foldersCount(where: $where)
+  }`,
+)
+
+export const foldersQuery = graphql(
+  `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
+    folders(offset: $offset, limit: $limit, where: $where) {
+      ...PartialFolderFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialFolderFieldsFragment, partialUserFieldsFragment],
+)

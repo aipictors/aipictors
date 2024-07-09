@@ -1,4 +1,9 @@
-import { viewerNotificationsQuery } from "@/_graphql/queries/viewer/viewer-notifications"
+import { followNotificationFieldsFragment } from "@/_graphql/fragments/follow-notification-fields"
+import { likedWorkNotificationFieldsFragment } from "@/_graphql/fragments/liked-work-notification-fields"
+import { likedWorksSummaryNotificationFieldsFragment } from "@/_graphql/fragments/liked-works-summary-notification-fields"
+import { workAwardNotificationFieldsFragment } from "@/_graphql/fragments/work-award-notification-fields"
+import { workCommentNotificationFieldsFragment } from "@/_graphql/fragments/work-comment-notification-fields"
+import { workCommentReplyNotificationFieldsFragment } from "@/_graphql/fragments/work-comment-reply-notification-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toDateText } from "@/_utils/to-date-text"
 import { HomeNotificationsContentAwardItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-award-item"
@@ -8,6 +13,7 @@ import { HomeNotificationsContentLikedItem } from "@/routes/($lang)._main._index
 import { HomeNotificationsContentReplyItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-reply-item"
 import { HomeNotificationsContentSumLikedItem } from "@/routes/($lang)._main._index/_components/home-notifications-content-sum-liked-item"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType"> | null
@@ -142,3 +148,38 @@ export const NotificationListItems = (props: Props) => {
     </div>
   )
 }
+
+export const viewerNotificationsQuery = graphql(
+  `query ViewerNotifications($offset: Int!, $limit: Int!, $where: NotificationsWhereInput) {
+    viewer {
+      notifications(offset: $offset, limit: $limit, where: $where) {
+        ... on LikedWorkNotificationNode {
+          ...LikedWorkNotificationFields
+        }
+        ... on LikedWorksSummaryNotificationNode {
+          ...LikedWorksSummaryNotificationFields
+        }
+        ... on WorkAwardNotificationNode {
+          ...WorkAwardNotificationFields
+        }
+        ... on WorkCommentNotificationNode {
+          ...WorkCommentNotificationFields
+        }
+        ... on WorkCommentReplyNotificationNode {
+          ...WorkCommentReplyNotificationFields
+        }
+        ... on FollowNotificationNode {
+          ...FollowNotificationFields
+        }
+      }
+    }
+  }`,
+  [
+    likedWorkNotificationFieldsFragment,
+    likedWorksSummaryNotificationFieldsFragment,
+    workAwardNotificationFieldsFragment,
+    workCommentNotificationFieldsFragment,
+    workCommentReplyNotificationFieldsFragment,
+    followNotificationFieldsFragment,
+  ],
+)

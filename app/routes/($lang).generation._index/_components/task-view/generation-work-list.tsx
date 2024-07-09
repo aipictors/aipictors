@@ -1,11 +1,11 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Skeleton } from "@/_components/ui/skeleton"
-import type { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation._index/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/routes/($lang).generation._index/_components/generation-work-card "
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -72,3 +72,12 @@ export const GenerationWorkList = (props: Props) => {
     </>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

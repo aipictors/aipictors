@@ -1,5 +1,5 @@
-import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 
 export const AppMilestoneList = () => {
   const { data: milestones } = useSuspenseQuery(milestonesQuery, {
@@ -23,3 +23,17 @@ export const AppMilestoneList = () => {
     </div>
   )
 }
+
+export const milestonesQuery = graphql(
+  `query Milestones($repository: String!) {
+    milestones(where: {repository: $repository}) {
+      id
+      title
+      version
+      description
+      pageURL
+      isDone
+      dueDate
+    }
+  }`,
+)

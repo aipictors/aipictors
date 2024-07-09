@@ -1,10 +1,10 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
-import { viewerNotificationsCountQuery } from "@/_graphql/queries/viewer/viewer-notifications-count"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { NotificationListItems } from "@/routes/($lang)._main.notifications/_components/notification-list-items"
 import { NotificationListSetting } from "@/routes/($lang)._main.notifications/_components/notification-list-settings"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 
 export const NotificationListContents = () => {
@@ -48,3 +48,11 @@ export const NotificationListContents = () => {
     </>
   )
 }
+
+export const viewerNotificationsCountQuery = graphql(
+  `query ViewerNotifications($where: NotificationsWhereInput) {
+    viewer {
+      notificationsCount(where: $where)
+    }
+  }`,
+)

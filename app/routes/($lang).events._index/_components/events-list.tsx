@@ -1,6 +1,5 @@
-import type { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventItem } from "@/routes/($lang).events._index/_components/events-item"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   appEvents: ResultOf<typeof appEventsQuery>["appEvents"]
@@ -26,3 +25,19 @@ export const EventsList = (props: Props) => {
     </div>
   )
 }
+
+export const appEventsQuery = graphql(
+  `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
+    appEvents(limit: $limit, offset: $offset, where: $where) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+  }`,
+)

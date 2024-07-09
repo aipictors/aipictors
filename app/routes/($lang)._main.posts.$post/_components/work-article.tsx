@@ -7,23 +7,22 @@ import { WorkArticleGenerationParameters } from "@/routes/($lang)._main.posts.$p
 import { WorkActionContainer } from "@/routes/($lang)._main.posts.$post/_components/work-action-container"
 import { Suspense, useContext } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.posts.$post/_components/work-article-tags"
-import type { workQuery } from "@/_graphql/queries/work/work"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
 import { WorkHtmlView } from "@/routes/($lang)._main.posts.$post/_components/work-html-view"
 import { WorkVideoView } from "@/routes/($lang)._main.posts.$post/_components/work-video-view"
 import { AuthContext } from "@/_contexts/auth-context"
-import {} from "@/_components/ui/carousel"
 import { WorkLikedUser } from "@/routes/($lang)._main.posts.$post/_components/work-liked-user"
 import { CarouselWithGradation } from "@/_components/carousel-with-gradation"
 import { ToggleContent } from "@/_components/toggle-content"
 import { Heart } from "lucide-react"
 import { Separator } from "@/_components/ui/separator"
-import { viewerBookmarkFolderIdQuery } from "@/_graphql/queries/viewer/viewer-bookmark-folder-id"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { ConstructionAlert } from "@/_components/construction-alert"
 import { PostAccessTypeBanner } from "@/routes/($lang)._main.posts.$post/_components/post-acess-type-banner"
+import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
+import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
 
 type Props = {
   work: NonNullable<ResultOf<typeof workQuery>["work"]>
@@ -193,3 +192,132 @@ export const WorkArticle = (props: Props) => {
     </article>
   )
 }
+
+export const viewerBookmarkFolderIdQuery = graphql(
+  `query ViewerBookmarkFolderId {
+    viewer {
+      bookmarkFolderId
+    }
+  }`,
+)
+
+export const workQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      id
+      isMyRecommended
+      title
+      accessType
+      type
+      adminAccessType
+      promptAccessType
+      rating
+      description
+      isSensitive
+      enTitle
+      enDescription
+      imageURL
+      largeThumbnailImageURL
+      largeThumbnailImageWidth
+      largeThumbnailImageHeight
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
+      subWorksCount
+      user {
+        id
+        promptonUser {
+          id
+        }
+        ...UserFields
+        isFollower
+        isFollowee
+        isMuted
+        works(offset: 0, limit: 16) {
+          id
+          userId
+          largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
+          smallThumbnailImageURL
+          smallThumbnailImageWidth
+          smallThumbnailImageHeight
+          thumbnailImagePosition
+          subWorksCount
+        }
+      }
+      likedUsers(offset: 0, limit: 32) {
+        id
+        name
+        iconUrl
+        login
+      }
+      album {
+        id
+        title
+        description
+      }
+      dailyTheme {
+        id
+        title
+      }
+      tagNames
+      createdAt
+      likesCount
+      viewsCount
+      commentsCount
+      subWorks {
+        ...SubWorkFields
+      }
+      nextWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      previousWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      model
+      modelHash
+      generationModelId
+      workModelId
+      isTagEditable
+      isCommentsEditable
+      isLiked
+      isBookmarked
+      isInCollection
+      isPromotion
+      isGeneration
+      ogpThumbnailImageUrl
+      prompt
+      negativePrompt
+      noise
+      seed
+      steps
+      sampler
+      scale
+      strength
+      vae
+      clipSkip
+      otherGenerationParams
+      pngInfo
+      style
+      url
+      html
+      updatedAt
+      dailyRanking
+      weeklyRanking
+      monthlyRanking
+      relatedUrl
+      nanoid
+    }
+  }`,
+  [userFieldsFragment, subWorkFieldsFragment],
+)

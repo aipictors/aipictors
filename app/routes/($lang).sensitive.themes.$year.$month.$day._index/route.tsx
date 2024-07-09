@@ -1,8 +1,9 @@
 import { AppPage } from "@/_components/app/app-page"
-import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -50,3 +51,25 @@ export default function SensitiveDayThemePage() {
     </AppPage>
   )
 }
+
+export const dailyThemesQuery = graphql(
+  `query DailyThemes(
+    $offset: Int!
+    $limit: Int!
+    $where: DailyThemesWhereInput!
+  ) {
+    dailyThemes(offset: $offset, limit: $limit, where: $where) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

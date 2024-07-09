@@ -3,9 +3,10 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
-import type { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { TagButton } from "@/routes/($lang)._main._index/_components/tag-button"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   hotTags: ResultOf<typeof hotTagsQuery>["hotTags"]
@@ -39,3 +40,15 @@ export const HomeTagList = (props: Props) => {
     </Carousel>
   )
 }
+
+export const hotTagsQuery = graphql(
+  `query HotTags {
+    hotTags {
+      ...PartialTagFields
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialTagFieldsFragment, partialWorkFieldsFragment],
+)

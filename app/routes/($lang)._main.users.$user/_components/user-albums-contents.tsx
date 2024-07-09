@@ -1,7 +1,8 @@
 import { ResponsiveAlbumsList } from "@/_components/responsive-albums-list"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { AuthContext } from "@/_contexts/auth-context"
-import { albumsQuery } from "@/_graphql/queries/album/albums"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
@@ -81,4 +82,16 @@ export const albumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
+)
+
+export const albumsQuery = graphql(
+  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
+    albums(offset: $offset, limit: $limit, where: $where) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment, partialUserFieldsFragment],
 )
