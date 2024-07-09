@@ -254,8 +254,18 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
           <>
-            <div className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white">
-              {" "}
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <div
+              className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+              onClick={() => {
+                const inputElement = document.getElementById(
+                  "images_input",
+                ) as HTMLInputElement
+                if (inputElement) {
+                  inputElement.click()
+                }
+              }}
+            >
               <p className="font-bold">画像／動画を追加</p>
             </div>
           </>
