@@ -484,10 +484,7 @@ export const NewImageForm = () => {
       }
       setProgress(PROGRESS_STEPS.FILE_CHECK)
 
-      if (
-        videoFile === null &&
-        items.map((item) => item.content).length === 0
-      ) {
+      if (videoFile === null && items.length === 0) {
         toast("画像もしくは動画を選択してください")
         return
       }
@@ -754,6 +751,22 @@ export const NewImageForm = () => {
     (tag) => !tags.map((tag) => tag.text).includes(tag.text),
   )
 
+  const onStartMouseDrawing = (content: string) => {
+    setEditTargetImageBase64(content)
+  }
+
+  const onVideoFileChange = (videoFile: File | null) => {
+    setVideoFile(videoFile)
+  }
+
+  const onChangeAccessTypeImageGenerationParameters = () => {
+    setIsSetGenerationParams((prev) => !prev)
+  }
+
+  const onOpenImageGenerationDialog = () => {
+    setIsOpenImageGenerationDialog(true)
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -780,12 +793,8 @@ export const NewImageForm = () => {
               maxItemsCount={config.post.maxImageCount}
               setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
-              onVideoChange={(videoFile: File | null) => {
-                setVideoFile(videoFile)
-              }}
-              onMosaicButtonClick={(content) => {
-                setEditTargetImageBase64(content)
-              }}
+              onVideoChange={onVideoFileChange}
+              onMosaicButtonClick={onStartMouseDrawing}
               onChangeItems={setItems}
               setThumbnailBase64={setThumbnailBase64}
               setOgpBase64={setOgpBase64}
@@ -819,9 +828,7 @@ export const NewImageForm = () => {
             </Button>
             <Button
               variant={"secondary"}
-              onClick={() => {
-                setIsOpenImageGenerationDialog(true)
-              }}
+              onClick={onOpenImageGenerationDialog}
               className="m-2 ml-auto block"
             >
               {"生成画像"}
@@ -858,9 +865,7 @@ export const NewImageForm = () => {
               <div className="flex items-center">
                 <Checkbox
                   checked={isSetGenerationParams}
-                  onCheckedChange={() => {
-                    setIsSetGenerationParams((prev) => !prev)
-                  }}
+                  onCheckedChange={onChangeAccessTypeImageGenerationParameters}
                   id="set-generation-check"
                 />
                 <label
