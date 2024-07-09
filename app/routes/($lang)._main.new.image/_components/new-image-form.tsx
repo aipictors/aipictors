@@ -628,7 +628,7 @@ export const NewImageForm = () => {
   return (
     <>
       <div className="relative w-[100%]">
-        <div className="mb-4 bg-gray-100 dark:bg-black">
+        <div className="mb-4 bg-background">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center bg-gray-800 ${
@@ -891,7 +891,7 @@ export const NewImageForm = () => {
             />
           </ScrollArea>
         </div>
-        <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
+        <div className="sticky bottom-0 bg-background pb-2">
           <Button className="w-full" type="submit" onClick={onPost}>
             投稿
           </Button>

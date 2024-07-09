@@ -5,7 +5,7 @@ type Props = {
 
 export const WorkHtmlView = ({ thumbnailUrl, html }: Props) => {
   return (
-    <div className="relative m-0 bg-gray-100 dark:bg-zinc-950">
+    <div className="relative m-0 bg-card">
       <img
         src={thumbnailUrl}
         alt="Thumbnail"

@@ -22,7 +22,7 @@ export const WorksSettingContents = (props: Props) => {
           isActive={props.workTabType === "WORK"}
         >
           {"作品"}
-          <div className="m-2 min-w-8 rounded-full bg-zinc-400 pr-1 pl-1 text-white dark:bg-zinc-600">
+          <div className="m-2 min-w-8 rounded-full bg-accent pr-1 pl-1 text-accent-foreground">
             {props.sumWorksCount}
           </div>
         </RoundedLightButton>
@@ -33,7 +33,7 @@ export const WorksSettingContents = (props: Props) => {
           isActive={props.workTabType === "ALBUM"}
         >
           {"シリーズ"}
-          <div className="m-2 min-w-8 rounded-full bg-zinc-400 pr-1 pl-1 text-white dark:bg-zinc-600">
+          <div className="m-2 min-w-8 rounded-full bg-accent pr-1 pl-1 text-accent-foreground">
             {props.sumAlbumsCount}
           </div>
         </RoundedLightButton>
