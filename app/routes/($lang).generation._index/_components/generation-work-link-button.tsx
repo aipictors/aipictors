@@ -13,7 +13,7 @@ export const GenerationWorkLinkButton = (props: Props) => {
   return (
     <Link
       className="absolute bottom-2 left-2 rounded-full hover:opacity-80"
-      to={`https://www.aipictors.com/works/${props.id}`}
+      to={`/posts/${props.id}`}
       target="_blank"
       rel="noopener noreferrer"
     >

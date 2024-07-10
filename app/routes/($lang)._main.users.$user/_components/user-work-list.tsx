@@ -1,6 +1,6 @@
 import { Switch } from "@/_components/ui/switch"
 import type { userWorksQuery } from "@/_graphql/queries/user/user-works"
-import { WorkCard } from "@/routes/($lang)._main.works._index/_components/work-card"
+import { WorkCard } from "@/routes/($lang)._main.posts._index/_components/work-card"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 
@@ -17,7 +17,7 @@ export const UserWorkList = (props: Props) => {
       </div>
       <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
         {props.works.map((work) => (
-          <Link key={work.id} to={`/works/${work.id}`}>
+          <Link key={work.id} to={`/posts/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}
               imageWidth={work.largeThumbnailImageWidth}

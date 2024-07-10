@@ -73,36 +73,31 @@ export const GenerationMainView = (props: Props) => {
   }
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
-    >
-      <ResizablePanelWithMemory
-        id="generation-config"
-        className="lg:min-w-40 xl:min-w-40"
+    <>
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex flex-1 flex-col gap-4 overflow-hidden lg:flex-row"
       >
-        {props.config}
-      </ResizablePanelWithMemory>
-      <ResizableHandle aria-setsize={1} withHandle />
-      <ResizablePanelWithMemory
-        id="generation-main"
-        className="flex flex-col gap-4 md:flex-row lg:min-w-40 lg:flex-col xl:min-w-40"
-      >
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanelWithMemory id="generation-editor">
-            <div className="h-full flex-1 overflow-hidden">
-              {props.promptEditor}
-            </div>
-          </ResizablePanelWithMemory>
-          <ResizableHandle withHandle className="mt-2 mb-2" />
-          <ResizablePanelWithMemory id="generation-negative">
-            <div className="h-full flex-1 overflow-hidden">
-              {props.negativePromptEditor}
-            </div>
-          </ResizablePanelWithMemory>
-          <div className="mt-4 mb-4">{props.submissionView}</div>
-        </ResizablePanelGroup>
-      </ResizablePanelWithMemory>
-    </ResizablePanelGroup>
+        <ResizablePanelWithMemory
+          id="generation-main"
+          className="flex flex-col gap-4 md:flex-row lg:min-w-40 lg:flex-col xl:min-w-40"
+        >
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanelWithMemory id="generation-editor">
+              <div className="h-full flex-1 overflow-hidden">
+                {props.promptEditor}
+              </div>
+            </ResizablePanelWithMemory>
+            <ResizableHandle withHandle className="mt-2 mb-2" />
+            <ResizablePanelWithMemory id="generation-negative">
+              <div className="h-full flex-1 overflow-hidden">
+                {props.negativePromptEditor}
+              </div>
+            </ResizablePanelWithMemory>
+            <div className="mt-4 mb-4">{props.submissionView}</div>
+          </ResizablePanelGroup>
+        </ResizablePanelWithMemory>
+      </ResizablePanelGroup>
+    </>
   )
 }

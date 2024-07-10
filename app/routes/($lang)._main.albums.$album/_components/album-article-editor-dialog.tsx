@@ -12,10 +12,10 @@ import {
 import { AuthContext } from "@/_contexts/auth-context"
 import { updateAlbumMutation } from "@/_graphql/mutations/update-album"
 import type { albumQuery } from "@/_graphql/queries/album/album"
-import { uploadImage } from "@/_utils/upload-image"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
-import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { useContext, useState } from "react"
@@ -44,6 +44,10 @@ export const AlbumArticleEditorDialog = (props: Props) => {
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
 
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
+    skip: authContext.isLoading,
+  })
+
   const onSubmit = async () => {
     if (title.length === 0) {
       toast.error("タイトルを入力してください")
@@ -55,9 +59,6 @@ export const AlbumArticleEditorDialog = (props: Props) => {
       return
     }
 
-    // base64ならアップロード
-    const fileName = `${createRandomString(30)}_album_header_image.png`
-
     if (props.userNanoid === null) {
       toast("画面更新して再度お試し下さい。")
       return null
@@ -65,7 +66,7 @@ export const AlbumArticleEditorDialog = (props: Props) => {
 
     const imageUrl = headerImageUrl.startsWith("https://")
       ? null
-      : await uploadImage(headerImageUrl, fileName, props.userNanoid)
+      : await uploadPublicImage(headerImageUrl, token?.viewer?.token)
 
     await updateAlbum({
       variables: {

@@ -2,6 +2,7 @@ import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
+import { useState } from "react"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
   userId: string
@@ -28,23 +29,27 @@ export function HomeWorkAlbum({
   isMosaic,
   subWorksCount,
 }: HomeWorkAlbumProps) {
+  const [isLoaded, setIsLoaded] = useState(false)
+
   return (
     <div
-      className="overflow-hidden transition-all hover:opacity-80"
+      className="cursor overflow-hidden rounded transition-all"
       style={{ ...wrapperStyle, position: "relative" }}
     >
-      <Link to={`/works/${workId}`}>
+      <Link to={`/posts/${workId}`} className="group">
         <img
-          style={{ filter: isMosaic ? "blur(24px)" : "none" }}
+          style={{
+            filter: isMosaic || !isLoaded ? "blur(24px)" : "none",
+            transition: "filter 0.3s ease-in-out transform 0.3s ease-in-out",
+          }}
           src={photo.src}
-          // @ts-ignore
-          placeholder={"blurDataURL" in photo ? "blur" : ""}
-          alt={""}
-          className={"rounded"}
+          onLoad={() => setIsLoaded(true)}
+          alt={workTitle}
+          className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-[32%] flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-        <Link className="w-48 font-bold" to={`/works/${workId}`}>
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+        <Link className="w-48 font-bold" to={`/posts/${workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {workTitle}
           </p>
@@ -53,7 +58,7 @@ export function HomeWorkAlbum({
           <div className="flex items-center space-x-2">
             <img
               src={IconUrl(userIcon)}
-              alt=""
+              alt={userName}
               className="h-4 w-4 rounded-full"
             />
             <span className="text-nowrap font-bold text-sm text-white">

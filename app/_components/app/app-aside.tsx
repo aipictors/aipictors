@@ -10,9 +10,9 @@ type Props = Readonly<{
  */
 export function AppAside(props: Props) {
   return (
-    <div className="sticky top-header">
-      <ScrollArea className="-ml-3 hidden h-main w-48 min-w-48 overflow-y-auto pr-4 md:block">
-        <nav className="pb-4">{props.children}</nav>
+    <div className="fixed top-header hidden h-main w-52 min-w-52 overflow-y-auto pl-8 md:block">
+      <ScrollArea className="-ml-3 pr-4">
+        <nav className="pb-8">{props.children}</nav>
       </ScrollArea>
     </div>
   )

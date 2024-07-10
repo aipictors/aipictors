@@ -2,13 +2,16 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
-import type { FragmentOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
-  taskIds?: string[]
+  task:
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   sizeType: number
+  taskIds?: string[]
   taskContentPositionType?: TaskContentPositionType
   isPreviewByHover: boolean
   userToken: string
@@ -27,6 +30,8 @@ export function GenerationTaskButton(props: Props) {
 
   const onClickTask = () => {
     setTimeout(() => {
+      console.log(props.task.id, props.taskIds)
+
       if (props.taskIds?.length) {
         context.updateViewTask(props.task.id, props.taskIds)
       }

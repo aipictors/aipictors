@@ -13,7 +13,7 @@ export const homeQuery = graphql(
       offset: 0,
       limit: 54,
       where: {
-        isRecommended: true,
+        isFeatured: true,
         ratings: [G],
       }
     ) {

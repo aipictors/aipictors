@@ -1,3 +1,4 @@
+import { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
 import { config } from "@/config"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
@@ -46,29 +47,57 @@ export const GenerationTaskListView = (props: Props) => {
     context.changePage(page)
   }
 
-  const { data: tasks, refetch } = useQuery(viewerImageGenerationTasksQuery, {
-    variables: {
-      limit:
-        props.protect !== 1 && (props.rating === 0 || props.rating === -1)
-          ? 56
-          : config.query.maxLimit,
-      offset: page * 56,
-      where: {
-        ...(props.rating !== -1 && {
-          rating: props.rating,
-        }),
-        ...(props.protect !== -1 && {
-          isProtected: props.protect === 1,
-        }),
+  const { data: tasks, refetch: taskRefetch } = useQuery(
+    viewerImageGenerationTasksQuery,
+    {
+      variables: {
+        limit:
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+            ? 56
+            : config.query.maxLimit,
+        offset: page * 56,
+        where: {
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1,
+          }),
+        },
+      },
+      fetchPolicy: "cache-first",
+    },
+  )
+
+  const { data: results, refetch: resultRefetch } = useQuery(
+    viewerImageGenerationResultsQuery,
+    {
+      variables: {
+        limit:
+          props.protect !== 1 && (props.rating === 0 || props.rating === -1)
+            ? 56
+            : config.query.maxLimit,
+        offset: Math.max(
+          0,
+          page * 56 - (tasks?.viewer?.imageGenerationTasks?.length ?? 0),
+        ),
+        where: {
+          ...(props.rating !== -1 && {
+            rating: props.rating,
+          }),
+          ...(props.protect !== -1 && {
+            isProtected: props.protect === 1,
+          }),
+        },
       },
     },
-    fetchPolicy: "cache-first",
-  })
+  )
 
   const queryData = useGenerationQuery()
 
   useEffect(() => {
-    refetch()
+    taskRefetch()
+    resultRefetch()
   }, [
     queryData.viewer.inProgressImageGenerationTasksCount ||
       queryData.viewer.inProgressImageGenerationReservedTasksCount,
@@ -140,8 +169,9 @@ export const GenerationTaskListView = (props: Props) => {
    */
   const onSelectAllTasks = () => {
     setSelectedTaskIds(
-      (tasks?.viewer?.imageGenerationTasks
-        .map((task) => task.nanoid)
+      (results?.viewer?.imageGenerationResults
+        .filter((result) => result.nanoid !== null)
+        .map((result) => result.nanoid)
         .filter((id) => id !== null) as string[]) ?? [],
     )
     if (!props.isEditMode) {
@@ -188,7 +218,7 @@ export const GenerationTaskListView = (props: Props) => {
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
       />
-      {tasks !== undefined && (
+      {tasks !== undefined && results !== undefined && (
         <GenerationTaskList
           currentPage={page}
           hidedTaskIds={hidedTaskIds}
@@ -197,6 +227,7 @@ export const GenerationTaskListView = (props: Props) => {
           isEditMode={props.isEditMode}
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
+          results={results}
           tasks={tasks}
           userToken={props.currentUserToken}
           taskContentPositionType={showTaskPositionType}

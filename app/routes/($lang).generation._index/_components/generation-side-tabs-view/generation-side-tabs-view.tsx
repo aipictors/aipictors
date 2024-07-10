@@ -80,6 +80,17 @@ export function GenerationSideTabsView() {
             >
               アンケート、コミュニティ
             </TabsTrigger>
+            <TabsTrigger
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.location.href = "https://www.aipictors.com/generate/"
+                }
+              }}
+              className="w-full"
+              value="OLD_LINK"
+            >
+              旧版はこちら
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       )}

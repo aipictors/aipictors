@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { useState } from "react"
 
 type Props = {
   workId: string
@@ -15,6 +16,8 @@ type Props = {
  * 四角形で作品をクロップして表示するコンポーネント
  */
 export const CroppedWorkSquare = (props: Props) => {
+  const [isHovered, setIsHovered] = useState(false)
+
   const getThumbnailPos = (
     src: number,
     width: number,
@@ -89,42 +92,49 @@ export const CroppedWorkSquare = (props: Props) => {
   }
 
   return (
-    <Link
-      to={`/works/${props.workId}`}
-      className="relative transition-all duration-300 ease-in-out hover:opacity-80"
-    >
-      <div
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={`rounded ${wrapSize()} overflow-hidden relative`}
+    <div className="inline-box relative">
+      <Link
+        to={`/posts/${props.workId}`}
+        className="transition-all duration-300 ease-in-out"
       >
-        <img
-          src={props.imageUrl}
-          alt=""
+        <div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          className={`rounded max-w-none ${size()}`}
-          style={{ transform: transform }}
-        />
-      </div>
-      {props.ranking && (
-        <div
-          className={
-            "absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
-          }
-          style={{ backgroundColor: backgroundColor() }}
+          className={`rounded ${wrapSize()} overflow-hidden relative`}
         >
-          {props.ranking}
+          <img
+            src={props.imageUrl}
+            alt=""
+            key={props.imageUrl}
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`rounded max-w-none ${size()} transition-transform duration-300 ease-in-out`}
+            style={{
+              transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
+            }}
+          />
         </div>
-      )}
-      {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-        <div
-          className={
-            "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
-          }
-          style={{ backgroundColor: "#00000052" }}
-        >
-          {props.subWorksCount + 1}
-        </div>
-      )}
-    </Link>
+        {props.ranking && (
+          <div
+            className={
+              "absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
+            }
+            style={{ backgroundColor: backgroundColor() }}
+          >
+            {props.ranking}
+          </div>
+        )}
+        {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
+          <div
+            className={
+              "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
+            }
+            style={{ backgroundColor: "#00000052" }}
+          >
+            {props.subWorksCount + 1}
+          </div>
+        )}
+      </Link>
+    </div>
   )
 }

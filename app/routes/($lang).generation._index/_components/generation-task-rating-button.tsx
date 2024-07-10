@@ -1,4 +1,4 @@
-import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { StarIcon } from "lucide-react"
@@ -17,7 +17,7 @@ type Props = {
  */
 export const GenerationTaskRatingButton = (props: Props) => {
   const [mutation, { loading: isLoading }] = useMutation(
-    updateRatingImageGenerationTaskMutation,
+    updateRatingImageGenerationResultMutation,
   )
   const changeRating = async (taskId: string, rating: number) => {
     try {

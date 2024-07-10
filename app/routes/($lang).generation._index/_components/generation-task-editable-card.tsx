@@ -2,7 +2,7 @@ import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
 import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
 import { cancelImageGenerationTaskMutation } from "@/_graphql/mutations/cancel-image-generation-task"
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
+import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
@@ -17,8 +17,9 @@ import { GenerationTaskZoomUpButton } from "@/routes/($lang).generation._index/_
 import { GenerationTaskRatingButton } from "@/routes/($lang).generation._index/_components/generation-task-rating-button"
 import { GenerationTaskDeleteButton } from "@/routes/($lang).generation._index/_components/generation-task-delete-button"
 import { GenerationTaskProtectedButton } from "@/routes/($lang).generation._index/_components/generation-task-protected-button"
-import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { FragmentOf } from "gql.tada"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 
 type Props = {
   taskId: string
@@ -29,7 +30,9 @@ type Props = {
   isProtected: boolean
   optionButtonSize: number
   isSelectDisabled: boolean
-  task: FragmentOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   isPreviewByHover?: boolean
   userToken: string
   onClick?(): void
@@ -61,7 +64,7 @@ export const GenerationTaskEditableCard = (props: Props) => {
     useMutation(cancelImageGenerationReservedTaskMutation)
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
-    deleteImageGenerationTaskMutation,
+    deleteImageGenerationResultMutation,
   )
 
   /**

@@ -1,6 +1,8 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import type { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
 import type { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
+
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -26,6 +28,7 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
+  results: ResultOf<typeof viewerImageGenerationResultsQuery>
   tasks: ResultOf<typeof viewerImageGenerationTasksQuery>
   userToken: string
   setCurrentPage: (currentPage: number) => void
@@ -66,19 +69,10 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
-  /**
-   * フィルターしたレーティングが０のタスク（一部）
-   */
-  const currentRatingZeroTasks =
-    props.rating === 0
-      ? imageGenerationTasks.filter((task) => {
-          return (
-            task.rating === 0 &&
-            task.nanoid &&
-            !props.hidedTaskIds.includes(task.nanoid)
-          )
-        })
-      : []
+  const currentResults =
+    props.results.viewer?.imageGenerationResults.filter((task) => {
+      return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
+    }) ?? []
 
   const onDelete = (taskId: string) => {
     props.setHidedTaskIds([...props.hidedTaskIds, ...taskId.split(",")])
@@ -109,12 +103,6 @@ export const GenerationTaskList = (props: Props) => {
     toast("設定を復元しました")
   }
 
-  const inProgressTasks = currentTasks.filter((task) => {
-    if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
-      return false
-    return task.status === "IN_PROGRESS" || task.status === "RESERVED"
-  })
-
   const activeTasks = currentTasks.filter((task) => {
     if (task.isDeleted || (!task.imageUrl && task.status === "DONE"))
       return false
@@ -126,7 +114,17 @@ export const GenerationTaskList = (props: Props) => {
     )
   })
 
-  const onSelectTask = (taskId: string | null, status: string) => {
+  const activeResults = currentResults.filter((result) => {
+    if (!result.imageUrl && result.status === "DONE") return false
+    return (
+      result.status === "PENDING" ||
+      result.status === "IN_PROGRESS" ||
+      result.status === "DONE" ||
+      result.status === "RESERVED"
+    )
+  })
+
+  const onSelectTask = (taskId: string | null, status?: string) => {
     if (status !== "DONE") {
       toast("選択できない履歴です")
       return
@@ -153,8 +151,10 @@ export const GenerationTaskList = (props: Props) => {
 
   const componentTasks = activeTasks
 
+  const combinedTasks = [...componentTasks, ...activeResults]
+
   // 左右の作品へ遷移するときに使用するnanoidのリスト
-  const taskIdList = componentTasks
+  const taskIdList = combinedTasks
     .filter((task) => task.status === "DONE" && task.nanoid)
     .map((task) => task.id)
 
@@ -177,7 +177,7 @@ export const GenerationTaskList = (props: Props) => {
             "grid-cols-10": props.thumbnailSize === 10,
           })}
         >
-          {componentTasks.map((task) => (
+          {combinedTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
               <Suspense fallback={<FallbackTaskCard />}>
                 <GenerationTaskCard

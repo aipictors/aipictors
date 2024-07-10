@@ -89,6 +89,27 @@ export function Layout(props: Props) {
         <ThemeProvider
           attribute={"class"}
           defaultTheme={"system"}
+          themes={[
+            "system",
+            "dark",
+            "light",
+            "gray-light",
+            "gray-dark",
+            "red-light",
+            "red-dark",
+            "pink-light",
+            "pink-dark",
+            "orange-light",
+            "orange-dark",
+            "green-light",
+            "green-dark",
+            "blue-light",
+            "blue-dark",
+            "yellow-light",
+            "yellow-dark",
+            "violet-light",
+            "violet-dark",
+          ]}
           enableSystem
           disableTransitionOnChange
         >

@@ -1,3 +1,4 @@
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation._index/_components/generation-task-responsive-card"
@@ -5,7 +6,9 @@ import type { TaskContentPositionType } from "@/routes/($lang).generation._index
 import type { ResultOf } from "gql.tada"
 
 type Props = {
-  task: ResultOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | ResultOf<typeof imageGenerationTaskFieldsFragment>
+    | ResultOf<typeof imageGenerationResultFieldsFragment>
   taskIds?: string[]
   isEditMode: boolean
   isSelected?: boolean
@@ -33,10 +36,10 @@ export const GenerationTaskCard = (props: Props) => {
       {props.isEditMode && (
         <GenerationTaskEditableCard
           onClick={() =>
-            props.onSelectTask(props.task.nanoid ?? "", props.task.status)
+            props.onSelectTask(props.task.nanoid ?? "", props.task.status ?? "")
           }
           isPreviewByHover={props.isPreviewByHover}
-          taskId={props.task.id}
+          taskId={props.task.id ?? ""}
           isSelected={props.selectedTaskIds.includes(props.task.nanoid ?? "")}
           isSelectDisabled={false}
           taskNanoid={props.task.nanoid}

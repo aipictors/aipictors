@@ -1,6 +1,6 @@
 import { Switch } from "@/_components/ui/switch"
 import type { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
-import { WorkCard } from "@/routes/($lang)._main.works._index/_components/work-card"
+import { WorkCard } from "@/routes/($lang)._main.posts._index/_components/work-card"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 

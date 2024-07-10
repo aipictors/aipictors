@@ -1,8 +1,8 @@
-import { deleteImageGenerationTaskMutation } from "@/_graphql/mutations/delete-image-generation-task"
-import { updateProtectedImageGenerationTaskMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
-import { updateRatingImageGenerationTaskMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
+import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
+import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
-import { config } from "@/config"
+import { config, KeyCodes } from "@/config"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
@@ -20,9 +20,13 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import type { ResultOf } from "gql.tada"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
 type Props = {
-  task: ResultOf<typeof imageGenerationTaskFieldsFragment>
+  task:
+    | ResultOf<typeof imageGenerationTaskFieldsFragment>
+    | ResultOf<typeof imageGenerationResultFieldsFragment>
   isReferenceLink?: boolean
   isScroll?: boolean
   setShowInPaintDialog?: (show: boolean) => void
@@ -68,7 +72,7 @@ export const copyUrl = (taskId: string) => {
  */
 export function GenerationTaskSheetView(props: Props) {
   const [mutation, { loading: isRatingLoading }] = useMutation(
-    updateRatingImageGenerationTaskMutation,
+    updateRatingImageGenerationResultMutation,
     {
       refetchQueries: [viewerImageGenerationTasksQuery],
       awaitRefetchQueries: true,
@@ -181,7 +185,7 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
-    deleteImageGenerationTaskMutation,
+    deleteImageGenerationResultMutation,
   )
 
   const onDelete = async () => {
@@ -200,7 +204,7 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const [protectTask, { loading: isProtectedLoading }] = useMutation(
-    updateProtectedImageGenerationTaskMutation,
+    updateProtectedImageGenerationResultMutation,
   )
 
   const toggleProtectedImage = async () => {
@@ -267,11 +271,11 @@ export function GenerationTaskSheetView(props: Props) {
       }
 
       // 左キーが押された場合は前のタスクへ
-      if (event.code === "ArrowLeft") {
+      if (event.code === KeyCodes.ALLOW_LEFT) {
         onPrevTask()
       }
       // 右キーが押された場合は次のタスクへ
-      if (event.code === "ArrowRight") {
+      if (event.code === KeyCodes.ALLOW_RIGHT) {
         onNextTask()
       }
     },
@@ -311,9 +315,17 @@ export function GenerationTaskSheetView(props: Props) {
   const userNanoid = context.user?.nanoid ?? null
   if (userNanoid === null) return
 
+  const cachedImage = useCachedImageGenerationTask(
+    context.config.viewTaskId ?? "",
+  )
+
+  const cachedResultImage = useCachedImageGenerationResult(
+    context.config.viewTaskId ?? "",
+  )
+
   const imageGenerationTask =
     props.task.id !== context.config.viewTaskId
-      ? useCachedImageGenerationTask(context.config.viewTaskId ?? "")
+      ? cachedImage ?? cachedResultImage
       : props.task
 
   useEffect(() => {

@@ -18,6 +18,7 @@ type Props = {
   items: TSortableItem[] // 画像のリスト
   videoFile: File | null // 動画ファイル
   isOnlyMove?: boolean // 移動可能のみかどうか（削除、追加不可能）
+  maxItemsCount?: number // 最大画像数
   setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   setThumbnailBase64?: (thumbnailBase64: string) => void
@@ -70,12 +71,6 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         props.setThumbnailBase64("")
       }
     }
-
-    console.log(
-      "props.items",
-      props.items.map((item) => item.id),
-    )
-    console.log("props.indexList", props.indexList)
   }, [props.items])
 
   /**
@@ -123,8 +118,14 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
       "image/bmp": [".bmp"],
       "video/mp4": [".mp4", ".MP4", ".Mp4"],
     },
+    noClick: true,
     onDrop: (acceptedFiles) => {
       if (props.isOnlyMove) {
+        return
+      }
+
+      if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
+        toast(`最大${props.maxItemsCount}までです`)
         return
       }
 
@@ -137,7 +138,6 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
             toast("動画のサイズは32MB以下にしてください")
             return
           }
-
           const video = document.createElement("video")
 
           video.src = URL.createObjectURL(file)
@@ -171,6 +171,14 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
             }
           }
         } else {
+          if (
+            props.maxItemsCount &&
+            props.maxItemsCount < props.items.length + 1
+          ) {
+            toast(`最大${props.maxItemsCount}までです`)
+            return
+          }
+
           props.onVideoChange(null)
 
           if (props.items.length === 0 && file.type === "image/png") {
@@ -246,52 +254,9 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
           <>
-            <div className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white">
-              {" "}
-              <p className="font-bold">画像／動画を追加</p>
-            </div>
-          </>
-        )}
-      </div>
-      {props.videoFile && (
-        <VideoItem
-          videoFile={props.videoFile}
-          onDelete={() => {
-            if (!props.isOnlyMove) {
-              props.onVideoChange(null)
-              props.onChangeItems([])
-              if (props.onChangeIndexList) {
-                props.onChangeIndexList([])
-              }
-            }
-          }}
-        />
-      )}
-
-      <SortableItems
-        items={props.items}
-        isDeletable={!props.isOnlyMove}
-        setItems={props.setItems}
-        setIndexList={props.setIndexList}
-        optionalButton={
-          <Button
-            className="absolute bottom-2 left-2 h-6 w-6 md:h-8 md:w-8"
-            size={"icon"}
-            onClick={() => {}}
-          >
-            <PencilLineIcon className="h-4 w-4 md:h-6 md:w-6" />
-          </Button>
-        }
-        onClickOptionButton={(index) => {
-          if (props.onMosaicButtonClick) {
-            props.onMosaicButtonClick(props.items[index].content)
-          }
-        }}
-        dummyEnableDragItem={
-          props.items.length !== 0 &&
-          !props.isOnlyMove && (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
+              className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
               onClick={() => {
                 const inputElement = document.getElementById(
                   "images_input",
@@ -300,13 +265,77 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
                   inputElement.click()
                 }
               }}
-              className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-600 hover:opacity-80 dark:bg-gray-700"
             >
-              <PlusIcon className="h-12 w-12" />
+              <p className="font-bold">画像／動画を追加</p>
             </div>
-          )
-        }
-      />
+          </>
+        )}
+        {props.videoFile && (
+          <VideoItem
+            videoFile={props.videoFile}
+            onDelete={() => {
+              if (!props.isOnlyMove) {
+                props.onVideoChange(null)
+                props.onChangeItems([])
+                if (props.onChangeIndexList) {
+                  props.onChangeIndexList([])
+                }
+              }
+            }}
+          />
+        )}
+
+        <SortableItems
+          items={props.items}
+          isDeletable={!props.isOnlyMove}
+          setItems={props.setItems}
+          setIndexList={props.setIndexList}
+          optionalButton={
+            <Button
+              className="absolute bottom-2 left-2 h-6 w-6 md:h-8 md:w-8"
+              size={"icon"}
+              onClick={() => {}}
+            >
+              <PencilLineIcon className="h-4 w-4 md:h-6 md:w-6" />
+            </Button>
+          }
+          onClickOptionButton={(index) => {
+            if (props.onMosaicButtonClick) {
+              props.onMosaicButtonClick(props.items[index].content)
+            }
+          }}
+          dummyEnableDragItem={
+            props.items.length !== 0 &&
+            !props.isOnlyMove && (
+              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+              <div
+                onClick={() => {
+                  const inputElement = document.getElementById(
+                    "images_input",
+                  ) as HTMLInputElement
+                  if (inputElement) {
+                    inputElement.click()
+                  }
+                }}
+                className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-600 hover:opacity-80 dark:bg-gray-700"
+              >
+                <PlusIcon className="h-12 w-12" />
+              </div>
+            )
+          }
+        />
+
+        {!props.items.length && (
+          <div className="m-4 flex flex-col text-white">
+            <p className="text-center text-sm">
+              JPEG、PNG、GIF、WEBP、BMP、MP4
+            </p>
+            <p className="text-center text-sm">
+              1枚32MB以内、最大200枚、動画は32MB、12秒まで
+            </p>
+          </div>
+        )}
+      </div>
     </>
   )
 }

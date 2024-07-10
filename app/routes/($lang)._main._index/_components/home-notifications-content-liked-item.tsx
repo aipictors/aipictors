@@ -19,7 +19,7 @@ export const HomeNotificationsContentLikedItem = (props: Props) => {
     <>
       {props.workId && (
         <Link
-          to={`/works/${props.workId}`}
+          to={`/posts/${props.workId}`}
           className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
         >
           <>

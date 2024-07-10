@@ -7,15 +7,15 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { userQuery } from "@/_graphql/queries/user/user"
 import type { worksQuery } from "@/_graphql/queries/work/works"
 import { SelectCreatedWorksDialog } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-profile"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 
 /**
  * プロフィール設定フォーム
@@ -68,6 +68,8 @@ export const SettingProfileForm = () => {
 
   const [headerImage, setHeaderImage] = useState("")
 
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+
   const [selectedPickupWorks, setSelectedPickupWorks] = useState<
     ResultOf<typeof worksQuery>["works"]
   >(userInfo?.featuredWorks ?? [])
@@ -86,14 +88,12 @@ export const SettingProfileForm = () => {
       return
     }
 
-    const iconFileName = `${createRandomString(30)}.webp`
     const iconUrl = profileImage
-      ? await uploadPublicImage(profileImage, iconFileName, authContext.userId)
+      ? await uploadPublicImage(profileImage, token?.viewer?.token)
       : null
 
-    const headerFileName = `${createRandomString(30)}.webp`
     const headerUrl = headerImage
-      ? await uploadPublicImage(headerImage, headerFileName, authContext.userId)
+      ? await uploadPublicImage(headerImage, token?.viewer?.token)
       : null
 
     await updateProfile({

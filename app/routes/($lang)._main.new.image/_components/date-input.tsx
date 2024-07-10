@@ -1,3 +1,4 @@
+import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import {} from "@/_components/ui/radio-group"
 import {} from "@/_components/ui/select"
@@ -35,6 +36,18 @@ export const DateInput = (props: Props) => {
               }
             />
           </div>
+          {(props.date || props.time) && (
+            <Button
+              onClick={() => {
+                props.setDate("")
+                props.setTime("")
+              }}
+              variant={"secondary"}
+              className="mt-2"
+            >
+              {"クリア"}
+            </Button>
+          )}
         </div>
       </div>
     </>

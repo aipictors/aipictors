@@ -37,7 +37,7 @@ export const TagReferencedWorkSection = (props: Props) => {
             workOwnerUserId={photoProps.photo.workOwnerUserId}
           />
         )}
-        defaultContainerWidth={1200}
+        defaultContainerWidth={1600}
         sizes={{
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],

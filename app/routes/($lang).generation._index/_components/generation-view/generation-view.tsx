@@ -15,6 +15,7 @@ type Props = {
   main: React.ReactNode
   aside: React.ReactNode
   asideHeader: React.ReactNode
+  menu: React.ReactNode
 }
 
 /**
@@ -67,6 +68,13 @@ export const GenerationView = (props: Props) => {
         defaultValue={1}
         direction="horizontal"
       >
+        <ResizablePanelWithMemory
+          id="generation-header-menu"
+          className="flex flex-col"
+        >
+          <Suspense fallback={<AppLoadingPage />}>{props.menu}</Suspense>
+        </ResizablePanelWithMemory>
+        <ResizableHandle withHandle className="mr-4 ml-4" />
         <ResizablePanelWithMemory
           id="generation-header-main"
           className="flex flex-col"

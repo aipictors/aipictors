@@ -49,6 +49,7 @@ export function getSubmitButtonLabel(
   isSetI2iImage: boolean,
   prompts: string,
   seed: number,
+  inProgressImageGenerationTasksCount: number,
 ) {
   const seedLabel = seed === -1 ? "" : "(Seed固定)"
 
@@ -60,6 +61,9 @@ export function getSubmitButtonLabel(
   }
   if (isSetI2iImage) {
     return `画像から生成${seedLabel}`
+  }
+  if (inProgressImageGenerationTasksCount > 0) {
+    return `追加生成${seedLabel}`
   }
   return `生成${seedLabel}`
 }
@@ -97,6 +101,10 @@ export function GenerationSubmitOperationParts(props: Props) {
   }
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
+  const generatingCount =
+    props.inProgressImageGenerationTasksCount +
+    props.inProgressImageGenerationReservedTasksCount
 
   return (
     <>
@@ -285,10 +293,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 }}
                 isLoading={props.isCreatingTask}
                 isDisabled={context.config.isDisabled}
-                generatingCount={
-                  props.inProgressImageGenerationTasksCount +
-                  props.inProgressImageGenerationReservedTasksCount
-                }
+                generatingCount={generatingCount}
                 maxGeneratingCount={
                   props.availableImageGenerationMaxTasksCount - props.tasksCount
                 }
@@ -296,6 +301,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   !!context.config.i2iImageBase64,
                   context.config.promptText,
                   context.config.seed,
+                  generatingCount,
                 )}
               />
             </>
@@ -336,10 +342,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                 }}
                 isLoading={props.isCreatingTask}
                 isDisabled={context.config.isDisabled}
-                generatingCount={
-                  props.inProgressImageGenerationTasksCount +
-                  props.inProgressImageGenerationReservedTasksCount
-                }
+                generatingCount={generatingCount}
                 maxGeneratingCount={
                   props.availableImageGenerationMaxTasksCount - props.tasksCount
                 }
@@ -347,6 +350,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   !!context.config.i2iImageBase64,
                   context.config.promptText,
                   context.config.seed,
+                  generatingCount,
                 )}
               />
             </>
@@ -391,10 +395,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                     }}
                     isLoading={props.isCreatingTask}
                     isDisabled={context.config.isDisabled}
-                    generatingCount={
-                      props.inProgressImageGenerationTasksCount +
-                      props.inProgressImageGenerationReservedTasksCount
-                    }
+                    generatingCount={generatingCount}
                     maxGeneratingCount={
                       props.availableImageGenerationMaxTasksCount -
                       props.tasksCount
@@ -403,6 +404,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                       !!context.config.i2iImageBase64,
                       context.config.promptText,
                       context.config.seed,
+                      generatingCount,
                     )}
                   />
                 </div>

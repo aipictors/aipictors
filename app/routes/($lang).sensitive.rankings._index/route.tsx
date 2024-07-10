@@ -3,28 +3,34 @@ import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
 import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 
-export async function loader() {
+export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
 
-  const year = new Date().getFullYear()
+  const year = params.params.year
+    ? Number.parseInt(params.params.year)
+    : new Date().getFullYear()
+  const month = params.params.month
+    ? Number.parseInt(params.params.month)
+    : new Date().getMonth() + 1
+  const day = params.params.day ? Number.parseInt(params.params.day) : null
 
-  const month = new Date().getMonth() + 1
-
-  const day = new Date().getDate()
+  const variables = {
+    offset: 0,
+    limit: 200,
+    where: {
+      year: year,
+      month: month,
+      ...(day !== null && { day: day }),
+      isSensitive: true,
+    },
+  }
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        year: year,
-        month: month,
-        day: day,
-      },
-    },
+    variables: variables,
   })
 
   return json({

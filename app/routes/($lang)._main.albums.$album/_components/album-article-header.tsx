@@ -1,13 +1,14 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
+import { AuthContext } from "@/_contexts/auth-context"
 import type { albumQuery } from "@/_graphql/queries/album/album"
 import { AlbumArticleEditorDialog } from "@/routes/($lang)._main.albums.$album/_components/album-article-editor-dialog"
-import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
+import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 import { Pencil } from "lucide-react"
-import { Suspense, useState } from "react"
+import { Suspense, useContext, useState } from "react"
 
 type Props = {
   album: NonNullable<ResultOf<typeof albumQuery>["album"]>
@@ -21,11 +22,9 @@ type Props = {
 export const AlbumArticleHeader = (props: Props) => {
   const workIds = props.album.workIds.map((work) => work.toString())
 
-  const [selectedWorks, setSelectedWorks] = useState<string[]>(workIds)
+  const authContext = useContext(AuthContext)
 
   const [headerImageUrl, setHeaderImageUrl] = useState(props.thumbnail ?? "")
-
-  console.log(props.album.user.nanoid)
 
   return (
     <Card className="relative flex flex-col items-center p-4">
@@ -60,24 +59,25 @@ export const AlbumArticleHeader = (props: Props) => {
       <div className="mt-4 text-center">
         <p>{props.album.description}</p>
       </div>
-      {props.userId === props.album.user.id && props.album.user.nanoid && (
-        <div className="absolute right-1 bottom-1">
-          <Suspense fallback={<AppLoadingPage />}>
-            <AlbumArticleEditorDialog
-              album={props.album}
-              thumbnail={headerImageUrl}
-              userNanoid={props.album.user.nanoid}
-            >
-              <Button
-                className="absolute right-1 bottom-1 h-12 w-12 rounded-full p-0"
-                variant={"secondary"}
+      {authContext.userId === props.album.user.id &&
+        props.album.user.nanoid && (
+          <div className="absolute right-1 bottom-1">
+            <Suspense fallback={<AppLoadingPage />}>
+              <AlbumArticleEditorDialog
+                album={props.album}
+                thumbnail={headerImageUrl}
+                userNanoid={props.album.user.nanoid}
               >
-                <Pencil className="h-8 w-8" />
-              </Button>
-            </AlbumArticleEditorDialog>
-          </Suspense>
-        </div>
-      )}
+                <Button
+                  className="absolute right-1 bottom-1 h-12 w-12 rounded-full p-0"
+                  variant={"secondary"}
+                >
+                  <Pencil className="h-8 w-8" />
+                </Button>
+              </AlbumArticleEditorDialog>
+            </Suspense>
+          </div>
+        )}
     </Card>
   )
 }

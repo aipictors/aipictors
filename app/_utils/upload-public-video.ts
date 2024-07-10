@@ -1,36 +1,50 @@
+import { config } from "@/config"
+import { object, string, safeParse, nullable } from "valibot"
+
 /**
- * 画像アップロード
+ * 動画アップロード
  * @param file Blob形式のファイル
  * @param name ファイル名（拡張子含む）
  * @param id ユーザID
- * @returns アップロードした画像URL
+ * @returns アップロードした動画URL
  */
 export const uploadPublicVideo = async (
   file: Blob,
-  name: string,
-  id: string,
+  token: string | undefined | null,
 ): Promise<string> => {
-  const formData = new FormData()
-
-  formData.append("id", id)
-  formData.append("file", file, name)
-
   try {
-    // const endpoint = config.wordpressEndpoint.uploadPublicVideo
+    const endpoint = config.uploader.uploadImage
 
-    // const response = await fetch(endpoint, {
-    //   method: "POST",
-    //   body: formData,
-    // })
+    const response = await fetch(endpoint, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "video/mp4",
+      },
+      body: file,
+    })
 
-    // if (response.ok) {
-    //   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    //   const responseData = (await response.json()) as any
-    //   return responseData.url
-    // }
-    throw new Error("Upload failed")
+    if (response.ok) {
+      const responseData = await response.json()
+
+      // Valibotでレスポンスデータのバリデーションを実行
+      const schema = object({
+        data: object({
+          fileId: string(),
+          url: string(),
+        }),
+        error: nullable(string()),
+      })
+
+      const validationResult = safeParse(schema, responseData)
+      if (!validationResult.success) {
+        throw new Error("動画のアップロードに失敗いたしました")
+      }
+
+      return validationResult.output.data.url
+    }
   } catch (error) {
-    // captureException(error)
-    throw new Error("Error uploading video")
+    console.error(error)
   }
+  throw new Error("動画のアップロードに失敗いたしました")
 }

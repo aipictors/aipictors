@@ -53,7 +53,7 @@ export const FollowingUserItem = (props: Props) => {
       <div className="flex space-x-2">
         {props.works.map((work, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <Link to={`/works/${work.id}`} key={index}>
+          <Link to={`/posts/${work.id}`} key={index}>
             <div className="h-32 w-32 rounded-md">
               <img
                 className="h-32 w-32 object-cover"

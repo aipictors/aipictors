@@ -181,7 +181,7 @@ export const WorksSetting = (props: Props) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
-                  <SelectItem value="G">{"G"}</SelectItem>
+                  <SelectItem value="G">{"全年齢"}</SelectItem>
                   <SelectItem value="R15">{"R15"}</SelectItem>
                   <SelectItem value="R18">{"R18"}</SelectItem>
                   <SelectItem value="R18G">{"R18G"}</SelectItem>

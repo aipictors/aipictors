@@ -12,7 +12,7 @@ import {
 export const SensitiveRouteList = () => {
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"https://www.aipictors.com"} icon={Undo2Icon}>
+      <HomeNavigationButton href={"/"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive"} icon={HomeIcon}>
@@ -33,31 +33,31 @@ export const SensitiveRouteList = () => {
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton href={"/sensitive/works/3d"}>
+      <HomeNavigationButton href={"/sensitive/posts/3d"}>
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/3d/a"}>
+      <HomeNavigationButton href={"/sensitive/posts/3d/a"}>
         {"フォトA"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/3d/b"}>
+      <HomeNavigationButton href={"/sensitive/posts/3d/b"}>
         {"フォトB"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/3d/c"}>
+      <HomeNavigationButton href={"/sensitive/posts/3d/c"}>
         {"フォトC"}
       </HomeNavigationButton>
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton href={"/sensitive/works/2d"}>
+      <HomeNavigationButton href={"/sensitive/posts/2d"}>
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/2d/a"}>
+      <HomeNavigationButton href={"/sensitive/posts/2d/a"}>
         {"イラストA"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/2d/b"}>
+      <HomeNavigationButton href={"/sensitive/posts/2d/b"}>
         {"イラストB"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/works/2d/c"}>
+      <HomeNavigationButton href={"/sensitive/posts/2d/c"}>
         {"イラストC"}
       </HomeNavigationButton>
       <div className="py-2">

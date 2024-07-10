@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
-import { XIntent } from "@/routes/($lang)._main.works.$work/_components/work-action-share-x"
+import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { useEffect } from "react"
 
@@ -11,6 +11,7 @@ type Props = {
   workId: string
   uuid: string
   shareTags: string[]
+  createdAt: number
 }
 
 export const SuccessCreatedWorkDialog = (props: Props) => {
@@ -49,11 +50,11 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
         "confetti-container",
       ) as HTMLElement
       if (confettiContainer) {
-        confettiContainer.innerHTML = "" // Clear previous confetti
+        confettiContainer.innerHTML = ""
         createConfetti(confettiContainer)
         const interval = setInterval(() => {
           createConfetti(confettiContainer)
-        }, 1000) // Adjust this interval to keep confetti always visible
+        }, 1000)
         return () => clearInterval(interval)
       }
     }, 1000)
@@ -66,10 +67,12 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           if (!isOpen) {
             // ページ遷移
             if (typeof window !== "undefined") {
-              if (props.uuid !== "") {
-                window.location.href = `https://aipictors.com/works/${props.uuid}`
+              if (props.createdAt > new Date().getTime()) {
+                window.location.href = "/dashboard/posts"
+              } else if (props.uuid !== "") {
+                window.location.href = `/posts/${props.uuid}`
               } else {
-                window.location.href = `https://aipictors.com/works/${props.workId}`
+                window.location.href = `/posts/${props.workId}`
               }
             }
           }
@@ -80,25 +83,31 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <div className="relative h-40 w-full">
             <div
               id="confetti-container"
-              style={{
-                overflow: "hidden",
-                backgroundColor: "#f3f4f6",
-              }}
-              className="relative h-40 w-full"
+              className="relative h-40 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900"
             />
-            <Link
-              to={
-                props.uuid !== ""
-                  ? `https://aipictors.com/works/${props.uuid}`
-                  : `https://aipictors.com/works/${props.workId}`
-              }
-            >
-              <img
-                className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
-                src={props.imageBase64}
-                alt="work-image"
-              />
-            </Link>
+            {props.createdAt > new Date().getTime() ? (
+              <Link to={"/dashboard/posts"}>
+                <img
+                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
+                  src={props.imageBase64}
+                  alt="work-image"
+                />
+              </Link>
+            ) : (
+              <Link
+                to={
+                  props.uuid !== ""
+                    ? `/posts/${props.uuid}`
+                    : `/posts/${props.workId}`
+                }
+              >
+                <img
+                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
+                  src={props.imageBase64}
+                  alt="work-image"
+                />
+              </Link>
+            )}
           </div>
           <p className="text-center font-bold">作品が更新されました</p>
           <p className="text-center text-sm opacity-80">この作品をシェアする</p>
@@ -116,10 +125,12 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <Button
             onClick={() => {
               if (typeof window !== "undefined") {
-                if (props.uuid !== "") {
-                  window.location.href = `https://aipictors.com/works/${props.uuid}`
+                if (props.createdAt > new Date().getTime()) {
+                  window.location.href = "/dashboard/posts"
+                } else if (props.uuid !== "") {
+                  window.location.href = `/posts/${props.uuid}`
                 } else {
-                  window.location.href = `https://aipictors.com/works/${props.workId}`
+                  window.location.href = `/posts/${props.workId}`
                 }
               }
             }}

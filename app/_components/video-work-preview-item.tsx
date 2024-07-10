@@ -15,7 +15,7 @@ type Props = {
 export const NovelWorkPreviewItem = (props: Props) => {
   return (
     <Link
-      to={`/works/${props.workId}`}
+      to={`/posts/${props.workId}`}
       className="relative transition-all duration-300 ease-in-out hover:opacity-80"
     >
       <div className={"relative overflow-hidden rounded"}>

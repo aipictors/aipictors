@@ -10,7 +10,7 @@ import {
 import { Input } from "@/_components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { AuthContext } from "@/_contexts/auth-context"
-import { changeUserStickerAccessTypeMutation } from "@/_graphql/mutations/change-user-sticker-access-type"
+import { updateStickerMutation } from "@/_graphql/mutations/update-sticker"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -32,8 +32,9 @@ type Props = {
 export const StickerChangeAccessTypeActionDialog = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const [changeUserStickerAccessType, { loading: isChangeStickerAccessType }] =
-    useMutation(changeUserStickerAccessTypeMutation)
+  const [updateSticker, { loading: isChangeStickerAccessType }] = useMutation(
+    updateStickerMutation,
+  )
 
   const [accessType, setAccessType] = React.useState(props.accessType)
 
@@ -59,7 +60,7 @@ export const StickerChangeAccessTypeActionDialog = (props: Props) => {
       return
     }
 
-    await changeUserStickerAccessType({
+    await updateSticker({
       variables: {
         input: {
           stickerId: props.stickerId,

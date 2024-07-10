@@ -59,16 +59,42 @@ import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_compone
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
+import { config } from "@/config"
+import { useBeforeUnload } from "@remix-run/react"
 
 /**
  * 新規作品フォーム
  */
 export const NewImageForm = () => {
+  const [state, setState] = React.useState<boolean | null>(null)
+
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        // 変更がある場合のみ警告を表示
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage // 標準
+          return confirmationMessage // Chrome用
+        }
+      },
+      [state],
+    ),
+  )
+
   const authContext = useContext(AuthContext)
+
+  if (authContext.isLoading) return null
 
   if (!authContext || !authContext.userId) {
     return "ログインしてください"
   }
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
     variables: {
@@ -253,6 +279,22 @@ export const NewImageForm = () => {
 
   const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
 
+  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
+    string[]
+  >([])
+
+  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
+    useState(false)
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const currentPassType = pass?.viewer?.currentPass?.type
+
+  const isSubscribed =
+    currentPassType === "STANDARD" || currentPassType === "PREMIUM"
+
   const onCloseImageEffectTool = () => {
     setEditTargetImageBase64("")
   }
@@ -264,14 +306,7 @@ export const NewImageForm = () => {
     if (authContext.userId === null || videoFile === null) {
       return ""
     }
-
-    const videoFileName = `${createRandomString(30)}.mp4`
-
-    const videoUrl = await uploadPublicVideo(
-      videoFile,
-      videoFileName,
-      authContext.userId,
-    )
+    const videoUrl = await uploadPublicVideo(videoFile, token?.viewer?.token)
     return videoUrl
   }
 
@@ -284,13 +319,7 @@ export const NewImageForm = () => {
 
     const imageUrls = await Promise.all(
       images.map(async (image) => {
-        const imageFileName = `${createRandomString(30)}.webp`
-
-        const imageUrl = await uploadPublicImage(
-          image,
-          imageFileName,
-          authContext.userId,
-        )
+        const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
         return imageUrl
       }),
     )
@@ -304,6 +333,25 @@ export const NewImageForm = () => {
     toast("作品を投稿しました")
   }
 
+  const PROGRESS_STEPS = {
+    AUTH_CHECK: 5,
+    TITLE_CHECK: 10,
+    CAPTION_CHECK: 15,
+    EN_TITLE_CHECK: 20,
+    EN_CAPTION_CHECK: 25,
+    FILE_CHECK: 30,
+    RESERVATION_CHECK: 35,
+    THUMBNAIL_RESIZE: 40,
+    UPLOAD_THUMBNAILS: 50,
+    VIDEO_PROCESSING: 60,
+    IMAGE_PROCESSING: 60,
+    WORK_CREATION: 80,
+    SUCCESS: 100,
+    FAILURE: 0,
+  }
+
+  const [progress, setProgress] = useState(0)
+
   /**
    * 投稿処理
    * @returns
@@ -312,36 +360,41 @@ export const NewImageForm = () => {
     const uploadedImageUrls = []
     try {
       setIsCreatingWork(true)
+      setProgress(PROGRESS_STEPS.AUTH_CHECK)
 
       if (!authContext || !authContext.userId) {
         toast("ログインしてください")
         return
       }
+      setProgress(PROGRESS_STEPS.TITLE_CHECK)
 
       if (title === "") {
         toast("タイトルを入力してください")
         return
       }
-
       if (title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.CAPTION_CHECK)
 
       if (caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_TITLE_CHECK)
 
       if (enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_CAPTION_CHECK)
 
       if (enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.FILE_CHECK)
 
       if (
         videoFile === null &&
@@ -350,8 +403,8 @@ export const NewImageForm = () => {
         toast("画像もしくは動画を選択してください")
         return
       }
+      setProgress(PROGRESS_STEPS.RESERVATION_CHECK)
 
-      // 予約投稿の時間は日付と時間両方の入力が必要
       if (
         (reservationDate !== "" && reservationTime === "") ||
         (reservationDate === "" && reservationTime !== "")
@@ -359,73 +412,47 @@ export const NewImageForm = () => {
         toast("予約投稿の時間を入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.THUMBNAIL_RESIZE)
 
-      if (thumbnailBase64 === "") {
-        toast("サムネイルを設定してください")
-        return
-      }
-
-      // サムネイルを作成してアップロード
       const smallThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 400, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 400, "webp")
       const largeThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 600, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 600, "webp")
+      setProgress(PROGRESS_STEPS.UPLOAD_THUMBNAILS)
+
       const smallThumbnailFileName = `${createRandomString(30)}.webp`
       const largeThumbnailFileName = `${createRandomString(30)}.webp`
       const ogpImageFileName = `${createRandomString(30)}.webp`
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        smallThumbnailFileName,
-        authContext.userId,
+        token?.viewer?.token,
       )
-      if (smallThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
-
       uploadedImageUrls.push(smallThumbnailUrl)
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        largeThumbnailFileName,
-        authContext.userId,
+        token?.viewer?.token,
       )
-      if (largeThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
       uploadedImageUrls.push(largeThumbnailUrl)
-      const ogpBase64Url = await uploadPublicImage(
-        ogpBase64,
-        ogpImageFileName,
-        authContext.userId,
-      )
-      if (ogpBase64Url === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
+      const ogpBase64Url = ogpBase64
+        ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
+        : ""
+      if (ogpBase64Url !== "") {
+        uploadedImageUrls.push(ogpBase64Url)
       }
-      uploadedImageUrls.push(ogpBase64Url)
 
-      // Int型にするために日付をミリ秒に変換
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
-
-      // トップ画像をSha256でハッシュ化
       const mainImageSha256 = await sha256(thumbnailBase64)
-
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
+      setProgress(PROGRESS_STEPS.VIDEO_PROCESSING)
 
-      // 動画もしくは画像をアップロード
       if (videoFile) {
         const videoUrl = await uploadVideo()
-        if (videoUrl === "") {
-          toast("動画のアップロードに失敗しました")
-          return
-        }
-
         const work = await createWork({
           variables: {
             input: {
@@ -484,6 +511,7 @@ export const NewImageForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       if (videoFile === null && items.length !== 0) {
@@ -550,18 +578,20 @@ export const NewImageForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       successUploadedProcess()
+      setProgress(PROGRESS_STEPS.SUCCESS)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      // 失敗したらアップロードした画像は削除する
       // biome-ignore lint/complexity/noForEach: <explanation>
       uploadedImageUrls.forEach(async (url) => {
         await deleteUploadedImage(url)
       })
+      setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
     } finally {
       setIsCreatingWork(false)
     }
@@ -593,6 +623,7 @@ export const NewImageForm = () => {
     if (items.map((item) => item.content).length === 0) {
       setPngInfo(null)
     }
+    setState(true)
   }, [items])
 
   return (
@@ -601,12 +632,12 @@ export const NewImageForm = () => {
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`relative items-center pb-2 bg-gray-800 ${
+            className={`relative items-center bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
             {items.map((item) => item.content).length !== 0 && (
-              <div className="mb-4 bg-gray-700 p-1 pl-4 dark:bg-blend-darken">
+              <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
                 <div className="flex space-x-4 text-white">
                   <div className="flex">
                     {"イラスト"}
@@ -638,6 +669,7 @@ export const NewImageForm = () => {
               items={items}
               videoFile={videoFile}
               setItems={setItems}
+              maxItemsCount={config.post.maxImageCount}
               setIndexList={setIndexList}
               onChangePngInfo={setPngInfo}
               onVideoChange={(videoFile: File | null) => {
@@ -651,16 +683,6 @@ export const NewImageForm = () => {
               setOgpBase64={setOgpBase64}
               setIsThumbnailLandscape={setIsThumbnailLandscape}
             />
-            {!items.length && (
-              <div className="m-4 flex flex-col text-white">
-                <p className="text-center text-sm">
-                  JPEG、PNG、GIF、WEBP、BMP、MP4
-                </p>
-                <p className="text-center text-sm">
-                  1枚32MB以内、最大200枚、動画は32MB、12秒まで
-                </p>
-              </div>
-            )}
           </div>
           {thumbnailBase64 !== "" && (
             <ThumbnailPositionAdjustInput
@@ -679,9 +701,24 @@ export const NewImageForm = () => {
               ogpBase64={ogpBase64}
             />
           )}
-          <Button onClick={onInputPngInfo} className="m-2 ml-auto block">
-            PNG情報のみ読み込み
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant={"secondary"}
+              onClick={onInputPngInfo}
+              className="m-2 ml-auto block"
+            >
+              PNG情報のみ読み込み
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={() => {
+                setIsOpenImageGenerationDialog(true)
+              }}
+              className="m-2 ml-auto block"
+            >
+              生成画像
+            </Button>
+          </div>
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
@@ -703,7 +740,14 @@ export const NewImageForm = () => {
             </Accordion>
             <RatingInput
               rating={ratingRestriction}
-              setRating={setRatingRestriction}
+              setRating={(rating) => {
+                setRatingRestriction(rating)
+                if (rating === "R18" || rating === "R18G") {
+                  setIsSensitiveWhiteTags(true)
+                } else {
+                  setIsSensitiveWhiteTags(false)
+                }
+              }}
             />
             <ViewInput accessType={accessType} setAccessType={setAccessType} />
             <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
@@ -753,14 +797,14 @@ export const NewImageForm = () => {
                 setReservationDate(value)
                 const today = new Date()
                 today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
-                const threeDaysLater = new Date(today)
-                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+                const daysLater = new Date(today)
+                daysLater.setDate(today.getDate() + 7) // 7日後の日付を設定
 
                 const changeDate = new Date(value)
                 changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
 
-                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
-                if (changeDate >= today && changeDate <= threeDaysLater) {
+                // 入力された日付が今日または未来（今日から7日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= daysLater) {
                   setDate(changeDate)
                   setIsHideTheme(false)
                 } else {
@@ -841,7 +885,11 @@ export const NewImageForm = () => {
               }}
             />
             <RelatedLinkInput link={link} onChange={setLink} />
-            <AdWorkInput isChecked={isAd} onChange={setIsAd} />
+            <AdWorkInput
+              isSubscribed={isSubscribed}
+              isChecked={isAd}
+              onChange={setIsAd}
+            />
           </ScrollArea>
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
@@ -888,9 +936,45 @@ export const NewImageForm = () => {
         workId={uploadedWorkId}
         uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
       />
 
-      <CreatingWorkDialog isOpen={isCreatingWork} />
+      <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
+
+      <ImageGenerationSelectorDialog
+        isOpen={isOpenImageGenerationDialog}
+        setIsOpen={setIsOpenImageGenerationDialog}
+        onSubmitted={(selectedImage: string[], selectedIds: string[]) => {
+          setSelectedImageGenerationIds(selectedIds)
+          setItems((prev) => {
+            if (
+              config.post.maxImageCount <
+              selectedImage.length + prev.length
+            ) {
+              toast(`最大${config.post.maxImageCount}までです`)
+              return [...prev]
+            }
+
+            // 既存の items の URL のセットを作成
+            const existingUrls = new Set(prev.map((item) => item.content))
+
+            // 新しく追加する items のフィルタリング
+            const newItems = selectedImage
+              .filter((image) => !existingUrls.has(image))
+              .map((image) => ({
+                id: Math.floor(Math.random() * 10000),
+                content: image,
+              }))
+
+            // 既存の items に新しい items を追加
+            return [...prev, ...newItems]
+          })
+          setIsOpenImageGenerationDialog(false)
+          setSelectedImageGenerationIds([])
+        }}
+        selectedIds={selectedImageGenerationIds}
+        setSelectIds={setSelectedImageGenerationIds}
+      />
     </>
   )
 }

@@ -12,6 +12,7 @@ const envSchema = object({
   VITE_GRAPHQL_ENDPOINT: string(),
   VITE_GRAPHQL_ENDPOINT_REMIX: string(),
   VITE_SENTRY_VERSION: string(),
+  VITE_WORKERS_UPLOADER: string(),
 })
 
 export const env = parse(envSchema, import.meta.env)

@@ -21,7 +21,7 @@ type Props = {
     bookmarksCount: number
     commentsCount: number
     viewsCount: number
-    createdAt: string
+    createdAt: number
     accessType: IntrospectionEnum<"AccessType">
     workType: IntrospectionEnum<"WorkType">
     isTagEditable: boolean

@@ -26,7 +26,7 @@ export function WorkAlbum({
 }: WorkAlbumProps) {
   return (
     <div style={{ ...wrapperStyle, position: "relative" }}>
-      <Link to={`/works/${workId}`}>
+      <Link to={`/posts/${workId}`}>
         <img
           src={photo.src}
           // @ts-ignore

@@ -59,7 +59,7 @@ export default function MonthlyAwards() {
 
   return (
     <AppPage>
-      <RankingHeader year={data.year} month={data.month} />
+      <RankingHeader year={data.year} month={data.month} day={null} />
       <RankingWorkList awards={data.workAwards.data.workAwards} />
     </AppPage>
   )

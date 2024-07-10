@@ -4,16 +4,15 @@ import { NewImageForm } from "@/routes/($lang)._main.new.image/_components/new-i
 export default function NewImage() {
   return (
     <div
-      className="container w-[100vw] space-y-2"
+      className="container space-y-2"
       style={{
         margin: "0 auto",
       }}
     >
       <ConstructionAlert
         type="WARNING"
-        message="このページは現在開発中です。不具合が起きる可能性があります。"
+        title="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
-        date="2024-07-30"
       />
       <NewImageForm />
     </div>

@@ -58,7 +58,7 @@ export function HomeWorkVideoAlbum({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Link to={`/works/${workId}`}>
+        <Link to={`/posts/${workId}`}>
           <img
             src={photo.src}
             // @ts-ignore
@@ -83,8 +83,8 @@ export function HomeWorkVideoAlbum({
             </Badge>
           </div>
         </Link>
-        <div className="absolute right-0 bottom-0 left-0 box-border flex h-[20%] flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-          <Link to={`/works/${workId}`}>
+        <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+          <Link to={`/posts/${workId}`}>
             <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
               {workTitle}
             </p>

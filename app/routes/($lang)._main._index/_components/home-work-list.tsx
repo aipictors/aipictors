@@ -1,5 +1,5 @@
 import type { worksQuery } from "@/_graphql/queries/work/works"
-import { WorkCard } from "@/routes/($lang)._main.works._index/_components/work-card"
+import { WorkCard } from "@/routes/($lang)._main.posts._index/_components/work-card"
 import { Link } from "@remix-run/react"
 import type { ResultOf } from "gql.tada"
 
@@ -13,7 +13,7 @@ export const HomeWorkList = (props: Props) => {
       {props.works?.map((work, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <li key={index}>
-          <Link to={`/works/${work.id}`}>
+          <Link to={`/posts/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}
               imageWidth={work.largeThumbnailImageWidth}

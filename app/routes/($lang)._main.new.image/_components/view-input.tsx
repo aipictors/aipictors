@@ -22,25 +22,25 @@ export const ViewInput = (props: Props) => {
             }}
             className="flex flex-wrap space-x-0 md:space-x-4"
           >
-            <div className="mb-2 w-1/3 md:w-auto">
+            <div className="mb-2 w-1/2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="PUBLIC" id="view-public" />
                 <label htmlFor="view-public">{"公開"}</label>
               </div>
             </div>
-            <div className="mb-2 w-1/3 md:w-auto">
+            <div className="mb-2 w-1/2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="PRIVATE" id="view-archive" />
-                <label htmlFor="view-archive">{"アーカイブ"}</label>
+                <label htmlFor="view-archive">{"非公開"}</label>
               </div>
             </div>
-            <div className="mb-2 w-1/3 md:w-auto">
+            <div className="mb-2 w-1/2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="LIMITED" id="view-limited" />
                 <label htmlFor="view-limited">{"限定公開"}</label>
               </div>
             </div>
-            <div className="mb-2 w-1/3 md:w-auto">
+            <div className="mb-2 w-1/2 md:w-auto">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="DRAFT" id="view-draft" />
                 <label htmlFor="view-draft">{"下書き"}</label>

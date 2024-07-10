@@ -6,6 +6,7 @@ import {
   ImageIcon,
   MedalIcon,
   StickerIcon,
+  PaletteIcon,
   UserXIcon,
 } from "lucide-react"
 
@@ -35,6 +36,9 @@ export const SettingsRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/sticker"} icon={StickerIcon}>
         {"スタンプ"}
+      </HomeNavigationButton>
+      <HomeNavigationButton href={"/settings/color"} icon={PaletteIcon}>
+        {"カラーテーマ"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/request"} icon={MedalIcon}>
         {"チップを受け取る"}

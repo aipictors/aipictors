@@ -1,5 +1,6 @@
 import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
+import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useContext } from "react"
@@ -21,6 +22,10 @@ export const GenerationTaskContentPreview = () => {
   }
 
   const imageGenerationTask = useCachedImageGenerationTask(
+    context.config.previewTaskId,
+  )
+
+  const imageGenerationResult = useCachedImageGenerationResult(
     context.config.previewTaskId,
   )
 
@@ -47,6 +52,30 @@ export const GenerationTaskContentPreview = () => {
             <div className="m-auto mb-1">
               <p className="mb-1 font-semibold">{"Model"}</p>
               <p>{imageGenerationTask.model?.name}</p>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+
+        {imageGenerationResult?.imageUrl &&
+        imageGenerationResult.thumbnailUrl &&
+        userToken ? (
+          <div className="m-auto max-h-[100vh]">
+            <img
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              className={`max-h-[64vh] generation-image-${imageGenerationResult.id}`}
+              src={
+                context.config.taskListThumbnailType === "light"
+                  ? imageGenerationResult.thumbnailUrl
+                  : imageGenerationResult.imageUrl
+              }
+              data-original={imageGenerationResult.imageUrl}
+              alt={"-"}
+            />
+            <div className="m-auto mb-1">
+              <p className="mb-1 font-semibold">{"Model"}</p>
+              <p>{imageGenerationResult.model?.name}</p>
             </div>
           </div>
         ) : (

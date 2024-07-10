@@ -34,9 +34,15 @@ export const GenerationConfigCount = (props: Props) => {
     <>
       <div className="gap-x-2">
         <div className="flex items-center gap-x-2">
-          <span className="text-nowrap font-bold">{"生成枚数"}</span>
+          <span className="text-nowrap font-bold">
+            {"生成枚数（予約生成）"}
+          </span>
           <CrossPlatformTooltip
-            text={"サブスクSTANDARD以上で1度の生成枚数を増やすことができます。"}
+            text={
+              !isStandardOrPremium
+                ? "サブスクSTANDARD以上で1度の生成枚数を増やすことができます。"
+                : "同時生成枚数以上を指定した場合は、予約生成となり順次生成が行われていきます。"
+            }
           />
         </div>
         <div className="flex items-center gap-x-2">
