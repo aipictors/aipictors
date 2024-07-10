@@ -19,7 +19,7 @@ export const HomeNotificationsContentFollowedItem = (props: Props) => {
   return (
     <>
       <Link
-        className="flex items-center p-1 transition-all hover:bg-card"
+        className="flex items-center p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
         to={`/users/${props.userId}`}
       >
         <img

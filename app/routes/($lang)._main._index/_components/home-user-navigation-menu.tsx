@@ -124,7 +124,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
       <DropdownMenuContent>
         <div>
           <div
-            className="relative mb-4 h-16 w-full rounded-md bg-card p-2"
+            className="relative mb-4 h-16 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
             style={{
               backgroundImage: `url(${headerImageUrl})`,
               backgroundSize: "cover",
