@@ -9,7 +9,9 @@ import { ScrollArea } from "@/_components/ui/scroll-area"
 import { aiModelsQuery } from "@/_graphql/queries/model/models"
 import { CaptionInput } from "@/routes/($lang)._main.new.image/_components/caption-input"
 import { DateInput } from "@/routes/($lang)._main.new.image/_components/date-input"
+import { ModelInput } from "@/routes/($lang)._main.new.image/_components/model-input"
 import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating-input"
+import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
 import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
@@ -30,6 +32,8 @@ import {
   getExtractInfoFromPNG,
   type PNGInfo,
 } from "@/_utils/get-extract-info-from-png"
+import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
+import { Checkbox } from "@/_components/ui/checkbox"
 import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
 import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { Loader2Icon } from "lucide-react"
@@ -39,6 +43,7 @@ import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
@@ -51,21 +56,46 @@ import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
+import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
+import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
+import { config } from "@/config"
+import { useBeforeUnload } from "@remix-run/react"
 import { CropImageField } from "@/_components/crop-image-field"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { OgpInputForText } from "@/routes/($lang)._main.new.image/_components/ogp-input-for-text"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 
 /**
- * 新規テキスト作品フォーム
+ * 新規作品フォーム
  */
 export const NewTextForm = () => {
+  const [state, setState] = React.useState<boolean | null>(null)
+
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        // 変更がある場合のみ警告を表示
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage // 標準
+          return confirmationMessage // Chrome用
+        }
+      },
+      [state],
+    ),
+  )
+
   const authContext = useContext(AuthContext)
+
+  if (authContext.isLoading) return null
 
   if (!authContext || !authContext.userId) {
     return "ログインしてください"
   }
+
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
   const { data: aiModels } = useQuery(aiModelsQuery, {
     variables: {
@@ -250,9 +280,12 @@ export const NewTextForm = () => {
 
   const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
-    skip: authContext.isLoading,
-  })
+  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
+    string[]
+  >([])
+
+  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
+    useState(false)
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isLoading,
@@ -274,14 +307,7 @@ export const NewTextForm = () => {
     if (authContext.userId === null || videoFile === null) {
       return ""
     }
-
-    const videoFileName = `${createRandomString(30)}.mp4`
-
-    const videoUrl = await uploadPublicVideo(
-      videoFile,
-      videoFileName,
-      authContext.userId,
-    )
+    const videoUrl = await uploadPublicVideo(videoFile, token?.viewer?.token)
     return videoUrl
   }
 
@@ -308,6 +334,25 @@ export const NewTextForm = () => {
     toast("作品を投稿しました")
   }
 
+  const PROGRESS_STEPS = {
+    AUTH_CHECK: 5,
+    TITLE_CHECK: 10,
+    CAPTION_CHECK: 15,
+    EN_TITLE_CHECK: 20,
+    EN_CAPTION_CHECK: 25,
+    FILE_CHECK: 30,
+    RESERVATION_CHECK: 35,
+    THUMBNAIL_RESIZE: 40,
+    UPLOAD_THUMBNAILS: 50,
+    VIDEO_PROCESSING: 60,
+    IMAGE_PROCESSING: 60,
+    WORK_CREATION: 80,
+    SUCCESS: 100,
+    FAILURE: 0,
+  }
+
+  const [progress, setProgress] = useState(0)
+
   /**
    * 投稿処理
    * @returns
@@ -316,36 +361,41 @@ export const NewTextForm = () => {
     const uploadedImageUrls = []
     try {
       setIsCreatingWork(true)
+      setProgress(PROGRESS_STEPS.AUTH_CHECK)
 
       if (!authContext || !authContext.userId) {
         toast("ログインしてください")
         return
       }
+      setProgress(PROGRESS_STEPS.TITLE_CHECK)
 
       if (title === "") {
         toast("タイトルを入力してください")
         return
       }
-
       if (title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.CAPTION_CHECK)
 
       if (caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_TITLE_CHECK)
 
       if (enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.EN_CAPTION_CHECK)
 
       if (enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.FILE_CHECK)
 
       if (
         videoFile === null &&
@@ -354,8 +404,8 @@ export const NewTextForm = () => {
         toast("画像もしくは動画を選択してください")
         return
       }
+      setProgress(PROGRESS_STEPS.RESERVATION_CHECK)
 
-      // 予約投稿の時間は日付と時間両方の入力が必要
       if (
         (reservationDate !== "" && reservationTime === "") ||
         (reservationDate === "" && reservationTime !== "")
@@ -363,19 +413,16 @@ export const NewTextForm = () => {
         toast("予約投稿の時間を入力してください")
         return
       }
+      setProgress(PROGRESS_STEPS.THUMBNAIL_RESIZE)
 
-      if (thumbnailBase64 === "") {
-        toast("サムネイルを設定してください")
-        return
-      }
-
-      // サムネイルを作成してアップロード
       const smallThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 400, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 400, "webp")
       const largeThumbnail = isThumbnailLandscape
         ? await resizeImage(thumbnailBase64, 600, 0, "webp")
         : await resizeImage(thumbnailBase64, 0, 600, "webp")
+      setProgress(PROGRESS_STEPS.UPLOAD_THUMBNAILS)
+
       const smallThumbnailFileName = `${createRandomString(30)}.webp`
       const largeThumbnailFileName = `${createRandomString(30)}.webp`
       const ogpImageFileName = `${createRandomString(30)}.webp`
@@ -383,20 +430,11 @@ export const NewTextForm = () => {
         smallThumbnail.base64,
         token?.viewer?.token,
       )
-      if (smallThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
-
       uploadedImageUrls.push(smallThumbnailUrl)
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
         token?.viewer?.token,
       )
-      if (largeThumbnailUrl === "") {
-        toast("サムネイルのアップロードに失敗しました")
-        return
-      }
       uploadedImageUrls.push(largeThumbnailUrl)
       const ogpBase64Url = ogpBase64
         ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
@@ -405,25 +443,16 @@ export const NewTextForm = () => {
         uploadedImageUrls.push(ogpBase64Url)
       }
 
-      // Int型にするために日付をミリ秒に変換
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
           ? new Date(`${reservationDate}T${reservationTime}`).getTime()
           : undefined
-
-      // トップ画像をSha256でハッシュ化
       const mainImageSha256 = await sha256(thumbnailBase64)
-
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
+      setProgress(PROGRESS_STEPS.VIDEO_PROCESSING)
 
-      // 動画もしくは画像をアップロード
       if (videoFile) {
         const videoUrl = await uploadVideo()
-        if (videoUrl === "") {
-          toast("動画のアップロードに失敗しました")
-          return
-        }
-
         const work = await createWork({
           variables: {
             input: {
@@ -482,6 +511,7 @@ export const NewTextForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       if (videoFile === null && items.length !== 0) {
@@ -548,18 +578,20 @@ export const NewTextForm = () => {
             setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
           }
         }
+        setProgress(PROGRESS_STEPS.WORK_CREATION)
       }
 
       successUploadedProcess()
+      setProgress(PROGRESS_STEPS.SUCCESS)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      // 失敗したらアップロードした画像は削除する
       // biome-ignore lint/complexity/noForEach: <explanation>
       uploadedImageUrls.forEach(async (url) => {
         await deleteUploadedImage(url)
       })
+      setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
     } finally {
       setIsCreatingWork(false)
     }
@@ -591,6 +623,7 @@ export const NewTextForm = () => {
     if (items.map((item) => item.content).length === 0) {
       setPngInfo(null)
     }
+    setState(true)
   }, [items])
 
   const onCrop = async (croppedImage: string) => {
@@ -620,6 +653,31 @@ export const NewTextForm = () => {
               ogpBase64={ogpBase64}
             />
           )}
+          {thumbnailBase64 !== "" && (
+            <OgpInput
+              imageBase64={thumbnailBase64}
+              setOgpBase64={setOgpBase64}
+              ogpBase64={ogpBase64}
+            />
+          )}
+          <div className="flex space-x-2">
+            <Button
+              variant={"secondary"}
+              onClick={onInputPngInfo}
+              className="m-2 ml-auto block"
+            >
+              PNG情報のみ読み込み
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={() => {
+                setIsOpenImageGenerationDialog(true)
+              }}
+              className="m-2 ml-auto block"
+            >
+              生成画像
+            </Button>
+          </div>
           <ScrollArea className="p-2">
             <TitleInput onChange={setTitle} />
             <CaptionInput setCaption={setCaption} />
@@ -641,9 +699,56 @@ export const NewTextForm = () => {
             </Accordion>
             <RatingInput
               rating={ratingRestriction}
-              setRating={setRatingRestriction}
+              setRating={(rating) => {
+                setRatingRestriction(rating)
+                if (rating === "R18" || rating === "R18G") {
+                  setIsSensitiveWhiteTags(true)
+                } else {
+                  setIsSensitiveWhiteTags(false)
+                }
+              }}
             />
             <ViewInput accessType={accessType} setAccessType={setAccessType} />
+            <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
+            <ModelInput
+              model={aiUsed}
+              models={optionModels}
+              setModel={setAiUsed}
+            />
+            {pngInfo && (
+              <div className="flex items-center">
+                <Checkbox
+                  checked={isSetGenerationParams}
+                  onCheckedChange={() => {
+                    setIsSetGenerationParams((prev) => !prev)
+                  }}
+                  id="set-generation-check"
+                />
+                <label
+                  htmlFor="set-generation-check"
+                  className="ml-2 font-medium text-sm"
+                >
+                  生成情報を公開する
+                </label>
+              </div>
+            )}
+            {pngInfo && isSetGenerationParams && (
+              <Accordion type="single" collapsible>
+                <AccordionItem value="setting">
+                  <AccordionTrigger>
+                    <Button variant={"secondary"} className="w-full">
+                      生成情報を確認する
+                    </Button>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-2">
+                    <GenerationParamsInput
+                      pngInfo={pngInfo}
+                      setPngInfo={setPngInfo}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
             <DateInput
               date={reservationDate}
               time={reservationTime}
@@ -692,6 +797,18 @@ export const NewTextForm = () => {
                 }}
                 title={theme?.dailyTheme?.title ?? ""}
                 isLoading={themeLoading}
+              />
+            )}
+
+            {appEvents && (
+              <EventInput
+                tags={tags}
+                setTags={setTags}
+                eventName={appEvents?.title ?? ""}
+                eventDescription={appEvents?.description ?? ""}
+                eventTag={appEvents?.tag ?? ""}
+                endAt={appEvents?.endAt ?? 0}
+                slug={appEvents?.slug ?? ""}
               />
             )}
 
@@ -778,9 +895,45 @@ export const NewTextForm = () => {
         workId={uploadedWorkId}
         uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
       />
 
-      <CreatingWorkDialog isOpen={isCreatingWork} />
+      <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
+
+      <ImageGenerationSelectorDialog
+        isOpen={isOpenImageGenerationDialog}
+        setIsOpen={setIsOpenImageGenerationDialog}
+        onSubmitted={(selectedImage: string[], selectedIds: string[]) => {
+          setSelectedImageGenerationIds(selectedIds)
+          setItems((prev) => {
+            if (
+              config.post.maxImageCount <
+              selectedImage.length + prev.length
+            ) {
+              toast(`最大${config.post.maxImageCount}までです`)
+              return [...prev]
+            }
+
+            // 既存の items の URL のセットを作成
+            const existingUrls = new Set(prev.map((item) => item.content))
+
+            // 新しく追加する items のフィルタリング
+            const newItems = selectedImage
+              .filter((image) => !existingUrls.has(image))
+              .map((image) => ({
+                id: Math.floor(Math.random() * 10000),
+                content: image,
+              }))
+
+            // 既存の items に新しい items を追加
+            return [...prev, ...newItems]
+          })
+          setIsOpenImageGenerationDialog(false)
+          setSelectedImageGenerationIds([])
+        }}
+        selectedIds={selectedImageGenerationIds}
+        setSelectIds={setSelectedImageGenerationIds}
+      />
     </>
   )
 }

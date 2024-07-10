@@ -17,7 +17,7 @@ export const PostAccessTypeBanner = (props: Props) => {
       case "PUBLIC":
         return ""
       case "PRIVATE":
-        return "アーカイブ（非公開）"
+        return "非公開（アーカイブ）"
       case "DRAFT":
         return "下書き"
       case "LIMITED":

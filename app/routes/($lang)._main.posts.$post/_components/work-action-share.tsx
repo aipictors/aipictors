@@ -16,7 +16,7 @@ type Props = {
 export const SharePopover = (props: Props) => {
   const { pathname } = useLocation()
 
-  const currentUrl = `${import.meta.env.VITE_APP_URL}${pathname}`
+  const currentUrl = `${"https://www.aipictors.com"}${pathname}`
 
   return (
     <Popover>

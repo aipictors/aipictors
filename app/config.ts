@@ -301,3 +301,14 @@ export const config = {
    */
   isReleaseMode: import.meta.env.MODE !== "development",
 }
+
+/**
+ * キーコードの型定義
+ */
+export enum KeyCodes {
+  Q = "KeyQ",
+  E = "KeyE",
+  ALLOW_LEFT = "ArrowLeft",
+  ALLOW_RIGHT = "ArrowRight",
+  ESCAPE = 27,
+}

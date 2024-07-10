@@ -55,7 +55,6 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { workQuery } from "@/_graphql/queries/work/work"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
 import { updateWorkMutation } from "@/_graphql/mutations/update-work"
-import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
@@ -353,8 +352,8 @@ export const EditImageForm = (props: Props) => {
 
     // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
     if (work?.work?.createdAt) {
-      const reservedDate = new Date(work?.work?.createdAt)
-      const now = new Date()
+      const reservedDate = new Date(work?.work?.createdAt * 1000 + 3600000 * 9)
+      const now = new Date(Date.now() + 3600000 * 9)
       if (reservedDate > now) {
         setReservationDate(reservedDate.toISOString().slice(0, 10))
         setReservationTime(reservedDate.toISOString().slice(11, 16))
@@ -554,7 +553,8 @@ export const EditImageForm = (props: Props) => {
 
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
       const mainImageSha256 = await sha256(thumbnailBase64)
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
@@ -735,20 +735,6 @@ export const EditImageForm = (props: Props) => {
     <>
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
-          {/* 種別表記 */}
-          <div className="p-2">
-            <div className="flex items-center space-x-2">
-              <div className="font-bold text-lg">
-                {toWorkTypeText(
-                  (work?.work?.type as "WORK" | "COLUMN" | "NOVEL" | "VIDEO") ??
-                    "WORK",
-                )}
-                {"作品編集"}
-                {work?.work?.type === "VIDEO" &&
-                  "（動画自体は変更できません。）"}
-              </div>
-            </div>
-          </div>
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center pb-2 bg-gray-800 ${
@@ -929,14 +915,14 @@ export const EditImageForm = (props: Props) => {
                 setReservationDate(value)
                 const today = new Date()
                 today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
-                const threeDaysLater = new Date(today)
-                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+                const daysLater = new Date(today)
+                daysLater.setDate(today.getDate() + 7) // 7日後の日付を設定
 
                 const changeDate = new Date(value)
                 changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
 
-                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
-                if (changeDate >= today && changeDate <= threeDaysLater) {
+                // 入力された日付が今日または未来（今日から7日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= daysLater) {
                   setDate(changeDate)
                   setIsHideTheme(false)
                 } else {
@@ -1067,6 +1053,7 @@ export const EditImageForm = (props: Props) => {
         workId={uploadedWorkId}
         uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
       />
 
       <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />

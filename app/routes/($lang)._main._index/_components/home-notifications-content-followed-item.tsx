@@ -27,7 +27,7 @@ export const HomeNotificationsContentFollowedItem = (props: Props) => {
           alt="thumbnail"
           className="h-8 w-8 rounded-full object-cover"
         />
-        <div className="ml-2 w-full max-w-64 overflow-hidden">
+        <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">
             {props.userName}さんにフォローされました！
           </p>

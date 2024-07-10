@@ -1,3 +1,4 @@
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { ParamsError } from "@/_errors/params-error"
 import { EditImageForm } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form"
 import { useParams } from "@remix-run/react"
@@ -12,11 +13,17 @@ export default function EditImage() {
 
   return (
     <div
-      className="container"
+      className="container space-y-2"
       style={{
         margin: "0 auto",
       }}
     >
+      <ConstructionAlert
+        type="WARNING"
+        title="試験的にリニューアル版を運用中です。"
+        fallbackURL={`https://www.aipictors.com/edit-work/?id=${params.post}`}
+      />
+
       <Suspense>
         <EditImageForm workId={params.post} />
       </Suspense>

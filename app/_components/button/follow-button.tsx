@@ -20,6 +20,43 @@ type Props = {
 export const FollowButton = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  const [isFollow, setIsFollow] = useState(props.isFollow)
+
+  const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
+
+  const [unFollow, { loading: isUnFollowing }] =
+    useMutation(unFollowUserMutation)
+
+  const onFollow = async () => {
+    try {
+      const res = await follow({
+        variables: {
+          input: {
+            userId: props.targetUserId,
+          },
+        },
+      })
+      setIsFollow(res.data?.followUser?.isFollowee ?? false)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const onUnFollow = async () => {
+    try {
+      const res = await unFollow({
+        variables: {
+          input: {
+            userId: props.targetUserId,
+          },
+        },
+      })
+      setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const triggerNode = props.triggerChildren ?? (
     <button
       type="button"
@@ -62,43 +99,6 @@ export const FollowButton = (props: Props) => {
   /* 自分自身の場合はフォローボタンを表示しない */
   if (authContext.userId === props.targetUserId) {
     return null
-  }
-
-  const [isFollow, setIsFollow] = useState(props.isFollow)
-
-  const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
-
-  const [unFollow, { loading: isUnFollowing }] =
-    useMutation(unFollowUserMutation)
-
-  const onFollow = async () => {
-    try {
-      const res = await follow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
-        },
-      })
-      setIsFollow(res.data?.followUser?.isFollowee ?? false)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const onUnFollow = async () => {
-    try {
-      const res = await unFollow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
-        },
-      })
-      setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   return isFollow ? (

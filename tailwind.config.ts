@@ -60,6 +60,18 @@ export default {
          */
         "clear-bright-blue": "#0090f0",
         "line-theme": "#06C755",
+        monotone: {
+          50: "hsl(var(--monotone-50))",
+          100: "hsl(var(--monotone-100))",
+          200: "hsl(var(--monotone-200))",
+          300: "hsl(var(--monotone-300))",
+          400: "hsl(var(--monotone-400))",
+          500: "hsl(var(--monotone-500))",
+          600: "hsl(var(--monotone-600))",
+          700: "hsl(var(--monotone-700))",
+          800: "hsl(var(--monotone-800))",
+          900: "hsl(var(--monotone-900))",
+        },
       },
       /**
        * shadcn/ui

@@ -42,6 +42,8 @@ export const HomeNotificationCommentsContents = (props: Props) => {
               comment={notification.message ?? ""}
               userName={notification.user?.name ?? ""}
               createdAt={toDateText(notification.createdAt) ?? ""}
+              isReplied={notification.myReplies.length !== 0}
+              repliedItem={null}
             />
           )
         })}

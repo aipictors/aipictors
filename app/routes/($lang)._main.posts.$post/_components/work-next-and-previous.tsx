@@ -5,10 +5,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
+import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import type { workQuery } from "@/_graphql/queries/work/work"
 import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
+import { useQuery } from "@apollo/client/index"
 import type { ResultOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
+import { useEffect } from "react"
 
 type Props = {
   work: ResultOf<typeof workQuery>["work"]
@@ -17,11 +20,43 @@ type Props = {
 export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
 
-  if (typeof document !== "undefined") {
-    document.addEventListener("keydown", (e: KeyboardEvent) =>
-      keyDownHandler(e, props.work),
-    )
-  }
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const passData = pass?.viewer?.currentPass
+
+  useEffect(() => {
+    const keyDownHandler = (e: KeyboardEvent) => {
+      if (document !== undefined) {
+        const activeElement = document.activeElement
+        if (
+          activeElement &&
+          (activeElement.tagName.toLowerCase() === "input" ||
+            activeElement.tagName.toLowerCase() === "textarea")
+        ) {
+          return
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        if (e.code === "KeyQ" && props.work?.nextWork) {
+          window.location.href = `/posts/${props.work?.nextWork.id}`
+        }
+        if (e.code === "KeyE" && props.work?.previousWork) {
+          window.location.href = `/posts/${props.work?.previousWork.id}`
+        }
+      }
+    }
+
+    if (typeof document !== "undefined") {
+      document.addEventListener("keydown", keyDownHandler)
+    }
+
+    return () => {
+      if (typeof document !== "undefined") {
+        document.removeEventListener("keydown", keyDownHandler)
+      }
+    }
+  }, [props.work])
 
   return (
     <div className="invisible flex flex-col space-y-8 lg:visible">
@@ -76,21 +111,10 @@ export const WorkNextAndPrevious = (props: Props) => {
           )}
         </div>
       </div>
-      <WorkAdSense />
+      {passData?.type !== "LITE" &&
+        passData?.type !== "STANDARD" &&
+        passData?.type !== "PREMIUM" &&
+        passData?.type !== "TWO_DAYS" && <WorkAdSense />}
     </div>
   )
-}
-
-function keyDownHandler(
-  e: KeyboardEvent,
-  work: ResultOf<typeof workQuery>["work"],
-): void {
-  if (typeof window !== "undefined" && work !== null) {
-    if (e.code === "KeyQ" && work.nextWork) {
-      window.location.href = `/posts/${work.nextWork.id}`
-    }
-    if (e.code === "KeyE" && work.previousWork) {
-      window.location.href = `/posts/${work.previousWork.id}`
-    }
-  }
 }

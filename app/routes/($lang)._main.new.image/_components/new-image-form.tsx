@@ -444,7 +444,8 @@ export const NewImageForm = () => {
 
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
       const mainImageSha256 = await sha256(thumbnailBase64)
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
@@ -631,7 +632,7 @@ export const NewImageForm = () => {
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`relative items-center pb-2 bg-gray-800 ${
+            className={`relative items-center bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
@@ -682,16 +683,6 @@ export const NewImageForm = () => {
               setOgpBase64={setOgpBase64}
               setIsThumbnailLandscape={setIsThumbnailLandscape}
             />
-            {!items.length && (
-              <div className="m-4 flex flex-col text-white">
-                <p className="text-center text-sm">
-                  JPEG、PNG、GIF、WEBP、BMP、MP4
-                </p>
-                <p className="text-center text-sm">
-                  1枚32MB以内、最大200枚、動画は32MB、12秒まで
-                </p>
-              </div>
-            )}
           </div>
           {thumbnailBase64 !== "" && (
             <ThumbnailPositionAdjustInput
@@ -806,14 +797,14 @@ export const NewImageForm = () => {
                 setReservationDate(value)
                 const today = new Date()
                 today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
-                const threeDaysLater = new Date(today)
-                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+                const daysLater = new Date(today)
+                daysLater.setDate(today.getDate() + 7) // 7日後の日付を設定
 
                 const changeDate = new Date(value)
                 changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
 
-                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
-                if (changeDate >= today && changeDate <= threeDaysLater) {
+                // 入力された日付が今日または未来（今日から7日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= daysLater) {
                   setDate(changeDate)
                   setIsHideTheme(false)
                 } else {
@@ -945,6 +936,7 @@ export const NewImageForm = () => {
         workId={uploadedWorkId}
         uuid={uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
       />
 
       <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
