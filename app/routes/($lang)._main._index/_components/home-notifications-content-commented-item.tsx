@@ -46,7 +46,7 @@ export const HomeNotificationsContentCommentedItem = (props: Props) => {
       <div className="flex flex-col space-y-1 border-b p-1">
         <Link
           to={`/posts/${props.workId}`}
-          className="flex items-center rounded-md p-1 transition-all hover:bg-card"
+          className="flex items-center rounded-md p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
         >
           <>
             <img

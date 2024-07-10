@@ -48,7 +48,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
 
   if (workImageURL) {
     return (
-      <div className="relative m-0 bg-card">
+      <div className="relative m-0 bg-gray-100 dark:bg-zinc-950">
         <ImagesPreview
           currentIndex={0}
           setCurrentIndex={() => {}}

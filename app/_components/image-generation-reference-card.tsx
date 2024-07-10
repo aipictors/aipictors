@@ -13,10 +13,10 @@ type Props = {
 export const ImageGenerationReferenceCard = (props: Props) => {
   return (
     <Link
-      className="bg-card"
+      className="bg-gray-100 dark:bg-gray-900"
       to={`/generation?prompts=${encodeURIComponent(props.prompts)}`}
     >
-      <div className="rounded-md bg-card p-4">
+      <div className="rounded-md bg-gray-100 p-4 dark:bg-gray-900">
         <div className="relative m-auto max-w-64">
           <Card className="relative z-10 bg-white">{props.children}</Card>
           <div className="ta-c relative z-10 m-auto mb-4 text-sm">
