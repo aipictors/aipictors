@@ -75,7 +75,11 @@ export const WorkActionBookmark = (props: Props) => {
         <Loader2Icon className="h-4 w-4 animate-spin" />
       ) : (
         <FolderIcon
-          className={isBookmarked ? "fill-foreground" : "fill-background"}
+          className={
+            isBookmarked
+              ? "fill-black dark:fill-white"
+              : "fill-white dark:fill-black"
+          }
         />
       )}
     </Button>
