@@ -22,7 +22,11 @@ export default defineConfig({
       targets: [
         {
           src: "./node_modules/onnxruntime-web/dist/*.wasm",
-          dest: ".",
+          dest: "./debug",
+        },
+        {
+          src: "./public/nsfw_model/*.onnx",
+          dest: "./debug",
         },
       ],
     }),

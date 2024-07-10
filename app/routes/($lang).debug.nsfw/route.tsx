@@ -1,6 +1,55 @@
 import { ImageUp } from "lucide-react"
 import { useState } from "react"
-import { predict } from "./_utils/process-image" // process-image.ts から predict 関数をインポート
+import { InferenceSession, Tensor } from "onnxruntime-web"
+
+const modelUrl = "./nsfwjs.onnx"
+const labels = ["drawings", "hentai", "neutral", "porn", "sexy"]
+const size = 224
+
+async function loadModel(): Promise<InferenceSession> {
+  const session = await InferenceSession.create(modelUrl, {
+    executionProviders: ["wasm"],
+  })
+  return session
+}
+
+async function preprocessImage(
+  image: HTMLImageElement,
+  size: number,
+): Promise<Float32Array> {
+  const canvas = document.createElement("canvas")
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext("2d")
+  ctx?.drawImage(image, 0, 0, size, size)
+  const imageData = ctx?.getImageData(0, 0, size, size)
+
+  const data = new Float32Array(size * size * 3)
+  for (let i = 0; i < size * size; i++) {
+    // 画像データのRGBチャンネルを正規化して格納
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    data[i * 3] = imageData!.data[i * 4] / 255 // R
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    data[i * 3 + 1] = imageData!.data[i * 4 + 1] / 255 // G
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    data[i * 3 + 2] = imageData!.data[i * 4 + 2] / 255 // B
+  }
+  return data
+}
+
+export async function predict(image: HTMLImageElement) {
+  const session = await loadModel()
+  const input = await preprocessImage(image, size)
+  const tensor = new Tensor("float32", input, [1, size, size, 3])
+  const feeds: Record<string, Tensor> = { input_1: tensor }
+  const output = await session.run(feeds)
+  const outputData = output.dense_3.data as Float32Array
+  const results: Record<string, number> = {}
+  labels.forEach((label, index) => {
+    results[label] = outputData[index]
+  })
+  return results
+}
 
 export default function CheckNsfw() {
   const [image, setImage] = useState<string | null>(null)
@@ -20,7 +69,7 @@ export default function CheckNsfw() {
         const img = new Image()
         img.src = imageUrl
         img.onload = async () => {
-          const results = await predict(img, "nsfwjs")
+          const results = await predict(img)
           setPredictions(results)
         }
       }
