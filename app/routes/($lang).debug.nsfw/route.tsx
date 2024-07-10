@@ -1,10 +1,12 @@
 import { ImageUp } from "lucide-react"
 import { useState } from "react"
 import { InferenceSession, Tensor } from "onnxruntime-web"
+import { config } from "@/config"
 
 const modelUrl = "./nsfwjs.onnx"
 const labels = ["drawings", "hentai", "neutral", "porn", "sexy"]
 const size = 224
+const isDevelopmentMode = config.isDevelopmentMode
 
 async function loadModel(): Promise<InferenceSession> {
   const session = await InferenceSession.create(modelUrl, {
@@ -75,6 +77,16 @@ export default function CheckNsfw() {
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  if (!isDevelopmentMode) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-background">
+        <div className="mb-8 text-center text-muted-foreground">
+          This feature is not enabled in the production environment.
+        </div>
+      </div>
+    )
   }
 
   return (
