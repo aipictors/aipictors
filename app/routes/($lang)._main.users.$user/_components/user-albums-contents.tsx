@@ -1,8 +1,10 @@
-import { ResponsiveAlbumsList } from "@/_components/responsive-albums-list"
+import {
+  albumItemFragment,
+  albumItemWorkFragment,
+  ResponsiveAlbumsList,
+} from "@/_components/responsive-albums-list"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { AuthContext } from "@/_contexts/auth-context"
-import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
 import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
@@ -63,7 +65,15 @@ export const UserAlbumsContents = (props: Props) => {
       {authContext.userId === props.userId && (
         <WorksSeriesAddButton refetch={refetch} />
       )}
-      <ResponsiveAlbumsList albums={albums} />
+      <div className="flex flex-wrap">
+        {albums.map((album) => (
+          <ResponsiveAlbumsList
+            key={album.id}
+            album={album}
+            works={album.works}
+          />
+        ))}
+      </div>
       <div className="mt-1 mb-1">
         <ResponsivePagination
           perPage={16}
@@ -87,11 +97,11 @@ export const albumsCountQuery = graphql(
 export const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
-      ...PartialAlbumFields
-      user {
-        ...PartialUserFields
+      ...AlbumItemFields
+      works(limit: $limit, offset: $offset) {
+        ...AlbumItemWorkFields
       }
     }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+  [albumItemFragment, albumItemWorkFragment],
 )
