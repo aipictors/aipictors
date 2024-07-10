@@ -73,13 +73,15 @@ export const LikeButton = ({
               }}
             >
               <Heart
-                className={"fill-white text-foreground"}
+                className={"fill-white text-black dark:text-white"}
                 size={Math.floor(size / 2)}
                 strokeWidth={1}
               />
             </div>
             {text && (
-              <span className={cn("mr-3 text-foreground text-sm")}>{text}</span>
+              <span className={cn("mr-3 text-black text-sm dark:text-white")}>
+                {text}
+              </span>
             )}
           </button>
         }
@@ -176,8 +178,8 @@ export const LikeButton = ({
             isLiked
               ? "fill-rose-500 text-rose-500"
               : isBackgroundNone
-                ? "fill-white text-foreground"
-                : "fill-transparent text-foreground",
+                ? "fill-white text-black dark:text-white"
+                : "fill-transparent text-black dark:text-white",
             isLiked ? "like-animation" : "like-animation-end",
           )}
           size={Math.floor(size / 2)}
@@ -186,7 +188,7 @@ export const LikeButton = ({
         />
       </div>
       {text && (
-        <span className={cn("mr-3 text-foreground text-sm")}>
+        <span className={cn("mr-3 text-black text-sm dark:text-white")}>
           {text}
           {likedCount}
         </span>
