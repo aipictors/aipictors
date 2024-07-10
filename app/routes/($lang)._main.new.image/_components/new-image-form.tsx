@@ -444,7 +444,8 @@ export const NewImageForm = () => {
 
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
       const mainImageSha256 = await sha256(thumbnailBase64)
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
