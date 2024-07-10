@@ -19,7 +19,7 @@ export const TagsInput = (props: Props) => {
 
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
+      <div className="mt-2 mb-2 space-y-2 rounded-md bg-secondary pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
         <div className="mt-2 flex flex-col">
           <p className="mb-1 font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
           <TagInput
@@ -33,6 +33,7 @@ export const TagsInput = (props: Props) => {
             maxTags={10}
             maxLength={160}
             className="sm:min-w-[450px]"
+            variant="outline"
             setTags={(newTags) => {
               props.setTags(newTags as [Tag, ...Tag[]])
               console.log(newTags)
@@ -60,7 +61,7 @@ export const TagsInput = (props: Props) => {
                 <Button
                   key={tag.id}
                   className="mr-2 mb-2 w-auto"
-                  variant={"secondary"}
+                  variant={"outline"}
                   onClick={() => {
                     if (props.tags.length >= 10) {
                       return

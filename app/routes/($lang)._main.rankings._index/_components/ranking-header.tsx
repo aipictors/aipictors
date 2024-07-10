@@ -58,7 +58,7 @@ export const RankingHeader = (props: Props) => {
                 type="number"
                 value={year}
                 onChange={handleYearChange}
-                className="w-16 text-center"
+                className="w-16 border-[1px] border-foreground border-solid bg-background text-center text-foreground"
                 min="2000"
                 max="2100"
               />
@@ -67,7 +67,7 @@ export const RankingHeader = (props: Props) => {
                 type="number"
                 value={month}
                 onChange={handleMonthChange}
-                className="w-12 text-center"
+                className="w-12 border-[1px] border-foreground border-solid bg-background text-center text-foreground"
                 min="1"
                 max="12"
               />
@@ -78,7 +78,7 @@ export const RankingHeader = (props: Props) => {
                     type="number"
                     value={day}
                     onChange={handleDayChange}
-                    className="w-12 text-center"
+                    className="w-12 border-[1px] border-foreground border-solid bg-background text-center text-foreground"
                     min="1"
                     max="31"
                   />

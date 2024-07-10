@@ -29,7 +29,7 @@ export const HomeNotificationCommentsTabs = () => {
     <>
       <ScrollArea className="relative h-96 overflow-y-auto">
         <Tabs
-          className="sticky top-0 z-10 bg-white pt-1 dark:bg-zinc-900"
+          className="sticky top-0 z-10 bg-popover pt-1 dark:bg-zinc-900"
           defaultValue={defaultTab}
         >
           <div className="border-b">

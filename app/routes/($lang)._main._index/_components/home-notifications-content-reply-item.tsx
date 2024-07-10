@@ -34,7 +34,7 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
     <>
       <Link
         to={`/posts/${props.workId}`}
-        className="flex items-center border-b p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+        className="flex items-center border-b p-1 transition-all hover:bg-card"
       >
         <Link to={`/users/${props.ownerUserId}`}>
           <img

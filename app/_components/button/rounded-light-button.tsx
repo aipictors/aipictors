@@ -15,7 +15,9 @@ export function RoundedLightButton(props: Props) {
       type="button"
       disabled={props.disabled}
       className={`flex items-center justify-center rounded-full p-1 pl-2 text-sm duration-200 hover:opacity-80${
-        props.isActive ? " bg-zinc-100 dark:bg-zinc-800" : " bg-transparent"
+        props.isActive
+          ? " bg-secondary text-secondary-foreground"
+          : " bg-transparent"
       }`}
     >
       {props.children}
