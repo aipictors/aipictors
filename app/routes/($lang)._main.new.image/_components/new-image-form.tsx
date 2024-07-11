@@ -533,11 +533,9 @@ export const NewImageForm = () => {
   }
 
   const recommendedNotUsedTags = () => {
-    return (
-      recommendedTagsRet?.recommendedTagsFromPrompts?.filter(
-        (tag) => !state.tags.map((t) => t.text).includes(tag.name),
-      ) ?? []
-    )
+    return (recommendedTagsRet?.recommendedTagsFromPrompts?.filter(
+      (tag) => !state.tags.map((t) => t.text).includes(tag.name),
+    ) ?? []) as unknown as Tag[]
   }
 
   const selectedFilesSizeText = () => {
@@ -558,10 +556,9 @@ export const NewImageForm = () => {
     return `イラスト${state.items.map((item) => item.content).length}枚`
   }
 
-  const whiteListNotSelectedTags =
-    whiteTagsRet?.whiteListTags?.filter(
-      (tag) => !state.tags.map((t) => t.text).includes(tag.name),
-    ) ?? []
+  const whiteListNotSelectedTags = (whiteTagsRet?.whiteListTags?.filter(
+    (tag) => !state.tags.map((t) => t.text).includes(tag.name),
+  ) ?? []) as unknown as Tag[]
 
   const onStartMouseDrawing = (content: string) => {
     dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: content })
@@ -827,10 +824,10 @@ export const NewImageForm = () => {
               />
             )}
             <TagsInput
-              whiteListTags={whiteListNotSelectedTags as unknown as Tag[]}
+              whiteListTags={whiteListNotSelectedTags}
               tags={state.tags}
               setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
-              recommendedTags={recommendedNotUsedTags() as unknown as Tag[]}
+              recommendedTags={recommendedNotUsedTags()}
             />
             {recommendedTagsLoading && (
               <Loader2Icon className="h-4 w-4 animate-spin" />
