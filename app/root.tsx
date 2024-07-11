@@ -87,30 +87,30 @@ export function Layout(props: Props) {
         style={{ margin: "0 !important" }}
       >
         <ThemeProvider
-          attribute={"class"}
           defaultTheme={"system"}
           themes={[
             "system",
             "dark",
             "light",
-            "gray-light",
-            "gray-dark",
-            "red-light",
-            "red-dark",
-            "pink-light",
-            "pink-dark",
-            "orange-light",
-            "orange-dark",
-            "green-light",
-            "green-dark",
-            "blue-light",
-            "blue-dark",
-            "yellow-light",
-            "yellow-dark",
-            "violet-light",
-            "violet-dark",
+            "light-gray",
+            "dark-gray",
+            "light-red",
+            "dark-red",
+            "light-pink",
+            "dark-pink",
+            "light-orange",
+            "dark-orange",
+            "light-green",
+            "dark-green",
+            "light-blue",
+            "dark-blue",
+            "light-yellow",
+            "dark-yellow",
+            "light-violet",
+            "dark-violet",
           ]}
           enableSystem
+          enableColorScheme
           disableTransitionOnChange
         >
           <ContextProviders>

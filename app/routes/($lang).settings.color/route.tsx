@@ -39,16 +39,18 @@ export default function SettingColor() {
       setTheme(mode)
       return
     }
-    setTheme(`${color}-${mode}`)
+    const themeName = `${mode}-${color}`
+    console.log(themeName)
+    setTheme(themeName)
   }
   const setMode = (theme: string) => {
     if (theme === "system" || theme === "light" || theme === "dark") {
       return theme
     }
-    if (theme.endsWith("-light")) {
+    if (theme.startsWith("light-")) {
       return "light"
     }
-    if (theme.endsWith("-dark")) {
+    if (theme.startsWith("dark-")) {
       return "dark"
     }
     return "system"
@@ -58,8 +60,9 @@ export default function SettingColor() {
     if (theme === "system" || theme === "light" || theme === "dark") {
       return "none"
     }
-    const prefix = theme.replace(/\-(light|dark)/, "")
-    return prefix ?? "none"
+    const suffix = theme.replace(/(light|dark)\-/, "")
+    console.log(`suffix: ${suffix}`)
+    return suffix ?? "none"
   }
   const colorSchema = setColorSchema(theme ? theme : "system")
   const themeRadio = (value: string, label: string) => {

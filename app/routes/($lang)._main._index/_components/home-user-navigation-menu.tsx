@@ -86,19 +86,19 @@ export const HomeUserNavigationMenu = (props: Props) => {
       setTheme(newMode)
       return
     }
-    // テーマ適用中→"blue-light"、"blue-dark"等同色でのダーク、ライト切り替え
-    const prefix = theme?.replace(/\-(light|dark)/, "-")
-    const colorPrefix = prefix ?? ""
-    setTheme(colorPrefix + newMode)
+    // テーマ適用中→"light-blue-"、"dark-blue"等同色でのダーク、ライト切り替え
+    const suffix = theme?.replace(/(light|dark)\-/, "-")
+    const colorSuffix = suffix ?? ""
+    setTheme(newMode + colorSuffix)
   }
   const setMode = (theme: string) => {
     if (theme === "system" || theme === "light" || theme === "dark") {
       return theme
     }
-    if (theme.endsWith("-light")) {
+    if (theme.startsWith("light-")) {
       return "light"
     }
-    if (theme.endsWith("-dark")) {
+    if (theme.startsWith("dark-")) {
       return "dark"
     }
     return "system"

@@ -40,7 +40,7 @@
     --radius: 0.5rem;
   }
 
-  .dark {
+  html[data-theme='dark'] {
     --background: 20 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;
     --card: 20 14.3% 4.1%;
@@ -72,7 +72,7 @@
     --ring: 24 5.7% 82.9%;
   }
 
-  .gray-light {
+  html[data-theme='light-gray'] {
     --background: 192 0% 95%;
     --foreground: 192 0% 0%;
     --card: 192 0% 90%;
@@ -105,7 +105,7 @@
     --radius: 0.5rem;
   }
 
-  .gray-dark  {
+  html[data-theme='dark-gray'] {
     --background: 202 10% 10%;
     --foreground: 202 0% 100%;
     --card: 202 0% 10%;
@@ -137,7 +137,7 @@
     --monotone-900: 0 0% 90%; 
     --radius: 0.5rem;
   }
-  .red-light {
+html[data-theme='light-red'] {
     --background: 0 100% 95%;
     --foreground: 0 5% 10%;
     --card: 0 50% 90%;
@@ -170,7 +170,7 @@
     --radius: 0.5rem;
   }
 
-  .red-dark {
+  html[data-theme='dark-red'] {
     --background: 0 50% 10%;
     --foreground: 0 5% 90%;
     --card: 0 50% 10%;
@@ -203,7 +203,7 @@
     --radius: 0.5rem;
   }
 
-  .pink-light {
+  html[data-theme='light-pink'] {
     --background: 310 100% 97%;
     --foreground: 310 5% 10%;
     --card: 310 50% 92%;
@@ -236,7 +236,7 @@
     --radius: 0.5rem;
   }
 
-  .pink-dark {
+  html[data-theme='dark-pink'] {
     --background: 310 50% 15%;
     --foreground: 310 100% 95%;
     --card: 310 50% 20%;
@@ -269,8 +269,8 @@
     --radius: 0.5rem;
   }
 
-  .orange-light {
-    --background: 34 100% 95%;
+  html[data-theme='light-orange'] {
+      --background: 34 100% 95%;
     --foreground: 34 5% 10%;
     --card: 34 50% 90%;
     --card-foreground: 34 5% 15%;
@@ -302,8 +302,8 @@
     --radius: 0.5rem;
 }
 
-  .orange-dark {
-    --background: 34 50% 10%;
+  html[data-theme='dark-orange'] {
+      --background: 34 50% 10%;
     --foreground: 34 5% 90%;
     --card: 34 50% 10%;
     --card-foreground: 34 5% 90%;
@@ -335,7 +335,7 @@
     --radius: 0.5rem;
   }
 
-  .green-light {
+  html[data-theme='light-green'] {
     --background: 146 100% 95%;
     --foreground: 146 5% 10%;
     --card: 146 50% 90%;
@@ -368,8 +368,8 @@
     --radius: 0.5rem;
   }
 
-  .green-dark {
-    --background: 146 50% 10%;
+  html[data-theme='dark-green'] {
+      --background: 146 50% 10%;
     --foreground: 146 5% 90%;
     --card: 146 50% 10%;
     --card-foreground: 146 5% 90%;
@@ -401,7 +401,7 @@
     --radius: 0.5rem;
   }
 
-  .blue-light {
+  html[data-theme='light-blue'] {
     --background: 194 100% 95%;
     --foreground: 194 5% 0%;
     --card: 194 50% 90%;
@@ -434,8 +434,8 @@
     --radius: 0.5rem;
   }
 
-  .blue-dark {
-    --background: 194 50% 5%;
+  html[data-theme='dark-blue'] {
+      --background: 194 50% 5%;
     --foreground: 194 5% 90%;
     --card: 194 50% 0%;
     --card-foreground: 194 5% 90%;
@@ -467,8 +467,8 @@
     --radius: 0.5rem;
   }
 
-  .yellow-light {
-    --background: 61 100% 95%;
+  html[data-theme='light-yellow'] {
+      --background: 61 100% 95%;
     --foreground: 61 5% 10%;
     --card: 61 50% 90%;
     --card-foreground: 61 5% 15%;
@@ -500,8 +500,8 @@
     --radius: 0.5rem;
   }
 
-  .yellow-dark {
-    --background: 61 50% 10%;
+  html[data-theme='dark-yellow'] {
+      --background: 61 50% 10%;
     --foreground: 61 5% 90%;
     --card: 61 50% 10%;
     --card-foreground: 61 5% 90%;
@@ -533,8 +533,8 @@
     --radius: 0.5rem;
   }
 
-  .violet-light {
-    --background: 288 100% 95%;
+  html[data-theme='light-violet'] {
+      --background: 288 100% 95%;
     --foreground: 288 5% 10%;
     --card: 288 50% 90%;
     --card-foreground: 288 5% 15%;
@@ -566,8 +566,8 @@
     --radius: 0.5rem;
   }
 
-  .violet-dark {
-    --background: 288 50% 10%;
+  html[data-theme='dark-violet'] {
+      --background: 288 50% 10%;
     --foreground: 288 5% 90%;
     --card: 288 50% 10%;
     --card-foreground: 288 5% 90%;
