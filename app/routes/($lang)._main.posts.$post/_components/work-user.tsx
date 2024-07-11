@@ -70,11 +70,11 @@ export const WorkUser = (props: Props) => {
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
             <p className="text-sm opacity-50">{"フォロワー"}</p>
           </div>
-          {props.userPromptonId && (
-            <PromptonRequestTextButton promptonId={props.userPromptonId} />
-          )}
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
+        {props.userPromptonId && (
+          <PromptonRequestTextButton promptonId={props.userPromptonId} />
+        )}
       </CardHeader>
       <CardDescription className="px-6 pb-4">
         {props.userBiography && (
