@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react"
 
 const MosaicCanvas = ({
   imageUrl,
-  mosaicSize = 10,
+  mosaicSize,
   width,
   height,
   className,
@@ -36,16 +36,21 @@ const MosaicCanvas = ({
       if (!context) return
       canvas.width = !width ? image.width : width
       canvas.height = !height ? image.height : height
+
+      // 長辺の1/100をモザイクサイズとする
+      const longestSide = Math.max(image.width, image.height)
+      const effectiveMosaicSize = mosaicSize || Math.floor(longestSide / 100)
+
       context.drawImage(image, 0, 0)
 
       // モザイク処理を改善
       const imageData = context.getImageData(0, 0, image.width, image.height)
-      for (let y = 0; y < image.height; y += mosaicSize) {
-        for (let x = 0; x < image.width; x += mosaicSize) {
+      for (let y = 0; y < image.height; y += effectiveMosaicSize) {
+        for (let x = 0; x < image.width; x += effectiveMosaicSize) {
           const { totalR, totalG, totalB, count } = calculateAverageColor(
             x,
             y,
-            mosaicSize,
+            effectiveMosaicSize,
             imageData,
             image.width,
           )
@@ -56,7 +61,7 @@ const MosaicCanvas = ({
 
           // 平均色でモザイクブロックを塗りつぶす
           context.fillStyle = `rgb(${averageR}, ${averageG}, ${averageB})`
-          context.fillRect(x, y, mosaicSize, mosaicSize)
+          context.fillRect(x, y, effectiveMosaicSize, effectiveMosaicSize)
         }
       }
     }
@@ -84,7 +89,7 @@ const MosaicCanvas = ({
     }
 
     image.src = imageUrl
-  }, [imageUrl, mosaicSize]) // 依存配列を確認
+  }, [imageUrl, mosaicSize, width, height]) // 依存配列を確認
 
   return <canvas className={className} ref={canvasRef} style={style} />
 }
