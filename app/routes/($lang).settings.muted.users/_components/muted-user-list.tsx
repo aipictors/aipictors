@@ -1,9 +1,10 @@
 import { IconUrl } from "@/_components/icon-url"
 import { AuthContext } from "@/_contexts/auth-context"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { muteUserMutation } from "@/_graphql/mutations/mute-user"
-import { viewerMutedUsersQuery } from "@/_graphql/queries/viewer/viewer-muted-users"
 import { MutedUser } from "@/routes/($lang).settings.muted.users/_components/muted-user"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 
 export const MutedUserList = () => {
@@ -47,3 +48,14 @@ export const MutedUserList = () => {
     </>
   )
 }
+
+export const viewerMutedUsersQuery = graphql(
+  `query ViewerMutedUsers($offset: Int!, $limit: Int!) {
+    viewer {
+      mutedUsers(offset: $offset, limit: $limit) {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialUserFieldsFragment],
+)

@@ -16,9 +16,9 @@ import {
   TableRow,
 } from "@/_components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { milestonesQuery } from "@/_graphql/queries/milestone/miestones"
 import { createClient } from "@/_lib/client"
 import { Link, json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader() {
   const client = createClient()
@@ -272,3 +272,17 @@ export default function Milestone() {
     </AppPage>
   )
 }
+
+export const milestonesQuery = graphql(
+  `query Milestones($repository: String!) {
+    milestones(where: {repository: $repository}) {
+      id
+      title
+      version
+      description
+      pageURL
+      isDone
+      dueDate
+    }
+  }`,
+)

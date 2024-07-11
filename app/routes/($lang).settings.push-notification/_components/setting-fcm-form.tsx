@@ -1,10 +1,10 @@
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
 import { updateAccountWebFcmTokenMutation } from "@/_graphql/mutations/update-account-web-fcm-token"
-import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 import { config } from "@/config"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { getMessaging, getToken } from "firebase/messaging"
+import { graphql } from "gql.tada"
 import { CircleCheckBigIcon, Loader2Icon, XIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -159,3 +159,33 @@ export const SettingFcmForm = () => {
     </>
   )
 }
+
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        id
+        biography
+        login
+        name
+        awardsCount
+        followersCount
+        followCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
+      }
+    }
+  }`,
+)

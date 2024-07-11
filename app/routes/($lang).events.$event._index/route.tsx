@@ -1,12 +1,11 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
-import { appEventQuery } from "@/_graphql/queries/app-events/app-event"
-import { worksQuery } from "@/_graphql/queries/work/works"
-import { worksCountQuery } from "@/_graphql/queries/work/works-count"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { EventPage } from "@/routes/($lang).events.$event._index/_components/event-page"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Suspense, useContext } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -80,3 +79,34 @@ export default function FollowingLayout() {
     </>
   )
 }
+
+export const appEventQuery = graphql(
+  `query AppEvent($slug: String!) {
+    appEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+  }`,
+)
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

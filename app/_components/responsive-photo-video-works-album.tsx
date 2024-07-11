@@ -1,7 +1,7 @@
-import type { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { config } from "@/config"
 import { HomeWorkVideoAlbum } from "@/routes/($lang)._main._index/_components/home-work-video-album"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -63,3 +63,12 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
     />
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

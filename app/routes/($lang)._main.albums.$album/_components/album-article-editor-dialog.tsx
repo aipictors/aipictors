@@ -10,13 +10,12 @@ import {
   DialogFooter,
 } from "@/_components/ui/dialog"
 import { AuthContext } from "@/_contexts/auth-context"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { updateAlbumMutation } from "@/_graphql/mutations/update-album"
-import type { albumQuery } from "@/_graphql/queries/album/album"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -178,3 +177,35 @@ export const AlbumArticleEditorDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+export const albumQuery = graphql(
+  `query Album($id: ID!) {
+    album(id: $id) {
+      id
+      title
+      description
+      user {
+        ...WorkUserFields
+        isFollowee
+        isFollowee
+        isMuted
+        nanoid
+      }
+      createdAt
+      isSensitive
+      thumbnailImageURL
+      slug
+      worksCount
+      workIds
+    }
+  }`,
+  [workUserFieldsFragment],
+)
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)

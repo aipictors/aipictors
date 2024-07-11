@@ -6,12 +6,14 @@ import {
   CarouselPrevious,
 } from "@/_components/ui/carousel"
 import { HomeEventBanner } from "@/routes/($lang)._main._index/_components/home-event-banner"
-import { HomeGenerationBanner } from "@/routes/($lang)._main._index/_components/home-generation-banner"
-import type { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
-import type { ResultOf } from "gql.tada"
+import {
+  HomeGenerationBanner,
+  type homeGenerationBannerWorkFieldFragment,
+} from "@/routes/($lang)._main._index/_components/home-generation-banner"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  adWorks: NonNullable<ResultOf<typeof homeQuery>["adWorks"]>
+  adWorks: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
 }
 
 /**

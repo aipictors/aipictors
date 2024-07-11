@@ -1,7 +1,7 @@
-import type { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-support-messages"
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
 import { RecipientMessage } from "@/routes/($lang)._main.support.chat/_components/recipient-message"
 import { SenderMessage } from "@/routes/($lang)._main.support.chat/_components/sender-message"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 import { useEffect, useRef } from "react"
 
@@ -51,3 +51,14 @@ export const SupportMessageList = (props: Props) => {
     </div>
   )
 }
+
+export const viewerSupportMessagesQuery = graphql(
+  `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
+    viewer {
+      supportMessages(offset: $offset, limit: $limit) {
+        ...MessageFields
+      }
+    }
+  }`,
+  [messageFieldsFragment],
+)

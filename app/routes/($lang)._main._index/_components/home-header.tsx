@@ -80,12 +80,15 @@ const HomeHeader = (props: Props) => {
               <Input placeholder={"作品を検索"} />
             </div>
           )}
-          <Button asChild variant={"secondary"}>
-            <Link to={"/generation"}>{"生成"}</Link>
-          </Button>
-          <Button asChild variant={"secondary"}>
-            <Link to={"/new/image"}>{"投稿"}</Link>
-          </Button>
+          <Link to={"https://www.aipictors.com/"}>
+            <Button variant={"secondary"}>{"旧版"}</Button>
+          </Link>
+          <Link to={"/generation"}>
+            <Button variant={"secondary"}>{"生成"}</Button>
+          </Link>
+          <Link to={"/new/image"}>
+            <Button variant={"secondary"}>{"投稿"}</Button>
+          </Link>
           {authContext.isLoggedIn && <HomeNotificationsMenu />}
           <Suspense>
             {authContext.isLoggedIn && (

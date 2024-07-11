@@ -1,11 +1,11 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import { worksQuery } from "@/_graphql/queries/work/works"
-import { worksCountQuery } from "@/_graphql/queries/work/works-count"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { config } from "@/config"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
 import { HomeVideosWorksSection } from "@/routes/($lang)._main._index/_components/home-video-works-section"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -163,3 +163,18 @@ export const UserContentsContainer = (props: Props) => {
     </div>
   )
 }
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -1,7 +1,7 @@
-import type { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { WorkCard } from "@/routes/($lang)._main.posts._index/_components/work-card"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   works: ResultOf<typeof worksQuery>["works"]
@@ -25,3 +25,12 @@ export const HomeWorkList = (props: Props) => {
     </ul>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

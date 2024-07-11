@@ -5,9 +5,10 @@ import { LikeButton } from "@/_components/like-button"
 import { Button } from "@/_components/ui/button"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
@@ -121,3 +122,17 @@ export const HomeAwardWorkSection = (props: Props) => {
     </section>
   )
 }
+
+export const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      id
+      index
+      dateText
+      work {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

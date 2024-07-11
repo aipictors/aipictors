@@ -1,5 +1,4 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import { ToggleGroup, ToggleGroupItem } from "@/_components/ui/toggle-group"
@@ -9,10 +8,11 @@ import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-sett
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
-import { viewerIsBlurSensitiveImageQuery } from "@/_graphql/queries/viewer/viewer-is-blur-sensitive-image"
 import { Separator } from "@/_components/ui/separator"
 import { Label } from "@/_components/ui/label"
 import { Switch } from "@/_components/ui/switch"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
+import { graphql } from "gql.tada"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
@@ -119,3 +119,20 @@ export const SettingRestrictionForm = () => {
     </div>
   )
 }
+
+export const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)
+
+export const viewerIsBlurSensitiveImageQuery = graphql(
+  `query ViewerIsBlurSensitiveImage {
+    viewer {
+      isBlurSensitiveImage
+    }
+  }`,
+)

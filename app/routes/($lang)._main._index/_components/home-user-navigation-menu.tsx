@@ -26,14 +26,13 @@ import {
   UserCircleIcon,
   UserIcon,
 } from "lucide-react"
-import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
 import { useContext } from "react"
 import { useTheme } from "next-themes"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { MenuItemLink } from "@/routes/($lang)._main._index/_components/menu-item-link"
 import { Link } from "@remix-run/react"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
+import { graphql } from "gql.tada"
 
 type Props = {
   onLogout(): void
@@ -244,3 +243,50 @@ export const HomeUserNavigationMenu = (props: Props) => {
     </DropdownMenu>
   )
 }
+
+export const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)
+
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        id
+        biography
+        login
+        name
+        awardsCount
+        followersCount
+        followCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
+      }
+    }
+  }`,
+)

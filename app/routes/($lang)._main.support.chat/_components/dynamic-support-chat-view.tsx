@@ -1,8 +1,9 @@
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
 import { createMessageMutation } from "@/_graphql/mutations/create-message"
-import { viewerSupportMessagesQuery } from "@/_graphql/queries/viewer/viewer-support-messages"
 import { MessageInput } from "@/routes/($lang)._main.support.chat/_components/message-input"
 import { SupportMessageList } from "@/routes/($lang)._main.support.chat/_components/support-message-list"
 import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
@@ -61,3 +62,14 @@ export function SupportChatView() {
     </div>
   )
 }
+
+export const viewerSupportMessagesQuery = graphql(
+  `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
+    viewer {
+      supportMessages(offset: $offset, limit: $limit) {
+        ...MessageFields
+      }
+    }
+  }`,
+  [messageFieldsFragment],
+)

@@ -26,7 +26,7 @@ export async function getBase64FromImageUrl(
 
     // 指定されたフォーマットでBase64文字列を取得
     if (format) {
-      return await canvas.toDataURL(format)
+      return await canvas.toDataURL(format, 1.0)
     }
     return await canvas.toDataURL()
   } catch (error) {

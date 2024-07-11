@@ -2,12 +2,12 @@ import type { SortType } from "@/_types/sort-type"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
-import { worksQuery } from "@/_graphql/queries/work/works"
-import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
   page: number
@@ -155,3 +155,18 @@ export const WorksListContainer = (props: Props) => {
     </>
   )
 }
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

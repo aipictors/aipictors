@@ -1,10 +1,11 @@
-import { stickersQuery } from "@/_graphql/queries/sticker/stickers"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { createClient } from "@/_lib/client"
 import { StickerList } from "@/routes/($lang)._main.stickers._index/_components/sticker-list"
 import { StickerListHeader } from "@/routes/($lang)._main.stickers._index/_components/sticker-list-header"
 import { StickerSearchForm } from "@/routes/($lang)._main.stickers._index/_components/sticker-search-form"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export const meta: MetaFunction = () => {
   return [
@@ -47,3 +48,12 @@ export default function StickersPage() {
     </main>
   )
 }
+
+export const stickersQuery = graphql(
+  `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
+    stickers(offset: $offset, limit: $limit, where: $where) {
+      ...PartialStickerFields
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)

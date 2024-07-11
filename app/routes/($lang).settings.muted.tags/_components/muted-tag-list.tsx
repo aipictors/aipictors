@@ -2,14 +2,15 @@ import type { Tag } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
+import { PartialMutedTagFieldsFragment } from "@/_graphql/fragments/partial-muted-tag-fields"
 import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
-import { viewerMutedTagsQuery } from "@/_graphql/queries/viewer/viewer-muted-tags"
 import { MutedTag } from "@/routes/($lang).settings.muted.tags/_components/muted-tag"
 import {
   ApolloError,
   useMutation,
   useSuspenseQuery,
 } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 
 export const MutedTagList = () => {
@@ -113,3 +114,14 @@ export const MutedTagList = () => {
     </>
   )
 }
+
+export const viewerMutedTagsQuery = graphql(
+  `query ViewerMutedTags($offset: Int!, $limit: Int!) {
+    viewer {
+      mutedTags(offset: $offset, limit: $limit) {
+        ...PartialMutedTagFields
+      }
+    }
+  }`,
+  [PartialMutedTagFieldsFragment],
+)

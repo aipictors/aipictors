@@ -1,11 +1,5 @@
-import type { controlNetCategoriesQuery } from "@/_graphql/queries/controlnet-category/controlnet-category"
-import type { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
-import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
-import type { negativePromptCategoriesQuery } from "@/_graphql/queries/negative-prompt-category/negative-prompt-category"
-import type { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
-import type { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
-import type { viewerImageGenerationStatusQuery } from "@/_graphql/queries/viewer/viewer-image-generation-status"
-import type { ResultOf } from "gql.tada"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { graphql, type ResultOf } from "gql.tada"
 import { createContext } from "react"
 
 type Context = {
@@ -58,3 +52,121 @@ export const GenerationQueryContext = createContext<Context>({
     availableConsecutiveImageGenerationsCount: 0,
   },
 })
+
+export const controlNetCategoriesQuery = graphql(
+  `query ControlNetCategories {
+    controlNetCategories {
+      id
+      name
+      enName
+      contents {
+        id
+        name
+        enName
+        module
+        sizeKind
+        imageUrl
+        thumbnailImageUrl
+      }
+    }
+  }`,
+)
+
+export const imageLoraModelsQuery = graphql(
+  `query ImageLoraModels {
+    imageLoraModels {
+      id
+      name
+      description
+      license
+      prompts
+      slug
+      thumbnailImageURL
+      genre
+    }
+  }`,
+)
+
+export const imageModelsQuery = graphql(
+  `query ImageModels {
+    imageModels {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)
+
+export const negativePromptCategoriesQuery = graphql(
+  `query NegativePromptCategories {
+    negativePromptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)
+
+export const promptCategoriesQuery = graphql(
+  `query PromptCategories {
+    promptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)
+
+export const viewerImageGenerationStatusQuery = graphql(
+  `query ViewerImageGenerationStatus {
+    imageGenerationEngineStatus {
+      normalTasksCount
+      standardTasksCount
+      normalPredictionGenerationWait
+      standardPredictionGenerationWait
+    }
+    viewer {
+      remainingImageGenerationTasksCount
+      inProgressImageGenerationTasksCount
+      inProgressImageGenerationTasksCost
+      inProgressImageGenerationReservedTasksCount
+      remainingImageGenerationTasksTotalCount
+      availableImageGenerationMaxTasksCount
+      imageGenerationWaitCount
+      availableImageGenerationLoraModelsCount
+      availableConsecutiveImageGenerationsCount
+    }
+  }`,
+)
