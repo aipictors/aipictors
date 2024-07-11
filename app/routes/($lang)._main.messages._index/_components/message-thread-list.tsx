@@ -2,10 +2,11 @@ import { IconUrl } from "@/_components/icon-url"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { viewerMessageThreadsQuery } from "@/_graphql/queries/viewer/viewer-message-threads"
+import { messageThreadFieldsFragment } from "@/_graphql/fragments/message-thread-fields"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
 
@@ -67,3 +68,14 @@ export const MessageThreadList = () => {
     </aside>
   )
 }
+
+export const viewerMessageThreadsQuery = graphql(
+  `query ViewerMessageThreads($offset: Int!, $limit: Int!) {
+    viewer {
+      messageThreads(offset: $offset, limit: $limit) {
+        ...MessageThreadFields
+      }
+    }
+  }`,
+  [messageThreadFieldsFragment],
+)

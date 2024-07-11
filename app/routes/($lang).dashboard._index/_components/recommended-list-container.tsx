@@ -1,9 +1,10 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { RecommendedWorksList } from "@/routes/($lang).dashboard._index/_components/recommended-works-list"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
 /**
  * 推薦一覧コンテナ
@@ -54,3 +55,12 @@ export const RecommendedListContainer = () => {
     </>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

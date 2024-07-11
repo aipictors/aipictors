@@ -1,9 +1,9 @@
 import { ArticlePage } from "@/_components/page/article-page"
-import { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { createClient } from "@/_lib/client"
 import { GoogleAdsense } from "@/routes/($lang)._main._index/_components/google-adsense"
 import { ImageModelList } from "@/routes/($lang)._main.models._index/_components/image-model-list"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 /**
  * モデルの一覧
@@ -31,3 +31,21 @@ export default function ModelsPage() {
     </ArticlePage>
   )
 }
+
+export const imageModelsQuery = graphql(
+  `query ImageModels {
+    imageModels {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)

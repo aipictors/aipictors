@@ -6,7 +6,6 @@ import {
 } from "@/_components/ui/accordion"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { aiModelsQuery } from "@/_graphql/queries/model/models"
 import { CaptionInput } from "@/routes/($lang)._main.new.image/_components/caption-input"
 import { DateInput } from "@/routes/($lang)._main.new.image/_components/date-input"
 import { ModelInput } from "@/routes/($lang)._main.new.image/_components/model-input"
@@ -20,10 +19,8 @@ import {} from "@dnd-kit/core"
 import { useContext, useEffect, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
-import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
 import { CategoryEditableInput } from "@/routes/($lang)._main.new.image/_components/category-editable-input"
-import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
@@ -34,8 +31,6 @@ import {
 } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
-import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
-import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommended-tags-from-prompts"
 import { Loader2Icon } from "lucide-react"
 import PaintCanvas from "@/_components/paint-canvas"
 import FullScreenContainer from "@/_components/full-screen-container"
@@ -57,13 +52,17 @@ import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
-import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { config } from "@/config"
 import { useBeforeUnload } from "@remix-run/react"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 
 /**
  * 新規作品フォーム
@@ -978,3 +977,100 @@ export const NewImageForm = () => {
     </>
   )
 }
+
+export const albumsQuery = graphql(
+  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
+    albums(offset: $offset, limit: $limit, where: $where) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+)
+
+export const appEventsQuery = graphql(
+  `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
+    appEvents(limit: $limit, offset: $offset, where: $where) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+  }`,
+)
+
+export const dailyThemeQuery = graphql(
+  `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount,
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const aiModelsQuery = graphql(
+  `query AiModels($offset: Int!, $limit: Int!, $where: AiModelWhereInput) {
+    aiModels(offset: $offset, limit: $limit, where: $where) {
+      ...AiModelFields
+    }
+  }`,
+  [aiModelFieldsFragment],
+)
+
+export const recommendedTagsFromPromptsQuery = graphql(
+  `query RecommendedTagsFromPrompts($prompts: String!) {
+    recommendedTagsFromPrompts(prompts: $prompts) {
+      ...PartialTagFields
+    }
+  }`,
+  [partialTagFieldsFragment],
+)
+
+export const whiteListTagsQuery = graphql(
+  `query WhiteListTags($where: WhiteListTagsInput!) {
+    whiteListTags(where: $where) {
+      ...PartialTagFields
+    }
+  }`,
+  [partialTagFieldsFragment],
+)
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)

@@ -1,9 +1,12 @@
 import { AppPage } from "@/_components/app/app-page"
 import { ConstructionAlert } from "@/_components/construction-alert"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeBanners } from "@/routes/($lang)._main._index/_components/home-banners"
 import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
+import { homeGenerationBannerWorkFieldFragment } from "@/routes/($lang)._main._index/_components/home-generation-banner"
 import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
@@ -11,10 +14,10 @@ import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/hom
 import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
-import { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -45,7 +48,7 @@ export async function loader() {
   const date = new Date()
 
   const homeQueryResp = await client.query({
-    query: homeQuery,
+    query: query,
     variables: {
       year: date.getFullYear(),
       month: date.getMonth() + 1,
@@ -121,3 +124,68 @@ export default function Index() {
     </AppPage>
   )
 }
+
+export const query = graphql(
+  `query HomeQuery(
+    $after: String
+    $year: Int
+    $month: Int
+    $day: Int
+  ) {
+    adWorks: works(
+      offset: 0,
+      limit: 54,
+      where: {
+        isFeatured: true,
+        ratings: [G],
+      }
+    ) {
+      ...HomeGenerationBannerWorkField
+    }
+    works: works(
+      offset: 0,
+      limit: 80,
+      where: {
+        orderBy: LIKES_COUNT,
+        sort: DESC,
+        createdAtAfter: $after,
+        ratings: [G],
+      },
+    ) {
+      ...PartialWorkFields
+    }
+    imageGenerationWorks: works(
+      offset: 0,
+      limit: 54,
+      where: {
+        isRecommended: true,
+        ratings: [G],
+      },
+    ) {
+      ...PartialWorkFields
+    }
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount,
+      works(offset: 0, limit: 0) {
+        ...PartialWorkFields
+      }
+    }
+    hotTags {
+      ...PartialTagFields
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [
+    partialTagFieldsFragment,
+    partialWorkFieldsFragment,
+    homeGenerationBannerWorkFieldFragment,
+  ],
+)

@@ -2,7 +2,6 @@ import { AppFixedContent } from "@/_components/app/app-fixed-content"
 import { createImageGenerationTaskReservedMutation } from "@/_graphql/mutations/create-image-generation-reserved-task"
 import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-image-generation-terms"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
 import { GenerationSubmitOperationParts } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-operation-parts"
@@ -18,10 +17,10 @@ import {} from "@/_components/ui/dialog"
 import { VerificationDialog } from "@/_components/verification-dialog"
 import { useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
-import { viewerLineUserIdQuery } from "@/_graphql/queries/viewer/viewer-line-user-id"
 import { AuthContext } from "@/_contexts/auth-context"
-import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { graphql } from "gql.tada"
 
 type Props = {
   termsText: string
@@ -571,3 +570,57 @@ export function GenerationSubmissionView(props: Props) {
     </>
   )
 }
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)
+
+export const viewerLineUserIdQuery = graphql(
+  `query viewerLineUserId {
+    viewer {
+      lineUserId
+    }
+  }`,
+)
+
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        id
+        biography
+        login
+        name
+        awardsCount
+        followersCount
+        followCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
+      }
+    }
+  }`,
+)

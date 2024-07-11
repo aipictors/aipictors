@@ -11,12 +11,11 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
-import type { workCommentsQuery } from "@/_graphql/queries/work/work-comments"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
-import { userQuery } from "@/_graphql/queries/user/user"
-import {} from "@/_components/ui/accordion"
 import { AccordionTransition } from "@/_components/accordion-transition"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { commentFieldsFragment } from "@/_graphql/fragments/comment-fields"
 
 type Props = {
   workId: string
@@ -553,3 +552,110 @@ export const WorkCommentList = (props: Props) => {
     </>
   )
 }
+
+export const userQuery = graphql(
+  `query User(
+    $userId: ID!,
+    $worksOffset: Int!,
+    $worksLimit: Int!,
+    $worksWhere: UserWorksWhereInput,
+    $followeesOffset: Int!,
+    $followeesLimit: Int!,
+    $followeesWorksOffset: Int!,
+    $followeesWorksLimit: Int!,
+    $followeesWorksWhere: UserWorksWhereInput,
+    $followersOffset: Int!,
+    $followersLimit: Int!,
+    $followersWorksOffset: Int!,
+    $followersWorksLimit: Int!
+    $followersWorksWhere: UserWorksWhereInput,
+    $bookmarksOffset: Int!,
+    $bookmarksLimit: Int!,
+    $bookmarksWhere: UserWorksWhereInput,
+  ) {
+    user(id: $userId) {
+      id
+      biography
+      createdBookmarksCount
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
+      isFollower
+      isFollowee
+      headerImageUrl
+      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
+        ...PartialWorkFields
+      }
+      followees(offset: $followeesOffset, limit: $followeesLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      followers(offset: $followersOffset, limit: $followersLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+        ...PartialWorkFields
+      }
+      featuredSensitiveWorks {
+        ...PartialWorkFields
+      }
+      featuredWorks {
+        ...PartialWorkFields
+      }
+      biography
+      enBiography
+      instagramAccountId
+      twitterAccountId
+      githubAccountId
+      siteURL
+      mailAddress
+      promptonUser {
+        id
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const workCommentsQuery = graphql(
+  `query WorkComments($workId: ID!) {
+    work(id: $workId) {
+      id
+      comments(offset: 0, limit: 128) {
+        ...CommentFields
+        responses(offset: 0, limit: 128) {
+          ...CommentFields
+        }
+      }
+    }
+  }`,
+  [commentFieldsFragment],
+)

@@ -1,6 +1,5 @@
 import { Switch } from "@/_components/ui/switch"
-import type { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   imageModel: ResultOf<typeof imageModelQuery>["imageModel"]
@@ -30,3 +29,21 @@ export const ModelHeader = (props: Props) => {
     </div>
   )
 }
+
+export const imageModelQuery = graphql(
+  `query ImageModel($id: ID!) {
+    imageModel(id: $id) {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)

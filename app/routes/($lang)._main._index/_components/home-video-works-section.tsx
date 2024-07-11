@@ -1,7 +1,6 @@
 import { ResponsivePhotoVideoWorksAlbum } from "@/_components/responsive-photo-video-works-album"
-import {} from "@/_components/ui/carousel"
-import type { worksQuery } from "@/_graphql/queries/work/works"
-import type { ResultOf } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
@@ -31,3 +30,12 @@ export const HomeVideosWorksSection = (props: Props) => {
     </section>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

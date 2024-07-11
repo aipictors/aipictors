@@ -1,10 +1,11 @@
 import { ParamsError } from "@/_errors/params-error"
-import { userAlbumsQuery } from "@/_graphql/queries/user/user-albums"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { createClient } from "@/_lib/client"
 import { UserAlbumList } from "@/routes/($lang)._main.users.$user.albums/_components/user-album-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -42,3 +43,15 @@ export default function UserAlbums() {
 
   return <UserAlbumList albums={data.albums} />
 }
+
+export const userAlbumsQuery = graphql(
+  `query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
+    user(id: $userId) {
+      id
+      albums(offset: $offset, limit: $limit) {
+        ...PartialAlbumFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment],
+)

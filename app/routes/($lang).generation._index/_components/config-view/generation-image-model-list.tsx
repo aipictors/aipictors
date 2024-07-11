@@ -7,14 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/_components/ui/select"
-import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { cn } from "@/_lib/cn"
 import { removeDuplicates } from "@/_utils/remove-duplicates"
 import { config } from "@/config"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
 import { toCategoryName } from "@/routes/($lang).generation._index/_utils/to-category-name"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
@@ -268,3 +267,21 @@ export const ImageModelsList = (props: Props) => {
     </>
   )
 }
+
+export const imageModelsQuery = graphql(
+  `query ImageModels {
+    imageModels {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)

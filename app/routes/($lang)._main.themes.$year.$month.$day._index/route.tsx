@@ -1,10 +1,11 @@
 import { Button } from "@/_components/ui/button"
 import { AppPage } from "@/_components/app/app-page"
-import { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
 import { createClient } from "@/_lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Link, json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -127,3 +128,25 @@ export default function Theme() {
     </AppPage>
   )
 }
+
+export const dailyThemesQuery = graphql(
+  `query DailyThemes(
+    $offset: Int!
+    $limit: Int!
+    $where: DailyThemesWhereInput!
+  ) {
+    dailyThemes(offset: $offset, limit: $limit, where: $where) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

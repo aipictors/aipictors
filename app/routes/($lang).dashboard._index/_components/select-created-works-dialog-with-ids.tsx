@@ -1,17 +1,16 @@
 import { useContext, useState } from "react"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import { Button } from "@/_components/ui/button"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
-import { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import type React from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { toast } from "sonner"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
   children?: React.ReactNode
@@ -242,3 +241,18 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
     </>
   )
 }
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

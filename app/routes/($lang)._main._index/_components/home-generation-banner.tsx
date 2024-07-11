@@ -1,9 +1,15 @@
-import type { homeQuery } from "@/routes/($lang)._main._index/_graphql/home-query"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
+
+export const homeGenerationBannerWorkFieldFragment = graphql(
+  `fragment HomeGenerationBannerWorkField on WorkNode @_unmask {
+    id
+    smallThumbnailImageURL
+  }`,
+)
 
 type Props = {
-  works: NonNullable<ResultOf<typeof homeQuery>["adWorks"]>
+  works: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
 }
 
 /**

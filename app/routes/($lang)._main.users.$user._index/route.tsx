@@ -1,11 +1,12 @@
 import { ParamsError } from "@/_errors/params-error"
-import { userWorksQuery } from "@/_graphql/queries/user/user-works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { UserWorkList } from "@/routes/($lang)._main.users.$user/_components/user-work-list"
 import { UserWorkListActions } from "@/routes/($lang)._main.users.$user/_components/user-work-list-actions"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -48,3 +49,15 @@ export default function UserLayout() {
     </>
   )
 }
+
+export const userWorksQuery = graphql(
+  `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!) {
+    user(id: $userId) {
+      id
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

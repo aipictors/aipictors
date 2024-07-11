@@ -1,8 +1,9 @@
 import { useContext } from "react"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql } from "gql.tada"
 
 type Props = {
   tagName: string
@@ -31,3 +32,12 @@ export const WorkTagsWorks = (props: Props) => {
 
   return <ResponsivePhotoWorksAlbum works={tagWork} />
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

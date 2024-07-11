@@ -1,7 +1,8 @@
-import type { foldersQuery } from "@/_graphql/queries/folder/folders"
+import { partialFolderFieldsFragment } from "@/_graphql/fragments/partial-folder-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { config } from "@/config"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -45,3 +46,15 @@ export const ResponsiveFoldersList = (props: Props) => {
     </div>
   )
 }
+
+export const foldersQuery = graphql(
+  `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
+    folders(offset: $offset, limit: $limit, where: $where) {
+      ...PartialFolderFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialFolderFieldsFragment, partialUserFieldsFragment],
+)

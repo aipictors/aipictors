@@ -1,9 +1,9 @@
 import { Button } from "@/_components/ui/button"
-import type { dailyThemesQuery } from "@/_graphql/queries/daily-theme/daily-themes"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { ThemeListItem } from "@/routes/($lang)._main.themes._index/_components/theme-list-item"
 import { createCalendarCells } from "@/routes/($lang)._main.themes._index/_utils/create-calendar-cells"
 import { useNavigate } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 type Props = {
@@ -84,3 +84,25 @@ export const ThemeList = (props: Props) => {
     </div>
   )
 }
+
+export const dailyThemesQuery = graphql(
+  `query DailyThemes(
+    $offset: Int!
+    $limit: Int!
+    $where: DailyThemesWhereInput!
+  ) {
+    dailyThemes(offset: $offset, limit: $limit, where: $where) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

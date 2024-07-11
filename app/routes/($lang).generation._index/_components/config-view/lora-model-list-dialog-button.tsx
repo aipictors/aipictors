@@ -8,9 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import type { imageLoraModelsQuery } from "@/_graphql/queries/image-model/image-lora-models"
 import { LoraImageModelList } from "@/routes/($lang).generation._index/_components/config-view/lora-image-model-list"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -72,3 +71,18 @@ export const LoraModelListDialogButton = (props: Props) => {
     </Dialog>
   )
 }
+
+export const imageLoraModelsQuery = graphql(
+  `query ImageLoraModels {
+    imageLoraModels {
+      id
+      name
+      description
+      license
+      prompts
+      slug
+      thumbnailImageURL
+      genre
+    }
+  }`,
+)

@@ -1,7 +1,7 @@
-import type { stickersQuery } from "@/_graphql/queries/sticker/stickers"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   stickers: ResultOf<typeof stickersQuery>["stickers"]
@@ -28,3 +28,12 @@ export const StickerList = (props: Props) => {
     </div>
   )
 }
+
+export const stickersQuery = graphql(
+  `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
+    stickers(offset: $offset, limit: $limit, where: $where) {
+      ...PartialStickerFields
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)
