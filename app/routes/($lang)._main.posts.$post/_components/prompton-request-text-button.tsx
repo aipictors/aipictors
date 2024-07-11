@@ -14,7 +14,13 @@ export const PromptonRequestTextButton = (props: Props) => {
   }
 
   return (
-    <Button onClick={onClick} size={"sm"} variant={"secondary"} {...props}>
+    <Button
+      className="rounded-full"
+      onClick={onClick}
+      size={"sm"}
+      variant={"secondary"}
+      {...props}
+    >
       <div className="flex items-center space-x-2">
         <p>{"サポート"}</p>
         <GiftIcon className="w-4" />

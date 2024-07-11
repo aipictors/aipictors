@@ -443,7 +443,8 @@ export const NewImageForm = () => {
 
       const reservedAt =
         reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+          ? new Date(`${reservationDate}T${reservationTime}`).getTime() +
+            3600000 * 9
           : undefined
       const mainImageSha256 = await sha256(thumbnailBase64)
       const mainImageSize = await getSizeFromBase64(thumbnailBase64)
@@ -795,14 +796,14 @@ export const NewImageForm = () => {
                 setReservationDate(value)
                 const today = new Date()
                 today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
-                const threeDaysLater = new Date(today)
-                threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+                const daysLater = new Date(today)
+                daysLater.setDate(today.getDate() + 7) // 7日後の日付を設定
 
                 const changeDate = new Date(value)
                 changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
 
-                // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
-                if (changeDate >= today && changeDate <= threeDaysLater) {
+                // 入力された日付が今日または未来（今日から7日後まで）である場合のみ更新
+                if (changeDate >= today && changeDate <= daysLater) {
                   setDate(changeDate)
                   setIsHideTheme(false)
                 } else {
