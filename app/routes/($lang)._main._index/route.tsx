@@ -30,7 +30,8 @@ export const meta: MetaFunction = () => {
 
   return [
     { title: metaTitle },
-    { name: "description", content: "noindex" },
+    { name: "description", content: metaDescription },
+    { name: "robots", content: "noindex" },
     { name: "twitter:title", content: metaTitle },
     { name: "twitter:description", content: metaDescription },
     { name: "twitter:image", content: metaImage },
