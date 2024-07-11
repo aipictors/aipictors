@@ -1,3 +1,4 @@
+import React, { useReducer, useContext } from "react"
 import {
   Accordion,
   AccordionContent,
@@ -14,11 +15,7 @@ import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating
 import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
 import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
-import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
-import { useMutation, useQuery } from "@apollo/client/index"
-import {} from "@dnd-kit/core"
-import { useContext, useState } from "react"
-import type { Tag } from "@/_components/tag/tag-input"
+import { useMutation, useQuery } from "@apollo/client"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
@@ -28,10 +25,7 @@ import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-
 import { AuthContext } from "@/_contexts/auth-context"
 import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
 import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
-import {
-  getExtractInfoFromPNG,
-  type PNGInfo,
-} from "@/_utils/get-extract-info-from-png"
+import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { whiteListTagsQuery } from "@/_graphql/queries/tag/white-list-tags"
@@ -39,16 +33,12 @@ import { recommendedTagsFromPromptsQuery } from "@/_graphql/queries/tag/recommen
 import { Loader2Icon } from "lucide-react"
 import PaintCanvas from "@/_components/paint-canvas"
 import FullScreenContainer from "@/_components/full-screen-container"
-import React from "react"
-import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-input"
 import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
-import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
-import { uploadPublicVideo } from "@/_utils/upload-public-video"
 import { createWorkMutation } from "@/_graphql/mutations/create-work"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
@@ -56,7 +46,6 @@ import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
-import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
@@ -64,64 +53,56 @@ import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { config } from "@/config"
 import { useBeforeUnload } from "@remix-run/react"
+import {
+  initialState,
+  postFormReducer,
+} from "@/routes/($lang)._main.new.image/_types/post-form-reducer"
+import { uploadPublicVideo } from "@/_utils/upload-public-video"
 
 /**
  * 新規作品フォーム
  */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
-
-  if (authContext.isLoading) return null
-
-  if (!authContext || !authContext.userId) {
-    return "ログインしてください"
-  }
+  const [state, dispatch] = useReducer(postFormReducer, initialState)
 
   const selectImageFromImageGeneration = (
     selectedImage: string[],
     selectedIds: string[],
   ) => {
-    setSelectedImageGenerationIds(selectedIds)
-    setItems((prev) => {
-      if (config.post.maxImageCount < selectedImage.length + prev.length) {
-        toast(`最大${config.post.maxImageCount}までです`)
-        return [...prev]
-      }
-
-      // 既存の items の URL のセットを作成
-      const existingUrls = new Set(prev.map((item) => item.content))
-
-      // 新しく追加する items のフィルタリング
-      const newItems = selectedImage
-        .filter((image) => !existingUrls.has(image))
-        .map((image) => ({
+    dispatch({
+      type: "SET_SELECTED_IMAGE_GENERATION_IDS",
+      payload: selectedIds,
+    })
+    dispatch({
+      type: "SET_ITEMS",
+      payload: [
+        ...state.items,
+        ...selectedImage.map((image) => ({
           id: Math.floor(Math.random() * 10000),
           content: image,
-        }))
-
-      // 既存の items に新しい items を追加
-      return [...prev, ...newItems]
+        })),
+      ],
     })
-    setIsOpenImageGenerationDialog(false)
-    setSelectedImageGenerationIds([])
+    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: false })
   }
 
   const submitFromEditorCanvas = (base64: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.content === editTargetImageBase64
+    dispatch({
+      type: "SET_ITEMS",
+      payload: state.items.map((item) =>
+        item.content === state.editTargetImageBase64
           ? { ...item, content: base64 }
           : item,
       ),
-    )
+    })
 
-    if (items[0].content === editTargetImageBase64) {
-      // もし先頭のアイテムを書き換えたならサムネイル更新
-      setThumbnailBase64(base64)
+    if (state.items[0]?.content === state.editTargetImageBase64) {
+      dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
     }
 
-    setEditTargetImageBase64("")
-    setOgpBase64("")
+    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: "" })
+    dispatch({ type: "SET_OGP_BASE64", payload: "" })
   }
 
   const { data: token } = useQuery(viewerTokenQuery)
@@ -135,137 +116,27 @@ export const NewImageForm = () => {
     fetchPolicy: "cache-first",
   })
 
-  const [state, setState] = React.useState<boolean | null>(null)
-
-  const [pngInfo, setPngInfo] = useState<PNGInfo | null>(null)
-
-  const [date, setDate] = useState(new Date())
-
-  const [isHideTheme, setIsHideTheme] = useState(false)
-
-  const [isSensitiveWhiteTags, setIsSensitiveWhiteTags] = useState(false)
-
-  const [isDrawing, setIsDrawing] = React.useState(false)
-
-  const [isHovered, setIsHovered] = useState(false)
-
-  const [title, setTitle] = useState("")
-
-  const [enTitle, setEnTitle] = useState("")
-
-  const [caption, setCaption] = useState("")
-
-  const [enCaption, setEnCaption] = useState("")
-
-  const [themeId, setThemeId] = useState("")
-
-  const [editTargetImageBase64, setEditTargetImageBase64] = useState("")
-
-  const [albumId, setAlbumId] = useState("")
-
-  const [link, setLink] = useState("")
-
-  const [tags, setTags] = useState<Tag[]>([])
-
-  const [isTagEditable, setIsTagEditable] = useState(false)
-
-  const [isCommentsEditable, setIsCommentsEditable] = useState(false)
-
-  const [isAd, setIsAd] = useState(false)
-
-  const [ratingRestriction, setRatingRestriction] =
-    useState<IntrospectionEnum<"Rating">>("G")
-
-  const [accessType, setAccessType] =
-    useState<IntrospectionEnum<"AccessType">>("PUBLIC")
-
-  const [imageStyle, setImageStyle] =
-    useState<IntrospectionEnum<"ImageStyle">>("ILLUSTRATION")
-
-  const [aiUsed, setAiUsed] = useState("1")
-
-  const [reservationDate, setReservationDate] = useState("")
-
-  const [reservationTime, setReservationTime] = useState("")
-
-  const [isSetGenerationParams, setIsSetGenerationParams] = useState(true)
-
-  const [items, setItems] = useState<TSortableItem[]>([])
-
-  const [indexList, setIndexList] = useState<number[]>([])
-
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-
-  const [thumbnailBase64, setThumbnailBase64] = useState("")
-
-  const [ogpBase64, setOgpBase64] = useState("")
-
-  const [thumbnailPosX, setThumbnailPosX] = useState(0)
-
-  const [thumbnailPosY, setThumbnailPosY] = useState(0)
-
-  const [isThumbnailLandscape, setIsThumbnailLandscape] = useState(false) // サムネイルが横長かどうか
-
-  const [isCreatedWork, setIsCreatedWork] = useState(false) // 作品作成が完了したかどうか
-
-  const [isCreatingWork, setIsCreatingWork] = useState(false) // 作品作成中かどうか
-
-  const [uploadedWorkId, setUploadedWorkId] = useState("")
-
-  const [uploadedWorkUuid, setUploadedWorkUuid] = useState("")
-
-  const [progress, setProgress] = useState(0)
-
-  const [selectedImageGenerationIds, setSelectedImageGenerationIds] = useState<
-    string[]
-  >([])
-
-  const [isOpenImageGenerationDialog, setIsOpenImageGenerationDialog] =
-    useState(false)
-
   const { data: recommendedTagsRet, loading: recommendedTagsLoading } =
     useQuery(recommendedTagsFromPromptsQuery, {
       variables: {
-        prompts: pngInfo?.params.prompt ?? "girl",
+        prompts: state.pngInfo?.params.prompt ?? "girl",
       },
     })
-
-  const recommendedTags = recommendedTagsRet?.recommendedTagsFromPrompts?.map(
-    (tag) =>
-      ({
-        id: tag.id,
-        text: tag.name,
-      }) as Tag,
-  )
 
   const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
     variables: {
       where: {
-        isSensitive: isSensitiveWhiteTags,
+        isSensitive: state.isSensitiveWhiteTags,
       },
     },
     fetchPolicy: "cache-first",
   })
 
-  const whiteTags = whiteTagsRet?.whiteListTags
-    ? whiteTagsRet.whiteListTags.map(
-        (tag) =>
-          ({
-            id: tag.id,
-            text: tag.name,
-          }) as Tag,
-      )
-    : []
-
-  const {
-    data: theme,
-    loading: themeLoading,
-    error,
-  } = useQuery(dailyThemeQuery, {
+  const { data: theme, loading: themeLoading } = useQuery(dailyThemeQuery, {
     variables: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
-      day: date.getDate(), // getDate()は月の日にちを返す
+      year: state.date.getFullYear(),
+      month: state.date.getMonth() + 1,
+      day: state.date.getDate(),
       offset: 0,
       limit: 0,
     },
@@ -286,227 +157,128 @@ export const NewImageForm = () => {
     },
   })
 
-  const today = new Date().toISOString().split("T")[0] // YYYY-MM-DD 形式に変換
-
   const { data: appEventsResp } = useQuery(appEventsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
       limit: 1,
       where: {
-        startAt: today, // 今日の日付を使用
+        startAt: new Date().toISOString().split("T")[0],
       },
     },
   })
-
-  const appEvents = appEventsResp?.appEvents.length
-    ? appEventsResp.appEvents[0]
-    : null
-
-  const optionAlbums = albums?.albums
-    ? (albums?.albums.map((album) => ({
-        id: album.id,
-        name: album.title,
-      })) as AiModel[])
-    : []
-
-  const optionModels = aiModels
-    ? (aiModels?.aiModels.map((model) => ({
-        id: model.workModelId,
-        name: model.name,
-      })) as AiModel[])
-    : []
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isLoading,
   })
 
-  const currentPassType = pass?.viewer?.currentPass?.type
-
-  const isSubscribed =
-    currentPassType === "STANDARD" || currentPassType === "PREMIUM"
-
   const onCloseImageEffectTool = () => {
-    setEditTargetImageBase64("")
+    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: "" })
   }
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
 
-  const uploadVideo = async () => {
-    if (authContext.userId === null || videoFile === null) {
-      return ""
-    }
-    const videoUrl = await uploadPublicVideo(videoFile, token?.viewer?.token)
-    return videoUrl
-  }
-
-  const uploadImages = async () => {
-    if (authContext.userId === null) {
-      return []
-    }
-
-    const images = items.map((item) => item.content)
-
-    const uploadImages = images.map(async (image) => {
-      const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
-      return imageUrl
-    })
-
-    const imageUrls = await Promise.all(uploadImages)
-
-    return imageUrls
-  }
-
-  const successUploadedProcess = () => {
-    setIsCreatingWork(false)
-    setIsCreatedWork(true)
-    toast("作品を投稿しました")
-  }
-
-  const PROGRESS_STEPS = {
-    AUTH_CHECK: 5,
-    TITLE_CHECK: 10,
-    CAPTION_CHECK: 15,
-    EN_TITLE_CHECK: 20,
-    EN_CAPTION_CHECK: 25,
-    FILE_CHECK: 30,
-    RESERVATION_CHECK: 35,
-    THUMBNAIL_RESIZE: 40,
-    UPLOAD_THUMBNAILS: 50,
-    VIDEO_PROCESSING: 60,
-    IMAGE_PROCESSING: 60,
-    WORK_CREATION: 80,
-    SUCCESS: 100,
-    FAILURE: 0,
-  }
-
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        // 変更がある場合のみ警告を表示
-        if (state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
-          event.returnValue = confirmationMessage // 標準
-          return confirmationMessage // Chrome用
-        }
-      },
-      [state],
-    ),
-  )
-
   const onDateInput = (value: string) => {
-    setReservationDate(value)
+    dispatch({ type: "SET_RESERVATION_DATE", payload: value })
     const today = new Date()
-    today.setHours(0, 0, 0, 0) // 今日の日付の始まりに時間をセット
+    today.setHours(0, 0, 0, 0)
     const threeDaysLater = new Date(today)
-    threeDaysLater.setDate(today.getDate() + 3) // 3日後の日付を設定
+    threeDaysLater.setDate(today.getDate() + 7)
 
     const changeDate = new Date(value)
-    changeDate.setHours(0, 0, 0, 0) // 入力された日付の時間をリセット
+    changeDate.setHours(0, 0, 0, 0)
 
-    // 入力された日付が今日または未来（今日から3日後まで）である場合のみ更新
     if (changeDate >= today && changeDate <= threeDaysLater) {
-      setDate(changeDate)
-      setIsHideTheme(false)
+      dispatch({ type: "SET_DATE", payload: changeDate })
+      dispatch({ type: "SET_HAS_NO_THEME", payload: false })
     } else {
-      setIsHideTheme(true)
+      dispatch({ type: "SET_HAS_NO_THEME", payload: true })
     }
-    setThemeId("")
+    dispatch({ type: "SET_THEME_ID", payload: "" })
   }
 
   const onChangeTheme = (value: boolean) => {
     if (value) {
-      setThemeId(theme?.dailyTheme?.id ?? "")
-      // タグをセット
-      setTags([
-        ...tags,
-        {
-          id: 9999,
-          text: theme?.dailyTheme?.title,
-        } as unknown as Tag,
-      ])
+      dispatch({ type: "SET_THEME_ID", payload: theme?.dailyTheme?.id ?? "" })
+      dispatch({
+        type: "ADD_TAG",
+        payload: { id: "9999", text: theme?.dailyTheme?.title ?? "" },
+      })
     } else {
-      setThemeId("")
-      // タグを削除
-      const newTags = tags.filter(
-        (tag) => tag.text !== theme?.dailyTheme?.title,
-      )
-      setTags(newTags)
+      dispatch({ type: "SET_THEME_ID", payload: "" })
+      dispatch({
+        type: "SET_TAGS",
+        payload: state.tags.filter(
+          (tag) => tag.text !== theme?.dailyTheme?.title,
+        ),
+      })
     }
   }
 
-  /**
-   * 投稿処理
-   * @returns
-   */
   const onPost = async () => {
     const uploadedImageUrls = []
     try {
-      setIsCreatingWork(true)
-      setProgress(PROGRESS_STEPS.AUTH_CHECK)
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: true })
+      dispatch({ type: "SET_PROGRESS", payload: 5 })
 
       if (!authContext || !authContext.userId) {
         toast("ログインしてください")
         return
       }
-      setProgress(PROGRESS_STEPS.TITLE_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      if (title === "") {
+      if (state.title === "") {
         toast("タイトルを入力してください")
         return
       }
-      if (title.length > 120) {
+      if (state.title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
-      setProgress(PROGRESS_STEPS.CAPTION_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 15 })
 
-      if (caption.length > 3000) {
+      if (state.caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
-      setProgress(PROGRESS_STEPS.EN_TITLE_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      if (enTitle.length > 120) {
+      if (state.enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
-      setProgress(PROGRESS_STEPS.EN_CAPTION_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 25 })
 
-      if (enCaption.length > 3000) {
+      if (state.enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
-      setProgress(PROGRESS_STEPS.FILE_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 30 })
 
-      if (videoFile === null && items.length === 0) {
+      if (state.videoFile === null && state.items.length === 0) {
         toast("画像もしくは動画を選択してください")
         return
       }
-      setProgress(PROGRESS_STEPS.RESERVATION_CHECK)
+      dispatch({ type: "SET_PROGRESS", payload: 35 })
 
       if (
-        (reservationDate !== "" && reservationTime === "") ||
-        (reservationDate === "" && reservationTime !== "")
+        (state.reservationDate !== "" && state.reservationTime === "") ||
+        (state.reservationDate === "" && state.reservationTime !== "")
       ) {
         toast("予約投稿の時間を入力してください")
         return
       }
-      setProgress(PROGRESS_STEPS.THUMBNAIL_RESIZE)
+      dispatch({ type: "SET_PROGRESS", payload: 40 })
 
-      const smallThumbnail = isThumbnailLandscape
-        ? await resizeImage(thumbnailBase64, 400, 0, "webp")
-        : await resizeImage(thumbnailBase64, 0, 400, "webp")
-      const largeThumbnail = isThumbnailLandscape
-        ? await resizeImage(thumbnailBase64, 600, 0, "webp")
-        : await resizeImage(thumbnailBase64, 0, 600, "webp")
-      setProgress(PROGRESS_STEPS.UPLOAD_THUMBNAILS)
+      const smallThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(state.thumbnailBase64, 400, 0, "webp")
+        : await resizeImage(state.thumbnailBase64, 0, 400, "webp")
+      const largeThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(state.thumbnailBase64, 600, 0, "webp")
+        : await resizeImage(state.thumbnailBase64, 0, 600, "webp")
+      dispatch({ type: "SET_PROGRESS", payload: 50 })
 
-      const smallThumbnailFileName = `${createRandomString(30)}.webp`
-      const largeThumbnailFileName = `${createRandomString(30)}.webp`
-      const ogpImageFileName = `${createRandomString(30)}.webp`
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
         token?.viewer?.token,
@@ -517,58 +289,72 @@ export const NewImageForm = () => {
         token?.viewer?.token,
       )
       uploadedImageUrls.push(largeThumbnailUrl)
-      const ogpBase64Url = ogpBase64
-        ? await uploadPublicImage(ogpBase64, token?.viewer?.token)
+      const ogpBase64Url = state.ogpBase64
+        ? await uploadPublicImage(state.ogpBase64, token?.viewer?.token)
         : ""
       if (ogpBase64Url !== "") {
         uploadedImageUrls.push(ogpBase64Url)
       }
 
       const reservedAt =
-        reservationDate !== "" && reservationTime !== ""
-          ? new Date(`${reservationDate}T${reservationTime}`).getTime()
+        state.reservationDate !== "" && state.reservationTime !== ""
+          ? new Date(
+              `${state.reservationDate}T${state.reservationTime}`,
+            ).getTime() +
+            3600000 * 9
           : undefined
-      const mainImageSha256 = await sha256(thumbnailBase64)
-      const mainImageSize = await getSizeFromBase64(thumbnailBase64)
-      setProgress(PROGRESS_STEPS.VIDEO_PROCESSING)
+      const mainImageSha256 = await sha256(state.thumbnailBase64)
+      const mainImageSize = await getSizeFromBase64(state.thumbnailBase64)
+      dispatch({ type: "SET_PROGRESS", payload: 60 })
 
-      if (videoFile) {
+      if (state.videoFile) {
+        const uploadVideo = async () => {
+          if (authContext.userId === null || state.videoFile === null) {
+            return ""
+          }
+          const videoUrl = await uploadPublicVideo(
+            state.videoFile,
+            token?.viewer?.token,
+          )
+          return videoUrl
+        }
+
         const videoUrl = await uploadVideo()
         const work = await createWork({
           variables: {
             input: {
-              title: title,
-              entitle: enTitle,
-              explanation: caption,
-              enExplanation: enCaption,
-              rating: ratingRestriction,
-              prompt: pngInfo?.params.prompt ?? "",
-              negativePrompt: pngInfo?.params.negativePrompt ?? "",
-              seed: pngInfo?.params.seed ?? "",
-              sampler: pngInfo?.params.sampler ?? "",
-              strength: pngInfo?.params.strength ?? "",
-              noise: pngInfo?.params.noise ?? "",
-              modelName: pngInfo?.params.model ?? "",
-              modelHash: pngInfo?.params.modelHash ?? "",
+              title: state.title,
+              entitle: state.enTitle,
+              explanation: state.caption,
+              enExplanation: state.enCaption,
+              rating: state.ratingRestriction,
+              prompt: state.pngInfo?.params.prompt ?? "",
+              negativePrompt: state.pngInfo?.params.negativePrompt ?? "",
+              seed: state.pngInfo?.params.seed ?? "",
+              sampler: state.pngInfo?.params.sampler ?? "",
+              strength: state.pngInfo?.params.strength ?? "",
+              noise: state.pngInfo?.params.noise ?? "",
+              modelName: state.pngInfo?.params.model ?? "",
+              modelHash: state.pngInfo?.params.modelHash ?? "",
               otherGenerationParams: "",
-              pngInfo: pngInfo?.src ?? "",
-              imageStyle: imageStyle,
-              relatedUrl: link,
-              tags: tags.map((tag) => tag.text),
-              isTagEditable: isTagEditable,
-              isCommentEditable: isCommentsEditable,
-              thumbnailPosition: isThumbnailLandscape
-                ? thumbnailPosX
-                : thumbnailPosY,
-              modelId: aiUsed,
+              pngInfo: state.pngInfo?.src ?? "",
+              imageStyle: state.imageStyle,
+              relatedUrl: state.link,
+              tags: state.tags.map((tag) => tag.text),
+              isTagEditable: state.isTagEditable,
+              isCommentEditable: state.isCommentsEditable,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: state.aiUsed,
               type: "VIDEO",
-              subjectId: themeId,
-              albumId: albumId,
-              isPromotion: isAd,
+              subjectId: state.themeId,
+              albumId: state.albumId,
+              isPromotion: state.isAd,
               reservedAt: reservedAt,
               mainImageSha256: mainImageSha256,
-              accessType: accessType,
-              imageUrls: [largeThumbnailFileName],
+              accessType: state.accessType,
+              imageUrls: [largeThumbnailUrl],
               smallThumbnailImageURL: smallThumbnailUrl,
               smallThumbnailImageWidth: smallThumbnail.width,
               smallThumbnailImageHeight: smallThumbnail.height,
@@ -579,7 +365,7 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
-              accessGenerationType: isSetGenerationParams
+              accessGenerationType: state.isSetGenerationParams
                 ? "PUBLIC"
                 : "PRIVATE",
             },
@@ -587,15 +373,21 @@ export const NewImageForm = () => {
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data?.createWork.id)
+          dispatch({
+            type: "SET_UPLOADED_WORK_ID",
+            payload: work.data?.createWork.id,
+          })
           if (work.data?.createWork.accessType === "LIMITED") {
-            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
+            dispatch({
+              type: "SET_UPLOADED_WORK_UUID",
+              payload: work.data?.createWork.uuid ?? "",
+            })
           }
         }
-        setProgress(PROGRESS_STEPS.WORK_CREATION)
+        dispatch({ type: "SET_PROGRESS", payload: 80 })
       }
 
-      if (videoFile === null && items.length !== 0) {
+      if (state.videoFile === null && state.items.length !== 0) {
         const imageUrls = await uploadImages()
         if (imageUrls.length === 0) {
           toast("画像のアップロードに失敗しました")
@@ -604,37 +396,37 @@ export const NewImageForm = () => {
         const work = await createWork({
           variables: {
             input: {
-              title: title,
-              entitle: enTitle,
-              explanation: caption,
-              enExplanation: enCaption,
-              rating: ratingRestriction,
-              prompt: pngInfo?.params.prompt ?? "",
-              negativePrompt: pngInfo?.params.negativePrompt ?? "",
-              seed: pngInfo?.params.seed ?? "",
-              sampler: pngInfo?.params.sampler ?? "",
-              strength: pngInfo?.params.strength ?? "",
-              noise: pngInfo?.params.noise ?? "",
-              modelName: pngInfo?.params.model ?? "",
-              modelHash: pngInfo?.params.modelHash ?? "",
+              title: state.title,
+              entitle: state.enTitle,
+              explanation: state.caption,
+              enExplanation: state.enCaption,
+              rating: state.ratingRestriction,
+              prompt: state.pngInfo?.params.prompt ?? "",
+              negativePrompt: state.pngInfo?.params.negativePrompt ?? "",
+              seed: state.pngInfo?.params.seed ?? "",
+              sampler: state.pngInfo?.params.sampler ?? "",
+              strength: state.pngInfo?.params.strength ?? "",
+              noise: state.pngInfo?.params.noise ?? "",
+              modelName: state.pngInfo?.params.model ?? "",
+              modelHash: state.pngInfo?.params.modelHash ?? "",
               otherGenerationParams: "",
-              pngInfo: pngInfo?.src ?? "",
-              imageStyle: imageStyle,
-              relatedUrl: link,
-              tags: tags.map((tag) => tag.text),
-              isTagEditable: isTagEditable,
-              isCommentEditable: isCommentsEditable,
-              thumbnailPosition: isThumbnailLandscape
-                ? thumbnailPosX
-                : thumbnailPosY,
-              modelId: aiUsed,
+              pngInfo: state.pngInfo?.src ?? "",
+              imageStyle: state.imageStyle,
+              relatedUrl: state.link,
+              tags: state.tags.map((tag) => tag.text),
+              isTagEditable: state.isTagEditable,
+              isCommentEditable: state.isCommentsEditable,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: state.aiUsed,
               type: "WORK",
-              subjectId: themeId,
-              albumId: albumId,
-              isPromotion: isAd,
+              subjectId: state.themeId,
+              albumId: state.albumId,
+              isPromotion: state.isAd,
               reservedAt: reservedAt,
               mainImageSha256: mainImageSha256,
-              accessType: accessType,
+              accessType: state.accessType,
               imageUrls: imageUrls,
               smallThumbnailImageURL: smallThumbnailUrl,
               smallThumbnailImageWidth: smallThumbnail.width,
@@ -646,7 +438,7 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
-              accessGenerationType: isSetGenerationParams
+              accessGenerationType: state.isSetGenerationParams
                 ? "PUBLIC"
                 : "PRIVATE",
             },
@@ -654,16 +446,24 @@ export const NewImageForm = () => {
         })
 
         if (work.data?.createWork) {
-          setUploadedWorkId(work.data?.createWork.id)
+          dispatch({
+            type: "SET_UPLOADED_WORK_ID",
+            payload: work.data?.createWork.id,
+          })
           if (work.data?.createWork.accessType === "LIMITED") {
-            setUploadedWorkUuid(work.data?.createWork.uuid ?? "")
+            dispatch({
+              type: "SET_UPLOADED_WORK_UUID",
+              payload: work.data?.createWork.uuid ?? "",
+            })
           }
         }
-        setProgress(PROGRESS_STEPS.WORK_CREATION)
+        dispatch({ type: "SET_PROGRESS", payload: 80 })
       }
 
-      successUploadedProcess()
-      setProgress(PROGRESS_STEPS.SUCCESS)
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
+      dispatch({ type: "SET_IS_CREATED_WORK", payload: true })
+      toast("作品を投稿しました")
+      dispatch({ type: "SET_PROGRESS", payload: 100 })
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -672,14 +472,12 @@ export const NewImageForm = () => {
         return deleteUploadedImage(url)
       })
       await Promise.all(deleteImages)
-      setProgress(PROGRESS_STEPS.FAILURE) // reset progress on failure
-    } finally {
-      setIsCreatingWork(false)
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
     }
   }
 
   const onInputPngInfo = () => {
-    // ファイル選択をさせて、開いた画像からPNG情報を取得してセットする
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/png"
@@ -690,37 +488,35 @@ export const NewImageForm = () => {
       }
       const pngInfo = await getExtractInfoFromPNG(file)
       if (pngInfo.src !== "") {
-        setPngInfo(pngInfo)
+        dispatch({ type: "SET_PNG_INFO", payload: pngInfo })
         toast("PNG情報を取得しました")
         return
       }
-      setPngInfo(null)
+      dispatch({ type: "SET_PNG_INFO", payload: null })
       toast("PNG情報を取得できませんでした")
     }
     input.click()
   }
 
-  const setRating = (
-    rating: React.SetStateAction<"G" | "R15" | "R18" | "R18G">,
-  ) => {
-    setRatingRestriction(rating)
+  const setRating = (rating: PostFormState["ratingRestriction"]) => {
+    dispatch({ type: "SET_RATING_RESTRICTION", payload: rating })
     if (rating === "R18" || rating === "R18G") {
-      setIsSensitiveWhiteTags(true)
+      dispatch({ type: "SET_IS_SENSITIVE_WHITE_TAGS", payload: true })
     } else {
-      setIsSensitiveWhiteTags(false)
+      dispatch({ type: "SET_IS_SENSITIVE_WHITE_TAGS", payload: false })
     }
   }
 
   const recommendedNotUsedTags = () => {
     return (
-      recommendedTags?.filter(
-        (tag) => !tags.map((tag) => tag.text).includes(tag.text),
+      recommendedTagsRet?.recommendedTagsFromPrompts?.filter(
+        (tag) => !state.tags.map((t) => t.text).includes(tag.name),
       ) ?? []
     )
   }
 
   const selectedFilesSizeText = () => {
-    const totalBytes = items
+    const totalBytes = state.items
       .map((item) => item.content)
       .reduce((acc, imageBase64) => {
         const byteLength = new TextEncoder().encode(imageBase64).length
@@ -734,48 +530,57 @@ export const NewImageForm = () => {
   }
 
   const selectedImagesCountText = () => {
-    return `イラスト${items.map((item) => item.content).length}枚`
+    return `イラスト${state.items.map((item) => item.content).length}枚`
   }
 
-  const whiteListNotSelectedTags = whiteTags.filter(
-    (tag) => !tags.map((tag) => tag.text).includes(tag.text),
-  )
+  const whiteListNotSelectedTags =
+    whiteTagsRet?.whiteListTags?.filter(
+      (tag) => !state.tags.map((t) => t.text).includes(tag.name),
+    ) ?? []
 
   const onStartMouseDrawing = (content: string) => {
-    setEditTargetImageBase64(content)
+    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: content })
   }
 
-  const onVideoFileChange = (videoFile: File | null) => {
-    setVideoFile(videoFile)
+  const onVideoFileChange = (videoFile: PostFormState["videoFile"]) => {
+    dispatch({ type: "SET_VIDEO_FILE", payload: videoFile })
   }
 
   const onChangeAccessTypeImageGenerationParameters = () => {
-    setIsSetGenerationParams((prev) => !prev)
+    dispatch({
+      type: "SET_IS_SET_GENERATION_PARAMS",
+      payload: !state.isSetGenerationParams,
+    })
   }
 
   const onOpenImageGenerationDialog = () => {
-    setIsOpenImageGenerationDialog(true)
+    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: true })
   }
 
-  const onSetItems = (items: TSortableItem[]) => {
-    setItems(items)
-    if (items.map((item) => item.content).length === 0) {
-      setPngInfo(null)
-    }
-    setState(true)
-  }
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state.state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state.state],
+    ),
+  )
 
   return (
     <>
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center bg-gray-800 ${
-              isHovered ? "border-2 border-white border-dashed" : ""
+              state.isHovered ? "border-2 border-white border-dashed" : ""
             }`}
           >
-            {items.map((item) => item.content).length !== 0 && (
+            {state.items.length !== 0 && (
               <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
                 <div className="flex space-x-4 text-white">
                   <div className="flex">{selectedImagesCountText()}</div>
@@ -784,36 +589,56 @@ export const NewImageForm = () => {
               </div>
             )}
             <DraggableImagesAndVideoInput
-              indexList={indexList}
-              items={items}
-              videoFile={videoFile}
-              setItems={onSetItems}
+              indexList={state.indexList}
+              items={state.items}
+              videoFile={state.videoFile}
+              setItems={(items) =>
+                dispatch({ type: "SET_ITEMS", payload: items })
+              }
               maxItemsCount={config.post.maxImageCount}
-              setIndexList={setIndexList}
-              onChangePngInfo={setPngInfo}
+              setIndexList={(indexList) =>
+                dispatch({ type: "SET_INDEX_LIST", payload: indexList })
+              }
+              onChangePngInfo={(pngInfo) =>
+                dispatch({ type: "SET_PNG_INFO", payload: pngInfo })
+              }
               onVideoChange={onVideoFileChange}
               onMosaicButtonClick={onStartMouseDrawing}
-              onChangeItems={setItems}
-              setThumbnailBase64={setThumbnailBase64}
-              setOgpBase64={setOgpBase64}
-              setIsThumbnailLandscape={setIsThumbnailLandscape}
+              setThumbnailBase64={(base64) =>
+                dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
+              }
+              setOgpBase64={(base64) =>
+                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
+              }
+              setIsThumbnailLandscape={(isLandscape) =>
+                dispatch({
+                  type: "SET_IS_THUMBNAIL_LANDSCAPE",
+                  payload: isLandscape,
+                })
+              }
             />
           </div>
-          {thumbnailBase64 !== "" && (
+          {state.thumbnailBase64 !== "" && (
             <ThumbnailPositionAdjustInput
-              isThumbnailLandscape={isThumbnailLandscape}
-              thumbnailBase64={thumbnailBase64}
-              thumbnailPosX={thumbnailPosX}
-              thumbnailPosY={thumbnailPosY}
-              setThumbnailPosX={setThumbnailPosX}
-              setThumbnailPosY={setThumbnailPosY}
+              isThumbnailLandscape={state.isThumbnailLandscape}
+              thumbnailBase64={state.thumbnailBase64}
+              thumbnailPosX={state.thumbnailPosX}
+              thumbnailPosY={state.thumbnailPosY}
+              setThumbnailPosX={(posX) =>
+                dispatch({ type: "SET_THUMBNAIL_POS_X", payload: posX })
+              }
+              setThumbnailPosY={(posY) =>
+                dispatch({ type: "SET_THUMBNAIL_POS_Y", payload: posY })
+              }
             />
           )}
-          {thumbnailBase64 !== "" && (
+          {state.thumbnailBase64 !== "" && (
             <OgpInput
-              imageBase64={thumbnailBase64}
-              setOgpBase64={setOgpBase64}
-              ogpBase64={ogpBase64}
+              imageBase64={state.thumbnailBase64}
+              setOgpBase64={(base64) =>
+                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
+              }
+              ogpBase64={state.ogpBase64}
             />
           )}
           <div className="flex space-x-2">
@@ -833,8 +658,16 @@ export const NewImageForm = () => {
             </Button>
           </div>
           <ScrollArea className="p-2">
-            <TitleInput onChange={setTitle} />
-            <CaptionInput setCaption={setCaption} />
+            <TitleInput
+              onChange={(title) =>
+                dispatch({ type: "SET_TITLE", payload: title })
+              }
+            />
+            <CaptionInput
+              setCaption={(caption) =>
+                dispatch({ type: "SET_CAPTION", payload: caption })
+              }
+            />
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
@@ -843,26 +676,53 @@ export const NewImageForm = () => {
                   </Button>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
-                  <TitleInput label={"英語タイトル"} onChange={setEnTitle} />
+                  <TitleInput
+                    label={"英語タイトル"}
+                    onChange={(enTitle) =>
+                      dispatch({ type: "SET_EN_TITLE", payload: enTitle })
+                    }
+                  />
                   <CaptionInput
                     label={"英語キャプション"}
-                    setCaption={setEnCaption}
+                    setCaption={(enCaption) =>
+                      dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
+                    }
                   />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <RatingInput rating={ratingRestriction} setRating={setRating} />
-            <ViewInput accessType={accessType} setAccessType={setAccessType} />
-            <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
-            <ModelInput
-              model={aiUsed}
-              models={optionModels}
-              setModel={setAiUsed}
+            <RatingInput
+              rating={state.ratingRestriction}
+              setRating={setRating}
             />
-            {pngInfo && (
+            <ViewInput
+              accessType={state.accessType}
+              setAccessType={(accessType) =>
+                dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
+              }
+            />
+            <TasteInput
+              imageStyle={state.imageStyle}
+              setImageStyle={(imageStyle) =>
+                dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+              }
+            />
+            <ModelInput
+              model={state.aiUsed}
+              models={
+                aiModels?.aiModels.map((model) => ({
+                  id: model.workModelId,
+                  name: model.name,
+                })) ?? []
+              }
+              setModel={(model) =>
+                dispatch({ type: "SET_AI_USED", payload: model })
+              }
+            />
+            {state.pngInfo && (
               <div className="flex items-center">
                 <Checkbox
-                  checked={isSetGenerationParams}
+                  checked={state.isSetGenerationParams}
                   onCheckedChange={onChangeAccessTypeImageGenerationParameters}
                   id="set-generation-check"
                 />
@@ -874,7 +734,7 @@ export const NewImageForm = () => {
                 </label>
               </div>
             )}
-            {pngInfo && isSetGenerationParams && (
+            {state.pngInfo && state.isSetGenerationParams && (
               <Accordion type="single" collapsible>
                 <AccordionItem value="setting">
                   <AccordionTrigger>
@@ -884,67 +744,97 @@ export const NewImageForm = () => {
                   </AccordionTrigger>
                   <AccordionContent className="space-y-2">
                     <GenerationParamsInput
-                      pngInfo={pngInfo}
-                      setPngInfo={setPngInfo}
+                      pngInfo={state.pngInfo}
+                      setPngInfo={(pngInfo) =>
+                        dispatch({ type: "SET_PNG_INFO", payload: pngInfo })
+                      }
                     />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
             )}
             <DateInput
-              date={reservationDate}
-              time={reservationTime}
+              date={state.reservationDate}
+              time={state.reservationTime}
               setDate={onDateInput}
-              setTime={setReservationTime}
+              setTime={(time) =>
+                dispatch({ type: "SET_RESERVATION_TIME", payload: time })
+              }
             />
-            {!isHideTheme && (
+            {!state.hasNoTheme && (
               <ThemeInput
                 onChange={onChangeTheme}
                 title={theme?.dailyTheme?.title ?? ""}
                 isLoading={themeLoading}
               />
             )}
-
-            {appEvents && (
+            {appEventsResp?.appEvents.length > 0 && (
               <EventInput
-                tags={tags}
-                setTags={setTags}
-                eventName={appEvents?.title ?? ""}
-                eventDescription={appEvents?.description ?? ""}
-                eventTag={appEvents?.tag ?? ""}
-                endAt={appEvents?.endAt ?? 0}
-                slug={appEvents?.slug ?? ""}
+                tags={state.tags}
+                setTags={(tags) =>
+                  dispatch({ type: "SET_TAGS", payload: tags })
+                }
+                eventName={appEventsResp?.appEvents[0]?.title ?? ""}
+                eventDescription={
+                  appEventsResp?.appEvents[0]?.description ?? ""
+                }
+                eventTag={appEventsResp?.appEvents[0]?.tag ?? ""}
+                endAt={appEventsResp?.appEvents[0]?.endAt ?? 0}
+                slug={appEventsResp?.appEvents[0]?.slug ?? ""}
               />
             )}
-
             <TagsInput
               whiteListTags={whiteListNotSelectedTags}
-              tags={tags}
-              setTags={setTags}
+              tags={state.tags}
+              setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
               recommendedTags={recommendedNotUsedTags()}
             />
-
             {recommendedTagsLoading && (
               <Loader2Icon className="h-4 w-4 animate-spin" />
             )}
             <CategoryEditableInput
-              isChecked={isTagEditable}
-              onChange={setIsTagEditable}
+              isChecked={state.isTagEditable}
+              onChange={(isTagEditable) =>
+                dispatch({
+                  type: "SET_IS_TAG_EDITABLE",
+                  payload: isTagEditable,
+                })
+              }
             />
             <CommentsEditableInput
-              isChecked={isCommentsEditable}
-              onChange={setIsCommentsEditable}
+              isChecked={state.isCommentsEditable}
+              onChange={(isCommentsEditable) =>
+                dispatch({
+                  type: "SET_IS_COMMENTS_EDITABLE",
+                  payload: isCommentsEditable,
+                })
+              }
             />
             <AlbumInput
-              album={albumId}
-              albums={optionAlbums}
-              setAlbumId={setAlbumId}
+              album={state.albumId}
+              albums={
+                albums?.albums.map((album) => ({
+                  id: album.id,
+                  name: album.title,
+                })) ?? []
+              }
+              setAlbumId={(albumId) =>
+                dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+              }
             />
-            <RelatedLinkInput link={link} onChange={setLink} />
+            <RelatedLinkInput
+              link={state.link}
+              onChange={(link) => dispatch({ type: "SET_LINK", payload: link })}
+            />
             <AdWorkInput
-              isSubscribed={isSubscribed}
-              isChecked={isAd}
-              onChange={setIsAd}
+              isSubscribed={
+                pass?.viewer?.currentPass?.type === "STANDARD" ||
+                pass?.viewer?.currentPass?.type === "PREMIUM"
+              }
+              isChecked={state.isAd}
+              onChange={(isAd) =>
+                dispatch({ type: "SET_IS_AD", payload: isAd })
+              }
             />
           </ScrollArea>
         </div>
@@ -954,39 +844,53 @@ export const NewImageForm = () => {
           </Button>
         </div>
       </div>
-      {editTargetImageBase64 !== "" && (
+      {state.editTargetImageBase64 !== "" && (
         <FullScreenContainer
           onClose={onCloseImageEffectTool}
-          enabledScroll={isDrawing}
+          enabledScroll={state.isDrawing}
         >
           <PaintCanvas
-            onChangeSetDrawing={setIsDrawing}
-            imageUrl={editTargetImageBase64}
+            onChangeSetDrawing={(isDrawing) =>
+              dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
+            }
+            imageUrl={state.editTargetImageBase64}
             isMosaicMode={true}
             isShowSubmitButton={true}
             onSubmit={submitFromEditorCanvas}
           />
         </FullScreenContainer>
       )}
-
       <SuccessCreatedWorkDialog
-        isOpen={isCreatedWork}
-        title={title}
-        imageBase64={thumbnailBase64}
-        workId={uploadedWorkId}
-        uuid={uploadedWorkUuid}
+        isOpen={state.isCreatedWork}
+        title={state.title}
+        imageBase64={state.thumbnailBase64}
+        workId={state.uploadedWorkId}
+        uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
-        createdAt={new Date(`${reservationDate}T${reservationTime}`).getTime()}
+        createdAt={new Date(
+          `${state.reservationDate}T${state.reservationTime}`,
+        ).getTime()}
       />
-
-      <CreatingWorkDialog progress={progress} isOpen={isCreatingWork} />
-
+      <CreatingWorkDialog
+        progress={state.progress}
+        isOpen={state.isCreatingWork}
+      />
       <ImageGenerationSelectorDialog
-        isOpen={isOpenImageGenerationDialog}
-        setIsOpen={setIsOpenImageGenerationDialog}
+        isOpen={state.isOpenImageGenerationDialog}
+        setIsOpen={(isOpen) =>
+          dispatch({
+            type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
+            payload: isOpen,
+          })
+        }
         onSubmitted={selectImageFromImageGeneration}
-        selectedIds={selectedImageGenerationIds}
-        setSelectIds={setSelectedImageGenerationIds}
+        selectedIds={state.selectedImageGenerationIds}
+        setSelectIds={(selectedIds) =>
+          dispatch({
+            type: "SET_SELECTED_IMAGE_GENERATION_IDS",
+            payload: selectedIds,
+          })
+        }
       />
     </>
   )
