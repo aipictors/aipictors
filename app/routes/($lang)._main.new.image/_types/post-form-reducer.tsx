@@ -159,6 +159,8 @@ export type Action =
   | { type: "ADD_SELECTED_IMAGE_GENERATION_ID"; payload: string }
   | { type: "REMOVE_SELECTED_IMAGE_GENERATION_ID"; payload: string }
   | { type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"; payload: boolean }
+  | { type: "SET_ITEMS"; payload: InferInput<typeof inputPostItem>[] }
+  | { type: "SET_TAGS"; payload: { id: string; text: string }[] }
   | { type: "RESET" }
 
 /** 初期状態 */
