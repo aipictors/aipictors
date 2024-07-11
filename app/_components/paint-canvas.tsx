@@ -746,6 +746,7 @@ const PaintCanvas: React.FC<IProps> = ({
                   // 合成したキャンバスからDataURLを取得
                   const dataUrl = compositeCanvas.toDataURL(
                     `image/${extension ?? "webp"}`,
+                    1.0,
                   )
 
                   // onSubmit関数を呼び出し、DataURLを渡す

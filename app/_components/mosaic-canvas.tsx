@@ -39,8 +39,9 @@ const MosaicCanvas = ({
 
       // 長辺の1/100をモザイクサイズとする
       const longestSide = Math.max(image.width, image.height)
-      const effectiveMosaicSize = mosaicSize || Math.floor(longestSide / 100)
-
+      const effectiveMosaicSize = Math.ceil(
+        Math.max(image.width, image.height) / 100,
+      )
       context.drawImage(image, 0, 0)
 
       // モザイク処理を改善
