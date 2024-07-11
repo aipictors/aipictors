@@ -15,7 +15,7 @@ import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating
 import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
 import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
 import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
 import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
@@ -55,9 +55,12 @@ import { config } from "@/config"
 import { useBeforeUnload } from "@remix-run/react"
 import {
   initialState,
+  type inputPostItem,
   postFormReducer,
+  type PostFormState,
 } from "@/routes/($lang)._main.new.image/_types/post-form-reducer"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
+import type { Tag } from "@/_components/tag/tag-input"
 
 /**
  * 新規作品フォーム
@@ -313,7 +316,7 @@ export const NewImageForm = () => {
             return ""
           }
           const videoUrl = await uploadPublicVideo(
-            state.videoFile,
+            state.videoFile as File,
             token?.viewer?.token,
           )
           return videoUrl
@@ -388,6 +391,26 @@ export const NewImageForm = () => {
       }
 
       if (state.videoFile === null && state.items.length !== 0) {
+        const uploadImages = async () => {
+          if (authContext.userId === null) {
+            return []
+          }
+
+          const images = state.items.map((item) => item.content)
+
+          const imageUrls = await Promise.all(
+            images.map(async (image) => {
+              const imageUrl = await uploadPublicImage(
+                image,
+                token?.viewer?.token,
+              )
+              return imageUrl
+            }),
+          )
+
+          return imageUrls
+        }
+
         const imageUrls = await uploadImages()
         if (imageUrls.length === 0) {
           toast("画像のアップロードに失敗しました")
@@ -472,6 +495,9 @@ export const NewImageForm = () => {
         return deleteUploadedImage(url)
       })
       await Promise.all(deleteImages)
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
+    } finally {
       dispatch({ type: "SET_PROGRESS", payload: 0 })
       dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
     }
@@ -591,13 +617,25 @@ export const NewImageForm = () => {
             <DraggableImagesAndVideoInput
               indexList={state.indexList}
               items={state.items}
-              videoFile={state.videoFile}
+              videoFile={state.videoFile as File}
               setItems={(items) =>
-                dispatch({ type: "SET_ITEMS", payload: items })
+                dispatch({
+                  type: "SET_ITEMS",
+                  payload: items as unknown as (typeof inputPostItem)[],
+                })
+              }
+              onChangeItems={(items) =>
+                dispatch({
+                  type: "SET_ITEMS",
+                  payload: items as unknown as (typeof inputPostItem)[],
+                })
               }
               maxItemsCount={config.post.maxImageCount}
               setIndexList={(indexList) =>
-                dispatch({ type: "SET_INDEX_LIST", payload: indexList })
+                dispatch({
+                  type: "SET_INDEX_LIST",
+                  payload: indexList as number[],
+                })
               }
               onChangePngInfo={(pngInfo) =>
                 dispatch({ type: "SET_PNG_INFO", payload: pngInfo })
@@ -625,10 +663,16 @@ export const NewImageForm = () => {
               thumbnailPosX={state.thumbnailPosX}
               thumbnailPosY={state.thumbnailPosY}
               setThumbnailPosX={(posX) =>
-                dispatch({ type: "SET_THUMBNAIL_POS_X", payload: posX })
+                dispatch({
+                  type: "SET_THUMBNAIL_POS_X",
+                  payload: posX as number,
+                })
               }
               setThumbnailPosY={(posY) =>
-                dispatch({ type: "SET_THUMBNAIL_POS_Y", payload: posY })
+                dispatch({
+                  type: "SET_THUMBNAIL_POS_Y",
+                  payload: posY as number,
+                })
               }
             />
           )}
@@ -711,7 +755,7 @@ export const NewImageForm = () => {
               model={state.aiUsed}
               models={
                 aiModels?.aiModels.map((model) => ({
-                  id: model.workModelId,
+                  id: model.workModelId ?? "",
                   name: model.name,
                 })) ?? []
               }
@@ -768,7 +812,7 @@ export const NewImageForm = () => {
                 isLoading={themeLoading}
               />
             )}
-            {appEventsResp?.appEvents.length > 0 && (
+            {appEventsResp && appEventsResp?.appEvents.length > 0 && (
               <EventInput
                 tags={state.tags}
                 setTags={(tags) =>
@@ -784,10 +828,10 @@ export const NewImageForm = () => {
               />
             )}
             <TagsInput
-              whiteListTags={whiteListNotSelectedTags}
+              whiteListTags={whiteListNotSelectedTags as unknown as Tag[]}
               tags={state.tags}
               setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
-              recommendedTags={recommendedNotUsedTags()}
+              recommendedTags={recommendedNotUsedTags() as unknown as Tag[]}
             />
             {recommendedTagsLoading && (
               <Loader2Icon className="h-4 w-4 animate-spin" />
@@ -810,18 +854,20 @@ export const NewImageForm = () => {
                 })
               }
             />
-            <AlbumInput
-              album={state.albumId}
-              albums={
-                albums?.albums.map((album) => ({
-                  id: album.id,
-                  name: album.title,
-                })) ?? []
-              }
-              setAlbumId={(albumId) =>
-                dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-              }
-            />
+            {albums?.albums && (
+              <AlbumInput
+                album={state.albumId}
+                albums={
+                  albums?.albums.map((album) => ({
+                    id: album.id,
+                    name: album.title,
+                  })) ?? []
+                }
+                setAlbumId={(albumId) =>
+                  dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+                }
+              />
+            )}
             <RelatedLinkInput
               link={state.link}
               onChange={(link) => dispatch({ type: "SET_LINK", payload: link })}

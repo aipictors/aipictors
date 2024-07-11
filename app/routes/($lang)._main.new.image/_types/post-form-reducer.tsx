@@ -36,7 +36,7 @@ const file = object({
 })
 
 /** 投稿アイテム */
-const inputPostItem = object({
+export const inputPostItem = object({
   id: number(),
   content: string(),
   isContentEdited: boolean(),
@@ -73,7 +73,12 @@ const vState = object({
   isTagEditable: boolean(),
   isCommentsEditable: boolean(),
   isAd: boolean(),
-  ratingRestriction: string(),
+  ratingRestriction: union([
+    literal("G"),
+    literal("R15"),
+    literal("R18"),
+    literal("R18G"),
+  ]),
   accessType: union([
     literal("PUBLIC"),
     literal("SILENT"),
@@ -131,7 +136,7 @@ export type Action =
   | { type: "SET_IS_TAG_EDITABLE"; payload: boolean }
   | { type: "SET_IS_COMMENTS_EDITABLE"; payload: boolean }
   | { type: "SET_IS_AD"; payload: boolean }
-  | { type: "SET_RATING_RESTRICTION"; payload: string }
+  | { type: "SET_RATING_RESTRICTION"; payload: "G" | "R15" | "R18" | "R18G" }
   | {
       type: "SET_ACCESS_TYPE"
       payload: "PUBLIC" | "SILENT" | "LIMITED" | "PRIVATE" | "DRAFT"
@@ -161,6 +166,7 @@ export type Action =
   | { type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"; payload: boolean }
   | { type: "SET_ITEMS"; payload: InferInput<typeof inputPostItem>[] }
   | { type: "SET_TAGS"; payload: { id: string; text: string }[] }
+  | { type: "SET_INDEX_LIST"; payload: number[] }
   | { type: "RESET" }
 
 /** 初期状態 */
