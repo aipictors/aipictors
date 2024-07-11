@@ -55,7 +55,6 @@ import { config } from "@/config"
 import { useBeforeUnload } from "@remix-run/react"
 import {
   initialState,
-  type inputPostItem,
   postFormReducer,
   type PostFormState,
 } from "@/routes/($lang)._main.new.image/_types/post-form-reducer"
@@ -621,13 +620,13 @@ export const NewImageForm = () => {
               setItems={(items) =>
                 dispatch({
                   type: "SET_ITEMS",
-                  payload: items as unknown as (typeof inputPostItem)[],
+                  payload: items,
                 })
               }
               onChangeItems={(items) =>
                 dispatch({
                   type: "SET_ITEMS",
-                  payload: items as unknown as (typeof inputPostItem)[],
+                  payload: items,
                 })
               }
               maxItemsCount={config.post.maxImageCount}

@@ -9,6 +9,7 @@ import {
   type InferInput,
   literal,
   union,
+  optional,
 } from "valibot"
 
 /** 生成画像の生成情報 */
@@ -35,11 +36,11 @@ const file = object({
   webkitRelativePath: string(),
 })
 
-/** 投稿アイテム */
-export const inputPostItem = object({
+// ドラッグ可能なアイテムの型を定義
+export const TSortableItemSchema = object({
   id: number(),
-  content: string(),
-  isContentEdited: boolean(),
+  content: string(), // 画像のURLなど
+  isContentEdited: optional(boolean()), // コンテンツが編集されたかどうか
 })
 
 /** フォームの状態 */
@@ -95,7 +96,7 @@ const vState = object({
   reservationDate: string(),
   reservationTime: string(),
   isSetGenerationParams: boolean(),
-  items: array(inputPostItem),
+  items: array(TSortableItemSchema),
   indexList: array(number()),
   videoFile: nullable(file),
   thumbnailBase64: string(),
@@ -146,7 +147,7 @@ export type Action =
   | { type: "SET_RESERVATION_DATE"; payload: string }
   | { type: "SET_RESERVATION_TIME"; payload: string }
   | { type: "SET_IS_SET_GENERATION_PARAMS"; payload: boolean }
-  | { type: "ADD_ITEM"; payload: InferInput<typeof inputPostItem> }
+  | { type: "ADD_ITEM"; payload: InferInput<typeof TSortableItemSchema> }
   | { type: "REMOVE_ITEM"; payload: number }
   | { type: "ADD_INDEX"; payload: number }
   | { type: "REMOVE_INDEX"; payload: number }
@@ -164,9 +165,10 @@ export type Action =
   | { type: "ADD_SELECTED_IMAGE_GENERATION_ID"; payload: string }
   | { type: "REMOVE_SELECTED_IMAGE_GENERATION_ID"; payload: string }
   | { type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"; payload: boolean }
-  | { type: "SET_ITEMS"; payload: InferInput<typeof inputPostItem>[] }
+  | { type: "SET_ITEMS"; payload: InferInput<typeof TSortableItemSchema>[] }
   | { type: "SET_TAGS"; payload: { id: string; text: string }[] }
   | { type: "SET_INDEX_LIST"; payload: number[] }
+  | { type: "SET_SELECTED_IMAGE_GENERATION_IDS"; payload: string[] }
   | { type: "RESET" }
 
 /** 初期状態 */

@@ -10,7 +10,7 @@ import { Card } from "@/_components/ui/card"
 type Props = {
   onSubmitted: (selectedImage: string[], selectedIds: string[]) => void
   selectedIds: string[]
-  setSelectIds: (selectedIds: (prevSelected: string[]) => string[]) => void
+  setSelectIds: (selectedIds: string[]) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
