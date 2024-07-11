@@ -40,7 +40,6 @@ export default function SettingColor() {
       return
     }
     const themeName = `${mode}-${color}`
-    console.log(themeName)
     setTheme(themeName)
   }
   const setMode = (theme: string) => {
@@ -61,7 +60,6 @@ export default function SettingColor() {
       return "none"
     }
     const suffix = theme.replace(/(light|dark)\-/, "")
-    console.log(`suffix: ${suffix}`)
     return suffix ?? "none"
   }
   const colorSchema = setColorSchema(theme ? theme : "system")
