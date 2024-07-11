@@ -80,6 +80,9 @@ const HomeHeader = (props: Props) => {
               <Input placeholder={"作品を検索"} />
             </div>
           )}
+          <Link to={"https://www.aipictors.com/"}>
+            <Button variant={"secondary"}>{"旧版"}</Button>
+          </Link>
           <Link to={"/generation"}>
             <Button variant={"secondary"}>{"生成"}</Button>
           </Link>
