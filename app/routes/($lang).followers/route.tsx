@@ -16,7 +16,7 @@ export default function FollowerLayout() {
       <AppAside>
         <HomeRouteList />
       </AppAside>
-      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-4 md:pl-52">
+      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-1 md:pl-52">
         <Outlet />
         <HomeFooter />
       </div>
