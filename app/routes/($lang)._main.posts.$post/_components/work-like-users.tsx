@@ -12,7 +12,10 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
   return (
     <div className="flex flex-row flex-wrap">
       {tagNames.map((tagName) => (
-        <Link to={`/tags/${tagName}`} key={tagName}>
+        <Link
+          to={`https://www.aipictors.com/search/?tag=${tagName}`}
+          key={tagName}
+        >
           <Button variant={"link"}>{`#${tagName}`}</Button>
         </Link>
       ))}

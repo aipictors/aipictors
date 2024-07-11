@@ -102,7 +102,9 @@ export default function Theme() {
         <div className="m-4">
           <p className="text-lg md:text-xl">"{data.dailyTheme.title}"</p>
           <Button asChild={true} className="m-1">
-            <Link to={`/tags/${data.dailyTheme.title}`}>
+            <Link
+              to={`https://www.aipictors.com/search/?tag=${data.dailyTheme.title}`}
+            >
               タグの作品一覧を見る
             </Link>
           </Button>
