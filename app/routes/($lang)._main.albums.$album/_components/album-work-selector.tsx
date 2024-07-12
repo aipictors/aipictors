@@ -1,8 +1,8 @@
 import { Card } from "@/_components/ui/card"
-import type { albumQuery } from "@/_graphql/queries/album/album"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   album: NonNullable<ResultOf<typeof albumQuery>["album"]>
@@ -46,3 +46,27 @@ export const AlbumArticleHeader = (props: Props) => {
     </Card>
   )
 }
+
+export const albumQuery = graphql(
+  `query Album($id: ID!) {
+    album(id: $id) {
+      id
+      title
+      description
+      user {
+        ...WorkUserFields
+        isFollowee
+        isFollowee
+        isMuted
+        nanoid
+      }
+      createdAt
+      isSensitive
+      thumbnailImageURL
+      slug
+      worksCount
+      workIds
+    }
+  }`,
+  [workUserFieldsFragment],
+)

@@ -10,15 +10,15 @@ import { WorksListContainer } from "@/routes/($lang).dashboard._index/_component
 import { WorksSetting } from "@/routes/($lang).dashboard._index/_components/works-settings"
 import { AlbumsListContainer } from "@/routes/($lang).dashboard._index/_components/albums-list-container"
 import { AlbumsSetting } from "@/routes/($lang).dashboard._index/_components/albums-settings"
-import { albumsCountQuery } from "@/_graphql/queries/album/albums-count"
 import { useQuery } from "@apollo/client/index"
 import { RecommendedListContainer } from "@/routes/($lang).dashboard._index/_components/recommended-list-container"
 import { DashboardHomeContents } from "@/routes/($lang).dashboard._index/_components/dashboard-home-contents"
 import { RecommendedBanner } from "@/routes/($lang).dashboard._index/_components/recommended-banner"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { BookmarkListContainer } from "@/routes/($lang).dashboard._index/_components/bookmark-list-container"
-import { userQuery } from "@/_graphql/queries/user/user"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 
 type Props = {
   dashboardContentType: DashboardContentType
@@ -347,3 +347,117 @@ export const DashboardContents = (props: Props) => {
     </>
   )
 }
+
+export const albumsCountQuery = graphql(
+  `query AlbumsCount($where: AlbumsWhereInput) {
+    albumsCount(where: $where)
+  }`,
+)
+
+export const userQuery = graphql(
+  `query User(
+    $userId: ID!,
+    $worksOffset: Int!,
+    $worksLimit: Int!,
+    $worksWhere: UserWorksWhereInput,
+    $followeesOffset: Int!,
+    $followeesLimit: Int!,
+    $followeesWorksOffset: Int!,
+    $followeesWorksLimit: Int!,
+    $followeesWorksWhere: UserWorksWhereInput,
+    $followersOffset: Int!,
+    $followersLimit: Int!,
+    $followersWorksOffset: Int!,
+    $followersWorksLimit: Int!
+    $followersWorksWhere: UserWorksWhereInput,
+    $bookmarksOffset: Int!,
+    $bookmarksLimit: Int!,
+    $bookmarksWhere: UserWorksWhereInput,
+  ) {
+    user(id: $userId) {
+      id
+      biography
+      createdBookmarksCount
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
+      isFollower
+      isFollowee
+      headerImageUrl
+      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
+        ...PartialWorkFields
+      }
+      followees(offset: $followeesOffset, limit: $followeesLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      followers(offset: $followersOffset, limit: $followersLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+        ...PartialWorkFields
+      }
+      featuredSensitiveWorks {
+        ...PartialWorkFields
+      }
+      featuredWorks {
+        ...PartialWorkFields
+      }
+      biography
+      enBiography
+      instagramAccountId
+      twitterAccountId
+      githubAccountId
+      siteURL
+      mailAddress
+      promptonUser {
+        id
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

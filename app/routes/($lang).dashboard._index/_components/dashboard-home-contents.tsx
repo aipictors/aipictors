@@ -1,11 +1,11 @@
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircleIcon } from "lucide-react"
 import { DashboardHomeContentContainer } from "@/routes/($lang).dashboard._index/_components/dashboard-home-content-container"
-import { worksQuery } from "@/_graphql/queries/work/works"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
-import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 export const DashboardHomeContents = () => {
   const appContext = useContext(AuthContext)
@@ -174,3 +174,42 @@ export const DashboardHomeContents = () => {
     </>
   )
 }
+
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        id
+        biography
+        login
+        name
+        awardsCount
+        followersCount
+        followCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
+      }
+    }
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

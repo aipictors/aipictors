@@ -9,12 +9,13 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import { Textarea } from "@/_components/ui/textarea"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { deleteImageGenerationMemoMutation } from "@/_graphql/mutations/delete-image-generation-memo"
 import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-image-generation-memo"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Loader2, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -333,3 +334,19 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
     </>
   )
 }
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

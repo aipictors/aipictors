@@ -4,9 +4,10 @@ import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 
 type Props = {
@@ -123,3 +124,12 @@ export const HomeColumnsSection = (props: Props) => {
     </section>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -2,8 +2,8 @@ import { CroppedWorkSquare } from "@/_components/cropped-work-square"
 import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import type { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
-import type { ResultOf } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   awards: NonNullable<ResultOf<typeof workAwardsQuery>["workAwards"]>
@@ -61,3 +61,17 @@ export const RankingWorkList = (props: Props) => {
     </div>
   )
 }
+
+export const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      id
+      index
+      dateText
+      work {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -1,7 +1,7 @@
-import type { stickersQuery } from "@/_graphql/queries/sticker/stickers"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { config } from "@/config"
 import { Link } from "@remix-run/react"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -54,3 +54,12 @@ export const ResponsiveStickersList = (props: Props) => {
     </div>
   )
 }
+
+export const stickersQuery = graphql(
+  `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
+    stickers(offset: $offset, limit: $limit, where: $where) {
+      ...PartialStickerFields
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)

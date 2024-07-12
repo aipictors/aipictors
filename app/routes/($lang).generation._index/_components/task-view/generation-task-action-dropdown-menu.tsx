@@ -11,13 +11,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/_components/ui/dropdown-menu"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { deleteReservedImageGenerationTasksMutation } from "@/_graphql/mutations/delete-image-generation-reserved-tasks"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
@@ -180,3 +181,19 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
     </DropdownMenu>
   )
 }
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

@@ -1,11 +1,12 @@
 import { AppPage } from "@/_components/app/app-page"
 import { ParamsError } from "@/_errors/params-error"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | ランキング"
@@ -18,7 +19,8 @@ export const meta: MetaFunction = () => {
 
   return [
     { title: metaTitle },
-    { name: "description", content: "noindex" },
+    { name: "description", content: metaDescription },
+    { name: "robots", content: "noindex" },
     { name: "twitter:title", content: metaTitle },
     { name: "twitter:description", content: metaDescription },
     { name: "twitter:image", content: metaImage },
@@ -91,3 +93,17 @@ export default function SensitiveAwardsPage() {
     </AppPage>
   )
 }
+
+export const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      id
+      index
+      dateText
+      work {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -1,8 +1,8 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
-import { albumWorksQuery } from "@/_graphql/queries/album/album-works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { useSuspenseQuery } from "@apollo/client/index"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useState } from "react"
 
 type Props = {
@@ -53,3 +53,15 @@ export const AlbumWorkList = (props: Props) => {
     </>
   )
 }
+
+export const albumWorksQuery = graphql(
+  `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
+    album(id: $albumId) {
+      id
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

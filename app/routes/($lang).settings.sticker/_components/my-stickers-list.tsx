@@ -4,12 +4,12 @@ import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { StickerChangeAccessTypeDialog } from "@/_components/sticker-change-access-type-dialog"
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { deleteUserStickerMutation } from "@/_graphql/mutations/delete-user-sticker"
-import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-stickers"
-import { viewerUserStickersCountQuery } from "@/_graphql/queries/viewer/viewer-user-stickers-count"
 import { StickerButton } from "@/routes/($lang)._main.posts.$post/_components/sticker-button"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
@@ -177,3 +177,22 @@ export const MyStickersList = () => {
     </div>
   )
 }
+
+export const viewerUserStickersCountQuery = graphql(
+  `query ViewerUserStickersCount($where: UserStickersWhereInput) {
+    viewer {
+      userStickersCount(where: $where)
+    }
+  }`,
+)
+
+export const viewerUserStickersQuery = graphql(
+  `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
+    viewer {
+      userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
+        ...PartialStickerFields
+      }
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)

@@ -1,4 +1,3 @@
-import {} from "@/_components/ui/table"
 import { PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { Dialog, DialogTrigger, DialogContent } from "@/_components/ui/dialog"
@@ -16,9 +15,8 @@ import { createAlbumMutation } from "@/_graphql/mutations/create-album"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import type { ResultOf } from "gql.tada"
-import type { worksQuery } from "@/_graphql/queries/work/works"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { graphql, type ResultOf } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
   children: React.ReactNode
@@ -269,3 +267,20 @@ export const CreateAlbumDialog = (props: Props) => {
     </>
   )
 }
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

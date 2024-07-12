@@ -1,7 +1,6 @@
 import { AppPage } from "@/_components/app/app-page"
-import { dailyThemeQuery } from "@/_graphql/queries/daily-theme/daily-theme"
-import { hotSensitiveTagsQuery } from "@/_graphql/queries/tag/hot-sensitive-tags"
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
@@ -15,6 +14,7 @@ import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import { type MetaFunction, json } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
@@ -28,7 +28,8 @@ export const meta: MetaFunction = () => {
 
   return [
     { title: metaTitle },
-    { name: "description", content: "noindex" },
+    { name: "description", content: metaDescription },
+    { name: "robots", content: "noindex" },
     { name: "twitter:title", content: metaTitle },
     { name: "twitter:description", content: metaDescription },
     { name: "twitter:image", content: metaImage },
@@ -193,3 +194,42 @@ export default function SensitivePage() {
     </AppPage>
   )
 }
+
+export const dailyThemeQuery = graphql(
+  `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount,
+      works(offset: $offset, limit: $limit) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const hotSensitiveTagsQuery = graphql(
+  `query HotSensitiveTags {
+    hotSensitiveTags {
+      ...PartialTagFields
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialTagFieldsFragment, partialWorkFieldsFragment],
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

@@ -9,11 +9,10 @@ import {
   DialogTrigger,
 } from "@/_components/ui/dialog"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
-import type { imageModelsQuery } from "@/_graphql/queries/image-model/image-models"
 import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -119,3 +118,21 @@ export const GenerationModelListButton = (props: Props) => {
     </Dialog>
   )
 }
+
+export const imageModelsQuery = graphql(
+  `query ImageModels {
+    imageModels {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)

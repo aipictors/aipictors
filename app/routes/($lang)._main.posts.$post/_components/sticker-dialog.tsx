@@ -2,14 +2,14 @@ import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent, DialogFooter } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
-import { viewerUserStickersQuery } from "@/_graphql/queries/viewer/viewer-user-stickers"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { StickerButton } from "@/routes/($lang)._main.posts.$post/_components/sticker-button"
 import { AddStickerButton } from "@/_components/add-sticker-button"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
-import { viewerUserStickersCountQuery } from "@/_graphql/queries/viewer/viewer-user-stickers-count"
+import { graphql } from "gql.tada"
+import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 
 type Props = {
   isOpen: boolean
@@ -158,3 +158,22 @@ export const StickerDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+export const viewerUserStickersCountQuery = graphql(
+  `query ViewerUserStickersCount($where: UserStickersWhereInput) {
+    viewer {
+      userStickersCount(where: $where)
+    }
+  }`,
+)
+
+export const viewerUserStickersQuery = graphql(
+  `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
+    viewer {
+      userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
+        ...PartialStickerFields
+      }
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)

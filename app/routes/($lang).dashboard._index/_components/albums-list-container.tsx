@@ -3,11 +3,13 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import { albumsQuery } from "@/_graphql/queries/album/albums"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AlbumsList } from "@/routes/($lang).dashboard._index/_components/albums-list"
 import { WorksSeriesAddButton } from "@/routes/($lang).dashboard._index/_components/works-series-add-button"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
 type Props = {
   page: number
@@ -93,3 +95,15 @@ export const AlbumsListContainer = (props: Props) => {
     </>
   )
 }
+
+export const albumsQuery = graphql(
+  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
+    albums(offset: $offset, limit: $limit, where: $where) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+)

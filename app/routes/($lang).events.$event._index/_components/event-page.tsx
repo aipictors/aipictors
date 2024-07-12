@@ -1,12 +1,10 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 import { Card, CardHeader, CardContent } from "@/_components/ui/card"
-import type { appEventQuery } from "@/_graphql/queries/app-events/app-event"
-import type { worksQuery } from "@/_graphql/queries/work/works"
-import type { worksCountQuery } from "@/_graphql/queries/work/works-count"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { useNavigate } from "@remix-run/react"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
   appEvent: ResultOf<typeof appEventQuery>["appEvent"]
@@ -71,3 +69,34 @@ export const EventPage = (props: Props) => {
     </div>
   )
 }
+
+export const appEventQuery = graphql(
+  `query AppEvent($slug: String!) {
+    appEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+  }`,
+)
+
+export const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
