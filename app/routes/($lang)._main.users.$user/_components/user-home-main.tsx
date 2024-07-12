@@ -6,9 +6,6 @@ import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "@/_components/profile-edit-dialog"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { userProfileFragment } from "@/routes/($lang)._main.users.$user/_components/user-contents"
-import { userProfileIconFragment } from "@/routes/($lang)._main.users.$user/_components/user-profile-name-icon"
 
 type Props = {
   user: FragmentOf<typeof userHomeMainFragment>
@@ -101,7 +98,7 @@ export const userHomeMainFragment = graphql(
       id
     }
   }`,
-  [partialWorkFieldsFragment],
+  [],
 )
 
 export const userQuery = graphql(
@@ -112,10 +109,5 @@ export const userQuery = graphql(
       ...UserHomeMain
     }
   }`,
-  [
-    userHomeMainFragment,
-    userProfileFragment,
-    userProfileIconFragment,
-    partialWorkFieldsFragment,
-  ],
+  [userHomeMainFragment],
 )
