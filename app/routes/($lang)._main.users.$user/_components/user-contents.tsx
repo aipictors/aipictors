@@ -9,12 +9,12 @@ import { UserStickersContents } from "@/routes/($lang)._main.users.$user/_compon
 import { UserNovelsContents } from "@/routes/($lang)._main.users.$user.novels/_components/user-novels-contents"
 import { UserTabs } from "@/routes/($lang)._main.users.$user/_components/user-tabs"
 import { UserWorksContents } from "@/routes/($lang)._main.users.$user/_components/user-works-contents "
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
-  user: NonNullable<ResultOf<typeof userQuery>["user"]>
+  user: FragmentOf<typeof userProfileFragment>
 }
 
 export const UserContents = (props: Props) => {
@@ -72,8 +72,10 @@ export const UserContents = (props: Props) => {
                 </Card>
 
                 <UserPickupContents
-                  userPickupWorks={props.user.featuredWorks}
-                  userPickupSensitiveWorks={props.user.featuredSensitiveWorks}
+                  userPickupWorks={props.user.featuredWorks ?? []}
+                  userPickupSensitiveWorks={
+                    props.user.featuredSensitiveWorks ?? []
+                  }
                 />
                 <Suspense fallback={<AppLoadingPage />}>
                   <UserContentsContainer
@@ -149,93 +151,24 @@ export const UserContents = (props: Props) => {
   )
 }
 
-export const userQuery = graphql(
-  `query User(
-    $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
-  ) {
-    user(id: $userId) {
-      id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
-      }
+export const userProfileFragment = graphql(
+  `fragment UserProfile on UserNode @_unmask {
+    id
+    biography
+    login
+    name
+    headerImageUrl
+    headerImageUrl
+    biography
+    instagramAccountId
+    twitterAccountId
+    githubAccountId
+    mailAddress
+    featuredSensitiveWorks {
+      ...PartialWorkFields
+    }
+    featuredWorks {
+      ...PartialWorkFields
     }
   }`,
   [partialWorkFieldsFragment],

@@ -5,12 +5,12 @@ import { AvatarImage } from "@radix-ui/react-avatar"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
-import { graphql, type ResultOf } from "gql.tada"
-import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
+import { type FragmentOf, graphql } from "gql.tada"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import type { albumArticleFragment } from "@/routes/($lang)._main.albums.$album/_components/album-article-editor-dialog"
 
 type Props = {
-  album: NonNullable<ResultOf<typeof albumQuery>["album"]>
+  album: FragmentOf<typeof albumArticleFragment>
 }
 
 export const AlbumWorkDescription = (props: Props) => {
@@ -60,30 +60,6 @@ export const AlbumWorkDescription = (props: Props) => {
     </Card>
   )
 }
-
-export const albumQuery = graphql(
-  `query Album($id: ID!) {
-    album(id: $id) {
-      id
-      title
-      description
-      user {
-        ...WorkUserFields
-        isFollowee
-        isFollowee
-        isMuted
-        nanoid
-      }
-      createdAt
-      isSensitive
-      thumbnailImageURL
-      slug
-      worksCount
-      workIds
-    }
-  }`,
-  [workUserFieldsFragment],
-)
 
 export const userFolloweesQuery = graphql(
   `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {

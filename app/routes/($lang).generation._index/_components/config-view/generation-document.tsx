@@ -7,11 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/_components/ui/table"
-import { graphql, type ResultOf } from "gql.tada"
+import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   markdownText: string
-  models: ResultOf<typeof imageModelsQuery>["imageModels"]
+  models: FragmentOf<typeof imageModelContextFragment>[]
 }
 
 export const GenerationDocument = (props: Props) => {
@@ -47,21 +48,3 @@ export const GenerationDocument = (props: Props) => {
     </div>
   )
 }
-
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
-  }`,
-)

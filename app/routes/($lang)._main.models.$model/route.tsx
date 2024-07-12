@@ -2,7 +2,10 @@ import { AppPage } from "@/_components/app/app-page"
 import { ParamsError } from "@/_errors/params-error"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
-import { ModelHeader } from "@/routes/($lang)._main.models.$model/_components/model-header"
+import {
+  imageModelHeaderFragment,
+  ModelHeader,
+} from "@/routes/($lang)._main.models.$model/_components/model-header"
 import { WorkList } from "@/routes/($lang)._main.posts._index/_components/work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
@@ -61,19 +64,10 @@ export default function ModelPage() {
 export const imageModelQuery = graphql(
   `query ImageModel($id: ID!) {
     imageModel(id: $id) {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
+      ...ImageModelHeader
     }
   }`,
+  [imageModelHeaderFragment],
 )
 
 export const worksQuery = graphql(

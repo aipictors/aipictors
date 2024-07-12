@@ -1,5 +1,5 @@
-import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { config } from "@/config"
+import { currentPassContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -59,15 +59,8 @@ export const GoogleAdsense = (props: Props) => {
 export const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
+      ...CurrentPassContext
     }
   }`,
-  [passFieldsFragment],
+  [currentPassContextFragment],
 )

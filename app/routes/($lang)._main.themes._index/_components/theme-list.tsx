@@ -3,13 +3,13 @@ import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fie
 import { ThemeListItem } from "@/routes/($lang)._main.themes._index/_components/theme-list-item"
 import { createCalendarCells } from "@/routes/($lang)._main.themes._index/_utils/create-calendar-cells"
 import { useNavigate } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 type Props = {
   year: number
   month: number
-  dailyThemes: ResultOf<typeof dailyThemesQuery>["dailyThemes"]
+  dailyThemes: FragmentOf<typeof dailyThemeComponentFragment>[]
 }
 
 export const ThemeList = (props: Props) => {
@@ -85,23 +85,17 @@ export const ThemeList = (props: Props) => {
   )
 }
 
-export const dailyThemesQuery = graphql(
-  `query DailyThemes(
-    $offset: Int!
-    $limit: Int!
-    $where: DailyThemesWhereInput!
-  ) {
-    dailyThemes(offset: $offset, limit: $limit, where: $where) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount
-      firstWork {
-        ...PartialWorkFields
-      }
+export const dailyThemeComponentFragment = graphql(
+  `fragment DailyThemeComponent on DailyThemeNode @_unmask {
+    id
+    title
+    dateText
+    year
+    month
+    day
+    worksCount
+    firstWork {
+      ...PartialWorkFields
     }
   }`,
   [partialWorkFieldsFragment],

@@ -28,7 +28,7 @@ export const WorkTagsWorks = (props: Props) => {
     },
   })
 
-  const tagWork = suggestedWorkResp?.works ?? null
+  const tagWork = suggestedWorkResp?.works ?? []
 
   return <ResponsivePhotoWorksAlbum works={tagWork} />
 }

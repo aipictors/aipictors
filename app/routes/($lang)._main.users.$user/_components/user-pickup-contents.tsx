@@ -1,14 +1,12 @@
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  userPickupWorks: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
-  userPickupSensitiveWorks: NonNullable<
-    ResultOf<typeof worksQuery>["works"]
-  > | null
+  userPickupWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
+  userPickupSensitiveWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 export const UserPickupContents = (props: Props) => {
@@ -36,12 +34,3 @@ export const UserPickupContents = (props: Props) => {
     </div>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

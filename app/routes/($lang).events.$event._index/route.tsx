@@ -1,12 +1,14 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { ResponsivePagination } from "@/_components/responsive-pagination"
+import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
+import { Card, CardHeader, CardContent } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
-import { EventPage } from "@/routes/($lang).events.$event._index/_components/event-page"
+import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -61,22 +63,70 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export default function FollowingLayout() {
+  const data = useLoaderData<typeof loader>()
+
   const authContext = useContext(AuthContext)
-  const events = useLoaderData<typeof loader>()
+
+  const navigate = useNavigate()
+
+  // TODO: コンポーネントが不足している
+  if (!authContext.isLoggedIn) {
+    return null
+  }
+
+  // TODO: コンポーネントが不足している
+  if (
+    !data.appEvent?.title ||
+    !data.appEvent?.thumbnailImageUrl ||
+    !data.appEvent?.tag ||
+    !data.appEvent?.description ||
+    !data.appEvent?.startAt ||
+    !data.appEvent?.endAt
+  ) {
+    return null
+  }
 
   return (
-    <>
-      <Suspense fallback={<AppLoadingPage />}>
-        {authContext.isLoggedIn && (
-          <EventPage
-            appEvent={events.appEvent}
-            works={events.works}
-            worksCount={events.worksCount}
-            page={events.page}
-          />
-        )}
-      </Suspense>
-    </>
+    <div className="flex flex-col space-y-4 p-4">
+      <Card className="m-auto max-w-96">
+        <CardHeader>
+          <div className="flex flex-col items-center">
+            <img
+              className="h-auto w-full rounded-lg object-cover"
+              src={data.appEvent.thumbnailImageUrl}
+              alt=""
+            />
+            <div className="mt-4 font-medium text-lg">
+              {data.appEvent.title}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center">
+            <div className="mb-2 text-sm">{data.appEvent.description}</div>
+            <div className="text-sm">
+              {toDateTimeText(data.appEvent.startAt)}～
+              {toDateTimeText(data.appEvent.endAt)}
+            </div>
+            <div className="mt-2 text-sm">
+              <span>応募作品数: {data.worksCount}</span>
+            </div>
+            <div className="mt-2 text-sm">
+              <span>参加タグ: {data.appEvent.tag}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <ResponsivePhotoWorksAlbum works={data.works} />
+      <ResponsivePagination
+        maxCount={data.worksCount}
+        perPage={64}
+        currentPage={data.page}
+        onPageChange={(page: number) => {
+          navigate(`/events/${data.appEvent?.slug}?page=${page}`)
+        }}
+      />
+    </div>
   )
 }
 
@@ -96,12 +146,18 @@ export const appEventQuery = graphql(
   }`,
 )
 
+/**
+ * TODO_2024_08: クエリを統合する
+ */
 export const worksCountQuery = graphql(
   `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
   }`,
 )
 
+/**
+ * TODO_2024_08: クエリを統合する
+ */
 export const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {

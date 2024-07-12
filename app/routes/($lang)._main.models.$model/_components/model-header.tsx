@@ -1,8 +1,8 @@
 import { Switch } from "@/_components/ui/switch"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  imageModel: ResultOf<typeof imageModelQuery>["imageModel"]
+  imageModel: FragmentOf<typeof imageModelHeaderFragment>
 }
 
 export const ModelHeader = (props: Props) => {
@@ -30,20 +30,18 @@ export const ModelHeader = (props: Props) => {
   )
 }
 
-export const imageModelQuery = graphql(
-  `query ImageModel($id: ID!) {
-    imageModel(id: $id) {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
+export const imageModelHeaderFragment = graphql(
+  `fragment ImageModelHeader on ImageModelNode @_unmask {
+    id
+    name
+    displayName
+    category
+    description
+    license
+    prompts
+    slug
+    style
+    thumbnailImageURL
+    type
   }`,
 )

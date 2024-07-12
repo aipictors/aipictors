@@ -228,8 +228,8 @@ export const GenerationTaskListView = (props: Props) => {
           isEditMode={props.isEditMode}
           isPreviewMode={props.isPreviewMode}
           selectedTaskIds={selectedTaskIds}
-          results={results}
-          tasks={tasks}
+          results={results.viewer?.imageGenerationResults ?? []}
+          tasks={tasks.viewer?.imageGenerationTasks ?? []}
           userToken={props.currentUserToken}
           taskContentPositionType={showTaskPositionType}
           onCancel={undefined}

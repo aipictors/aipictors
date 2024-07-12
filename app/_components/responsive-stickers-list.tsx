@@ -1,12 +1,12 @@
-import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
+import type { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { config } from "@/config"
 import { Link } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  stickers: NonNullable<ResultOf<typeof stickersQuery>["stickers"]> | null
+  stickers: FragmentOf<typeof partialStickerFieldsFragment>[]
   targetRowHeight?: number
 }
 
@@ -54,12 +54,3 @@ export const ResponsiveStickersList = (props: Props) => {
     </div>
   )
 }
-
-export const stickersQuery = graphql(
-  `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
-    stickers(offset: $offset, limit: $limit, where: $where) {
-      ...PartialStickerFields
-    }
-  }`,
-  [partialStickerFieldsFragment],
-)

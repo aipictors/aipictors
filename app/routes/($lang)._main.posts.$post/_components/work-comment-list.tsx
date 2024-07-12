@@ -11,7 +11,7 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
 import { AccordionTransition } from "@/_components/accordion-transition"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
@@ -19,7 +19,7 @@ import { commentFieldsFragment } from "@/_graphql/fragments/comment-fields"
 
 type Props = {
   workId: string
-  comments: NonNullable<ResultOf<typeof workCommentsQuery>["work"]>["comments"]
+  comments: FragmentOf<typeof commentFragment>[]
 }
 
 // コメント
@@ -553,6 +553,39 @@ export const WorkCommentList = (props: Props) => {
   )
 }
 
+export const workCommentUserFragment = graphql(
+  `fragment WorkCommentUser on UserNode @_unmask {
+    id
+    biography
+    createdBookmarksCount
+    login
+    nanoid
+    name
+    receivedLikesCount
+    receivedViewsCount
+    awardsCount
+    followCount
+    followersCount
+    worksCount
+    iconUrl
+    headerImageUrl
+    webFcmToken
+    isFollower
+    isFollowee
+    headerImageUrl
+    biography
+    enBiography
+    instagramAccountId
+    twitterAccountId
+    githubAccountId
+    siteURL
+    mailAddress
+    promptonUser {
+      id
+    }
+  }`,
+)
+
 export const userQuery = graphql(
   `query User(
     $userId: ID!,
@@ -574,24 +607,7 @@ export const userQuery = graphql(
     $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
-      id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
+      ...WorkCommentUser
       works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
         ...PartialWorkFields
       }
@@ -630,32 +646,17 @@ export const userQuery = graphql(
       featuredWorks {
         ...PartialWorkFields
       }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
-      }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const workCommentsQuery = graphql(
-  `query WorkComments($workId: ID!) {
-    work(id: $workId) {
-      id
-      comments(offset: 0, limit: 128) {
+export const commentFragment = graphql(
+  `fragment Comment on CommentNode @_unmask {
+      ...CommentFields
+      responses(offset: 0, limit: 128) {
         ...CommentFields
-        responses(offset: 0, limit: 128) {
-          ...CommentFields
-        }
       }
-    }
   }`,
   [commentFieldsFragment],
 )

@@ -1,10 +1,10 @@
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof worksQuery>["works"]>
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
   title: string
 }
 
@@ -46,12 +46,3 @@ export const TagReferencedWorkSection = (props: Props) => {
     </section>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

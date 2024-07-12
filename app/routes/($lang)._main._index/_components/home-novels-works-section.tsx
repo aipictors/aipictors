@@ -3,11 +3,11 @@ import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { NovelWorkPreviewItem } from "@/_components/novel-work-preview-item"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { graphql, type ResultOf } from "gql.tada"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -90,12 +90,3 @@ export const HomeNovelsWorksSection = (props: Props) => {
     </section>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

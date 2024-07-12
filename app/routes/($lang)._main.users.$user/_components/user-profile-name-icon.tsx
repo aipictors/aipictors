@@ -3,14 +3,14 @@ import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fie
 import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
 import { config } from "@/config"
 import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useMediaQuery } from "usehooks-ts"
 
-type UserProfileProps = {
-  user: NonNullable<ResultOf<typeof userQuery>["user"]>
+type Props = {
+  user: FragmentOf<typeof userProfileIconFragment>
 }
 
-export const UserProfileNameIcon = (props: UserProfileProps) => {
+export const UserProfileNameIcon = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
@@ -76,94 +76,20 @@ export const UserProfileNameIcon = (props: UserProfileProps) => {
   )
 }
 
-export const userQuery = graphql(
-  `query User(
-    $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
-  ) {
-    user(id: $userId) {
-      id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
-      }
-    }
+export const userProfileIconFragment = graphql(
+  `fragment UserProfileIcon on UserNode @_unmask {
+    id
+    login
+    nanoid
+    name
+    receivedLikesCount
+    receivedViewsCount
+    awardsCount
+    followCount
+    followersCount
+    worksCount
+    iconUrl
+    headerImageUrl
   }`,
   [partialWorkFieldsFragment],
 )

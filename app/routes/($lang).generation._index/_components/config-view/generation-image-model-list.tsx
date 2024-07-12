@@ -12,14 +12,15 @@ import { removeDuplicates } from "@/_utils/remove-duplicates"
 import { config } from "@/config"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
+import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { toCategoryName } from "@/routes/($lang).generation._index/_utils/to-category-name"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  models: ResultOf<typeof imageModelsQuery>["imageModels"]
+  models: FragmentOf<typeof imageModelContextFragment>[]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean
@@ -267,21 +268,3 @@ export const ImageModelsList = (props: Props) => {
     </>
   )
 }
-
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
-  }`,
-)

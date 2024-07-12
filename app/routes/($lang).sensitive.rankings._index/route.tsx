@@ -1,8 +1,10 @@
 import { AppPage } from "@/_components/app/app-page"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
-import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
+import {
+  RankingWorkList,
+  workAwardFieldsFragment,
+} from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -56,13 +58,8 @@ export default function SensitiveAwards() {
 export const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      id
-      index
-      dateText
-      work {
-        ...PartialWorkFields
-      }
+      ...WorkAwardFields
     }
   }`,
-  [partialWorkFieldsFragment],
+  [workAwardFieldsFragment],
 )

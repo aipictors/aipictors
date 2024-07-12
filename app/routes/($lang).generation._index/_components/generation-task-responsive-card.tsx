@@ -8,12 +8,12 @@ import { ErrorBoundary } from "react-error-boundary"
 import { useMediaQuery } from "usehooks-ts"
 import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
-import type { ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | ResultOf<typeof imageGenerationTaskFieldsFragment>
-    | ResultOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   taskIds?: string[]
   estimatedSeconds?: number
   selectedTaskIds: string[]

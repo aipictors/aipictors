@@ -15,13 +15,13 @@ import { updateAlbumMutation } from "@/_graphql/mutations/update-album"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
-  album: NonNullable<ResultOf<typeof albumQuery>["album"]>
+  album: FragmentOf<typeof albumArticleFragment>
   thumbnail?: string
   children: React.ReactNode
   userNanoid: string
@@ -178,26 +178,24 @@ export const AlbumArticleEditorDialog = (props: Props) => {
   )
 }
 
-export const albumQuery = graphql(
-  `query Album($id: ID!) {
-    album(id: $id) {
-      id
-      title
-      description
-      user {
-        ...WorkUserFields
-        isFollowee
-        isFollowee
-        isMuted
-        nanoid
-      }
-      createdAt
-      isSensitive
-      thumbnailImageURL
-      slug
-      worksCount
-      workIds
+export const albumArticleFragment = graphql(
+  `fragment AlbumArticle on AlbumNode @_unmask {
+    id
+    title
+    description
+    user {
+      ...WorkUserFields
+      isFollowee
+      isFollowee
+      isMuted
+      nanoid
     }
+    createdAt
+    isSensitive
+    thumbnailImageURL
+    slug
+    worksCount
+    workIds
   }`,
   [workUserFieldsFragment],
 )

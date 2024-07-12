@@ -6,14 +6,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeCroppedWorkList } from "@/routes/($lang)._main._index/_components/home-cropped-work-list"
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -59,12 +59,3 @@ export const HomeWorkSection = (props: Props) => {
     </section>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

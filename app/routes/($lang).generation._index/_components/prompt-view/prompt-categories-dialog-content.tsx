@@ -12,12 +12,13 @@ import {
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { PromptCategoryIcon } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-category-icon"
-import { graphql, type ResultOf } from "gql.tada"
+import type { promptCategoryContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedPromptIds: string[]
   onClose(): void
-  promptCategories: ResultOf<typeof promptCategoriesQuery>["promptCategories"]
+  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
   onSelect(id: string): void
 }
 
@@ -81,17 +82,3 @@ export const PromptCategoriesDialogContent = (props: Props) => {
     </>
   )
 }
-
-export const promptCategoriesQuery = graphql(
-  `query PromptCategories {
-    promptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
-    }
-  }`,
-)

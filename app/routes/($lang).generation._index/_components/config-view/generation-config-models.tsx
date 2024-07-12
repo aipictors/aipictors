@@ -1,12 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { GenerationModelListButton } from "@/routes/($lang).generation._index/_components/config-view/generation-model-list-button"
+import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { CheckIcon } from "lucide-react"
 
 type Props = {
-  models: ResultOf<typeof imageModelsQuery>["imageModels"]
+  models: FragmentOf<typeof imageModelContextFragment>[]
   currentModelId: string
   favoritedModelIds: number[]
   /**
@@ -209,21 +210,3 @@ export const GenerationConfigModels = (props: Props) => {
     </>
   )
 }
-
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
-  }`,
-)

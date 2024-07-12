@@ -3,9 +3,11 @@ import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "@/_lib/client"
 import { AppPage } from "@/_components/app/app-page"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
-import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
+import {
+  RankingWorkList,
+  workAwardFieldsFragment,
+} from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 export async function loader(params: LoaderFunctionArgs) {
@@ -59,13 +61,8 @@ export default function Rankings() {
 export const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      id
-      index
-      dateText
-      work {
-        ...PartialWorkFields
-      }
+      ...WorkAwardFields
     }
   }`,
-  [partialWorkFieldsFragment],
+  [workAwardFieldsFragment],
 )

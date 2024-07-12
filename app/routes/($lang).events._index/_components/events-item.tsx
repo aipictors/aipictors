@@ -1,15 +1,9 @@
 import { Card, CardHeader } from "@/_components/ui/card"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 
-type Props = {
-  title: string | null
-  thumbnailImageUrl: string | null
-  description: string | null
-  startAt: number | null
-  endAt: number | null
-  slug: string | null
-}
+type Props = FragmentOf<typeof appEventItemFragment>
 
 /**
  * イベントアイテム
@@ -24,8 +18,9 @@ export const EventItem = (props: Props) => {
     !props.startAt ||
     !props.endAt ||
     !props.slug
-  )
+  ) {
     return null
+  }
 
   return (
     <Link to={`/events/${props.slug}`}>
@@ -49,3 +44,17 @@ export const EventItem = (props: Props) => {
     </Link>
   )
 }
+
+export const appEventItemFragment = graphql(
+  `fragment AppEventItem on AppEventNode @_unmask {
+    id
+    description
+    title
+    slug
+    thumbnailImageUrl
+    headerImageUrl
+    startAt
+    endAt
+    tag
+  }`,
+)

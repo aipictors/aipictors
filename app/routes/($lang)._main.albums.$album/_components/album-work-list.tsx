@@ -2,12 +2,12 @@ import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "@/_components/responsive-photo-works-album"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useState } from "react"
 
 type Props = {
   albumId: string
-  albumWorks: NonNullable<ResultOf<typeof albumWorksQuery>["album"]>["works"]
+  albumWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
   maxCount: number
 }
 

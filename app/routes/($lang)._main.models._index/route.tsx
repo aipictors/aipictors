@@ -1,7 +1,10 @@
 import { ArticlePage } from "@/_components/page/article-page"
 import { createClient } from "@/_lib/client"
 import { GoogleAdsense } from "@/routes/($lang)._main._index/_components/google-adsense"
-import { ImageModelList } from "@/routes/($lang)._main.models._index/_components/image-model-list"
+import {
+  imageModelCardFragment,
+  ImageModelList,
+} from "@/routes/($lang)._main.models._index/_components/image-model-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
@@ -35,17 +38,8 @@ export default function ModelsPage() {
 export const imageModelsQuery = graphql(
   `query ImageModels {
     imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
+      ...ImageModelCard
     }
   }`,
+  [imageModelCardFragment],
 )

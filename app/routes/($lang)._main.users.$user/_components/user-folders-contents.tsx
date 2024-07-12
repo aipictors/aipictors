@@ -47,7 +47,15 @@ export const UserFoldersContents = (props: Props) => {
 
   return (
     <>
-      <ResponsiveFoldersList folders={folders} />
+      <div className="flex flex-wrap">
+        {folders.map((folder) => (
+          <ResponsiveFoldersList
+            key={folder.id}
+            folder={folder}
+            user={folder.user}
+          />
+        ))}
+      </div>
       <div className="mt-1 mb-1">
         <ResponsivePagination
           perPage={16}

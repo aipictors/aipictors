@@ -9,12 +9,13 @@ import {
   DialogTrigger,
 } from "@/_components/ui/dialog"
 import { LoraImageModelList } from "@/routes/($lang).generation._index/_components/config-view/lora-image-model-list"
-import { graphql, type ResultOf } from "gql.tada"
+import type { imageLoraModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import type { FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
-  models: ResultOf<typeof imageLoraModelsQuery>["imageLoraModels"]
+  models: FragmentOf<typeof imageLoraModelContextFragment>[]
   selectedModelNames: string[]
   availableImageGenerationMaxTasksCount: number
   onSelect(name: string, isAdded: boolean): void
@@ -71,18 +72,3 @@ export const LoraModelListDialogButton = (props: Props) => {
     </Dialog>
   )
 }
-
-export const imageLoraModelsQuery = graphql(
-  `query ImageLoraModels {
-    imageLoraModels {
-      id
-      name
-      description
-      license
-      prompts
-      slug
-      thumbnailImageURL
-      genre
-    }
-  }`,
-)

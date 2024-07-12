@@ -77,14 +77,23 @@
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
-  "todo-tree.general.tags": ["TODO", "TODO_2024_06", "TODO_2024_07"],
+  "todo-tree.general.tags": [
+    "TODO",
+    "TODO_2024_07",
+    "TODO_2024_08",
+    "TODO_2024_09"
+  ],
   "todo-tree.highlights.customHighlight": {
-    "TODO_2024_06": {
-      "foreground": "red",
+    "TODO_2024_07": {
+      "background": "fuchsia",
       "iconColour": "red"
     },
-    "TODO_2024_07": {
-      "foreground": "red",
+    "TODO_2024_08": {
+      "background": "fuchsia",
+      "iconColour": "red"
+    },
+    "TODO_2024_09": {
+      "background": "fuchsia",
       "iconColour": "red"
     }
   }

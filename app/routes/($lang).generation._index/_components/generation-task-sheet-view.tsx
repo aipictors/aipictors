@@ -17,15 +17,15 @@ import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
 type Props = {
   task:
-    | ResultOf<typeof imageGenerationTaskFieldsFragment>
-    | ResultOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   isReferenceLink?: boolean
   isScroll?: boolean
   setShowInPaintDialog?: (show: boolean) => void

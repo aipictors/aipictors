@@ -101,7 +101,7 @@ export const GenerationWorkListModelView = () => {
       />
       <GenerationWorkList
         loading={loading}
-        works={worksResp}
+        works={worksResp?.works ?? []}
         onCancel={onCancel}
         thumbnailSize={thumbnailSize()}
         isPreviewByHover={isPreviewMode}

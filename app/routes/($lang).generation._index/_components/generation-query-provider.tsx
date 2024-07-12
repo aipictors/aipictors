@@ -1,23 +1,27 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { checkInGenerationProgressStatus } from "@/_utils/check-in-generation-progress-status"
-import { GenerationQueryContext } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import {
+  type controlNetCategoryContextFragment,
+  currentPassContextFragment,
+  GenerationQueryContext,
+  imageGenerationStatusContextFragment,
+  imageGenerationViewerContextFragment,
+  type imageLoraModelContextFragment,
+  type imageModelContextFragment,
+  type promptCategoryContextFragment,
+} from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { useQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
-  promptCategories: ResultOf<typeof promptCategoriesQuery>["promptCategories"]
-  negativePromptCategories: ResultOf<
-    typeof negativePromptCategoriesQuery
-  >["negativePromptCategories"]
-  controlNetCategories: ResultOf<
-    typeof controlNetCategoriesQuery
-  >["controlNetCategories"]
-  imageModels: ResultOf<typeof imageModelsQuery>["imageModels"]
-  imageLoraModels: ResultOf<typeof imageLoraModelsQuery>["imageLoraModels"]
+  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
+  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
+  controlNetCategories: FragmentOf<typeof controlNetCategoryContextFragment>[]
+  imageModels: FragmentOf<typeof imageModelContextFragment>[]
+  imageLoraModels: FragmentOf<typeof imageLoraModelContextFragment>[]
 }
 
 /**
@@ -100,120 +104,23 @@ export const GenerationQueryProvider = (props: Props) => {
   )
 }
 
-export const controlNetCategoriesQuery = graphql(
-  `query ControlNetCategories {
-    controlNetCategories {
-      id
-      name
-      enName
-      contents {
-        id
-        name
-        enName
-        module
-        sizeKind
-        imageUrl
-        thumbnailImageUrl
-      }
-    }
-  }`,
-)
-
-export const imageLoraModelsQuery = graphql(
-  `query ImageLoraModels {
-    imageLoraModels {
-      id
-      name
-      description
-      license
-      prompts
-      slug
-      thumbnailImageURL
-      genre
-    }
-  }`,
-)
-
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
-  }`,
-)
-
-export const negativePromptCategoriesQuery = graphql(
-  `query NegativePromptCategories {
-    negativePromptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
-    }
-  }`,
-)
-
-export const promptCategoriesQuery = graphql(
-  `query PromptCategories {
-    promptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
-    }
-  }`,
-)
-
 export const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
+      ...CurrentPassContext
     }
   }`,
-  [passFieldsFragment],
+  [currentPassContextFragment],
 )
 
 export const viewerImageGenerationStatusQuery = graphql(
   `query ViewerImageGenerationStatus {
     imageGenerationEngineStatus {
-      normalTasksCount
-      standardTasksCount
-      normalPredictionGenerationWait
-      standardPredictionGenerationWait
+      ...ImageGenerationStatusContext
     }
     viewer {
-      remainingImageGenerationTasksCount
-      inProgressImageGenerationTasksCount
-      inProgressImageGenerationTasksCost
-      inProgressImageGenerationReservedTasksCount
-      remainingImageGenerationTasksTotalCount
-      availableImageGenerationMaxTasksCount
-      imageGenerationWaitCount
-      availableImageGenerationLoraModelsCount
-      availableConsecutiveImageGenerationsCount
+      ...ImageGenerationViewerContext
     }
   }`,
+  [imageGenerationStatusContextFragment, imageGenerationViewerContextFragment],
 )
