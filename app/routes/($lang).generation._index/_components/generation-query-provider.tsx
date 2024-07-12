@@ -31,7 +31,11 @@ type Props = {
 export const GenerationQueryProvider = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data: viewer, refetch } = useQuery(viewerCurrentPassQuery, {
+  const {
+    data: viewer,
+    refetch,
+    error,
+  } = useQuery(viewerCurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
@@ -107,6 +111,7 @@ export const GenerationQueryProvider = (props: Props) => {
 export const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       ...CurrentPassContext
     }
   }`,

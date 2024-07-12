@@ -137,7 +137,7 @@ export const currentPassContextFragment = graphql(
       ...ImageGenerationPassContext
     }
   }`,
-  [imageGenerationUserContextFragment, imageGenerationPassContextFragment],
+  [imageGenerationPassContextFragment],
 )
 
 export const imageGenerationStatusContextFragment = graphql(
