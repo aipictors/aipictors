@@ -1,12 +1,11 @@
-import { partialFolderFieldsFragment } from "@/_graphql/fragments/partial-folder-fields"
-import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
-import { config } from "@/config"
+import type { partialFolderFieldsFragment } from "@/_graphql/fragments/partial-folder-fields"
+import type { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { Link } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
-import { useMediaQuery } from "usehooks-ts"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  folders: NonNullable<ResultOf<typeof foldersQuery>["folders"]> | null
+  folder: FragmentOf<typeof partialFolderFieldsFragment>
+  user: FragmentOf<typeof partialUserFieldsFragment> | null
   targetRowHeight?: number
 }
 
@@ -14,47 +13,29 @@ type Props = {
  * レスポンシブ対応のフォルダ一覧
  */
 export const ResponsiveFoldersList = (props: Props) => {
-  if (props.folders === null || props.folders.length === 0) {
-    return null
-  }
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
-    <div className="flex flex-wrap">
-      {props.folders.map((folder) => (
-        <div
-          key={folder.id}
-          className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
-        >
-          <div className="box-border flex flex-col justify-end">
-            <Link to={`/collections/${folder.id}`} className="relative">
-              <img
-                className="h-16 w-32 object-cover transition-all hover:scale-110 md:h-32 md:w-64"
-                src={folder.thumbnailImageURL ? folder.thumbnailImageURL : ""}
-                alt={folder.title}
-              />
-              <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
-                <p className="absolute bottom-1 left-1 text-white">
-                  {folder.title}
-                </p>
-              </div>
-            </Link>
+    <div
+      key={props.folder.id}
+      className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
+    >
+      <div className="box-border flex flex-col justify-end">
+        <Link to={`/collections/${props.folder.id}`} className="relative">
+          <img
+            className="h-16 w-32 object-cover transition-all hover:scale-110 md:h-32 md:w-64"
+            src={
+              props.folder.thumbnailImageURL
+                ? props.folder.thumbnailImageURL
+                : ""
+            }
+            alt={props.folder.title}
+          />
+          <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+            <p className="absolute bottom-1 left-1 text-white">
+              {props.folder.title}
+            </p>
           </div>
-        </div>
-      ))}
+        </Link>
+      </div>
     </div>
   )
 }
-
-export const foldersQuery = graphql(
-  `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
-    folders(offset: $offset, limit: $limit, where: $where) {
-      ...PartialFolderFields
-      user {
-        ...PartialUserFields
-      }
-    }
-  }`,
-  [partialFolderFieldsFragment, partialUserFieldsFragment],
-)

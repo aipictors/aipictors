@@ -51,6 +51,10 @@ export function ErrorBoundary() {
     return <AppErrorPage status={error.status} message={error.data} />
   }
 
+  if (error instanceof Error) {
+    return <AppErrorPage status={500} message={error.message} />
+  }
+
   return <AppNotFoundPage />
 }
 

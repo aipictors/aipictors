@@ -1,9 +1,9 @@
 import { ResponsivePhotoVideoWorksAlbum } from "@/_components/responsive-photo-video-works-album"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { graphql, type ResultOf } from "gql.tada"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -30,12 +30,3 @@ export const HomeVideosWorksSection = (props: Props) => {
     </section>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

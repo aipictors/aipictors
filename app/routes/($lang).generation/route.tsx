@@ -5,6 +5,12 @@ import { config } from "@/config"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
 import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
+import {
+  controlNetCategoryContextFragment,
+  imageLoraModelContextFragment,
+  imageModelContextFragment,
+  promptCategoryContextFragment,
+} from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { ApolloError } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, json, useLoaderData } from "@remix-run/react"
@@ -133,79 +139,44 @@ export default function GenerationLayout() {
 export const controlNetCategoriesQuery = graphql(
   `query ControlNetCategories {
     controlNetCategories {
-      id
-      name
-      enName
-      contents {
-        id
-        name
-        enName
-        module
-        sizeKind
-        imageUrl
-        thumbnailImageUrl
-      }
+      ...ControlNetCategoryContext
     }
   }`,
+  [controlNetCategoryContextFragment],
 )
 
 export const imageLoraModelsQuery = graphql(
   `query ImageLoraModels {
     imageLoraModels {
-      id
-      name
-      description
-      license
-      prompts
-      slug
-      thumbnailImageURL
-      genre
+      ...ImageLoraModelContext
     }
   }`,
+  [imageLoraModelContextFragment],
 )
 
 export const imageModelsQuery = graphql(
   `query ImageModels {
     imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
+      ...ImageModelContext
     }
   }`,
+  [imageModelContextFragment],
 )
 
 export const negativePromptCategoriesQuery = graphql(
   `query NegativePromptCategories {
     negativePromptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
+      ...PromptCategoryContext
     }
   }`,
+  [promptCategoryContextFragment],
 )
 
 export const promptCategoriesQuery = graphql(
   `query PromptCategories {
     promptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
+      ...PromptCategoryContext
     }
   }`,
+  [promptCategoryContextFragment],
 )

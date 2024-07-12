@@ -1,11 +1,11 @@
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Skeleton } from "@/_components/ui/skeleton"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
 import { FallbackTaskCard } from "@/routes/($lang).generation._index/_components/fallback-task-card"
 import { GenerationWorkCard } from "@/routes/($lang).generation._index/_components/generation-work-card "
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -13,7 +13,7 @@ type Props = {
   loading: boolean
   onCancel?(): void
   thumbnailSize: number
-  works: ResultOf<typeof worksQuery> | undefined
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
   isPreviewByHover: boolean
 }
 
@@ -49,35 +49,22 @@ export const GenerationWorkList = (props: Props) => {
               <Skeleton className="h-40 w-32" />
             </>
           ) : null}
-
-          {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-          {props.works !== undefined &&
-            props.works?.works !== undefined &&
-            props.works?.works.map(
-              (work) =>
-                work && (
-                  <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
-                    <Suspense fallback={<FallbackTaskCard />}>
-                      <GenerationWorkCard
-                        work={work}
-                        isPreviewByHover={props.isPreviewByHover}
-                      />
-                    </Suspense>
-                  </ErrorBoundary>
-                ),
-            )}
+          {props.works.map(
+            (work) =>
+              work && (
+                <ErrorBoundary key={work.id} fallback={<ErrorResultCard />}>
+                  <Suspense fallback={<FallbackTaskCard />}>
+                    <GenerationWorkCard
+                      work={work}
+                      isPreviewByHover={props.isPreviewByHover}
+                    />
+                  </Suspense>
+                </ErrorBoundary>
+              ),
+          )}
         </div>
         {/* </Suspense> */}
       </ScrollArea>
     </>
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

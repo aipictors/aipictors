@@ -1,8 +1,11 @@
-import { EventItem } from "@/routes/($lang).events._index/_components/events-item"
-import { graphql, type ResultOf } from "gql.tada"
+import {
+  type appEventItemFragment,
+  EventItem,
+} from "@/routes/($lang).events._index/_components/events-item"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  appEvents: ResultOf<typeof appEventsQuery>["appEvents"]
+  appEvents: FragmentOf<typeof appEventItemFragment>[]
 }
 
 export const EventsList = (props: Props) => {
@@ -11,33 +14,10 @@ export const EventsList = (props: Props) => {
       <div className="flex flex-wrap items-center space-x-2 space-y-2 rounded-lg p-4 shadow-md">
         {props.appEvents.map((event) => (
           <div key={event.id}>
-            <EventItem
-              title={event.title}
-              thumbnailImageUrl={event.thumbnailImageUrl}
-              description={event.description}
-              startAt={event.startAt}
-              endAt={event.endAt}
-              slug={event.slug}
-            />
+            <EventItem {...event} />
           </div>
         ))}
       </div>
     </div>
   )
 }
-
-export const appEventsQuery = graphql(
-  `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
-    appEvents(limit: $limit, offset: $offset, where: $where) {
-      id
-      description
-      title
-      slug
-      thumbnailImageUrl
-      headerImageUrl
-      startAt
-      endAt
-      tag
-    }
-  }`,
-)

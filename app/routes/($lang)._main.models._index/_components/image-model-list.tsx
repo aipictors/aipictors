@@ -1,8 +1,8 @@
 import { Link } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  imageModels: ResultOf<typeof imageModelsQuery>["imageModels"]
+  imageModels: FragmentOf<typeof imageModelCardFragment>[]
 }
 
 export const ImageModelList = (props: Props) => {
@@ -29,20 +29,18 @@ export const ImageModelList = (props: Props) => {
   )
 }
 
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
+export const imageModelCardFragment = graphql(
+  `fragment ImageModelCard on ImageModelNode @_unmask {
+    id
+    name
+    displayName
+    category
+    description
+    license
+    prompts
+    slug
+    style
+    thumbnailImageURL
+    type
   }`,
 )

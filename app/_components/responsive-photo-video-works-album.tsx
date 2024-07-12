@@ -1,23 +1,23 @@
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { config } from "@/config"
 import { HomeWorkVideoAlbum } from "@/routes/($lang)._main._index/_components/home-work-video-album"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
-  works: NonNullable<ResultOf<typeof worksQuery>["works"]> | null
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
  * レスポンシブ対応の作品一覧
  */
 export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
+  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
+
   if (props.works === null || props.works.length === 0) {
     return null
   }
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const photos = props.works.map((work) => ({
     src: work.largeThumbnailImageURL,
@@ -63,12 +63,3 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
     />
   )
 }
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
-)

@@ -1,7 +1,7 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
-import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -11,7 +11,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
@@ -27,8 +27,8 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
-  results: ResultOf<typeof viewerImageGenerationResultsQuery>
-  tasks: ResultOf<typeof viewerImageGenerationTasksQuery>
+  results: FragmentOf<typeof imageGenerationResultFieldsFragment>[]
+  tasks: FragmentOf<typeof imageGenerationTaskFieldsFragment>[]
   userToken: string
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
@@ -56,7 +56,7 @@ export const GenerationTaskList = (props: Props) => {
     return null
   }
 
-  const imageGenerationTasks = tasks.viewer?.imageGenerationTasks ?? []
+  const imageGenerationTasks = tasks ?? []
 
   /**
    * 非表示指定のタスクを除外
@@ -69,7 +69,7 @@ export const GenerationTaskList = (props: Props) => {
   })
 
   const currentResults =
-    props.results.viewer?.imageGenerationResults.filter((task) => {
+    props.results.filter((task) => {
       return task.nanoid && !props.hidedTaskIds.includes(task.nanoid)
     }) ?? []
 
@@ -78,9 +78,7 @@ export const GenerationTaskList = (props: Props) => {
   }
 
   const onRestore = (taskId: string) => {
-    const task = tasks.viewer?.imageGenerationTasks.find(
-      (task) => task.nanoid === taskId,
-    )
+    const task = tasks.find((task) => task.nanoid === taskId)
     if (typeof task === "undefined") return
     context.updateSettings(
       task.model.id,
@@ -224,25 +222,3 @@ export const GenerationTaskList = (props: Props) => {
     </>
   )
 }
-
-export const viewerImageGenerationResultsQuery = graphql(
-  `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
-    viewer {
-      imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
-        ...ImageGenerationResultFields
-      }
-    }
-  }`,
-  [imageGenerationResultFieldsFragment],
-)
-
-export const viewerImageGenerationTasksQuery = graphql(
-  `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
-    viewer {
-      imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
-        ...ImageGenerationTaskFields
-      }
-    }
-  }`,
-  [imageGenerationTaskFieldsFragment],
-)

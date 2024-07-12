@@ -3,13 +3,12 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
-import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { TagButton } from "@/routes/($lang)._main._index/_components/tag-button"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  hotTags: ResultOf<typeof hotTagsQuery>["hotTags"]
+  hotTags: FragmentOf<typeof partialTagFieldsFragment>[]
   themeTitle?: string
 }
 
@@ -28,7 +27,6 @@ export const HomeTagList = (props: Props) => {
             />
           )}
         </CarouselItem>
-
         {props.hotTags?.map((tag) => (
           <CarouselItem className="basis-auto" key={tag.id}>
             <TagButton link={`${tag.name}`} name={tag.name} />
@@ -40,15 +38,3 @@ export const HomeTagList = (props: Props) => {
     </Carousel>
   )
 }
-
-export const hotTagsQuery = graphql(
-  `query HotTags {
-    hotTags {
-      ...PartialTagFields
-      firstWork {
-        ...PartialWorkFields
-      }
-    }
-  }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
-)

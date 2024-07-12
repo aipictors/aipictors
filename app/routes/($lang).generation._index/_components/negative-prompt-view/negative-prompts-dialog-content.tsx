@@ -12,14 +12,13 @@ import {
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { NegativePromptCategoryIcon } from "@/routes/($lang).generation._index/_components/negative-prompt-view/negative-prompt-category-icon"
-import { graphql, type ResultOf } from "gql.tada"
+import type { promptCategoryContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedNegativePromptIds: string[]
   onClose(): void
-  negativePromptCategories: ResultOf<
-    typeof negativePromptCategoriesQuery
-  >["negativePromptCategories"]
+  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
   onSelect(id: string): void
 }
 
@@ -83,17 +82,3 @@ export const NegativePromptsDialogContent = (props: Props) => {
     </>
   )
 }
-
-export const negativePromptCategoriesQuery = graphql(
-  `query NegativePromptCategories {
-    negativePromptCategories {
-      id
-      name
-      prompts {
-        id
-        name
-        words
-      }
-    }
-  }`,
-)

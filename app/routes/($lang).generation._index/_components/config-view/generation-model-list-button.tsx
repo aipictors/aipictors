@@ -10,13 +10,14 @@ import {
 } from "@/_components/ui/dialog"
 import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
 import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
+import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  models: ResultOf<typeof imageModelsQuery>["imageModels"]
+  models: FragmentOf<typeof imageModelContextFragment>[]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean
@@ -118,21 +119,3 @@ export const GenerationModelListButton = (props: Props) => {
     </Dialog>
   )
 }
-
-export const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      id
-      name
-      displayName
-      category
-      description
-      license
-      prompts
-      slug
-      style
-      thumbnailImageURL
-      type
-    }
-  }`,
-)

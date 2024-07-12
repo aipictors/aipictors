@@ -3,12 +3,12 @@ import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/ima
 import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/_components/generation-task-editable-card"
 import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation._index/_components/generation-task-responsive-card"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
-import type { ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | ResultOf<typeof imageGenerationTaskFieldsFragment>
-    | ResultOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
+    | FragmentOf<typeof imageGenerationResultFieldsFragment>
   taskIds?: string[]
   isEditMode: boolean
   isSelected?: boolean

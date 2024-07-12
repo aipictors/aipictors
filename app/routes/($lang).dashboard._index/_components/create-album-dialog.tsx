@@ -15,8 +15,8 @@ import { createAlbumMutation } from "@/_graphql/mutations/create-album"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { graphql, type ResultOf } from "gql.tada"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { type FragmentOf, graphql } from "gql.tada"
+import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
   children: React.ReactNode
@@ -40,7 +40,7 @@ export const CreateAlbumDialog = (props: Props) => {
   const [description, setDescription] = useState<string>("")
 
   const [selectedWorks, setSelectedWorks] = useState<
-    ResultOf<typeof worksQuery>["works"]
+    FragmentOf<typeof partialWorkFieldsFragment>[]
   >([])
 
   const [isCreating, setIsCreating] = useState<boolean>(false)
@@ -274,13 +274,4 @@ export const viewerTokenQuery = graphql(
       token
     }
   }`,
-)
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
 )

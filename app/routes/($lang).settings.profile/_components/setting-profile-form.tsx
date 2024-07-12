@@ -6,7 +6,7 @@ import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { SelectCreatedWorksDialog } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog"
 import { useQuery, useSuspenseQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
@@ -68,14 +68,12 @@ export const SettingProfileForm = () => {
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
-  const [selectedPickupWorks, setSelectedPickupWorks] = useState<
-    ResultOf<typeof worksQuery>["works"]
-  >(userInfo?.featuredWorks ?? [])
+  const [selectedPickupWorks, setSelectedPickupWorks] = useState(
+    userInfo?.featuredWorks ?? [],
+  )
 
   const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] =
-    useState<ResultOf<typeof worksQuery>["works"]>(
-      userInfo?.featuredSensitiveWorks ?? [],
-    )
+    useState(userInfo?.featuredSensitiveWorks ?? [])
 
   const [updateProfile, { loading: isUpdating }] = useMutation(
     updateUserProfileMutation,
@@ -494,13 +492,4 @@ export const viewerTokenQuery = graphql(
       token
     }
   }`,
-)
-
-export const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
 )

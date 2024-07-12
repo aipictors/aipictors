@@ -2,16 +2,18 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { Button } from "@/_components/ui/button"
 import { Card } from "@/_components/ui/card"
 import { AuthContext } from "@/_contexts/auth-context"
-import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
-import { AlbumArticleEditorDialog } from "@/routes/($lang)._main.albums.$album/_components/album-article-editor-dialog"
+import {
+  AlbumArticleEditorDialog,
+  type albumArticleFragment,
+} from "@/routes/($lang)._main.albums.$album/_components/album-article-editor-dialog"
 import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 
 type Props = {
-  album: NonNullable<ResultOf<typeof albumQuery>["album"]>
+  album: FragmentOf<typeof albumArticleFragment>
   thumbnail?: string
   userLogin: string
   userId: string
@@ -81,27 +83,3 @@ export const AlbumArticleHeader = (props: Props) => {
     </Card>
   )
 }
-
-export const albumQuery = graphql(
-  `query Album($id: ID!) {
-    album(id: $id) {
-      id
-      title
-      description
-      user {
-        ...WorkUserFields
-        isFollowee
-        isFollowee
-        isMuted
-        nanoid
-      }
-      createdAt
-      isSensitive
-      thumbnailImageURL
-      slug
-      worksCount
-      workIds
-    }
-  }`,
-  [workUserFieldsFragment],
-)

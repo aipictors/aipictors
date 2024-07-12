@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import type React from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
@@ -79,7 +79,9 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
 
-  const handleWorkClick = (work: ResultOf<typeof worksQuery>["works"][0]) => {
+  const handleWorkClick = (
+    work: FragmentOf<typeof partialWorkFieldsFragment>,
+  ) => {
     if (selectedWorks.some((w) => w.id === work.id)) {
       props.setSelectedWorkIds(
         props.selectedWorkIds.filter((w) => w !== work.id),
@@ -97,7 +99,9 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
     }
   }
 
-  const renderWorks = (worksToRender: ResultOf<typeof worksQuery>["works"]) => {
+  const renderWorks = (
+    worksToRender: FragmentOf<typeof partialWorkFieldsFragment>[],
+  ) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}

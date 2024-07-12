@@ -1,10 +1,10 @@
-import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
+import type { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
 import { StickerCard } from "@/routes/($lang)._main.stickers._index/_components/sticker-card"
 import { Link } from "@remix-run/react"
-import { graphql, type ResultOf } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  stickers: NonNullable<ResultOf<typeof userStickersQuery>["user"]>["stickers"]
+  stickers: FragmentOf<typeof partialStickerFieldsFragment>[]
 }
 
 export const UserStickerList = (props: Props) => {
@@ -26,15 +26,3 @@ export const UserStickerList = (props: Props) => {
     </div>
   )
 }
-
-export const userStickersQuery = graphql(
-  `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $userId) {
-      id
-      stickers(offset: $offset, limit: $limit) {
-        ...PartialStickerFields
-      }
-    }
-  }`,
-  [partialStickerFieldsFragment],
-)

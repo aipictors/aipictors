@@ -1,15 +1,14 @@
 import { FollowButton } from "@/_components/button/follow-button"
 import { Button } from "@/_components/ui/button"
 import { PromptonRequestColorfulButton } from "@/routes/($lang)._main.posts.$post/_components/prompton-request-colorful-button"
-import { graphql, type ResultOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "@/_components/profile-edit-dialog"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 type Props = {
-  user: NonNullable<ResultOf<typeof userQuery>["user"]>
+  user: FragmentOf<typeof userHomeMainFragment>
   userId: string
 }
 
@@ -20,22 +19,6 @@ export const UserHomeMain = (props: Props) => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: decodeURIComponent(props.userId),
-      worksWhere: {},
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {},
-      worksOffset: 0,
-      worksLimit: 0,
-      followeesOffset: 0,
-      followeesLimit: 0,
-      followeesWorksOffset: 0,
-      followeesWorksLimit: 0,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
     },
   })
 
@@ -106,94 +89,25 @@ export const UserHomeMain = (props: Props) => {
   )
 }
 
+export const userHomeMainFragment = graphql(
+  `fragment UserHomeMain on UserNode @_unmask {
+    id
+    isFollowee
+    isFollower
+    promptonUser {
+      id
+    }
+  }`,
+  [],
+)
+
 export const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
-      id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
-      }
+      ...UserHomeMain
     }
   }`,
-  [partialWorkFieldsFragment],
+  [userHomeMainFragment],
 )

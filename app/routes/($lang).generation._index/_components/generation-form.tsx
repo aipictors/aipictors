@@ -128,6 +128,7 @@ export const GenerationForm = (props: Props) => {
 export const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,

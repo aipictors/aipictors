@@ -51,8 +51,7 @@ export const HomeVideosSection = (props: Props) => {
     },
   })
 
-  const workList =
-    videoWorks?.works.filter((_, index) => index % 2 === 0) ?? null
+  const workList = videoWorks?.works.filter((_, index) => index % 2 === 0) ?? []
 
   return <HomeVideosWorksSection works={workList} title={props.title} />
 }
