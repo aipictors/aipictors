@@ -26,7 +26,7 @@ import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import {
   postFormReducer,
-  type PostFormState,
+  type PostImageFormState,
 } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 
 /**
@@ -403,7 +403,7 @@ export const NewImageForm = () => {
       if (pngInfo.src !== null) {
         dispatch({
           type: "SET_PNG_INFO",
-          payload: pngInfo as PostFormState["pngInfo"],
+          payload: pngInfo as PostImageFormState["pngInfo"],
         })
         toast("PNG情報を取得しました")
         return

@@ -9,9 +9,7 @@ import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-
 import { graphql } from "gql.tada"
 
 type Props = {
-  onSubmitted: (selectedImage: string[], selectedIds: string[]) => void
-  selectedIds: string[]
-  setSelectIds: (selectedIds: string[]) => void
+  onSubmit: (selectedImage: string[], selectedIds: string[]) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
@@ -53,7 +51,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
 
   const handleSubmit = () => {
     console.log(selectedImages)
-    props.onSubmitted(selectedImages, selectedIds)
+    props.onSubmit(selectedImages, selectedIds)
     props.setIsOpen(false)
   }
 

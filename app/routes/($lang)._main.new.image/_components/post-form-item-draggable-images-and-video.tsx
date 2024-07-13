@@ -19,16 +19,16 @@ type Props = {
   videoFile: File | null
   isOnlyMove?: boolean
   maxItemsCount?: number
-  setItems: (items: TSortableItem[]) => void
-  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
-  setThumbnailBase64?: (thumbnailBase64: string) => void
-  setOgpBase64?: (ogpBase64: string) => void
-  setIsThumbnailLandscape?: (isThumbnailLandscape: boolean) => void
-  onVideoChange: (videoFile: File | null) => void
-  onChangePngInfo?: (pngInfo: PNGInfo) => void
-  onMosaicButtonClick?: (content: string) => void
-  onChangeItems: (items: TSortableItem[]) => void
-  onChangeIndexList?: (indexList: number[]) => void
+  setItems(items: TSortableItem[]): void
+  setIndexList(value: number[]): void
+  setThumbnailBase64(thumbnailBase64: string | null): void
+  setOgpBase64?(ogpBase64: string | null): void
+  setIsThumbnailLandscape?(isThumbnailLandscape: boolean): void
+  onVideoChange(videoFile: File | null): void
+  onChangePngInfo?(pngInfo: PNGInfo): void
+  onMosaicButtonClick?(content: string): void
+  onChangeItems(items: TSortableItem[]): void
+  onChangeIndexList?(indexList: number[]): void
 }
 
 /**
@@ -65,13 +65,13 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
     }
     if (props.items.length === 0) {
       if (props.setOgpBase64) {
-        props.setOgpBase64("")
+        props.setOgpBase64(null)
       }
       if (props.setIsThumbnailLandscape) {
         props.setIsThumbnailLandscape(false)
       }
       if (props.setThumbnailBase64) {
-        props.setThumbnailBase64("")
+        props.setThumbnailBase64(null)
       }
     }
   }, [props.items])
@@ -332,14 +332,13 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
             )
           }
         />
-
         {!props.items.length && (
           <div className="m-4 flex flex-col text-white">
             <p className="text-center text-sm">
-              JPEG、PNG、GIF、WEBP、BMP、MP4
+              {"JPEG、PNG、GIF、WEBP、BMP、MP4"}
             </p>
             <p className="text-center text-sm">
-              1枚32MB以内、最大200枚、動画は32MB、12秒まで
+              {"1枚32MB以内、最大200枚、動画は32MB、12秒まで"}
             </p>
           </div>
         )}

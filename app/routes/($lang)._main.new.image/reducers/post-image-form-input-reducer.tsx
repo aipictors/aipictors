@@ -77,6 +77,10 @@ export type PostImageFormInputAction =
       payload: boolean
     }
   | {
+      type: "ENABLE_GENERATION_PARAMS_FEATURE"
+      payload: boolean
+    }
+  | {
       type: "SET_RATING_RESTRICTION"
       payload: "G" | "R15" | "R18" | "R18G"
     }
@@ -231,6 +235,12 @@ export const postImageFormInputReducer = (
       return {
         ...state,
         isPromotion: action.payload,
+      }
+    }
+    case "ENABLE_GENERATION_PARAMS_FEATURE": {
+      return {
+        ...state,
+        isSetGenerationParams: action.payload,
       }
     }
     case "SET_RATING_RESTRICTION": {

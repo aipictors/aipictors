@@ -23,7 +23,7 @@ import { SortableItem } from "@/_components/drag/sortable-item"
 type Props = {
   items: TSortableItem[]
   setItems: (items: TSortableItem[]) => void
-  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
+  setIndexList(value: number[]): void
   isDeletable?: boolean
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void

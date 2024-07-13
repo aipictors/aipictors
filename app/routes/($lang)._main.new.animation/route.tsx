@@ -22,7 +22,7 @@ import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_comp
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import {
   postFormReducer,
-  type PostFormState,
+  type PostImageFormState,
 } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -399,7 +399,7 @@ export default function NewImage() {
       if (pngInfo.src !== null) {
         dispatch({
           type: "SET_PNG_INFO",
-          payload: pngInfo as PostFormState["pngInfo"],
+          payload: pngInfo as PostImageFormState["pngInfo"],
         })
         toast("PNG情報を取得しました")
         return

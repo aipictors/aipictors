@@ -1,11 +1,10 @@
-import { type Dispatch, useContext } from "react"
+import type { Dispatch } from "react"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/_components/ui/accordion"
-import { Button } from "@/_components/ui/button"
 import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
 import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
 import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
@@ -25,13 +24,11 @@ import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_comp
 import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
 import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
 import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
-import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import type { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
-import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { graphql } from "gql.tada"
-import { AuthContext } from "@/_contexts/auth-context"
+import type { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { type FragmentOf, graphql } from "gql.tada"
 import type {
   PostImageFormInputAction,
   PostImageFormInputState,
@@ -44,11 +41,11 @@ type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
   dispatch: Dispatch<PostImageFormInputAction>
   state: PostImageFormInputState
+  albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
+  currentPass: FragmentOf<typeof passFieldsFragment> | null
 }
 
 export function PostImageFormInput(props: Props) {
-  const authContext = useContext(AuthContext)
-
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
@@ -62,15 +59,6 @@ export function PostImageFormInput(props: Props) {
     },
   })
 
-  const { data: viewer } = useQuery(viewerQuery, {
-    skip: authContext.isLoggedIn,
-    variables: {
-      offset: 0,
-      limit: 128,
-      ownerUserId: authContext.userId,
-    },
-  })
-
   const hasImageInfo = props.imageInformation
 
   const onChangeTheme = (value: boolean) => {
@@ -79,6 +67,16 @@ export function PostImageFormInput(props: Props) {
     }
     if (data.dailyTheme === null) {
       throw new Error("theme.dailyTheme is null")
+    }
+    if (value === false) {
+      props.dispatch({
+        type: "SET_THEME_ID",
+        payload: {
+          themeId: null,
+          themeTitle: data.dailyTheme.title,
+        },
+      })
+      return
     }
     props.dispatch({
       type: "SET_THEME_ID",
@@ -92,7 +90,7 @@ export function PostImageFormInput(props: Props) {
   /**
    * 選択可能なタグ
    */
-  const selectableTags = () => {
+  const tagOptions = () => {
     if (data?.whiteListTags === undefined) {
       return []
     }
@@ -107,14 +105,23 @@ export function PostImageFormInput(props: Props) {
     })
   }
 
+  const recommendedTagOptions = () => {
+    if (data === undefined) {
+      return []
+    }
+    const tags = data.recommendedTagsFromPrompts.filter((tag) => {
+      return !props.state.tags.map((t) => t.text).includes(tag.name)
+    })
+    return tags.map((tag) => {
+      return {
+        id: tag.id,
+        text: tag.name,
+      }
+    })
+  }
+
   const albumOptions = () => {
-    if (viewer === undefined) {
-      return []
-    }
-    if (viewer.albums === null) {
-      return []
-    }
-    return viewer.albums.map((album) => {
+    return props.albums.map((album) => {
       return {
         id: album.id,
         name: album.title,
@@ -135,23 +142,6 @@ export function PostImageFormInput(props: Props) {
         }
       })
   }
-
-  const tagOptions = () => {
-    if (data === undefined) {
-      return []
-    }
-    const tags = data.recommendedTagsFromPrompts.filter((tag) => {
-      return !props.state.tags.map((t) => t.text).includes(tag.name)
-    })
-    return tags.map((tag) => {
-      return {
-        id: tag.id,
-        text: tag.name,
-      }
-    })
-  }
-
-  const themeId = data?.dailyTheme?.id ?? null
 
   return (
     <div className="space-y-4">
@@ -216,7 +206,7 @@ export function PostImageFormInput(props: Props) {
             id="set-generation-check"
             onCheckedChange={() => {
               props.dispatch({
-                type: "SET_GENERATION_PARAMS_FEATURE",
+                type: "ENABLE_GENERATION_PARAMS_FEATURE",
                 payload: !props.state.isSetGenerationParams,
               })
             }}
@@ -232,11 +222,7 @@ export function PostImageFormInput(props: Props) {
       {props.imageInformation && props.state.isSetGenerationParams && (
         <Accordion type="single" collapsible>
           <AccordionItem value="setting">
-            <AccordionTrigger>
-              <Button variant={"secondary"} className="w-full">
-                {"生成情報を確認する"}
-              </Button>
-            </AccordionTrigger>
+            <AccordionTrigger>{"生成情報を確認する"}</AccordionTrigger>
             <AccordionContent className="space-y-2">
               <PostFormItemGenerationParams
                 pngInfo={props.imageInformation}
@@ -284,9 +270,9 @@ export function PostImageFormInput(props: Props) {
         />
       )}
       <PostFormItemTags
-        whiteListTags={selectableTags()}
+        whiteListTags={tagOptions()}
         tags={props.state.tags}
-        recommendedTags={tagOptions()}
+        recommendedTags={recommendedTagOptions()}
         setTags={(tags) => {
           props.dispatch({ type: "SET_TAGS", payload: tags })
         }}
@@ -304,7 +290,7 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />
-      {viewer?.albums && (
+      {props.albums.length !== 0 && (
         <PostFormItemAlbum
           album={props.state.albumId}
           albums={albumOptions()}
@@ -321,8 +307,8 @@ export function PostImageFormInput(props: Props) {
       />
       <PostFormItemAdvertising
         isSubscribed={
-          viewer?.viewer?.currentPass?.type === "STANDARD" ||
-          viewer?.viewer?.currentPass?.type === "PREMIUM"
+          props.currentPass?.type === "STANDARD" ||
+          props.currentPass?.type === "PREMIUM"
         }
         isChecked={props.state.isPromotion}
         onChange={(isAd) => {
@@ -332,42 +318,6 @@ export function PostImageFormInput(props: Props) {
     </div>
   )
 }
-
-const viewerQuery = graphql(
-  `query ViewerQuery(
-    $limit: Int!,
-    $offset: Int!,
-    $ownerUserId: ID
-  ) {
-    viewer {
-      token
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
-    }
-    albums(
-      offset: $offset,
-      limit: $limit,
-      where: {
-        ownerUserId: $ownerUserId,
-        isSensitiveAndAllRating: true,
-        needInspected: false,
-        needsThumbnailImage: false,
-      }
-    ) {
-      ...PartialAlbumFields
-      user {
-        ...PartialUserFields
-      }
-    }
-  }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
-)
 
 const pageQuery = graphql(
   `query PageQuery(

@@ -24,12 +24,12 @@ export const vSortableItem = object({
   isContentEdited: optional(boolean()),
 })
 
-export type PostFormState = InferInput<typeof vPostImageFormState>
+export type PostImageFormState = InferInput<typeof vPostImageFormState>
 
-export type Action =
+export type PostImageFormAction =
   | {
       type: "SET_PNG_INFO"
-      payload: PostFormState["pngInfo"]
+      payload: PostImageFormState["pngInfo"]
     }
   | {
       type: "SET_IS_DRAWING"
@@ -67,15 +67,15 @@ export type Action =
     }
   | {
       type: "SET_VIDEO_FILE"
-      payload: PostFormState["videoFile"]
+      payload: PostImageFormState["videoFile"]
     }
   | {
       type: "SET_THUMBNAIL_BASE64"
-      payload: string
+      payload: string | null
     }
   | {
       type: "SET_OGP_BASE64"
-      payload: string
+      payload: string | null
     }
   | {
       type: "SET_THUMBNAIL_POS_X"
@@ -121,11 +121,20 @@ export type Action =
       type: "SET_SELECTED_IMAGE_GENERATION_IDS"
       payload: string[]
     }
+  | {
+      type: "ADD_IMAGE"
+      payload: {
+        imageId: string
+      }
+    }
+  | {
+      type: "CLOSE_IMAGE_GENERATION_DIALOG"
+    }
 
 export const postFormReducer = (
-  state: PostFormState,
-  action: Action,
-): PostFormState => {
+  state: PostImageFormState,
+  action: PostImageFormAction,
+): PostImageFormState => {
   switch (action.type) {
     case "SET_PNG_INFO": {
       return {
@@ -254,7 +263,37 @@ export const postFormReducer = (
         ogpBase64: null,
       }
     }
+    case "SET_ITEMS": {
+      return {
+        ...state,
+        items: action.payload,
+      }
+    }
+    case "ADD_IMAGE": {
+      return {
+        ...state,
+        items: [
+          ...state.items,
+          {
+            id: Math.floor(Math.random() * 10000),
+            content: action.payload.imageId,
+          },
+        ],
+      }
+    }
+    case "CLOSE_IMAGE_GENERATION_DIALOG": {
+      return {
+        ...state,
+        isOpenImageGenerationDialog: false,
+      }
+    }
+    case "SET_INDEX_LIST": {
+      return {
+        ...state,
+        indexList: action.payload,
+      }
+    }
   }
 
-  throw new Error("Invalid action type")
+  throw new Error(`Invalid action type: ${action.type}`)
 }

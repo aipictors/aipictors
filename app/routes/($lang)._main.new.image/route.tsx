@@ -4,25 +4,17 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { cn } from "@/_lib/cn"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
-import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { config } from "@/config"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
-import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
-import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
-import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
 import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
+import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
-import {
-  postFormReducer,
-  type PostFormState,
-} from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import { postFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -34,25 +26,25 @@ export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [state, dispatch] = useReducer(postFormReducer, {
-    pngInfo: null,
-    isDrawing: false,
-    isHovered: false,
     editTargetImageBase64: null,
-    items: [],
     indexList: [],
-    videoFile: null,
-    thumbnailBase64: null,
-    ogpBase64: null,
-    thumbnailPosX: 0,
-    thumbnailPosY: 0,
-    isThumbnailLandscape: false,
     isCreatedWork: false,
     isCreatingWork: false,
-    uploadedWorkId: null,
-    uploadedWorkUuid: null,
+    isDrawing: false,
+    isHovered: false,
+    isOpenImageGenerationDialog: false,
+    isThumbnailLandscape: false,
+    items: [],
+    ogpBase64: null,
+    pngInfo: null,
     progress: 0,
     selectedImageGenerationIds: [],
-    isOpenImageGenerationDialog: false,
+    thumbnailBase64: null,
+    thumbnailPosX: 0,
+    thumbnailPosY: 0,
+    uploadedWorkId: null,
+    uploadedWorkUuid: null,
+    videoFile: null,
   })
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
@@ -290,57 +282,11 @@ export default function NewImage() {
     dispatch({ type: "SET_PROGRESS", payload: 0 })
   }
 
-  const onInputPngInfo = () => {
-    const input = document.createElement("input")
-    input.type = "file"
-    input.accept = "image/png"
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) {
-        return
-      }
-      const pngInfo = await getExtractInfoFromPNG(file)
-      if (pngInfo.src !== null) {
-        dispatch({
-          type: "SET_PNG_INFO",
-          payload: pngInfo as PostFormState["pngInfo"],
-        })
-        toast("PNG情報を取得しました")
-        return
-      }
-      dispatch({ type: "SET_PNG_INFO", payload: null })
-      toast("PNG情報を取得できませんでした")
-    }
-    input.click()
-  }
-
-  const selectedFilesSizeText = () => {
-    const totalBytes = state.items
-      .map((item) => item.content)
-      .reduce((acc, imageBase64) => {
-        if (!imageBase64) {
-          return acc
-        }
-        const byteLength = new TextEncoder().encode(imageBase64).length
-        return acc + byteLength
-      }, 0)
-
-    if (totalBytes < 1024 * 1024) {
-      return `${(totalBytes / 1024).toFixed(2)} KB`
-    }
-    return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-  }
-
-  const selectedImagesCountText = () => {
-    const imageCount = state.items.filter((item) => item.content).length
-    return `イラスト${imageCount}枚`
-  }
-
   const createdAt = new Date(
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // TODO: あとで
+  // TODO_2024_08: 仕組みが分からなかった
   // useBeforeUnload(
   //   React.useCallback(
   //     (event) => {
@@ -363,122 +309,13 @@ export default function NewImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="w-full space-y-4">
-        <div>
-          <div
-            className={cn(
-              "relative items-center bg-gray-800",
-              state.isHovered && "border-2 border-white border-dashed",
-            )}
-          >
-            {state.items.length !== 0 && (
-              <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
-                <div className="flex space-x-4 text-white">
-                  <div className="flex">{selectedImagesCountText()}</div>
-                  <div className="flex">{selectedFilesSizeText()}</div>
-                </div>
-              </div>
-            )}
-            <PostFormItemDraggableImagesAndVideo
-              indexList={state.indexList}
-              items={state.items ?? []}
-              videoFile={state.videoFile as File}
-              setItems={(items) => {
-                dispatch({ type: "SET_ITEMS", payload: items })
-              }}
-              onChangeItems={(items) => {
-                dispatch({ type: "SET_ITEMS", payload: items })
-              }}
-              maxItemsCount={config.post.maxImageCount}
-              setIndexList={(indexList) => {
-                dispatch({
-                  type: "SET_INDEX_LIST",
-                  payload: indexList as number[],
-                })
-              }}
-              onChangePngInfo={(pngInfo) => {
-                dispatch({
-                  type: "SET_PNG_INFO",
-                  payload: pngInfo,
-                })
-              }}
-              onVideoChange={(value) => {
-                dispatch({ type: "SET_VIDEO_FILE", payload: value })
-              }}
-              onMosaicButtonClick={(content) => {
-                dispatch({
-                  type: "SET_EDIT_TARGET_IMAGE_BASE64",
-                  payload: content,
-                })
-              }}
-              setThumbnailBase64={(base64) => {
-                dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
-              }}
-              setOgpBase64={(base64) => {
-                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-              }}
-              setIsThumbnailLandscape={(isLandscape) => {
-                dispatch({
-                  type: "SET_IS_THUMBNAIL_LANDSCAPE",
-                  payload: isLandscape,
-                })
-              }}
-            />
-          </div>
-          {state.thumbnailBase64 !== null && (
-            <PostFormItemThumbnailPositionAdjust
-              isThumbnailLandscape={state.isThumbnailLandscape}
-              thumbnailBase64={state.thumbnailBase64}
-              thumbnailPosX={state.thumbnailPosX}
-              thumbnailPosY={state.thumbnailPosY}
-              setThumbnailPosX={(posX) => {
-                dispatch({
-                  type: "SET_THUMBNAIL_POS_X",
-                  payload: posX as number,
-                })
-              }}
-              setThumbnailPosY={(posY) => {
-                dispatch({
-                  type: "SET_THUMBNAIL_POS_Y",
-                  payload: posY as number,
-                })
-              }}
-            />
-          )}
-          {state.thumbnailBase64 !== null && state.ogpBase64 !== null && (
-            <PostFormOgp
-              imageBase64={state.thumbnailBase64}
-              setOgpBase64={(base64) => {
-                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-              }}
-              ogpBase64={state.ogpBase64}
-            />
-          )}
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            variant={"secondary"}
-            onClick={onInputPngInfo}
-            className="m-2 ml-auto block"
-          >
-            {"PNG情報のみ読み込み"}
-          </Button>
-          <Button
-            variant={"secondary"}
-            className="m-2 ml-auto block"
-            onClick={() => {
-              dispatch({
-                type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
-                payload: true,
-              })
-            }}
-          >
-            {"生成画像"}
-          </Button>
-        </div>
+        <PostImageFormUploader state={state} dispatch={dispatch} />
         <PostImageFormInput
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}
+          albums={viewer?.albums ?? []}
+          currentPass={viewer?.viewer?.currentPass ?? null}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"投稿"}
@@ -508,6 +345,7 @@ const viewerQuery = graphql(
     $ownerUserId: ID
   ) {
     viewer {
+      id
       token
       user {
         id
