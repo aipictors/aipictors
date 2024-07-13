@@ -167,25 +167,25 @@ export const UserTabs = (props: Props) => {
   )
 }
 
-export const albumsCountQuery = graphql(
+const albumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
 )
 
-export const foldersCountQuery = graphql(
+const foldersCountQuery = graphql(
   `query FoldersCount($where: FoldersWhereInput) {
     foldersCount(where: $where)
   }`,
 )
 
-export const stickersCountQuery = graphql(
+const stickersCountQuery = graphql(
   `query StickersCount($where: StickersWhereInput) {
     stickersCount(where: $where)
   }`,
 )
 
-export const worksCountQuery = graphql(
+const worksCountQuery = graphql(
   `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
   }`,

@@ -66,7 +66,7 @@ export const AccountLoginForm = () => {
   )
 }
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {

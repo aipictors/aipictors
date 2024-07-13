@@ -61,7 +61,7 @@ export const AlbumWorkDescription = (props: Props) => {
   )
 }
 
-export const userFolloweesQuery = graphql(
+const userFolloweesQuery = graphql(
   `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {
     user(id: $user_id) {
       id

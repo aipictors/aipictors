@@ -52,7 +52,7 @@ export default function SensitiveDayThemePage() {
   )
 }
 
-export const dailyThemesQuery = graphql(
+const dailyThemesQuery = graphql(
   `query DailyThemes(
     $offset: Int!
     $limit: Int!

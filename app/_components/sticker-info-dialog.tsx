@@ -79,7 +79,7 @@ export const StickerInfoDialog = (props: Props) => {
   )
 }
 
-export const createUserStickerMutation = graphql(
+const createUserStickerMutation = graphql(
   `mutation CreateUserSticker($input: CreateUserStickerInput!) {
     createUserSticker(input: $input) {
       id

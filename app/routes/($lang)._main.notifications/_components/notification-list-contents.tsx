@@ -49,7 +49,7 @@ export const NotificationListContents = () => {
   )
 }
 
-export const viewerNotificationsCountQuery = graphql(
+const viewerNotificationsCountQuery = graphql(
   `query ViewerNotifications($where: NotificationsWhereInput) {
     viewer {
       notificationsCount(where: $where)

@@ -148,7 +148,7 @@ export const WorkComment = (props: Props) => {
   )
 }
 
-export const deleteCommentMutation = graphql(
+const deleteCommentMutation = graphql(
   `mutation DeleteComment($input: DeleteCommentInput!) {
     deleteComment(input: $input) {
       id

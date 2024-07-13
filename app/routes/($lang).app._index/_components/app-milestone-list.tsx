@@ -24,7 +24,7 @@ export const AppMilestoneList = () => {
   )
 }
 
-export const milestonesQuery = graphql(
+const milestonesQuery = graphql(
   `query Milestones($repository: String!) {
     milestones(where: {repository: $repository}) {
       id

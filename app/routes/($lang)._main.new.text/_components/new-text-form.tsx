@@ -935,7 +935,7 @@ export const NewTextForm = () => {
   )
 }
 
-export const albumsQuery = graphql(
+const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...PartialAlbumFields
@@ -947,7 +947,7 @@ export const albumsQuery = graphql(
   [partialAlbumFieldsFragment, partialUserFieldsFragment],
 )
 
-export const appEventsQuery = graphql(
+const appEventsQuery = graphql(
   `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
     appEvents(limit: $limit, offset: $offset, where: $where) {
       id
@@ -963,7 +963,7 @@ export const appEventsQuery = graphql(
   }`,
 )
 
-export const dailyThemeQuery = graphql(
+const dailyThemeQuery = graphql(
   `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -981,7 +981,7 @@ export const dailyThemeQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const aiModelsQuery = graphql(
+const aiModelsQuery = graphql(
   `query AiModels($offset: Int!, $limit: Int!, $where: AiModelWhereInput) {
     aiModels(offset: $offset, limit: $limit, where: $where) {
       ...AiModelFields
@@ -990,7 +990,7 @@ export const aiModelsQuery = graphql(
   [aiModelFieldsFragment],
 )
 
-export const recommendedTagsFromPromptsQuery = graphql(
+const recommendedTagsFromPromptsQuery = graphql(
   `query RecommendedTagsFromPrompts($prompts: String!) {
     recommendedTagsFromPrompts(prompts: $prompts) {
       ...PartialTagFields
@@ -999,7 +999,7 @@ export const recommendedTagsFromPromptsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const whiteListTagsQuery = graphql(
+const whiteListTagsQuery = graphql(
   `query WhiteListTags($where: WhiteListTagsInput!) {
     whiteListTags(where: $where) {
       ...PartialTagFields
@@ -1008,7 +1008,7 @@ export const whiteListTagsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -1024,7 +1024,7 @@ export const viewerCurrentPassQuery = graphql(
   [passFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token

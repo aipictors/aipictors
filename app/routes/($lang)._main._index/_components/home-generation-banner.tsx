@@ -1,13 +1,6 @@
 import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 
-export const homeGenerationBannerWorkFieldFragment = graphql(
-  `fragment HomeGenerationBannerWorkField on WorkNode @_unmask {
-    id
-    smallThumbnailImageURL
-  }`,
-)
-
 type Props = {
   works: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
 }
@@ -16,12 +9,7 @@ type Props = {
  * ホームの生成機バナー
  */
 export const HomeGenerationBanner = (props: Props) => {
-  // ランダムで3つを重複なしで選択
-  const works = props?.works || []
-  const shuffledWorks = [...works] // .sort(() => 0.5 - Math.random())
-  const selectedWorks = shuffledWorks.slice(0, 3)
-
-  const [randomOneWork, randomTwoWork, randomThreeWork] = selectedWorks
+  const [workA, workB, workC] = props.works
 
   return (
     <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
@@ -39,33 +27,33 @@ export const HomeGenerationBanner = (props: Props) => {
         </Link>
       </div>
       <div className="ml-2 flex">
-        {randomOneWork && (
-          <Link to={`/generation?work=${randomOneWork.id}`}>
+        {workA && (
+          <Link to={`/generation?work=${workA.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
-                src={randomOneWork.smallThumbnailImageURL}
+                src={workA.smallThumbnailImageURL}
                 alt="Generation Banner"
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
             </div>
           </Link>
         )}
-        {randomTwoWork && (
-          <Link to={`/generation?work=${randomTwoWork.id}`}>
+        {workB && (
+          <Link to={`/generation?work=${workB.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
-                src={randomTwoWork.smallThumbnailImageURL}
+                src={workB.smallThumbnailImageURL}
                 alt="Generation Banner"
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
             </div>
           </Link>
         )}
-        {randomThreeWork && (
-          <Link to={`/generation?work=${randomThreeWork.id}`}>
+        {workC && (
+          <Link to={`/generation?work=${workC.id}`}>
             <div className="h-32 w-32 overflow-hidden">
               <img
-                src={randomThreeWork.smallThumbnailImageURL}
+                src={workC.smallThumbnailImageURL}
                 alt="Generation Banner"
                 className="h-32 w-32 object-cover transition-all hover:scale-110"
               />
@@ -76,3 +64,10 @@ export const HomeGenerationBanner = (props: Props) => {
     </div>
   )
 }
+
+export const homeGenerationBannerWorkFieldFragment = graphql(
+  `fragment HomeGenerationBannerWorkField on WorkNode @_unmask {
+    id
+    smallThumbnailImageURL
+  }`,
+)

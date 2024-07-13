@@ -88,13 +88,13 @@ export const UserAlbumsContents = (props: Props) => {
   )
 }
 
-export const albumsCountQuery = graphql(
+const albumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
 )
 
-export const albumsQuery = graphql(
+const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...AlbumItemFields

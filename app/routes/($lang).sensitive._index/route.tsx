@@ -195,7 +195,7 @@ export default function SensitivePage() {
   )
 }
 
-export const dailyThemeQuery = graphql(
+const dailyThemeQuery = graphql(
   `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -213,7 +213,7 @@ export const dailyThemeQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const hotSensitiveTagsQuery = graphql(
+const hotSensitiveTagsQuery = graphql(
   `query HotSensitiveTags {
     hotSensitiveTags {
       ...PartialTagFields
@@ -225,7 +225,7 @@ export const hotSensitiveTagsQuery = graphql(
   [partialTagFieldsFragment, partialWorkFieldsFragment],
 )
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

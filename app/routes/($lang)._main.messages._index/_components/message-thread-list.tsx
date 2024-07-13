@@ -69,7 +69,7 @@ export const MessageThreadList = () => {
   )
 }
 
-export const viewerMessageThreadsQuery = graphql(
+const viewerMessageThreadsQuery = graphql(
   `query ViewerMessageThreads($offset: Int!, $limit: Int!) {
     viewer {
       messageThreads(offset: $offset, limit: $limit) {

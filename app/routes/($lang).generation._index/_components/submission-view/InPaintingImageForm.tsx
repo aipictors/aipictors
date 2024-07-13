@@ -208,7 +208,7 @@ export const InPaintingImageForm = (props: Props) => {
   )
 }
 
-export const createImageGenerationTaskMutation = graphql(
+const createImageGenerationTaskMutation = graphql(
   `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
     createImageGenerationTask(input: $input) {
       ...ImageGenerationTaskFields

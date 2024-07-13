@@ -70,13 +70,13 @@ export const UserFoldersContents = (props: Props) => {
   )
 }
 
-export const foldersCountQuery = graphql(
+const foldersCountQuery = graphql(
   `query FoldersCount($where: FoldersWhereInput) {
     foldersCount(where: $where)
   }`,
 )
 
-export const foldersQuery = graphql(
+const foldersQuery = graphql(
   `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
     folders(offset: $offset, limit: $limit, where: $where) {
       ...PartialFolderFields

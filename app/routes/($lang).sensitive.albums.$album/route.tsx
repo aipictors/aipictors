@@ -68,7 +68,7 @@ export default function SensitiveAlbumPage() {
   )
 }
 
-export const albumWorksQuery = graphql(
+const albumWorksQuery = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
@@ -80,7 +80,7 @@ export const albumWorksQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const albumQuery = graphql(
+const albumQuery = graphql(
   `query Album($id: ID!) {
     album(id: $id) {
       ...AlbumArticle

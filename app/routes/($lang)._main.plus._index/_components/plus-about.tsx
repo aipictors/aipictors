@@ -48,7 +48,7 @@ export const PlusAbout = (props: Props) => {
   )
 }
 
-export const createPassCheckoutSessionMutation = graphql(
+const createPassCheckoutSessionMutation = graphql(
   `mutation CreatePassCheckoutSession($input: CreatePassCheckoutSessionInput!) {
     createPassCheckoutSession(input: $input)
   }`,

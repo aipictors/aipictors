@@ -40,7 +40,7 @@ export function ChatMessageView(props: Props) {
   )
 }
 
-export const createMessageMutation = graphql(
+const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
       ...MessageFields

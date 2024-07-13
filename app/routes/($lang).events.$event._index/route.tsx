@@ -130,7 +130,7 @@ export default function FollowingLayout() {
   )
 }
 
-export const appEventQuery = graphql(
+const appEventQuery = graphql(
   `query AppEvent($slug: String!) {
     appEvent(slug: $slug) {
       id
@@ -149,7 +149,7 @@ export const appEventQuery = graphql(
 /**
  * TODO_2024_08: クエリを統合する
  */
-export const worksCountQuery = graphql(
+const worksCountQuery = graphql(
   `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
   }`,
@@ -158,7 +158,7 @@ export const worksCountQuery = graphql(
 /**
  * TODO_2024_08: クエリを統合する
  */
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

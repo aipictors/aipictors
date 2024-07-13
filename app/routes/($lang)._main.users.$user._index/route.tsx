@@ -50,7 +50,7 @@ export default function UserLayout() {
   )
 }
 
-export const userWorksQuery = graphql(
+const userWorksQuery = graphql(
   `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id

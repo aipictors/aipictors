@@ -68,7 +68,7 @@ export default function MonthlyAwards() {
   )
 }
 
-export const workAwardsQuery = graphql(
+const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
       ...WorkAwardFields

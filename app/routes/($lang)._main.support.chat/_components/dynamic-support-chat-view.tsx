@@ -62,7 +62,7 @@ export function SupportChatView() {
   )
 }
 
-export const viewerSupportMessagesQuery = graphql(
+const viewerSupportMessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       supportMessages(offset: $offset, limit: $limit) {
@@ -73,7 +73,7 @@ export const viewerSupportMessagesQuery = graphql(
   [messageFieldsFragment],
 )
 
-export const createMessageMutation = graphql(
+const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
       ...MessageFields

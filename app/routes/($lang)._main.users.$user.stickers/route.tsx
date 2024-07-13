@@ -50,7 +50,7 @@ export default function UserStickers() {
   )
 }
 
-export const userStickersQuery = graphql(
+const userStickersQuery = graphql(
   `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id

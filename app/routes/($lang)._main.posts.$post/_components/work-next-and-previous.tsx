@@ -119,7 +119,7 @@ export const WorkNextAndPrevious = (props: Props) => {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {

@@ -58,7 +58,7 @@ export const ReservedGenerationLinkCard = (props: Props) => {
   )
 }
 
-export const cancelImageGenerationReservedTaskMutation = graphql(
+const cancelImageGenerationReservedTaskMutation = graphql(
   `mutation CancelImageGenerationReservedTask($input: CancelImageGenerationReservedTaskInput!) {
     cancelImageGenerationReservedTask(input: $input) {
       ...ImageGenerationTaskFields

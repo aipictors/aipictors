@@ -210,7 +210,7 @@ export const GenerationTaskListActions = (props: Props) => {
   )
 }
 
-export const deleteImageGenerationResultMutation = graphql(
+const deleteImageGenerationResultMutation = graphql(
   `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
     deleteImageGenerationResult(input: $input) {
       ...ImageGenerationResultFields

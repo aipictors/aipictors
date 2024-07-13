@@ -159,7 +159,7 @@ export const SettingFcmForm = () => {
   )
 }
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {

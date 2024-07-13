@@ -129,7 +129,7 @@ export const VerificationDialog = (props: Props) => {
   )
 }
 
-export const verificationUrlQuery = graphql(
+const verificationUrlQuery = graphql(
   `query VerificationUrl {
     viewer {
       verificationUrl

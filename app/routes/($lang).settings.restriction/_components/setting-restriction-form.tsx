@@ -119,7 +119,7 @@ export const SettingRestrictionForm = () => {
   )
 }
 
-export const userSettingQuery = graphql(
+const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       ...UserSettingFields
@@ -128,7 +128,7 @@ export const userSettingQuery = graphql(
   [userSettingFieldsFragment],
 )
 
-export const viewerIsBlurSensitiveImageQuery = graphql(
+const viewerIsBlurSensitiveImageQuery = graphql(
   `query ViewerIsBlurSensitiveImage {
     viewer {
       isBlurSensitiveImage

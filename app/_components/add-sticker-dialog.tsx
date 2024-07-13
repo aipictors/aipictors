@@ -288,7 +288,7 @@ export const AddStickerDialog = (props: Props) => {
   )
 }
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
@@ -296,7 +296,7 @@ export const viewerTokenQuery = graphql(
   }`,
 )
 
-export const createStickerMutation = graphql(
+const createStickerMutation = graphql(
   `mutation CreateSticker($input: CreateStickerInput!) {
     createSticker(input: $input) {
       id
@@ -304,7 +304,7 @@ export const createStickerMutation = graphql(
   }`,
 )
 
-export const createUserStickerMutation = graphql(
+const createUserStickerMutation = graphql(
   `mutation CreateUserSticker($input: CreateUserStickerInput!) {
     createUserSticker(input: $input) {
       id

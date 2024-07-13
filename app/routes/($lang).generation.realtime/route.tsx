@@ -292,7 +292,7 @@ export default function GenerationLayout() {
   )
 }
 
-export const imageLoraModelsQuery = graphql(
+const imageLoraModelsQuery = graphql(
   `query ImageLoraModels {
     imageLoraModels {
       id
@@ -307,7 +307,7 @@ export const imageLoraModelsQuery = graphql(
   }`,
 )
 
-export const imageModelsQuery = graphql(
+const imageModelsQuery = graphql(
   `query ImageModels {
     imageModels {
       id
@@ -325,7 +325,7 @@ export const imageModelsQuery = graphql(
   }`,
 )
 
-export const negativePromptCategoriesQuery = graphql(
+const negativePromptCategoriesQuery = graphql(
   `query NegativePromptCategories {
     negativePromptCategories {
       id
@@ -339,7 +339,7 @@ export const negativePromptCategoriesQuery = graphql(
   }`,
 )
 
-export const promptCategoriesQuery = graphql(
+const promptCategoriesQuery = graphql(
   `query PromptCategories {
     promptCategories {
       id

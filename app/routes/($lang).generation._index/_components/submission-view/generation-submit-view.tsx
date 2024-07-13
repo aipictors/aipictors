@@ -570,7 +570,7 @@ export function GenerationSubmissionView(props: Props) {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {

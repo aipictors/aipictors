@@ -267,7 +267,7 @@ export const CreateAlbumDialog = (props: Props) => {
   )
 }
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
@@ -275,7 +275,7 @@ export const viewerTokenQuery = graphql(
   }`,
 )
 
-export const createAlbumMutation = graphql(
+const createAlbumMutation = graphql(
   `mutation CreateAlbum($input: CreateAlbumInput!) {
     createAlbum(input: $input) {
       id

@@ -96,7 +96,7 @@ export default function albums() {
   )
 }
 
-export const albumWorksQuery = graphql(
+const albumWorksQuery = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
@@ -108,7 +108,7 @@ export const albumWorksQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const userAlbumQuery = graphql(
+const userAlbumQuery = graphql(
   `query userAlbum($where: UserAlbumWhereInput) {
     userAlbum( where: $where) {
       ...AlbumArticle

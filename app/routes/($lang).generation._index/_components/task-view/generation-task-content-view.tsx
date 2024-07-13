@@ -68,7 +68,7 @@ export const GenerationTaskContentPreview = () => {
   )
 }
 
-export const imageGenerationTaskQuery = graphql(
+const imageGenerationTaskQuery = graphql(
   `query ImageGenerationTask($id: ID!) {
     imageGenerationTask(id: $id) {
       ...ImageGenerationTaskFields

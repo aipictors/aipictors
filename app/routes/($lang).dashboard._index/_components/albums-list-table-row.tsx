@@ -99,7 +99,7 @@ export const AlbumsListTableRow = (props: Props) => {
   )
 }
 
-export const deleteAlbumMutation = graphql(
+const deleteAlbumMutation = graphql(
   `mutation DeleteAlbum($input: DeleteAlbumInput!) {
     deleteAlbum(input: $input) {
       id

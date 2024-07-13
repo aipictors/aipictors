@@ -49,7 +49,7 @@ export default function StickersPage() {
   )
 }
 
-export const stickersQuery = graphql(
+const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
       ...PartialStickerFields

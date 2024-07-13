@@ -152,7 +152,7 @@ export default function UserLayout() {
   )
 }
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,

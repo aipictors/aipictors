@@ -61,7 +61,7 @@ export default function ModelPage() {
   )
 }
 
-export const imageModelQuery = graphql(
+const imageModelQuery = graphql(
   `query ImageModel($id: ID!) {
     imageModel(id: $id) {
       ...ImageModelHeader
@@ -70,7 +70,7 @@ export const imageModelQuery = graphql(
   [imageModelHeaderFragment],
 )
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

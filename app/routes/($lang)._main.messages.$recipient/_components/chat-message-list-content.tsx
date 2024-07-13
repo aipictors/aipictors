@@ -40,7 +40,7 @@ export function ChatMessageListContent(props: Props) {
   )
 }
 
-export const messageThreadMessagesQuery = graphql(
+const messageThreadMessagesQuery = graphql(
   `query MessageThreadMessages($threadId: ID!, $offset: Int!, $limit: Int!) {
     viewer {
       messageThread(threadId: $threadId) {

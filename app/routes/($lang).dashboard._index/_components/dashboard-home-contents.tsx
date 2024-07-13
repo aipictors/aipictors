@@ -175,7 +175,7 @@ export const DashboardHomeContents = () => {
   )
 }
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {
@@ -205,7 +205,7 @@ export const viewerUserQuery = graphql(
   }`,
 )
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

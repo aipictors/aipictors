@@ -128,7 +128,7 @@ export const ReplyCommentInput = (props: Props) => {
   )
 }
 
-export const createResponseCommentMutation = graphql(
+const createResponseCommentMutation = graphql(
   `mutation CreateResponseComment($input: CreateResponseCommentInput!) {
     createResponseComment(input: $input) {
       id

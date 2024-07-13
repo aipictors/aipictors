@@ -155,7 +155,7 @@ export const SettingRequestForm = () => {
   )
 }
 
-export const userSettingQuery = graphql(
+const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       ...UserSettingFields
@@ -164,7 +164,7 @@ export const userSettingQuery = graphql(
   [userSettingFieldsFragment],
 )
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,

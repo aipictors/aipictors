@@ -348,13 +348,13 @@ export const DashboardContents = (props: Props) => {
   )
 }
 
-export const albumsCountQuery = graphql(
+const albumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
 )
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,
@@ -446,7 +446,7 @@ export const userQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {

@@ -44,7 +44,7 @@ export default function UserAlbums() {
   return <UserAlbumList albums={data.albums} />
 }
 
-export const userAlbumsQuery = graphql(
+const userAlbumsQuery = graphql(
   `query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
       id
