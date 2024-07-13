@@ -1,5 +1,6 @@
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   tags: Tag[]
@@ -16,8 +17,8 @@ export const PostFormItemTags = (props: Props) => {
 
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mb-1 font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
           <TagInput
             placeholder="タグを追加してください"
@@ -76,8 +77,8 @@ export const PostFormItemTags = (props: Props) => {
               ))}
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   )
 }

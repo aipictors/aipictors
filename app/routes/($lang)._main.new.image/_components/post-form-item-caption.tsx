@@ -1,8 +1,5 @@
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
-import {} from "@/_components/ui/select"
-
-import {} from "@dnd-kit/core"
-import {} from "@dnd-kit/sortable"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   label?: string
@@ -16,8 +13,8 @@ type Props = {
 export const PostFormItemCaption = (props: Props) => {
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mb-1 font-bold text-sm">
             {props.label ? props.label : "キャプション（任意）"}
           </p>
@@ -30,8 +27,8 @@ export const PostFormItemCaption = (props: Props) => {
             placeholder={props.label ? props.label : "キャプション"}
             className="w-full"
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   )
 }

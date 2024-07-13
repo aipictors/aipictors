@@ -1,5 +1,6 @@
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   accessType: IntrospectionEnum<"AccessType">
@@ -12,8 +13,8 @@ type Props = {
 export const PostFormItemView = (props: Props) => {
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
-        <div className="mt-2 flex flex-col">
+      <Card className="p-1">
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">公開モード</p>
           <RadioGroup
             value={props.accessType}
@@ -47,8 +48,8 @@ export const PostFormItemView = (props: Props) => {
               </div>
             </div>
           </RadioGroup>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { Input } from "@/_components/ui/input"
 import { Textarea } from "@/_components/ui/textarea"
 import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   pngInfo: PNGInfo | null
@@ -36,8 +37,8 @@ export const PostFormItemGenerationParams = (props: Props) => {
 
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">生成情報</p>
           <p className="mb-1 text-xs">プロンプト</p>
           <Textarea
@@ -153,8 +154,8 @@ export const PostFormItemGenerationParams = (props: Props) => {
             placeholder={"Other"}
             className="w-full"
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   )
 }
