@@ -11,7 +11,7 @@ import { graphql } from "gql.tada"
 type Props = {
   onSubmitted: (selectedImage: string[], selectedIds: string[]) => void
   selectedIds: string[]
-  setSelectIds: (selectedIds: (prevSelected: string[]) => string[]) => void
+  setSelectIds: (selectedIds: string[]) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
@@ -101,7 +101,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
   )
 }
 
-const viewerImageGenerationResultsQuery = graphql(
+export const viewerImageGenerationResultsQuery = graphql(
   `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
     viewer {
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
