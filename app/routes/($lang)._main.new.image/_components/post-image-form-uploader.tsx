@@ -1,3 +1,5 @@
+import FullScreenContainer from "@/_components/full-screen-container"
+import PaintCanvas from "@/_components/paint-canvas"
 import { Button } from "@/_components/ui/button"
 import { cn } from "@/_lib/cn"
 import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
@@ -102,10 +104,10 @@ export function PostImageFormUploader(props: Props) {
             onVideoChange={(value) => {
               props.dispatch({ type: "SET_VIDEO_FILE", payload: value })
             }}
-            onMosaicButtonClick={(content) => {
+            onMosaicButtonClick={(value) => {
               props.dispatch({
                 type: "SET_EDIT_TARGET_IMAGE_BASE64",
-                payload: content,
+                payload: value,
               })
             }}
             setThumbnailBase64={(base64) => {
@@ -114,10 +116,10 @@ export function PostImageFormUploader(props: Props) {
             setOgpBase64={(base64) => {
               props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
             }}
-            setIsThumbnailLandscape={(isLandscape) => {
+            setIsThumbnailLandscape={(value) => {
               props.dispatch({
                 type: "SET_IS_THUMBNAIL_LANDSCAPE",
-                payload: isLandscape,
+                payload: value,
               })
             }}
           />
@@ -131,13 +133,13 @@ export function PostImageFormUploader(props: Props) {
             setThumbnailPosX={(posX) => {
               props.dispatch({
                 type: "SET_THUMBNAIL_POS_X",
-                payload: posX as number,
+                payload: posX,
               })
             }}
             setThumbnailPosY={(posY) => {
               props.dispatch({
                 type: "SET_THUMBNAIL_POS_Y",
-                payload: posY as number,
+                payload: posY,
               })
             }}
           />
@@ -185,6 +187,32 @@ export function PostImageFormUploader(props: Props) {
           }
         }}
       />
+      {props.state.editTargetImageBase64 !== null && (
+        <FullScreenContainer
+          onClose={() => {
+            props.dispatch({
+              type: "SET_EDIT_TARGET_IMAGE_BASE64",
+              payload: null,
+            })
+          }}
+          enabledScroll={props.state.isDrawing}
+        >
+          <PaintCanvas
+            onChangeSetDrawing={(isDrawing) =>
+              props.dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
+            }
+            imageUrl={props.state.editTargetImageBase64}
+            isMosaicMode={true}
+            isShowSubmitButton={true}
+            onSubmit={(base64) => {
+              props.dispatch({
+                type: "SET_EDITED_IMAGE",
+                payload: { base64 },
+              })
+            }}
+          />
+        </FullScreenContainer>
+      )}
     </div>
   )
 }

@@ -1,13 +1,12 @@
 import { ThumbnailPositionAdjustDialog } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-dialog"
-import type React from "react"
 
 type Props = {
   thumbnailBase64: string
   isThumbnailLandscape: boolean
   thumbnailPosX: number
   thumbnailPosY: number
-  setThumbnailPosX: React.Dispatch<React.SetStateAction<number>>
-  setThumbnailPosY: React.Dispatch<React.SetStateAction<number>>
+  setThumbnailPosX(value: number): void
+  setThumbnailPosY(value: number): void
 }
 
 /**

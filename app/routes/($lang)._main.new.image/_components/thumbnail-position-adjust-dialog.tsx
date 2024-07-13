@@ -15,8 +15,8 @@ type Props = {
   children: React.ReactNode
   thumbnailPosX: number
   thumbnailPosY: number
-  setThumbnailPosX: React.Dispatch<React.SetStateAction<number>>
-  setThumbnailPosY: React.Dispatch<React.SetStateAction<number>>
+  setThumbnailPosX(value: number): void
+  setThumbnailPosY(value: number): void
 }
 
 export const ThumbnailPositionAdjustDialog = (props: Props) => {
