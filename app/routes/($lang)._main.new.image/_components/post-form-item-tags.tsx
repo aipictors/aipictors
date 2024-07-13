@@ -1,6 +1,5 @@
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
-import { useState } from "react"
 
 type Props = {
   tags: Tag[]
@@ -12,9 +11,7 @@ type Props = {
 /**
  * タグ入力
  */
-export const TagsInput = (props: Props) => {
-  const [isFocus, setIsFocus] = useState(false)
-
+export const PostFormItemTags = (props: Props) => {
   const whiteListTags = props.whiteListTags
 
   return (

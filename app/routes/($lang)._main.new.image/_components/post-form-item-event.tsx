@@ -16,7 +16,7 @@ type Props = {
 /**
  * イベント入力
  */
-export const EventInput = (props: Props) => {
+export const PostFormItemEvent = (props: Props) => {
   const [isAttending, setIsAttending] = useState(false)
 
   const handleAttendanceChange = (isChecked: boolean) => {

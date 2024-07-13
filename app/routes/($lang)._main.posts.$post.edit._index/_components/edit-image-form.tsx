@@ -6,26 +6,25 @@ import {
 } from "@/_components/ui/accordion"
 import { Button } from "@/_components/ui/button"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { CaptionInput } from "@/routes/($lang)._main.new.image/_components/caption-input"
-import { DateInput } from "@/routes/($lang)._main.new.image/_components/date-input"
-import { ModelInput } from "@/routes/($lang)._main.new.image/_components/model-input"
-import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating-input"
-import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
-import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
-import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
+import { PostFormItemCaption } from "@/routes/($lang)._main.new.image/_components/post-form-item-caption"
+import { PostFormItemDate } from "@/routes/($lang)._main.new.image/_components/post-form-item-date"
+import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
+import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
+import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
+import { PostFormItemTitle } from "@/routes/($lang)._main.new.image/_components/post-form-item-title"
+import { PostFormItemView } from "@/routes/($lang)._main.new.image/_components/post-form-item-view"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
-import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
-import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
-import { CategoryEditableInput } from "@/routes/($lang)._main.new.image/_components/category-editable-input"
-import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-input"
+import { PostFormItemTheme } from "@/routes/($lang)._main.new.image/_components/post-form-item-theme"
+import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
+import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
 import { AuthContext } from "@/_contexts/auth-context"
-import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
-import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
+import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
+import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
 import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
-import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
+import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Loader2Icon } from "lucide-react"
 import PaintCanvas from "@/_components/paint-canvas"
@@ -34,20 +33,19 @@ import React from "react"
 import type { TSortableItem } from "@/_components/drag/sortable-item"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-input"
-import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
+import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
-import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
+import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
-import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
+import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
-import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
+import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
 import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
@@ -56,6 +54,8 @@ import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
+import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/post-form-item-tags"
+import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
 
 type Props = {
   workId: string
@@ -771,7 +771,7 @@ export const EditImageForm = (props: Props) => {
               </div>
             )}
 
-            <DraggableImagesAndVideoInput
+            <PostFormItemDraggableImagesAndVideo
               isOnlyMove={true}
               indexList={indexList}
               items={items}
@@ -823,7 +823,7 @@ export const EditImageForm = (props: Props) => {
             )}
           </div>
           {thumbnailBase64 !== "" && (
-            <ThumbnailPositionAdjustInput
+            <PostFormItemThumbnailPositionAdjust
               isThumbnailLandscape={isThumbnailLandscape}
               thumbnailBase64={thumbnailBase64}
               thumbnailPosX={thumbnailPosX}
@@ -833,7 +833,7 @@ export const EditImageForm = (props: Props) => {
             />
           )}
           {thumbnailBase64 !== "" && (
-            <OgpInput
+            <PostFormOgp
               imageBase64={thumbnailBase64}
               setOgpBase64={setOgpBase64}
               ogpBase64={ogpBase64}
@@ -841,8 +841,8 @@ export const EditImageForm = (props: Props) => {
           )}
 
           <ScrollArea className="p-2">
-            <TitleInput onChange={setTitle} value={title} />
-            <CaptionInput caption={caption} setCaption={setCaption} />
+            <PostFormItemTitle onChange={setTitle} value={title} />
+            <PostFormItemCaption caption={caption} setCaption={setCaption} />
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
@@ -851,12 +851,12 @@ export const EditImageForm = (props: Props) => {
                   </Button>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
-                  <TitleInput
+                  <PostFormItemTitle
                     value={enTitle}
                     label={"英語タイトル"}
                     onChange={setEnTitle}
                   />
-                  <CaptionInput
+                  <PostFormItemCaption
                     label={"英語キャプション"}
                     caption={enCaption}
                     setCaption={setEnCaption}
@@ -864,13 +864,19 @@ export const EditImageForm = (props: Props) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <RatingInput
+            <PostFormItemRating
               rating={ratingRestriction}
               setRating={setRatingRestriction}
             />
-            <ViewInput accessType={accessType} setAccessType={setAccessType} />
-            <TasteInput imageStyle={imageStyle} setImageStyle={setImageStyle} />
-            <ModelInput
+            <PostFormItemView
+              accessType={accessType}
+              setAccessType={setAccessType}
+            />
+            <PostFormItemTaste
+              imageStyle={imageStyle}
+              setImageStyle={setImageStyle}
+            />
+            <PostFormItemModel
               model={aiUsed ?? 0}
               models={optionModels}
               setModel={setAiUsed}
@@ -901,7 +907,7 @@ export const EditImageForm = (props: Props) => {
                     </Button>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-2">
-                    <GenerationParamsInput
+                    <PostFormItemGenerationParams
                       pngInfo={pngInfo}
                       setPngInfo={setPngInfo}
                     />
@@ -909,7 +915,7 @@ export const EditImageForm = (props: Props) => {
                 </AccordionItem>
               </Accordion>
             )}
-            <DateInput
+            <PostFormItemDate
               date={reservationDate}
               time={reservationTime}
               setDate={(value: string) => {
@@ -934,7 +940,7 @@ export const EditImageForm = (props: Props) => {
               setTime={setReservationTime}
             />
             {!isHideTheme && (
-              <ThemeInput
+              <PostFormItemTheme
                 onChange={(value: boolean) => {
                   if (value) {
                     setThemeId(theme?.dailyTheme?.id ?? "")
@@ -962,7 +968,7 @@ export const EditImageForm = (props: Props) => {
             )}
 
             {appEvents && (
-              <EventInput
+              <PostFormItemEvent
                 tags={tags}
                 setTags={setTags}
                 eventName={appEvents?.title ?? ""}
@@ -973,7 +979,7 @@ export const EditImageForm = (props: Props) => {
               />
             )}
 
-            <TagsInput
+            <PostFormItemTags
               whiteListTags={whiteTags}
               tags={tags}
               setTags={setTags}
@@ -983,23 +989,23 @@ export const EditImageForm = (props: Props) => {
             {recommendedTagsLoading && (
               <Loader2Icon className="h-4 w-4 animate-spin" />
             )}
-            <CategoryEditableInput
+            <PostFormCategoryEditable
               isChecked={isTagEditable}
               onChange={setIsTagEditable}
             />
-            <CommentsEditableInput
+            <PostFormCommentsEditable
               isChecked={isCommentsEditable}
               onChange={setIsCommentsEditable}
             />
-            <AlbumInput
+            <PostFormItemAlbum
               album={albumId}
               albums={optionAlbums}
               setAlbumId={(value: string) => {
                 setAlbumId(value)
               }}
             />
-            <RelatedLinkInput link={link} onChange={setLink} />
-            <AdWorkInput isChecked={isAd} onChange={setIsAd} />
+            <PostFormItemRelatedLink link={link} onChange={setLink} />
+            <PostFormItemAdvertising isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">

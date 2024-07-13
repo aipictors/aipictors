@@ -13,7 +13,7 @@ type Props = {
 /**
  * サムネイル位置調整フォーム
  */
-export const ThumbnailPositionAdjustInput = (props: Props) => {
+export const PostFormItemThumbnailPositionAdjust = (props: Props) => {
   return (
     <>
       <ThumbnailPositionAdjustDialog

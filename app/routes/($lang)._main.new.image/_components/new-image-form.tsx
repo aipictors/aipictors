@@ -6,41 +6,27 @@ import {
   AccordionTrigger,
 } from "@/_components/ui/accordion"
 import { Button } from "@/_components/ui/button"
-import { ScrollArea } from "@/_components/ui/scroll-area"
-import { CaptionInput } from "@/routes/($lang)._main.new.image/_components/caption-input"
-import { DateInput } from "@/routes/($lang)._main.new.image/_components/date-input"
-import { ModelInput } from "@/routes/($lang)._main.new.image/_components/model-input"
-import { RatingInput } from "@/routes/($lang)._main.new.image/_components/rating-input"
-import { TasteInput } from "@/routes/($lang)._main.new.image/_components/taste-input"
-import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-input"
-import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
+import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
+import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
+import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
+import { PostFormItemTitle } from "@/routes/($lang)._main.new.image/_components/post-form-item-title"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
-import { ThemeInput } from "@/routes/($lang)._main.new.image/_components/theme-input"
-import { CategoryEditableInput } from "@/routes/($lang)._main.new.image/_components/category-editable-input"
-import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-input"
+import { PostFormItemTheme } from "@/routes/($lang)._main.new.image/_components/post-form-item-theme"
 import { AuthContext } from "@/_contexts/auth-context"
-import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
-import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
 import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
-import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Loader2Icon } from "lucide-react"
 import PaintCanvas from "@/_components/paint-canvas"
 import FullScreenContainer from "@/_components/full-screen-container"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { ThumbnailPositionAdjustInput } from "@/routes/($lang)._main.new.image/_components/thumbnail-position-adjust-input"
-import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input"
-import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
+import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
-import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
-import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { config } from "@/config"
 import { useBeforeUnload } from "@remix-run/react"
@@ -59,6 +45,19 @@ import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { cn } from "@/_lib/cn"
+import { PostFormItemCaption } from "@/routes/($lang)._main.new.image/_components/post-form-item-caption"
+import { PostFormItemView } from "@/routes/($lang)._main.new.image/_components/post-form-item-view"
+import { PostFormItemDate } from "@/routes/($lang)._main.new.image/_components/post-form-item-date"
+import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/post-form-item-tags"
+import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
+import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
+import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
+import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
+import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
+import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
+import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
+import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
+import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
 
 /**
  * 新規作品フォーム
@@ -596,7 +595,7 @@ export const NewImageForm = () => {
                 </div>
               </div>
             )}
-            <DraggableImagesAndVideoInput
+            <PostFormItemDraggableImagesAndVideo
               indexList={state.indexList}
               items={state.items ?? []}
               videoFile={state.videoFile as File}
@@ -649,7 +648,7 @@ export const NewImageForm = () => {
             />
           </div>
           {state.thumbnailBase64 !== null && (
-            <ThumbnailPositionAdjustInput
+            <PostFormItemThumbnailPositionAdjust
               isThumbnailLandscape={state.isThumbnailLandscape}
               thumbnailBase64={state.thumbnailBase64}
               thumbnailPosX={state.thumbnailPosX}
@@ -669,7 +668,7 @@ export const NewImageForm = () => {
             />
           )}
           {state.thumbnailBase64 !== null && state.ogpBase64 !== null && (
-            <OgpInput
+            <PostFormOgp
               imageBase64={state.thumbnailBase64}
               setOgpBase64={(base64) => {
                 dispatch({ type: "SET_OGP_BASE64", payload: base64 })
@@ -693,180 +692,178 @@ export const NewImageForm = () => {
               {"生成画像"}
             </Button>
           </div>
-          <ScrollArea className="p-2">
-            <TitleInput
-              onChange={(title) => {
-                dispatch({ type: "SET_TITLE", payload: title })
-              }}
-            />
-            <CaptionInput
-              setCaption={(caption) => {
-                dispatch({ type: "SET_CAPTION", payload: caption })
-              }}
-            />
+          <PostFormItemTitle
+            onChange={(title) => {
+              dispatch({ type: "SET_TITLE", payload: title })
+            }}
+          />
+          <PostFormItemCaption
+            setCaption={(caption) => {
+              dispatch({ type: "SET_CAPTION", payload: caption })
+            }}
+          />
+          <Accordion type="single" collapsible>
+            <AccordionItem value="setting">
+              <AccordionTrigger>
+                <Button variant={"secondary"} className="w-full">
+                  英語キャプションを入力
+                </Button>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-2">
+                <PostFormItemTitle
+                  label={"英語タイトル"}
+                  onChange={(enTitle) =>
+                    dispatch({ type: "SET_EN_TITLE", payload: enTitle })
+                  }
+                />
+                <PostFormItemCaption
+                  label={"英語キャプション"}
+                  setCaption={(enCaption) =>
+                    dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
+                  }
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <PostFormItemRating
+            rating={state.ratingRestriction}
+            setRating={(value) => {
+              dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
+            }}
+          />
+          <PostFormItemView
+            accessType={state.accessType}
+            setAccessType={(accessType) => {
+              dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
+            }}
+          />
+          <PostFormItemTaste
+            imageStyle={state.imageStyle}
+            setImageStyle={(imageStyle) => {
+              dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+            }}
+          />
+          <PostFormItemModel
+            model={state.aiUsed}
+            models={aiModelOptions()}
+            setModel={(model) => {
+              dispatch({ type: "SET_AI_USED", payload: model })
+            }}
+          />
+          {state.pngInfo && (
+            <div className="flex items-center">
+              <Checkbox
+                checked={state.isSetGenerationParams}
+                onCheckedChange={onChangeAccessTypeImageGenerationParameters}
+                id="set-generation-check"
+              />
+              <label
+                htmlFor="set-generation-check"
+                className="ml-2 font-medium text-sm"
+              >
+                {"生成情報を公開する"}
+              </label>
+            </div>
+          )}
+          {state.pngInfo && state.isSetGenerationParams && (
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
                   <Button variant={"secondary"} className="w-full">
-                    英語キャプションを入力
+                    {"生成情報を確認する"}
                   </Button>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
-                  <TitleInput
-                    label={"英語タイトル"}
-                    onChange={(enTitle) =>
-                      dispatch({ type: "SET_EN_TITLE", payload: enTitle })
-                    }
-                  />
-                  <CaptionInput
-                    label={"英語キャプション"}
-                    setCaption={(enCaption) =>
-                      dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
-                    }
+                  <PostFormItemGenerationParams
+                    pngInfo={state.pngInfo}
+                    setPngInfo={(value) => {
+                      dispatch({ type: "SET_PNG_INFO", payload: value })
+                    }}
                   />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <RatingInput
-              rating={state.ratingRestriction}
-              setRating={(value) => {
-                dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
-              }}
+          )}
+          <PostFormItemDate
+            date={state.reservationDate}
+            time={state.reservationTime}
+            setDate={(value) => {
+              dispatch({ type: "SET_RESERVATION_DATE", payload: value })
+            }}
+            setTime={(time) => {
+              dispatch({ type: "SET_RESERVATION_TIME", payload: time })
+            }}
+          />
+          {!state.hasNoTheme && (
+            <PostFormItemTheme
+              title={data?.dailyTheme?.title ?? null}
+              isLoading={loading}
+              onChange={onChangeTheme}
             />
-            <ViewInput
-              accessType={state.accessType}
-              setAccessType={(accessType) => {
-                dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
-              }}
-            />
-            <TasteInput
-              imageStyle={state.imageStyle}
-              setImageStyle={(imageStyle) => {
-                dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-              }}
-            />
-            <ModelInput
-              model={state.aiUsed}
-              models={aiModelOptions()}
-              setModel={(model) => {
-                dispatch({ type: "SET_AI_USED", payload: model })
-              }}
-            />
-            {state.pngInfo && (
-              <div className="flex items-center">
-                <Checkbox
-                  checked={state.isSetGenerationParams}
-                  onCheckedChange={onChangeAccessTypeImageGenerationParameters}
-                  id="set-generation-check"
-                />
-                <label
-                  htmlFor="set-generation-check"
-                  className="ml-2 font-medium text-sm"
-                >
-                  {"生成情報を公開する"}
-                </label>
-              </div>
-            )}
-            {state.pngInfo && state.isSetGenerationParams && (
-              <Accordion type="single" collapsible>
-                <AccordionItem value="setting">
-                  <AccordionTrigger>
-                    <Button variant={"secondary"} className="w-full">
-                      {"生成情報を確認する"}
-                    </Button>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-2">
-                    <GenerationParamsInput
-                      pngInfo={state.pngInfo}
-                      setPngInfo={(value) => {
-                        dispatch({ type: "SET_PNG_INFO", payload: value })
-                      }}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            )}
-            <DateInput
-              date={state.reservationDate}
-              time={state.reservationTime}
-              setDate={(value) => {
-                dispatch({ type: "SET_RESERVATION_DATE", payload: value })
-              }}
-              setTime={(time) => {
-                dispatch({ type: "SET_RESERVATION_TIME", payload: time })
-              }}
-            />
-            {!state.hasNoTheme && (
-              <ThemeInput
-                title={data?.dailyTheme?.title ?? null}
-                isLoading={loading}
-                onChange={onChangeTheme}
-              />
-            )}
-            {data && 0 < data?.appEvents.length && (
-              <EventInput
-                tags={state.tags}
-                eventName={data?.appEvents[0]?.title ?? null}
-                eventDescription={data?.appEvents[0]?.description ?? null}
-                eventTag={data?.appEvents[0]?.tag ?? null}
-                endAt={data?.appEvents[0]?.endAt ?? 0}
-                slug={data?.appEvents[0]?.slug ?? null}
-                setTags={(tags) => {
-                  dispatch({ type: "SET_TAGS", payload: tags })
-                }}
-              />
-            )}
-            <TagsInput
-              whiteListTags={selectableTags()}
+          )}
+          {data && 0 < data?.appEvents.length && (
+            <PostFormItemEvent
               tags={state.tags}
-              setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
-              recommendedTags={recommendedNotUsedTags()}
-            />
-            {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
-            <CategoryEditableInput
-              isChecked={state.isTagEditable}
-              onChange={(isTagEditable) => {
-                dispatch({
-                  type: "SET_IS_TAG_EDITABLE",
-                  payload: isTagEditable,
-                })
+              eventName={data?.appEvents[0]?.title ?? null}
+              eventDescription={data?.appEvents[0]?.description ?? null}
+              eventTag={data?.appEvents[0]?.tag ?? null}
+              endAt={data?.appEvents[0]?.endAt ?? 0}
+              slug={data?.appEvents[0]?.slug ?? null}
+              setTags={(tags) => {
+                dispatch({ type: "SET_TAGS", payload: tags })
               }}
             />
-            <CommentsEditableInput
-              isChecked={state.isCommentsEditable}
-              onChange={(value) => {
-                dispatch({
-                  type: "SET_IS_COMMENTS_EDITABLE",
-                  payload: value,
-                })
+          )}
+          <PostFormItemTags
+            whiteListTags={selectableTags()}
+            tags={state.tags}
+            setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
+            recommendedTags={recommendedNotUsedTags()}
+          />
+          {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
+          <PostFormCategoryEditable
+            isChecked={state.isTagEditable}
+            onChange={(isTagEditable) => {
+              dispatch({
+                type: "SET_IS_TAG_EDITABLE",
+                payload: isTagEditable,
+              })
+            }}
+          />
+          <PostFormCommentsEditable
+            isChecked={state.isCommentsEditable}
+            onChange={(value) => {
+              dispatch({
+                type: "SET_IS_COMMENTS_EDITABLE",
+                payload: value,
+              })
+            }}
+          />
+          {viewer?.albums && (
+            <PostFormItemAlbum
+              album={state.albumId}
+              albums={albumOptions()}
+              setAlbumId={(albumId) => {
+                dispatch({ type: "SET_ALBUM_ID", payload: albumId })
               }}
             />
-            {viewer?.albums && (
-              <AlbumInput
-                album={state.albumId}
-                albums={albumOptions()}
-                setAlbumId={(albumId) => {
-                  dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-                }}
-              />
-            )}
-            <RelatedLinkInput
-              link={state.link}
-              onChange={(link) => {
-                dispatch({ type: "SET_LINK", payload: link })
-              }}
-            />
-            <AdWorkInput
-              isSubscribed={
-                viewer?.viewer?.currentPass?.type === "STANDARD" ||
-                viewer?.viewer?.currentPass?.type === "PREMIUM"
-              }
-              isChecked={state.isAd}
-              onChange={(isAd) => {
-                dispatch({ type: "SET_IS_AD", payload: isAd })
-              }}
-            />
-          </ScrollArea>
+          )}
+          <PostFormItemRelatedLink
+            link={state.link}
+            onChange={(link) => {
+              dispatch({ type: "SET_LINK", payload: link })
+            }}
+          />
+          <PostFormItemAdvertising
+            isSubscribed={
+              viewer?.viewer?.currentPass?.type === "STANDARD" ||
+              viewer?.viewer?.currentPass?.type === "PREMIUM"
+            }
+            isChecked={state.isAd}
+            onChange={(isAd) => {
+              dispatch({ type: "SET_IS_AD", payload: isAd })
+            }}
+          />
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
           <Button className="w-full" type="submit" onClick={onPost}>

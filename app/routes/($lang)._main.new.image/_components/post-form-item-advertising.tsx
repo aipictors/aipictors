@@ -11,7 +11,7 @@ type Props = {
 /**
  * 宣伝作品かどうか入力
  */
-export const AdWorkInput = (props: Props) => {
+export const PostFormItemAdvertising = (props: Props) => {
   return (
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">

@@ -13,7 +13,7 @@ type Props = {
 /**
  * タイトル入力
  */
-export const TitleInput = (props: Props) => {
+export const PostFormItemTitle = (props: Props) => {
   return (
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">

@@ -36,7 +36,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const DraggableImagesAndVideoInput = (props: Props) => {
+export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
   // 先頭の画像
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 

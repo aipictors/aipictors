@@ -7,24 +7,24 @@ type Props = {
 }
 
 /**
- * コメント編集許可入力
+ * カテゴリ編集許可入力
  */
-export const CommentsEditableInput = (props: Props) => {
+export const PostFormCategoryEditable = (props: Props) => {
   return (
     <>
       <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
         <div className="mt-2 flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">コメント許可</p>
+          <p className="mt-1 mb-1 font-bold text-sm">タグの編集許可</p>
           <div className="flex items-center space-x-2">
             <Checkbox
               onCheckedChange={(value: boolean) => {
                 props.onChange(value)
               }}
-              id="comments-editable"
+              id="tag-editable"
               checked={props.isChecked}
             />
-            <label className="text-sm" htmlFor="comments-editable">
-              {"コメントを許可しない"}
+            <label className="text-sm" htmlFor="tag-editable">
+              {"タグの編集を許可しない"}
             </label>
           </div>
         </div>
