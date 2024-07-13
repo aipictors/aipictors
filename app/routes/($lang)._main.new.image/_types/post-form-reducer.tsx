@@ -181,10 +181,7 @@ export type Action =
   | {
       type: "SET_EDITED_IMAGE"
       payload: {
-        items: InferInput<typeof vSortableItem>[]
-        thumbnailBase64: string | null
-        editTargetImageBase64: string | null
-        ogpBase64: string | null
+        base64: string
       }
     }
   | {
@@ -660,6 +657,25 @@ export const postFormReducer = (
       return {
         ...state,
         isSetGenerationParams: action.payload,
+      }
+    }
+    case "SET_EDITED_IMAGE": {
+      const updatedItems = state.items.map((item) =>
+        item.content === state.editTargetImageBase64
+          ? { ...item, content: action.payload.base64 }
+          : item,
+      )
+      const [item] = updatedItems
+      const thumbnailBase64 =
+        item.content === state.editTargetImageBase64
+          ? action.payload.base64
+          : state.thumbnailBase64
+      return {
+        ...state,
+        items: updatedItems,
+        thumbnailBase64: thumbnailBase64,
+        editTargetImageBase64: null,
+        ogpBase64: null,
       }
     }
   }

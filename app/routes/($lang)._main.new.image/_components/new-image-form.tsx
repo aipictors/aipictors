@@ -91,25 +91,9 @@ export const NewImageForm = () => {
   }
 
   const submitFromEditorCanvas = (base64: string) => {
-    const updatedItems = state.items.map((item) =>
-      item.content === state.editTargetImageBase64
-        ? { ...item, content: base64 }
-        : item,
-    )
-
-    const updatedState = {
-      items: updatedItems,
-      thumbnailBase64:
-        state.items[0]?.content === state.editTargetImageBase64
-          ? base64
-          : state.thumbnailBase64,
-      editTargetImageBase64: null,
-      ogpBase64: null,
-    }
-
     dispatch({
       type: "SET_EDITED_IMAGE",
-      payload: updatedState,
+      payload: { base64 },
     })
   }
 
