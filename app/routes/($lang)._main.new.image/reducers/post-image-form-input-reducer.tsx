@@ -1,5 +1,5 @@
 import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
-import type { vPostImageInputState } from "@/routes/($lang)._main.new.image/validations/post-image-form-input"
+import type { vPostImageInputState } from "@/routes/($lang)._main.new.image/validations/post-image-form-input-state"
 import { object, string, type InferInput } from "valibot"
 
 export type PostImageFormInputState = InferInput<typeof vPostImageInputState>

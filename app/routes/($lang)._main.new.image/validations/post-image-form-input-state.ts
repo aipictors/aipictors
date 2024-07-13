@@ -5,31 +5,14 @@ import {
   boolean,
   date,
   array,
-  number,
   nullable,
   literal,
   union,
-  optional,
 } from "valibot"
 
 const vTag = object({
   id: string(),
   text: string(),
-})
-
-/**
- * ドラッグ可能なアイテムの型を定義
- */
-export const vSortableItem = object({
-  id: number(),
-  /**
-   * 画像のURLなど
-   */
-  content: nullable(string()),
-  /**
-   * コンテンツが編集されたかどうか
-   */
-  isContentEdited: optional(boolean()),
 })
 
 export const vPostImageInputState = object({

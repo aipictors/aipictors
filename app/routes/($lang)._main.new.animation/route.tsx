@@ -11,6 +11,7 @@ import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { uploadPublicVideo } from "@/_utils/upload-public-video"
 import { config } from "@/config"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
@@ -23,12 +24,10 @@ import {
   postFormReducer,
   type PostFormState,
 } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
-import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
-import { safeParse } from "valibot"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -90,97 +89,89 @@ export default function NewImage() {
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
 
-  const formResult = safeParse(vPostImageForm, {
-    title: inputState.title,
-    caption: inputState.caption,
-    enTitle: inputState.enTitle,
-    enCaption: inputState.enCaption,
-    imagesCount: state.items.length,
-    thumbnailBase64: state.thumbnailBase64,
-  })
-
-  const uploadImages = async () => {
-    if (authContext.userId === null) {
-      return []
-    }
-    const images = state.items.map((item) => item.content)
-    const uploads = images.map((image) => {
-      if (image === null) {
-        return null
-      }
-      return uploadPublicImage(image, viewer?.viewer?.token)
-    })
-    const imageUrls = await Promise.all(uploads)
-    return imageUrls
-  }
-
   const onPost = async () => {
-    if (formResult.success === false) {
-      for (const issue of formResult.issues) {
-        toast(issue.message)
+    const uploadedImageUrls = []
+    try {
+      dispatch({ type: "SET_PROGRESS", payload: 5 })
+
+      if (!authContext || !authContext.userId) {
+        toast("ログインしてください")
         return
       }
-    }
+      dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-    if (formResult.success === false) {
-      return
-    }
+      if (inputState.title === null) {
+        toast("タイトルを入力してください")
+        return
+      }
+      if (inputState.title.length > 120) {
+        toast("タイトルは120文字以内で入力してください")
+        return
+      }
+      dispatch({ type: "SET_PROGRESS", payload: 15 })
 
-    if (
-      inputState.reservationDate !== null &&
-      inputState.reservationTime === null
-    ) {
-      toast("予約投稿の時間を入力してください")
-      return
-    }
-
-    if (
-      inputState.reservationDate === null &&
-      inputState.reservationTime !== null
-    ) {
-      toast("予約投稿の時間を入力してください")
-      return
-    }
-
-    const uploadedImageUrls = []
-
-    try {
-      const smallThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
-
+      if (inputState.caption && inputState.caption.length > 3000) {
+        toast("キャプションは3000文字以内で入力してください")
+        return
+      }
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      const largeThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+      if (inputState.enTitle && inputState.enTitle.length > 120) {
+        toast("英語タイトルは120文字以内で入力してください")
+        return
+      }
+      dispatch({ type: "SET_PROGRESS", payload: 25 })
 
+      if (inputState.enCaption && inputState.enCaption.length > 3000) {
+        toast("英語キャプションは3000文字以内で入力してください")
+        return
+      }
       dispatch({ type: "SET_PROGRESS", payload: 30 })
+
+      if (state.videoFile === null && state.items.length === 0) {
+        toast("画像もしくは動画を選択してください")
+        return
+      }
+      dispatch({ type: "SET_PROGRESS", payload: 35 })
+
+      if (
+        (inputState.reservationDate !== null &&
+          inputState.reservationTime === null) ||
+        (inputState.reservationDate === null &&
+          inputState.reservationTime !== null)
+      ) {
+        toast("予約投稿の時間を入力してください")
+        return
+      }
+
+      if (!state.thumbnailBase64) {
+        toast("サムネイル画像を設定してください")
+        return
+      }
+
+      dispatch({ type: "SET_PROGRESS", payload: 40 })
+
+      const smallThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(state.thumbnailBase64, 400, 0, "webp")
+        : await resizeImage(state.thumbnailBase64, 0, 400, "webp")
+      const largeThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(state.thumbnailBase64, 600, 0, "webp")
+        : await resizeImage(state.thumbnailBase64, 0, 600, "webp")
+      dispatch({ type: "SET_PROGRESS", payload: 50 })
 
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
         viewer?.viewer?.token,
       )
-
-      dispatch({ type: "SET_PROGRESS", payload: 40 })
-
       uploadedImageUrls.push(smallThumbnailUrl)
-
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
         viewer?.viewer?.token,
       )
-
-      dispatch({ type: "SET_PROGRESS", payload: 50 })
-
       uploadedImageUrls.push(largeThumbnailUrl)
-
       const ogpBase64Url = state.ogpBase64
         ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
         : null
-
-      dispatch({ type: "SET_PROGRESS", payload: 60 })
-
       if (ogpBase64Url !== null) {
         uploadedImageUrls.push(ogpBase64Url)
       }
@@ -193,101 +184,206 @@ export default function NewImage() {
             ).getTime() +
             3600000 * 9
           : undefined
+      const mainImageSha256 = await sha256(state.thumbnailBase64)
+      const mainImageSize = await getSizeFromBase64(state.thumbnailBase64)
+      dispatch({ type: "SET_PROGRESS", payload: 60 })
 
-      const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
-
-      const mainImageSize = await getSizeFromBase64(
-        formResult.output.thumbnailBase64,
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 70 })
-
-      const uploadResults = await uploadImages()
-
-      const imageUrls = uploadResults.filter((url) => url !== null)
-
-      if (imageUrls.length === 0) {
-        toast("画像のアップロードに失敗しました")
-        return
-      }
-
-      const work = await createWork({
-        variables: {
-          input: {
-            title: formResult.output.title,
-            entitle: formResult.output.enTitle,
-            explanation: formResult.output.caption,
-            enExplanation: formResult.output.enCaption,
-            rating: inputState.ratingRestriction,
-            prompt: state.pngInfo?.params.prompt ?? null,
-            negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
-            seed: state.pngInfo?.params.seed ?? null,
-            sampler: state.pngInfo?.params.sampler ?? null,
-            strength: state.pngInfo?.params.strength ?? null,
-            noise: state.pngInfo?.params.noise ?? null,
-            modelName: state.pngInfo?.params.model ?? null,
-            modelHash: state.pngInfo?.params.modelHash ?? null,
-            otherGenerationParams: null,
-            pngInfo: state.pngInfo?.src ?? null,
-            imageStyle: inputState.imageStyle,
-            relatedUrl: inputState.link,
-            tags: inputState.tags.map((tag) => tag.text),
-            isTagEditable: inputState.isTagEditable,
-            isCommentEditable: inputState.isCommentsEditable,
-            thumbnailPosition: state.isThumbnailLandscape
-              ? state.thumbnailPosX
-              : state.thumbnailPosY,
-            modelId: inputState.aiModelId,
-            type: "WORK",
-            subjectId: inputState.themeId,
-            albumId: inputState.albumId,
-            isPromotion: inputState.isPromotion,
-            reservedAt: reservedAt,
-            mainImageSha256: mainImageSha256,
-            accessType: inputState.accessType,
-            imageUrls: imageUrls,
-            smallThumbnailImageURL: smallThumbnailUrl,
-            smallThumbnailImageWidth: smallThumbnail.width,
-            smallThumbnailImageHeight: smallThumbnail.height,
-            largeThumbnailImageURL: largeThumbnailUrl,
-            largeThumbnailImageWidth: largeThumbnail.width,
-            largeThumbnailImageHeight: largeThumbnail.height,
-            videoUrl: null,
-            ogpImageUrl: ogpBase64Url,
-            imageHeight: mainImageSize.height,
-            imageWidth: mainImageSize.width,
-            accessGenerationType: inputState.isSetGenerationParams
-              ? "PUBLIC"
-              : "PRIVATE",
-          },
-        },
-      })
-
-      if (work.data?.createWork) {
-        dispatch({
-          type: "SET_UPLOADED_WORK_ID",
-          payload: work.data?.createWork.id,
-        })
-        if (work.data?.createWork.accessType === "LIMITED") {
-          dispatch({
-            type: "SET_UPLOADED_WORK_UUID",
-            payload: work.data?.createWork.uuid ?? null,
-          })
+      if (state.videoFile) {
+        const uploadVideo = async () => {
+          if (authContext.userId === null || state.videoFile === null) {
+            return null
+          }
+          const videoUrl = await uploadPublicVideo(
+            state.videoFile as File,
+            viewer?.viewer?.token,
+          )
+          return videoUrl
         }
+
+        const videoUrl = await uploadVideo()
+        const work = await createWork({
+          variables: {
+            input: {
+              title: inputState.title,
+              entitle: inputState.enTitle,
+              explanation: inputState.caption,
+              enExplanation: inputState.enCaption,
+              rating: inputState.ratingRestriction,
+              prompt: state.pngInfo?.params.prompt ?? null,
+              negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
+              seed: state.pngInfo?.params.seed ?? null,
+              sampler: state.pngInfo?.params.sampler ?? null,
+              strength: state.pngInfo?.params.strength ?? null,
+              noise: state.pngInfo?.params.noise ?? null,
+              modelName: state.pngInfo?.params.model ?? null,
+              modelHash: state.pngInfo?.params.modelHash ?? null,
+              otherGenerationParams: null,
+              pngInfo: state.pngInfo?.src ?? null,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.isTagEditable,
+              isCommentEditable: inputState.isCommentsEditable,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: inputState.aiModelId,
+              type: "VIDEO",
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.isPromotion,
+              reservedAt: reservedAt,
+              mainImageSha256: mainImageSha256,
+              accessType: inputState.accessType,
+              imageUrls: [largeThumbnailUrl],
+              smallThumbnailImageURL: smallThumbnailUrl,
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: largeThumbnailUrl,
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: videoUrl,
+              ogpImageUrl: ogpBase64Url,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+              accessGenerationType: inputState.isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
+            },
+          },
+        })
+
+        if (work.data?.createWork) {
+          dispatch({
+            type: "SET_UPLOADED_WORK_ID",
+            payload: work.data?.createWork.id,
+          })
+          if (work.data?.createWork.accessType === "LIMITED") {
+            dispatch({
+              type: "SET_UPLOADED_WORK_UUID",
+              payload: work.data?.createWork.uuid ?? null,
+            })
+          }
+        }
+        dispatch({ type: "SET_PROGRESS", payload: 80 })
       }
-      dispatch({ type: "SET_PROGRESS", payload: 100 })
+
+      if (state.videoFile === null && state.items.length !== 0) {
+        const uploadImages = async () => {
+          if (authContext.userId === null) {
+            return []
+          }
+
+          const images = state.items.map((item) => item.content)
+
+          const imageUrls = await Promise.all(
+            images.map(async (image) => {
+              if (image === null) {
+                return null
+              }
+              const imageUrl = await uploadPublicImage(
+                image,
+                viewer?.viewer?.token,
+              )
+              return imageUrl
+            }),
+          )
+
+          return imageUrls
+        }
+
+        const imageUrls = await uploadImages().then((urls) =>
+          urls.filter((url) => url !== null),
+        )
+        if (imageUrls.length === 0) {
+          toast("画像のアップロードに失敗しました")
+          return
+        }
+        const work = await createWork({
+          variables: {
+            input: {
+              title: inputState.title,
+              entitle: inputState.enTitle,
+              explanation: inputState.caption,
+              enExplanation: inputState.enCaption,
+              rating: inputState.ratingRestriction,
+              prompt: state.pngInfo?.params.prompt ?? null,
+              negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
+              seed: state.pngInfo?.params.seed ?? null,
+              sampler: state.pngInfo?.params.sampler ?? null,
+              strength: state.pngInfo?.params.strength ?? null,
+              noise: state.pngInfo?.params.noise ?? null,
+              modelName: state.pngInfo?.params.model ?? null,
+              modelHash: state.pngInfo?.params.modelHash ?? null,
+              otherGenerationParams: null,
+              pngInfo: state.pngInfo?.src ?? null,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.isTagEditable,
+              isCommentEditable: inputState.isCommentsEditable,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: inputState.aiModelId,
+              type: "WORK",
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.isPromotion,
+              reservedAt: reservedAt,
+              mainImageSha256: mainImageSha256,
+              accessType: inputState.accessType,
+              imageUrls: imageUrls,
+              smallThumbnailImageURL: smallThumbnailUrl,
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: largeThumbnailUrl,
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: null,
+              ogpImageUrl: ogpBase64Url,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+              accessGenerationType: inputState.isSetGenerationParams
+                ? "PUBLIC"
+                : "PRIVATE",
+            },
+          },
+        })
+
+        if (work.data?.createWork) {
+          dispatch({
+            type: "SET_UPLOADED_WORK_ID",
+            payload: work.data?.createWork.id,
+          })
+          if (work.data?.createWork.accessType === "LIMITED") {
+            dispatch({
+              type: "SET_UPLOADED_WORK_UUID",
+              payload: work.data?.createWork.uuid ?? null,
+            })
+          }
+        }
+        dispatch({ type: "SET_PROGRESS", payload: 80 })
+      }
+
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
+      dispatch({ type: "SET_IS_CREATED_WORK", payload: true })
       toast("作品を投稿しました")
+      dispatch({ type: "SET_PROGRESS", payload: 100 })
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
-      const promises = uploadedImageUrls.map((url) => {
+      const deleteImages = uploadedImageUrls.map((url) => {
         return deleteUploadedImage(url)
       })
-      await Promise.all(promises)
+      await Promise.all(deleteImages)
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
+    } finally {
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      dispatch({ type: "SET_IS_CREATING_WORK", payload: false })
     }
-
-    dispatch({ type: "SET_PROGRESS", payload: 0 })
   }
 
   const onInputPngInfo = () => {
@@ -355,8 +451,6 @@ export default function NewImage() {
   //   ),
   // )
 
-  console.log(state.indexList)
-
   return (
     <div className="space-y-2">
       <ConstructionAlert
@@ -364,8 +458,8 @@ export default function NewImage() {
         title="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
       />
-      <div className="relative w-full">
-        <div className="space-y-2 rounded-md">
+      <div className="relative w-[100%]">
+        <div className="mb-4 space-y-2 p-1">
           <div>
             <div
               className={cn(
@@ -386,10 +480,16 @@ export default function NewImage() {
                 items={state.items ?? []}
                 videoFile={state.videoFile as File}
                 setItems={(items) => {
-                  dispatch({ type: "SET_ITEMS", payload: items })
+                  dispatch({
+                    type: "SET_ITEMS",
+                    payload: items,
+                  })
                 }}
                 onChangeItems={(items) => {
-                  dispatch({ type: "SET_ITEMS", payload: items })
+                  dispatch({
+                    type: "SET_ITEMS",
+                    payload: items,
+                  })
                 }}
                 maxItemsCount={config.post.maxImageCount}
                 setIndexList={(indexList) => {

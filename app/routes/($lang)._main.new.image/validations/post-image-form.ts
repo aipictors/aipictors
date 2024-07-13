@@ -1,41 +1,32 @@
-import { vImageParameters } from "@/routes/($lang)._main.new.image/validations/image-parameters"
-import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/post-image-form-input"
-import { array, boolean, nullable, number, object, string } from "valibot"
-
-/**
- * Fileオブジェクト
- */
-const vFile = object({
-  name: nullable(string()),
-  lastModified: number(),
-  size: number(),
-  type: nullable(string()),
-  webkitRelativePath: nullable(string()),
-})
+import {
+  maxLength,
+  minLength,
+  minValue,
+  number,
+  object,
+  pipe,
+  string,
+} from "valibot"
 
 export const vPostImageForm = object({
-  pngInfo: nullable(
-    object({
-      params: vImageParameters,
-      src: nullable(string()),
-    }),
+  title: pipe(
+    string(),
+    minLength(1, "タイトルを入力してください"),
+    maxLength(120, "タイトルは120文字以内で入力してください"),
   ),
-  isDrawing: boolean(),
-  isHovered: boolean(),
-  editTargetImageBase64: nullable(string()),
-  items: array(vSortableItem),
-  indexList: array(number()),
-  videoFile: nullable(vFile),
-  thumbnailBase64: nullable(string()),
-  ogpBase64: nullable(string()),
-  thumbnailPosX: number(),
-  thumbnailPosY: number(),
-  isThumbnailLandscape: boolean(),
-  isCreatedWork: boolean(),
-  isCreatingWork: boolean(),
-  uploadedWorkId: nullable(string()),
-  uploadedWorkUuid: nullable(string()),
-  progress: number(),
-  selectedImageGenerationIds: array(string()),
-  isOpenImageGenerationDialog: boolean(),
+  caption: pipe(
+    string(),
+    maxLength(3000, "キャプションは3000文字以内で入力してください"),
+  ),
+  enTitle: pipe(
+    string(),
+    minLength(1, "タイトルを入力してください"),
+    maxLength(120, "タイトルは120文字以内で入力してください"),
+  ),
+  enCaption: pipe(
+    string(),
+    maxLength(3000, "キャプションは3000文字以内で入力してください"),
+  ),
+  imagesCount: pipe(number(), minValue(1, "画像を1枚以上選択してください")),
+  thumbnailBase64: string("サムネイル画像を設定してください"),
 })

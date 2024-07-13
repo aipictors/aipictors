@@ -1,4 +1,4 @@
-import type { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
+import type { vPostImageFormState } from "@/routes/($lang)._main.new.image/validations/post-image-form-state"
 import {
   object,
   string,
@@ -24,7 +24,7 @@ export const vSortableItem = object({
   isContentEdited: optional(boolean()),
 })
 
-export type PostFormState = InferInput<typeof vPostImageForm>
+export type PostFormState = InferInput<typeof vPostImageFormState>
 
 export type Action =
   | {
@@ -91,10 +91,6 @@ export type Action =
     }
   | {
       type: "SET_IS_CREATED_WORK"
-      payload: boolean
-    }
-  | {
-      type: "SET_IS_CREATING_WORK"
       payload: boolean
     }
   | {
@@ -201,12 +197,6 @@ export const postFormReducer = (
       return {
         ...state,
         isCreatedWork: action.payload,
-      }
-    }
-    case "SET_IS_CREATING_WORK": {
-      return {
-        ...state,
-        isCreatingWork: action.payload,
       }
     }
     case "SET_UPLOADED_WORK_ID": {
