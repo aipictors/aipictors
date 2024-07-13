@@ -25,6 +25,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@fontsource-variable/m-plus-2": "^5.0.17",
+    "@l4ph/nsfwts": "npm:@jsr/l4ph__nsfwts",
     "@marsidev/react-turnstile": "^0.5.4",
     "@napi-rs/canvas": "^0.1.52",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -87,6 +88,7 @@
     "next-themes": "^0.3.0",
     "node-loader": "^2.0.0",
     "nsfwjs": "^4.1.0",
+    "onnxruntime-web": "^1.18.0",
     "postcss": "^8.4.38",
     "react": "18.3.0",
     "react-day-picker": "^8.10.1",
@@ -139,6 +141,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.5.2",
     "vite": "^5.2.9",
+    "vite-plugin-static-copy": "^1.0.6",
     "vite-tsconfig-paths": "^4.3.2",
     "wrangler": "^3.50.0"
   }
