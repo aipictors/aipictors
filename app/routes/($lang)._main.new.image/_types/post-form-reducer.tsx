@@ -358,211 +358,252 @@ export const initialState: PostFormState = {
 
 export const postFormReducer = (state: PostFormState, action: Action) => {
   switch (action.type) {
-    case "SET_TITLE":
+    case "SET_TITLE": {
       return {
         ...state,
         title: action.payload,
       }
-    case "SET_DATE":
+    }
+    case "SET_DATE": {
       return {
         ...state,
         date: action.payload,
       }
-    case "SET_PNG_INFO":
+    }
+    case "SET_PNG_INFO": {
       return {
         ...state,
         pngInfo: action.payload,
       }
-    case "ADD_TAG":
+    }
+    case "ADD_TAG": {
       return {
         ...state,
         tags: [...state.tags, action.payload],
       }
-    case "REMOVE_TAG":
+    }
+    case "REMOVE_TAG": {
       return {
         ...state,
         tags: state.tags.filter((tag) => tag.id !== action.payload),
       }
-    case "ADD_ITEM":
+    }
+    case "ADD_ITEM": {
       return {
         ...state,
         items: [...state.items, action.payload],
       }
-    case "REMOVE_ITEM":
+    }
+    case "REMOVE_ITEM": {
       return {
         ...state,
         items: state.items.filter((item) => item.id !== action.payload),
       }
-    case "ADD_INDEX":
+    }
+    case "ADD_INDEX": {
       return {
         ...state,
         indexList: [...state.indexList, action.payload],
       }
-    case "REMOVE_INDEX":
+    }
+    case "REMOVE_INDEX": {
       return {
         ...state,
         indexList: state.indexList.filter((index) => index !== action.payload),
       }
-    case "SET_VIDEO_FILE":
+    }
+    case "SET_VIDEO_FILE": {
       return {
         ...state,
         videoFile: action.payload,
       }
-    case "SET_THUMBNAIL_BASE64":
+    }
+    case "SET_THUMBNAIL_BASE64": {
       return {
         ...state,
         thumbnailBase64: action.payload,
       }
-    case "SET_OGP_BASE64":
+    }
+    case "SET_OGP_BASE64": {
       return {
         ...state,
         ogpBase64: action.payload,
       }
-    case "SET_THUMBNAIL_POS_X":
+    }
+    case "SET_THUMBNAIL_POS_X": {
       return {
         ...state,
         thumbnailPosX: action.payload,
       }
-    case "SET_THUMBNAIL_POS_Y":
+    }
+    case "SET_THUMBNAIL_POS_Y": {
       return {
         ...state,
         thumbnailPosY: action.payload,
       }
-    case "SET_IS_THUMBNAIL_LANDSCAPE":
+    }
+    case "SET_IS_THUMBNAIL_LANDSCAPE": {
       return {
         ...state,
         isThumbnailLandscape: action.payload,
       }
-    case "SET_IS_CREATED_WORK":
+    }
+    case "SET_IS_CREATED_WORK": {
       return {
         ...state,
         isCreatedWork: action.payload,
       }
-    case "SET_IS_CREATING_WORK":
+    }
+    case "SET_IS_CREATING_WORK": {
       return {
         ...state,
         isCreatingWork: action.payload,
       }
-    case "SET_UPLOADED_WORK_ID":
+    }
+    case "SET_UPLOADED_WORK_ID": {
       return {
         ...state,
         uploadedWorkId: action.payload,
       }
-    case "SET_UPLOADED_WORK_UUID":
+    }
+    case "SET_UPLOADED_WORK_UUID": {
       return {
         ...state,
         uploadedWorkUuid: action.payload,
       }
-    case "SET_PROGRESS":
+    }
+    case "SET_PROGRESS": {
       return {
         ...state,
         progress: action.payload,
       }
-    case "SET_IS_OPEN_IMAGE_GENERATION_DIALOG":
+    }
+    case "SET_IS_OPEN_IMAGE_GENERATION_DIALOG": {
       return {
         ...state,
         isOpenImageGenerationDialog: action.payload,
       }
-    case "SET_HAS_NO_THEME":
+    }
+    case "SET_HAS_NO_THEME": {
       return {
         ...state,
         hasNoTheme: action.payload,
       }
-    case "SET_IS_SENSITIVE_WHITE_TAGS":
+    }
+    case "SET_IS_SENSITIVE_WHITE_TAGS": {
       return {
         ...state,
         isSensitiveWhiteTags: action.payload,
       }
-    case "SET_IS_DRAWING":
+    }
+    case "SET_IS_DRAWING": {
       return {
         ...state,
         isDrawing: action.payload,
       }
-    case "SET_EN_TITLE":
+    }
+    case "SET_EN_TITLE": {
       return {
         ...state,
         enTitle: action.payload,
       }
-    case "SET_CAPTION":
+    }
+    case "SET_CAPTION": {
       return {
         ...state,
         caption: action.payload,
       }
-    case "SET_EN_CAPTION":
+    }
+    case "SET_EN_CAPTION": {
       return {
         ...state,
         enCaption: action.payload,
       }
-    case "SET_THEME_ID":
+    }
+    case "SET_THEME_ID": {
       return {
         ...state,
         themeId: action.payload,
       }
-    case "SET_EDIT_TARGET_IMAGE_BASE64":
+    }
+    case "SET_EDIT_TARGET_IMAGE_BASE64": {
       return {
         ...state,
         editTargetImageBase64: action.payload,
       }
-    case "SET_ALBUM_ID":
+    }
+    case "SET_ALBUM_ID": {
       return {
         ...state,
         albumId: action.payload,
       }
-    case "SET_LINK":
+    }
+    case "SET_LINK": {
       return {
         ...state,
         link: action.payload,
       }
-    case "SET_IS_TAG_EDITABLE":
+    }
+    case "SET_IS_TAG_EDITABLE": {
       return {
         ...state,
         isTagEditable: action.payload,
       }
-    case "SET_IS_COMMENTS_EDITABLE":
+    }
+    case "SET_IS_COMMENTS_EDITABLE": {
       return {
         ...state,
         isCommentsEditable: action.payload,
       }
-    case "SET_IS_AD":
+    }
+    case "SET_IS_AD": {
       return {
         ...state,
         isAd: action.payload,
       }
-    case "SET_RATING_RESTRICTION":
+    }
+    case "SET_RATING_RESTRICTION": {
       return {
         ...state,
         ratingRestriction: action.payload,
       }
-    case "SET_ACCESS_TYPE":
+    }
+    case "SET_ACCESS_TYPE": {
       return {
         ...state,
         accessType: action.payload,
       }
-    case "SET_IMAGE_STYLE":
+    }
+    case "SET_IMAGE_STYLE": {
       return {
         ...state,
         imageStyle: action.payload,
       }
-    case "SET_AI_USED":
+    }
+    case "SET_AI_USED": {
       return {
         ...state,
         aiUsed: action.payload,
       }
-    case "SET_RESERVATION_DATE":
+    }
+    case "SET_RESERVATION_DATE": {
       return {
         ...state,
         reservationDate: action.payload,
       }
-    case "SET_RESERVATION_TIME":
+    }
+    case "SET_RESERVATION_TIME": {
       return {
         ...state,
         reservationTime: action.payload,
       }
-    case "SET_IS_SET_GENERATION_PARAMS":
+    }
+    case "SET_IS_SET_GENERATION_PARAMS": {
       return {
         ...state,
         isSetGenerationParams: action.payload,
       }
+    }
   }
 
   throw new Error("Invalid action type")
