@@ -12,23 +12,21 @@ type Props = {
  */
 export const PostFormItemCaption = (props: Props) => {
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mb-1 font-bold text-sm">
-            {props.label ? props.label : "キャプション（任意）"}
-          </p>
-          <AutoResizeTextarea
-            onChange={(event) => {
-              props.setCaption(event.target.value)
-            }}
-            value={props.caption}
-            maxLength={3000}
-            placeholder={props.label ? props.label : "キャプション"}
-            className="w-full"
-          />
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">
+          {props.label ? props.label : "キャプション（任意）"}
+        </p>
+        <AutoResizeTextarea
+          onChange={(event) => {
+            props.setCaption(event.target.value)
+          }}
+          value={props.caption}
+          maxLength={3000}
+          placeholder={props.label ? props.label : "キャプション"}
+          className="w-full"
+        />
+      </CardContent>
+    </Card>
   )
 }

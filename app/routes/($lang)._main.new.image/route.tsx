@@ -355,8 +355,6 @@ export default function NewImage() {
   //   ),
   // )
 
-  console.log(state.indexList)
-
   return (
     <div className="space-y-2">
       <ConstructionAlert
@@ -364,127 +362,125 @@ export default function NewImage() {
         title="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
       />
-      <div className="relative w-full">
-        <div className="space-y-2 rounded-md">
-          <div>
-            <div
-              className={cn(
-                "relative items-center bg-gray-800",
-                state.isHovered && "border-2 border-white border-dashed",
-              )}
-            >
-              {state.items.length !== 0 && (
-                <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
-                  <div className="flex space-x-4 text-white">
-                    <div className="flex">{selectedImagesCountText()}</div>
-                    <div className="flex">{selectedFilesSizeText()}</div>
-                  </div>
+      <div className="w-full space-y-4">
+        <div>
+          <div
+            className={cn(
+              "relative items-center bg-gray-800",
+              state.isHovered && "border-2 border-white border-dashed",
+            )}
+          >
+            {state.items.length !== 0 && (
+              <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
+                <div className="flex space-x-4 text-white">
+                  <div className="flex">{selectedImagesCountText()}</div>
+                  <div className="flex">{selectedFilesSizeText()}</div>
                 </div>
-              )}
-              <PostFormItemDraggableImagesAndVideo
-                indexList={state.indexList}
-                items={state.items ?? []}
-                videoFile={state.videoFile as File}
-                setItems={(items) => {
-                  dispatch({ type: "SET_ITEMS", payload: items })
-                }}
-                onChangeItems={(items) => {
-                  dispatch({ type: "SET_ITEMS", payload: items })
-                }}
-                maxItemsCount={config.post.maxImageCount}
-                setIndexList={(indexList) => {
-                  dispatch({
-                    type: "SET_INDEX_LIST",
-                    payload: indexList as number[],
-                  })
-                }}
-                onChangePngInfo={(pngInfo) => {
-                  dispatch({
-                    type: "SET_PNG_INFO",
-                    payload: pngInfo,
-                  })
-                }}
-                onVideoChange={(value) => {
-                  dispatch({ type: "SET_VIDEO_FILE", payload: value })
-                }}
-                onMosaicButtonClick={(content) => {
-                  dispatch({
-                    type: "SET_EDIT_TARGET_IMAGE_BASE64",
-                    payload: content,
-                  })
-                }}
-                setThumbnailBase64={(base64) => {
-                  dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
-                }}
-                setOgpBase64={(base64) => {
-                  dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-                }}
-                setIsThumbnailLandscape={(isLandscape) => {
-                  dispatch({
-                    type: "SET_IS_THUMBNAIL_LANDSCAPE",
-                    payload: isLandscape,
-                  })
-                }}
-              />
-            </div>
-            {state.thumbnailBase64 !== null && (
-              <PostFormItemThumbnailPositionAdjust
-                isThumbnailLandscape={state.isThumbnailLandscape}
-                thumbnailBase64={state.thumbnailBase64}
-                thumbnailPosX={state.thumbnailPosX}
-                thumbnailPosY={state.thumbnailPosY}
-                setThumbnailPosX={(posX) => {
-                  dispatch({
-                    type: "SET_THUMBNAIL_POS_X",
-                    payload: posX as number,
-                  })
-                }}
-                setThumbnailPosY={(posY) => {
-                  dispatch({
-                    type: "SET_THUMBNAIL_POS_Y",
-                    payload: posY as number,
-                  })
-                }}
-              />
+              </div>
             )}
-            {state.thumbnailBase64 !== null && state.ogpBase64 !== null && (
-              <PostFormOgp
-                imageBase64={state.thumbnailBase64}
-                setOgpBase64={(base64) => {
-                  dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-                }}
-                ogpBase64={state.ogpBase64}
-              />
-            )}
-          </div>
-          <div className="flex space-x-2">
-            <Button
-              variant={"secondary"}
-              onClick={onInputPngInfo}
-              className="m-2 ml-auto block"
-            >
-              {"PNG情報のみ読み込み"}
-            </Button>
-            <Button
-              variant={"secondary"}
-              className="m-2 ml-auto block"
-              onClick={() => {
+            <PostFormItemDraggableImagesAndVideo
+              indexList={state.indexList}
+              items={state.items ?? []}
+              videoFile={state.videoFile as File}
+              setItems={(items) => {
+                dispatch({ type: "SET_ITEMS", payload: items })
+              }}
+              onChangeItems={(items) => {
+                dispatch({ type: "SET_ITEMS", payload: items })
+              }}
+              maxItemsCount={config.post.maxImageCount}
+              setIndexList={(indexList) => {
                 dispatch({
-                  type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
-                  payload: true,
+                  type: "SET_INDEX_LIST",
+                  payload: indexList as number[],
                 })
               }}
-            >
-              {"生成画像"}
-            </Button>
+              onChangePngInfo={(pngInfo) => {
+                dispatch({
+                  type: "SET_PNG_INFO",
+                  payload: pngInfo,
+                })
+              }}
+              onVideoChange={(value) => {
+                dispatch({ type: "SET_VIDEO_FILE", payload: value })
+              }}
+              onMosaicButtonClick={(content) => {
+                dispatch({
+                  type: "SET_EDIT_TARGET_IMAGE_BASE64",
+                  payload: content,
+                })
+              }}
+              setThumbnailBase64={(base64) => {
+                dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
+              }}
+              setOgpBase64={(base64) => {
+                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
+              }}
+              setIsThumbnailLandscape={(isLandscape) => {
+                dispatch({
+                  type: "SET_IS_THUMBNAIL_LANDSCAPE",
+                  payload: isLandscape,
+                })
+              }}
+            />
           </div>
-          <PostImageFormInput
-            imageInformation={state.pngInfo}
-            state={inputState}
-            dispatch={dispatchInput}
-          />
+          {state.thumbnailBase64 !== null && (
+            <PostFormItemThumbnailPositionAdjust
+              isThumbnailLandscape={state.isThumbnailLandscape}
+              thumbnailBase64={state.thumbnailBase64}
+              thumbnailPosX={state.thumbnailPosX}
+              thumbnailPosY={state.thumbnailPosY}
+              setThumbnailPosX={(posX) => {
+                dispatch({
+                  type: "SET_THUMBNAIL_POS_X",
+                  payload: posX as number,
+                })
+              }}
+              setThumbnailPosY={(posY) => {
+                dispatch({
+                  type: "SET_THUMBNAIL_POS_Y",
+                  payload: posY as number,
+                })
+              }}
+            />
+          )}
+          {state.thumbnailBase64 !== null && state.ogpBase64 !== null && (
+            <PostFormOgp
+              imageBase64={state.thumbnailBase64}
+              setOgpBase64={(base64) => {
+                dispatch({ type: "SET_OGP_BASE64", payload: base64 })
+              }}
+              ogpBase64={state.ogpBase64}
+            />
+          )}
         </div>
-        <Button className="w-full" type="submit" onClick={onPost}>
+        <div className="flex space-x-2">
+          <Button
+            variant={"secondary"}
+            onClick={onInputPngInfo}
+            className="m-2 ml-auto block"
+          >
+            {"PNG情報のみ読み込み"}
+          </Button>
+          <Button
+            variant={"secondary"}
+            className="m-2 ml-auto block"
+            onClick={() => {
+              dispatch({
+                type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
+                payload: true,
+              })
+            }}
+          >
+            {"生成画像"}
+          </Button>
+        </div>
+        <PostImageFormInput
+          imageInformation={state.pngInfo}
+          state={inputState}
+          dispatch={dispatchInput}
+        />
+        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"投稿"}
         </Button>
       </div>

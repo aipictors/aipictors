@@ -12,27 +12,25 @@ type Props = {
  */
 export const PostFormItemTitle = (props: Props) => {
   return (
-    <>
-      <Card className="p-1">
-        <CardContent className="flex flex-col">
-          <p className="mb-1 font-bold text-sm">
-            {props.label ? props.label : "タイトル（必須）"}
-          </p>
-          <Input
-            onChange={(event) => {
-              props.onChange(event.target.value)
-            }}
-            value={props.value}
-            minLength={1}
-            maxLength={120}
-            required
-            type="text"
-            name="title"
-            placeholder={props.label ? props.label : "タイトル"}
-            className="w-full"
-          />
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">
+          {props.label ? props.label : "タイトル（必須）"}
+        </p>
+        <Input
+          onChange={(event) => {
+            props.onChange(event.target.value)
+          }}
+          value={props.value}
+          minLength={1}
+          maxLength={120}
+          required
+          type="text"
+          name="title"
+          placeholder={props.label ? props.label : "タイトル"}
+          className="w-full"
+        />
+      </CardContent>
+    </Card>
   )
 }

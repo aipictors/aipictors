@@ -31,31 +31,29 @@ export const PostFormItemModel = (props: Props) => {
   })
 
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">使用AI</p>
-          <Select
-            value={props.model ?? ""}
-            onValueChange={(value) => {
-              props.setModel(value)
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {displayModels.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    {model.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">使用AI</p>
+        <Select
+          value={props.model ?? ""}
+          onValueChange={(value) => {
+            props.setModel(value)
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {displayModels.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  {model.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
   )
 }

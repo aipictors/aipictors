@@ -18,27 +18,25 @@ type Props = {
  */
 export const PostFormItemTaste = (props: Props) => {
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">テイスト</p>
-          <Select
-            value={props.imageStyle}
-            onValueChange={(value) => {
-              props.setImageStyle(value as IntrospectionEnum<"ImageStyle">)
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="w-full">
-              <SelectItem value={"ILLUSTRATION"}>{"イラスト"}</SelectItem>
-              <SelectItem value={"SEMI_REAL"}>{"セミリアル"}</SelectItem>
-              <SelectItem value={"REAL"}>{"リアル"}</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">テイスト</p>
+        <Select
+          value={props.imageStyle}
+          onValueChange={(value) => {
+            props.setImageStyle(value as IntrospectionEnum<"ImageStyle">)
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            <SelectItem value={"ILLUSTRATION"}>{"イラスト"}</SelectItem>
+            <SelectItem value={"SEMI_REAL"}>{"セミリアル"}</SelectItem>
+            <SelectItem value={"REAL"}>{"リアル"}</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
   )
 }

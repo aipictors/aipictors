@@ -43,34 +43,33 @@ export const PostFormItemEvent = (props: Props) => {
   }
 
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mb-1 font-bold text-sm">{"イベント"}</p>
-          <div className="items-center">
-            <Checkbox
-              checked={isAttending}
-              onCheckedChange={handleAttendanceChange}
-              id="attend-checkbox"
-            />
-            <label
-              htmlFor="attend-checkbox"
-              className="ml-2 font-medium text-sm"
-            >
-              参加する
-            </label>
-          </div>
-          {/* イベント名と説明を表示 */}
-          <Link
-            to={`https://www.aipictors.com/events/${props.slug}`}
-            target="_blank"
-            className="mt-2"
-          >
-            <h3 className="font-medium text-sm">{props.eventName}</h3>
-            <h4 className="font-medium text-xs">{props.eventDescription}</h4>
-          </Link>
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">{"イベント"}</p>
+        <div className="items-center">
+          <Checkbox
+            checked={isAttending}
+            onCheckedChange={handleAttendanceChange}
+            id="attend-checkbox"
+          />
+          <label htmlFor="attend-checkbox" className="ml-2 font-medium text-sm">
+            参加する
+          </label>
+        </div>
+        {/* イベント名と説明を表示 */}
+        <Link
+          className="block"
+          to={`https://www.aipictors.com/events/${props.slug}`}
+          target="_blank"
+        >
+          <Card>
+            <CardContent className="space-y-2 p-4">
+              <h3 className="font-medium text-sm">{props.eventName}</h3>
+              <h4 className="font-medium text-xs">{props.eventDescription}</h4>
+            </CardContent>
+          </Card>
+        </Link>
+      </CardContent>
+    </Card>
   )
 }

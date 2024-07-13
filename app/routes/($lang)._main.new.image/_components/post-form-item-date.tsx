@@ -13,42 +13,42 @@ type Props = {
  * 日付入力
  */
 export const PostFormItemDate = (props: Props) => {
+  const hasValue = props.date || props.time
+
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">予約投稿</p>
-          <div className="block md:flex">
-            <Input
-              type="date"
-              value={props.date ?? ""}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                props.setDate(event.target.value)
-              }
-              className="mt-2 mr-0 md:mt-0 md:mr-2"
-            />
-            <Input
-              type="time"
-              value={props.time ?? ""}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                props.setTime(event.target.value)
-              }
-            />
-          </div>
-          {(props.date || props.time) && (
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">予約投稿</p>
+        <div className="flex flex-col gap-2 md:flex-row">
+          <Input
+            type="date"
+            value={props.date ?? ""}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              props.setDate(event.target.value)
+            }
+          />
+          <Input
+            type="time"
+            value={props.time ?? ""}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              props.setTime(event.target.value)
+            }
+          />
+        </div>
+        {hasValue && (
+          <div className="flex justify-end">
             <Button
               onClick={() => {
                 props.setDate("")
                 props.setTime("")
               }}
               variant={"secondary"}
-              className="mt-2"
             >
               {"クリア"}
             </Button>
-          )}
-        </CardContent>
-      </Card>
-    </>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

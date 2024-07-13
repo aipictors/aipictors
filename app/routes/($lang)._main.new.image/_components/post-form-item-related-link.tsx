@@ -11,24 +11,22 @@ type Props = {
  */
 export const PostFormItemRelatedLink = (props: Props) => {
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mb-1 font-bold text-sm">{"関連リンク"}</p>
-          <Input
-            onChange={(event) => {
-              props.onChange(event.target.value)
-            }}
-            value={props.link ?? ""}
-            minLength={1}
-            maxLength={320}
-            required
-            type="text"
-            placeholder={"https://"}
-            className="w-full"
-          />
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">{"関連リンク"}</p>
+        <Input
+          onChange={(event) => {
+            props.onChange(event.target.value)
+          }}
+          value={props.link ?? ""}
+          minLength={1}
+          maxLength={320}
+          required
+          type="text"
+          placeholder={"https://"}
+          className="w-full"
+        />
+      </CardContent>
+    </Card>
   )
 }

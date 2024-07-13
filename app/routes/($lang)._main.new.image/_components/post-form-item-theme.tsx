@@ -14,29 +14,26 @@ type Props = {
  */
 export const PostFormItemTheme = (props: Props) => {
   return (
-    <>
-      <Card className="p-1">
-        <CardContent className="flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">お題参加</p>
-          {props.isLoading ? (
-            <Loader2Icon className="h-4 w-4 animate-spin" />
-          ) : (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                onCheckedChange={(value: boolean) => {
-                  props.onChange(value)
-                }}
-                id="theme"
-                checked={props.isChecked}
-              />
-              <label
-                className="text-sm"
-                htmlFor="theme"
-              >{`お題「${props.title}」に参加する`}</label>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">お題参加</p>
+        {props.isLoading ? (
+          <Loader2Icon className="h-4 w-4 animate-spin" />
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              onCheckedChange={(value: boolean) => {
+                props.onChange(value)
+              }}
+              id="theme"
+              checked={props.isChecked}
+            />
+            <label className="text-sm" htmlFor="theme">
+              {`お題「${props.title}」に参加する`}
+            </label>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

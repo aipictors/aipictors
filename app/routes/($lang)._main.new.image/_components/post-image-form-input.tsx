@@ -151,10 +151,10 @@ export function PostImageFormInput(props: Props) {
     })
   }
 
-  const hasTheme = props.state.themeId !== null
+  const themeId = data?.dailyTheme?.id ?? null
 
   return (
-    <div className="relative w-[100%]">
+    <div className="space-y-4">
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
@@ -167,12 +167,8 @@ export function PostImageFormInput(props: Props) {
       />
       <Accordion type="single" collapsible>
         <AccordionItem value="setting">
-          <AccordionTrigger>
-            <Button variant={"secondary"} className="w-full">
-              英語キャプションを入力
-            </Button>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-2">
+          <AccordionTrigger>英語キャプションを入力</AccordionTrigger>
+          <AccordionContent className="space-y-4">
             <PostFormItemTitle
               label={"英語タイトル"}
               onChange={(enTitle) =>
@@ -265,7 +261,7 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {hasTheme && (
+      {data?.dailyTheme && (
         <PostFormItemTheme
           title={data?.dailyTheme?.title ?? null}
           isLoading={loading}

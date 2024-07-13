@@ -21,31 +21,29 @@ type Props = {
  */
 export const PostFormItemAlbum = (props: Props) => {
   return (
-    <>
-      <Card>
-        <CardContent className="flex flex-col">
-          <p className="mt-1 mb-1 font-bold text-sm">シリーズ</p>
-          <Select
-            value={props.album ?? ""}
-            onValueChange={(value) => {
-              props.setAlbumId(value)
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {props.albums.map((album) => (
-                  <SelectItem key={album.id} value={album.id}>
-                    {album.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-    </>
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">{"シリーズ"}</p>
+        <Select
+          value={props.album ?? ""}
+          onValueChange={(value) => {
+            props.setAlbumId(value)
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {props.albums.map((album) => (
+                <SelectItem key={album.id} value={album.id}>
+                  {album.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
   )
 }
