@@ -1,6 +1,7 @@
-import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
@@ -70,3 +71,12 @@ export const GenerationTaskRatingButton = (props: Props) => {
     </button>
   )
 }
+
+const updateRatingImageGenerationResultMutation = graphql(
+  `mutation updateRatingImageGenerationResult($input: UpdateRatingImageGenerationResultInput!) {
+    updateRatingImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)

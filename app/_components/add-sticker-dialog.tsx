@@ -17,9 +17,7 @@ import { Checkbox } from "@/_components/ui/checkbox"
 import { Input } from "@/_components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { createStickerMutation } from "@/_graphql/mutations/create-sticker"
 import { Loader2Icon } from "lucide-react"
-import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
@@ -290,10 +288,26 @@ export const AddStickerDialog = (props: Props) => {
   )
 }
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const createStickerMutation = graphql(
+  `mutation CreateSticker($input: CreateStickerInput!) {
+    createSticker(input: $input) {
+      id
+    }
+  }`,
+)
+
+const createUserStickerMutation = graphql(
+  `mutation CreateUserSticker($input: CreateUserStickerInput!) {
+    createUserSticker(input: $input) {
+      id
     }
   }`,
 )

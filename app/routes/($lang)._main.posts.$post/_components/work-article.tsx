@@ -193,7 +193,7 @@ export const WorkArticle = (props: Props) => {
   )
 }
 
-export const viewerBookmarkFolderIdQuery = graphql(
+const viewerBookmarkFolderIdQuery = graphql(
   `query ViewerBookmarkFolderId {
     viewer {
       bookmarkFolderId

@@ -1,3 +1,0 @@
-# GraphQL
-
-GraphQLのクエリを含む。

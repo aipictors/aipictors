@@ -1,6 +1,5 @@
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
-import { updateAccountWebFcmTokenMutation } from "@/_graphql/mutations/update-account-web-fcm-token"
 import { config } from "@/config"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { getMessaging, getToken } from "firebase/messaging"
@@ -160,7 +159,7 @@ export const SettingFcmForm = () => {
   )
 }
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {
@@ -186,6 +185,14 @@ export const viewerUserQuery = graphql(
         createdCommentsCount
         createdBookmarksCount
       }
+    }
+  }`,
+)
+
+const updateAccountWebFcmTokenMutation = graphql(
+  `mutation UpdateAccountWebFcmToken($input: UpdateAccountWebFcmTokenInput!) {
+    updateAccountWebFcmToken(input: $input) {
+      id
     }
   }`,
 )

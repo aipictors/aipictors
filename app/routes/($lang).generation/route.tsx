@@ -136,7 +136,7 @@ export default function GenerationLayout() {
   )
 }
 
-export const controlNetCategoriesQuery = graphql(
+const controlNetCategoriesQuery = graphql(
   `query ControlNetCategories {
     controlNetCategories {
       ...ControlNetCategoryContext
@@ -145,7 +145,7 @@ export const controlNetCategoriesQuery = graphql(
   [controlNetCategoryContextFragment],
 )
 
-export const imageLoraModelsQuery = graphql(
+const imageLoraModelsQuery = graphql(
   `query ImageLoraModels {
     imageLoraModels {
       ...ImageLoraModelContext
@@ -154,7 +154,7 @@ export const imageLoraModelsQuery = graphql(
   [imageLoraModelContextFragment],
 )
 
-export const imageModelsQuery = graphql(
+const imageModelsQuery = graphql(
   `query ImageModels {
     imageModels {
       ...ImageModelContext
@@ -163,7 +163,7 @@ export const imageModelsQuery = graphql(
   [imageModelContextFragment],
 )
 
-export const negativePromptCategoriesQuery = graphql(
+const negativePromptCategoriesQuery = graphql(
   `query NegativePromptCategories {
     negativePromptCategories {
       ...PromptCategoryContext
@@ -172,7 +172,7 @@ export const negativePromptCategoriesQuery = graphql(
   [promptCategoryContextFragment],
 )
 
-export const promptCategoriesQuery = graphql(
+const promptCategoriesQuery = graphql(
   `query PromptCategories {
     promptCategories {
       ...PromptCategoryContext

@@ -1,7 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { Separator } from "@/_components/ui/separator"
-import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
 import { uploadImage } from "@/_utils/upload-image"
 import { InPaintingSetting } from "@/routes/($lang).generation._index/_components/submission-view/in-painting-setting"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
@@ -11,6 +10,8 @@ import { useMutation } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import type { Props } from "./in-painting-image-form"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import { graphql } from "gql.tada"
 
 /**
  * インペイント用のフォーム
@@ -206,3 +207,12 @@ export const InPaintingImageForm = (props: Props) => {
     </>
   )
 }
+
+const createImageGenerationTaskMutation = graphql(
+  `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
+    createImageGenerationTask(input: $input) {
+      ...ImageGenerationTaskFields
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

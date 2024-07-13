@@ -15,7 +15,6 @@ import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-i
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 import { useMutation, useQuery } from "@apollo/client/index"
-import {} from "@dnd-kit/core"
 import { useContext, useEffect, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
@@ -44,7 +43,6 @@ import { createRandomString } from "@/routes/($lang).generation._index/_utils/cr
 import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
-import { createWorkMutation } from "@/_graphql/mutations/create-work"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
@@ -630,7 +628,6 @@ export const NewImageForm = () => {
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
@@ -978,7 +975,7 @@ export const NewImageForm = () => {
   )
 }
 
-export const albumsQuery = graphql(
+const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...PartialAlbumFields
@@ -990,7 +987,7 @@ export const albumsQuery = graphql(
   [partialAlbumFieldsFragment, partialUserFieldsFragment],
 )
 
-export const appEventsQuery = graphql(
+const appEventsQuery = graphql(
   `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
     appEvents(limit: $limit, offset: $offset, where: $where) {
       id
@@ -1006,7 +1003,7 @@ export const appEventsQuery = graphql(
   }`,
 )
 
-export const dailyThemeQuery = graphql(
+const dailyThemeQuery = graphql(
   `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -1024,7 +1021,7 @@ export const dailyThemeQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const aiModelsQuery = graphql(
+const aiModelsQuery = graphql(
   `query AiModels($offset: Int!, $limit: Int!, $where: AiModelWhereInput) {
     aiModels(offset: $offset, limit: $limit, where: $where) {
       ...AiModelFields
@@ -1033,7 +1030,7 @@ export const aiModelsQuery = graphql(
   [aiModelFieldsFragment],
 )
 
-export const recommendedTagsFromPromptsQuery = graphql(
+const recommendedTagsFromPromptsQuery = graphql(
   `query RecommendedTagsFromPrompts($prompts: String!) {
     recommendedTagsFromPrompts(prompts: $prompts) {
       ...PartialTagFields
@@ -1042,7 +1039,7 @@ export const recommendedTagsFromPromptsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const whiteListTagsQuery = graphql(
+const whiteListTagsQuery = graphql(
   `query WhiteListTags($where: WhiteListTagsInput!) {
     whiteListTags(where: $where) {
       ...PartialTagFields
@@ -1051,7 +1048,7 @@ export const whiteListTagsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -1067,10 +1064,22 @@ export const viewerCurrentPassQuery = graphql(
   [passFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const createWorkMutation = graphql(
+  `mutation CreateWork($input: CreateWorkInput!) {
+    createWork(input: $input) {
+      id
+      title
+      accessType
+      nanoid
+      uuid
     }
   }`,
 )

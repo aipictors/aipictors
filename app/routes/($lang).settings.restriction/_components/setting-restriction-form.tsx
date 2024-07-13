@@ -4,7 +4,6 @@ import { useContext, useEffect } from "react"
 import { ToggleGroup, ToggleGroupItem } from "@/_components/ui/toggle-group"
 import { Button } from "@/_components/ui/button"
 import React from "react"
-import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-setting"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
@@ -120,7 +119,7 @@ export const SettingRestrictionForm = () => {
   )
 }
 
-export const userSettingQuery = graphql(
+const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       ...UserSettingFields
@@ -129,10 +128,18 @@ export const userSettingQuery = graphql(
   [userSettingFieldsFragment],
 )
 
-export const viewerIsBlurSensitiveImageQuery = graphql(
+const viewerIsBlurSensitiveImageQuery = graphql(
   `query ViewerIsBlurSensitiveImage {
     viewer {
       isBlurSensitiveImage
+    }
+  }`,
+)
+
+const updateUserSettingMutation = graphql(
+  `mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
+    updateUserSetting(input: $input) {
+      preferenceRating
     }
   }`,
 )

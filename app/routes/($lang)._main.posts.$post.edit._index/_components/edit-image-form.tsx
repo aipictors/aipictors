@@ -47,7 +47,6 @@ import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
 import { CommentsEditableInput } from "@/routes/($lang)._main.new.image/_components/comments-editable-input"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { getBase64FromAipictorsUrl } from "@/_utils/get-base64-from-aipicors-url"
-import { updateWorkMutation } from "@/_graphql/mutations/update-work"
 import { EventInput } from "@/routes/($lang)._main.new.image/_components/event-input"
 import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
@@ -1060,7 +1059,7 @@ export const EditImageForm = (props: Props) => {
   )
 }
 
-export const albumsQuery = graphql(
+const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...PartialAlbumFields
@@ -1072,7 +1071,7 @@ export const albumsQuery = graphql(
   [partialAlbumFieldsFragment, partialUserFieldsFragment],
 )
 
-export const appEventsQuery = graphql(
+const appEventsQuery = graphql(
   `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
     appEvents(limit: $limit, offset: $offset, where: $where) {
       id
@@ -1088,7 +1087,7 @@ export const appEventsQuery = graphql(
   }`,
 )
 
-export const dailyThemeQuery = graphql(
+const dailyThemeQuery = graphql(
   `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -1106,7 +1105,7 @@ export const dailyThemeQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const aiModelsQuery = graphql(
+const aiModelsQuery = graphql(
   `query AiModels($offset: Int!, $limit: Int!, $where: AiModelWhereInput) {
     aiModels(offset: $offset, limit: $limit, where: $where) {
       ...AiModelFields
@@ -1115,7 +1114,7 @@ export const aiModelsQuery = graphql(
   [aiModelFieldsFragment],
 )
 
-export const recommendedTagsFromPromptsQuery = graphql(
+const recommendedTagsFromPromptsQuery = graphql(
   `query RecommendedTagsFromPrompts($prompts: String!) {
     recommendedTagsFromPrompts(prompts: $prompts) {
       ...PartialTagFields
@@ -1124,7 +1123,7 @@ export const recommendedTagsFromPromptsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const whiteListTagsQuery = graphql(
+const whiteListTagsQuery = graphql(
   `query WhiteListTags($where: WhiteListTagsInput!) {
     whiteListTags(where: $where) {
       ...PartialTagFields
@@ -1133,7 +1132,7 @@ export const whiteListTagsQuery = graphql(
   [partialTagFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
@@ -1141,7 +1140,7 @@ export const viewerTokenQuery = graphql(
   }`,
 )
 
-export const workQuery = graphql(
+const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id
@@ -1260,4 +1259,18 @@ export const workQuery = graphql(
     }
   }`,
   [userFieldsFragment, subWorkFieldsFragment],
+)
+
+const updateWorkMutation = graphql(
+  `mutation UpdateWork($input: UpdateWorkInput!) {
+    updateWork(input: $input) {
+      id
+      title
+      description
+      rating
+      accessType
+      nanoid
+      uuid
+    }
+  }`,
 )

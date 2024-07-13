@@ -159,7 +159,7 @@ export const StickerDialog = (props: Props) => {
   )
 }
 
-export const viewerUserStickersCountQuery = graphql(
+const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
       userStickersCount(where: $where)
@@ -167,7 +167,7 @@ export const viewerUserStickersCountQuery = graphql(
   }`,
 )
 
-export const viewerUserStickersQuery = graphql(
+const viewerUserStickersQuery = graphql(
   `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
     viewer {
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {

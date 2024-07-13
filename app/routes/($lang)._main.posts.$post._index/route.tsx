@@ -66,7 +66,7 @@ export default function Work() {
   )
 }
 
-export const workCommentsQuery = graphql(
+const workCommentsQuery = graphql(
   `query WorkComments($workId: ID!) {
     work(id: $workId) {
       id
@@ -78,7 +78,7 @@ export const workCommentsQuery = graphql(
   [commentFragment],
 )
 
-export const workQuery = graphql(
+const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       ...WorkArticle

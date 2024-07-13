@@ -256,7 +256,7 @@ export function GenerationConfigView() {
   )
 }
 
-export const userSettingQuery = graphql(
+const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       ...UserSettingFields
@@ -265,7 +265,7 @@ export const userSettingQuery = graphql(
   [userSettingFieldsFragment],
 )
 
-export const viewerCurrentImageGenerationMemosQuery = graphql(
+const viewerCurrentImageGenerationMemosQuery = graphql(
   `query ViewerCurrentImageGenerationMemos {
     viewer {
       currentImageGenerationMemos {
@@ -276,7 +276,7 @@ export const viewerCurrentImageGenerationMemosQuery = graphql(
   [imageGenerationMemoFieldsFragment],
 )
 
-export const viewerFavoritedImageGenerationModelsQuery = graphql(
+const viewerFavoritedImageGenerationModelsQuery = graphql(
   `query ViewerFavoritedImageGenerationModels {
     viewer {
       favoritedImageGenerationModels {

@@ -54,7 +54,7 @@ export const AlbumWorkList = (props: Props) => {
   )
 }
 
-export const albumWorksQuery = graphql(
+const albumWorksQuery = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id

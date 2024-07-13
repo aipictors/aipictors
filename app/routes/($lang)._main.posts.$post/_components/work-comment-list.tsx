@@ -8,7 +8,6 @@ import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { createWorkCommentMutation } from "@/_graphql/mutations/create-work-comment"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -586,7 +585,7 @@ export const workCommentUserFragment = graphql(
   }`,
 )
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,
@@ -659,4 +658,12 @@ export const commentFragment = graphql(
       }
   }`,
   [commentFieldsFragment],
+)
+
+const createWorkCommentMutation = graphql(
+  `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
+    createWorkComment(input: $input) {
+      id
+    }
+  }`,
 )

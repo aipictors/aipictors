@@ -96,7 +96,7 @@ export const AlbumsListContainer = (props: Props) => {
   )
 }
 
-export const albumsQuery = graphql(
+const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...PartialAlbumFields

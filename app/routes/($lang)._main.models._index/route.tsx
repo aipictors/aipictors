@@ -35,7 +35,7 @@ export default function ModelsPage() {
   )
 }
 
-export const imageModelsQuery = graphql(
+const imageModelsQuery = graphql(
   `query ImageModels {
     imageModels {
       ...ImageModelCard

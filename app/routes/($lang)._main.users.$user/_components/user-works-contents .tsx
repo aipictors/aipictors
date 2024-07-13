@@ -74,13 +74,13 @@ export const UserWorksContents = (props: Props) => {
   )
 }
 
-export const worksCountQuery = graphql(
+const worksCountQuery = graphql(
   `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
   }`,
 )
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

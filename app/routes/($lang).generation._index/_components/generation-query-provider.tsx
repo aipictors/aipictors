@@ -108,7 +108,7 @@ export const GenerationQueryProvider = (props: Props) => {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
@@ -118,7 +118,7 @@ export const viewerCurrentPassQuery = graphql(
   [currentPassContextFragment],
 )
 
-export const viewerImageGenerationStatusQuery = graphql(
+const viewerImageGenerationStatusQuery = graphql(
   `query ViewerImageGenerationStatus {
     imageGenerationEngineStatus {
       ...ImageGenerationStatusContext

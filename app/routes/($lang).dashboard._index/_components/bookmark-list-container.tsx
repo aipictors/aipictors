@@ -81,7 +81,7 @@ export const BookmarkListContainer = (props: Props) => {
   )
 }
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,

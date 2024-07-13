@@ -126,7 +126,7 @@ export default function Index() {
   )
 }
 
-export const query = graphql(
+const query = graphql(
   `query HomeQuery(
     $after: String
     $year: Int

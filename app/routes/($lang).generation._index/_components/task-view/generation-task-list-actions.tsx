@@ -1,7 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Slider } from "@/_components/ui/slider"
 import { Toggle } from "@/_components/ui/toggle"
-import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { config } from "@/config"
 import { GenerationTasksDeleteButton } from "@/routes/($lang).generation._index/_components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "@/routes/($lang).generation._index/_components/task-view/generation-image-download-button"
@@ -15,6 +15,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
@@ -208,3 +209,12 @@ export const GenerationTaskListActions = (props: Props) => {
     </>
   )
 }
+
+const deleteImageGenerationResultMutation = graphql(
+  `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
+    deleteImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)

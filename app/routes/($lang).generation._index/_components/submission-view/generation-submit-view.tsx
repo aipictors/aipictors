@@ -1,7 +1,4 @@
 import { AppFixedContent } from "@/_components/app/app-fixed-content"
-import { createImageGenerationTaskReservedMutation } from "@/_graphql/mutations/create-image-generation-reserved-task"
-import { createImageGenerationTaskMutation } from "@/_graphql/mutations/create-image-generation-task"
-import { signImageGenerationTermsMutation } from "@/_graphql/mutations/sign-image-generation-terms"
 import { uploadImage } from "@/_utils/upload-image"
 import { config } from "@/config"
 import { GenerationSubmitOperationParts } from "@/routes/($lang).generation._index/_components/submission-view/generation-submit-operation-parts"
@@ -21,6 +18,8 @@ import { AuthContext } from "@/_contexts/auth-context"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { graphql } from "gql.tada"
+import { imageGenerationReservedTaskFieldsFragment } from "@/_graphql/fragments/image-reserved-generation-task-field"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 
 type Props = {
   termsText: string
@@ -571,7 +570,7 @@ export function GenerationSubmissionView(props: Props) {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -587,7 +586,7 @@ export const viewerCurrentPassQuery = graphql(
   [passFieldsFragment],
 )
 
-export const viewerLineUserIdQuery = graphql(
+const viewerLineUserIdQuery = graphql(
   `query viewerLineUserId {
     viewer {
       lineUserId
@@ -595,7 +594,7 @@ export const viewerLineUserIdQuery = graphql(
   }`,
 )
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {
@@ -621,6 +620,32 @@ export const viewerUserQuery = graphql(
         createdCommentsCount
         createdBookmarksCount
       }
+    }
+  }`,
+)
+
+const createImageGenerationTaskReservedMutation = graphql(
+  `mutation CreateReservedImageGenerationTask($input: CreateReservedImageGenerationTaskInput!) {
+    createReservedImageGenerationTask(input: $input) {
+      ...ImageGenerationReservedTaskFields
+    }
+  }`,
+  [imageGenerationReservedTaskFieldsFragment],
+)
+
+const createImageGenerationTaskMutation = graphql(
+  `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
+    createImageGenerationTask(input: $input) {
+      ...ImageGenerationTaskFields
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)
+
+const signImageGenerationTermsMutation = graphql(
+  `mutation SignImageGenerationTerms($input: SignImageGenerationTermsInput!) {
+    signImageGenerationTerms(input: $input) {
+      id
     }
   }`,
 )

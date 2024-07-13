@@ -1,5 +1,4 @@
 import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
-import { createMessageMutation } from "@/_graphql/mutations/create-message"
 import { MessageInput } from "@/routes/($lang)._main.support.chat/_components/message-input"
 import { SupportMessageList } from "@/routes/($lang)._main.support.chat/_components/support-message-list"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -63,12 +62,21 @@ export function SupportChatView() {
   )
 }
 
-export const viewerSupportMessagesQuery = graphql(
+const viewerSupportMessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       supportMessages(offset: $offset, limit: $limit) {
         ...MessageFields
       }
+    }
+  }`,
+  [messageFieldsFragment],
+)
+
+const createMessageMutation = graphql(
+  `mutation CreateMessage($input: CreateMessageInput!) {
+    createMessage(input: $input) {
+      ...MessageFields
     }
   }`,
   [messageFieldsFragment],

@@ -5,7 +5,6 @@ import { StickerChangeAccessTypeDialog } from "@/_components/sticker-change-acce
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
-import { deleteUserStickerMutation } from "@/_graphql/mutations/delete-user-sticker"
 import { StickerButton } from "@/routes/($lang)._main.posts.$post/_components/sticker-button"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -178,7 +177,7 @@ export const MyStickersList = () => {
   )
 }
 
-export const viewerUserStickersCountQuery = graphql(
+const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
       userStickersCount(where: $where)
@@ -186,7 +185,7 @@ export const viewerUserStickersCountQuery = graphql(
   }`,
 )
 
-export const viewerUserStickersQuery = graphql(
+const viewerUserStickersQuery = graphql(
   `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
     viewer {
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
@@ -195,4 +194,12 @@ export const viewerUserStickersQuery = graphql(
     }
   }`,
   [partialStickerFieldsFragment],
+)
+
+const deleteUserStickerMutation = graphql(
+  `mutation DeleteUserSticker($input: DeleteUserStickerInput!) {
+    deleteUserSticker(input: $input) {
+      id
+    }
+  }`,
 )

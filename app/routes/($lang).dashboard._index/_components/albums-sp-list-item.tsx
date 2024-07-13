@@ -2,11 +2,11 @@ import { Separator } from "@/_components/ui/separator"
 import {} from "@/_components/ui/table"
 import { Loader2Icon, TrashIcon } from "lucide-react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 type Props = {
   album: {
@@ -106,3 +106,11 @@ export const AlbumsSpListItem = (props: Props) => {
     </>
   )
 }
+
+const deleteWorkMutation = graphql(
+  `mutation DeleteWork($input: DeleteWorkInput!) {
+    deleteWork(input: $input) {
+      id
+    }
+  }`,
+)

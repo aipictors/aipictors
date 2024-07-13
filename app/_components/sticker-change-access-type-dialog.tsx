@@ -8,9 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import { updateStickerMutation } from "@/_graphql/mutations/update-sticker"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import React from "react"
 import { toast } from "sonner"
 
@@ -92,3 +92,11 @@ export const StickerChangeAccessTypeDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+const updateStickerMutation = graphql(
+  `mutation updateSticker($input: UpdateStickerInput!) {
+    updateSticker(input: $input) {
+      id
+    }
+  }`,
+)

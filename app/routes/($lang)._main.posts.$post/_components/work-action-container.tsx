@@ -51,7 +51,7 @@ export const WorkActionContainer = (props: Props) => {
   )
 }
 
-export const workQuery = graphql(
+const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id

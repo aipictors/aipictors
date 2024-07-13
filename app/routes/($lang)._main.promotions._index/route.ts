@@ -5,7 +5,7 @@ export default function Route() {
   return null
 }
 
-export const promotionsQuery = graphql(
+const promotionsQuery = graphql(
   `query Promotions($offset: Int!, $limit: Int!) {
     promotions(offset: $offset, limit: $limit) {
       ...PartialPromotionFields
@@ -14,7 +14,7 @@ export const promotionsQuery = graphql(
   [partialPromotionFieldsFragment],
 )
 
-export const promotionQuery = graphql(
+const promotionQuery = graphql(
   `query Promotion($id: ID!) {
     promotion(id: $id) {
       id

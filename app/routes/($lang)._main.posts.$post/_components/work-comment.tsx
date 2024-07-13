@@ -1,13 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { deleteCommentMutation } from "@/_graphql/mutations/delete-comment"
 import { useMutation } from "@apollo/client/index"
 import { ArrowDownToLine, Loader2Icon } from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "@/routes/($lang)._main.posts.$post/_components/work-comment-input"
 import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 type Props = {
   userId: string
@@ -147,3 +147,11 @@ export const WorkComment = (props: Props) => {
     </>
   )
 }
+
+const deleteCommentMutation = graphql(
+  `mutation DeleteComment($input: DeleteCommentInput!) {
+    deleteComment(input: $input) {
+      id
+    }
+  }`,
+)

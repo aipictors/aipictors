@@ -244,7 +244,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
   )
 }
 
-export const userSettingQuery = graphql(
+const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       ...UserSettingFields
@@ -253,7 +253,7 @@ export const userSettingQuery = graphql(
   [userSettingFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
@@ -261,7 +261,7 @@ export const viewerTokenQuery = graphql(
   }`,
 )
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {

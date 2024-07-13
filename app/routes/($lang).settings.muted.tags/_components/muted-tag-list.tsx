@@ -3,7 +3,6 @@ import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { PartialMutedTagFieldsFragment } from "@/_graphql/fragments/partial-muted-tag-fields"
-import { muteTagMutation } from "@/_graphql/mutations/mute-tag"
 import { MutedTag } from "@/routes/($lang).settings.muted.tags/_components/muted-tag"
 import {
   ApolloError,
@@ -115,7 +114,7 @@ export const MutedTagList = () => {
   )
 }
 
-export const viewerMutedTagsQuery = graphql(
+const viewerMutedTagsQuery = graphql(
   `query ViewerMutedTags($offset: Int!, $limit: Int!) {
     viewer {
       mutedTags(offset: $offset, limit: $limit) {
@@ -124,4 +123,12 @@ export const viewerMutedTagsQuery = graphql(
     }
   }`,
   [PartialMutedTagFieldsFragment],
+)
+
+const muteTagMutation = graphql(
+  `mutation MuteTag($input: MuteTagInput!) {
+    muteTag(input: $input) {
+      id
+    }
+  }`,
 )

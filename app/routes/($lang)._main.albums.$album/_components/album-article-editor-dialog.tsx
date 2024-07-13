@@ -11,7 +11,6 @@ import {
 } from "@/_components/ui/dialog"
 import { AuthContext } from "@/_contexts/auth-context"
 import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
-import { updateAlbumMutation } from "@/_graphql/mutations/update-album"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -200,10 +199,19 @@ export const albumArticleFragment = graphql(
   [workUserFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const updateAlbumMutation = graphql(
+  `mutation UpdateAlbum($input: UpdateAlbumInput!) {
+    updateAlbum(input: $input) {
+      id
+      title
     }
   }`,
 )

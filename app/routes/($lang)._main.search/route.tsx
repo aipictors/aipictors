@@ -38,7 +38,7 @@ export default function Search() {
   )
 }
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

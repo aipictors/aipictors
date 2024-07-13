@@ -56,13 +56,13 @@ export const UserStickersContents = (props: Props) => {
   )
 }
 
-export const stickersCountQuery = graphql(
+const stickersCountQuery = graphql(
   `query StickersCount($where: StickersWhereInput) {
     stickersCount(where: $where)
   }`,
 )
 
-export const stickersQuery = graphql(
+const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
       ...PartialStickerFields

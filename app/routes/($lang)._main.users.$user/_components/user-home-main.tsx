@@ -101,7 +101,7 @@ export const userHomeMainFragment = graphql(
   [],
 )
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
   ) {

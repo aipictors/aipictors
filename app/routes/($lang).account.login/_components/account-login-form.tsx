@@ -1,7 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
-import { updateAccountLoginMutation } from "@/_graphql/mutations/update-account-login"
 import {
   ApolloError,
   useMutation,
@@ -67,7 +66,7 @@ export const AccountLoginForm = () => {
   )
 }
 
-export const viewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       user {
@@ -93,6 +92,15 @@ export const viewerUserQuery = graphql(
         createdCommentsCount
         createdBookmarksCount
       }
+    }
+  }`,
+)
+
+const updateAccountLoginMutation = graphql(
+  `mutation UpdateAccountLogin($input: UpdateAccountLoginInput!) {
+    updateAccountLogin(input: $input) {
+      id
+      login
     }
   }`,
 )

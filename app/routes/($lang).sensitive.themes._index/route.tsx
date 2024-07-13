@@ -42,7 +42,7 @@ export default function SensitiveThemes() {
   )
 }
 
-export const dailyThemesQuery = graphql(
+const dailyThemesQuery = graphql(
   `query DailyThemes(
     $offset: Int!
     $limit: Int!

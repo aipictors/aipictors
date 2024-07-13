@@ -7,9 +7,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import { createUserStickerMutation } from "@/_graphql/mutations/create-user-sticker"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React from "react"
 
@@ -78,3 +78,11 @@ export const StickerInfoDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+const createUserStickerMutation = graphql(
+  `mutation CreateUserSticker($input: CreateUserStickerInput!) {
+    createUserSticker(input: $input) {
+      id
+    }
+  }`,
+)

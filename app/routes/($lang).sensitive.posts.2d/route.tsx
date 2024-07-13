@@ -41,7 +41,7 @@ export default function SensitiveWorks2d() {
   )
 }
 
-export const hotTagsQuery = graphql(
+const hotTagsQuery = graphql(
   `query HotTags {
     hotTags {
       ...PartialTagFields
@@ -53,7 +53,7 @@ export const hotTagsQuery = graphql(
   [partialTagFieldsFragment, partialWorkFieldsFragment],
 )
 
-export const worksQuery = graphql(
+const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

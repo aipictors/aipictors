@@ -1,6 +1,5 @@
 import { TableRow, TableCell } from "@/_components/ui/table"
 import { Loader2Icon, PencilIcon, TrashIcon } from "lucide-react"
-import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
@@ -10,6 +9,7 @@ import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { Link } from "@remix-run/react"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
+import { graphql } from "gql.tada"
 
 type Props = {
   work: {
@@ -153,3 +153,11 @@ export const WorksListTableRow = (props: Props) => {
     </>
   )
 }
+
+const deleteWorkMutation = graphql(
+  `mutation DeleteWork($input: DeleteWorkInput!) {
+    deleteWork(input: $input) {
+      id
+    }
+  }`,
+)
