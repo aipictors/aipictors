@@ -1,9 +1,8 @@
-import { AppAside } from "@/_components/app/app-aside"
+import { AppContents } from "@/_components/app/app-contents"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { SettingsRouteList } from "@/routes/($lang).settings/_components/settings-route-list"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
@@ -24,14 +23,8 @@ export default function SettingsLayout() {
 
   return (
     <>
-      <HomeHeader title={"設定"} />
-      <AppAside>
-        <SettingsRouteList />
-      </AppAside>
-      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-1 md:pl-52">
-        <Outlet />
-        <HomeFooter />
-      </div>
+      <HomeHeader title="設定" />
+      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
     </>
   )
 }

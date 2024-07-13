@@ -1,8 +1,7 @@
-import { AppAside } from "@/_components/app/app-aside"
+import { AppContents } from "@/_components/app/app-contents"
 import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-route-list"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
@@ -17,13 +16,7 @@ export default function DashboardLayout() {
   return (
     <>
       <HomeHeader />
-      <AppAside>
-        <HomeRouteList />
-      </AppAside>
-      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-1 md:pl-52">
-        <Outlet />
-        <HomeFooter />
-      </div>
+      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
     </>
   )
 }

@@ -11,6 +11,15 @@ type Props = {
  * メニュー項目
  */
 export const MenuItemLink = (props: Props) => {
+  if (!props.href) {
+    return (
+      <DropdownMenuItem>
+        {props.icon}
+        <span>{props.label}</span>
+      </DropdownMenuItem>
+    )
+  }
+
   return (
     <>
       <Link to={props.href}>

@@ -1,25 +1,17 @@
-import { LoginNavigationButton } from "@/_components/login-navitation-button"
+import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { NavigationLogoutDialogButton } from "@/_components/logout-navigation-dialog-button"
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
-import { Link } from "@remix-run/react"
-import {
-  RiDiscordLine,
-  RiThreadsLine,
-  RiTwitterXLine,
-  RiYoutubeLine,
-} from "@remixicon/react"
+import {} from "@remixicon/react"
 import {
   AwardIcon,
   BookImageIcon,
   BoxIcon,
-  FolderIcon,
   GemIcon,
   HomeIcon,
   ImageIcon,
-  LibraryBigIcon,
   LightbulbIcon,
   MessageCircleIcon,
   RocketIcon,
@@ -33,7 +25,15 @@ export const HomeRouteList = () => {
   const authContext = useContext(AuthContext)
 
   return (
-    <div className="space-y-1">
+    <div className="mt-8 space-y-1">
+      {authContext.isNotLoggedIn && (
+        <>
+          <LoginDialogButton variant="secondary" isWidthFull />
+          <div className={"py-2"}>
+            <Separator />
+          </div>
+        </>
+      )}
       <HomeNavigationButton href={"/"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
@@ -54,22 +54,15 @@ export const HomeRouteList = () => {
       >
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/albums"}
-        icon={LibraryBigIcon}
-      >
-        {"シリーズ"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/collections"}
-        icon={FolderIcon}
-      >
-        {"コレクション"}
-      </HomeNavigationButton>
       <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
         {"開発予定"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        isDisabled={config.isReleaseMode}
+        href={"/generation"}
+        icon={AwardIcon}
+      >
+        {"画像生成"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
@@ -118,57 +111,6 @@ export const HomeRouteList = () => {
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
-      {authContext.isNotLoggedIn && <LoginNavigationButton />}
-      <div className="py-2">
-        <Separator />
-      </div>
-      <HomeNavigationButton
-        icon={RiTwitterXLine}
-        href={"https://twitter.com/Aipictors"}
-      >
-        {"Twitter"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        icon={RiDiscordLine}
-        href={"https://discord.gg/CsSbTHYY"}
-      >
-        {"Discord"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"https://www.threads.net/@aipictors"}
-        icon={RiThreadsLine}
-      >
-        {"Threads"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"https://www.youtube.com/@aipictors"}
-        icon={RiYoutubeLine}
-      >
-        {"YouTube"}
-      </HomeNavigationButton>
-      <div className="py-2">
-        <Separator />
-      </div>
-      <div className="flex flex-col space-y-2 pl-3">
-        <Link to={"/about"} className={"text-xs"}>
-          {"このサイトについて"}
-        </Link>
-        <Link to={"/about/us"} className={"text-xs"}>
-          {"運営会社"}
-        </Link>
-        <Link to={"/terms"} className={"text-xs"}>
-          {"利用規約"}
-        </Link>
-        <Link to={"/privacy"} className={"text-xs"}>
-          {"プライバシーポリシー"}
-        </Link>
-        <Link
-          className={"text-xs"}
-          to={"/specified-commercial-transaction-act"}
-        >
-          {"特定商取引法に基づく表記"}
-        </Link>
-      </div>
     </div>
   )
 }

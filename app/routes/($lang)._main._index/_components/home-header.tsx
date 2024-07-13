@@ -8,6 +8,7 @@ import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
+import HomeHeaderNotLoggedInMenu from "@/routes/($lang)._main._index/_components/home-header-not-logged-in-menu"
 import { HomeNotificationsMenu } from "@/routes/($lang)._main._index/_components/home-notifications-menu"
 import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/routes/($lang)._main._index/_components/home-user-navigation-menu"
@@ -39,7 +40,7 @@ const HomeHeader = (props: Props) => {
             <SheetTrigger asChild>
               <Button
                 className="mr-2 md:hidden"
-                variant={"secondary"}
+                variant={"ghost"}
                 size={"icon"}
               >
                 <MenuIcon />
@@ -51,19 +52,16 @@ const HomeHeader = (props: Props) => {
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <Link
-            className="hidden items-center md:flex"
-            to="https://www.aipictors.com"
-          >
+          <Link className="items-center md:flex" to="https://www.aipictors.com">
             {navigation.state === "loading" && (
-              <div className="flex h-10 w-10 items-center justify-center">
+              <div className="flex h-10 w-10 items-center justify-center md:ml-8">
                 <Loader2Icon className={"h-10 w-10 animate-spin"} />
               </div>
             )}
             {navigation.state !== "loading" && (
               <img
                 src="/icon.svg"
-                className="h-10 w-10 rounded-full"
+                className="h-10 w-10 rounded-full md:ml-8"
                 alt="Avatar"
                 width={40}
                 height={40}
@@ -80,15 +78,23 @@ const HomeHeader = (props: Props) => {
               <Input placeholder={"作品を検索"} />
             </div>
           )}
-          <Link to={"https://www.aipictors.com/"}>
-            <Button variant={"secondary"}>{"旧版"}</Button>
-          </Link>
-          <Link to={"/generation"}>
-            <Button variant={"secondary"}>{"生成"}</Button>
-          </Link>
-          <Link to={"/new/image"}>
-            <Button variant={"secondary"}>{"投稿"}</Button>
-          </Link>
+          {authContext.isLoggedIn && (
+            <>
+              <Link
+                className="hidden md:block"
+                to={"https://www.aipictors.com/"}
+              >
+                <Button variant={"secondary"}>{"旧版"}</Button>
+              </Link>
+              <Link to={"/generation"}>
+                <Button variant={"secondary"}>{"生成"}</Button>
+              </Link>
+              <Link to={"/new/image"}>
+                <Button variant={"secondary"}>{"投稿"}</Button>
+              </Link>
+            </>
+          )}
+          {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
           {authContext.isLoggedIn && <HomeNotificationsMenu />}
           <Suspense>
             {authContext.isLoggedIn && (

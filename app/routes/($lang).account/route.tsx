@@ -1,9 +1,8 @@
-import { AppAside } from "@/_components/app/app-aside"
-import { AppColumnLayout } from "@/_components/app/app-column-layout"
+import { AppContents } from "@/_components/app/app-contents"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { AccountRouteList } from "@/routes/($lang).account/_components/account-route-list"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
@@ -25,12 +24,7 @@ export default function SettingsLayout() {
   return (
     <>
       <HomeHeader title={"アカウント"} />
-      <AppColumnLayout>
-        <AppAside>
-          <AccountRouteList />
-        </AppAside>
-        <Outlet />
-      </AppColumnLayout>
+      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
     </>
   )
 }

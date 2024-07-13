@@ -18,6 +18,13 @@ type Props = {
   isLoading?: boolean
   description?: string
   imageUrl?: string
+  variant?:
+    | "link"
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
 }
 
 /**
@@ -31,6 +38,7 @@ export function LoginDialogButton(props: Props) {
           props.triggerChildren
         ) : (
           <Button
+            variant={props.variant}
             disabled={props.isLoading}
             className={cn(props.isWidthFull ? "w-full" : "")}
           >

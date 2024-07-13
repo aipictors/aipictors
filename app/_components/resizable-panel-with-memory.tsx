@@ -3,6 +3,7 @@ import { cn } from "@/_lib/cn"
 import { ResizablePanel } from "@/_components/ui/resizable"
 import {} from "react"
 import { getCookie } from "@/_utils/get-cookie"
+import { setCookie } from "@/_utils/set-cookie"
 
 /**
  * リサイザーパネルのサイズ記憶付きハンドル
@@ -15,13 +16,6 @@ export const ResizablePanelWithMemory = ({
 }: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
   withHandle?: boolean
 }) => {
-  /**
-   * Cookieにサイズを保存
-   */
-  const setCookie = (name: string, value: number) => {
-    document.cookie = `${name}=${value}; path=/`
-  }
-
   /**
    * Cookieからサイズを取得
    */

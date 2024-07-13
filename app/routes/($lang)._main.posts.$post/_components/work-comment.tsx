@@ -3,7 +3,7 @@ import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { deleteCommentMutation } from "@/_graphql/mutations/delete-comment"
 import { useMutation } from "@apollo/client/index"
-import { Loader2Icon } from "lucide-react"
+import { ArrowDownToLine, Loader2Icon } from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "@/routes/($lang)._main.posts.$post/_components/work-comment-input"
 import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
@@ -123,7 +123,7 @@ export const WorkComment = (props: Props) => {
                       title={props.stickerTitle ?? ""}
                       imageUrl={props.stickerImageURL}
                     >
-                      <p className="cursor-pointer text-xs">{"ダウンロード"}</p>
+                      <ArrowDownToLine className="h-4 w-4" />
                     </StickerInfoDialog>
                   )}
               </>

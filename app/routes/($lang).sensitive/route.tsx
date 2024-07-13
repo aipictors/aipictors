@@ -1,7 +1,6 @@
-import { AppAside } from "@/_components/app/app-aside"
+import { AppContents } from "@/_components/app/app-contents"
 import { HomeFooter } from "@/_components/home-footer"
 import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { SensitiveRouteList } from "@/routes/($lang).sensitive/_components/sensitive-route-list"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
 
@@ -13,13 +12,7 @@ export default function SensitiveLayout() {
   return (
     <>
       <HomeHeader />
-      <AppAside>
-        <SensitiveRouteList />
-      </AppAside>
-      <div className="pr-4 pl-4 sm:pr-8 sm:pl-8 md:ml-1 md:pl-52">
-        <Outlet />
-        <HomeFooter />
-      </div>
+      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
     </>
   )
 }
