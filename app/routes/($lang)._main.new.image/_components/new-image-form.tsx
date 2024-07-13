@@ -1,23 +1,8 @@
-import React, { useReducer, useContext } from "react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/_components/ui/accordion"
+import { useReducer, useContext } from "react"
 import { Button } from "@/_components/ui/button"
-import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
-import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
-import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
-import { PostFormItemTitle } from "@/routes/($lang)._main.new.image/_components/post-form-item-title"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { PostFormItemTheme } from "@/routes/($lang)._main.new.image/_components/post-form-item-theme"
 import { AuthContext } from "@/_contexts/auth-context"
 import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
-import { Checkbox } from "@/_components/ui/checkbox"
-import { Loader2Icon } from "lucide-react"
-import PaintCanvas from "@/_components/paint-canvas"
-import FullScreenContainer from "@/_components/full-screen-container"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
@@ -27,37 +12,21 @@ import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components
 import { resizeImage } from "@/_utils/resize-image"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
-import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { config } from "@/config"
-import { useBeforeUnload } from "@remix-run/react"
-import {
-  initialState,
-  postFormReducer,
-  type PostFormState,
-} from "@/routes/($lang)._main.new.image/_types/post-form-reducer"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
-import type { Tag } from "@/_components/tag/tag-input"
 import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
-import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { cn } from "@/_lib/cn"
-import { PostFormItemCaption } from "@/routes/($lang)._main.new.image/_components/post-form-item-caption"
-import { PostFormItemView } from "@/routes/($lang)._main.new.image/_components/post-form-item-view"
-import { PostFormItemDate } from "@/routes/($lang)._main.new.image/_components/post-form-item-date"
-import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/post-form-item-tags"
-import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
-import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
-import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
-import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
-import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
-import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
 import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
-import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
 import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
+import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
+import {
+  postFormReducer,
+  type PostFormState,
+} from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 
 /**
  * 新規作品フォーム
@@ -65,18 +34,49 @@ import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
 
-  const [state, dispatch] = useReducer(postFormReducer, initialState)
+  const [state, dispatch] = useReducer(postFormReducer, {
+    pngInfo: null,
+    isDrawing: false,
+    isHovered: false,
+    editTargetImageBase64: null,
+    items: [],
+    indexList: [],
+    videoFile: null,
+    thumbnailBase64: null,
+    ogpBase64: null,
+    thumbnailPosX: 0,
+    thumbnailPosY: 0,
+    isThumbnailLandscape: false,
+    isCreatedWork: false,
+    isCreatingWork: false,
+    uploadedWorkId: null,
+    uploadedWorkUuid: null,
+    progress: 0,
+    selectedImageGenerationIds: [],
+    isOpenImageGenerationDialog: false,
+  })
 
-  const { data, loading } = useQuery(pageQuery, {
-    variables: {
-      isSensitive:
-        state.ratingRestriction === "R18" || state.ratingRestriction === "R18G",
-      startAt: new Date().toISOString().split("T")[0],
-      prompts: state.pngInfo?.params.prompt ?? "girl",
-      year: state.date.getFullYear(),
-      month: state.date.getMonth() + 1,
-      day: state.date.getDate(),
-    },
+  const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
+    imageInformation: null,
+    date: new Date(),
+    title: null,
+    enTitle: null,
+    caption: null,
+    enCaption: null,
+    themeId: null,
+    albumId: null,
+    link: null,
+    tags: [],
+    isTagEditable: false,
+    isCommentsEditable: false,
+    isPromotion: false,
+    ratingRestriction: "G",
+    accessType: "PUBLIC",
+    imageStyle: "ILLUSTRATION",
+    aiModelId: "1",
+    reservationDate: null,
+    reservationTime: null,
+    isSetGenerationParams: true,
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -88,45 +88,8 @@ export const NewImageForm = () => {
     },
   })
 
-  const selectImageFromImageGeneration = (
-    selectedImage: string[],
-    selectedIds: string[],
-  ) => {
-    dispatch({
-      type: "SET_SELECTED_IMAGE_GENERATION_IDS",
-      payload: selectedIds,
-    })
-    dispatch({
-      type: "SET_ITEMS",
-      payload: [
-        ...state.items,
-        ...selectedImage.map((image) => ({
-          id: Math.floor(Math.random() * 10000),
-          content: image,
-        })),
-      ],
-    })
-    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: false })
-  }
-
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
-
-  const onChangeTheme = (value: boolean) => {
-    if (data === undefined) {
-      throw new Error("theme is undefined")
-    }
-    if (data.dailyTheme === null) {
-      throw new Error("theme.dailyTheme is null")
-    }
-    dispatch({
-      type: "SET_THEME_ID",
-      payload: {
-        themeId: data.dailyTheme.id,
-        themeTitle: data.dailyTheme.title,
-      },
-    })
-  }
 
   const onPost = async () => {
     const uploadedImageUrls = []
@@ -140,29 +103,29 @@ export const NewImageForm = () => {
       }
       dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      if (state.title === null) {
+      if (inputState.title === null) {
         toast("タイトルを入力してください")
         return
       }
-      if (state.title.length > 120) {
+      if (inputState.title.length > 120) {
         toast("タイトルは120文字以内で入力してください")
         return
       }
       dispatch({ type: "SET_PROGRESS", payload: 15 })
 
-      if (state.caption && state.caption.length > 3000) {
+      if (inputState.caption && inputState.caption.length > 3000) {
         toast("キャプションは3000文字以内で入力してください")
         return
       }
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      if (state.enTitle && state.enTitle.length > 120) {
+      if (inputState.enTitle && inputState.enTitle.length > 120) {
         toast("英語タイトルは120文字以内で入力してください")
         return
       }
       dispatch({ type: "SET_PROGRESS", payload: 25 })
 
-      if (state.enCaption && state.enCaption.length > 3000) {
+      if (inputState.enCaption && inputState.enCaption.length > 3000) {
         toast("英語キャプションは3000文字以内で入力してください")
         return
       }
@@ -175,8 +138,10 @@ export const NewImageForm = () => {
       dispatch({ type: "SET_PROGRESS", payload: 35 })
 
       if (
-        (state.reservationDate !== null && state.reservationTime === null) ||
-        (state.reservationDate === null && state.reservationTime !== null)
+        (inputState.reservationDate !== null &&
+          inputState.reservationTime === null) ||
+        (inputState.reservationDate === null &&
+          inputState.reservationTime !== null)
       ) {
         toast("予約投稿の時間を入力してください")
         return
@@ -215,9 +180,10 @@ export const NewImageForm = () => {
       }
 
       const reservedAt =
-        state.reservationDate !== null && state.reservationTime !== null
+        inputState.reservationDate !== null &&
+        inputState.reservationTime !== null
           ? new Date(
-              `${state.reservationDate}T${state.reservationTime}`,
+              `${inputState.reservationDate}T${inputState.reservationTime}`,
             ).getTime() +
             3600000 * 9
           : undefined
@@ -241,11 +207,11 @@ export const NewImageForm = () => {
         const work = await createWork({
           variables: {
             input: {
-              title: state.title,
-              entitle: state.enTitle,
-              explanation: state.caption,
-              enExplanation: state.enCaption,
-              rating: state.ratingRestriction,
+              title: inputState.title,
+              entitle: inputState.enTitle,
+              explanation: inputState.caption,
+              enExplanation: inputState.enCaption,
+              rating: inputState.ratingRestriction,
               prompt: state.pngInfo?.params.prompt ?? null,
               negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
               seed: state.pngInfo?.params.seed ?? null,
@@ -256,22 +222,22 @@ export const NewImageForm = () => {
               modelHash: state.pngInfo?.params.modelHash ?? null,
               otherGenerationParams: null,
               pngInfo: state.pngInfo?.src ?? null,
-              imageStyle: state.imageStyle,
-              relatedUrl: state.link,
-              tags: state.tags.map((tag) => tag.text),
-              isTagEditable: state.isTagEditable,
-              isCommentEditable: state.isCommentsEditable,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.isTagEditable,
+              isCommentEditable: inputState.isCommentsEditable,
               thumbnailPosition: state.isThumbnailLandscape
                 ? state.thumbnailPosX
                 : state.thumbnailPosY,
-              modelId: state.aiUsed,
+              modelId: inputState.aiModelId,
               type: "VIDEO",
-              subjectId: state.themeId,
-              albumId: state.albumId,
-              isPromotion: state.isAd,
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.isPromotion,
               reservedAt: reservedAt,
               mainImageSha256: mainImageSha256,
-              accessType: state.accessType,
+              accessType: inputState.accessType,
               imageUrls: [largeThumbnailUrl],
               smallThumbnailImageURL: smallThumbnailUrl,
               smallThumbnailImageWidth: smallThumbnail.width,
@@ -283,7 +249,7 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
-              accessGenerationType: state.isSetGenerationParams
+              accessGenerationType: inputState.isSetGenerationParams
                 ? "PUBLIC"
                 : "PRIVATE",
             },
@@ -339,11 +305,11 @@ export const NewImageForm = () => {
         const work = await createWork({
           variables: {
             input: {
-              title: state.title,
-              entitle: state.enTitle,
-              explanation: state.caption,
-              enExplanation: state.enCaption,
-              rating: state.ratingRestriction,
+              title: inputState.title,
+              entitle: inputState.enTitle,
+              explanation: inputState.caption,
+              enExplanation: inputState.enCaption,
+              rating: inputState.ratingRestriction,
               prompt: state.pngInfo?.params.prompt ?? null,
               negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
               seed: state.pngInfo?.params.seed ?? null,
@@ -354,22 +320,22 @@ export const NewImageForm = () => {
               modelHash: state.pngInfo?.params.modelHash ?? null,
               otherGenerationParams: null,
               pngInfo: state.pngInfo?.src ?? null,
-              imageStyle: state.imageStyle,
-              relatedUrl: state.link,
-              tags: state.tags.map((tag) => tag.text),
-              isTagEditable: state.isTagEditable,
-              isCommentEditable: state.isCommentsEditable,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.isTagEditable,
+              isCommentEditable: inputState.isCommentsEditable,
               thumbnailPosition: state.isThumbnailLandscape
                 ? state.thumbnailPosX
                 : state.thumbnailPosY,
-              modelId: state.aiUsed,
+              modelId: inputState.aiModelId,
               type: "WORK",
-              subjectId: state.themeId,
-              albumId: state.albumId,
-              isPromotion: state.isAd,
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.isPromotion,
               reservedAt: reservedAt,
               mainImageSha256: mainImageSha256,
-              accessType: state.accessType,
+              accessType: inputState.accessType,
               imageUrls: imageUrls,
               smallThumbnailImageURL: smallThumbnailUrl,
               smallThumbnailImageWidth: smallThumbnail.width,
@@ -381,7 +347,7 @@ export const NewImageForm = () => {
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,
               imageWidth: mainImageSize.width,
-              accessGenerationType: state.isSetGenerationParams
+              accessGenerationType: inputState.isSetGenerationParams
                 ? "PUBLIC"
                 : "PRIVATE",
             },
@@ -447,12 +413,6 @@ export const NewImageForm = () => {
     input.click()
   }
 
-  const recommendedNotUsedTags = () => {
-    return (data?.recommendedTagsFromPrompts?.filter(
-      (tag) => !state.tags.map((t) => t.text).includes(tag.name),
-    ) ?? []) as unknown as Tag[]
-  }
-
   const selectedFilesSizeText = () => {
     const totalBytes = state.items
       .map((item) => item.content)
@@ -475,111 +435,28 @@ export const NewImageForm = () => {
     return `イラスト${imageCount}枚`
   }
 
-  /**
-   * 選択可能なタグ
-   */
-  const selectableTags = () => {
-    if (data?.whiteListTags === undefined) {
-      return []
-    }
-    const tags = data.whiteListTags.filter((tag) => {
-      return !state.tags.map((t) => t.text).includes(tag.name)
-    })
-    return tags.map((tag) => {
-      return {
-        id: tag.id,
-        text: tag.name,
-      }
-    })
-  }
-
-  const onChangeAccessTypeImageGenerationParameters = () => {
-    dispatch({
-      type: "SET_IS_SET_GENERATION_PARAMS",
-      payload: !state.isSetGenerationParams,
-    })
-  }
-
-  const onOpenImageGenerationDialog = () => {
-    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: true })
-  }
-
-  const setIsOpenImageGenerationDialog = (isOpen: boolean) => {
-    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: isOpen })
-  }
-
-  const setSelectGenerationIds = (selectedIds: string[]) => {
-    dispatch({
-      type: "SET_SELECTED_IMAGE_GENERATION_IDS",
-      payload: selectedIds,
-    })
-  }
-
-  const onSubmitGenerationImage = (selectedImage: string[]) => {
-    dispatch({ type: "SET_SELECTED_IMAGE_GENERATION_IDS", payload: [] })
-    dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: false })
-    dispatch({
-      type: "SET_ITEMS",
-      payload: [
-        ...state.items,
-        ...selectedImage.map((image) => ({
-          id: Math.floor(Math.random() * 10000),
-          content: image,
-        })),
-      ],
-    })
-  }
-
   const createdAt = new Date(
-    `${state.reservationDate}T${state.reservationTime}`,
+    `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  const albumOptions = () => {
-    if (viewer === undefined) {
-      return []
-    }
-    if (viewer.albums === null) {
-      return []
-    }
-    return viewer.albums.map((album) => {
-      return {
-        id: album.id,
-        name: album.title,
-      }
-    })
-  }
-
-  const aiModelOptions = () => {
-    if (data === undefined) {
-      return []
-    }
-    return data.aiModels
-      .filter((model) => model.workModelId !== null)
-      .map((model) => {
-        return {
-          id: model.workModelId as string,
-          name: model.name,
-        }
-      })
-  }
-
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        if (state.state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
-          event.returnValue = confirmationMessage
-          return confirmationMessage
-        }
-      },
-      [state.state],
-    ),
-  )
+  // TODO: あとで
+  // useBeforeUnload(
+  //   React.useCallback(
+  //     (event) => {
+  //       if (state.state) {
+  //         const confirmationMessage =
+  //           "ページ遷移すると変更が消えますが問題無いですか？"
+  //         event.returnValue = confirmationMessage
+  //         return confirmationMessage
+  //       }
+  //     },
+  //     [state.state],
+  //   ),
+  // )
 
   return (
     <>
-      <div className="relative w-[100%]">
+      <div className="relative w-full">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
             className={cn(
@@ -686,183 +563,21 @@ export const NewImageForm = () => {
             </Button>
             <Button
               variant={"secondary"}
-              onClick={onOpenImageGenerationDialog}
               className="m-2 ml-auto block"
+              onClick={() => {
+                dispatch({
+                  type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
+                  payload: true,
+                })
+              }}
             >
               {"生成画像"}
             </Button>
           </div>
-          <PostFormItemTitle
-            onChange={(title) => {
-              dispatch({ type: "SET_TITLE", payload: title })
-            }}
-          />
-          <PostFormItemCaption
-            setCaption={(caption) => {
-              dispatch({ type: "SET_CAPTION", payload: caption })
-            }}
-          />
-          <Accordion type="single" collapsible>
-            <AccordionItem value="setting">
-              <AccordionTrigger>
-                <Button variant={"secondary"} className="w-full">
-                  英語キャプションを入力
-                </Button>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-2">
-                <PostFormItemTitle
-                  label={"英語タイトル"}
-                  onChange={(enTitle) =>
-                    dispatch({ type: "SET_EN_TITLE", payload: enTitle })
-                  }
-                />
-                <PostFormItemCaption
-                  label={"英語キャプション"}
-                  setCaption={(enCaption) =>
-                    dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
-                  }
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <PostFormItemRating
-            rating={state.ratingRestriction}
-            setRating={(value) => {
-              dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
-            }}
-          />
-          <PostFormItemView
-            accessType={state.accessType}
-            setAccessType={(accessType) => {
-              dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
-            }}
-          />
-          <PostFormItemTaste
-            imageStyle={state.imageStyle}
-            setImageStyle={(imageStyle) => {
-              dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-            }}
-          />
-          <PostFormItemModel
-            model={state.aiUsed}
-            models={aiModelOptions()}
-            setModel={(model) => {
-              dispatch({ type: "SET_AI_USED", payload: model })
-            }}
-          />
-          {state.pngInfo && (
-            <div className="flex items-center">
-              <Checkbox
-                checked={state.isSetGenerationParams}
-                onCheckedChange={onChangeAccessTypeImageGenerationParameters}
-                id="set-generation-check"
-              />
-              <label
-                htmlFor="set-generation-check"
-                className="ml-2 font-medium text-sm"
-              >
-                {"生成情報を公開する"}
-              </label>
-            </div>
-          )}
-          {state.pngInfo && state.isSetGenerationParams && (
-            <Accordion type="single" collapsible>
-              <AccordionItem value="setting">
-                <AccordionTrigger>
-                  <Button variant={"secondary"} className="w-full">
-                    {"生成情報を確認する"}
-                  </Button>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-2">
-                  <PostFormItemGenerationParams
-                    pngInfo={state.pngInfo}
-                    setPngInfo={(value) => {
-                      dispatch({ type: "SET_PNG_INFO", payload: value })
-                    }}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          )}
-          <PostFormItemDate
-            date={state.reservationDate}
-            time={state.reservationTime}
-            setDate={(value) => {
-              dispatch({ type: "SET_RESERVATION_DATE", payload: value })
-            }}
-            setTime={(time) => {
-              dispatch({ type: "SET_RESERVATION_TIME", payload: time })
-            }}
-          />
-          {!state.hasNoTheme && (
-            <PostFormItemTheme
-              title={data?.dailyTheme?.title ?? null}
-              isLoading={loading}
-              onChange={onChangeTheme}
-            />
-          )}
-          {data && 0 < data?.appEvents.length && (
-            <PostFormItemEvent
-              tags={state.tags}
-              eventName={data?.appEvents[0]?.title ?? null}
-              eventDescription={data?.appEvents[0]?.description ?? null}
-              eventTag={data?.appEvents[0]?.tag ?? null}
-              endAt={data?.appEvents[0]?.endAt ?? 0}
-              slug={data?.appEvents[0]?.slug ?? null}
-              setTags={(tags) => {
-                dispatch({ type: "SET_TAGS", payload: tags })
-              }}
-            />
-          )}
-          <PostFormItemTags
-            whiteListTags={selectableTags()}
-            tags={state.tags}
-            setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
-            recommendedTags={recommendedNotUsedTags()}
-          />
-          {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
-          <PostFormCategoryEditable
-            isChecked={state.isTagEditable}
-            onChange={(isTagEditable) => {
-              dispatch({
-                type: "SET_IS_TAG_EDITABLE",
-                payload: isTagEditable,
-              })
-            }}
-          />
-          <PostFormCommentsEditable
-            isChecked={state.isCommentsEditable}
-            onChange={(value) => {
-              dispatch({
-                type: "SET_IS_COMMENTS_EDITABLE",
-                payload: value,
-              })
-            }}
-          />
-          {viewer?.albums && (
-            <PostFormItemAlbum
-              album={state.albumId}
-              albums={albumOptions()}
-              setAlbumId={(albumId) => {
-                dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-              }}
-            />
-          )}
-          <PostFormItemRelatedLink
-            link={state.link}
-            onChange={(link) => {
-              dispatch({ type: "SET_LINK", payload: link })
-            }}
-          />
-          <PostFormItemAdvertising
-            isSubscribed={
-              viewer?.viewer?.currentPass?.type === "STANDARD" ||
-              viewer?.viewer?.currentPass?.type === "PREMIUM"
-            }
-            isChecked={state.isAd}
-            onChange={(isAd) => {
-              dispatch({ type: "SET_IS_AD", payload: isAd })
-            }}
+          <PostImageFormInput
+            imageInformation={state.pngInfo}
+            state={inputState}
+            dispatch={dispatchInput}
           />
         </div>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
@@ -871,29 +586,9 @@ export const NewImageForm = () => {
           </Button>
         </div>
       </div>
-      {state.editTargetImageBase64 !== null && (
-        <FullScreenContainer
-          enabledScroll={state.isDrawing}
-          onClose={() => {
-            dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: null })
-          }}
-        >
-          <PaintCanvas
-            onChangeSetDrawing={(isDrawing) => {
-              dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
-            }}
-            imageUrl={state.editTargetImageBase64}
-            isMosaicMode={true}
-            isShowSubmitButton={true}
-            onSubmit={(base64) => {
-              dispatch({ type: "SET_EDITED_IMAGE", payload: { base64 } })
-            }}
-          />
-        </FullScreenContainer>
-      )}
       <SuccessCreatedWorkDialog
         isOpen={state.isCreatedWork}
-        title={state.title}
+        title={inputState.title}
         imageBase64={state.thumbnailBase64}
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
@@ -903,13 +598,6 @@ export const NewImageForm = () => {
       <CreatingWorkDialog
         progress={state.progress}
         isOpen={state.isCreatingWork}
-      />
-      <ImageGenerationSelectorDialog
-        isOpen={state.isOpenImageGenerationDialog}
-        setIsOpen={setIsOpenImageGenerationDialog}
-        onSubmitted={onSubmitGenerationImage}
-        selectedIds={state.selectedImageGenerationIds}
-        setSelectIds={setSelectGenerationIds}
       />
     </>
   )
@@ -949,61 +637,6 @@ const viewerQuery = graphql(
     }
   }`,
   [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
-)
-
-const pageQuery = graphql(
-  `query PageQuery(
-    $isSensitive: Boolean!
-    $startAt: String!
-    $prompts: String!
-    $year: Int,
-    $month: Int,
-    $day: Int,
-  ) {
-    aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
-    }
-    appEvents(
-      limit: 1,
-      offset: 0,
-      where: {
-        startAt: $startAt,
-      }
-    ) {
-      id
-      description
-      title
-      slug
-      thumbnailImageUrl
-      headerImageUrl
-      startAt
-      endAt
-      tag
-    }
-    whiteListTags(
-      where: {
-        isSensitive: $isSensitive
-      }
-    ) {
-      ...PartialTagFields
-    }
-    recommendedTagsFromPrompts(prompts: $prompts) {
-      ...PartialTagFields
-    }
-    dailyTheme(year: $year, month: $month, day: $day) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount,
-      works(offset: 0, limit: 1) {
-        ...PartialWorkFields
-      }
-    }
-  }`,
-  [partialWorkFieldsFragment, aiModelFieldsFragment, partialTagFieldsFragment],
 )
 
 const createWorkMutation = graphql(

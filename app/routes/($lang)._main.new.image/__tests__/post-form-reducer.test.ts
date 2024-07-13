@@ -1,8 +1,31 @@
 import {
-  initialState,
-  postFormReducer,
-} from "@/routes/($lang)._main.new.image/_types/post-form-reducer"
+  postImageFormInputReducer,
+  type PostImageFormInputState,
+} from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { test, expect, describe } from "bun:test"
+
+const initialState: PostImageFormInputState = {
+  imageInformation: null,
+  date: new Date(),
+  title: null,
+  enTitle: null,
+  caption: null,
+  enCaption: null,
+  themeId: null,
+  albumId: null,
+  link: null,
+  tags: [],
+  isTagEditable: false,
+  isCommentsEditable: false,
+  isPromotion: false,
+  ratingRestriction: "G",
+  accessType: "PUBLIC",
+  imageStyle: "ILLUSTRATION",
+  aiModelId: "1",
+  reservationDate: null,
+  reservationTime: null,
+  isSetGenerationParams: true,
+}
 
 describe("SET_RESERVATION_DATE", () => {
   test("日付を変えるとお題がNULLになる", () => {
@@ -16,7 +39,7 @@ describe("SET_RESERVATION_DATE", () => {
       payload: "2022-01-01",
     } as const
 
-    const newState = postFormReducer(state, action)
+    const newState = postImageFormInputReducer(state, action)
 
     expect(newState.themeId).toBe(null)
   })
@@ -38,7 +61,7 @@ describe("SET_THEME_ID", () => {
       },
     } as const
 
-    const newState = postFormReducer(state, action)
+    const newState = postImageFormInputReducer(state, action)
 
     expect(newState.tags.length).toBe(0)
   })
@@ -58,7 +81,7 @@ describe("SET_THEME_ID", () => {
       },
     } as const
 
-    const newState = postFormReducer(state, action)
+    const newState = postImageFormInputReducer(state, action)
 
     expect(newState.tags.length).toBe(1)
   })

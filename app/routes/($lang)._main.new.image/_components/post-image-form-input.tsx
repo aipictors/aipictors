@@ -1,0 +1,429 @@
+import { type Dispatch, useContext } from "react"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/_components/ui/accordion"
+import { Button } from "@/_components/ui/button"
+import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
+import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
+import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
+import { PostFormItemTitle } from "@/routes/($lang)._main.new.image/_components/post-form-item-title"
+import { useQuery } from "@apollo/client/index"
+import { PostFormItemTheme } from "@/routes/($lang)._main.new.image/_components/post-form-item-theme"
+import { Checkbox } from "@/_components/ui/checkbox"
+import { Loader2Icon } from "lucide-react"
+import { PostFormItemCaption } from "@/routes/($lang)._main.new.image/_components/post-form-item-caption"
+import { PostFormItemView } from "@/routes/($lang)._main.new.image/_components/post-form-item-view"
+import { PostFormItemDate } from "@/routes/($lang)._main.new.image/_components/post-form-item-date"
+import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/post-form-item-tags"
+import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
+import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
+import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
+import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
+import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
+import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
+import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { graphql } from "gql.tada"
+import { AuthContext } from "@/_contexts/auth-context"
+import type {
+  PostImageFormInputAction,
+  PostImageFormInputState,
+} from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import type { InferInput } from "valibot"
+import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
+
+type Props = {
+  imageInformation: InferInput<typeof vImageInformation> | null
+  dispatch: Dispatch<PostImageFormInputAction>
+  state: PostImageFormInputState
+}
+
+export function PostImageFormInput(props: Props) {
+  const authContext = useContext(AuthContext)
+
+  const { data, loading } = useQuery(pageQuery, {
+    variables: {
+      isSensitive:
+        props.state.ratingRestriction === "R18" ||
+        props.state.ratingRestriction === "R18G",
+      startAt: new Date().toISOString().split("T")[0],
+      prompts: props.imageInformation?.params.prompt ?? "girl",
+      year: props.state.date.getFullYear(),
+      month: props.state.date.getMonth() + 1,
+      day: props.state.date.getDate(),
+    },
+  })
+
+  const { data: viewer } = useQuery(viewerQuery, {
+    skip: authContext.isLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: authContext.userId,
+    },
+  })
+
+  const hasImageInfo = props.imageInformation
+
+  const onChangeTheme = (value: boolean) => {
+    if (data === undefined) {
+      throw new Error("theme is undefined")
+    }
+    if (data.dailyTheme === null) {
+      throw new Error("theme.dailyTheme is null")
+    }
+    props.dispatch({
+      type: "SET_THEME_ID",
+      payload: {
+        themeId: data.dailyTheme.id,
+        themeTitle: data.dailyTheme.title,
+      },
+    })
+  }
+
+  /**
+   * 選択可能なタグ
+   */
+  const selectableTags = () => {
+    if (data?.whiteListTags === undefined) {
+      return []
+    }
+    const tags = data.whiteListTags.filter((tag) => {
+      return !props.state.tags.map((t) => t.text).includes(tag.name)
+    })
+    return tags.map((tag) => {
+      return {
+        id: tag.id,
+        text: tag.name,
+      }
+    })
+  }
+
+  const albumOptions = () => {
+    if (viewer === undefined) {
+      return []
+    }
+    if (viewer.albums === null) {
+      return []
+    }
+    return viewer.albums.map((album) => {
+      return {
+        id: album.id,
+        name: album.title,
+      }
+    })
+  }
+
+  const aiModelOptions = () => {
+    if (data === undefined) {
+      return []
+    }
+    return data.aiModels
+      .filter((model) => model.workModelId !== null)
+      .map((model) => {
+        return {
+          id: model.workModelId as string,
+          name: model.name,
+        }
+      })
+  }
+
+  const tagOptions = () => {
+    if (data === undefined) {
+      return []
+    }
+    const tags = data.recommendedTagsFromPrompts.filter((tag) => {
+      return !props.state.tags.map((t) => t.text).includes(tag.name)
+    })
+    return tags.map((tag) => {
+      return {
+        id: tag.id,
+        text: tag.name,
+      }
+    })
+  }
+
+  const hasTheme = props.state.themeId !== null
+
+  return (
+    <div className="relative w-[100%]">
+      <PostFormItemTitle
+        onChange={(title) => {
+          props.dispatch({ type: "SET_TITLE", payload: title })
+        }}
+      />
+      <PostFormItemCaption
+        setCaption={(caption) => {
+          props.dispatch({ type: "SET_CAPTION", payload: caption })
+        }}
+      />
+      <Accordion type="single" collapsible>
+        <AccordionItem value="setting">
+          <AccordionTrigger>
+            <Button variant={"secondary"} className="w-full">
+              英語キャプションを入力
+            </Button>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2">
+            <PostFormItemTitle
+              label={"英語タイトル"}
+              onChange={(enTitle) =>
+                props.dispatch({ type: "SET_EN_TITLE", payload: enTitle })
+              }
+            />
+            <PostFormItemCaption
+              label={"英語キャプション"}
+              setCaption={(enCaption) =>
+                props.dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
+              }
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <PostFormItemRating
+        rating={props.state.ratingRestriction}
+        setRating={(value) => {
+          props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
+        }}
+      />
+      <PostFormItemView
+        accessType={props.state.accessType}
+        setAccessType={(accessType) => {
+          props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
+        }}
+      />
+      <PostFormItemTaste
+        imageStyle={props.state.imageStyle}
+        setImageStyle={(imageStyle) => {
+          props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+        }}
+      />
+      <PostFormItemModel
+        model={props.state.aiModelId}
+        models={aiModelOptions()}
+        setModel={(model) => {
+          props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
+        }}
+      />
+      {hasImageInfo && (
+        <div className="flex items-center">
+          <Checkbox
+            checked={props.state.isSetGenerationParams}
+            id="set-generation-check"
+            onCheckedChange={() => {
+              props.dispatch({
+                type: "SET_GENERATION_PARAMS_FEATURE",
+                payload: !props.state.isSetGenerationParams,
+              })
+            }}
+          />
+          <label
+            htmlFor="set-generation-check"
+            className="ml-2 font-medium text-sm"
+          >
+            {"生成情報を公開する"}
+          </label>
+        </div>
+      )}
+      {props.imageInformation && props.state.isSetGenerationParams && (
+        <Accordion type="single" collapsible>
+          <AccordionItem value="setting">
+            <AccordionTrigger>
+              <Button variant={"secondary"} className="w-full">
+                {"生成情報を確認する"}
+              </Button>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              <PostFormItemGenerationParams
+                pngInfo={props.imageInformation}
+                setPngInfo={(value) => {
+                  props.dispatch({
+                    type: "SET_IMAGE_INFORMATION",
+                    payload: value,
+                  })
+                }}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
+      <PostFormItemDate
+        date={props.state.reservationDate}
+        time={props.state.reservationTime}
+        setDate={(value) => {
+          props.dispatch({ type: "SET_RESERVATION_DATE", payload: value })
+        }}
+        setTime={(time) => {
+          props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
+        }}
+      />
+      {hasTheme && (
+        <PostFormItemTheme
+          title={data?.dailyTheme?.title ?? null}
+          isLoading={loading}
+          onChange={onChangeTheme}
+        />
+      )}
+      {data && 0 < data?.appEvents.length && (
+        <PostFormItemEvent
+          tags={props.state.tags}
+          eventName={data?.appEvents[0]?.title ?? null}
+          eventDescription={data?.appEvents[0]?.description ?? null}
+          eventTag={data?.appEvents[0]?.tag ?? null}
+          endAt={data?.appEvents[0]?.endAt ?? 0}
+          slug={data?.appEvents[0]?.slug ?? null}
+          setTags={(tags) => {
+            for (const tag of tags) {
+              props.dispatch({ type: "ADD_TAG", payload: tag })
+            }
+          }}
+        />
+      )}
+      <PostFormItemTags
+        whiteListTags={selectableTags()}
+        tags={props.state.tags}
+        recommendedTags={tagOptions()}
+        setTags={(tags) => {
+          props.dispatch({ type: "SET_TAGS", payload: tags })
+        }}
+      />
+      {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
+      <PostFormCategoryEditable
+        isChecked={props.state.isTagEditable}
+        onChange={(value) => {
+          props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
+        }}
+      />
+      <PostFormCommentsEditable
+        isChecked={props.state.isCommentsEditable}
+        onChange={(value) => {
+          props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
+        }}
+      />
+      {viewer?.albums && (
+        <PostFormItemAlbum
+          album={props.state.albumId}
+          albums={albumOptions()}
+          setAlbumId={(albumId) => {
+            props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+          }}
+        />
+      )}
+      <PostFormItemRelatedLink
+        link={props.state.link}
+        onChange={(link) => {
+          props.dispatch({ type: "SET_LINK", payload: link })
+        }}
+      />
+      <PostFormItemAdvertising
+        isSubscribed={
+          viewer?.viewer?.currentPass?.type === "STANDARD" ||
+          viewer?.viewer?.currentPass?.type === "PREMIUM"
+        }
+        isChecked={props.state.isPromotion}
+        onChange={(isAd) => {
+          props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
+        }}
+      />
+    </div>
+  )
+}
+
+const viewerQuery = graphql(
+  `query ViewerQuery(
+    $limit: Int!,
+    $offset: Int!,
+    $ownerUserId: ID
+  ) {
+    viewer {
+      token
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+    albums(
+      offset: $offset,
+      limit: $limit,
+      where: {
+        ownerUserId: $ownerUserId,
+        isSensitiveAndAllRating: true,
+        needInspected: false,
+        needsThumbnailImage: false,
+      }
+    ) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
+)
+
+const pageQuery = graphql(
+  `query PageQuery(
+    $isSensitive: Boolean!
+    $startAt: String!
+    $prompts: String!
+    $year: Int,
+    $month: Int,
+    $day: Int,
+  ) {
+    aiModels(offset: 0, limit: 124, where: {}) {
+      ...AiModelFields
+    }
+    appEvents(
+      limit: 1,
+      offset: 0,
+      where: {
+        startAt: $startAt,
+      }
+    ) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+    whiteListTags(
+      where: {
+        isSensitive: $isSensitive
+      }
+    ) {
+      ...PartialTagFields
+    }
+    recommendedTagsFromPrompts(prompts: $prompts) {
+      ...PartialTagFields
+    }
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount,
+      works(offset: 0, limit: 1) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment, aiModelFieldsFragment, partialTagFieldsFragment],
+)
