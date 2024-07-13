@@ -15,16 +15,16 @@ const initialState: PostImageFormInputState = {
   albumId: null,
   link: null,
   tags: [],
-  isTagEditable: false,
-  isCommentsEditable: false,
-  isPromotion: false,
+  useTagFeature: false,
+  useCommentFeature: false,
+  usePromotionFeature: false,
   ratingRestriction: "G",
   accessType: "PUBLIC",
   imageStyle: "ILLUSTRATION",
   aiModelId: "1",
   reservationDate: null,
   reservationTime: null,
-  isSetGenerationParams: true,
+  useGenerationParams: true,
 }
 
 describe("SET_RESERVATION_DATE", () => {

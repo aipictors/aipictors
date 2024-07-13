@@ -91,11 +91,11 @@ export const SortableItems = (props: Props) => {
     console.log("deletedId", deletedId)
 
     // deletedId以降は1つずつ前にずらす
-    props.setIndexList((prev) =>
-      prev
-        .filter((id) => id !== deletedId)
-        .map((id) => (id > deletedId ? id - 1 : id)),
-    )
+    const draftIds = props.items
+      .map((item) => item.id)
+      .filter((id) => id !== deletedId)
+      .map((id) => (id > deletedId ? id - 1 : id))
+    props.setIndexList(draftIds)
 
     // itemsの各itemsのidを今の並び順ごとに0, 1, 2...と振り直す
     const newItems = props.items.filter((item) => item.id !== deletedId)

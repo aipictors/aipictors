@@ -1,8 +1,6 @@
 import { ConstructionAlert } from "@/_components/construction-alert"
 import { ParamsError } from "@/_errors/params-error"
-import { EditImageForm } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form"
 import { useParams } from "@remix-run/react"
-import { Suspense } from "react"
 
 export default function EditImage() {
   const params = useParams()
@@ -24,9 +22,9 @@ export default function EditImage() {
         fallbackURL={`https://www.aipictors.com/edit-work/?id=${params.post}`}
       />
 
-      <Suspense>
+      {/* <Suspense>
         <EditImageForm workId={params.post} />
-      </Suspense>
+      </Suspense> */}
     </div>
   )
 }

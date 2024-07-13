@@ -26,9 +26,10 @@ export const vPostImageInputState = object({
   albumId: nullable(string()),
   link: nullable(string()),
   tags: array(vTag),
-  isTagEditable: boolean(),
-  isCommentsEditable: boolean(),
-  isPromotion: boolean(),
+  useTagFeature: boolean(),
+  useCommentFeature: boolean(),
+  usePromotionFeature: boolean(),
+  useGenerationParams: boolean(),
   ratingRestriction: union([
     literal("G"),
     literal("R15"),
@@ -50,5 +51,4 @@ export const vPostImageInputState = object({
   aiModelId: nullable(string()),
   reservationDate: nullable(string()),
   reservationTime: nullable(string()),
-  isSetGenerationParams: boolean(),
 })

@@ -58,16 +58,16 @@ export default function NewImage() {
     albumId: null,
     link: null,
     tags: [],
-    isTagEditable: false,
-    isCommentsEditable: false,
-    isPromotion: false,
+    useTagFeature: false,
+    useCommentFeature: false,
+    usePromotionFeature: false,
     ratingRestriction: "G",
     accessType: "PUBLIC",
     imageStyle: "ILLUSTRATION",
     aiModelId: "1",
     reservationDate: null,
     reservationTime: null,
-    isSetGenerationParams: true,
+    useGenerationParams: true,
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -224,8 +224,8 @@ export default function NewImage() {
             imageStyle: inputState.imageStyle,
             relatedUrl: inputState.link,
             tags: inputState.tags.map((tag) => tag.text),
-            isTagEditable: inputState.isTagEditable,
-            isCommentEditable: inputState.isCommentsEditable,
+            isTagEditable: inputState.useTagFeature,
+            isCommentEditable: inputState.useCommentFeature,
             thumbnailPosition: state.isThumbnailLandscape
               ? state.thumbnailPosX
               : state.thumbnailPosY,
@@ -233,7 +233,7 @@ export default function NewImage() {
             type: "WORK",
             subjectId: inputState.themeId,
             albumId: inputState.albumId,
-            isPromotion: inputState.isPromotion,
+            isPromotion: inputState.usePromotionFeature,
             reservedAt: reservedAt,
             mainImageSha256: mainImageSha256,
             accessType: inputState.accessType,
@@ -248,7 +248,7 @@ export default function NewImage() {
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
             imageWidth: mainImageSize.width,
-            accessGenerationType: inputState.isSetGenerationParams
+            accessGenerationType: inputState.useGenerationParams
               ? "PUBLIC"
               : "PRIVATE",
           },

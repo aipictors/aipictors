@@ -222,25 +222,25 @@ export const postImageFormInputReducer = (
     case "ENABLE_TAG_FEATURE": {
       return {
         ...state,
-        isTagEditable: action.payload,
+        useTagFeature: action.payload,
       }
     }
     case "ENABLE_COMMENT_FEATURE": {
       return {
         ...state,
-        isCommentsEditable: action.payload,
+        useCommentFeature: action.payload,
       }
     }
     case "ENABLE_PROMOTION_FEATURE": {
       return {
         ...state,
-        isPromotion: action.payload,
+        usePromotionFeature: action.payload,
       }
     }
     case "ENABLE_GENERATION_PARAMS_FEATURE": {
       return {
         ...state,
-        isSetGenerationParams: action.payload,
+        useGenerationParams: action.payload,
       }
     }
     case "SET_RATING_RESTRICTION": {

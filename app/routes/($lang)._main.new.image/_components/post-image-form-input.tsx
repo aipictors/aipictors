@@ -202,12 +202,12 @@ export function PostImageFormInput(props: Props) {
       {hasImageInfo && (
         <div className="flex items-center">
           <Checkbox
-            checked={props.state.isSetGenerationParams}
+            checked={props.state.useGenerationParams}
             id="set-generation-check"
             onCheckedChange={() => {
               props.dispatch({
                 type: "ENABLE_GENERATION_PARAMS_FEATURE",
-                payload: !props.state.isSetGenerationParams,
+                payload: !props.state.useGenerationParams,
               })
             }}
           />
@@ -219,7 +219,7 @@ export function PostImageFormInput(props: Props) {
           </label>
         </div>
       )}
-      {props.imageInformation && props.state.isSetGenerationParams && (
+      {props.imageInformation && props.state.useGenerationParams && (
         <Accordion type="single" collapsible>
           <AccordionItem value="setting">
             <AccordionTrigger>{"生成情報を確認する"}</AccordionTrigger>
@@ -279,13 +279,13 @@ export function PostImageFormInput(props: Props) {
       />
       {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
       <PostFormCategoryEditable
-        isChecked={props.state.isTagEditable}
+        isChecked={props.state.useTagFeature}
         onChange={(value) => {
           props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
         }}
       />
       <PostFormCommentsEditable
-        isChecked={props.state.isCommentsEditable}
+        isChecked={props.state.useCommentFeature}
         onChange={(value) => {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
@@ -310,7 +310,7 @@ export function PostImageFormInput(props: Props) {
           props.currentPass?.type === "STANDARD" ||
           props.currentPass?.type === "PREMIUM"
         }
-        isChecked={props.state.isPromotion}
+        isChecked={props.state.usePromotionFeature}
         onChange={(isAd) => {
           props.dispatch({ type: "ENABLE_PROMOTION_FEATURE", payload: isAd })
         }}
