@@ -73,7 +73,7 @@ export const WorkUser = (props: Props) => {
           </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
-        {props.userPromptonId && (
+        {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
         )}
       </CardHeader>
@@ -82,10 +82,6 @@ export const WorkUser = (props: Props) => {
           <CardDescription>{props.userBiography}</CardDescription>
         )}
       </CardDescription>
-      {/* <CardFooter className="flex justify-between space-x-2">
-        <FollowButton className="flex-1" />
-        {props.userPromptonId && <PromptonRequestTextButton className="flex-1" />}
-      </CardFooter> */}
     </Card>
   )
 }

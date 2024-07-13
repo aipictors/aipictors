@@ -181,11 +181,12 @@ export const WorkArticle = (props: Props) => {
               </Avatar>
               <span>{props.work.user.name}</span>
             </Link>
-            {props.work.user.promptonUser?.id !== undefined && (
-              <PromptonRequestButton
-                promptonId={props.work.user.promptonUser.id}
-              />
-            )}
+            {props.work.user.promptonUser?.id !== undefined &&
+              props.work.user.id !== appContext?.userId && (
+                <PromptonRequestButton
+                  promptonId={props.work.user.promptonUser.id}
+                />
+              )}
           </div>
         </div>
       </section>
