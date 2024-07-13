@@ -628,7 +628,6 @@ export const NewImageForm = () => {
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center bg-gray-800 ${
               isHovered ? "border-2 border-white border-dashed" : ""
             }`}
