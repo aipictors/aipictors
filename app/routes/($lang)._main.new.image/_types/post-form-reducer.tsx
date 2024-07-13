@@ -77,7 +77,7 @@ const vState = object({
   enTitle: string(),
   caption: string(),
   enCaption: string(),
-  themeId: string(),
+  themeId: nullable(string()),
   editTargetImageBase64: string(),
   albumId: string(),
   link: string(),
@@ -169,7 +169,15 @@ export type Action =
     }
   | {
       type: "SET_THEME_ID"
-      payload: string
+      payload:
+        | {
+            themeId: string
+            themeTitle: string
+          }
+        | {
+            themeId: null
+            themeTitle: string
+          }
     }
   | {
       type: "SET_EDIT_TARGET_IMAGE_BASE64"
@@ -220,7 +228,13 @@ export type Action =
       payload: string
     }
   | {
+      /**
+       * 投稿時刻を設定する
+       */
       type: "SET_RESERVATION_DATE"
+      /**
+       * 日付
+       */
       payload: string
     }
   | {
@@ -324,7 +338,7 @@ export const initialState: PostFormState = {
   enTitle: "",
   caption: "",
   enCaption: "",
-  themeId: "",
+  themeId: null,
   editTargetImageBase64: "",
   albumId: "",
   link: "",
@@ -356,7 +370,10 @@ export const initialState: PostFormState = {
   isOpenImageGenerationDialog: false,
 }
 
-export const postFormReducer = (state: PostFormState, action: Action) => {
+export const postFormReducer = (
+  state: PostFormState,
+  action: Action,
+): PostFormState => {
   switch (action.type) {
     case "SET_TITLE": {
       return {
@@ -521,9 +538,34 @@ export const postFormReducer = (state: PostFormState, action: Action) => {
       }
     }
     case "SET_THEME_ID": {
+      if (action.payload.themeId === null) {
+        return {
+          ...state,
+          themeId: null,
+          tags: state.tags.filter((tag) => {
+            return tag.text !== action.payload.themeTitle
+          }),
+        }
+      }
+      const hasThemeTag = state.tags.some((tag) => {
+        return tag.id === "9999"
+      })
+      if (hasThemeTag) {
+        return {
+          ...state,
+          themeId: action.payload.themeId,
+        }
+      }
       return {
         ...state,
-        themeId: action.payload,
+        themeId: action.payload.themeId,
+        tags: [
+          ...state.tags,
+          {
+            id: "9999",
+            text: action.payload.themeTitle,
+          },
+        ],
       }
     }
     case "SET_EDIT_TARGET_IMAGE_BASE64": {
@@ -587,9 +629,24 @@ export const postFormReducer = (state: PostFormState, action: Action) => {
       }
     }
     case "SET_RESERVATION_DATE": {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const threeDaysLater = new Date(today)
+      threeDaysLater.setDate(today.getDate() + 7)
+      const changeDate = new Date(action.payload)
+      changeDate.setHours(0, 0, 0, 0)
+      if (changeDate >= today && changeDate <= threeDaysLater) {
+        return {
+          ...state,
+          reservationDate: action.payload,
+          date: changeDate,
+          themeId: null,
+        }
+      }
       return {
         ...state,
         reservationDate: action.payload,
+        themeId: null,
       }
     }
     case "SET_RESERVATION_TIME": {

@@ -191,39 +191,22 @@ export const NewImageForm = () => {
 
   const onDateInput = (value: string) => {
     dispatch({ type: "SET_RESERVATION_DATE", payload: value })
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const threeDaysLater = new Date(today)
-    threeDaysLater.setDate(today.getDate() + 7)
-
-    const changeDate = new Date(value)
-    changeDate.setHours(0, 0, 0, 0)
-
-    if (changeDate >= today && changeDate <= threeDaysLater) {
-      dispatch({ type: "SET_DATE", payload: changeDate })
-      dispatch({ type: "SET_HAS_NO_THEME", payload: false })
-    } else {
-      dispatch({ type: "SET_HAS_NO_THEME", payload: true })
-    }
-    dispatch({ type: "SET_THEME_ID", payload: "" })
   }
 
   const onChangeTheme = (value: boolean) => {
-    if (value) {
-      dispatch({ type: "SET_THEME_ID", payload: theme?.dailyTheme?.id ?? "" })
-      dispatch({
-        type: "ADD_TAG",
-        payload: { id: "9999", text: theme?.dailyTheme?.title ?? "" },
-      })
-    } else {
-      dispatch({ type: "SET_THEME_ID", payload: "" })
-      dispatch({
-        type: "SET_TAGS",
-        payload: state.tags.filter(
-          (tag) => tag.text !== theme?.dailyTheme?.title,
-        ),
-      })
+    if (theme === undefined) {
+      throw new Error("theme is undefined")
     }
+    if (theme.dailyTheme === null) {
+      throw new Error("theme.dailyTheme is null")
+    }
+    dispatch({
+      type: "SET_THEME_ID",
+      payload: {
+        themeId: theme.dailyTheme.id,
+        themeTitle: theme.dailyTheme.title,
+      },
+    })
   }
 
   const onPost = async () => {
