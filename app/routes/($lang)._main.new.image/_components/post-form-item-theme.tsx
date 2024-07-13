@@ -1,5 +1,5 @@
 import { Checkbox } from "@/_components/ui/checkbox"
-import {} from "@/_components/ui/radio-group"
+import { Card } from "@/_components/ui/card"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 export const PostFormItemTheme = (props: Props) => {
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
+      <Card className="p-1">
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">お題参加</p>
           {props.isLoading ? (
@@ -36,7 +36,7 @@ export const PostFormItemTheme = (props: Props) => {
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </>
   )
 }

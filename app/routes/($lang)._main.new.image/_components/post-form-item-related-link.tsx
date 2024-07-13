@@ -1,5 +1,5 @@
 import { Input } from "@/_components/ui/input"
-import {} from "@/_components/ui/radio-group"
+import { Card } from "@/_components/ui/card"
 
 type Props = {
   link: string | null
@@ -12,7 +12,7 @@ type Props = {
 export const PostFormItemRelatedLink = (props: Props) => {
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
+      <Card className="p-1">
         <div className="mt-2 flex flex-col">
           <p className="mb-1 font-bold text-sm">{"関連リンク"}</p>
           <Input
@@ -28,7 +28,7 @@ export const PostFormItemRelatedLink = (props: Props) => {
             className="w-full"
           />
         </div>
-      </div>
+      </Card>
     </>
   )
 }

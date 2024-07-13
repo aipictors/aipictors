@@ -1,6 +1,6 @@
 import { Checkbox } from "@/_components/ui/checkbox"
-import {} from "@/_components/ui/radio-group"
 import { Link } from "@remix-run/react"
+import { Card } from "@/_components/ui/card"
 
 type Props = {
   isChecked?: boolean
@@ -14,7 +14,7 @@ type Props = {
 export const PostFormItemAdvertising = (props: Props) => {
   return (
     <>
-      <div className="mt-2 mb-2 space-y-2 rounded-md bg-white pt-1 pr-2 pb-4 pl-2 dark:bg-zinc-900">
+      <Card className="p-1">
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">宣伝作品</p>
           <div className="mb-1 items-center text-sm opacity-65">
@@ -42,7 +42,7 @@ export const PostFormItemAdvertising = (props: Props) => {
             </Link>
           )}
         </div>
-      </div>
+      </Card>
     </>
   )
 }

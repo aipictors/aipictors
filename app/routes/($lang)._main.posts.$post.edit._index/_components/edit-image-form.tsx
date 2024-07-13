@@ -56,6 +56,7 @@ import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
 import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/post-form-item-tags"
 import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
+import { Card } from "@/_components/ui/card"
 
 type Props = {
   workId: string
@@ -751,7 +752,7 @@ export const EditImageForm = (props: Props) => {
   return (
     <>
       <div className="relative w-[100%]">
-        <div className="mb-4 bg-gray-100 dark:bg-black">
+        <Card className="mb-4 p-1">
           <div
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
             className={`relative items-center pb-2 bg-gray-800 ${
@@ -1007,7 +1008,7 @@ export const EditImageForm = (props: Props) => {
             <PostFormItemRelatedLink link={link} onChange={setLink} />
             <PostFormItemAdvertising isChecked={isAd} onChange={setIsAd} />
           </ScrollArea>
-        </div>
+        </Card>
         <div className="sticky bottom-0 bg-white pb-2 dark:bg-black">
           <Button className="w-full" type="submit" onClick={onPost}>
             更新
