@@ -22,10 +22,7 @@ import { AlbumInput } from "@/routes/($lang)._main.new.image/_components/series-
 import { AuthContext } from "@/_contexts/auth-context"
 import { RelatedLinkInput } from "@/routes/($lang)._main.new.image/_components/related-link-input"
 import { AdWorkInput } from "@/routes/($lang)._main.new.image/_components/ad-work-input"
-import {
-  getExtractInfoFromPNG,
-  type PNGInfo,
-} from "@/_utils/get-extract-info-from-png"
+import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
 import { GenerationParamsInput } from "@/routes/($lang)._main.new.image/_components/generation-params-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Loader2Icon } from "lucide-react"
@@ -61,6 +58,7 @@ import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fie
 import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { cn } from "@/_lib/cn"
 
 /**
  * 新規作品フォーム
@@ -70,7 +68,7 @@ export const NewImageForm = () => {
 
   const [state, dispatch] = useReducer(postFormReducer, initialState)
 
-  const { data, loading, error } = useQuery(pageQuery, {
+  const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
         state.ratingRestriction === "R18" || state.ratingRestriction === "R18G",
@@ -79,6 +77,15 @@ export const NewImageForm = () => {
       year: state.date.getFullYear(),
       month: state.date.getMonth() + 1,
       day: state.date.getDate(),
+    },
+  })
+
+  const { data: viewer } = useQuery(viewerQuery, {
+    skip: authContext.isLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: authContext.userId,
     },
   })
 
@@ -103,32 +110,8 @@ export const NewImageForm = () => {
     dispatch({ type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG", payload: false })
   }
 
-  const submitFromEditorCanvas = (base64: string) => {
-    dispatch({
-      type: "SET_EDITED_IMAGE",
-      payload: { base64 },
-    })
-  }
-
-  const { data: viewer } = useQuery(viewerQuery, {
-    skip: authContext.isLoggedIn,
-    variables: {
-      offset: 0,
-      limit: 128,
-      ownerUserId: authContext.userId,
-    },
-  })
-
-  const onCloseImageEffectTool = () => {
-    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: null })
-  }
-
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
-
-  const onDateInput = (value: string) => {
-    dispatch({ type: "SET_RESERVATION_DATE", payload: value })
-  }
 
   const onChangeTheme = (value: boolean) => {
     if (data === undefined) {
@@ -465,10 +448,6 @@ export const NewImageForm = () => {
     input.click()
   }
 
-  const setRating = (rating: PostFormState["ratingRestriction"]) => {
-    dispatch({ type: "SET_RATING_RESTRICTION", payload: rating })
-  }
-
   const recommendedNotUsedTags = () => {
     return (data?.recommendedTagsFromPrompts?.filter(
       (tag) => !state.tags.map((t) => t.text).includes(tag.name),
@@ -493,19 +472,26 @@ export const NewImageForm = () => {
   }
 
   const selectedImagesCountText = () => {
-    return `イラスト${state.items.map((item) => item.content).length}枚`
+    const imageCount = state.items.filter((item) => item.content).length
+    return `イラスト${imageCount}枚`
   }
 
-  const whiteListNotSelectedTags = (data?.whiteListTags?.filter(
-    (tag) => !state.tags.map((t) => t.text).includes(tag.name),
-  ) ?? []) as unknown as Tag[]
-
-  const onStartMouseDrawing = (content: string) => {
-    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: content })
-  }
-
-  const onVideoFileChange = (videoFile: PostFormState["videoFile"]) => {
-    dispatch({ type: "SET_VIDEO_FILE", payload: videoFile })
+  /**
+   * 選択可能なタグ
+   */
+  const selectableTags = () => {
+    if (data?.whiteListTags === undefined) {
+      return []
+    }
+    const tags = data.whiteListTags.filter((tag) => {
+      return !state.tags.map((t) => t.text).includes(tag.name)
+    })
+    return tags.map((tag) => {
+      return {
+        id: tag.id,
+        text: tag.name,
+      }
+    })
   }
 
   const onChangeAccessTypeImageGenerationParameters = () => {
@@ -545,11 +531,37 @@ export const NewImageForm = () => {
     })
   }
 
-  const setPngInfo = (pngInfo: PNGInfo | null) => {
-    dispatch({
-      type: "SET_PNG_INFO",
-      payload: pngInfo as PostFormState["pngInfo"],
+  const createdAt = new Date(
+    `${state.reservationDate}T${state.reservationTime}`,
+  )
+
+  const albumOptions = () => {
+    if (viewer === undefined) {
+      return []
+    }
+    if (viewer.albums === null) {
+      return []
+    }
+    return viewer.albums.map((album) => {
+      return {
+        id: album.id,
+        name: album.title,
+      }
     })
+  }
+
+  const aiModelOptions = () => {
+    if (data === undefined) {
+      return []
+    }
+    return data.aiModels
+      .filter((model) => model.workModelId !== null)
+      .map((model) => {
+        return {
+          id: model.workModelId as string,
+          name: model.name,
+        }
+      })
   }
 
   useBeforeUnload(
@@ -571,9 +583,10 @@ export const NewImageForm = () => {
       <div className="relative w-[100%]">
         <div className="mb-4 bg-gray-100 dark:bg-black">
           <div
-            className={`relative items-center bg-gray-800 ${
-              state.isHovered ? "border-2 border-white border-dashed" : null
-            }`}
+            className={cn(
+              "relative items-center bg-gray-800",
+              state.isHovered && "border-2 border-white border-dashed",
+            )}
           >
             {state.items.length !== 0 && (
               <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
@@ -587,45 +600,52 @@ export const NewImageForm = () => {
               indexList={state.indexList}
               items={state.items ?? []}
               videoFile={state.videoFile as File}
-              setItems={(items) =>
+              setItems={(items) => {
                 dispatch({
                   type: "SET_ITEMS",
                   payload: items,
                 })
-              }
-              onChangeItems={(items) =>
+              }}
+              onChangeItems={(items) => {
                 dispatch({
                   type: "SET_ITEMS",
                   payload: items,
                 })
-              }
+              }}
               maxItemsCount={config.post.maxImageCount}
-              setIndexList={(indexList) =>
+              setIndexList={(indexList) => {
                 dispatch({
                   type: "SET_INDEX_LIST",
                   payload: indexList as number[],
                 })
-              }
-              onChangePngInfo={(pngInfo) =>
+              }}
+              onChangePngInfo={(pngInfo) => {
                 dispatch({
                   type: "SET_PNG_INFO",
-                  payload: pngInfo as PostFormState["pngInfo"],
+                  payload: pngInfo,
                 })
-              }
-              onVideoChange={onVideoFileChange}
-              onMosaicButtonClick={onStartMouseDrawing}
-              setThumbnailBase64={(base64) =>
+              }}
+              onVideoChange={(value) => {
+                dispatch({ type: "SET_VIDEO_FILE", payload: value })
+              }}
+              onMosaicButtonClick={(content) => {
+                dispatch({
+                  type: "SET_EDIT_TARGET_IMAGE_BASE64",
+                  payload: content,
+                })
+              }}
+              setThumbnailBase64={(base64) => {
                 dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
-              }
-              setOgpBase64={(base64) =>
+              }}
+              setOgpBase64={(base64) => {
                 dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-              }
-              setIsThumbnailLandscape={(isLandscape) =>
+              }}
+              setIsThumbnailLandscape={(isLandscape) => {
                 dispatch({
                   type: "SET_IS_THUMBNAIL_LANDSCAPE",
                   payload: isLandscape,
                 })
-              }
+              }}
             />
           </div>
           {state.thumbnailBase64 !== null && (
@@ -634,26 +654,26 @@ export const NewImageForm = () => {
               thumbnailBase64={state.thumbnailBase64}
               thumbnailPosX={state.thumbnailPosX}
               thumbnailPosY={state.thumbnailPosY}
-              setThumbnailPosX={(posX) =>
+              setThumbnailPosX={(posX) => {
                 dispatch({
                   type: "SET_THUMBNAIL_POS_X",
                   payload: posX as number,
                 })
-              }
-              setThumbnailPosY={(posY) =>
+              }}
+              setThumbnailPosY={(posY) => {
                 dispatch({
                   type: "SET_THUMBNAIL_POS_Y",
                   payload: posY as number,
                 })
-              }
+              }}
             />
           )}
           {state.thumbnailBase64 !== null && state.ogpBase64 !== null && (
             <OgpInput
               imageBase64={state.thumbnailBase64}
-              setOgpBase64={(base64) =>
+              setOgpBase64={(base64) => {
                 dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-              }
+              }}
               ogpBase64={state.ogpBase64}
             />
           )}
@@ -675,14 +695,14 @@ export const NewImageForm = () => {
           </div>
           <ScrollArea className="p-2">
             <TitleInput
-              onChange={(title) =>
+              onChange={(title) => {
                 dispatch({ type: "SET_TITLE", payload: title })
-              }
+              }}
             />
             <CaptionInput
-              setCaption={(caption) =>
+              setCaption={(caption) => {
                 dispatch({ type: "SET_CAPTION", payload: caption })
-              }
+              }}
             />
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
@@ -709,33 +729,28 @@ export const NewImageForm = () => {
             </Accordion>
             <RatingInput
               rating={state.ratingRestriction}
-              setRating={setRating}
+              setRating={(value) => {
+                dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
+              }}
             />
             <ViewInput
               accessType={state.accessType}
-              setAccessType={(accessType) =>
+              setAccessType={(accessType) => {
                 dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
-              }
+              }}
             />
             <TasteInput
               imageStyle={state.imageStyle}
-              setImageStyle={(imageStyle) =>
+              setImageStyle={(imageStyle) => {
                 dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-              }
+              }}
             />
             <ModelInput
               model={state.aiUsed}
-              models={
-                data?.aiModels
-                  .filter((model) => model.workModelId !== null)
-                  .map((model) => ({
-                    id: model.workModelId as string,
-                    name: model.name,
-                  })) ?? []
-              }
-              setModel={(model) =>
+              models={aiModelOptions()}
+              setModel={(model) => {
                 dispatch({ type: "SET_AI_USED", payload: model })
-              }
+              }}
             />
             {state.pngInfo && (
               <div className="flex items-center">
@@ -757,13 +772,15 @@ export const NewImageForm = () => {
                 <AccordionItem value="setting">
                   <AccordionTrigger>
                     <Button variant={"secondary"} className="w-full">
-                      生成情報を確認する
+                      {"生成情報を確認する"}
                     </Button>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-2">
                     <GenerationParamsInput
                       pngInfo={state.pngInfo}
-                      setPngInfo={setPngInfo}
+                      setPngInfo={(value) => {
+                        dispatch({ type: "SET_PNG_INFO", payload: value })
+                      }}
                     />
                   </AccordionContent>
                 </AccordionItem>
@@ -772,33 +789,35 @@ export const NewImageForm = () => {
             <DateInput
               date={state.reservationDate}
               time={state.reservationTime}
-              setDate={onDateInput}
-              setTime={(time) =>
+              setDate={(value) => {
+                dispatch({ type: "SET_RESERVATION_DATE", payload: value })
+              }}
+              setTime={(time) => {
                 dispatch({ type: "SET_RESERVATION_TIME", payload: time })
-              }
+              }}
             />
             {!state.hasNoTheme && (
               <ThemeInput
-                onChange={onChangeTheme}
                 title={data?.dailyTheme?.title ?? null}
                 isLoading={loading}
+                onChange={onChangeTheme}
               />
             )}
-            {data && data?.appEvents.length > 0 && (
+            {data && 0 < data?.appEvents.length && (
               <EventInput
                 tags={state.tags}
-                setTags={(tags) =>
-                  dispatch({ type: "SET_TAGS", payload: tags })
-                }
                 eventName={data?.appEvents[0]?.title ?? null}
                 eventDescription={data?.appEvents[0]?.description ?? null}
                 eventTag={data?.appEvents[0]?.tag ?? null}
                 endAt={data?.appEvents[0]?.endAt ?? 0}
                 slug={data?.appEvents[0]?.slug ?? null}
+                setTags={(tags) => {
+                  dispatch({ type: "SET_TAGS", payload: tags })
+                }}
               />
             )}
             <TagsInput
-              whiteListTags={whiteListNotSelectedTags}
+              whiteListTags={selectableTags()}
               tags={state.tags}
               setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
               recommendedTags={recommendedNotUsedTags()}
@@ -806,39 +825,36 @@ export const NewImageForm = () => {
             {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
             <CategoryEditableInput
               isChecked={state.isTagEditable}
-              onChange={(isTagEditable) =>
+              onChange={(isTagEditable) => {
                 dispatch({
                   type: "SET_IS_TAG_EDITABLE",
                   payload: isTagEditable,
                 })
-              }
+              }}
             />
             <CommentsEditableInput
               isChecked={state.isCommentsEditable}
-              onChange={(isCommentsEditable) =>
+              onChange={(value) => {
                 dispatch({
                   type: "SET_IS_COMMENTS_EDITABLE",
-                  payload: isCommentsEditable,
+                  payload: value,
                 })
-              }
+              }}
             />
             {viewer?.albums && (
               <AlbumInput
                 album={state.albumId}
-                albums={
-                  viewer?.albums.map((album) => ({
-                    id: album.id,
-                    name: album.title,
-                  })) ?? []
-                }
-                setAlbumId={(albumId) =>
+                albums={albumOptions()}
+                setAlbumId={(albumId) => {
                   dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-                }
+                }}
               />
             )}
             <RelatedLinkInput
               link={state.link}
-              onChange={(link) => dispatch({ type: "SET_LINK", payload: link })}
+              onChange={(link) => {
+                dispatch({ type: "SET_LINK", payload: link })
+              }}
             />
             <AdWorkInput
               isSubscribed={
@@ -846,9 +862,9 @@ export const NewImageForm = () => {
                 viewer?.viewer?.currentPass?.type === "PREMIUM"
               }
               isChecked={state.isAd}
-              onChange={(isAd) =>
+              onChange={(isAd) => {
                 dispatch({ type: "SET_IS_AD", payload: isAd })
-              }
+              }}
             />
           </ScrollArea>
         </div>
@@ -860,17 +876,21 @@ export const NewImageForm = () => {
       </div>
       {state.editTargetImageBase64 !== null && (
         <FullScreenContainer
-          onClose={onCloseImageEffectTool}
           enabledScroll={state.isDrawing}
+          onClose={() => {
+            dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: null })
+          }}
         >
           <PaintCanvas
-            onChangeSetDrawing={(isDrawing) =>
+            onChangeSetDrawing={(isDrawing) => {
               dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
-            }
+            }}
             imageUrl={state.editTargetImageBase64}
             isMosaicMode={true}
             isShowSubmitButton={true}
-            onSubmit={submitFromEditorCanvas}
+            onSubmit={(base64) => {
+              dispatch({ type: "SET_EDITED_IMAGE", payload: { base64 } })
+            }}
           />
         </FullScreenContainer>
       )}
@@ -881,9 +901,7 @@ export const NewImageForm = () => {
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
-        createdAt={new Date(
-          `${state.reservationDate}T${state.reservationTime}`,
-        ).getTime()}
+        createdAt={createdAt.getTime()}
       />
       <CreatingWorkDialog
         progress={state.progress}
