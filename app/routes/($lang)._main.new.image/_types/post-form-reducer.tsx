@@ -11,6 +11,7 @@ import {
   union,
   optional,
 } from "valibot"
+import type { Tag } from "@/_components/tag/tag-input"
 
 /** 生成画像の生成情報 */
 const imageParameters = object({
@@ -36,7 +37,7 @@ const file = object({
   webkitRelativePath: string(),
 })
 
-// ドラッグ可能なアイテムの型を定義
+/** ドラッグ可能なアイテムの型を定義 */
 export const TSortableItemSchema = object({
   id: number(),
   content: string(), // 画像のURLなど
@@ -132,7 +133,7 @@ export type Action =
   | { type: "SET_EDIT_TARGET_IMAGE_BASE64"; payload: string }
   | { type: "SET_ALBUM_ID"; payload: string }
   | { type: "SET_LINK"; payload: string }
-  | { type: "ADD_TAG"; payload: { id: string; text: string } }
+  | { type: "ADD_TAG"; payload: Tag }
   | { type: "REMOVE_TAG"; payload: string }
   | { type: "SET_IS_TAG_EDITABLE"; payload: boolean }
   | { type: "SET_IS_COMMENTS_EDITABLE"; payload: boolean }
@@ -166,7 +167,7 @@ export type Action =
   | { type: "REMOVE_SELECTED_IMAGE_GENERATION_ID"; payload: string }
   | { type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"; payload: boolean }
   | { type: "SET_ITEMS"; payload: InferInput<typeof TSortableItemSchema>[] }
-  | { type: "SET_TAGS"; payload: { id: string; text: string }[] }
+  | { type: "SET_TAGS"; payload: Tag[] }
   | { type: "SET_INDEX_LIST"; payload: number[] }
   | { type: "SET_SELECTED_IMAGE_GENERATION_IDS"; payload: string[] }
   | { type: "RESET" }
