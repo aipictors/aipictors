@@ -15,7 +15,6 @@ import { TitleInput } from "@/routes/($lang)._main.new.image/_components/title-i
 import { ViewInput } from "@/routes/($lang)._main.new.image/_components/view-input"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 import { useMutation, useQuery } from "@apollo/client/index"
-import {} from "@dnd-kit/core"
 import { useContext, useEffect, useState } from "react"
 import type { Tag } from "@/_components/tag/tag-input"
 import { TagsInput } from "@/routes/($lang)._main.new.image/_components/tag-input"
@@ -44,7 +43,6 @@ import { createRandomString } from "@/routes/($lang).generation._index/_utils/cr
 import { DraggableImagesAndVideoInput } from "@/routes/($lang)._main.new.image/_components/draggable-images-and-video.input"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
-import { createWorkMutation } from "@/_graphql/mutations/create-work"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
@@ -1071,6 +1069,18 @@ export const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const createWorkMutation = graphql(
+  `mutation CreateWork($input: CreateWorkInput!) {
+    createWork(input: $input) {
+      id
+      title
+      accessType
+      nanoid
+      uuid
     }
   }`,
 )

@@ -11,7 +11,6 @@ import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { createAlbumMutation } from "@/_graphql/mutations/create-album"
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { toast } from "sonner"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
@@ -272,6 +271,14 @@ export const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+export const createAlbumMutation = graphql(
+  `mutation CreateAlbum($input: CreateAlbumInput!) {
+    createAlbum(input: $input) {
+      id
     }
   }`,
 )

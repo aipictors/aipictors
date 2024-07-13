@@ -2,7 +2,6 @@ import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { Separator } from "@/_components/ui/separator"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { createCustomerPortalSessionMutation } from "@/_graphql/mutations/create-customer-portal-session"
 import { cn } from "@/_lib/cn"
 import { toDateText } from "@/_utils/to-date-text"
 import { PassBenefitList } from "@/routes/($lang)._main.plus._index/_components/pass-benefit-list"
@@ -117,7 +116,7 @@ export const PlusForm = () => {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -131,4 +130,10 @@ export const viewerCurrentPassQuery = graphql(
     }
   }`,
   [passFieldsFragment],
+)
+
+const createCustomerPortalSessionMutation = graphql(
+  `mutation CreateCustomerPortalSession {
+    createCustomerPortalSession
+  }`,
 )

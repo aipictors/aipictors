@@ -41,7 +41,6 @@ import { OgpInput } from "@/routes/($lang)._main.new.image/_components/ogp-input
 import { createRandomString } from "@/routes/($lang).generation._index/_utils/create-random-string"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
-import { createWorkMutation } from "@/_graphql/mutations/create-work"
 import { sha256 } from "@/_utils/sha256"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { resizeImage } from "@/_utils/resize-image"
@@ -1029,6 +1028,18 @@ export const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const createWorkMutation = graphql(
+  `mutation CreateWork($input: CreateWorkInput!) {
+    createWork(input: $input) {
+      id
+      title
+      accessType
+      nanoid
+      uuid
     }
   }`,
 )

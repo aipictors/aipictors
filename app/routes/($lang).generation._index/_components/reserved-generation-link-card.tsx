@@ -1,8 +1,9 @@
 import { Card } from "@/_components/ui/card"
-import { cancelImageGenerationReservedTaskMutation } from "@/_graphql/mutations/cancel-image-generation-reserved-task"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { GenerationTaskCancelButton } from "@/routes/($lang).generation._index/_components/generation-cancel-button"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -56,3 +57,12 @@ export const ReservedGenerationLinkCard = (props: Props) => {
     </>
   )
 }
+
+export const cancelImageGenerationReservedTaskMutation = graphql(
+  `mutation CancelImageGenerationReservedTask($input: CancelImageGenerationReservedTaskInput!) {
+    cancelImageGenerationReservedTask(input: $input) {
+      ...ImageGenerationTaskFields
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

@@ -2,7 +2,6 @@ import { Button } from "@/_components/ui/button"
 import { Label } from "@/_components/ui/label"
 import { Switch } from "@/_components/ui/switch"
 import { AuthContext } from "@/_contexts/auth-context"
-import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-setting"
 import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
@@ -261,6 +260,14 @@ export const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const updateUserSettingMutation = graphql(
+  `mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
+    updateUserSetting(input: $input) {
+      preferenceRating
     }
   }`,
 )

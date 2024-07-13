@@ -1,6 +1,3 @@
-import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
-import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
-import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
 import { config, KeyCodes } from "@/config"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
@@ -19,7 +16,7 @@ import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
 import { type FragmentOf, graphql } from "gql.tada"
 import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
 type Props = {
@@ -401,7 +398,7 @@ export function GenerationTaskSheetView(props: Props) {
   )
 }
 
-export const viewerImageGenerationTasksQuery = graphql(
+const viewerImageGenerationTasksQuery = graphql(
   `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
     viewer {
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
@@ -410,4 +407,31 @@ export const viewerImageGenerationTasksQuery = graphql(
     }
   }`,
   [imageGenerationTaskFieldsFragment],
+)
+
+const deleteImageGenerationResultMutation = graphql(
+  `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
+    deleteImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)
+
+const updateProtectedImageGenerationResultMutation = graphql(
+  `mutation updateProtectedImageGenerationResult($input: UpdateProtectedImageGenerationResultInput!) {
+    updateProtectedImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)
+
+const updateRatingImageGenerationResultMutation = graphql(
+  `mutation updateRatingImageGenerationResult($input: UpdateRatingImageGenerationResultInput!) {
+    updateRatingImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
 )

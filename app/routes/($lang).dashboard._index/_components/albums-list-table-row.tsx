@@ -4,8 +4,8 @@ import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
-import { deleteAlbumMutation } from "@/_graphql/mutations/delete-album"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 type Props = {
   album: {
@@ -98,3 +98,11 @@ export const AlbumsListTableRow = (props: Props) => {
     </>
   )
 }
+
+export const deleteAlbumMutation = graphql(
+  `mutation DeleteAlbum($input: DeleteAlbumInput!) {
+    deleteAlbum(input: $input) {
+      id
+    }
+  }`,
+)

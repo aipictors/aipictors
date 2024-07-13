@@ -1,7 +1,7 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
-import { updateAccountPasswordMutation } from "@/_graphql/mutations/update-account-password"
 import { ApolloError, useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -95,3 +95,11 @@ export const AccountPasswordForm = () => {
     </div>
   )
 }
+
+const updateAccountPasswordMutation = graphql(
+  `mutation UpdateAccountPassword($input: UpdateAccountPasswordInput!) {
+    updateAccountPassword(input: $input) {
+      id
+    }
+  }`,
+)

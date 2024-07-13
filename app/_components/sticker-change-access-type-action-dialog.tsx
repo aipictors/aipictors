@@ -10,10 +10,10 @@ import {
 import { Input } from "@/_components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import { AuthContext } from "@/_contexts/auth-context"
-import { updateStickerMutation } from "@/_graphql/mutations/update-sticker"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React, { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -179,3 +179,11 @@ export const StickerChangeAccessTypeActionDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+const updateStickerMutation = graphql(
+  `mutation updateSticker($input: UpdateStickerInput!) {
+    updateSticker(input: $input) {
+      id
+    }
+  }`,
+)

@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import { Textarea } from "@/_components/ui/textarea"
+import { imageGenerationMemoFieldsFragment } from "@/_graphql/fragments/image-reserved-generation-memo-field"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { createImageGenerationMemoMutation } from "@/_graphql/mutations/create-image-generation-memo"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { parseGenerationSize } from "@/routes/($lang).generation._index/_types/generation-size"
@@ -246,7 +246,7 @@ export const GenerationConfigMemoSavingContent = (props: Props) => {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -260,4 +260,13 @@ export const viewerCurrentPassQuery = graphql(
     }
   }`,
   [passFieldsFragment],
+)
+
+const createImageGenerationMemoMutation = graphql(
+  `mutation CreateImageGenerationMemo($input: CreateImageGenerationMemoInput!) {
+    createImageGenerationMemo(input: $input) {
+      ...ImageGenerationMemoFields
+    }
+  }`,
+  [imageGenerationMemoFieldsFragment],
 )

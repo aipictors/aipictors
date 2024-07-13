@@ -1,6 +1,7 @@
-import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { cn } from "@/_lib/cn"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { LockKeyholeIcon, LockKeyholeOpenIcon } from "lucide-react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
@@ -62,3 +63,12 @@ export const GenerationTaskProtectedButton = (props: Props) => {
     </button>
   )
 }
+
+const updateProtectedImageGenerationResultMutation = graphql(
+  `mutation updateProtectedImageGenerationResult($input: UpdateProtectedImageGenerationResultInput!) {
+    updateProtectedImageGenerationResult(input: $input) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)

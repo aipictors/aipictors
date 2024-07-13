@@ -5,11 +5,11 @@ import { Loader2Icon, StampIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
-import { createResponseCommentMutation } from "@/_graphql/mutations/create-response-comment"
 import { StickerDialog } from "@/routes/($lang)._main.posts.$post/_components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
+import { graphql } from "gql.tada"
 
 type Props = {
   targetCommentId: string
@@ -127,3 +127,11 @@ export const ReplyCommentInput = (props: Props) => {
     </>
   )
 }
+
+export const createResponseCommentMutation = graphql(
+  `mutation CreateResponseComment($input: CreateResponseCommentInput!) {
+    createResponseComment(input: $input) {
+      id
+    }
+  }`,
+)

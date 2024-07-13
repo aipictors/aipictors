@@ -1,8 +1,9 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { createMessageMutation } from "@/_graphql/mutations/create-message"
+import { messageFieldsFragment } from "@/_graphql/fragments/message-fields"
 import { ChatMessageListContent } from "@/routes/($lang)._main.messages.$recipient/_components/chat-message-list-content"
 import { MessageInput } from "@/routes/($lang)._main.support.chat/_components/message-input"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { toast } from "sonner"
 
@@ -38,3 +39,12 @@ export function ChatMessageView(props: Props) {
     </div>
   )
 }
+
+export const createMessageMutation = graphql(
+  `mutation CreateMessage($input: CreateMessageInput!) {
+    createMessage(input: $input) {
+      ...MessageFields
+    }
+  }`,
+  [messageFieldsFragment],
+)

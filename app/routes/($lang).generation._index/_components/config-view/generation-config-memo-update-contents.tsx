@@ -9,9 +9,8 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import { Textarea } from "@/_components/ui/textarea"
+import { imageGenerationMemoFieldsFragment } from "@/_graphql/fragments/image-reserved-generation-memo-field"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { deleteImageGenerationMemoMutation } from "@/_graphql/mutations/delete-image-generation-memo"
-import { updateImageGenerationMemoMutation } from "@/_graphql/mutations/update-image-generation-memo"
 import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
@@ -335,7 +334,7 @@ export const GenerationConfigMemoUpdateContent = (props: Props) => {
   )
 }
 
-export const viewerCurrentPassQuery = graphql(
+const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       user {
@@ -349,4 +348,22 @@ export const viewerCurrentPassQuery = graphql(
     }
   }`,
   [passFieldsFragment],
+)
+
+const deleteImageGenerationMemoMutation = graphql(
+  `mutation DeleteImageGenerationMemo($input: DeleteImageGenerationMemoInput!) {
+    deleteImageGenerationMemo(input: $input) {
+      ...ImageGenerationMemoFields
+    }
+  }`,
+  [imageGenerationMemoFieldsFragment],
+)
+
+const updateImageGenerationMemoMutation = graphql(
+  `mutation UpdateImageGenerationTask($input: UpdateImageGenerationMemoInput!) {
+    updateImageGenerationMemo(input: $input) {
+      ...ImageGenerationMemoFields
+    }
+  }`,
+  [imageGenerationMemoFieldsFragment],
 )

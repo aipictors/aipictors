@@ -5,9 +5,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/_components/ui/popover"
-import { deleteWorkMutation } from "@/_graphql/mutations/delete-work"
 import { ReportDialog } from "@/routes/($lang)._main.posts.$post/_components/report-dialog"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { DownloadIcon, Loader2Icon, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -87,3 +87,11 @@ export function MenuPopover(props: Props) {
     </Popover>
   )
 }
+
+const deleteWorkMutation = graphql(
+  `mutation DeleteWork($input: DeleteWorkInput!) {
+    deleteWork(input: $input) {
+      id
+    }
+  }`,
+)

@@ -3,9 +3,8 @@ import { Heart } from "lucide-react"
 import { cn } from "@/_lib/cn"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
-import { createWorkLikeMutation } from "@/_graphql/mutations/create-work-like"
-import { deleteWorkLikeMutation } from "@/_graphql/mutations/delete-work-like"
 import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 
 type LikeButtonProps = {
   size?: number
@@ -196,3 +195,23 @@ export const LikeButton = ({
     </button>
   )
 }
+
+const createWorkLikeMutation = graphql(
+  `mutation CreateWorkLike($input: CreateWorkLikeInput!) {
+    createWorkLike(input: $input) {
+      id
+      likesCount
+      isLiked
+    }
+  }`,
+)
+
+const deleteWorkLikeMutation = graphql(
+  `mutation DeleteWorkLike($input: DeleteWorkLikeInput!) {
+    deleteWorkLike(input: $input) {
+      id
+      likesCount
+      isLiked
+    }
+  }`,
+)

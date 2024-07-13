@@ -10,7 +10,6 @@ import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
-import { updateUserProfileMutation } from "@/_graphql/mutations/update-user-profile"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { toast } from "sonner"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
@@ -394,7 +393,7 @@ export const SettingProfileForm = () => {
   )
 }
 
-export const userQuery = graphql(
+const userQuery = graphql(
   `query User(
     $userId: ID!,
     $worksOffset: Int!,
@@ -486,10 +485,19 @@ export const userQuery = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const viewerTokenQuery = graphql(
+const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
       token
+    }
+  }`,
+)
+
+const updateUserProfileMutation = graphql(
+  `mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
+    updateUserProfile(input: $input) {
+      id
+      name
     }
   }`,
 )

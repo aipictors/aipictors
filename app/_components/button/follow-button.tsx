@@ -1,10 +1,9 @@
-import { followUserMutation } from "@/_graphql/mutations/follow-user"
-import { unFollowUserMutation } from "@/_graphql/mutations/un-follow-user"
 import { useMutation } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { cn } from "@/_lib/cn"
+import { graphql } from "gql.tada"
 
 type Props = {
   targetUserId: string
@@ -25,7 +24,7 @@ export const FollowButton = (props: Props) => {
   const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
 
   const [unFollow, { loading: isUnFollowing }] =
-    useMutation(unFollowUserMutation)
+    useMutation(unfollowUserMutation)
 
   const onFollow = async () => {
     try {
@@ -125,3 +124,21 @@ export const FollowButton = (props: Props) => {
     </div>
   )
 }
+
+const followUserMutation = graphql(
+  `mutation FollowUser($input: FollowUserInput!) {
+    followUser(input: $input) {
+      id
+      isFollowee
+    }
+  }`,
+)
+
+const unfollowUserMutation = graphql(
+  `mutation UnfollowUser($input: UnfollowUserInput!) {
+    unfollowUser(input: $input) {
+      id
+      isFollowee
+    }
+  }`,
+)

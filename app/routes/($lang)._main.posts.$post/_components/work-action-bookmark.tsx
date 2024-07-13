@@ -1,10 +1,9 @@
 import { Button } from "@/_components/ui/button"
 import { FolderIcon, Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
-import { createFolderWorkMutation } from "@/_graphql/mutations/create-folder-work"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { deleteFolderWorkMutation } from "@/_graphql/mutations/delete-folder-work"
+import { graphql } from "gql.tada"
 
 type Props = {
   targetWorkId: string
@@ -85,3 +84,19 @@ export const WorkActionBookmark = (props: Props) => {
     </Button>
   )
 }
+
+const createFolderWorkMutation = graphql(
+  `mutation CreateFolderWork($input: CreateFolderWorkInput!) {
+    createFolderWork(input: $input) {
+      id
+    }
+  }`,
+)
+
+const deleteFolderWorkMutation = graphql(
+  `mutation DeleteFolderWork($input: DeleteFolderWorkInput!) {
+    deleteFolderWork(input: $input) {
+      id
+    }
+  }`,
+)

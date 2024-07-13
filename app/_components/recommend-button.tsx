@@ -8,10 +8,9 @@ import {
 } from "@/_components/ui/popover"
 import { Link } from "@remix-run/react"
 import { useMutation } from "@apollo/client/index"
-import { deleteRecommendedWorkMutation } from "@/_graphql/mutations/delete-recommended-work"
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react"
-import { createRecommendedWorkMutation } from "@/_graphql/mutations/create-recommended-work"
+import { graphql } from "gql.tada"
 
 type Props = {
   workId: string
@@ -112,3 +111,17 @@ export const RecommendButton = (props: Props) => {
     </>
   )
 }
+
+const createRecommendedWorkMutation = graphql(
+  `mutation CreateRecommendedWork($input: CreateRecommendedWorkInput!) {
+    createRecommendedWork(input: $input) {
+      id
+    }
+  }`,
+)
+
+const deleteRecommendedWorkMutation = graphql(
+  `mutation DeleteRecommendedWork($input: DeleteRecommendedWorkInput!) {
+    deleteRecommendedWork(input: $input)
+  }`,
+)

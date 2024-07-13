@@ -8,12 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/_components/ui/dialog"
-import { updateRatingImageGenerationModelMutation } from "@/_graphql/mutations/update-rating-image-generation-model"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
 import { ImageModelsList } from "@/routes/($lang).generation._index/_components/config-view/generation-image-model-list"
 import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -119,3 +119,12 @@ export const GenerationModelListButton = (props: Props) => {
     </Dialog>
   )
 }
+
+const updateRatingImageGenerationModelMutation = graphql(
+  `mutation UpdateRatingImageGenerationModel($input: UpdateRatingImageGenerationModelInput!) {
+    updateRatingImageGenerationModel(input: $input) {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)

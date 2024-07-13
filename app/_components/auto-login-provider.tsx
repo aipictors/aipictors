@@ -1,7 +1,7 @@
-import { loginWithWordPressTokenMutation } from "@/_graphql/mutations/login-with-wordpress-token"
 import { getCookieLoginToken } from "@/_utils/get-cookie-login-token"
 import { useMutation } from "@apollo/client/index"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
+import { graphql } from "gql.tada"
 import { useEffect } from "react"
 
 type Props = {
@@ -46,3 +46,11 @@ export const AutoLoginProvider = (props: Props) => {
 
   return <>{props.children}</>
 }
+
+const loginWithWordPressTokenMutation = graphql(
+  `mutation LoginWithWordPressToken($input: LoginWithWordPressTokenInput!) {
+    loginWithWordPressToken(input: $input) {
+      token
+    }
+  }`,
+)

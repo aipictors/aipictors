@@ -2,7 +2,6 @@ import { PasswordLoginForm } from "@/_components/password-login-form"
 import { SocialLoginButton } from "@/_components/social-login-button"
 import { Button } from "@/_components/ui/button"
 import { Separator } from "@/_components/ui/separator"
-import { loginWithPasswordMutation } from "@/_graphql/mutations/login-with-password"
 import type { FormLogin } from "@/_types/form-login"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -14,6 +13,7 @@ import {
 } from "firebase/auth"
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
+import { graphql } from "gql.tada"
 
 type Props = {
   children: React.ReactNode
@@ -91,3 +91,11 @@ export const LoginDialog = (props: Props) => {
     </div>
   )
 }
+
+const loginWithPasswordMutation = graphql(
+  `mutation LoginWithPassword($input: LoginWithPasswordInput!) {
+    loginWithPassword(input: $input) {
+      token
+    }
+  }`,
+)
