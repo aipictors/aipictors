@@ -1,5 +1,5 @@
 import { Checkbox } from "@/_components/ui/checkbox"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {
@@ -16,7 +16,7 @@ export const PostFormItemTheme = (props: Props) => {
   return (
     <>
       <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">お題参加</p>
           {props.isLoading ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
@@ -35,7 +35,7 @@ export const PostFormItemTheme = (props: Props) => {
               >{`お題「${props.title}」に参加する`}</label>
             </div>
           )}
-        </div>
+        </CardContent>
       </Card>
     </>
   )

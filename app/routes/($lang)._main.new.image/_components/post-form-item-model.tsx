@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   model: string | null
@@ -32,8 +32,8 @@ export const PostFormItemModel = (props: Props) => {
 
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">使用AI</p>
           <Select
             value={props.model ?? ""}
@@ -54,7 +54,7 @@ export const PostFormItemModel = (props: Props) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
+        </CardContent>
       </Card>
     </>
   )

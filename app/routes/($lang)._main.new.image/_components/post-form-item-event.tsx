@@ -2,7 +2,7 @@ import type { Tag } from "@/_components/tag/tag-input"
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Link } from "@remix-run/react"
 import { useState } from "react"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   tags: Tag[]
@@ -44,8 +44,8 @@ export const PostFormItemEvent = (props: Props) => {
 
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mb-1 font-bold text-sm">{"イベント"}</p>
           <div className="items-center">
             <Checkbox
@@ -69,7 +69,7 @@ export const PostFormItemEvent = (props: Props) => {
             <h3 className="font-medium text-sm">{props.eventName}</h3>
             <h4 className="font-medium text-xs">{props.eventDescription}</h4>
           </Link>
-        </div>
+        </CardContent>
       </Card>
     </>
   )

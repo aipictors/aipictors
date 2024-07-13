@@ -1,5 +1,5 @@
 import { Input } from "@/_components/ui/input"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   label?: string
@@ -14,7 +14,7 @@ export const PostFormItemTitle = (props: Props) => {
   return (
     <>
       <Card className="p-1">
-        <div className="flex flex-col">
+        <CardContent className="flex flex-col">
           <p className="mb-1 font-bold text-sm">
             {props.label ? props.label : "タイトル（必須）"}
           </p>
@@ -31,7 +31,7 @@ export const PostFormItemTitle = (props: Props) => {
             placeholder={props.label ? props.label : "タイトル"}
             className="w-full"
           />
-        </div>
+        </CardContent>
       </Card>
     </>
   )

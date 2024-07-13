@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import type { Album } from "@/routes/($lang)._main.new.image/_types/album"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   album: string | null
@@ -22,8 +22,8 @@ type Props = {
 export const PostFormItemAlbum = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">シリーズ</p>
           <Select
             value={props.album ?? ""}
@@ -44,7 +44,7 @@ export const PostFormItemAlbum = (props: Props) => {
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
+        </CardContent>
       </Card>
     </>
   )

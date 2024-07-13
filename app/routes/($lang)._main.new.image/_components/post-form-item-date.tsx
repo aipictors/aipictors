@@ -1,6 +1,6 @@
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   date: string | null
@@ -15,8 +15,8 @@ type Props = {
 export const PostFormItemDate = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">予約投稿</p>
           <div className="block md:flex">
             <Input
@@ -47,7 +47,7 @@ export const PostFormItemDate = (props: Props) => {
               {"クリア"}
             </Button>
           )}
-        </div>
+        </CardContent>
       </Card>
     </>
   )

@@ -1,5 +1,5 @@
 import { Input } from "@/_components/ui/input"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   link: string | null
@@ -12,8 +12,8 @@ type Props = {
 export const PostFormItemRelatedLink = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mb-1 font-bold text-sm">{"関連リンク"}</p>
           <Input
             onChange={(event) => {
@@ -27,7 +27,7 @@ export const PostFormItemRelatedLink = (props: Props) => {
             placeholder={"https://"}
             className="w-full"
           />
-        </div>
+        </CardContent>
       </Card>
     </>
   )

@@ -1,7 +1,7 @@
 import { RadioGroup, RadioGroupItem } from "@/_components/ui/radio-group"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { Link } from "@remix-run/react"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   rating: IntrospectionEnum<"Rating">
@@ -14,8 +14,8 @@ type Props = {
 export const PostFormItemRating = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">年齢制限</p>
           <RadioGroup
             value={props.rating}
@@ -61,7 +61,7 @@ export const PostFormItemRating = (props: Props) => {
               </div>
             </div>
           </RadioGroup>
-        </div>
+        </CardContent>
       </Card>
     </>
   )

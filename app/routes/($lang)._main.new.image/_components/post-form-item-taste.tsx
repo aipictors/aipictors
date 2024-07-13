@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/_components/ui/select"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   imageStyle: IntrospectionEnum<"ImageStyle">
@@ -19,8 +19,8 @@ type Props = {
 export const PostFormItemTaste = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">テイスト</p>
           <Select
             value={props.imageStyle}
@@ -37,7 +37,7 @@ export const PostFormItemTaste = (props: Props) => {
               <SelectItem value={"REAL"}>{"リアル"}</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </CardContent>
       </Card>
     </>
   )

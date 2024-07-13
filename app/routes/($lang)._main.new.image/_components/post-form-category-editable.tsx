@@ -1,5 +1,5 @@
 import { Checkbox } from "@/_components/ui/checkbox"
-import { Card } from "@/_components/ui/card"
+import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
   isChecked?: boolean
@@ -12,8 +12,8 @@ type Props = {
 export const PostFormCategoryEditable = (props: Props) => {
   return (
     <>
-      <Card className="p-1">
-        <div className="mt-2 flex flex-col">
+      <Card>
+        <CardContent className="flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">タグの編集許可</p>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -27,7 +27,7 @@ export const PostFormCategoryEditable = (props: Props) => {
               {"タグの編集を許可しない"}
             </label>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </>
   )
