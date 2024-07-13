@@ -152,7 +152,10 @@ export const WorkArticle = (props: Props) => {
               </Link>
             </div>
           )}
-          <WorkArticleTags tagNames={props.work.tagNames} />
+          <WorkArticleTags
+            tagNames={props.work.tagNames}
+            isEditable={props.work.isTagEditable}
+          />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
           {props.work.description}

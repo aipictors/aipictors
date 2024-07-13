@@ -1,20 +1,22 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import {
   WorkArticle,
-  type workArticleFragment,
+  workArticleFragment,
 } from "@/routes/($lang)._main.posts.$post/_components/work-article"
 import { WorkNextAndPrevious } from "@/routes/($lang)._main.posts.$post/_components/work-next-and-previous"
 import { WorkRelatedList } from "@/routes/($lang)._main.posts.$post/_components/work-related-list"
 import { WorkUser } from "@/routes/($lang)._main.posts.$post/_components/work-user"
-import { Suspense } from "react"
+import { Suspense, useContext } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.posts.$post/_components/work-tags-works"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
 import {
   type commentFragment,
   WorkCommentList,
 } from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
+import { AuthContext } from "@/_contexts/auth-context"
+import { useSuspenseQuery } from "@apollo/client/index"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -25,24 +27,42 @@ type Props = {
  * 作品詳細情報
  */
 export const WorkContainer = (props: Props) => {
-  const work = props.work
+  const authContext = useContext(AuthContext)
+
+  const workQuery = graphql(
+    `query Work($id: ID!) {
+      work(id: $id) {
+        ...WorkArticle
+      }
+    }`,
+    [workArticleFragment],
+  )
+
+  const { data, refetch } = useSuspenseQuery(workQuery, {
+    skip: authContext.userId !== props.work.user.id,
+    variables: {
+      id: props.work.id,
+    },
+  })
+
+  const work = data?.work ?? props.work
 
   if (!work) {
     return null
   }
 
-  const relatedWorks = work.user.works.map((work) => ({
-    smallThumbnailImageURL: work.smallThumbnailImageURL,
-    thumbnailImagePosition: work.thumbnailImagePosition ?? 0,
-    smallThumbnailImageWidth: work.smallThumbnailImageWidth,
-    smallThumbnailImageHeight: work.smallThumbnailImageHeight,
-    id: work.id,
-    userId: work.userId,
+  const relatedWorks = work.user.works.map((relatedWork) => ({
+    smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+    thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
+    smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
+    smallThumbnailImageHeight: relatedWork.smallThumbnailImageHeight,
+    id: relatedWork.id,
+    userId: relatedWork.userId,
     isLiked: false,
-    subWorksCount: work.subWorksCount,
+    subWorksCount: relatedWork.subWorksCount,
   }))
 
-  const tags = props.work?.tagNames ?? []
+  const tags = work?.tagNames ?? []
 
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
