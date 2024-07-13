@@ -7,9 +7,8 @@ import {
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
-import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
-import { viewerCurrentImageGenerationMemosQuery } from "@/_graphql/queries/viewer/viewer-current-image-generation-memos"
-import { viewerFavoritedImageGenerationModelsQuery } from "@/_graphql/queries/viewer/viewer-favorited-image-generation-models"
+import { imageGenerationMemoFieldsFragment } from "@/_graphql/fragments/image-reserved-generation-memo-field"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
 import { cn } from "@/_lib/cn"
 import { config } from "@/config"
 import { GenerationConfigClipSkip } from "@/routes/($lang).generation._index/_components/config-view/generation-config-clip-skip"
@@ -32,6 +31,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
 
@@ -255,3 +255,35 @@ export function GenerationConfigView() {
     </GenerationViewCard>
   )
 }
+
+export const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)
+
+export const viewerCurrentImageGenerationMemosQuery = graphql(
+  `query ViewerCurrentImageGenerationMemos {
+    viewer {
+      currentImageGenerationMemos {
+        ...ImageGenerationMemoFields
+      }
+    }
+  }`,
+  [imageGenerationMemoFieldsFragment],
+)
+
+export const viewerFavoritedImageGenerationModelsQuery = graphql(
+  `query ViewerFavoritedImageGenerationModels {
+    viewer {
+      favoritedImageGenerationModels {
+        id
+        name
+        type
+      }
+    }
+  }`,
+)

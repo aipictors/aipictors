@@ -1,10 +1,11 @@
 import { AppPage } from "@/_components/app/app-page"
-import { hotTagsQuery } from "@/_graphql/queries/tag/hot-tags"
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeWorkList } from "@/routes/($lang)._main._index/_components/home-work-list"
 import { json, useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader() {
   const client = createClient()
@@ -39,3 +40,24 @@ export default function SensitiveWorks25d() {
     </AppPage>
   )
 }
+
+export const hotTagsQuery = graphql(
+  `query HotTags {
+    hotTags {
+      ...PartialTagFields
+      firstWork {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialTagFieldsFragment, partialWorkFieldsFragment],
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

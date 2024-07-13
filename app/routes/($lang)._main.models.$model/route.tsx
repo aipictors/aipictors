@@ -1,13 +1,13 @@
 import { AppPage } from "@/_components/app/app-page"
 import { ParamsError } from "@/_errors/params-error"
-import { imageModelQuery } from "@/_graphql/queries/image-model/image-model"
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { ModelHeader } from "@/routes/($lang)._main.models.$model/_components/model-header"
 import { WorkList } from "@/routes/($lang)._main.posts._index/_components/work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -57,3 +57,30 @@ export default function ModelPage() {
     </AppPage>
   )
 }
+
+export const imageModelQuery = graphql(
+  `query ImageModel($id: ID!) {
+    imageModel(id: $id) {
+      id
+      name
+      displayName
+      category
+      description
+      license
+      prompts
+      slug
+      style
+      thumbnailImageURL
+      type
+    }
+  }`,
+)
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

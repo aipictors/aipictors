@@ -1,8 +1,9 @@
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { PassPlanDescription } from "@/routes/($lang)._main.plus._index/_components/pass-plan-description"
 import { toPassFeatures } from "@/routes/($lang)._main.plus._index/_utils/to-pass-features"
 import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 
 type Props = {
   isLoading: boolean
@@ -95,3 +96,19 @@ export const PassPlanList = (props: Props) => {
     </div>
   )
 }
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

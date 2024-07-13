@@ -2,12 +2,12 @@ import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { AuthContext } from "@/_contexts/auth-context"
 import { updateAccountLoginMutation } from "@/_graphql/mutations/update-account-login"
-import { viewerUserQuery } from "@/_graphql/queries/viewer/viewer-user"
 import {
   ApolloError,
   useMutation,
   useSuspenseQuery,
 } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 
@@ -66,3 +66,33 @@ export const AccountLoginForm = () => {
     </div>
   )
 }
+
+export const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        id
+        biography
+        login
+        name
+        awardsCount
+        followersCount
+        followCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        generatedCount
+        promptonUser {
+          id
+          name
+        }
+        receivedLikesCount
+        receivedViewsCount
+        createdLikesCount
+        createdViewsCount
+        createdCommentsCount
+        createdBookmarksCount
+      }
+    }
+  }`,
+)

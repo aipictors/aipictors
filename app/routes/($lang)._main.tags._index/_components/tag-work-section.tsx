@@ -1,6 +1,6 @@
-import type { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 
 type Props = {
@@ -41,3 +41,12 @@ export const TagWorkSection = (props: Props) => {
     </section>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

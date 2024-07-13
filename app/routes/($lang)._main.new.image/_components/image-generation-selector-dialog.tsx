@@ -1,11 +1,12 @@
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
 import { useState } from "react"
-import { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
 import { useQuery } from "@apollo/client/index"
 import { Button } from "@/_components/ui/button"
 import { getBase64FromImageUrl } from "@/_utils/get-base64-from-image-url"
 import { ScrollArea } from "@/_components/ui/scroll-area"
 import { Card } from "@/_components/ui/card"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { graphql } from "gql.tada"
 
 type Props = {
   onSubmitted: (selectedImage: string[], selectedIds: string[]) => void
@@ -99,3 +100,14 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+export const viewerImageGenerationResultsQuery = graphql(
+  `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
+    viewer {
+      imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationResultFields
+      }
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)

@@ -5,16 +5,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/_components/ui/tooltip"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
-import type { workQuery } from "@/_graphql/queries/work/work"
-import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
 import { useQuery } from "@apollo/client/index"
-import type { ResultOf } from "gql.tada"
+import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/_components/work-adcense"
+import { type FragmentOf, graphql } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import type { workArticleFragment } from "@/routes/($lang)._main.posts.$post/_components/work-article"
 
 type Props = {
-  work: ResultOf<typeof workQuery>["work"]
+  work: FragmentOf<typeof workArticleFragment>
 }
 
 export const WorkNextAndPrevious = (props: Props) => {
@@ -118,3 +118,19 @@ export const WorkNextAndPrevious = (props: Props) => {
     </div>
   )
 }
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

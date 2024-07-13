@@ -7,11 +7,12 @@ import {
   CardTitle,
 } from "@/_components/ui/card"
 import { PromptonRequestTextButton } from "@/routes/($lang)._main.posts.$post/_components/prompton-request-text-button"
-import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { Link } from "@remix-run/react"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { graphql } from "gql.tada"
 
 type Props = {
   userId: string
@@ -88,3 +89,15 @@ export const WorkUser = (props: Props) => {
     </Card>
   )
 }
+
+export const userFolloweesQuery = graphql(
+  `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {
+    user(id: $user_id) {
+      id
+      followees(offset: $offset, limit: $limit) {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialUserFieldsFragment],
+)

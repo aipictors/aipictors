@@ -1,4 +1,4 @@
-import { worksQuery } from "@/_graphql/queries/work/works"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationWorkList } from "@/routes/($lang).generation._index/_components/task-view/generation-work-list"
@@ -6,6 +6,7 @@ import { GenerationWorkListActions } from "@/routes/($lang).generation._index/_c
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useState } from "react"
 
 /**
@@ -108,3 +109,12 @@ export const GenerationWorkListModelView = () => {
     </GenerationViewCard>
   )
 }
+
+export const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

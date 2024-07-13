@@ -1,11 +1,12 @@
 import { AppPage } from "@/_components/app/app-page"
-import { workAwardsQuery } from "@/_graphql/queries/award/work-awards"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
 import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -76,3 +77,17 @@ export default function DayAwards() {
     </AppPage>
   )
 }
+
+export const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      id
+      index
+      dateText
+      work {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)

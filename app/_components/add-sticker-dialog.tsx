@@ -23,7 +23,7 @@ import { createUserStickerMutation } from "@/_graphql/mutations/create-user-stic
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
+import { graphql } from "gql.tada"
 
 type Props = {
   onAddedSicker?: () => void
@@ -289,3 +289,11 @@ export const AddStickerDialog = (props: Props) => {
     </Dialog>
   )
 }
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)

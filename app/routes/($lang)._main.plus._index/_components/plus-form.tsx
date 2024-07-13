@@ -1,8 +1,8 @@
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card"
 import { Separator } from "@/_components/ui/separator"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { createCustomerPortalSessionMutation } from "@/_graphql/mutations/create-customer-portal-session"
-import { viewerCurrentPassQuery } from "@/_graphql/queries/viewer/viewer-current-pass"
 import { cn } from "@/_lib/cn"
 import { toDateText } from "@/_utils/to-date-text"
 import { PassBenefitList } from "@/routes/($lang)._main.plus._index/_components/pass-benefit-list"
@@ -10,6 +10,7 @@ import { PassImageGenerationBenefitList } from "@/routes/($lang)._main.plus._ind
 import { PlusAbout } from "@/routes/($lang)._main.plus._index/_components/plus-about"
 import { toPassName } from "@/routes/($lang)._main.plus._index/_utils/to-pass-name"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { toast } from "sonner"
 
 export const PlusForm = () => {
@@ -115,3 +116,19 @@ export const PlusForm = () => {
     </>
   )
 }
+
+export const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
+)

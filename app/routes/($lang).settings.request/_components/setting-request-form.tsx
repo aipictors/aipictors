@@ -3,9 +3,6 @@ import { Label } from "@/_components/ui/label"
 import { Switch } from "@/_components/ui/switch"
 import { AuthContext } from "@/_contexts/auth-context"
 import { updateUserSettingMutation } from "@/_graphql/mutations/update-user-setting"
-import { userQuery } from "@/_graphql/queries/user/user"
-import { userSettingQuery } from "@/_graphql/queries/user/user-setting"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
@@ -13,6 +10,9 @@ import React, { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 import { Link } from "@remix-run/react"
+import { userSettingFieldsFragment } from "@/_graphql/fragments/user-setting-fields"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
 export const SettingRequestForm = () => {
   const authContext = useContext(AuthContext)
@@ -155,3 +155,112 @@ export const SettingRequestForm = () => {
     </div>
   )
 }
+
+export const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSettingFields
+    }
+  }`,
+  [userSettingFieldsFragment],
+)
+
+export const userQuery = graphql(
+  `query User(
+    $userId: ID!,
+    $worksOffset: Int!,
+    $worksLimit: Int!,
+    $worksWhere: UserWorksWhereInput,
+    $followeesOffset: Int!,
+    $followeesLimit: Int!,
+    $followeesWorksOffset: Int!,
+    $followeesWorksLimit: Int!,
+    $followeesWorksWhere: UserWorksWhereInput,
+    $followersOffset: Int!,
+    $followersLimit: Int!,
+    $followersWorksOffset: Int!,
+    $followersWorksLimit: Int!
+    $followersWorksWhere: UserWorksWhereInput,
+    $bookmarksOffset: Int!,
+    $bookmarksLimit: Int!,
+    $bookmarksWhere: UserWorksWhereInput,
+  ) {
+    user(id: $userId) {
+      id
+      biography
+      createdBookmarksCount
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
+      isFollower
+      isFollowee
+      headerImageUrl
+      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
+        ...PartialWorkFields
+      }
+      followees(offset: $followeesOffset, limit: $followeesLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      followers(offset: $followersOffset, limit: $followersLimit) {
+        id
+        name
+        iconUrl
+        headerImageUrl
+        biography
+        isFollower
+        isFollowee
+        enBiography
+        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
+          ...PartialWorkFields
+        }
+      }
+      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+        ...PartialWorkFields
+      }
+      featuredSensitiveWorks {
+        ...PartialWorkFields
+      }
+      featuredWorks {
+        ...PartialWorkFields
+      }
+      biography
+      enBiography
+      instagramAccountId
+      twitterAccountId
+      githubAccountId
+      siteURL
+      mailAddress
+      promptonUser {
+        id
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)

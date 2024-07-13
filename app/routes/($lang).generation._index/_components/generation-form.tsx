@@ -16,12 +16,12 @@ import { GenerationWorkContentPreview } from "@/routes/($lang).generation._index
 import { GenerationWorkListModelView } from "@/routes/($lang).generation._index/_components/task-view/generation-works-from-model-view"
 import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
-import { viewerTokenQuery } from "@/_graphql/queries/viewer/viewer-token"
 import { getUserToken } from "@/_utils/get-user-token"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { setUserToken } from "@/_utils/set-user-token"
 import { jwtDecode } from "jwt-decode"
 import { GenerationLinksView } from "@/routes/($lang).generation._index/_components/task-view/generation-links-view"
+import { graphql } from "gql.tada"
 
 type Props = {
   termsMarkdownText: string
@@ -124,3 +124,11 @@ export const GenerationForm = (props: Props) => {
     />
   )
 }
+
+export const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)

@@ -1,11 +1,13 @@
 import { AuthContext } from "@/_contexts/auth-context"
-import { imageGenerationResultQuery } from "@/_graphql/queries/image-generation/image-generation-result"
-import { workQuery } from "@/_graphql/queries/work/work"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
+import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
 import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { toast } from "sonner"
 
@@ -143,3 +145,133 @@ export const GenerationConfigRestoration = (props: Props) => {
 
   return props.children
 }
+
+export const imageGenerationResultQuery = graphql(
+  `query ImageGenerationResult($id: ID!) {
+    imageGenerationResult(id: $id) {
+      ...ImageGenerationResultFields
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)
+
+export const workQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      id
+      isMyRecommended
+      title
+      accessType
+      type
+      adminAccessType
+      promptAccessType
+      rating
+      description
+      isSensitive
+      enTitle
+      enDescription
+      imageURL
+      largeThumbnailImageURL
+      largeThumbnailImageWidth
+      largeThumbnailImageHeight
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
+      subWorksCount
+      user {
+        id
+        promptonUser {
+          id
+        }
+        ...UserFields
+        isFollower
+        isFollowee
+        isMuted
+        works(offset: 0, limit: 16) {
+          id
+          userId
+          largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
+          smallThumbnailImageURL
+          smallThumbnailImageWidth
+          smallThumbnailImageHeight
+          thumbnailImagePosition
+          subWorksCount
+        }
+      }
+      likedUsers(offset: 0, limit: 32) {
+        id
+        name
+        iconUrl
+        login
+      }
+      album {
+        id
+        title
+        description
+      }
+      dailyTheme {
+        id
+        title
+      }
+      tagNames
+      createdAt
+      likesCount
+      viewsCount
+      commentsCount
+      subWorks {
+        ...SubWorkFields
+      }
+      nextWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      previousWork {
+        id
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+      }
+      model
+      modelHash
+      generationModelId
+      workModelId
+      isTagEditable
+      isCommentsEditable
+      isLiked
+      isBookmarked
+      isInCollection
+      isPromotion
+      isGeneration
+      ogpThumbnailImageUrl
+      prompt
+      negativePrompt
+      noise
+      seed
+      steps
+      sampler
+      scale
+      strength
+      vae
+      clipSkip
+      otherGenerationParams
+      pngInfo
+      style
+      url
+      html
+      updatedAt
+      dailyRanking
+      weeklyRanking
+      monthlyRanking
+      relatedUrl
+      nanoid
+    }
+  }`,
+  [userFieldsFragment, subWorkFieldsFragment],
+)

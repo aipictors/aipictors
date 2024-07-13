@@ -1,5 +1,5 @@
-import { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
-import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { config } from "@/config"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationTaskList } from "@/routes/($lang).generation._index/_components/task-view/generation-task-list"
@@ -10,6 +10,7 @@ import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/us
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
 import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 
 type Props = {
@@ -242,3 +243,25 @@ export const GenerationTaskListView = (props: Props) => {
     </GenerationViewCard>
   )
 }
+
+export const viewerImageGenerationResultsQuery = graphql(
+  `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
+    viewer {
+      imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationResultFields
+      }
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)
+
+export const viewerImageGenerationTasksQuery = graphql(
+  `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
+    viewer {
+      imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationTaskFields
+      }
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

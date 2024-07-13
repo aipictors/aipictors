@@ -2,12 +2,12 @@ import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback } from "@/_components/ui/avatar"
 import { Card, CardContent } from "@/_components/ui/card"
 import { AvatarImage } from "@radix-ui/react-avatar"
-import { userFolloweesQuery } from "@/_graphql/queries/user/user-followees"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { graphql, type ResultOf } from "gql.tada"
 import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 
 type Props = {
   album: NonNullable<ResultOf<typeof albumQuery>["album"]>
@@ -83,4 +83,16 @@ export const albumQuery = graphql(
     }
   }`,
   [workUserFieldsFragment],
+)
+
+export const userFolloweesQuery = graphql(
+  `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {
+    user(id: $user_id) {
+      id
+      followees(offset: $offset, limit: $limit) {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [partialUserFieldsFragment],
 )

@@ -1,8 +1,7 @@
 import { ResponsivePagination } from "@/_components/responsive-pagination"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { viewerImageGenerationResultsQuery } from "@/_graphql/queries/viewer/viewer-image-generation-results"
-import type { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
-
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { useFocusTimeout } from "@/_hooks/use-focus-timeout"
 import { cn } from "@/_lib/cn"
 import { ErrorResultCard } from "@/routes/($lang).generation._index/_components/error-result-card"
@@ -12,7 +11,7 @@ import { GenerationConfigContext } from "@/routes/($lang).generation._index/_con
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
@@ -225,3 +224,25 @@ export const GenerationTaskList = (props: Props) => {
     </>
   )
 }
+
+export const viewerImageGenerationResultsQuery = graphql(
+  `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
+    viewer {
+      imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationResultFields
+      }
+    }
+  }`,
+  [imageGenerationResultFieldsFragment],
+)
+
+export const viewerImageGenerationTasksQuery = graphql(
+  `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
+    viewer {
+      imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationTaskFields
+      }
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

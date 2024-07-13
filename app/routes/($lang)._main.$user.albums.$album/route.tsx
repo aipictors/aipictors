@@ -2,7 +2,7 @@ import { AppPage } from "@/_components/app/app-page"
 import { IconUrl } from "@/_components/icon-url"
 import { ParamsError } from "@/_errors/params-error"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { userAlbumQuery } from "@/_graphql/queries/album/user-album"
+import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { createClient } from "@/_lib/client"
 import { AlbumArticleHeader } from "@/routes/($lang)._main.albums.$album/_components/album-article-header"
 import { AlbumWorkList } from "@/routes/($lang)._main.albums.$album/_components/album-work-list"
@@ -106,4 +106,28 @@ export const albumWorksQuery = graphql(
     }
   }`,
   [partialWorkFieldsFragment],
+)
+
+export const userAlbumQuery = graphql(
+  `query userAlbum($where: UserAlbumWhereInput) {
+    userAlbum( where: $where) {
+      id
+      title
+      description
+      user {
+        ...WorkUserFields
+        isFollowee
+        isFollowee
+        isMuted
+        nanoid
+      }
+      createdAt
+      isSensitive
+      thumbnailImageURL
+      slug
+      worksCount
+      workIds
+    }
+  }`,
+  [workUserFieldsFragment],
 )

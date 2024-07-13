@@ -1,6 +1,5 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
-import { appEventsQuery } from "@/_graphql/queries/app-events/app-events"
 import { createClient } from "@/_lib/client"
 import { EventsList } from "@/routes/($lang).events._index/_components/events-list"
 import {
@@ -10,6 +9,7 @@ import {
   type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { Suspense, useContext } from "react"
 
 export const headers: HeadersFunction = () => {
@@ -77,3 +77,19 @@ export default function FollowingLayout() {
     </>
   )
 }
+
+export const appEventsQuery = graphql(
+  `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
+    appEvents(limit: $limit, offset: $offset, where: $where) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+    }
+  }`,
+)

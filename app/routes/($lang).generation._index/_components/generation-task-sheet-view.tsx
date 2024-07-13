@@ -1,8 +1,7 @@
 import { deleteImageGenerationResultMutation } from "@/_graphql/mutations/delete-image-generation-result"
 import { updateProtectedImageGenerationResultMutation } from "@/_graphql/mutations/update-protected-image-generation-task"
 import { updateRatingImageGenerationResultMutation } from "@/_graphql/mutations/update-rating-image-generation-task"
-import { viewerImageGenerationTasksQuery } from "@/_graphql/queries/viewer/viewer-image-generation-tasks"
-import { config, KeyCodes } from "@/config"
+import { config } from "@/config"
 import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
@@ -18,8 +17,8 @@ import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useMediaQuery } from "usehooks-ts"
-import type { ResultOf } from "gql.tada"
-import type { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
+import { graphql, type ResultOf } from "gql.tada"
+import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import type { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/_hooks/use-cached-image-generation-result"
 
@@ -401,3 +400,14 @@ export function GenerationTaskSheetView(props: Props) {
     />
   )
 }
+
+export const viewerImageGenerationTasksQuery = graphql(
+  `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
+    viewer {
+      imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
+        ...ImageGenerationTaskFields
+      }
+    }
+  }`,
+  [imageGenerationTaskFieldsFragment],
+)

@@ -11,9 +11,8 @@ import {
   DialogHeader,
 } from "@/_components/ui/dialog"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import type { promptCategoriesQuery } from "@/_graphql/queries/prompt-category/prompt-category"
 import { PromptCategoryIcon } from "@/routes/($lang).generation._index/_components/prompt-view/prompt-category-icon"
-import type { ResultOf } from "gql.tada"
+import { graphql, type ResultOf } from "gql.tada"
 
 type Props = {
   selectedPromptIds: string[]
@@ -82,3 +81,17 @@ export const PromptCategoriesDialogContent = (props: Props) => {
     </>
   )
 }
+
+export const promptCategoriesQuery = graphql(
+  `query PromptCategories {
+    promptCategories {
+      id
+      name
+      prompts {
+        id
+        name
+        words
+      }
+    }
+  }`,
+)
