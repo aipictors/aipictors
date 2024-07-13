@@ -404,6 +404,9 @@ export const EditImageForm = (props: Props) => {
 
     const imageUrls = await Promise.all(
       images.map(async (image) => {
+        if (!image) {
+          return null
+        }
         const imageUrl = image.startsWith("https://")
           ? image
           : await uploadPublicImage(image, token?.viewer?.token)
@@ -631,7 +634,9 @@ export const EditImageForm = (props: Props) => {
       }
 
       if (videoFile === null && items.length !== 0) {
-        const imageUrls = await uploadImages()
+        const imageUrls = await uploadImages().then((urls) =>
+          urls.filter((url) => url !== null),
+        )
         if (imageUrls.length === 0) {
           toast("画像のアップロードに失敗しました")
           return
@@ -729,6 +734,20 @@ export const EditImageForm = (props: Props) => {
     }
   }, [items])
 
+  const selectedImagesByte = () => {
+    const totalBytes = items
+      .map((item) => item.content)
+      .reduce((acc, imageBase64) => {
+        const byteLength = new TextEncoder().encode(imageBase64 ?? "").length
+        return acc + byteLength
+      }, 0)
+
+    if (totalBytes < 1024 * 1024) {
+      return `${(totalBytes / 1024).toFixed(2)} KB`
+    }
+    return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+  }
+
   return (
     <>
       <div className="relative w-[100%]">
@@ -747,23 +766,7 @@ export const EditImageForm = (props: Props) => {
                     {items.map((item) => item.content).length.toString()}
                     {"枚"}
                   </div>
-                  <div className="flex">
-                    {(() => {
-                      const totalBytes = items
-                        .map((item) => item.content)
-                        .reduce((acc, imageBase64) => {
-                          const byteLength = new TextEncoder().encode(
-                            imageBase64,
-                          ).length
-                          return acc + byteLength
-                        }, 0)
-
-                      if (totalBytes < 1024 * 1024) {
-                        return `${(totalBytes / 1024).toFixed(2)} KB`
-                      }
-                      return `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
-                    })()}
-                  </div>
+                  <div className="flex">{selectedImagesByte()}</div>
                 </div>
               </div>
             )}
@@ -1019,7 +1022,9 @@ export const EditImageForm = (props: Props) => {
               setItems((prev) =>
                 prev.map((item) =>
                   item.content === editTargetImageUrl ||
-                  (item.content.startsWith("https://") &&
+                  // biome-ignore lint/complexity/useOptionalChain: <explanation>
+                  (item.content &&
+                    item.content.startsWith("https://") &&
                     item.content === editTargetImageUrl)
                     ? { ...item, content: base64 }
                     : item,
@@ -1030,9 +1035,10 @@ export const EditImageForm = (props: Props) => {
 
               // もし先頭のアイテムを書き換えたならサムネイル更新
               if (
-                items[0].content === editTargetImageUrl ||
-                (items[0].content.startsWith("https://") &&
-                  items[0].content !== editTargetImageUrl)
+                items[0].content &&
+                (items[0].content === editTargetImageUrl ||
+                  (items[0].content.startsWith("https://") &&
+                    items[0].content !== editTargetImageUrl))
               ) {
                 setThumbnailBase64(base64)
               }

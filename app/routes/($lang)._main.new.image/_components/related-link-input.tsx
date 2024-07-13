@@ -2,7 +2,7 @@ import { Input } from "@/_components/ui/input"
 import {} from "@/_components/ui/radio-group"
 
 type Props = {
-  link: string
+  link: string | null
   onChange: (value: string) => void
 }
 
@@ -19,7 +19,7 @@ export const RelatedLinkInput = (props: Props) => {
             onChange={(event) => {
               props.onChange(event.target.value)
             }}
-            value={props.link}
+            value={props.link ?? ""}
             minLength={1}
             maxLength={320}
             required

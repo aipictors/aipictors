@@ -14,11 +14,11 @@ import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 
 type Props = {
-  indexList: number[] // 画像の並び順
-  items: TSortableItem[] // 画像のリスト
-  videoFile: File | null // 動画ファイル
-  isOnlyMove?: boolean // 移動可能のみかどうか（削除、追加不可能）
-  maxItemsCount?: number // 最大画像数
+  indexList: number[]
+  items: TSortableItem[]
+  videoFile: File | null
+  isOnlyMove?: boolean
+  maxItemsCount?: number
   setItems: (items: TSortableItem[]) => void
   setIndexList: React.Dispatch<React.SetStateAction<number[]>>
   setThumbnailBase64?: (thumbnailBase64: string) => void
@@ -52,7 +52,10 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
   useEffect(() => {
     // 違いがあったらサムネイルを更新
     if (props.items.length) {
-      if (props.items[0].content !== nowHeadImageBase64) {
+      if (
+        props.items[0].content &&
+        props.items[0].content !== nowHeadImageBase64
+      ) {
         updateThumbnail()
         setNowHeadImageBase64(props.items[0].content)
       }
@@ -80,7 +83,12 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
   const updateThumbnail = (webpDataURL: string | null = null) => {
     // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setThumbnailBase64) {
-      if (!webpDataURL && props.items && props.items.length > 0) {
+      if (
+        !webpDataURL &&
+        props.items &&
+        props.items.length > 0 &&
+        props.items[0].content
+      ) {
         props.setThumbnailBase64(props.items[0].content)
       } else {
         props.setThumbnailBase64(webpDataURL ? webpDataURL : "")
@@ -95,7 +103,7 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
       if ((props.items && props.items.length > 0) || webpDataURL) {
         const base64 = webpDataURL ? webpDataURL : props.items[0].content
         const img = new Image()
-        img.src = base64
+        img.src = base64 ?? ""
         img.onload = () => {
           if (props.setIsThumbnailLandscape) {
             props.setIsThumbnailLandscape(img.width > img.height)
@@ -300,7 +308,7 @@ export const DraggableImagesAndVideoInput = (props: Props) => {
             </Button>
           }
           onClickOptionButton={(index) => {
-            if (props.onMosaicButtonClick) {
+            if (props.onMosaicButtonClick && props.items[index].content) {
               props.onMosaicButtonClick(props.items[index].content)
             }
           }}

@@ -10,7 +10,7 @@ import {
 import type { Album } from "@/routes/($lang)._main.new.image/_types/album"
 
 type Props = {
-  album: string
+  album: string | null
   albums: Album[]
   setAlbumId: (value: string) => void
 }
@@ -25,7 +25,7 @@ export const AlbumInput = (props: Props) => {
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">シリーズ</p>
           <Select
-            value={props.album}
+            value={props.album ?? ""}
             onValueChange={(value) => {
               props.setAlbumId(value)
             }}

@@ -4,8 +4,8 @@ import {} from "@/_components/ui/radio-group"
 import {} from "@/_components/ui/select"
 
 type Props = {
-  date: string
-  time: string
+  date: string | null
+  time: string | null
   setDate: (value: string) => void
   setTime: (value: string) => void
 }
@@ -22,7 +22,7 @@ export const DateInput = (props: Props) => {
           <div className="block md:flex">
             <Input
               type="date"
-              value={props.date}
+              value={props.date ?? ""}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 props.setDate(event.target.value)
               }
@@ -30,7 +30,7 @@ export const DateInput = (props: Props) => {
             />
             <Input
               type="time"
-              value={props.time}
+              value={props.time ?? ""}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 props.setTime(event.target.value)
               }

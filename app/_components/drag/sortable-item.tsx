@@ -7,7 +7,7 @@ import { useState, type HTMLAttributes } from "react"
 // ドラッグ可能なアイテムの型
 export type TSortableItem = {
   id: number
-  content: string // 画像のURLなど
+  content: string | null // 画像のURLなど
   isContentEdited?: boolean // コンテンツが編集されたかどうか
 }
 

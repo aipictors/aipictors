@@ -3,7 +3,7 @@ import {} from "@/_components/ui/radio-group"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {
-  title: string
+  title: string | null
   isChecked?: boolean
   onChange: (value: boolean) => void
   isLoading?: boolean

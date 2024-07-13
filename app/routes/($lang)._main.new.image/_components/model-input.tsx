@@ -10,7 +10,7 @@ import {
 import type { AiModel } from "@/routes/($lang)._main.new.image/_types/model"
 
 type Props = {
-  model: string
+  model: string | null
   models: AiModel[]
   setModel: (value: string) => void
 }
@@ -36,7 +36,7 @@ export const ModelInput = (props: Props) => {
         <div className="mt-2 flex flex-col">
           <p className="mt-1 mb-1 font-bold text-sm">使用AI</p>
           <Select
-            value={props.model}
+            value={props.model ?? ""}
             onValueChange={(value) => {
               props.setModel(value)
             }}

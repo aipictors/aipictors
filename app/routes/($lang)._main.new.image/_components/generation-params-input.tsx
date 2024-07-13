@@ -3,7 +3,7 @@ import { Textarea } from "@/_components/ui/textarea"
 import type { PNGInfo } from "@/_utils/get-extract-info-from-png"
 
 type Props = {
-  pngInfo: PNGInfo
+  pngInfo: PNGInfo | null
   setPngInfo: (value: PNGInfo | null) => void
 }
 
@@ -12,10 +12,12 @@ type Props = {
  */
 export const GenerationParamsInput = (props: Props) => {
   const handleChange = (field: keyof PNGInfo["params"], value: string) => {
+    if (!props.pngInfo) return
+
     const updatedPngInfo = {
       ...props.pngInfo,
       params: {
-        ...props.pngInfo.params,
+        ...props.pngInfo?.params,
         [field]: value,
       },
     }
@@ -23,6 +25,8 @@ export const GenerationParamsInput = (props: Props) => {
   }
 
   const handleSrcChange = (value: string) => {
+    if (!props.pngInfo) return
+
     const updatedPngInfo = {
       ...props.pngInfo,
       src: value,
@@ -39,7 +43,7 @@ export const GenerationParamsInput = (props: Props) => {
           <Textarea
             onChange={(event) => handleChange("prompt", event.target.value)}
             maxLength={10000}
-            value={props.pngInfo.params.prompt}
+            value={props.pngInfo?.params?.prompt ?? ""}
             placeholder={"Prompts"}
             className="mb-2 max-h-24 w-full overflow-y-auto"
           />
@@ -49,7 +53,7 @@ export const GenerationParamsInput = (props: Props) => {
             onChange={(event) =>
               handleChange("negativePrompt", event.target.value)
             }
-            value={props.pngInfo.params.negativePrompt}
+            value={props.pngInfo?.params?.negativePrompt ?? ""}
             maxLength={10000}
             placeholder={"NegativePrompts"}
             className="max-h-24 w-full overflow-y-auto"
@@ -60,7 +64,7 @@ export const GenerationParamsInput = (props: Props) => {
             <div className="flex space-x-1">
               <Input
                 onChange={(event) => handleChange("seed", event.target.value)}
-                value={props.pngInfo.params.seed}
+                value={props.pngInfo?.params?.seed ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -69,7 +73,7 @@ export const GenerationParamsInput = (props: Props) => {
               />
               <Input
                 onChange={(event) => handleChange("steps", event.target.value)}
-                value={props.pngInfo.params.steps}
+                value={props.pngInfo?.params?.steps ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -78,7 +82,7 @@ export const GenerationParamsInput = (props: Props) => {
               />
               <Input
                 onChange={(event) => handleChange("scale", event.target.value)}
-                value={props.pngInfo.params.scale}
+                value={props.pngInfo?.params?.scale ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -91,7 +95,7 @@ export const GenerationParamsInput = (props: Props) => {
                 onChange={(event) =>
                   handleChange("sampler", event.target.value)
                 }
-                value={props.pngInfo.params.sampler}
+                value={props.pngInfo?.params?.sampler ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -102,7 +106,7 @@ export const GenerationParamsInput = (props: Props) => {
                 onChange={(event) =>
                   handleChange("strength", event.target.value)
                 }
-                value={props.pngInfo.params.strength}
+                value={props.pngInfo?.params?.strength ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -111,7 +115,7 @@ export const GenerationParamsInput = (props: Props) => {
               />
               <Input
                 onChange={(event) => handleChange("noise", event.target.value)}
-                value={props.pngInfo.params.noise}
+                value={props.pngInfo?.params?.noise ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -122,7 +126,7 @@ export const GenerationParamsInput = (props: Props) => {
             <div className="flex space-x-1">
               <Input
                 onChange={(event) => handleChange("model", event.target.value)}
-                value={props.pngInfo.params.model}
+                value={props.pngInfo?.params?.model ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -133,7 +137,7 @@ export const GenerationParamsInput = (props: Props) => {
                 onChange={(event) =>
                   handleChange("modelHash", event.target.value)
                 }
-                value={props.pngInfo.params.modelHash}
+                value={props.pngInfo?.params?.modelHash ?? ""}
                 minLength={1}
                 maxLength={100}
                 type="text"
@@ -144,7 +148,7 @@ export const GenerationParamsInput = (props: Props) => {
           </div>
           <Textarea
             onChange={(event) => handleSrcChange(event.target.value)}
-            value={props.pngInfo.src}
+            value={props.pngInfo?.src ?? ""}
             maxLength={10000}
             placeholder={"Other"}
             className="w-full"

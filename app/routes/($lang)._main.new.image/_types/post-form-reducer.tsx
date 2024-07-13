@@ -21,28 +21,28 @@ const vTag = object({
  * 生成画像の生成情報
  */
 const vImageParameters = object({
-  prompt: string(),
-  negativePrompt: string(),
-  seed: string(),
-  steps: string(),
-  strength: string(),
-  noise: string(),
-  scale: string(),
-  sampler: string(),
-  vae: string(),
-  modelHash: string(),
-  model: string(),
+  prompt: nullable(string()),
+  negativePrompt: nullable(string()),
+  seed: nullable(string()),
+  steps: nullable(string()),
+  strength: nullable(string()),
+  noise: nullable(string()),
+  scale: nullable(string()),
+  sampler: nullable(string()),
+  vae: nullable(string()),
+  modelHash: nullable(string()),
+  model: nullable(string()),
 })
 
 /**
  * Fileオブジェクト
  */
 const vFile = object({
-  name: string(),
+  name: nullable(string()),
   lastModified: number(),
   size: number(),
-  type: string(),
-  webkitRelativePath: string(),
+  type: nullable(string()),
+  webkitRelativePath: nullable(string()),
 })
 
 /**
@@ -53,7 +53,7 @@ export const vSortableItem = object({
   /**
    * 画像のURLなど
    */
-  content: string(),
+  content: nullable(string()),
   /**
    * コンテンツが編集されたかどうか
    */
@@ -65,22 +65,21 @@ const vState = object({
   pngInfo: nullable(
     object({
       params: vImageParameters,
-      src: string(),
+      src: nullable(string()),
     }),
   ),
   date: date(),
   hasNoTheme: boolean(),
-  isSensitiveWhiteTags: boolean(),
   isDrawing: boolean(),
   isHovered: boolean(),
-  title: string(),
-  enTitle: string(),
-  caption: string(),
-  enCaption: string(),
+  title: nullable(string()),
+  enTitle: nullable(string()),
+  caption: nullable(string()),
+  enCaption: nullable(string()),
   themeId: nullable(string()),
-  editTargetImageBase64: string(),
-  albumId: string(),
-  link: string(),
+  editTargetImageBase64: nullable(string()),
+  albumId: nullable(string()),
+  link: nullable(string()),
   tags: array(vTag),
   isTagEditable: boolean(),
   isCommentsEditable: boolean(),
@@ -103,22 +102,22 @@ const vState = object({
     literal("REAL"),
     literal("SEMI_REAL"),
   ]),
-  aiUsed: string(),
-  reservationDate: string(),
-  reservationTime: string(),
+  aiUsed: nullable(string()),
+  reservationDate: nullable(string()),
+  reservationTime: nullable(string()),
   isSetGenerationParams: boolean(),
   items: array(vSortableItem),
   indexList: array(number()),
   videoFile: nullable(vFile),
-  thumbnailBase64: string(),
-  ogpBase64: string(),
+  thumbnailBase64: nullable(string()),
+  ogpBase64: nullable(string()),
   thumbnailPosX: number(),
   thumbnailPosY: number(),
   isThumbnailLandscape: boolean(),
   isCreatedWork: boolean(),
   isCreatingWork: boolean(),
-  uploadedWorkId: string(),
-  uploadedWorkUuid: string(),
+  uploadedWorkId: nullable(string()),
+  uploadedWorkUuid: nullable(string()),
   progress: number(),
   selectedImageGenerationIds: array(string()),
   isOpenImageGenerationDialog: boolean(),
@@ -180,8 +179,17 @@ export type Action =
           }
     }
   | {
+      type: "SET_EDITED_IMAGE"
+      payload: {
+        items: InferInput<typeof vSortableItem>[]
+        thumbnailBase64: string | null
+        editTargetImageBase64: string | null
+        ogpBase64: string | null
+      }
+    }
+  | {
       type: "SET_EDIT_TARGET_IMAGE_BASE64"
-      payload: string
+      payload: string | null
     }
   | {
       type: "SET_ALBUM_ID"
@@ -299,7 +307,7 @@ export type Action =
     }
   | {
       type: "SET_UPLOADED_WORK_UUID"
-      payload: string
+      payload: string | null
     }
   | {
       type: "SET_PROGRESS"
@@ -331,17 +339,16 @@ export const initialState: PostFormState = {
   pngInfo: null,
   date: new Date(),
   hasNoTheme: false,
-  isSensitiveWhiteTags: false,
   isDrawing: false,
   isHovered: false,
-  title: "",
-  enTitle: "",
-  caption: "",
-  enCaption: "",
+  title: null,
+  enTitle: null,
+  caption: null,
+  enCaption: null,
   themeId: null,
-  editTargetImageBase64: "",
-  albumId: "",
-  link: "",
+  editTargetImageBase64: null,
+  albumId: null,
+  link: null,
   tags: [],
   isTagEditable: false,
   isCommentsEditable: false,
@@ -350,21 +357,21 @@ export const initialState: PostFormState = {
   accessType: "PUBLIC",
   imageStyle: "ILLUSTRATION",
   aiUsed: "1",
-  reservationDate: "",
-  reservationTime: "",
+  reservationDate: null,
+  reservationTime: null,
   isSetGenerationParams: true,
   items: [],
   indexList: [],
   videoFile: null,
-  thumbnailBase64: "",
-  ogpBase64: "",
+  thumbnailBase64: null,
+  ogpBase64: null,
   thumbnailPosX: 0,
   thumbnailPosY: 0,
   isThumbnailLandscape: false,
   isCreatedWork: false,
   isCreatingWork: false,
-  uploadedWorkId: "",
-  uploadedWorkUuid: "",
+  uploadedWorkId: null,
+  uploadedWorkUuid: null,
   progress: 0,
   selectedImageGenerationIds: [],
   isOpenImageGenerationDialog: false,
@@ -505,12 +512,6 @@ export const postFormReducer = (
       return {
         ...state,
         hasNoTheme: action.payload,
-      }
-    }
-    case "SET_IS_SENSITIVE_WHITE_TAGS": {
-      return {
-        ...state,
-        isSensitiveWhiteTags: action.payload,
       }
     }
     case "SET_IS_DRAWING": {

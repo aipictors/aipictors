@@ -6,11 +6,11 @@ import { useState } from "react"
 type Props = {
   tags: Tag[]
   setTags: (value: Tag[]) => void
-  eventName: string
-  eventDescription: string
-  eventTag: string
+  eventName: string | null
+  eventDescription: string | null
+  eventTag: string | null
   endAt: number
-  slug: string
+  slug: string | null
 }
 
 /**

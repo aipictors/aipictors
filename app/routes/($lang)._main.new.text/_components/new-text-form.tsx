@@ -317,6 +317,9 @@ export const NewTextForm = () => {
 
     const imageUrls = await Promise.all(
       images.map(async (image) => {
+        if (image === null) {
+          return null
+        }
         const imageUrl = await uploadPublicImage(image, token?.viewer?.token)
         return imageUrl
       }),
@@ -512,7 +515,9 @@ export const NewTextForm = () => {
       }
 
       if (videoFile === null && items.length !== 0) {
-        const imageUrls = await uploadImages()
+        const imageUrls = await uploadImages().then((urls) =>
+          urls.filter((url) => url !== null),
+        )
         if (imageUrls.length === 0) {
           toast("画像のアップロードに失敗しました")
           return

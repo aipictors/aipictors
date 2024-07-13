@@ -8,22 +8,22 @@ interface PNGItem {
 }
 
 interface ImageParameters {
-  prompt: string
-  negativePrompt: string
-  seed: string
-  steps: string
-  strength: string
-  noise: string
-  scale: string
-  sampler: string
-  vae: string
-  modelHash: string
-  model: string
+  prompt: string | null
+  negativePrompt: string | null
+  seed: string | null
+  steps: string | null
+  strength: string | null
+  noise: string | null
+  scale: string | null
+  sampler: string | null
+  vae: string | null
+  modelHash: string | null
+  model: string | null
 }
 
 export interface PNGInfo {
   params: ImageParameters
-  src: string
+  src: string | null
 }
 
 /**
