@@ -67,7 +67,20 @@ import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
  */
 export const NewImageForm = () => {
   const authContext = useContext(AuthContext)
+
   const [state, dispatch] = useReducer(postFormReducer, initialState)
+
+  const { data, loading } = useQuery(pageQuery, {
+    variables: {
+      isSensitive:
+        state.ratingRestriction === "R18" || state.ratingRestriction === "R18G",
+      startAt: new Date().toISOString().split("T")[0],
+      prompts: state.pngInfo?.params.prompt ?? "girl",
+      year: state.date.getFullYear(),
+      month: state.date.getMonth() + 1,
+      day: state.date.getDate(),
+    },
+  })
 
   const selectImageFromImageGeneration = (
     selectedImage: string[],
@@ -97,73 +110,13 @@ export const NewImageForm = () => {
     })
   }
 
-  const { data: token } = useQuery(viewerTokenQuery)
-
-  const { data: aiModels } = useQuery(aiModelsQuery, {
-    variables: {
-      limit: 124,
-      offset: 0,
-      where: {},
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const { data: recommendedTagsRet, loading: recommendedTagsLoading } =
-    useQuery(recommendedTagsFromPromptsQuery, {
-      variables: {
-        prompts: state.pngInfo?.params.prompt ?? "girl",
-      },
-    })
-
-  const { data: whiteTagsRet } = useQuery(whiteListTagsQuery, {
-    variables: {
-      where: {
-        isSensitive:
-          state.ratingRestriction === "R18" ||
-          state.ratingRestriction === "R18G",
-      },
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const { data: theme, loading: themeLoading } = useQuery(dailyThemeQuery, {
-    variables: {
-      year: state.date.getFullYear(),
-      month: state.date.getMonth() + 1,
-      day: state.date.getDate(),
-      offset: 0,
-      limit: 0,
-    },
-    fetchPolicy: "cache-first",
-  })
-
-  const { data: albums } = useQuery(albumsQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      limit: 124,
-      offset: 0,
-      where: {
-        ownerUserId: authContext.userId,
-        isSensitiveAndAllRating: true,
-        needInspected: false,
-        needsThumbnailImage: false,
-      },
-    },
-  })
-
-  const { data: appEventsResp } = useQuery(appEventsQuery, {
-    skip: authContext.isLoading,
+  const { data: viewer } = useQuery(viewerQuery, {
+    skip: authContext.isLoggedIn,
     variables: {
       offset: 0,
-      limit: 1,
-      where: {
-        startAt: new Date().toISOString().split("T")[0],
-      },
+      limit: 128,
+      ownerUserId: authContext.userId,
     },
-  })
-
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {
-    skip: authContext.isLoading,
   })
 
   const onCloseImageEffectTool = () => {
@@ -178,17 +131,17 @@ export const NewImageForm = () => {
   }
 
   const onChangeTheme = (value: boolean) => {
-    if (theme === undefined) {
+    if (data === undefined) {
       throw new Error("theme is undefined")
     }
-    if (theme.dailyTheme === null) {
+    if (data.dailyTheme === null) {
       throw new Error("theme.dailyTheme is null")
     }
     dispatch({
       type: "SET_THEME_ID",
       payload: {
-        themeId: theme.dailyTheme.id,
-        themeTitle: theme.dailyTheme.title,
+        themeId: data.dailyTheme.id,
+        themeTitle: data.dailyTheme.title,
       },
     })
   }
@@ -264,16 +217,16 @@ export const NewImageForm = () => {
 
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        token?.viewer?.token,
+        viewer?.viewer?.token,
       )
       uploadedImageUrls.push(smallThumbnailUrl)
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        token?.viewer?.token,
+        viewer?.viewer?.token,
       )
       uploadedImageUrls.push(largeThumbnailUrl)
       const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, token?.viewer?.token)
+        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
         : null
       if (ogpBase64Url !== null) {
         uploadedImageUrls.push(ogpBase64Url)
@@ -297,7 +250,7 @@ export const NewImageForm = () => {
           }
           const videoUrl = await uploadPublicVideo(
             state.videoFile as File,
-            token?.viewer?.token,
+            viewer?.viewer?.token,
           )
           return videoUrl
         }
@@ -385,7 +338,7 @@ export const NewImageForm = () => {
               }
               const imageUrl = await uploadPublicImage(
                 image,
-                token?.viewer?.token,
+                viewer?.viewer?.token,
               )
               return imageUrl
             }),
@@ -517,7 +470,7 @@ export const NewImageForm = () => {
   }
 
   const recommendedNotUsedTags = () => {
-    return (recommendedTagsRet?.recommendedTagsFromPrompts?.filter(
+    return (data?.recommendedTagsFromPrompts?.filter(
       (tag) => !state.tags.map((t) => t.text).includes(tag.name),
     ) ?? []) as unknown as Tag[]
   }
@@ -543,7 +496,7 @@ export const NewImageForm = () => {
     return `イラスト${state.items.map((item) => item.content).length}枚`
   }
 
-  const whiteListNotSelectedTags = (whiteTagsRet?.whiteListTags?.filter(
+  const whiteListNotSelectedTags = (data?.whiteListTags?.filter(
     (tag) => !state.tags.map((t) => t.text).includes(tag.name),
   ) ?? []) as unknown as Tag[]
 
@@ -773,7 +726,7 @@ export const NewImageForm = () => {
             <ModelInput
               model={state.aiUsed}
               models={
-                aiModels?.aiModels
+                data?.aiModels
                   .filter((model) => model.workModelId !== null)
                   .map((model) => ({
                     id: model.workModelId as string,
@@ -827,23 +780,21 @@ export const NewImageForm = () => {
             {!state.hasNoTheme && (
               <ThemeInput
                 onChange={onChangeTheme}
-                title={theme?.dailyTheme?.title ?? null}
-                isLoading={themeLoading}
+                title={data?.dailyTheme?.title ?? null}
+                isLoading={loading}
               />
             )}
-            {appEventsResp && appEventsResp?.appEvents.length > 0 && (
+            {data && data?.appEvents.length > 0 && (
               <EventInput
                 tags={state.tags}
                 setTags={(tags) =>
                   dispatch({ type: "SET_TAGS", payload: tags })
                 }
-                eventName={appEventsResp?.appEvents[0]?.title ?? null}
-                eventDescription={
-                  appEventsResp?.appEvents[0]?.description ?? null
-                }
-                eventTag={appEventsResp?.appEvents[0]?.tag ?? null}
-                endAt={appEventsResp?.appEvents[0]?.endAt ?? 0}
-                slug={appEventsResp?.appEvents[0]?.slug ?? null}
+                eventName={data?.appEvents[0]?.title ?? null}
+                eventDescription={data?.appEvents[0]?.description ?? null}
+                eventTag={data?.appEvents[0]?.tag ?? null}
+                endAt={data?.appEvents[0]?.endAt ?? 0}
+                slug={data?.appEvents[0]?.slug ?? null}
               />
             )}
             <TagsInput
@@ -852,9 +803,7 @@ export const NewImageForm = () => {
               setTags={(tags) => dispatch({ type: "SET_TAGS", payload: tags })}
               recommendedTags={recommendedNotUsedTags()}
             />
-            {recommendedTagsLoading && (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
-            )}
+            {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
             <CategoryEditableInput
               isChecked={state.isTagEditable}
               onChange={(isTagEditable) =>
@@ -873,11 +822,11 @@ export const NewImageForm = () => {
                 })
               }
             />
-            {albums?.albums && (
+            {viewer?.albums && (
               <AlbumInput
                 album={state.albumId}
                 albums={
-                  albums?.albums.map((album) => ({
+                  viewer?.albums.map((album) => ({
                     id: album.id,
                     name: album.title,
                   })) ?? []
@@ -893,8 +842,8 @@ export const NewImageForm = () => {
             />
             <AdWorkInput
               isSubscribed={
-                pass?.viewer?.currentPass?.type === "STANDARD" ||
-                pass?.viewer?.currentPass?.type === "PREMIUM"
+                viewer?.viewer?.currentPass?.type === "STANDARD" ||
+                viewer?.viewer?.currentPass?.type === "PREMIUM"
               }
               isChecked={state.isAd}
               onChange={(isAd) =>
@@ -951,21 +900,61 @@ export const NewImageForm = () => {
   )
 }
 
-export const albumsQuery = graphql(
-  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
-    albums(offset: $offset, limit: $limit, where: $where) {
+const viewerQuery = graphql(
+  `query ViewerQuery(
+    $limit: Int!,
+    $offset: Int!,
+    $ownerUserId: ID
+  ) {
+    viewer {
+      token
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+    albums(
+      offset: $offset,
+      limit: $limit,
+      where: {
+        ownerUserId: $ownerUserId,
+        isSensitiveAndAllRating: true,
+        needInspected: false,
+        needsThumbnailImage: false,
+      }
+    ) {
       ...PartialAlbumFields
       user {
         ...PartialUserFields
       }
     }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
 )
 
-export const appEventsQuery = graphql(
-  `query AppEvents( $limit: Int!, $offset: Int!, $where: AppEventsWhereInput) {
-    appEvents(limit: $limit, offset: $offset, where: $where) {
+const pageQuery = graphql(
+  `query PageQuery(
+    $isSensitive: Boolean!
+    $startAt: String!
+    $prompts: String!
+    $year: Int,
+    $month: Int,
+    $day: Int,
+  ) {
+    aiModels(offset: 0, limit: 124, where: {}) {
+      ...AiModelFields
+    }
+    appEvents(
+      limit: 1,
+      offset: 0,
+      where: {
+        startAt: $startAt,
+      }
+    ) {
       id
       description
       title
@@ -976,11 +965,16 @@ export const appEventsQuery = graphql(
       endAt
       tag
     }
-  }`,
-)
-
-export const dailyThemeQuery = graphql(
-  `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
+    whiteListTags(
+      where: {
+        isSensitive: $isSensitive
+      }
+    ) {
+      ...PartialTagFields
+    }
+    recommendedTagsFromPrompts(prompts: $prompts) {
+      ...PartialTagFields
+    }
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
@@ -989,63 +983,17 @@ export const dailyThemeQuery = graphql(
       month
       day
       worksCount,
-      works(offset: $offset, limit: $limit) {
+      works(offset: 0, limit: 1) {
         ...PartialWorkFields
       }
     }
   }`,
-  [partialWorkFieldsFragment],
-)
-
-export const aiModelsQuery = graphql(
-  `query AiModels($offset: Int!, $limit: Int!, $where: AiModelWhereInput) {
-    aiModels(offset: $offset, limit: $limit, where: $where) {
-      ...AiModelFields
-    }
-  }`,
-  [aiModelFieldsFragment],
-)
-
-export const recommendedTagsFromPromptsQuery = graphql(
-  `query RecommendedTagsFromPrompts($prompts: String!) {
-    recommendedTagsFromPrompts(prompts: $prompts) {
-      ...PartialTagFields
-    }
-  }`,
-  [partialTagFieldsFragment],
-)
-
-export const whiteListTagsQuery = graphql(
-  `query WhiteListTags($where: WhiteListTagsInput!) {
-    whiteListTags(where: $where) {
-      ...PartialTagFields
-    }
-  }`,
-  [partialTagFieldsFragment],
-)
-
-export const viewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
-    viewer {
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
-    }
-  }`,
-  [passFieldsFragment],
-)
-
-export const viewerTokenQuery = graphql(
-  `query ViewerToken {
-    viewer {
-      token
-    }
-  }`,
+  [
+    partialWorkFieldsFragment,
+    aiModelFieldsFragment,
+    partialAlbumFieldsFragment,
+    partialTagFieldsFragment,
+  ],
 )
 
 const createWorkMutation = graphql(
