@@ -70,7 +70,7 @@ export const NewImageForm = () => {
 
   const [state, dispatch] = useReducer(postFormReducer, initialState)
 
-  const { data, loading } = useQuery(pageQuery, {
+  const { data, loading, error } = useQuery(pageQuery, {
     variables: {
       isSensitive:
         state.ratingRestriction === "R18" || state.ratingRestriction === "R18G",
@@ -988,12 +988,7 @@ const pageQuery = graphql(
       }
     }
   }`,
-  [
-    partialWorkFieldsFragment,
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialTagFieldsFragment,
-  ],
+  [partialWorkFieldsFragment, aiModelFieldsFragment, partialTagFieldsFragment],
 )
 
 const createWorkMutation = graphql(
