@@ -1,10 +1,5 @@
 import type { Dispatch } from "react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/_components/ui/accordion"
+import {} from "@/_components/ui/accordion"
 import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
 import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
 import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
@@ -34,10 +29,9 @@ import type {
 import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
 import type { InferInput } from "valibot"
 import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
-import { ExpansionTransition } from "@/_components/expansion-transition"
-import { Button } from "@/_components/ui/button"
-import { Card, CardContent } from "@/_components/ui/card"
+import {} from "@/_components/ui/card"
 import { PostFormPermissionSetting } from "@/routes/($lang)._main.new.image/_components/post-form-permission-setting"
+import { PostFormItemEnglish } from "@/routes/($lang)._main.new.image/_components/post-form-item-english"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -158,33 +152,14 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
       />
-      <Card>
-        <CardContent className="space-y-4 p-4">
-          <ExpansionTransition
-            triggerChildren={
-              <Button variant={"secondary"} className="w-full">
-                {"英語バージョン"}
-              </Button>
-            }
-          >
-            <div className="space-y-4">
-              <PostFormItemTitle
-                label={"タイトル"}
-                onChange={(enTitle) =>
-                  props.dispatch({ type: "SET_EN_TITLE", payload: enTitle })
-                }
-              />
-              <PostFormItemCaption
-                label={"キャプション"}
-                setCaption={(enCaption) =>
-                  props.dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
-                }
-              />
-            </div>
-          </ExpansionTransition>
-        </CardContent>
-      </Card>
-
+      <PostFormItemEnglish
+        onChangeTitle={(title) => {
+          props.dispatch({ type: "SET_EN_TITLE", payload: title })
+        }}
+        onChangeCaption={(caption) => {
+          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+        }}
+      />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         setRating={(value) => {
@@ -231,22 +206,15 @@ export function PostImageFormInput(props: Props) {
         </div>
       )}
       {props.imageInformation && props.state.useGenerationParams && (
-        <Accordion type="single" collapsible>
-          <AccordionItem value="setting">
-            <AccordionTrigger>{"生成情報を確認する"}</AccordionTrigger>
-            <AccordionContent className="space-y-2">
-              <PostFormItemGenerationParams
-                pngInfo={props.imageInformation}
-                setPngInfo={(value) => {
-                  props.dispatch({
-                    type: "SET_IMAGE_INFORMATION",
-                    payload: value,
-                  })
-                }}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <PostFormItemGenerationParams
+          pngInfo={props.imageInformation}
+          setPngInfo={(value) => {
+            props.dispatch({
+              type: "SET_IMAGE_INFORMATION",
+              payload: value,
+            })
+          }}
+        />
       )}
       <PostFormItemDate
         date={props.state.reservationDate}
