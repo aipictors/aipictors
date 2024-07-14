@@ -2,7 +2,10 @@ import FullScreenContainer from "@/_components/full-screen-container"
 import PaintCanvas from "@/_components/paint-canvas"
 import { Button } from "@/_components/ui/button"
 import { cn } from "@/_lib/cn"
-import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
+import {
+  getExtractInfoFromBase64,
+  getExtractInfoFromPNG,
+} from "@/_utils/get-extract-info-from-png"
 import { config } from "@/config"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
@@ -175,7 +178,7 @@ export function PostImageFormUploader(props: Props) {
         setIsOpen={() => {
           props.dispatch({ type: "CLOSE_IMAGE_GENERATION_DIALOG" })
         }}
-        onSubmit={(selectedImage: string[], selectedIds: string[]) => {
+        onSubmit={async (selectedImage: string[], selectedIds: string[]) => {
           props.dispatch({
             type: "SUBMIT_IMAGE_GENERATION_DIALOG",
             payload: {
@@ -183,6 +186,28 @@ export function PostImageFormUploader(props: Props) {
               selectedImageGenerationIds: selectedIds,
             },
           })
+          if (selectedImage.length === 0) {
+            props.dispatch({
+              type: "IS_SELECTED_GENERATION_IMAGE",
+              payload: false,
+            })
+            return
+          }
+          props.dispatch({
+            type: "IS_SELECTED_GENERATION_IMAGE",
+            payload: true,
+          })
+
+          // TODO: 正しく生成画像からPNGInfoを取得する
+          const pngInfo = await getExtractInfoFromBase64(selectedImage[0])
+
+          if (pngInfo.src !== null) {
+            props.dispatch({
+              type: "SET_PNG_INFO",
+              payload: pngInfo,
+            })
+            return
+          }
         }}
       />
       {props.state.editTargetImageBase64 !== null && (

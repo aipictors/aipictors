@@ -198,7 +198,7 @@ export function PostImageFormInput(props: Props) {
           <Checkbox
             checked={props.state.useGenerationParams}
             id="set-generation-check"
-            onCheckedChange={() => {
+            onCheckedChange={(checked) => {
               props.dispatch({
                 type: "ENABLE_GENERATION_PARAMS_FEATURE",
                 payload: !props.state.useGenerationParams,

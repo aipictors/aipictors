@@ -18,6 +18,7 @@ const initialState: PostImageFormInputState = {
   usePromotionFeature: false,
   ratingRestriction: "G",
   accessType: "PUBLIC",
+  generationParamAccessType: "PUBLIC",
   imageStyle: "ILLUSTRATION",
   aiModelId: "1",
   reservationDate: null,

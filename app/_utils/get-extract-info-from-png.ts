@@ -39,6 +39,25 @@ export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
 }
 
 /**
+ * Base64からPNGInfoを解析する
+ * @param base64
+ */
+export const getExtractInfoFromBase64 = async (
+  base64: string,
+): Promise<PNGInfo> => {
+  const binary = atob(base64)
+  const length = binary.length
+  const buffer = new Uint8Array(length)
+  for (let i = 0; i < length; i++) {
+    buffer[i] = binary.charCodeAt(i)
+  }
+  const file = new File([buffer.buffer as BlobPart], "image.png", {
+    type: "image/png",
+  })
+  return await getExtractInfoFromPNG(file)
+}
+
+/**
  * PNGInfoを解析する
  * @param file
  * @param callback

@@ -21,6 +21,7 @@ export const vPostImageFormState = object({
   isOpenImageGenerationDialog: boolean(),
   isThumbnailLandscape: boolean(),
   items: array(vSortableItem),
+  isSelectedGenerationImage: boolean(),
   ogpBase64: nullable(string()),
   pngInfo: nullable(vImageInformation),
   progress: number(),

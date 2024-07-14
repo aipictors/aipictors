@@ -129,6 +129,12 @@ export const postImageFormReducer = (
         isOpenImageGenerationDialog: false,
       }
     }
+    case "IS_SELECTED_GENERATION_IMAGE": {
+      return {
+        ...state,
+        isSelectedGenerationImage: action.payload,
+      }
+    }
     case "SUBMIT_IMAGE_GENERATION_DIALOG": {
       const newItems: { id: number; content: string }[] =
         action.payload.selectedImageGenerationUrls.reduce(
@@ -150,7 +156,6 @@ export const postImageFormReducer = (
         items: [...state.items, ...newItems],
       }
     }
-
     case "MARK_AS_DONE":
       return {
         ...state,

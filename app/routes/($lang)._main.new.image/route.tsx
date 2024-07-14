@@ -31,6 +31,7 @@ export default function NewImage() {
     isDrawing: false,
     isHovered: false,
     isOpenImageGenerationDialog: false,
+    isSelectedGenerationImage: false,
     isThumbnailLandscape: false,
     items: [],
     ogpBase64: null,
@@ -47,6 +48,7 @@ export default function NewImage() {
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
     accessType: "PUBLIC",
+    generationParamAccessType: "PUBLIC",
     aiModelId: "1",
     albumId: null,
     caption: "",
@@ -245,9 +247,12 @@ export default function NewImage() {
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
             imageWidth: mainImageSize.width,
-            accessGenerationType: inputState.useGenerationParams
-              ? "PUBLIC"
-              : "PRIVATE",
+            accessGenerationType:
+              state.isSelectedGenerationImage && inputState.useGenerationParams
+                ? "PUBLIC_IN_OWN_PRODUCT"
+                : inputState.useGenerationParams
+                  ? "PUBLIC"
+                  : "PRIVATE",
           },
         },
       })

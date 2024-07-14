@@ -95,6 +95,10 @@ export const vPostImageFormAction = union([
     type: literal("CLOSE_IMAGE_GENERATION_DIALOG"),
   }),
   object({
+    type: literal("IS_SELECTED_GENERATION_IMAGE"),
+    payload: boolean(),
+  }),
+  object({
     type: literal("SUBMIT_IMAGE_GENERATION_DIALOG"),
     payload: object({
       selectedImageGenerationUrls: array(string()),
