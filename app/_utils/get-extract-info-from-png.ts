@@ -39,21 +39,28 @@ export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
 }
 
 /**
+ * Converts an image URL to a File object.
+ * @param imageUrl - The URL of the image.
+ * @param fileName - The desired name of the file.
+ * @returns A promise that resolves to the File object.
+ */
+async function urlToFile(imageUrl: string, fileName: string): Promise<File> {
+  // Fetch the image data
+  const response = await fetch(imageUrl)
+  const blob = await response.blob()
+
+  // Create a File object from the Blob
+  return new File([blob], fileName, { type: blob.type })
+}
+
+/**
  * Base64からPNGInfoを解析する
- * @param base64
+ * @param imageUrl
  */
 export const getExtractInfoFromBase64 = async (
-  base64: string,
+  imageUrl: string,
 ): Promise<PNGInfo> => {
-  const binary = atob(base64)
-  const length = binary.length
-  const buffer = new Uint8Array(length)
-  for (let i = 0; i < length; i++) {
-    buffer[i] = binary.charCodeAt(i)
-  }
-  const file = new File([buffer.buffer as BlobPart], "image.png", {
-    type: "image/png",
-  })
+  const file = await urlToFile(imageUrl, "image.png")
   return await getExtractInfoFromPNG(file)
 }
 

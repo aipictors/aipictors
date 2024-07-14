@@ -50,11 +50,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
         }
         return [...prevSelected, id]
       })
-      const baseOriginal64Image = await getBase64FromImageUrl(
-        imageUrl,
-        "image/png",
-      )
-      setLastSelectedOriginalImage(baseOriginal64Image)
+      setLastSelectedOriginalImage(imageUrl)
     } catch (error) {
       console.error("Error converting image to base64:", error)
     }
