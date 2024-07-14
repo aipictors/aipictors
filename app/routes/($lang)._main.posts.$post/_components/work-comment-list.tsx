@@ -12,7 +12,7 @@ import { toast } from "sonner"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
-import { AccordionTransition } from "@/_components/accordion-transition"
+import { ExpansionTransition } from "@/_components/expansion-transition"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { commentFieldsFragment } from "@/_graphql/fragments/comment-fields"
 
@@ -409,7 +409,7 @@ export const WorkCommentList = (props: Props) => {
           ))}
           {/* もっと見るで確認できる既にコメント済みのコメント一覧 */}
           {showCommentsAfterMore.length > 8 && (
-            <AccordionTransition
+            <ExpansionTransition
               triggerChildren={
                 <Button className="w-full" variant={"secondary"}>
                   もっと見る({showComments.length - 8})
@@ -536,7 +536,7 @@ export const WorkCommentList = (props: Props) => {
                     )}
                 </div>
               ))}
-            </AccordionTransition>
+            </ExpansionTransition>
           )}
         </div>
       </div>

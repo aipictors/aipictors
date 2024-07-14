@@ -7,7 +7,7 @@ type Props = {
   oneTimeExpand?: boolean // 一度切りの展開フラグ
 }
 
-export const AccordionTransition = (props: Props) => {
+export const ExpansionTransition = (props: Props) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [hasExpanded, setHasExpanded] = useState(false) // 追加: 展開済みフラグ
   const [maxHeight, setMaxHeight] = useState("0px")
