@@ -13,6 +13,10 @@ type Props = {
  * お題入力
  */
 export const PostFormItemTheme = (props: Props) => {
+  if (!props.title) {
+    return null
+  }
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

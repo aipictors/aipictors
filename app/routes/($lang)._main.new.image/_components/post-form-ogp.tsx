@@ -32,7 +32,7 @@ export const PostFormOgp = (props: Props) => {
         imageBase64={props.imageBase64}
         setResultImage={props.setOgpBase64}
       >
-        <div className="cursor m-auto block transform cursor-pointer bg-gray-800 transition-all duration-300 hover:bg-gray-700">
+        <div className="cursor m-auto block transform cursor-pointer bg-zinc-800 transition-all duration-300 hover:bg-zinc-700">
           <div className="m-auto flex items-center justify-center space-x-2 rounded-md">
             <div className="m-4">
               <img

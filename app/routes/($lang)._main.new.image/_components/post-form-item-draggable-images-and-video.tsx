@@ -325,7 +325,7 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
                     inputElement.click()
                   }
                 }}
-                className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-600 hover:opacity-80 dark:bg-gray-700"
+                className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-zinc-600 hover:opacity-80 dark:bg-zinc-700"
               >
                 <PlusIcon className="h-12 w-12" />
               </div>
