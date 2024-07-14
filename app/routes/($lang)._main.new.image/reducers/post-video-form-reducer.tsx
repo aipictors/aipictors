@@ -94,3 +94,12 @@ export type PostVideoFormAction =
   | {
       type: "CLOSE_IMAGE_GENERATION_DIALOG"
     }
+  | {
+      type: "CREATING_START"
+    }
+  | {
+      type: "CREATING_END"
+    }
+  | {
+      type: "COMPLETED"
+    }

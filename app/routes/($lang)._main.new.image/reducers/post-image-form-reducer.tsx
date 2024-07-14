@@ -147,6 +147,27 @@ export const postImageFormReducer = (
         indexList: action.payload,
       }
     }
+    case "CREATING_START": {
+      return {
+        ...state,
+        isCreatingWork: true,
+      }
+    }
+    case "CREATING_END": {
+      return {
+        ...state,
+        isCreatingWork: false,
+      }
+    }
+    case "COMPLETED": {
+      return {
+        ...state,
+        isCreatingWork: false,
+        isCreatedWork: true,
+        uploadedWorkId: action.payload.uploadedWorkId,
+        uploadedWorkUuid: action.payload.uploadedWorkUuid,
+      }
+    }
   }
 
   throw new Error("Invalid action type")

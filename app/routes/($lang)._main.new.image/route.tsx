@@ -134,6 +134,8 @@ export default function NewImage() {
     const uploadedImageUrls = []
 
     try {
+      dispatch({ type: "CREATING_START" })
+
       const smallThumbnail = state.isThumbnailLandscape
         ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
         : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
@@ -265,6 +267,8 @@ export default function NewImage() {
         }
       }
       dispatch({ type: "SET_PROGRESS", payload: 100 })
+      dispatch({ type: "COMPLETED" })
+
       toast("作品を投稿しました")
     } catch (error) {
       if (error instanceof Error) {
@@ -274,6 +278,8 @@ export default function NewImage() {
         return deleteUploadedImage(url)
       })
       await Promise.all(promises)
+
+      dispatch({ type: "CREATING_END" })
     }
 
     dispatch({ type: "SET_PROGRESS", payload: 0 })
