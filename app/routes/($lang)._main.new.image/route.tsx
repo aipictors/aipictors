@@ -50,13 +50,13 @@ export default function NewImage() {
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
     imageInformation: null,
     date: new Date(),
-    title: null,
-    enTitle: null,
-    caption: null,
-    enCaption: null,
+    title: "",
+    enTitle: "",
+    caption: "",
+    enCaption: "",
     themeId: null,
     albumId: null,
-    link: null,
+    link: "",
     tags: [],
     useTagFeature: false,
     useCommentFeature: false,
@@ -81,6 +81,8 @@ export default function NewImage() {
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
+
+  console.log(inputState)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -107,6 +109,8 @@ export default function NewImage() {
   }
 
   const onPost = async () => {
+    console.log(formResult)
+
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
