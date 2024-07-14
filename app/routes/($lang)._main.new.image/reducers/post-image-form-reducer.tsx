@@ -130,22 +130,27 @@ export const postImageFormReducer = (
       }
     }
     case "SUBMIT_IMAGE_GENERATION_DIALOG": {
+      const newItems: { id: number; content: string }[] =
+        action.payload.selectedImageGenerationUrls.reduce(
+          (acc: { id: number; content: string }[], url: string) => {
+            if (!state.items.some((item) => item.content === url)) {
+              acc.push({
+                id: Math.floor(Math.random() * 10000),
+                content: url,
+              })
+            }
+            return acc
+          },
+          [],
+        )
+
       return {
         ...state,
         isOpenImageGenerationDialog: false,
-        items: state.items.map((item) => {
-          if (
-            action.payload.selectedImageGenerationIds.includes(String(item.id))
-          ) {
-            return {
-              ...item,
-            }
-          }
-          return item
-        }),
-        selectedImageGenerationIds: action.payload.selectedImageGenerationIds,
+        items: [...state.items, ...newItems],
       }
     }
+
     case "MARK_AS_DONE":
       return {
         ...state,
