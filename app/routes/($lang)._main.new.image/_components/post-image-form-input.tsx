@@ -187,19 +187,25 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
         }}
       />
-      <PostFormItemTaste
-        imageStyle={props.state.imageStyle}
-        setImageStyle={(imageStyle) => {
-          props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-        }}
-      />
-      <PostFormItemModel
-        model={props.state.aiModelId}
-        models={aiModelOptions()}
-        setModel={(model) => {
-          props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
-        }}
-      />
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex-1">
+          <PostFormItemTaste
+            imageStyle={props.state.imageStyle}
+            setImageStyle={(imageStyle) => {
+              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <PostFormItemModel
+            model={props.state.aiModelId}
+            models={aiModelOptions()}
+            setModel={(model) => {
+              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
+            }}
+          />
+        </div>
+      </div>
       {hasImageInfo && (
         <div className="flex items-center">
           <Checkbox
@@ -279,18 +285,24 @@ export function PostImageFormInput(props: Props) {
         }}
       />
       {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
-      <PostFormCategoryEditable
-        isChecked={props.state.useTagFeature}
-        onChange={(value) => {
-          props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
-        }}
-      />
-      <PostFormCommentsEditable
-        isChecked={props.state.useCommentFeature}
-        onChange={(value) => {
-          props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
-        }}
-      />
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex-1">
+          <PostFormCategoryEditable
+            isChecked={props.state.useTagFeature}
+            onChange={(value) => {
+              props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <PostFormCommentsEditable
+            isChecked={props.state.useCommentFeature}
+            onChange={(value) => {
+              props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
+            }}
+          />
+        </div>
+      </div>
       {props.albums.length !== 0 && (
         <PostFormItemAlbum
           album={props.state.albumId}
