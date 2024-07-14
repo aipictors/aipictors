@@ -46,7 +46,9 @@ export function PostImageFormInput(props: Props) {
         props.state.ratingRestriction === "R18" ||
         props.state.ratingRestriction === "R18G",
       startAt: new Date().toISOString().split("T")[0],
-      prompts: props.imageInformation?.params.prompt ?? "girl",
+      prompts: !props.imageInformation?.params.prompt
+        ? "girl"
+        : props.imageInformation.params.prompt,
       year: props.state.date.getFullYear(),
       month: props.state.date.getMonth() + 1,
       day: props.state.date.getDate(),
@@ -106,6 +108,8 @@ export function PostImageFormInput(props: Props) {
     const tags = data.recommendedTagsFromPrompts.filter((tag) => {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
+    console.log(tags)
+
     return tags.map((tag) => {
       return {
         id: tag.id,

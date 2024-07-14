@@ -75,6 +75,7 @@ export const PostFormItemTags = (props: Props) => {
           setTags={() => {}}
           autocompleteOptions={formattedWhiteListTags}
           enableAutocomplete={true}
+          placeholderWhenFull="タグは10個までです"
         />
         <div className="space-y-2 pt-2">
           <p className="text-sm">

@@ -33,8 +33,8 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     <Command className="min-w-[400px] border">
       {children}
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Suggestions">
+        <CommandEmpty>{"検索結果なし"}</CommandEmpty>
+        <CommandGroup heading="">
           {autocompleteOptions.map((option) => (
             <CommandItem key={option.id}>
               {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
