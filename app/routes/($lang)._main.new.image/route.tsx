@@ -71,7 +71,7 @@ export default function NewImage() {
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
-    skip: authContext.isLoggedIn,
+    skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
       limit: 128,
@@ -81,8 +81,6 @@ export default function NewImage() {
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
-
-  console.log(inputState)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -109,16 +107,11 @@ export default function NewImage() {
   }
 
   const onPost = async () => {
-    console.log(formResult)
-
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
         return
       }
-    }
-
-    if (formResult.success === false) {
       return
     }
 
