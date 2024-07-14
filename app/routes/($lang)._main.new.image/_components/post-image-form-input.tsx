@@ -1,10 +1,5 @@
 import type { Dispatch } from "react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/_components/ui/accordion"
+import {} from "@/_components/ui/accordion"
 import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
 import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
 import { PostFormItemTaste } from "@/routes/($lang)._main.new.image/_components/post-form-item-taste"
@@ -20,8 +15,6 @@ import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/p
 import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
 import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
 import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
-import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
-import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
 import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
 import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
 import type { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
@@ -34,6 +27,9 @@ import type { InferInput } from "valibot"
 import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
 import type { PostImageFormInputAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import type { PostImageFormInputState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
+import {} from "@/_components/ui/card"
+import { PostFormPermissionSetting } from "@/routes/($lang)._main.new.image/_components/post-form-permission-setting"
+import { PostFormItemEnglish } from "@/routes/($lang)._main.new.image/_components/post-form-item-english"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -154,25 +150,14 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
       />
-      <Accordion type="single" collapsible>
-        <AccordionItem value="setting">
-          <AccordionTrigger>英語キャプションを入力</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            <PostFormItemTitle
-              label={"英語タイトル"}
-              onChange={(enTitle) =>
-                props.dispatch({ type: "SET_EN_TITLE", payload: enTitle })
-              }
-            />
-            <PostFormItemCaption
-              label={"英語キャプション"}
-              setCaption={(enCaption) =>
-                props.dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
-              }
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <PostFormItemEnglish
+        onChangeTitle={(title) => {
+          props.dispatch({ type: "SET_EN_TITLE", payload: title })
+        }}
+        onChangeCaption={(caption) => {
+          props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
+        }}
+      />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         setRating={(value) => {
@@ -225,22 +210,15 @@ export function PostImageFormInput(props: Props) {
         </div>
       )}
       {props.imageInformation && props.state.useGenerationParams && (
-        <Accordion type="single" collapsible>
-          <AccordionItem value="setting">
-            <AccordionTrigger>{"生成情報を確認する"}</AccordionTrigger>
-            <AccordionContent className="space-y-2">
-              <PostFormItemGenerationParams
-                pngInfo={props.imageInformation}
-                setPngInfo={(value) => {
-                  props.dispatch({
-                    type: "SET_IMAGE_INFORMATION",
-                    payload: value,
-                  })
-                }}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <PostFormItemGenerationParams
+          pngInfo={props.imageInformation}
+          setPngInfo={(value) => {
+            props.dispatch({
+              type: "SET_IMAGE_INFORMATION",
+              payload: value,
+            })
+          }}
+        />
       )}
       <PostFormItemDate
         date={props.state.reservationDate}
@@ -278,29 +256,24 @@ export function PostImageFormInput(props: Props) {
         whiteListTags={tagOptions()}
         tags={props.state.tags}
         recommendedTags={recommendedTagOptions()}
-        setTags={(tags) => {
-          props.dispatch({ type: "SET_TAGS", payload: tags })
+        onAddTag={(tag) => {
+          props.dispatch({ type: "ADD_TAG", payload: tag })
+        }}
+        onRemoveTag={(tag) => {
+          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
       {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
-      <div className="flex flex-col justify-between gap-4 md:flex-row">
-        <div className="flex-1">
-          <PostFormCategoryEditable
-            isChecked={props.state.useTagFeature}
-            onChange={(value) => {
-              props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
-            }}
-          />
-        </div>
-        <div className="flex-1">
-          <PostFormCommentsEditable
-            isChecked={props.state.useCommentFeature}
-            onChange={(value) => {
-              props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
-            }}
-          />
-        </div>
-      </div>
+      <PostFormPermissionSetting
+        isTagEditableChecked={props.state.useTagFeature}
+        onTagEditableChange={(value) => {
+          props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
+        }}
+        isCommentsEditableChecked={props.state.useCommentFeature}
+        onCommentsEditableChange={(value) => {
+          props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
+        }}
+      />
       {props.albums.length !== 0 && (
         <PostFormItemAlbum
           album={props.state.albumId}

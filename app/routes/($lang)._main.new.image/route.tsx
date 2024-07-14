@@ -308,7 +308,7 @@ export default function NewImage() {
         title="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
       />
-      <div className="w-full space-y-4">
+      <div className="w-full max-w-[1200px] space-y-4">
         <PostImageFormUploader state={state} dispatch={dispatch} />
         <PostImageFormInput
           imageInformation={state.pngInfo}

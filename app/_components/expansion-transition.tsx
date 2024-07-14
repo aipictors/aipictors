@@ -5,6 +5,7 @@ type Props = {
   triggerChildren: React.ReactNode
   children: React.ReactNode
   oneTimeExpand?: boolean // 一度切りの展開フラグ
+  onExpandChange?: (isOpen: boolean) => void
 }
 
 export const ExpansionTransition = (props: Props) => {
@@ -30,11 +31,14 @@ export const ExpansionTransition = (props: Props) => {
   const onToggleFilterButton = () => {
     if (!hasExpanded || !props.oneTimeExpand) {
       setIsFilterOpen(!isFilterOpen)
+      if (props.onExpandChange) {
+        props.onExpandChange(!isFilterOpen)
+      }
     }
   }
 
   return (
-    <div>
+    <>
       {!hasExpanded && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div onClick={onToggleFilterButton}>{props.triggerChildren}</div>
@@ -50,6 +54,6 @@ export const ExpansionTransition = (props: Props) => {
       >
         {props.children}
       </div>
-    </div>
+    </>
   )
 }

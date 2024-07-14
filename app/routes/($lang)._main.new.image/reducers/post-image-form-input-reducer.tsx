@@ -18,12 +18,6 @@ export const postImageFormInputReducer = (
         date: action.payload,
       }
     }
-    case "SET_TAGS": {
-      return {
-        ...state,
-        tags: action.payload,
-      }
-    }
     case "ADD_TAG": {
       return {
         ...state,
