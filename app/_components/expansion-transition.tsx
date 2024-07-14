@@ -34,7 +34,7 @@ export const ExpansionTransition = (props: Props) => {
   }
 
   return (
-    <div>
+    <>
       {!hasExpanded && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div onClick={onToggleFilterButton}>{props.triggerChildren}</div>
@@ -50,6 +50,6 @@ export const ExpansionTransition = (props: Props) => {
       >
         {props.children}
       </div>
-    </div>
+    </>
   )
 }

@@ -20,8 +20,6 @@ import { PostFormItemTags } from "@/routes/($lang)._main.new.image/_components/p
 import { PostFormItemEvent } from "@/routes/($lang)._main.new.image/_components/post-form-item-event"
 import { PostFormItemRelatedLink } from "@/routes/($lang)._main.new.image/_components/post-form-item-related-link"
 import { PostFormItemAlbum } from "@/routes/($lang)._main.new.image/_components/post-form-item-album"
-import { PostFormCommentsEditable } from "@/routes/($lang)._main.new.image/_components/post-form-comments-editable"
-import { PostFormCategoryEditable } from "@/routes/($lang)._main.new.image/_components/post-form-category-editable"
 import { PostFormItemAdvertising } from "@/routes/($lang)._main.new.image/_components/post-form-item-advertising"
 import { aiModelFieldsFragment } from "@/_graphql/fragments/ai-model-fields"
 import type { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
@@ -36,6 +34,10 @@ import type {
 import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
 import type { InferInput } from "valibot"
 import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
+import { ExpansionTransition } from "@/_components/expansion-transition"
+import { Button } from "@/_components/ui/button"
+import { Card, CardContent } from "@/_components/ui/card"
+import { PostFormPermissionSetting } from "@/routes/($lang)._main.new.image/_components/post-form-permission-setting"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -156,25 +158,33 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
       />
-      <Accordion type="single" collapsible>
-        <AccordionItem value="setting">
-          <AccordionTrigger>英語キャプションを入力</AccordionTrigger>
-          <AccordionContent className="space-y-4">
-            <PostFormItemTitle
-              label={"英語タイトル"}
-              onChange={(enTitle) =>
-                props.dispatch({ type: "SET_EN_TITLE", payload: enTitle })
-              }
-            />
-            <PostFormItemCaption
-              label={"英語キャプション"}
-              setCaption={(enCaption) =>
-                props.dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
-              }
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <Card>
+        <CardContent className="space-y-4 p-4">
+          <ExpansionTransition
+            triggerChildren={
+              <Button variant={"secondary"} className="w-full">
+                {"英語バージョン"}
+              </Button>
+            }
+          >
+            <div className="space-y-4">
+              <PostFormItemTitle
+                label={"タイトル"}
+                onChange={(enTitle) =>
+                  props.dispatch({ type: "SET_EN_TITLE", payload: enTitle })
+                }
+              />
+              <PostFormItemCaption
+                label={"キャプション"}
+                setCaption={(enCaption) =>
+                  props.dispatch({ type: "SET_EN_CAPTION", payload: enCaption })
+                }
+              />
+            </div>
+          </ExpansionTransition>
+        </CardContent>
+      </Card>
+
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         setRating={(value) => {
@@ -279,15 +289,13 @@ export function PostImageFormInput(props: Props) {
         }}
       />
       {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
-      <PostFormCategoryEditable
-        isChecked={props.state.useTagFeature}
-        onChange={(value) => {
+      <PostFormPermissionSetting
+        isTagEditableChecked={props.state.useTagFeature}
+        onTagEditableChange={(value) => {
           props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
         }}
-      />
-      <PostFormCommentsEditable
-        isChecked={props.state.useCommentFeature}
-        onChange={(value) => {
+        isCommentsEditableChecked={props.state.useCommentFeature}
+        onCommentsEditableChange={(value) => {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />
