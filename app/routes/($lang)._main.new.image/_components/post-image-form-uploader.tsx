@@ -175,10 +175,14 @@ export function PostImageFormUploader(props: Props) {
         setIsOpen={() => {
           props.dispatch({ type: "CLOSE_IMAGE_GENERATION_DIALOG" })
         }}
-        onSubmit={(imageIds) => {
-          for (const imageId of imageIds) {
-            props.dispatch({ type: "ADD_IMAGE", payload: { imageId } })
-          }
+        onSubmit={(selectedImage: string[], selectedIds: string[]) => {
+          props.dispatch({
+            type: "SUBMIT_IMAGE_GENERATION_DIALOG",
+            payload: {
+              selectedImageGenerationUrls: selectedImage,
+              selectedImageGenerationIds: selectedIds,
+            },
+          })
         }}
       />
       {props.state.editTargetImageBase64 !== null && (

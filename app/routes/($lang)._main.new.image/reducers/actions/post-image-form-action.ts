@@ -95,6 +95,13 @@ export const vPostImageFormAction = union([
     type: literal("CLOSE_IMAGE_GENERATION_DIALOG"),
   }),
   object({
+    type: literal("SUBMIT_IMAGE_GENERATION_DIALOG"),
+    payload: object({
+      selectedImageGenerationUrls: array(string()),
+      selectedImageGenerationIds: array(string()),
+    }),
+  }),
+  object({
     type: literal("MARK_AS_DONE"),
     payload: object({
       uploadedWorkId: string(),

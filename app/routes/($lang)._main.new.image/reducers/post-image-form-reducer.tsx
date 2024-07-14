@@ -123,14 +123,36 @@ export const postImageFormReducer = (
         indexList: action.payload,
       }
     }
-    case "MARK_AS_DONE": {
+    case "CLOSE_IMAGE_GENERATION_DIALOG": {
+      return {
+        ...state,
+        isOpenImageGenerationDialog: false,
+      }
+    }
+    case "SUBMIT_IMAGE_GENERATION_DIALOG": {
+      return {
+        ...state,
+        isOpenImageGenerationDialog: false,
+        items: state.items.map((item) => {
+          if (
+            action.payload.selectedImageGenerationIds.includes(String(item.id))
+          ) {
+            return {
+              ...item,
+            }
+          }
+          return item
+        }),
+        selectedImageGenerationIds: action.payload.selectedImageGenerationIds,
+      }
+    }
+    case "MARK_AS_DONE":
       return {
         ...state,
         progress: 100,
         uploadedWorkId: action.payload.uploadedWorkId,
         uploadedWorkUuid: action.payload.uploadedWorkUuid,
       }
-    }
   }
 
   throw new Error("Invalid action type")
