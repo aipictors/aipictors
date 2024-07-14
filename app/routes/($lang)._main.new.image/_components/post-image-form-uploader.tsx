@@ -7,7 +7,7 @@ import { config } from "@/config"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
-import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
+import { PostFormItemOgp } from "@/routes/($lang)._main.new.image/_components/post-form-item-ogp"
 import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { Dispatch } from "react"
@@ -144,7 +144,7 @@ export function PostImageFormUploader(props: Props) {
         )}
         {props.state.thumbnailBase64 !== null &&
           props.state.ogpBase64 !== null && (
-            <PostFormOgp
+            <PostFormItemOgp
               imageBase64={props.state.thumbnailBase64}
               setOgpBase64={(base64) => {
                 props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })

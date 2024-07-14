@@ -22,7 +22,7 @@ export const PostFormItemTags = (props: Props) => {
 
   return (
     <Card>
-      <CardContent className="p-4">
+      <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
         <TagInput
           placeholder="タグを追加してください"
@@ -35,15 +35,15 @@ export const PostFormItemTags = (props: Props) => {
           maxTags={10}
           maxLength={160}
           className="sm:min-w-[450px]"
-          onTagAdd={(tag) =>
+          onTagAdd={(tag) => {
             props.onAddTag({ id: getRandomId().toString(), text: tag })
-          }
-          onTagRemove={(tag) =>
+          }}
+          onTagRemove={(tag) => {
             props.onRemoveTag({
               id: props.tags.find((t) => t.text === tag)?.id ?? "",
               text: tag,
             })
-          }
+          }}
           setTags={() => {}}
           autocompleteOptions={whiteListTags.map((tag) => ({
             id: tag.id,
