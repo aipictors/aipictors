@@ -69,7 +69,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             if (typeof window !== "undefined") {
               if (props.createdAt > new Date().getTime()) {
                 window.location.href = "/dashboard/posts"
-              } else if (props.uuid !== "") {
+              } else if (props.uuid) {
                 window.location.href = `/posts/${props.uuid}`
               } else {
                 window.location.href = `/posts/${props.workId}`
@@ -97,7 +97,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               ) : (
                 <Link
                   to={
-                    props.uuid !== ""
+                    props.uuid
                       ? `/posts/${props.uuid}`
                       : `/posts/${props.workId}`
                   }

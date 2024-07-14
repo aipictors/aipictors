@@ -58,10 +58,6 @@ export type PostVideoFormAction =
       payload: boolean
     }
   | {
-      type: "SET_IS_CREATED_WORK"
-      payload: boolean
-    }
-  | {
       type: "SET_UPLOADED_WORK_ID"
       payload: string
     }

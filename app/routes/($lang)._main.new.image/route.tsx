@@ -261,7 +261,10 @@ export default function NewImage() {
         type: "MARK_AS_DONE",
         payload: {
           uploadedWorkId: work.data?.createWork.id,
-          uploadedWorkUuid: work.data?.createWork.uuid ?? null,
+          uploadedWorkUuid:
+            inputState.accessType !== "PRIVATE"
+              ? null
+              : work.data?.createWork.uuid ?? null,
         },
       })
 

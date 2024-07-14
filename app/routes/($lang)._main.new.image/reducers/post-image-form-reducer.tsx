@@ -56,12 +56,6 @@ export const postImageFormReducer = (
         isThumbnailLandscape: action.payload,
       }
     }
-    case "SET_IS_CREATED_WORK": {
-      return {
-        ...state,
-        isCreatedWork: action.payload,
-      }
-    }
     case "SET_UPLOADED_WORK_ID": {
       return {
         ...state,

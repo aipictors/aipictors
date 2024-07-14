@@ -62,10 +62,6 @@ export const vPostImageFormAction = union([
     payload: boolean(),
   }),
   object({
-    type: literal("SET_IS_CREATED_WORK"),
-    payload: boolean(),
-  }),
-  object({
     type: literal("SET_UPLOADED_WORK_ID"),
     payload: string(),
   }),
