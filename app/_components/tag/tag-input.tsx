@@ -1,13 +1,15 @@
+// https://github.com/JaleelB/emblor/blob/main/website/components/tag/tag-input.tsx
+
 import React from "react"
+import { Input } from "../ui/input"
+import { Button } from "../ui/button"
 import type { VariantProps } from "class-variance-authority"
-import type { tagVariants } from "@/_components/tag/tag"
-import { toast } from "sonner"
 import { CommandInput } from "@/_components/ui/command"
-import { TagList } from "@/_components/tag/tag-list"
-import { Autocomplete } from "@/_components/tag/autocomplete"
-import { TagPopover } from "@/_components/tag/tag-popover"
-import { Input } from "@/_components/ui/input"
-import { Button } from "@/_components/ui/button"
+import { toast } from "sonner"
+import { TagPopover } from "./tag-popover"
+import { TagList } from "./tag-list"
+import type { tagVariants } from "./tag"
+import { Autocomplete } from "./autocomplete"
 
 export enum Delimiter {
   Comma = ",",
@@ -121,7 +123,10 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
       (props.minTags !== undefined && props.minTags < 0)
     ) {
       console.warn("maxTags and minTags cannot be less than 0")
-      toast("maxTags and minTags cannot be less than 0")
+      toast("maxTags and minTags cannot be less than 0", {
+        description:
+          "Please set maxTags and minTags to a value greater than or equal to 0",
+      })
       return null
     }
 
@@ -145,7 +150,9 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           restrictTagsToAutocompleteOptions &&
           !autocompleteOptions?.some((option) => option.text === newTagText)
         ) {
-          toast("Invalid Tag")
+          toast("Invalid Tag", {
+            description: "Please select a tag from the autocomplete options.",
+          })
           return
         }
 
@@ -155,13 +162,17 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 
         if (minLength && newTagText.length < minLength) {
           console.warn("Tag is too short")
-          toast("Tag is too short")
+          toast("Tag is too short", {
+            description: "Please enter a tag with more characters",
+          })
           return
         }
 
         // Validate maxLength
         if (maxLength && newTagText.length > maxLength) {
-          toast("Tag is too long")
+          toast("Tag is too long", {
+            description: "Please enter a tag with less characters",
+          })
           console.warn("Tag is too long")
           return
         }
@@ -249,7 +260,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           />
         ) : null}
         {enableAutocomplete ? (
-          <div className="w-full">
+          <div className="w-full max-w-[450px]">
             <Autocomplete
               tags={tags}
               setTags={setTags}
