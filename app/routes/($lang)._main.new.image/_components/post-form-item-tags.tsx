@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/_components/ui/card"
 type Props = {
   tags: Tag[]
   whiteListTags: Tag[]
-  setTags(value: Tag[]): void
   recommendedTags: Tag[]
+  onAddTag(tag: Tag): void
+  onRemoveTag(tag: Tag): void
 }
 
 /**
@@ -14,6 +15,10 @@ type Props = {
  */
 export const PostFormItemTags = (props: Props) => {
   const whiteListTags = props.whiteListTags
+
+  const getRandomId = () => {
+    return Math.floor(Math.random() * 10000)
+  }
 
   return (
     <Card>
@@ -30,16 +35,16 @@ export const PostFormItemTags = (props: Props) => {
           maxTags={10}
           maxLength={160}
           className="sm:min-w-[450px]"
-          setTags={(newTags) => {
-            props.setTags(newTags as [Tag, ...Tag[]])
-            console.log(newTags)
-          }}
-          onFocus={() => {
-            // setIsFocus(true)
-          }}
-          onBlur={() => {
-            //setIsFocus(false)
-          }}
+          onTagAdd={(tag) =>
+            props.onAddTag({ id: getRandomId().toString(), text: tag })
+          }
+          onTagRemove={(tag) =>
+            props.onRemoveTag({
+              id: props.tags.find((t) => t.text === tag)?.id ?? "",
+              text: tag,
+            })
+          }
+          setTags={() => {}}
           autocompleteOptions={whiteListTags.map((tag) => ({
             id: tag.id,
             text: tag.text,
@@ -62,13 +67,10 @@ export const PostFormItemTags = (props: Props) => {
                   if (props.tags.length >= 10) {
                     return
                   }
-                  props.setTags([
-                    ...props.tags,
-                    {
-                      id: tag.id,
-                      text: tag.text,
-                    },
-                  ])
+                  props.onAddTag({
+                    id: tag.id,
+                    text: tag.text,
+                  })
                 }}
               >
                 {tag.text}

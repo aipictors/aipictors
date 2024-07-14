@@ -258,8 +258,11 @@ export function PostImageFormInput(props: Props) {
         whiteListTags={tagOptions()}
         tags={props.state.tags}
         recommendedTags={recommendedTagOptions()}
-        setTags={(tags) => {
-          props.dispatch({ type: "SET_TAGS", payload: tags })
+        onAddTag={(tag) => {
+          props.dispatch({ type: "ADD_TAG", payload: tag })
+        }}
+        onRemoveTag={(tag) => {
+          props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
       {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
