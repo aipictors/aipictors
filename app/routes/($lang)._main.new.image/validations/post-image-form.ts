@@ -20,7 +20,6 @@ export const vPostImageForm = object({
   ),
   enTitle: pipe(
     string(),
-    minLength(1, "タイトルを入力してください"),
     maxLength(120, "タイトルは120文字以内で入力してください"),
   ),
   enCaption: pipe(
