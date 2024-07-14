@@ -60,7 +60,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="WORKS_FROM_MODEL"
             >
-              作品例検索
+              作品検索
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -69,7 +69,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="COMMUNICATION"
             >
-              ご要望など
+              ご意見
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -78,7 +78,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="LINKS"
             >
-              アンケート、コミュニティ
+              アンケート
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -89,7 +89,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="OLD_LINK"
             >
-              旧版はこちら
+              旧版
             </TabsTrigger>
           </TabsList>
         </Tabs>
