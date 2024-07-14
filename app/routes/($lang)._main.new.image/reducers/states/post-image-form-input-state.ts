@@ -1,4 +1,7 @@
 import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
+import { vPostImageStyle } from "@/routes/($lang)._main.new.image/validations/post-image-style"
+import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
 import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
 import {
   object,
@@ -7,8 +10,6 @@ import {
   date,
   array,
   nullable,
-  literal,
-  union,
   type InferInput,
 } from "valibot"
 
@@ -31,24 +32,9 @@ export const vPostImageFormInputState = object({
   useCommentFeature: boolean(),
   usePromotionFeature: boolean(),
   useGenerationParams: boolean(),
-  ratingRestriction: union([
-    literal("G"),
-    literal("R15"),
-    literal("R18"),
-    literal("R18G"),
-  ]),
-  accessType: union([
-    literal("PUBLIC"),
-    literal("SILENT"),
-    literal("LIMITED"),
-    literal("PRIVATE"),
-    literal("DRAFT"),
-  ]),
-  imageStyle: union([
-    literal("ILLUSTRATION"),
-    literal("REAL"),
-    literal("SEMI_REAL"),
-  ]),
+  ratingRestriction: vPostRating,
+  accessType: vPostAccessType,
+  imageStyle: vPostImageStyle,
   aiModelId: nullable(string()),
   reservationDate: nullable(string()),
   reservationTime: nullable(string()),

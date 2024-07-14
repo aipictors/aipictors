@@ -1,119 +1,101 @@
-import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
-import type { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item"
-import type { InferInput } from "valibot"
+import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item"
+import {
+  array,
+  boolean,
+  literal,
+  nullable,
+  number,
+  object,
+  string,
+  union,
+  type InferInput,
+} from "valibot"
 
-export type PostImageFormAction =
-  | {
-      type: "SET_PNG_INFO"
-      payload: InferInput<typeof vImageInformation> | null
-    }
-  | {
-      type: "SET_IS_DRAWING"
-      payload: boolean
-    }
-  | {
-      type: "SET_EDITED_IMAGE"
-      payload: {
-        base64: string
-      }
-    }
-  | {
-      type: "SET_EDIT_TARGET_IMAGE_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "ADD_ITEM"
-      payload: InferInput<typeof vSortableItem>
-    }
-  | {
-      type: "REMOVE_ITEM"
-      payload: number
-    }
-  | {
-      type: "ADD_INDEX"
-      payload: number
-    }
-  | {
-      type: "REMOVE_INDEX"
-      payload: number
-    }
-  | {
-      type: "SET_THUMBNAIL_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "SET_OGP_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "SET_THUMBNAIL_POS_X"
-      payload: number
-    }
-  | {
-      type: "SET_THUMBNAIL_POS_Y"
-      payload: number
-    }
-  | {
-      type: "SET_IS_THUMBNAIL_LANDSCAPE"
-      payload: boolean
-    }
-  | {
-      type: "SET_IS_CREATED_WORK"
-      payload: boolean
-    }
-  | {
-      type: "SET_UPLOADED_WORK_ID"
-      payload: string
-    }
-  | {
-      type: "SET_UPLOADED_WORK_UUID"
-      payload: string | null
-    }
-  | {
-      type: "SET_PROGRESS"
-      payload: number
-    }
-  | {
-      type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"
-      payload: boolean
-    }
-  | {
-      type: "SET_ITEMS"
-      payload: InferInput<typeof vSortableItem>[]
-    }
-  | {
-      type: "SET_INDEX_LIST"
-      payload: number[]
-    }
-  | {
-      type: "ADD_IMAGE"
-      payload: {
-        imageId: string
-      }
-    }
-  | {
-      type: "CLOSE_IMAGE_GENERATION_DIALOG"
-    }
+export type PostImageFormAction = InferInput<typeof vPostImageFormAction>
 
-// export const vAction = union([
-//   object({
-//     type: string("SET_PNG_INFO"),
-//     payload: vImageInformation,
-//   }),
-//   object({
-//     type: string("SET_IS_DRAWING"),
-//     payload: boolean(),
-//   }),
-//   object({
-//     type: string("SET_EDITED_IMAGE"),
-//     payload: object({
-//       base64: string(),
-//     }),
-//   }),
-//   object({
-//     type: string("SET_EDIT_TARGET_IMAGE_BASE64"),
-//     payload: nullable(string()),
-//   }),
-// ])
-
-// export type PostImageFormAction = InferInput<typeof vAction>
+export const vPostImageFormAction = union([
+  object({
+    type: literal("SET_PNG_INFO"),
+    payload: nullable(vImageInformation),
+  }),
+  object({
+    type: literal("SET_IS_DRAWING"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_EDITED_IMAGE"),
+    payload: object({
+      base64: string(),
+    }),
+  }),
+  object({
+    type: literal("SET_EDIT_TARGET_IMAGE_BASE64"),
+    payload: nullable(string()),
+  }),
+  object({
+    type: literal("ADD_INDEX"),
+    payload: number(),
+  }),
+  object({
+    type: literal("REMOVE_INDEX"),
+    payload: number(),
+  }),
+  object({
+    type: literal("SET_THUMBNAIL_BASE64"),
+    payload: nullable(string()),
+  }),
+  object({
+    type: literal("SET_OGP_BASE64"),
+    payload: nullable(string()),
+  }),
+  object({
+    type: literal("SET_THUMBNAIL_POS_X"),
+    payload: number(),
+  }),
+  object({
+    type: literal("SET_THUMBNAIL_POS_Y"),
+    payload: number(),
+  }),
+  object({
+    type: literal("SET_IS_THUMBNAIL_LANDSCAPE"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_IS_CREATED_WORK"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_UPLOADED_WORK_ID"),
+    payload: string(),
+  }),
+  object({
+    type: literal("SET_UPLOADED_WORK_UUID"),
+    payload: nullable(string()),
+  }),
+  object({
+    type: literal("SET_PROGRESS"),
+    payload: number(),
+  }),
+  object({
+    type: literal("SET_IS_OPEN_IMAGE_GENERATION_DIALOG"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_ITEMS"),
+    payload: array(vSortableItem),
+  }),
+  object({
+    type: literal("SET_INDEX_LIST"),
+    payload: array(number()),
+  }),
+  object({
+    type: literal("ADD_IMAGE"),
+    payload: object({
+      imageId: string(),
+    }),
+  }),
+  object({
+    type: literal("CLOSE_IMAGE_GENERATION_DIALOG"),
+  }),
+])
