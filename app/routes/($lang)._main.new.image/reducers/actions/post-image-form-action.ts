@@ -74,7 +74,7 @@ export const vPostImageFormAction = union([
     payload: number(),
   }),
   object({
-    type: literal("SET_IS_OPEN_IMAGE_GENERATION_DIALOG"),
+    type: literal("OPEN_IMAGE_GENERATION_DIALOG"),
     payload: boolean(),
   }),
   object({

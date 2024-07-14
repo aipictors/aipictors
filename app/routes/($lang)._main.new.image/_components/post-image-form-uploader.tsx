@@ -162,7 +162,7 @@ export function PostImageFormUploader(props: Props) {
           className="block"
           onClick={() => {
             props.dispatch({
-              type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG",
+              type: "OPEN_IMAGE_GENERATION_DIALOG",
               payload: true,
             })
           }}
