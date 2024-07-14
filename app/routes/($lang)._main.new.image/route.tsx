@@ -14,7 +14,7 @@ import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components
 import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
-import { postFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -25,7 +25,7 @@ import { safeParse } from "valibot"
 export default function NewImage() {
   const authContext = useContext(AuthContext)
 
-  const [state, dispatch] = useReducer(postFormReducer, {
+  const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
     isCreatedWork: false,

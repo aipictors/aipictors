@@ -1,4 +1,5 @@
 import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
 import {
   object,
   string,
@@ -8,14 +9,14 @@ import {
   nullable,
   literal,
   union,
+  type InferInput,
 } from "valibot"
 
-const vTag = object({
-  id: string(),
-  text: string(),
-})
+export type PostImageFormInputState = InferInput<
+  typeof vPostImageFormInputState
+>
 
-export const vPostImageInputState = object({
+export const vPostImageFormInputState = object({
   imageInformation: nullable(vImageInformation),
   date: date(),
   title: nullable(string()),

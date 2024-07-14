@@ -8,10 +8,8 @@ import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/
 import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
 import { PostFormOgp } from "@/routes/($lang)._main.new.image/_components/post-form-ogp"
-import type {
-  PostImageFormAction,
-  PostImageFormState,
-} from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
+import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { Dispatch } from "react"
 import { toast } from "sonner"
 
@@ -56,7 +54,7 @@ export function PostImageFormUploader(props: Props) {
       if (pngInfo.src !== null) {
         props.dispatch({
           type: "SET_PNG_INFO",
-          payload: pngInfo as PostImageFormState["pngInfo"],
+          payload: pngInfo,
         })
         toast("PNG情報を取得しました")
         return
@@ -102,7 +100,7 @@ export function PostImageFormUploader(props: Props) {
               props.dispatch({ type: "SET_PNG_INFO", payload: value })
             }}
             onVideoChange={(value) => {
-              props.dispatch({ type: "SET_VIDEO_FILE", payload: value })
+              // props.dispatch({ type: "SET_VIDEO_FILE", payload: value })
             }}
             onMosaicButtonClick={(value) => {
               props.dispatch({

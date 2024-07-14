@@ -1,137 +1,7 @@
-import type { vPostImageFormState } from "@/routes/($lang)._main.new.image/validations/post-image-form-state"
-import {
-  object,
-  string,
-  boolean,
-  number,
-  nullable,
-  type InferInput,
-  optional,
-} from "valibot"
+import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
+import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 
-/**
- * ドラッグ可能なアイテムの型を定義
- */
-export const vSortableItem = object({
-  id: number(),
-  /**
-   * 画像のURLなど
-   */
-  content: nullable(string()),
-  /**
-   * コンテンツが編集されたかどうか
-   */
-  isContentEdited: optional(boolean()),
-})
-
-export type PostImageFormState = InferInput<typeof vPostImageFormState>
-
-export type PostImageFormAction =
-  | {
-      type: "SET_PNG_INFO"
-      payload: PostImageFormState["pngInfo"]
-    }
-  | {
-      type: "SET_IS_DRAWING"
-      payload: boolean
-    }
-  | {
-      type: "SET_IS_HOVERED"
-      payload: boolean
-    }
-  | {
-      type: "SET_EDITED_IMAGE"
-      payload: {
-        base64: string
-      }
-    }
-  | {
-      type: "SET_EDIT_TARGET_IMAGE_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "ADD_ITEM"
-      payload: InferInput<typeof vSortableItem>
-    }
-  | {
-      type: "REMOVE_ITEM"
-      payload: number
-    }
-  | {
-      type: "ADD_INDEX"
-      payload: number
-    }
-  | {
-      type: "REMOVE_INDEX"
-      payload: number
-    }
-  | {
-      type: "SET_VIDEO_FILE"
-      payload: PostImageFormState["videoFile"]
-    }
-  | {
-      type: "SET_THUMBNAIL_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "SET_OGP_BASE64"
-      payload: string | null
-    }
-  | {
-      type: "SET_THUMBNAIL_POS_X"
-      payload: number
-    }
-  | {
-      type: "SET_THUMBNAIL_POS_Y"
-      payload: number
-    }
-  | {
-      type: "SET_IS_THUMBNAIL_LANDSCAPE"
-      payload: boolean
-    }
-  | {
-      type: "SET_IS_CREATED_WORK"
-      payload: boolean
-    }
-  | {
-      type: "SET_UPLOADED_WORK_ID"
-      payload: string
-    }
-  | {
-      type: "SET_UPLOADED_WORK_UUID"
-      payload: string | null
-    }
-  | {
-      type: "SET_PROGRESS"
-      payload: number
-    }
-  | {
-      type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"
-      payload: boolean
-    }
-  | {
-      type: "SET_ITEMS"
-      payload: InferInput<typeof vSortableItem>[]
-    }
-  | {
-      type: "SET_INDEX_LIST"
-      payload: number[]
-    }
-  | {
-      type: "SET_SELECTED_IMAGE_GENERATION_IDS"
-      payload: string[]
-    }
-  | {
-      type: "ADD_IMAGE"
-      payload: {
-        imageId: string
-      }
-    }
-  | {
-      type: "CLOSE_IMAGE_GENERATION_DIALOG"
-    }
-
-export const postFormReducer = (
+export const postImageFormReducer = (
   state: PostImageFormState,
   action: PostImageFormAction,
 ): PostImageFormState => {
@@ -151,7 +21,9 @@ export const postFormReducer = (
     case "REMOVE_ITEM": {
       return {
         ...state,
-        items: state.items.filter((item) => item.id !== action.payload),
+        items: state.items.filter((item) => {
+          return item.id !== action.payload
+        }),
       }
     }
     case "ADD_INDEX": {
@@ -163,13 +35,9 @@ export const postFormReducer = (
     case "REMOVE_INDEX": {
       return {
         ...state,
-        indexList: state.indexList.filter((index) => index !== action.payload),
-      }
-    }
-    case "SET_VIDEO_FILE": {
-      return {
-        ...state,
-        videoFile: action.payload,
+        indexList: state.indexList.filter((index) => {
+          return index !== action.payload
+        }),
       }
     }
     case "SET_THUMBNAIL_BASE64": {
@@ -295,5 +163,5 @@ export const postFormReducer = (
     }
   }
 
-  throw new Error(`Invalid action type: ${action.type}`)
+  throw new Error("Invalid action type")
 }

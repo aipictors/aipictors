@@ -1,7 +1,5 @@
-import {
-  postImageFormInputReducer,
-  type PostImageFormInputState,
-} from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import type { PostImageFormInputState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import { test, expect, describe } from "bun:test"
 
 const initialState: PostImageFormInputState = {

@@ -29,13 +29,11 @@ import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-field
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import type { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
-import type {
-  PostImageFormInputAction,
-  PostImageFormInputState,
-} from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
 import type { InferInput } from "valibot"
 import { PostFormItemGenerationParams } from "@/routes/($lang)._main.new.image/_components/post-form-item-generation-params"
+import type { PostImageFormInputAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
+import type { PostImageFormInputState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null

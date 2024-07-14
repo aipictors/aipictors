@@ -1,47 +1,20 @@
-import { vImageParameters } from "@/routes/($lang)._main.new.image/validations/image-parameters"
+import { vFile } from "@/routes/($lang)._main.new.image/validations/file"
+import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item"
 import {
   array,
   boolean,
+  type InferInput,
   nullable,
   number,
   object,
-  optional,
   string,
 } from "valibot"
 
-/**
- * Fileオブジェクト
- */
-const vFile = object({
-  name: nullable(string()),
-  lastModified: number(),
-  size: number(),
-  type: nullable(string()),
-  webkitRelativePath: nullable(string()),
-})
-
-/**
- * ドラッグ可能なアイテムの型を定義
- */
-const vSortableItem = object({
-  id: number(),
-  /**
-   * 画像のURLなど
-   */
-  content: nullable(string()),
-  /**
-   * コンテンツが編集されたかどうか
-   */
-  isContentEdited: optional(boolean()),
-})
+export type PostImageFormState = InferInput<typeof vPostImageFormState>
 
 export const vPostImageFormState = object({
-  pngInfo: nullable(
-    object({
-      params: vImageParameters,
-      src: nullable(string()),
-    }),
-  ),
+  pngInfo: nullable(vImageInformation),
   isDrawing: boolean(),
   isHovered: boolean(),
   editTargetImageBase64: nullable(string()),
