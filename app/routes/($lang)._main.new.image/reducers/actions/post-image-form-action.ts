@@ -99,12 +99,10 @@ export const vPostImageFormAction = union([
     type: literal("CLOSE_IMAGE_GENERATION_DIALOG"),
   }),
   object({
-    type: literal("CREATING_START"),
-  }),
-  object({
-    type: literal("CREATING_END"),
-  }),
-  object({
-    type: literal("COMPLETED"),
+    type: literal("MARK_AS_DONE"),
+    payload: object({
+      uploadedWorkId: string(),
+      uploadedWorkUuid: nullable(string()),
+    }),
   }),
 ])

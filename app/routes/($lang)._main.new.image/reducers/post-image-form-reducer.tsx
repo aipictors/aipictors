@@ -147,23 +147,10 @@ export const postImageFormReducer = (
         indexList: action.payload,
       }
     }
-    case "CREATING_START": {
+    case "MARK_AS_DONE": {
       return {
         ...state,
-        isCreatingWork: true,
-      }
-    }
-    case "CREATING_END": {
-      return {
-        ...state,
-        isCreatingWork: false,
-      }
-    }
-    case "COMPLETED": {
-      return {
-        ...state,
-        isCreatingWork: false,
-        isCreatedWork: true,
+        progress: 100,
         uploadedWorkId: action.payload.uploadedWorkId,
         uploadedWorkUuid: action.payload.uploadedWorkUuid,
       }

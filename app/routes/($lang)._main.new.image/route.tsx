@@ -28,8 +28,6 @@ export default function NewImage() {
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
-    isCreatedWork: false,
-    isCreatingWork: false,
     isDrawing: false,
     isHovered: false,
     isOpenImageGenerationDialog: false,
@@ -134,7 +132,7 @@ export default function NewImage() {
     const uploadedImageUrls = []
 
     try {
-      dispatch({ type: "CREATING_START" })
+      dispatch({ type: "SET_PROGRESS", payload: 10 })
 
       const smallThumbnail = state.isThumbnailLandscape
         ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
@@ -254,20 +252,18 @@ export default function NewImage() {
         },
       })
 
-      if (work.data?.createWork) {
-        dispatch({
-          type: "SET_UPLOADED_WORK_ID",
-          payload: work.data?.createWork.id,
-        })
-        if (work.data?.createWork.accessType === "LIMITED") {
-          dispatch({
-            type: "SET_UPLOADED_WORK_UUID",
-            payload: work.data?.createWork.uuid ?? null,
-          })
-        }
+      if (work.data?.createWork === undefined) {
+        toast("作品の投稿に失敗しました")
+        return
       }
-      dispatch({ type: "SET_PROGRESS", payload: 100 })
-      dispatch({ type: "COMPLETED" })
+
+      dispatch({
+        type: "MARK_AS_DONE",
+        payload: {
+          uploadedWorkId: work.data?.createWork.id,
+          uploadedWorkUuid: work.data?.createWork.uuid ?? null,
+        },
+      })
 
       toast("作品を投稿しました")
     } catch (error) {
@@ -278,11 +274,8 @@ export default function NewImage() {
         return deleteUploadedImage(url)
       })
       await Promise.all(promises)
-
-      dispatch({ type: "CREATING_END" })
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
     }
-
-    dispatch({ type: "SET_PROGRESS", payload: 0 })
   }
 
   const createdAt = new Date(
@@ -325,7 +318,7 @@ export default function NewImage() {
         </Button>
       </div>
       <SuccessCreatedWorkDialog
-        isOpen={state.isCreatedWork}
+        isOpen={state.progress === 100}
         title={inputState.title}
         imageBase64={state.thumbnailBase64}
         workId={state.uploadedWorkId}
@@ -335,7 +328,7 @@ export default function NewImage() {
       />
       <CreatingWorkDialog
         progress={state.progress}
-        isOpen={state.isCreatingWork}
+        isOpen={state.progress !== 0 && state.progress !== 100}
       />
     </div>
   )
