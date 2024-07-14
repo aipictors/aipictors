@@ -178,7 +178,11 @@ export function PostImageFormUploader(props: Props) {
         setIsOpen={() => {
           props.dispatch({ type: "CLOSE_IMAGE_GENERATION_DIALOG" })
         }}
-        onSubmit={async (selectedImage: string[], selectedIds: string[]) => {
+        onSubmit={async (
+          selectedImage: string[],
+          selectedIds: string[],
+          lastSelectedOriginalImage: string,
+        ) => {
           props.dispatch({
             type: "SUBMIT_IMAGE_GENERATION_DIALOG",
             payload: {
@@ -199,8 +203,9 @@ export function PostImageFormUploader(props: Props) {
           })
 
           // TODO: 正しく生成画像からPNGInfoを取得する
-          const pngInfo = await getExtractInfoFromBase64(selectedImage[0])
-
+          const pngInfo = await getExtractInfoFromBase64(
+            lastSelectedOriginalImage,
+          )
           if (pngInfo.src !== null) {
             props.dispatch({
               type: "SET_PNG_INFO",

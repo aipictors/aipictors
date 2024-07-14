@@ -9,7 +9,11 @@ import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-
 import { graphql } from "gql.tada"
 
 type Props = {
-  onSubmit: (selectedImage: string[], selectedIds: string[]) => void
+  onSubmit: (
+    selectedImage: string[],
+    selectedIds: string[],
+    lastSelectedOriginalImage: string,
+  ) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
@@ -28,6 +32,8 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
 
   const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [lastSelectedOriginalImage, setLastSelectedOriginalImage] =
+    useState<string>("")
 
   const handleImageClick = async (imageUrl: string, id: string) => {
     try {
@@ -44,6 +50,11 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
         }
         return [...prevSelected, id]
       })
+      const baseOriginal64Image = await getBase64FromImageUrl(
+        imageUrl,
+        "image/png",
+      )
+      setLastSelectedOriginalImage(baseOriginal64Image)
     } catch (error) {
       console.error("Error converting image to base64:", error)
     }
@@ -51,7 +62,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
 
   const handleSubmit = () => {
     console.log(selectedImages)
-    props.onSubmit(selectedImages, selectedIds)
+    props.onSubmit(selectedImages, selectedIds, lastSelectedOriginalImage)
     props.setIsOpen(false)
   }
 
