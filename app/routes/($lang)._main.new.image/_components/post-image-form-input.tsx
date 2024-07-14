@@ -172,19 +172,25 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
         }}
       />
-      <PostFormItemTaste
-        imageStyle={props.state.imageStyle}
-        setImageStyle={(imageStyle) => {
-          props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
-        }}
-      />
-      <PostFormItemModel
-        model={props.state.aiModelId}
-        models={aiModelOptions()}
-        setModel={(model) => {
-          props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
-        }}
-      />
+      <div className="flex flex-col justify-between gap-4 md:flex-row">
+        <div className="flex-1">
+          <PostFormItemTaste
+            imageStyle={props.state.imageStyle}
+            setImageStyle={(imageStyle) => {
+              props.dispatch({ type: "SET_IMAGE_STYLE", payload: imageStyle })
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <PostFormItemModel
+            model={props.state.aiModelId}
+            models={aiModelOptions()}
+            setModel={(model) => {
+              props.dispatch({ type: "SET_AI_MODEL_ID", payload: model })
+            }}
+          />
+        </div>
+      </div>
       {hasImageInfo && (
         <div className="flex items-center">
           <Checkbox
