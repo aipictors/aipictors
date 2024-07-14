@@ -5,13 +5,13 @@ import { cn } from "@/_lib/cn"
 import { getExtractInfoFromPNG } from "@/_utils/get-extract-info-from-png"
 import { config } from "@/config"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
-import { PostFormItemDraggableImagesAndVideo } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images-and-video"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
 import { PostFormItemOgp } from "@/routes/($lang)._main.new.image/_components/post-form-item-ogp"
 import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { Dispatch } from "react"
 import { toast } from "sonner"
+import { PostFormItemDraggableImages } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -82,10 +82,9 @@ export function PostImageFormUploader(props: Props) {
               </div>
             </div>
           )}
-          <PostFormItemDraggableImagesAndVideo
+          <PostFormItemDraggableImages
             indexList={props.state.indexList}
             items={props.state.items ?? []}
-            videoFile={props.state.videoFile as File}
             setItems={(items) => {
               props.dispatch({ type: "SET_ITEMS", payload: items })
             }}
@@ -98,9 +97,6 @@ export function PostImageFormUploader(props: Props) {
             }}
             onChangePngInfo={(value) => {
               props.dispatch({ type: "SET_PNG_INFO", payload: value })
-            }}
-            onVideoChange={(value) => {
-              // props.dispatch({ type: "SET_VIDEO_FILE", payload: value })
             }}
             onMosaicButtonClick={(value) => {
               props.dispatch({

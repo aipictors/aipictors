@@ -6,7 +6,6 @@ import {
   getExtractInfoFromPNG,
   type PNGInfo,
 } from "@/_utils/get-extract-info-from-png"
-import { VideoItem } from "@/routes/($lang)._main.new.image/_components/video-item"
 import {} from "@dnd-kit/core"
 import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -16,7 +15,6 @@ import { toast } from "sonner"
 type Props = {
   indexList: number[]
   items: TSortableItem[]
-  videoFile: File | null
   isOnlyMove?: boolean
   maxItemsCount?: number
   setItems(items: TSortableItem[]): void
@@ -24,7 +22,6 @@ type Props = {
   setThumbnailBase64(thumbnailBase64: string | null): void
   setOgpBase64?(ogpBase64: string | null): void
   setIsThumbnailLandscape?(isThumbnailLandscape: boolean): void
-  onVideoChange(videoFile: File | null): void
   onChangePngInfo?(pngInfo: PNGInfo): void
   onMosaicButtonClick?(content: string): void
   onChangeItems(items: TSortableItem[]): void
@@ -36,7 +33,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
+export const PostFormItemDraggableImages = (props: Props) => {
   // 先頭の画像
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 
@@ -124,7 +121,6 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
       "image/gif": [".gif"],
       "image/webp": [".webp"],
       "image/bmp": [".bmp"],
-      "video/mp4": [".mp4", ".MP4", ".Mp4"],
     },
     noClick: true,
     onDrop: (acceptedFiles) => {
@@ -139,86 +135,43 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
 
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
-        // 動画が選択された場合は画像一覧をリセットして、動画をセットする
-        if (file.type === "video/mp4") {
-          // サイズと再生時間のチェック
-          if (file.size > 32 * 1024 * 1024) {
-            toast("動画のサイズは32MB以下にしてください")
-            return
-          }
-          const video = document.createElement("video")
-
-          video.src = URL.createObjectURL(file)
-          video.onloadedmetadata = () => {
-            if (video.duration > 12) {
-              toast("動画は12秒以下にしてください")
-              return
-            }
-
-            // 動画をセット
-            props.onVideoChange(file)
-
-            // アイテムリストに動画のみをセット
-            props.setItems([])
-            props.onChangeItems([])
-
-            // 動画のサムネイルを生成するためのCanvasを作成
-            const canvas = document.createElement("canvas")
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            const ctx = canvas.getContext("2d")
-
-            // タイムラインで指定できるライブラリを使ってサムネイルを取得
-            const time = video.duration / 2
-            video.currentTime = time
-            video.onseeked = () => {
-              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
-
-              updateThumbnail(thumbnailUrl)
-            }
-          }
-        } else {
-          if (
-            props.maxItemsCount &&
-            props.maxItemsCount < props.items.length + 1
-          ) {
-            toast(`最大${props.maxItemsCount}までです`)
-            return
-          }
-
-          props.onVideoChange(null)
-
-          if (props.items.length === 0 && file.type === "image/png") {
-            const pngInfo = await getExtractInfoFromPNG(file)
-            if (props.onChangePngInfo) {
-              props.onChangePngInfo(pngInfo)
-            }
-          }
-
-          const reader = new FileReader()
-          reader.onload = (event) => {
-            if (event.target) {
-              const img = new Image()
-              img.onload = () => {
-                const canvas = document.createElement("canvas")
-                canvas.width = img.width
-                canvas.height = img.height
-                const ctx = canvas.getContext("2d")
-                ctx?.drawImage(img, 0, 0)
-                const webpDataURL = canvas.toDataURL("image/webp")
-                props.items.push({
-                  id: props.items.length,
-                  content: webpDataURL,
-                })
-                props.onChangeItems([...props.items])
-                updateThumbnail()
-              }
-              img.src = event.target.result as string
-            }
-          }
-          reader.readAsDataURL(file)
+        if (
+          props.maxItemsCount &&
+          props.maxItemsCount < props.items.length + 1
+        ) {
+          toast(`最大${props.maxItemsCount}までです`)
+          return
         }
+
+        if (props.items.length === 0 && file.type === "image/png") {
+          const pngInfo = await getExtractInfoFromPNG(file)
+          if (props.onChangePngInfo) {
+            props.onChangePngInfo(pngInfo)
+          }
+        }
+
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          if (event.target) {
+            const img = new Image()
+            img.onload = () => {
+              const canvas = document.createElement("canvas")
+              canvas.width = img.width
+              canvas.height = img.height
+              const ctx = canvas.getContext("2d")
+              ctx?.drawImage(img, 0, 0)
+              const webpDataURL = canvas.toDataURL("image/webp")
+              props.items.push({
+                id: props.items.length,
+                content: webpDataURL,
+              })
+              props.onChangeItems([...props.items])
+              updateThumbnail()
+            }
+            img.src = event.target.result as string
+          }
+        }
+        reader.readAsDataURL(file)
       })
       // ここで input の id が image_inputの要素に file をセットする
       const inputElement = document.getElementById(
@@ -278,21 +231,6 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
             </div>
           </>
         )}
-        {props.videoFile && (
-          <VideoItem
-            videoFile={props.videoFile}
-            onDelete={() => {
-              if (!props.isOnlyMove) {
-                props.onVideoChange(null)
-                props.onChangeItems([])
-                if (props.onChangeIndexList) {
-                  props.onChangeIndexList([])
-                }
-              }
-            }}
-          />
-        )}
-
         <SortableItems
           items={props.items}
           isDeletable={!props.isOnlyMove}
@@ -334,12 +272,8 @@ export const PostFormItemDraggableImagesAndVideo = (props: Props) => {
         />
         {!props.items.length && (
           <div className="m-4 flex flex-col text-white">
-            <p className="text-center text-sm">
-              {"JPEG、PNG、GIF、WEBP、BMP、MP4"}
-            </p>
-            <p className="text-center text-sm">
-              {"1枚32MB以内、最大200枚、動画は32MB、12秒まで"}
-            </p>
+            <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>
+            <p className="text-center text-sm">{"1枚32MB以内、最大200枚"}</p>
           </div>
         )}
       </div>
