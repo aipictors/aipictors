@@ -56,31 +56,13 @@ export const postImageFormReducer = (
         isThumbnailLandscape: action.payload,
       }
     }
-    case "SET_IS_CREATED_WORK": {
-      return {
-        ...state,
-        isCreatedWork: action.payload,
-      }
-    }
-    case "SET_UPLOADED_WORK_ID": {
-      return {
-        ...state,
-        uploadedWorkId: action.payload,
-      }
-    }
-    case "SET_UPLOADED_WORK_UUID": {
-      return {
-        ...state,
-        uploadedWorkUuid: action.payload,
-      }
-    }
     case "SET_PROGRESS": {
       return {
         ...state,
         progress: action.payload,
       }
     }
-    case "SET_IS_OPEN_IMAGE_GENERATION_DIALOG": {
+    case "OPEN_IMAGE_GENERATION_DIALOG": {
       return {
         ...state,
         isOpenImageGenerationDialog: action.payload,
@@ -133,12 +115,6 @@ export const postImageFormReducer = (
             content: action.payload.imageId,
           },
         ],
-      }
-    }
-    case "CLOSE_IMAGE_GENERATION_DIALOG": {
-      return {
-        ...state,
-        isOpenImageGenerationDialog: false,
       }
     }
     case "SET_INDEX_LIST": {

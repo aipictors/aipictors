@@ -62,23 +62,11 @@ export const vPostImageFormAction = union([
     payload: boolean(),
   }),
   object({
-    type: literal("SET_IS_CREATED_WORK"),
-    payload: boolean(),
-  }),
-  object({
-    type: literal("SET_UPLOADED_WORK_ID"),
-    payload: string(),
-  }),
-  object({
-    type: literal("SET_UPLOADED_WORK_UUID"),
-    payload: nullable(string()),
-  }),
-  object({
     type: literal("SET_PROGRESS"),
     payload: number(),
   }),
   object({
-    type: literal("SET_IS_OPEN_IMAGE_GENERATION_DIALOG"),
+    type: literal("OPEN_IMAGE_GENERATION_DIALOG"),
     payload: boolean(),
   }),
   object({

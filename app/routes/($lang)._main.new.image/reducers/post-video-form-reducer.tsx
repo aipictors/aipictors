@@ -12,12 +12,6 @@ export type PostVideoFormAction =
       payload: boolean
     }
   | {
-      type: "SET_EDITED_IMAGE"
-      payload: {
-        base64: string
-      }
-    }
-  | {
       type: "SET_EDIT_TARGET_IMAGE_BASE64"
       payload: string | null
     }
@@ -74,7 +68,7 @@ export type PostVideoFormAction =
       payload: number
     }
   | {
-      type: "SET_IS_OPEN_IMAGE_GENERATION_DIALOG"
+      type: "OPEN_IMAGE_GENERATION_DIALOG"
       payload: boolean
     }
   | {
