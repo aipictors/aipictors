@@ -1,6 +1,5 @@
 import { ParamsError } from "@/_errors/params-error"
 import { createClient } from "@/_lib/client"
-import { toRatingText } from "@/_utils/work/to-rating-text"
 import { workArticleFragment } from "@/routes/($lang)._main.posts.$post/_components/work-article"
 import { commentFragment } from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
 import { WorkContainer } from "@/routes/($lang)._main.posts.$post/_components/work-container"
@@ -41,8 +40,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   // 作品と同じ年齢種別で新着順の作品一覧を取得
   const rating = workResp.data.work.rating
-
-  const ratingText = rating ? toRatingText(rating) : "G"
 
   return json({
     work: workResp.data.work,

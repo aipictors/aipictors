@@ -81,15 +81,6 @@ export const GenerationWorkListModelView = () => {
 
   return (
     <GenerationViewCard>
-      {/* <Button
-        id="generation-works-from-model-view"
-        className="mx-4 my-2"
-        variant={"secondary"}
-        onClick={onCancel}
-      >
-        {"閉じる"}
-        <span className="hidden md:inline-block">{"（Escape）"}</span>
-      </Button> */}
       <GenerationWorkListActions
         sortType={sortType}
         showHistoryExpandButton={true}

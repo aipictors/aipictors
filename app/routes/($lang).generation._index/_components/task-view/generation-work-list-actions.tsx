@@ -9,6 +9,7 @@ import { GenerationWorkActionDropdownMenu } from "@/routes/($lang).generation._i
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
+import { useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
@@ -35,6 +36,8 @@ export const GenerationWorkListActions = (props: Props) => {
 
   const { send } = GenerationConfigContext.useActorRef()
 
+  const [previewWord, setPreviewWord] = useState("")
+
   const openFullTask = () => {
     send({ type: "OPEN_FULL_WORK_LIST" })
   }
@@ -57,9 +60,17 @@ export const GenerationWorkListActions = (props: Props) => {
             placeholder="検索ワード"
             className="flex items-center gap-x-4 px-4 pb-2 md:px-4 xl:px-4"
             onChange={(event) => {
-              props.onChangeWord(event.target.value)
+              setPreviewWord(event.target.value)
             }}
           />
+          <Button
+            onClick={() => {
+              props.onChangeWord(previewWord)
+            }}
+            variant={"secondary"}
+          >
+            検索
+          </Button>
           {isDesktop && state !== "WORK_LIST_FULL" && (
             <GenerationTaskPreviewModeButton
               onTogglePreviewMode={props.onTogglePreviewMode}

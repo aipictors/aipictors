@@ -23,8 +23,6 @@ export const CroppedWorkSquare = (props: Props) => {
     width: number,
     height: number,
   ): string => {
-    console.log(props.subWorksCount)
-
     let result = ""
     if (width < height) {
       result = "translateY("
