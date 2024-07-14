@@ -67,15 +67,15 @@ export function PostImageFormUploader(props: Props) {
 
   return (
     <div className="space-y-2">
-      <div>
+      <div className="rounded-md">
         <div
           className={cn(
-            "relative items-center bg-gray-800",
+            "relative items-center bg-zinc-800",
             props.state.isHovered && "border-2 border-white border-dashed",
           )}
         >
           {props.state.items.length !== 0 && (
-            <div className="mb-4 bg-gray-600 p-1 pl-4 dark:bg-blend-darken">
+            <div className="mb-4 bg-zinc-600 p-1 pl-4 dark:bg-blend-darken">
               <div className="flex space-x-4 text-white">
                 <div className="flex">{selectedImagesCountText()}</div>
                 <div className="flex">{selectedFilesSizeText()}</div>

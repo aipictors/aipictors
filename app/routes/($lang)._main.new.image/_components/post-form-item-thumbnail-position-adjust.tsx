@@ -23,7 +23,7 @@ export const PostFormItemThumbnailPositionAdjust = (props: Props) => {
         setThumbnailPosX={props.setThumbnailPosX}
         setThumbnailPosY={props.setThumbnailPosY}
       >
-        <div className="cursor m-auto block transform cursor-pointer bg-gray-800 transition-all duration-300 hover:bg-gray-700">
+        <div className="cursor m-auto block transform cursor-pointer bg-zinc-800 transition-all duration-300 hover:bg-zinc-700">
           <div className="m-auto flex w-64 items-center justify-center space-x-2 rounded-md p-4">
             <div className="h-16 w-16 overflow-hidden rounded-md">
               <img

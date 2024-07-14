@@ -143,11 +143,11 @@ export const postImageFormInputReducer = (
       // TODO: お題が存在しない日の場合はお題の項目を見えないようにする
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      const threeDaysLater = new Date(today)
-      threeDaysLater.setDate(today.getDate() + 7)
+      const daysLater = new Date(today)
+      daysLater.setDate(today.getDate() + 7)
       const changeDate = new Date(action.payload)
       changeDate.setHours(0, 0, 0, 0)
-      if (changeDate >= today && changeDate <= threeDaysLater) {
+      if (changeDate >= today && changeDate <= daysLater) {
         return {
           ...state,
           reservationDate: action.payload,

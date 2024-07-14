@@ -5,13 +5,13 @@ import { useState } from "react"
 import { Card, CardContent } from "@/_components/ui/card"
 
 type Props = {
-  tags: Tag[]
-  setTags: (value: Tag[]) => void
   eventName: string | null
   eventDescription: string | null
   eventTag: string | null
   endAt: number
   slug: string | null
+  removeTag: (tag: Tag) => void
+  addTag: (tag: Tag) => void
 }
 
 /**
@@ -22,24 +22,19 @@ export const PostFormItemEvent = (props: Props) => {
 
   const handleAttendanceChange = (isChecked: boolean) => {
     setIsAttending(isChecked)
-    if (isChecked) {
-      const newTags = [
-        ...props.tags,
-        { id: props.tags.length + 1, text: props.eventTag } as unknown as Tag,
-      ]
-      props.setTags(newTags)
-    } else {
-      const filteredTags = props.tags.filter(
-        (tag) => tag.text !== props.eventTag,
-      )
-      props.setTags(filteredTags)
+    if (props.eventTag) {
+      if (isChecked) {
+        props.addTag({
+          id: "event",
+          text: props.eventTag,
+        })
+        return
+      }
+      props.removeTag({
+        id: "event",
+        text: props.eventTag,
+      })
     }
-  }
-
-  // Unix Timestamp を日時に変換する関数
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp)
-    return date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })
   }
 
   return (

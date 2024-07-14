@@ -232,23 +232,23 @@ export function PostImageFormInput(props: Props) {
       />
       {data?.dailyTheme && (
         <PostFormItemTheme
-          title={data?.dailyTheme?.title ?? null}
+          title={data?.dailyTheme?.title}
           isLoading={loading}
           onChange={onChangeTheme}
         />
       )}
       {data && 0 < data?.appEvents.length && (
         <PostFormItemEvent
-          tags={props.state.tags}
           eventName={data?.appEvents[0]?.title ?? null}
           eventDescription={data?.appEvents[0]?.description ?? null}
           eventTag={data?.appEvents[0]?.tag ?? null}
           endAt={data?.appEvents[0]?.endAt ?? 0}
           slug={data?.appEvents[0]?.slug ?? null}
-          setTags={(tags) => {
-            for (const tag of tags) {
-              props.dispatch({ type: "ADD_TAG", payload: tag })
-            }
+          addTag={(tag) => {
+            props.dispatch({ type: "ADD_TAG", payload: tag })
+          }}
+          removeTag={(tag) => {
+            props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
           }}
         />
       )}
