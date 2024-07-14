@@ -116,7 +116,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             <XIntent
               text={`${props.title}\n`}
               url={`${
-                props.uuid !== ""
+                props.uuid
                   ? `https://aipictors.com/works/${props.uuid}`
                   : `https://aipictors.com/works/${props.workId}`
               }\n`}
@@ -128,7 +128,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               if (typeof window !== "undefined") {
                 if (props.createdAt > new Date().getTime()) {
                   window.location.href = "/dashboard/posts"
-                } else if (props.uuid !== "") {
+                } else if (props.uuid) {
                   window.location.href = `/posts/${props.uuid}`
                 } else {
                   window.location.href = `/posts/${props.workId}`
