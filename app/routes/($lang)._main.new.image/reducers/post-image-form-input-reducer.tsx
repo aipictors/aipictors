@@ -115,10 +115,6 @@ export type PostImageFormInputAction =
       payload: boolean
     }
   | {
-      type: "SET_TAGS"
-      payload: InferInput<typeof vTag>[]
-    }
-  | {
       type: "SET_IMAGE_INFORMATION"
       payload: InferInput<typeof vImageInformation> | null
     }
@@ -138,12 +134,6 @@ export const postImageFormInputReducer = (
       return {
         ...state,
         date: action.payload,
-      }
-    }
-    case "SET_TAGS": {
-      return {
-        ...state,
-        tags: action.payload,
       }
     }
     case "ADD_TAG": {
