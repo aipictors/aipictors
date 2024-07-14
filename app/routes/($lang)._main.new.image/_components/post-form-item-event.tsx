@@ -46,7 +46,7 @@ export const PostFormItemEvent = (props: Props) => {
     <Card>
       <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">{"イベント"}</p>
-        <div className="items-center">
+        <div className="flex items-center">
           <Checkbox
             checked={isAttending}
             onCheckedChange={handleAttendanceChange}

@@ -15,6 +15,7 @@ export const PostFormPermissionSetting = (props: Props) => {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
+        <p className="font-bold text-sm">{"許可の設定"}</p>
         <div className="flex items-center space-x-2">
           <Checkbox
             onCheckedChange={(value: boolean) => {

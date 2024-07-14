@@ -22,7 +22,7 @@ export const PostFormItemTags = (props: Props) => {
 
   return (
     <Card>
-      <CardContent className="space-y-2 p-4">
+      <CardContent className="p-4">
         <p className="font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
         <TagInput
           placeholder="タグを追加してください"
@@ -53,31 +53,33 @@ export const PostFormItemTags = (props: Props) => {
           }))}
           enableAutocomplete={true}
         />
-        <p className="mt-2 text-sm">
-          {"プロンプト付きの画像を読み込むとおすすめタグが更新されます"}
-        </p>
-        {props.recommendedTags.length !== 0 && (
-          <div className="flex flex-wrap gap-2">
-            {props.recommendedTags.map((tag) => (
-              <Button
-                key={tag.id}
-                size={"sm"}
-                variant={"secondary"}
-                onClick={() => {
-                  if (props.tags.length >= 10) {
-                    return
-                  }
-                  props.onAddTag({
-                    id: tag.id,
-                    text: tag.text,
-                  })
-                }}
-              >
-                {tag.text}
-              </Button>
-            ))}
-          </div>
-        )}
+        <div className="space-y-2 pt-2">
+          <p className="text-sm">
+            {"プロンプト付きの画像を読み込むとおすすめタグが更新されます"}
+          </p>
+          {props.recommendedTags.length !== 0 && (
+            <div className="flex flex-wrap gap-2">
+              {props.recommendedTags.map((tag) => (
+                <Button
+                  key={tag.id}
+                  size={"sm"}
+                  variant={"secondary"}
+                  onClick={() => {
+                    if (props.tags.length >= 10) {
+                      return
+                    }
+                    props.onAddTag({
+                      id: tag.id,
+                      text: tag.text,
+                    })
+                  }}
+                >
+                  {tag.text}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

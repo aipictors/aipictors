@@ -19,17 +19,17 @@ export const PostFormItemEnglish = (props: Props) => {
 
   return (
     <Card>
-      <CardContent className="space-y-4 p-4">
+      <CardContent className="p-4">
         <ExpansionTransition
           triggerChildren={
             <Button variant={"secondary"} className="w-full">
               {"英語バージョン"}
-              {isExpanded ? "を閉じる" : "を開く"}
+              {isExpanded ? "を閉じる" : "を編集する"}
             </Button>
           }
           onExpandChange={setIsExpanded}
         >
-          <div className="space-y-4">
+          <div className="space-y-4 pt-4">
             <PostFormItemTitle
               label={"タイトル"}
               onChange={props.onChangeTitle}
