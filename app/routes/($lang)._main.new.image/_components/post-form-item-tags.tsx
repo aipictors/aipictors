@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from "react"
 import { type Tag, TagInput } from "@/_components/tag/tag-input"
 import { Button } from "@/_components/ui/button"
 import { Card, CardContent } from "@/_components/ui/card"
@@ -16,9 +17,48 @@ type Props = {
 export const PostFormItemTags = (props: Props) => {
   const whiteListTags = props.whiteListTags
 
-  const getRandomId = () => {
+  const getRandomId = useCallback(() => {
     return Math.floor(Math.random() * 10000)
-  }
+  }, [])
+
+  const formattedTags = useMemo(
+    () =>
+      props.tags.map((tag) => ({
+        id: tag.id,
+        text: tag.text,
+        label: tag.text,
+        value: tag.text,
+      })),
+    [props.tags],
+  )
+
+  const formattedWhiteListTags = useMemo(
+    () =>
+      whiteListTags.map((tag) => ({
+        id: tag.id,
+        text: tag.text,
+        label: tag.text,
+        value: tag.text,
+      })),
+    [whiteListTags],
+  )
+
+  const handleTagAdd = useCallback(
+    (tag: string) => {
+      props.onAddTag({ id: getRandomId().toString(), text: tag })
+    },
+    [getRandomId, props.onAddTag],
+  )
+
+  const handleTagRemove = useCallback(
+    (tag: string) => {
+      props.onRemoveTag({
+        id: props.tags.find((t) => t.text === tag)?.id ?? "",
+        text: tag,
+      })
+    },
+    [props.tags, props.onRemoveTag],
+  )
 
   return (
     <Card>
@@ -26,31 +66,14 @@ export const PostFormItemTags = (props: Props) => {
         <p className="font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
         <TagInput
           placeholder="タグを追加してください"
-          tags={props.tags.map((tag) => ({
-            id: tag.id,
-            text: tag.text,
-            label: tag.text,
-            value: tag.text,
-          }))}
+          tags={formattedTags}
           maxTags={10}
           maxLength={160}
           className="sm:min-w-[450px]"
-          onTagAdd={(tag) => {
-            props.onAddTag({ id: getRandomId().toString(), text: tag })
-          }}
-          onTagRemove={(tag) => {
-            props.onRemoveTag({
-              id: props.tags.find((t) => t.text === tag)?.id ?? "",
-              text: tag,
-            })
-          }}
+          onTagAdd={handleTagAdd}
+          onTagRemove={handleTagRemove}
           setTags={() => {}}
-          autocompleteOptions={whiteListTags.map((tag) => ({
-            id: tag.id,
-            text: tag.text,
-            label: tag.text,
-            value: tag.text,
-          }))}
+          autocompleteOptions={formattedWhiteListTags}
           enableAutocomplete={true}
         />
         <div className="space-y-2 pt-2">
