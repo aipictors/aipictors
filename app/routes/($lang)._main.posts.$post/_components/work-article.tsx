@@ -44,9 +44,9 @@ export const WorkArticle = (props: Props) => {
     <article className="flex flex-col space-y-2">
       <ConstructionAlert
         type="WARNING"
-        title="このページは現在開発中です。不具合が起きる可能性があります。"
+        message="このページは現在開発中です。不具合が起きる可能性があります。"
         fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
-        date={"2024-07-30"}
+        deadline={"2024-07-30"}
       />
       <PostAccessTypeBanner postAccessType={props.work.accessType} />
       {props.work.type === "WORK" && (

@@ -11,7 +11,7 @@ export default function NewImage() {
     >
       <ConstructionAlert
         type="WARNING"
-        title="試験的にリニューアル版を運用中です。"
+        message="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
       />
       <NewImageForm />
