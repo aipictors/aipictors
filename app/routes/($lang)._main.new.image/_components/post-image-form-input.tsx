@@ -108,7 +108,6 @@ export function PostImageFormInput(props: Props) {
     const tags = data.recommendedTagsFromPrompts.filter((tag) => {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
-    console.log(tags)
 
     return tags.map((tag) => {
       return {
@@ -234,13 +233,17 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {data?.dailyTheme && (
-        <PostFormItemTheme
-          title={data?.dailyTheme?.title}
-          isLoading={loading}
-          onChange={onChangeTheme}
-        />
-      )}
+      {data?.dailyTheme &&
+        props.state.reservationDate &&
+        new Date(props.state.reservationDate) <
+          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && (
+          <PostFormItemTheme
+            title={data?.dailyTheme?.title}
+            isLoading={loading}
+            onChange={onChangeTheme}
+          />
+        )}
+
       {data && 0 < data?.appEvents.length && (
         <PostFormItemEvent
           eventName={data?.appEvents[0]?.title ?? null}
