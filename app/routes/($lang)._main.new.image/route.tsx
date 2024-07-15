@@ -218,7 +218,7 @@ export default function NewImage() {
             noise: state.pngInfo?.params.noise ?? null,
             modelName: state.pngInfo?.params.model ?? null,
             modelHash: state.pngInfo?.params.modelHash ?? null,
-            otherGenerationParams: null,
+            otherGenerationParams: state.pngInfo?.src ?? null,
             pngInfo: state.pngInfo?.src ?? null,
             imageStyle: inputState.imageStyle,
             relatedUrl: inputState.link,
