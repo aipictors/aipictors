@@ -13,7 +13,7 @@ type Props = {
 }
 
 /**
- * ドラッグ可能な複数画像選択
+ * 動画選択
  * @param props
  * @returns
  */
@@ -92,7 +92,7 @@ export const PostFormItemVideo = (props: Props) => {
       })
       // ここで input の id が image_inputの要素に file をセットする
       const inputElement = document.getElementById(
-        "images_input",
+        "video_input",
       ) as HTMLInputElement
       if (inputElement) {
         const fileList: File[] = []
@@ -128,12 +128,13 @@ export const PostFormItemVideo = (props: Props) => {
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
+        <input id="video_input" {...getInputProps()} />
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
         <div
           className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
           onClick={() => {
             const inputElement = document.getElementById(
-              "images_input",
+              "video_input",
             ) as HTMLInputElement
             if (inputElement) {
               inputElement.click()

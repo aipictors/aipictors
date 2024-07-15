@@ -1,12 +1,12 @@
-import { nullable, number, object, string } from "valibot"
+import { number, object, string } from "valibot"
 
 /**
  * Fileオブジェクト
  */
 export const vFile = object({
-  name: nullable(string()),
+  name: string(),
   lastModified: number(),
   size: number(),
-  type: nullable(string()),
-  webkitRelativePath: nullable(string()),
+  type: string(),
+  webkitRelativePath: string(),
 })
