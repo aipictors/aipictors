@@ -1,12 +1,4 @@
-import {
-  maxLength,
-  minLength,
-  minValue,
-  number,
-  object,
-  pipe,
-  string,
-} from "valibot"
+import { maxLength, minLength, object, pipe, string } from "valibot"
 
 export const vPostImageForm = object({
   title: pipe(
@@ -26,6 +18,5 @@ export const vPostImageForm = object({
     string(),
     maxLength(3000, "キャプションは3000文字以内で入力してください"),
   ),
-  imagesCount: pipe(number(), minValue(1, "画像を1枚以上選択してください")),
   thumbnailBase64: string("サムネイル画像を設定してください"),
 })

@@ -43,7 +43,6 @@ export default function NewAnimation() {
     postAnimationFormInputReducer,
     {
       accessType: "PUBLIC",
-      generationParamAccessType: "PUBLIC",
       aiModelId: "1",
       albumId: null,
       caption: "",
@@ -140,12 +139,21 @@ export default function NewAnimation() {
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
+      const thumbnailUrl = await uploadPublicImage(
+        formResult.output.thumbnailBase64,
+        viewer?.viewer?.token,
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 40 })
+
+      uploadedImageUrls.push(thumbnailUrl)
+
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
         viewer?.viewer?.token,
       )
 
-      dispatch({ type: "SET_PROGRESS", payload: 40 })
+      dispatch({ type: "SET_PROGRESS", payload: 45 })
 
       uploadedImageUrls.push(smallThumbnailUrl)
 
@@ -226,14 +234,14 @@ export default function NewAnimation() {
             reservedAt: reservedAt,
             mainImageSha256: mainImageSha256,
             accessType: inputState.accessType,
-            imageUrls: [],
+            imageUrls: [thumbnailUrl],
             smallThumbnailImageURL: smallThumbnailUrl,
             smallThumbnailImageWidth: smallThumbnail.width,
             smallThumbnailImageHeight: smallThumbnail.height,
             largeThumbnailImageURL: largeThumbnailUrl,
             largeThumbnailImageWidth: largeThumbnail.width,
             largeThumbnailImageHeight: largeThumbnail.height,
-            videoUrl: null,
+            videoUrl: uploadedUrl,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
             imageWidth: mainImageSize.width,

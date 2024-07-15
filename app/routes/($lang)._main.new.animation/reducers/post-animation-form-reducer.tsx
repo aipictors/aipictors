@@ -12,6 +12,12 @@ export const postAnimationFormReducer = (
         thumbnailBase64: action.payload,
       }
     }
+    case "SET_ANIMATION_FILE": {
+      return {
+        ...state,
+        videoFile: action.payload ? (action.payload as File) : null,
+      }
+    }
     case "SET_OGP_BASE64": {
       return {
         ...state,

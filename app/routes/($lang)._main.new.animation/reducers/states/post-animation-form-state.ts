@@ -8,9 +8,9 @@ import {
   string,
 } from "valibot"
 
-export type PostAnimationFormState = InferInput<typeof vPostImageFormState>
+export type PostAnimationFormState = InferInput<typeof vPostAnimationFormState>
 
-export const vPostImageFormState = object({
+export const vPostAnimationFormState = object({
   isHovered: boolean(),
   isThumbnailLandscape: boolean(),
   ogpBase64: nullable(string()),

@@ -140,7 +140,6 @@ export function PostImageFormInput(props: Props) {
       })
   }
 
-  // TODO: 必須項目を入力して投稿ボタンを押しても「Invalid type: Expected string but received null」というエラーが出るので直す
   return (
     <div className="space-y-4">
       <PostFormItemTitle

@@ -39,7 +39,18 @@ export const PostFormItemVideo = (props: Props) => {
     }
 
     if (props.setIsThumbnailLandscape) {
-      props.setIsThumbnailLandscape(false)
+      if (webpDataURL) {
+        const base64 = webpDataURL
+        const img = new Image()
+        img.src = base64 ?? ""
+        img.onload = () => {
+          if (props.setIsThumbnailLandscape) {
+            props.setIsThumbnailLandscape(img.width > img.height)
+          }
+        }
+      } else {
+        props.setIsThumbnailLandscape(false)
+      }
     }
   }
 
@@ -141,10 +152,16 @@ export const PostFormItemVideo = (props: Props) => {
             }
           }}
         >
-          <p className="font-bold">動画を追加</p>
+          <p className="font-bold">動画を選択</p>
         </div>
         {props.videoFile && (
-          <VideoItem videoFile={props.videoFile} onDelete={() => {}} />
+          <VideoItem
+            videoFile={props.videoFile}
+            onDelete={() => {
+              props.onVideoChange(null)
+              updateThumbnail(null)
+            }}
+          />
         )}
       </div>
     </>

@@ -22,10 +22,6 @@ export const vFile = object({
 
 export const vPostAnimationFormAction = union([
   object({
-    type: literal("SET_IS_DRAWING"),
-    payload: boolean(),
-  }),
-  object({
     type: literal("SET_ANIMATION_FILE"),
     payload: nullable(vFile),
   }),
