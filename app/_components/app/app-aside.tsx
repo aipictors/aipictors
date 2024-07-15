@@ -16,17 +16,17 @@ export function AppAside(props: Props) {
   return (
     <>
       <Button
-        className="fixed top-4 left-4 z-50 hidden pl-1 md:block"
+        className="fixed top-4 left-8 z-50 hidden pl-2 md:block"
         variant={"ghost"}
         size={"icon"}
         onClick={props.onToggle}
       >
-        <MenuIcon className="h-8 w-8" />
+        <MenuIcon className="h-6 w-6" />
       </Button>
       {props.isOpen && (
-        <div className="fixed top-header hidden h-main w-52 min-w-52 overflow-y-auto pl-8 md:block">
-          <ScrollArea className="-ml-3 pr-4">
-            <nav className="pb-8">{props.children}</nav>
+        <div className="fixed top-header hidden pl-8 md:block">
+          <ScrollArea className="overflow-hidden">
+            <nav>{props.children}</nav>
           </ScrollArea>
         </div>
       )}

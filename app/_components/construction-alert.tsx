@@ -12,7 +12,7 @@ type Props = {
 export const ConstructionAlert: React.FC<Props> = (props: Props) => {
   return (
     <Link to={props.fallbackURL}>
-      <Alert className="container border-2">
+      <Alert className="border-2">
         <AlertTitle>
           {props.type === "BUG"
             ? "バグ"

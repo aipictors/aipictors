@@ -35,7 +35,7 @@ const HomeHeader = (props: Props) => {
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
-        <div className="flex min-w-fit items-center md:flex-1">
+        <div className="flex min-w-fit items-center md:flex">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -52,24 +52,29 @@ const HomeHeader = (props: Props) => {
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <Link className="items-center md:flex" to="https://www.aipictors.com">
-            {navigation.state === "loading" && (
-              <div className="flex h-10 w-10 items-center justify-center md:ml-8">
-                <Loader2Icon className={"h-10 w-10 animate-spin"} />
-              </div>
-            )}
-            {navigation.state !== "loading" && (
-              <img
-                src="/icon.svg"
-                className="h-10 w-10 rounded-full md:ml-8"
-                alt="Avatar"
-                width={40}
-                height={40}
-              />
-            )}
-          </Link>
-          <div className="hidden flex-grow flex-row items-center pl-4 md:flex">
-            <span className="font-bold">{props.title ?? "Beta"}</span>
+          <div className="flex items-center space-x-2 pl-0 md:pl-11">
+            <Link
+              className="items-center md:flex"
+              to="https://www.aipictors.com"
+            >
+              {navigation.state === "loading" && (
+                <div className="flex h-8 w-8 items-center justify-center">
+                  <Loader2Icon className={"h-8 w-8 animate-spin"} />
+                </div>
+              )}
+              {navigation.state !== "loading" && (
+                <img
+                  src="/icon.svg"
+                  className="h-8 w-8 rounded-full"
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                />
+              )}
+            </Link>
+            <div className="hidden flex-grow flex-row items-center md:flex">
+              <span className="font-bold text-xl">{props.title ?? "Beta"}</span>
+            </div>
           </div>
         </div>
         <div className="flex gap-x-2">

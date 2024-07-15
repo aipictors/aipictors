@@ -24,7 +24,7 @@ export function AppContents(props: Props) {
           <HomeRouteList />
         </AppAside>
         <div
-          className={`m-auto max-w-[100%] space-y-4 overflow-hidden pr-4 pl-2 ${isOpen ? "md:pl-64" : "pl-4"}`}
+          className={`m-auto max-w-[100%] space-y-4 overflow-hidden ${isOpen ? "md:pr-8 md:pl-48" : "px-4 md:px-8"}`}
         >
           {props.outlet}
           {props.footer}
