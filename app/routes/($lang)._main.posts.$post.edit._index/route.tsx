@@ -51,6 +51,30 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
+function getReservationDetails(createdAt: number) {
+  // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
+  if (createdAt) {
+    const reservedDate = new Date(createdAt * 1000 + 3600000 * 9) // 日本時間に変換
+    const now = new Date(Date.now() + 3600000 * 9) // 日本時間の現在時刻
+
+    if (reservedDate > now) {
+      const reservationDate = reservedDate
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "/")
+      const reservationTime = reservedDate.toISOString().slice(11, 16)
+      return {
+        reservationDate,
+        reservationTime,
+      }
+    }
+  }
+  return {
+    reservationDate: null,
+    reservationTime: null,
+  }
+}
+
 export default function EditImage() {
   const authContext = useContext(AuthContext)
 
@@ -112,11 +136,15 @@ export default function EditImage() {
     videoFile: null,
   })
 
+  const { reservationDate, reservationTime } = getReservationDetails(
+    data.work.createdAt,
+  )
+
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
-    accessType: data.work.accessType ?? "PUBLIC",
+    accessType: data.work.accessType,
     generationParamAccessType:
       data.work.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
-    aiModelId: data.work.generationModelId ?? null,
+    aiModelId: data.work.workModelId?.toString() ?? null,
     albumId: data.work.album?.id ?? null,
     caption: data.work.description ?? "",
     date: new Date(data.work.createdAt ?? new Date()),
@@ -138,21 +166,20 @@ export default function EditImage() {
       },
       src: data.work.pngInfo ?? "",
     },
-    imageStyle: data.work.style ?? "ILLUSTRATION",
+    imageStyle: data.work.style,
     link: data.work.relatedUrl ?? "",
     ratingRestriction: data.work.rating ?? "G",
-    reservationDate: null,
-    reservationTime: null,
+    reservationDate: reservationDate,
+    reservationTime: reservationTime,
     tags: [
-      ...(data.work.tagNames.map((tag) => ({
-        id: tag,
-        text: tag,
-      })) ?? []),
+      ...(data.work.tagNames[0]
+        .split(",")
+        .map((tag) => ({ id: tag, text: tag })) ?? []),
     ],
     themeId: data.work.dailyTheme?.id ?? null,
     title: data.work.title ?? "",
     useCommentFeature: data.work.isCommentsEditable ?? true,
-    useGenerationParams: data.work.isGeneration ?? false,
+    useGenerationParams: data.work.promptAccessType === "PUBLIC",
     usePromotionFeature: data.work.isPromotion ?? false,
     useTagFeature: data.work.isTagEditable ?? true,
   })
@@ -223,43 +250,67 @@ export default function EditImage() {
     try {
       dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      const smallThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+      console.log(formResult.output.thumbnailBase64)
+
+      const smallThumbnail = formResult.output.thumbnailBase64.startsWith(
+        "https://",
+      )
+        ? null
+        : state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
 
       dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      const largeThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+      const largeThumbnail = formResult.output.thumbnailBase64.startsWith(
+        "https://",
+      )
+        ? null
+        : state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
 
       dispatch({ type: "SET_PROGRESS", payload: 30 })
 
-      const smallThumbnailUrl = await uploadPublicImage(
-        smallThumbnail.base64,
-        viewer?.viewer?.token,
-      )
+      const smallThumbnailUrl =
+        formResult.output.thumbnailBase64.startsWith("https://") ||
+        smallThumbnail === null
+          ? data.work.smallThumbnailImageURL ?? ""
+          : await uploadPublicImage(
+              smallThumbnail.base64,
+              viewer?.viewer?.token,
+            )
 
       dispatch({ type: "SET_PROGRESS", payload: 40 })
 
       uploadedImageUrls.push(smallThumbnailUrl)
 
-      const largeThumbnailUrl = await uploadPublicImage(
-        largeThumbnail.base64,
-        viewer?.viewer?.token,
-      )
+      const largeThumbnailUrl =
+        formResult.output.thumbnailBase64.startsWith("https://") ||
+        largeThumbnail === null
+          ? data.work.largeThumbnailImageURL ?? ""
+          : await uploadPublicImage(
+              largeThumbnail.base64,
+              viewer?.viewer?.token,
+            )
+
+      uploadedImageUrls.push(largeThumbnailUrl)
 
       dispatch({ type: "SET_PROGRESS", payload: 50 })
 
       uploadedImageUrls.push(largeThumbnailUrl)
 
-      const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
-        : null
+      const ogpBase64Url =
+        state.ogpBase64 === "" || state.ogpBase64?.startsWith("https://")
+          ? data.work.ogpThumbnailImageUrl
+          : await uploadPublicImage(
+              state.ogpBase64 ?? "",
+              viewer?.viewer?.token,
+            )
 
       dispatch({ type: "SET_PROGRESS", payload: 60 })
 
-      if (ogpBase64Url !== null) {
+      if (ogpBase64Url !== null && ogpBase64Url !== "") {
         uploadedImageUrls.push(ogpBase64Url)
       }
 
@@ -285,7 +336,7 @@ export default function EditImage() {
       const imageUrls = uploadResults.filter((url) => url !== null)
 
       if (imageUrls.length === 0) {
-        toast("画像のアップロードに失敗しました")
+        toast("画像の取得に失敗しました")
         return
       }
 
@@ -326,11 +377,19 @@ export default function EditImage() {
             accessType: inputState.accessType,
             imageUrls: imageUrls,
             smallThumbnailImageURL: smallThumbnailUrl,
-            smallThumbnailImageWidth: smallThumbnail.width,
-            smallThumbnailImageHeight: smallThumbnail.height,
+            smallThumbnailImageWidth: smallThumbnail
+              ? smallThumbnail.width
+              : data.work.smallThumbnailImageWidth ?? 0,
+            smallThumbnailImageHeight: smallThumbnail
+              ? smallThumbnail.height
+              : data.work.smallThumbnailImageHeight ?? 0,
             largeThumbnailImageURL: largeThumbnailUrl,
-            largeThumbnailImageWidth: largeThumbnail.width,
-            largeThumbnailImageHeight: largeThumbnail.height,
+            largeThumbnailImageWidth: largeThumbnail
+              ? largeThumbnail.width
+              : data.work.largeThumbnailImageWidth ?? 0,
+            largeThumbnailImageHeight: largeThumbnail
+              ? largeThumbnail.height
+              : data.work.largeThumbnailImageHeight ?? 0,
             videoUrl: null,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
@@ -373,8 +432,6 @@ export default function EditImage() {
       dispatch({ type: "SET_PROGRESS", payload: 0 })
     }
   }
-
-  console.log(state.items)
 
   const createdAt = new Date(
     `${inputState.reservationDate}T${inputState.reservationTime}`,

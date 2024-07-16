@@ -9,6 +9,8 @@ import { useState } from "react"
 type Props = {
   onChangeTitle: (title: string) => void
   onChangeCaption: (caption: string) => void
+  title?: string
+  caption?: string
 }
 
 /**
@@ -33,10 +35,12 @@ export const PostFormItemEnglish = (props: Props) => {
             <PostFormItemTitle
               label={"タイトル"}
               onChange={props.onChangeTitle}
+              value={props.title}
             />
             <PostFormItemCaption
               label={"キャプション"}
               setCaption={props.onChangeCaption}
+              caption={props.caption}
             />
           </div>
         </ExpansionTransition>

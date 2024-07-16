@@ -146,11 +146,13 @@ export function PostImageFormInput(props: Props) {
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
         }}
+        value={props.state.title}
       />
       <PostFormItemCaption
         setCaption={(caption) => {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
+        caption={props.state.caption}
       />
       <PostFormItemEnglish
         onChangeTitle={(title) => {
@@ -159,6 +161,8 @@ export function PostImageFormInput(props: Props) {
         onChangeCaption={(caption) => {
           props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
         }}
+        title={props.state.enTitle}
+        caption={props.state.enCaption}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}

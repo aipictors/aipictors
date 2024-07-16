@@ -42,6 +42,12 @@ export const PostFormItemView = (props: Props) => {
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
+              <RadioGroupItem value="SILENT" id="view-silent" />
+              <label htmlFor="view-silent">{"新着非公開"}</label>
+            </div>
+          </div>
+          <div className="w-1/2 md:w-auto">
+            <div className="flex items-center space-x-2">
               <RadioGroupItem value="DRAFT" id="view-draft" />
               <label htmlFor="view-draft">{"下書き"}</label>
             </div>
