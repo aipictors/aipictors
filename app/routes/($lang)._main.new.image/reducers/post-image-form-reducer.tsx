@@ -163,6 +163,20 @@ export const postImageFormReducer = (
         uploadedWorkId: action.payload.uploadedWorkId,
         uploadedWorkUuid: action.payload.uploadedWorkUuid,
       }
+    // すべてリセット
+    case "INITIALIZE":
+      return {
+        ...state,
+        progress: 0,
+        items: action.payload.items,
+        indexList: [],
+        isThumbnailLandscape: action.payload.isThumbnailLandscape,
+        thumbnailBase64: action.payload.thumbnailBase64,
+        ogpBase64: action.payload.ogpBase64,
+        pngInfo: action.payload.pngInfo,
+        thumbnailPosX: action.payload.thumbnailPosX,
+        thumbnailPosY: action.payload.thumbnailPosY,
+      }
   }
 
   throw new Error("Invalid action type")

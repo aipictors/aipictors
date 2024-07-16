@@ -19,35 +19,21 @@ import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useReducer } from "react"
+import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { EditImageFormUploader } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form-uploader"
-import { createClient } from "@/_lib/client"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const workResp = await client.query({
-    query: workQuery,
-    variables: {
-      id: props.params.post,
-    },
-  })
-
-  if (workResp.data.work === null) {
-    throw new Response("Not found", { status: 404 })
-  }
-
   return json({
-    work: workResp.data.work,
+    id: props.params.post,
   })
 }
 
@@ -80,6 +66,115 @@ export default function EditImage() {
 
   const data = useLoaderData<typeof loader>()
 
+  const { data: workWithAuth = null } = useQuery(workQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      id: data.id,
+    },
+  })
+
+  const work = workWithAuth?.work ?? null
+
+  useEffect(() => {
+    if (work) {
+      dispatch({
+        type: "INITIALIZE",
+        payload: {
+          items: [
+            {
+              id: 0,
+              content: work?.imageURL ?? "",
+            },
+            ...(work?.subWorks ?? []).map((subWork, index) => ({
+              id: index + 1,
+              content: subWork.imageUrl ?? "",
+            })),
+          ],
+          indexList: [],
+          isThumbnailLandscape:
+            (work?.smallThumbnailImageWidth ?? 0) >
+            (work?.smallThumbnailImageHeight ?? 0),
+          thumbnailBase64: work?.largeThumbnailImageURL ?? "",
+          ogpBase64: work?.ogpThumbnailImageUrl ?? "",
+          pngInfo: {
+            src: work?.pngInfo ?? "",
+            params: {
+              prompt: work?.prompt ?? "",
+              negativePrompt: work?.negativePrompt ?? "",
+              seed: work?.seed?.toString() ?? "",
+              sampler: work?.sampler ?? "",
+              strength: work?.strength ?? "",
+              noise: work?.noise ?? "",
+              model: work?.model ?? "",
+              modelHash: work?.modelHash ?? "",
+              steps: work?.steps ? work?.steps.toString() : "",
+              scale: work?.scale ? work?.scale.toString() : "",
+              vae: "",
+            },
+          },
+          thumbnailPosX:
+            work?.smallThumbnailImageWidth ??
+            0 > (work?.smallThumbnailImageHeight ?? 0)
+              ? work?.thumbnailImagePosition ?? 0
+              : 0,
+          thumbnailPosY:
+            work?.smallThumbnailImageWidth ??
+            0 > (work?.smallThumbnailImageHeight ?? 0)
+              ? 0
+              : work?.thumbnailImagePosition ?? 0,
+        },
+      })
+      dispatchInput({
+        type: "INITIALIZE",
+        payload: {
+          accessType: work?.accessType ?? "PUBLIC",
+          aiModelId: work?.workModelId?.toString() ?? "1",
+          albumId: work?.album?.id ?? null,
+          caption: work?.description ?? "",
+          date: new Date(work?.createdAt ?? new Date()),
+          enCaption: work?.enDescription ?? "",
+          enTitle: work?.enTitle ?? "",
+          imageInformation: {
+            params: {
+              prompt: work?.prompt ?? "",
+              negativePrompt: work?.negativePrompt ?? "",
+              seed: work?.seed?.toString() ?? "",
+              steps: work?.steps ? work?.steps.toString() : "",
+              strength: work?.strength ?? "",
+              noise: work?.noise ?? "",
+              scale: work?.scale ? work?.scale.toString() : "",
+              sampler: work?.sampler ?? "",
+              vae: work?.vae ?? "",
+              modelHash: work?.modelHash ?? "",
+              model: work?.model ?? "",
+            },
+            src: work?.pngInfo ?? "",
+          },
+          imageStyle: work?.style ?? "ILLUSTRATION",
+          link: work?.relatedUrl ?? "",
+          ratingRestriction: work?.rating ?? "G",
+          reservationDate: getReservationDetails(work?.createdAt ?? 0)
+            .reservationDate,
+          reservationTime: getReservationDetails(work?.createdAt ?? 0)
+            .reservationTime,
+          tags: work?.tagNames.length
+            ? [
+                ...(work?.tagNames[0]
+                  .split(",")
+                  .map((tag) => ({ id: tag, text: tag })) ?? []),
+              ]
+            : [],
+          themeId: work?.dailyTheme?.id ?? null,
+          title: work?.title ?? "",
+          useCommentFeature: work?.isCommentsEditable ?? true,
+          useGenerationParams: work?.promptAccessType === "PUBLIC",
+          usePromotionFeature: work?.isPromotion ?? false,
+          useTagFeature: work?.isTagEditable ?? true,
+        },
+      })
+    }
+  }, [work])
+
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
@@ -88,100 +183,102 @@ export default function EditImage() {
     isOpenImageGenerationDialog: false,
     isSelectedGenerationImage: false,
     isThumbnailLandscape:
-      (data.work.smallThumbnailImageWidth ?? 0) >
-      (data.work.smallThumbnailImageHeight ?? 0),
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0),
     items: [
       {
         id: 0,
-        content: data.work.imageURL ?? "",
+        content: work?.imageURL ?? "",
       },
-      ...(data.work.subWorks ?? []).map((subWork, index) => ({
+      ...(work?.subWorks ?? []).map((subWork, index) => ({
         id: index + 1,
         content: subWork.imageUrl ?? "",
       })),
     ],
-    ogpBase64: data.work.ogpThumbnailImageUrl ?? "",
+    ogpBase64: work?.ogpThumbnailImageUrl ?? "",
     pngInfo: {
-      src: data.work.pngInfo ?? "",
+      src: work?.pngInfo ?? "",
       params: {
-        prompt: data.work.prompt ?? "",
-        negativePrompt: data.work.negativePrompt ?? "",
-        seed: data.work.seed?.toString() ?? "",
-        sampler: data.work.sampler ?? "",
-        strength: data.work.strength ?? "",
-        noise: data.work.noise ?? "",
-        model: data.work.model ?? "",
-        modelHash: data.work.modelHash ?? "",
-        steps: data.work.steps ? data.work.steps.toString() : "",
-        scale: data.work.scale ? data.work.scale.toString() : "",
+        prompt: work?.prompt ?? "",
+        negativePrompt: work?.negativePrompt ?? "",
+        seed: work?.seed?.toString() ?? "",
+        sampler: work?.sampler ?? "",
+        strength: work?.strength ?? "",
+        noise: work?.noise ?? "",
+        model: work?.model ?? "",
+        modelHash: work?.modelHash ?? "",
+        steps: work?.steps ? work?.steps.toString() : "",
+        scale: work?.scale ? work?.scale.toString() : "",
         vae: "",
       },
     },
     progress: 0,
     selectedImageGenerationIds: [],
-    thumbnailBase64: data.work.largeThumbnailImageURL ?? "",
+    thumbnailBase64: work?.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      data.work.smallThumbnailImageWidth ??
-      0 > (data.work.smallThumbnailImageHeight ?? 0)
-        ? data.work.thumbnailImagePosition ?? 0
+      work?.smallThumbnailImageWidth ??
+      0 > (work?.smallThumbnailImageHeight ?? 0)
+        ? work?.thumbnailImagePosition ?? 0
         : 0,
     thumbnailPosY:
-      data.work.smallThumbnailImageWidth ??
-      0 > (data.work.smallThumbnailImageHeight ?? 0) ??
+      work?.smallThumbnailImageWidth ??
+      0 > (work?.smallThumbnailImageHeight ?? 0) ??
       0
         ? 0
-        : data.work.thumbnailImagePosition ?? 0,
+        : work?.thumbnailImagePosition ?? 0,
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
   })
 
   const { reservationDate, reservationTime } = getReservationDetails(
-    data.work.createdAt,
+    work?.createdAt ?? 0,
   )
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
-    accessType: data.work.accessType,
+    accessType: work?.accessType ?? "PUBLIC",
     generationParamAccessType:
-      data.work.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
-    aiModelId: data.work.workModelId?.toString() ?? null,
-    albumId: data.work.album?.id ?? null,
-    caption: data.work.description ?? "",
-    date: new Date(data.work.createdAt ?? new Date()),
-    enCaption: data.work.enDescription ?? "",
-    enTitle: data.work.enTitle ?? "",
+      work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
+    aiModelId: work?.workModelId?.toString() ?? null,
+    albumId: work?.album?.id ?? null,
+    caption: work?.description ?? "",
+    date: new Date(work?.createdAt ?? new Date()),
+    enCaption: work?.enDescription ?? "",
+    enTitle: work?.enTitle ?? "",
     imageInformation: {
       params: {
-        prompt: data.work.prompt ?? "",
-        negativePrompt: data.work.negativePrompt ?? "",
-        seed: data.work.seed?.toString() ?? "",
-        steps: data.work.steps ? data.work.steps.toString() : "",
-        strength: data.work.strength ?? "",
-        noise: data.work.noise ?? "",
-        scale: data.work.scale ? data.work.scale.toString() : "",
-        sampler: data.work.sampler ?? "",
-        vae: data.work.vae ?? "",
-        modelHash: data.work.modelHash ?? "",
-        model: data.work.model ?? "",
+        prompt: work?.prompt ?? "",
+        negativePrompt: work?.negativePrompt ?? "",
+        seed: work?.seed?.toString() ?? "",
+        steps: work?.steps ? work?.steps.toString() : "",
+        strength: work?.strength ?? "",
+        noise: work?.noise ?? "",
+        scale: work?.scale ? work?.scale.toString() : "",
+        sampler: work?.sampler ?? "",
+        vae: work?.vae ?? "",
+        modelHash: work?.modelHash ?? "",
+        model: work?.model ?? "",
       },
-      src: data.work.pngInfo ?? "",
+      src: work?.pngInfo ?? "",
     },
-    imageStyle: data.work.style,
-    link: data.work.relatedUrl ?? "",
-    ratingRestriction: data.work.rating ?? "G",
+    imageStyle: work?.style ?? "ILLUSTRATION",
+    link: work?.relatedUrl ?? "",
+    ratingRestriction: work?.rating ?? "G",
     reservationDate: reservationDate,
     reservationTime: reservationTime,
-    tags: [
-      ...(data.work.tagNames[0]
-        .split(",")
-        .map((tag) => ({ id: tag, text: tag })) ?? []),
-    ],
-    themeId: data.work.dailyTheme?.id ?? null,
-    title: data.work.title ?? "",
-    useCommentFeature: data.work.isCommentsEditable ?? true,
-    useGenerationParams: data.work.promptAccessType === "PUBLIC",
-    usePromotionFeature: data.work.isPromotion ?? false,
-    useTagFeature: data.work.isTagEditable ?? true,
+    tags: work?.tagNames.length
+      ? [
+          ...(work?.tagNames[0]
+            .split(",")
+            .map((tag) => ({ id: tag, text: tag })) ?? []),
+        ]
+      : [],
+    themeId: work?.dailyTheme?.id ?? null,
+    title: work?.title ?? "",
+    useCommentFeature: work?.isCommentsEditable ?? true,
+    useGenerationParams: work?.promptAccessType === "PUBLIC",
+    usePromotionFeature: work?.isPromotion ?? false,
+    useTagFeature: work?.isTagEditable ?? true,
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -209,18 +306,29 @@ export default function EditImage() {
     if (authContext.userId === null) {
       return []
     }
+
     const images = state.items.map((item) => item.content)
-    const uploads = images.map((image) => {
-      if (image === null) {
-        return null
-      }
-      return uploadPublicImage(image, viewer?.viewer?.token)
-    })
-    const imageUrls = await Promise.all(uploads)
+
+    const imageUrls = await Promise.all(
+      images.map(async (image) => {
+        if (!image) {
+          return null
+        }
+        const imageUrl = image.startsWith("https://")
+          ? image
+          : await uploadPublicImage(image, viewer?.viewer?.token)
+        return imageUrl
+      }),
+    )
+
     return imageUrls
   }
 
   const onPost = async () => {
+    if (work === null) {
+      return
+    }
+
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
@@ -275,7 +383,7 @@ export default function EditImage() {
       const smallThumbnailUrl =
         formResult.output.thumbnailBase64.startsWith("https://") ||
         smallThumbnail === null
-          ? data.work.smallThumbnailImageURL ?? ""
+          ? work.smallThumbnailImageURL ?? ""
           : await uploadPublicImage(
               smallThumbnail.base64,
               viewer?.viewer?.token,
@@ -288,7 +396,7 @@ export default function EditImage() {
       const largeThumbnailUrl =
         formResult.output.thumbnailBase64.startsWith("https://") ||
         largeThumbnail === null
-          ? data.work.largeThumbnailImageURL ?? ""
+          ? work.largeThumbnailImageURL ?? ""
           : await uploadPublicImage(
               largeThumbnail.base64,
               viewer?.viewer?.token,
@@ -302,7 +410,7 @@ export default function EditImage() {
 
       const ogpBase64Url =
         state.ogpBase64 === "" || state.ogpBase64?.startsWith("https://")
-          ? data.work.ogpThumbnailImageUrl
+          ? work.ogpThumbnailImageUrl
           : await uploadPublicImage(
               state.ogpBase64 ?? "",
               viewer?.viewer?.token,
@@ -340,10 +448,10 @@ export default function EditImage() {
         return
       }
 
-      const work = await updateWork({
+      const updatedWork = await updateWork({
         variables: {
           input: {
-            id: data.work.id,
+            id: work?.id,
             title: formResult.output.title,
             entitle: formResult.output.enTitle,
             explanation: formResult.output.caption,
@@ -379,17 +487,17 @@ export default function EditImage() {
             smallThumbnailImageURL: smallThumbnailUrl,
             smallThumbnailImageWidth: smallThumbnail
               ? smallThumbnail.width
-              : data.work.smallThumbnailImageWidth ?? 0,
+              : work.smallThumbnailImageWidth ?? 0,
             smallThumbnailImageHeight: smallThumbnail
               ? smallThumbnail.height
-              : data.work.smallThumbnailImageHeight ?? 0,
+              : work.smallThumbnailImageHeight ?? 0,
             largeThumbnailImageURL: largeThumbnailUrl,
             largeThumbnailImageWidth: largeThumbnail
               ? largeThumbnail.width
-              : data.work.largeThumbnailImageWidth ?? 0,
+              : work.largeThumbnailImageWidth ?? 0,
             largeThumbnailImageHeight: largeThumbnail
               ? largeThumbnail.height
-              : data.work.largeThumbnailImageHeight ?? 0,
+              : work.largeThumbnailImageHeight ?? 0,
             videoUrl: null,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
@@ -404,7 +512,7 @@ export default function EditImage() {
         },
       })
 
-      if (work?.data?.updateWork === undefined) {
+      if (updatedWork?.data?.updateWork === undefined) {
         toast("作品の更新に失敗しました")
         return
       }
@@ -412,11 +520,11 @@ export default function EditImage() {
       dispatch({
         type: "MARK_AS_DONE",
         payload: {
-          uploadedWorkId: work?.data?.updateWork.id,
+          uploadedWorkId: updatedWork?.data?.updateWork.id,
           uploadedWorkUuid:
             inputState.accessType !== "PRIVATE"
               ? null
-              : work?.data?.updateWork.uuid ?? null,
+              : updatedWork?.data?.updateWork.uuid ?? null,
         },
       })
 
@@ -452,7 +560,7 @@ export default function EditImage() {
   //   ),
   // )
 
-  return data.work.user.id === authContext.userId ? (
+  return work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-2">
       <ConstructionAlert
         type="WARNING"

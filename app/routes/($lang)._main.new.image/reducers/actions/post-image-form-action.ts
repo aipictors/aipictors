@@ -112,4 +112,17 @@ export const vPostImageFormAction = union([
       uploadedWorkUuid: nullable(string()),
     }),
   }),
+  object({
+    type: literal("INITIALIZE"),
+    payload: object({
+      items: array(vSortableItem),
+      indexList: array(number()),
+      isThumbnailLandscape: boolean(),
+      thumbnailBase64: nullable(string()),
+      ogpBase64: nullable(string()),
+      pngInfo: nullable(vImageInformation),
+      thumbnailPosX: number(),
+      thumbnailPosY: number(),
+    }),
+  }),
 ])

@@ -173,6 +173,31 @@ export const postImageFormInputReducer = (
         imageInformation: action.payload,
       }
     }
+    case "INITIALIZE": {
+      return {
+        ...state,
+        title: action.payload.title,
+        date: action.payload.date,
+        tags: action.payload.tags,
+        enTitle: action.payload.enTitle,
+        caption: action.payload.caption,
+        enCaption: action.payload.enCaption,
+        themeId: action.payload.themeId,
+        albumId: action.payload.albumId,
+        link: action.payload.link,
+        useTagFeature: action.payload.useTagFeature,
+        useCommentFeature: action.payload.useCommentFeature,
+        usePromotionFeature: action.payload.usePromotionFeature,
+        useGenerationParams: action.payload.useGenerationParams,
+        ratingRestriction: action.payload.ratingRestriction,
+        accessType: action.payload.accessType,
+        imageStyle: action.payload.imageStyle,
+        aiModelId: action.payload.aiModelId,
+        reservationDate: action.payload.reservationDate,
+        reservationTime: action.payload.reservationTime,
+        imageInformation: action.payload.imageInformation,
+      }
+    }
   }
 
   throw new Error("Invalid action type")
