@@ -13,7 +13,6 @@ import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
-import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
@@ -25,14 +24,30 @@ import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { EditImageFormUploader } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form-uploader"
+import { createClient } from "@/_lib/client"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
+  const client = createClient()
+
+  const workResp = await client.query({
+    query: workQuery,
+    variables: {
+      id: props.params.post,
+    },
+  })
+
+  if (workResp.data.work === null) {
+    throw new Response("Not found", { status: 404 })
+  }
+
   return json({
-    id: props.params.post,
+    work: workResp.data.work,
   })
 }
 
@@ -40,13 +55,6 @@ export default function EditImage() {
   const authContext = useContext(AuthContext)
 
   const data = useLoaderData<typeof loader>()
-
-  const { data: work = null } = useQuery(workQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      id: data.id,
-    },
-  })
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -56,97 +64,97 @@ export default function EditImage() {
     isOpenImageGenerationDialog: false,
     isSelectedGenerationImage: false,
     isThumbnailLandscape:
-      (work?.work?.smallThumbnailImageWidth ?? 0) >
-      (work?.work?.smallThumbnailImageHeight ?? 0),
+      (data.work.smallThumbnailImageWidth ?? 0) >
+      (data.work.smallThumbnailImageHeight ?? 0),
     items: [
       {
         id: 0,
-        content: work?.work?.imageURL ?? "",
+        content: data.work.imageURL ?? "",
       },
-      ...(work?.work?.subWorks ?? []).map((subWork, index) => ({
+      ...(data.work.subWorks ?? []).map((subWork, index) => ({
         id: index + 1,
         content: subWork.imageUrl ?? "",
       })),
     ],
-    ogpBase64: work?.work?.ogpThumbnailImageUrl ?? "",
+    ogpBase64: data.work.ogpThumbnailImageUrl ?? "",
     pngInfo: {
-      src: work?.work?.pngInfo ?? "",
+      src: data.work.pngInfo ?? "",
       params: {
-        prompt: work?.work?.prompt ?? "",
-        negativePrompt: work?.work?.negativePrompt ?? "",
-        seed: work?.work?.seed?.toString() ?? "",
-        sampler: work?.work?.sampler ?? "",
-        strength: work?.work?.strength ?? "",
-        noise: work?.work?.noise ?? "",
-        model: work?.work?.model ?? "",
-        modelHash: work?.work?.modelHash ?? "",
-        steps: work?.work?.steps ? work?.work?.steps.toString() : "",
-        scale: work?.work?.scale ? work?.work?.scale.toString() : "",
+        prompt: data.work.prompt ?? "",
+        negativePrompt: data.work.negativePrompt ?? "",
+        seed: data.work.seed?.toString() ?? "",
+        sampler: data.work.sampler ?? "",
+        strength: data.work.strength ?? "",
+        noise: data.work.noise ?? "",
+        model: data.work.model ?? "",
+        modelHash: data.work.modelHash ?? "",
+        steps: data.work.steps ? data.work.steps.toString() : "",
+        scale: data.work.scale ? data.work.scale.toString() : "",
         vae: "",
       },
     },
     progress: 0,
     selectedImageGenerationIds: [],
-    thumbnailBase64: work?.work?.largeThumbnailImageURL ?? "",
+    thumbnailBase64: data.work.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      work?.work?.smallThumbnailImageWidth ??
-      0 > (work?.work?.smallThumbnailImageHeight ?? 0)
-        ? work?.work?.thumbnailImagePosition ?? 0
+      data.work.smallThumbnailImageWidth ??
+      0 > (data.work.smallThumbnailImageHeight ?? 0)
+        ? data.work.thumbnailImagePosition ?? 0
         : 0,
     thumbnailPosY:
-      work?.work?.smallThumbnailImageWidth ??
-      0 > (work?.work?.smallThumbnailImageHeight ?? 0) ??
+      data.work.smallThumbnailImageWidth ??
+      0 > (data.work.smallThumbnailImageHeight ?? 0) ??
       0
         ? 0
-        : work?.work?.thumbnailImagePosition ?? 0,
+        : data.work.thumbnailImagePosition ?? 0,
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
   })
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
-    accessType: work?.work?.accessType ?? "PUBLIC",
+    accessType: data.work.accessType ?? "PUBLIC",
     generationParamAccessType:
-      work?.work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
-    aiModelId: work?.work?.generationModelId ?? null,
-    albumId: work?.work?.album?.id ?? null,
-    caption: work?.work?.description ?? "",
-    date: new Date(work?.work?.createdAt ?? new Date()),
-    enCaption: work?.work?.enDescription ?? "",
-    enTitle: work?.work?.enTitle ?? "",
+      data.work.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
+    aiModelId: data.work.generationModelId ?? null,
+    albumId: data.work.album?.id ?? null,
+    caption: data.work.description ?? "",
+    date: new Date(data.work.createdAt ?? new Date()),
+    enCaption: data.work.enDescription ?? "",
+    enTitle: data.work.enTitle ?? "",
     imageInformation: {
       params: {
-        prompt: work?.work?.prompt ?? "",
-        negativePrompt: work?.work?.negativePrompt ?? "",
-        seed: work?.work?.seed?.toString() ?? "",
-        steps: work?.work?.steps ? work?.work?.steps.toString() : "",
-        strength: work?.work?.strength ?? "",
-        noise: work?.work?.noise ?? "",
-        scale: work?.work?.scale ? work?.work?.scale.toString() : "",
-        sampler: work?.work?.sampler ?? "",
-        vae: work?.work?.vae ?? "",
-        modelHash: work?.work?.modelHash ?? "",
-        model: work?.work?.model ?? "",
+        prompt: data.work.prompt ?? "",
+        negativePrompt: data.work.negativePrompt ?? "",
+        seed: data.work.seed?.toString() ?? "",
+        steps: data.work.steps ? data.work.steps.toString() : "",
+        strength: data.work.strength ?? "",
+        noise: data.work.noise ?? "",
+        scale: data.work.scale ? data.work.scale.toString() : "",
+        sampler: data.work.sampler ?? "",
+        vae: data.work.vae ?? "",
+        modelHash: data.work.modelHash ?? "",
+        model: data.work.model ?? "",
       },
-      src: work?.work?.pngInfo ?? "",
+      src: data.work.pngInfo ?? "",
     },
-    imageStyle: work?.work?.style ?? "ILLUSTRATION",
-    link: work?.work?.relatedUrl ?? "",
-    ratingRestriction: work?.work?.rating ?? "G",
+    imageStyle: data.work.style ?? "ILLUSTRATION",
+    link: data.work.relatedUrl ?? "",
+    ratingRestriction: data.work.rating ?? "G",
     reservationDate: null,
     reservationTime: null,
     tags: [
-      ...(work?.work?.tagNames.map((tag) => ({
+      ...(data.work.tagNames.map((tag) => ({
         id: tag,
         text: tag,
       })) ?? []),
     ],
-    themeId: work?.work?.dailyTheme?.id ?? null,
-    title: work?.work?.title ?? "",
-    useCommentFeature: work?.work?.isCommentsEditable ?? true,
-    useGenerationParams: work?.work?.isGeneration ?? false,
-    usePromotionFeature: work?.work?.isPromotion ?? false,
-    useTagFeature: work?.work?.isTagEditable ?? true,
+    themeId: data.work.dailyTheme?.id ?? null,
+    title: data.work.title ?? "",
+    useCommentFeature: data.work.isCommentsEditable ?? true,
+    useGenerationParams: data.work.isGeneration ?? false,
+    usePromotionFeature: data.work.isPromotion ?? false,
+    useTagFeature: data.work.isTagEditable ?? true,
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -284,7 +292,7 @@ export default function EditImage() {
       const work = await updateWork({
         variables: {
           input: {
-            id: data.id,
+            id: data.work.id,
             title: formResult.output.title,
             entitle: formResult.output.enTitle,
             explanation: formResult.output.caption,
@@ -366,6 +374,8 @@ export default function EditImage() {
     }
   }
 
+  console.log(state.items)
+
   const createdAt = new Date(
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
@@ -385,7 +395,7 @@ export default function EditImage() {
   //   ),
   // )
 
-  return (
+  return data.work.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-2">
       <ConstructionAlert
         type="WARNING"
@@ -393,7 +403,7 @@ export default function EditImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
-        <PostImageFormUploader state={state} dispatch={dispatch} />
+        <EditImageFormUploader state={state} dispatch={dispatch} />
         <PostImageFormInput
           imageInformation={state.pngInfo}
           state={inputState}
@@ -402,7 +412,7 @@ export default function EditImage() {
           currentPass={viewer?.viewer?.currentPass ?? null}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
-          {"投稿"}
+          {"更新"}
         </Button>
       </div>
       <SuccessCreatedWorkDialog
@@ -417,7 +427,12 @@ export default function EditImage() {
       <CreatingWorkDialog
         progress={state.progress}
         isOpen={state.progress !== 0 && state.progress !== 100}
+        text={"更新中"}
       />
+    </div>
+  ) : (
+    <div>
+      <AppLoadingPage />
     </div>
   )
 }
