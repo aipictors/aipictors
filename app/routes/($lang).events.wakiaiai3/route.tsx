@@ -29,7 +29,7 @@ export default function EventWakiaiai3() {
           <EventImage
             alt={"和気あいAI3"}
             imageURL={
-              "https://www.aipictors.com/wp-content/uploads/2023/07/XVzvtp28cfh6CQaMT9Rk0yJFA4rsgN.webp"
+              "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_top.png?alt=media&token=8d910ea3-1065-4601-813a-70b6ce082b9b"
             }
           />
         </div>
@@ -39,12 +39,17 @@ export default function EventWakiaiai3() {
               {"2024年10月19日（土）"}
             </h2>
             <h1 className={"font-bold text-4xl text-green-500"}>
-              {"和気あいAI３"}
+              {"和気あいAI３＠音楽の秋🍁"}
             </h1>
           </div>
           <p className="leading-relaxed">
             {
-              "全国一アットホームな生成AIを利用したイラストの展示やグッズ等の展示・即売会、第三回"
+              "生成AI仲間と出会える！全国一アットホームな生成AIを利用したイラストの展示やグッズ等の展示・即売会、第三回"
+            }
+          </p>
+          <p className="leading-relaxed">
+            {
+              "第三回目はAIイラストだけじゃない！名古屋ゲームミュージックアンサンブル様とコラボ✨"
             }
           </p>
           <Link
@@ -67,7 +72,7 @@ export default function EventWakiaiai3() {
           <CardContent>
             <p>
               {
-                "一般参加は無料！本イベントは、画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。屋外のイベントですので、どなたでもお気軽に立ち寄ることができます！"
+                "愛知の生成AIコミュニティを盛り上げよう！一般参加は無料！本イベントは、主に画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。屋外のイベントですので、どなたでもお気軽に立ち寄ることができます！"
               }
             </p>
           </CardContent>
@@ -154,12 +159,12 @@ export const meta: MetaFunction = () => {
     {
       property: "og:description",
       content:
-        "2024年10月19日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
+        "東海の生成AI界隈を盛り上げよう！2024年10月19日（土）生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
     },
     {
       property: "og:image",
       content:
-        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_sns.png?alt=media&token=a15a4637-65e6-44c2-808b-5302473221b7",
     },
     {
       name: "twitter:title",
@@ -168,7 +173,7 @@ export const meta: MetaFunction = () => {
     {
       name: "twitter:description",
       content:
-        "2024年10月19日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
+        "東海の生成AI界隈を盛り上げよう！2024年10月19日（土）生成AIを利用したイラストの展示やグッズ等の展示即売会、第三回！",
     },
   ]
 }

@@ -50,6 +50,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "イロミライ(IROMIRAI)",
+    types: ["SHOP", "EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_iromirai.jpg?alt=media&token=799d9520-90ac-4b17-b6da-971643157680",
+    twitterId: "iromiraijp",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "サムネイル・ストーリーズ",
     types: ["EXHIBIT"],
     message: null,
