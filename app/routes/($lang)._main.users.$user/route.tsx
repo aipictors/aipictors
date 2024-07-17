@@ -75,9 +75,9 @@ export default function UserLayout() {
         <Suspense>
           <ConstructionAlert
             type="WARNING"
-            title="このページは現在開発中です。不具合が起きる可能性があります。"
+            message="このページは現在開発中です。不具合が起きる可能性があります。"
             fallbackURL={`https://www.aipictors.com/users/${params.user}`}
-            date={"2024-07-30"}
+            deadline={"2024-07-30"}
           />
           <div className="flex w-full flex-col justify-center">
             <div className="relative">
