@@ -32,7 +32,7 @@ export const ConstructionAlert: React.FC<Props> = (props: Props) => {
   }
 
   return (
-    <Alert className="space-y-2 border-none bg-primary text-white">
+    <Alert className="space-y-2 border-none">
       <AlertTitle>{alertTitle()}</AlertTitle>
       <div className="flex flex-col justify-between gap-2 md:flex-row">
         {props.message && <AlertDescription>{props.message}</AlertDescription>}
