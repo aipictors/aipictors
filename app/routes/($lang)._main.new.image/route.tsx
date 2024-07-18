@@ -310,7 +310,7 @@ export default function NewImage() {
     <div className="m-auto w-full max-w-[1200px] space-y-2">
       <ConstructionAlert
         type="WARNING"
-        title="試験的にリニューアル版を運用中です。"
+        message="試験的にリニューアル版を運用中です。"
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">

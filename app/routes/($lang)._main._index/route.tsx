@@ -101,9 +101,9 @@ export default function Index() {
     <AppPage>
       <ConstructionAlert
         type="WARNING"
-        title="このページは現在開発中です。不具合が起きる可能性があります。"
+        message="不具合が起きる可能性があります。"
         fallbackURL="https://www.aipictors.com/"
-        date={"2024-07-30"}
+        deadline={"2024-07-30"}
       />
       <HomeBanners adWorks={data.adWorks} />
       {data && (
