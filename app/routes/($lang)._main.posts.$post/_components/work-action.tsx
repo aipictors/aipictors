@@ -9,10 +9,12 @@ import { WorkActionBookmark } from "@/routes/($lang)._main.posts.$post/_componen
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import { RecommendButton } from "@/_components/recommend-button"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   title?: string
   imageUrl?: string
+  workType: IntrospectionEnum<"WorkType">
   bookmarkFolderId: string | null
   workLikesCount: number
   defaultLiked: boolean
@@ -59,6 +61,7 @@ export const WorkAction = (props: Props) => {
           <WorkEditorButton
             targetWorkId={props.targetWorkId}
             targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+            type={props.workType}
           />
         )}
         {props.targetWorkOwnerUserId !== appContext.userId && (

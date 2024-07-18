@@ -64,4 +64,18 @@ export const vPostAnimationFormAction = union([
       uploadedWorkUuid: nullable(string()),
     }),
   }),
+  object({
+    type: literal("INITIALIZE"),
+    payload: object({
+      thumbnailBase64: string(),
+      videoFile: nullable(vFile),
+      ogpBase64: string(),
+      thumbnailPosX: number(),
+      thumbnailPosY: number(),
+      isThumbnailLandscape: boolean(),
+      progress: number(),
+      uploadedWorkId: string(),
+      uploadedWorkUuid: nullable(string()),
+    }),
+  }),
 ])

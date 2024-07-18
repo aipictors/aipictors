@@ -25,7 +25,7 @@ import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { EditImageFormUploader } from "@/routes/($lang)._main.posts.$post.edit._index/_components/edit-image-form-uploader"
+import { EditImageFormUploader } from "@/routes/($lang)._main.posts.$post.image.edit._index/_components/edit-image-form-uploader"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -124,6 +124,9 @@ export default function EditImage() {
               : work?.thumbnailImagePosition ?? 0,
         },
       })
+
+      console.log(getReservationDetails(work?.createdAt ?? 0).reservationDate)
+
       dispatchInput({
         type: "INITIALIZE",
         payload: {

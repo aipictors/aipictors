@@ -61,7 +61,19 @@ export const WorksListTableRow = (props: Props) => {
 
   const [isHidden, setIsHidden] = useState(false)
 
-  console.log(new Date())
+  const editUrl = () => {
+    if (props.work.workType === "WORK") {
+      return `/posts/${props.work.id}/image/edit`
+    }
+    if (props.work.workType === "VIDEO") {
+      return `/posts/${props.work.id}/animation/edit`
+    }
+    if (props.work.workType === "COLUMN" || props.work.workType === "NOVEL") {
+      return `/posts/${props.work.id}/text/edit`
+    }
+
+    return "/"
+  }
 
   return (
     <>
@@ -119,7 +131,7 @@ export const WorksListTableRow = (props: Props) => {
             )}
           </TableCell>
           <TableCell>
-            <Link to={`/posts/${props.work.id}/edit`}>
+            <Link to={editUrl()}>
               <PencilIcon />
             </Link>
           </TableCell>

@@ -10,6 +10,8 @@ type Props = {
   setOgpBase64?(ogpBase64: string | null): void
   setIsThumbnailLandscape?(isThumbnailLandscape: boolean): void
   onVideoChange(videoFile: File | null): void
+  isEnabledSelectVideo?: boolean
+  previewVideoUrl?: string
 }
 
 /**
@@ -139,21 +141,26 @@ export const PostFormItemVideo = (props: Props) => {
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
-        <input id="video_input" {...getInputProps()} />
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-        <div
-          className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
-          onClick={() => {
-            const inputElement = document.getElementById(
-              "video_input",
-            ) as HTMLInputElement
-            if (inputElement) {
-              inputElement.click()
-            }
-          }}
-        >
-          <p className="font-bold">動画を選択</p>
-        </div>
+        {props.isEnabledSelectVideo === undefined ||
+          (props.isEnabledSelectVideo && (
+            <>
+              <input id="video_input" {...getInputProps()} />
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+              <div
+                className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+                onClick={() => {
+                  const inputElement = document.getElementById(
+                    "video_input",
+                  ) as HTMLInputElement
+                  if (inputElement) {
+                    inputElement.click()
+                  }
+                }}
+              >
+                <p className="font-bold">動画を選択</p>
+              </div>
+            </>
+          ))}
         {props.videoFile && (
           <VideoItem
             videoFile={props.videoFile}
@@ -162,6 +169,15 @@ export const PostFormItemVideo = (props: Props) => {
               updateThumbnail(null)
             }}
           />
+        )}
+        {props.previewVideoUrl && (
+          <video
+            controls
+            className="m-auto mt-4 mb-4 w-64"
+            src={props.previewVideoUrl}
+          >
+            <track kind="captions" src="path_to_captions.vtt" label="English" />
+          </video>
         )}
       </div>
     </>

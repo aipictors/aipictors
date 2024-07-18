@@ -55,6 +55,21 @@ export const postAnimationFormReducer = (
         uploadedWorkId: action.payload.uploadedWorkId,
         uploadedWorkUuid: action.payload.uploadedWorkUuid,
       }
+    case "INITIALIZE":
+      return {
+        ...state,
+        thumbnailBase64: action.payload.thumbnailBase64,
+        videoFile: action.payload.videoFile
+          ? (action.payload.videoFile as File)
+          : null,
+        ogpBase64: action.payload.ogpBase64,
+        thumbnailPosX: action.payload.thumbnailPosX,
+        thumbnailPosY: action.payload.thumbnailPosY,
+        isThumbnailLandscape: action.payload.isThumbnailLandscape,
+        progress: action.payload.progress,
+        uploadedWorkId: action.payload.uploadedWorkId,
+        uploadedWorkUuid: action.payload.uploadedWorkUuid,
+      }
   }
 
   throw new Error("Invalid action type")

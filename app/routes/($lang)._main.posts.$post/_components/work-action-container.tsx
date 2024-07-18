@@ -47,6 +47,9 @@ export const WorkActionContainer = (props: Props) => {
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={isHideEditButton}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      workType={
+        (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
+      }
     />
   )
 }

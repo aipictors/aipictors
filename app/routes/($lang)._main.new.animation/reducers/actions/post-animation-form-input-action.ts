@@ -1,11 +1,14 @@
+import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
 import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
 import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
 import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
 import {
+  array,
   boolean,
   instance,
   literal,
   null_,
+  nullable,
   object,
   string,
   union,
@@ -109,5 +112,34 @@ export const vPostAnimationFormInputAction = union([
   object({
     type: literal("SET_RESERVATION_TIME"),
     payload: string(),
+  }),
+  object({
+    type: literal("INITIALIZE"),
+    payload: object({
+      date: instance(Date),
+      title: string(),
+      enTitle: string(),
+      caption: string(),
+      enCaption: string(),
+      themeId: nullable(string()),
+      albumId: nullable(string()),
+      link: string(),
+      tags: array(vTag),
+      useTagFeature: boolean(),
+      useCommentFeature: boolean(),
+      usePromotionFeature: boolean(),
+      useGenerationParams: boolean(),
+      ratingRestriction: vPostRating,
+      accessType: vPostAccessType,
+      imageStyle: union([
+        literal("ILLUSTRATION"),
+        literal("REAL"),
+        literal("SEMI_REAL"),
+      ]),
+      aiModelId: string(),
+      reservationDate: nullable(string()),
+      reservationTime: nullable(string()),
+      imageInformation: nullable(vImageInformation),
+    }),
   }),
 ])
