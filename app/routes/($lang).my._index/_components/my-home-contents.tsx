@@ -1,5 +1,5 @@
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircleIcon } from "lucide-react"
-import { DashboardHomeContentContainer } from "@/routes/($lang).dashboard._index/_components/dashboard-home-content-container"
+import { DashboardHomeContentContainer } from "@/routes/($lang).my._index/_components/my-home-content-container"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"

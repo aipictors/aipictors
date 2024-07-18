@@ -7,8 +7,8 @@ import {
 } from "@/_components/ui/table"
 import type { SortType } from "@/_types/sort-type"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { AlbumsListTableRow } from "@/routes/($lang).dashboard._index/_components/albums-list-table-row"
-import { AlbumsListColumn } from "@/routes/($lang).dashboard._index/_components/albums-list-column"
+import { AlbumsListTableRow } from "@/routes/($lang).my._index/_components/albums-list-table-row"
+import { AlbumsListColumn } from "@/routes/($lang).my._index/_components/albums-list-column"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {

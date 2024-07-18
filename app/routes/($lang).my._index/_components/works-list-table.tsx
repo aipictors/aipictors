@@ -5,10 +5,10 @@ import {
   TableHead,
   TableBody,
 } from "@/_components/ui/table"
-import { WorksListColumn } from "@/routes/($lang).dashboard._index/_components/works-list-column"
+import { WorksListColumn } from "@/routes/($lang).my._index/_components/works-list-column"
 import type { SortType } from "@/_types/sort-type"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { WorksListTableRow } from "@/routes/($lang).dashboard._index/_components/works-list-table-row"
+import { WorksListTableRow } from "@/routes/($lang).my._index/_components/works-list-table-row"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {

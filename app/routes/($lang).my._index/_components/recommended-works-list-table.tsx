@@ -6,7 +6,7 @@ import {
   TableBody,
 } from "@/_components/ui/table"
 import { ScrollArea } from "@/_components/ui/scroll-area"
-import { RecommendedWorksListTableRow } from "@/routes/($lang).dashboard._index/_components/recommended-works-list-table-row"
+import { RecommendedWorksListTableRow } from "@/routes/($lang).my._index/_components/recommended-works-list-table-row"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {

@@ -1,8 +1,7 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import { WorksListSortableSetting } from "@/routes/($lang).dashboard._index/_components/works-list-sortable-setting"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
+import { WorksListSortableSetting } from "@/routes/($lang).my._index/_components/works-list-sortable-setting"
 import {
   Select,
   SelectTrigger,
@@ -11,23 +10,18 @@ import {
   SelectItem,
 } from "@/_components/ui/select"
 import { useState } from "react"
-import { WorksListFilterSettingButton } from "@/routes/($lang).dashboard._index/_components/works-list-filter-setting-button"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import { toRatingText } from "@/_utils/work/to-rating-text"
-import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { toWorkTypeText } from "@/_utils/work/to-work-type-text"
 
 type Props = {
-  workTabType: WorkTabType | null
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   sumWorksCount: number
-  sumAlbumsCount: number
-  setWorkTabType: (workTabType: WorkTabType | null) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -78,7 +72,7 @@ export const WorksSetting = (props: Props) => {
     <>
       <div className="mb-4">
         <>
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <WorksSettingContents
               workTabType={props.workTabType}
               sumWorksCount={props.sumWorksCount}
@@ -90,7 +84,7 @@ export const WorksSetting = (props: Props) => {
                 onToggleFilterButton={onToggleFilterButton}
               />
             </div>
-          </div>
+          </div> */}
           <div
             className="mt-4 mb-4"
             style={{

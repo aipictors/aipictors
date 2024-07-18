@@ -1,5 +1,5 @@
 import { RoundedLightButton } from "@/_components/button/rounded-light-button"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
+import type { WorkTabType } from "@/routes/($lang).my._index/_types/work-tab-type"
 
 type Props = {
   workTabType: WorkTabType | null

@@ -1,8 +1,7 @@
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AuthContext } from "@/_contexts/auth-context"
-import { DashboardContents } from "@/routes/($lang).dashboard._index/_components/dashboard-contents"
+import { DashboardHomeContents } from "@/routes/($lang).my._index/_components/my-home-contents"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Suspense, useContext } from "react"
+import { Suspense } from "react"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -11,7 +10,7 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - ダッシュボード"
+  const metaTitle = "Aipictors - ダッシュボード - ホーム"
 
   const metaDescription = "ダッシュボード"
 
@@ -33,15 +32,11 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export default function DashboardLayout() {
-  const authContext = useContext(AuthContext)
-
+export default function MyHome() {
   return (
     <>
       <Suspense fallback={<AppLoadingPage />}>
-        {authContext.isLoggedIn && (
-          <DashboardContents dashboardContentType="WORK" />
-        )}
+        <DashboardHomeContents />
       </Suspense>
     </>
   )

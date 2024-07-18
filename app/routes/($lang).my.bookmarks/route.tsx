@@ -1,37 +1,56 @@
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
-import { useContext } from "react"
-import { toDateTimeText } from "@/_utils/to-date-time-text"
-import { BookmarkWorksList } from "@/routes/($lang).dashboard._index/_components/bookmark-works-list"
-import { ResponsivePagination } from "@/_components/responsive-pagination"
-import { useQuery } from "@apollo/client/index"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { BookmarkListContainer } from "@/routes/($lang).my._index/_components/bookmark-list-container"
+import { useQuery } from "@apollo/client/index"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
+import React from "react"
+import { Suspense, useContext } from "react"
 
-type Props = {
-  page: number
-  maxCount: number
-  setPage: (page: number) => void
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": "max-age=0, s-maxage=0",
+  }
 }
 
-/**
- * ブックマーク一覧コンテナ
- */
-export const BookmarkListContainer = (props: Props) => {
+export const meta: MetaFunction = () => {
+  const metaTitle = "Aipictors - ダッシュボード - ブックマーク"
+
+  const metaDescription = "ダッシュボード - ブックマーク"
+
+  const metaImage =
+    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
+
+  return [
+    { title: metaTitle },
+    { name: "description", content: metaDescription },
+    { name: "robots", content: "noindex" },
+    { name: "twitter:title", content: metaTitle },
+    { name: "twitter:description", content: metaDescription },
+    { name: "twitter:image", content: metaImage },
+    { name: "twitter:card", content: "summary_large_image" },
+    { property: "og:title", content: metaTitle },
+    { property: "og:description", content: metaDescription },
+    { property: "og:image", content: metaImage },
+    { property: "og:site_name", content: metaTitle },
+  ]
+}
+
+export default function MyBookmarks() {
+  const [bookmarkPage, setBookmarkPage] = React.useState(0)
+
   const authContext = useContext(AuthContext)
 
-  if (
-    authContext.isLoading ||
-    authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
-    !authContext.userId
-  ) {
-    return null
+  if (!authContext.isLoggedIn) {
+    return <AppLoadingPage />
   }
+
   const { data: userResp, refetch } = useQuery(userQuery, {
     skip: authContext.isLoading,
     variables: {
-      bookmarksOffset: 16 * props.page,
-      bookmarksLimit: 16,
+      bookmarksOffset: 0,
+      bookmarksLimit: 0,
       userId: decodeURIComponent(authContext.userId),
       worksWhere: {},
       followeesWorksWhere: {},
@@ -49,34 +68,17 @@ export const BookmarkListContainer = (props: Props) => {
     },
   })
 
-  const works = userResp?.user?.bookmarkWorks ?? []
+  const bookmarkMaxCount = userResp?.user?.createdBookmarksCount ?? 0
 
   return (
     <>
-      <BookmarkWorksList
-        works={works.map((work) => ({
-          id: work.id,
-          title: work.title,
-          thumbnailImageUrl: work.smallThumbnailImageURL,
-          likesCount: work.likesCount,
-          bookmarksCount: work.bookmarksCount ?? 0,
-          commentsCount: work.commentsCount ?? 0,
-          viewsCount: work.viewsCount,
-          createdAt: toDateTimeText(work.createdAt), // Convert createdAt to string
-          accessType: work.accessType,
-          isTagEditable: work.isTagEditable,
-        }))}
-      />
-      <div className="mt-4 mb-8">
-        <ResponsivePagination
-          perPage={16}
-          maxCount={props.maxCount}
-          currentPage={props.page}
-          onPageChange={(page: number) => {
-            props.setPage(page)
-          }}
+      <Suspense fallback={<AppLoadingPage />}>
+        <BookmarkListContainer
+          page={bookmarkPage}
+          maxCount={bookmarkMaxCount}
+          setPage={setBookmarkPage}
         />
-      </div>
+      </Suspense>
     </>
   )
 }

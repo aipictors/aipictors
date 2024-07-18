@@ -2,10 +2,9 @@ import type { SortType } from "@/_types/sort-type"
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "@/_components/responsive-pagination"
-import { WorksList } from "@/routes/($lang).dashboard._index/_components/works-list"
+import { WorksList } from "@/routes/($lang).my._index/_components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
 import { graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 
@@ -17,7 +16,6 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   setWorksMaxCount: (worksMaxCount: number) => void
-  setWorkTabType: (workTabType: WorkTabType | null) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
@@ -30,7 +28,6 @@ type Props = {
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
-  albumsCountRefetch: () => void
 }
 
 /**
@@ -129,7 +126,6 @@ export const WorksListContainer = (props: Props) => {
         rating={props.rating}
         sort={props.sort}
         orderBy={props.orderBy}
-        setWorkTabType={props.setWorkTabType}
         setAccessType={props.setAccessType}
         setRating={props.setRating}
         setSort={props.setSort}

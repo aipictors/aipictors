@@ -1,6 +1,6 @@
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import type { SortType } from "@/_types/sort-type"
-import { WorksListSortableSetting } from "@/routes/($lang).dashboard._index/_components/works-list-sortable-setting"
+import { WorksListSortableSetting } from "@/routes/($lang).my._index/_components/works-list-sortable-setting"
 
 type Props = {
   nowSort: IntrospectionEnum<"WorkOrderBy">

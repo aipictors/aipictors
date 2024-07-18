@@ -1,7 +1,7 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { RecommendedWorksList } from "@/routes/($lang).dashboard._index/_components/recommended-works-list"
+import { RecommendedWorksList } from "@/routes/($lang).my._index/_components/recommended-works-list"
 import { toDateTimeText } from "@/_utils/to-date-time-text"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"

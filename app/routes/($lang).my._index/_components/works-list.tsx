@@ -1,9 +1,8 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import { WorksSpList } from "@/routes/($lang).dashboard._index/_components/works-sp-list"
-import { WorksListTable } from "@/routes/($lang).dashboard._index/_components/works-list-table"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
+import { WorksSpList } from "@/routes/($lang).my._index/_components/works-sp-list"
+import { WorksListTable } from "@/routes/($lang).my._index/_components/works-list-table"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
@@ -25,7 +24,6 @@ type Props = {
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
   rating: IntrospectionEnum<"Rating"> | null
-  setWorkTabType: (workTabType: WorkTabType | null) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
