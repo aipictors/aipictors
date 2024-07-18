@@ -568,8 +568,8 @@ export default function EditImage() {
     <div className="m-auto w-full max-w-[1200px] space-y-2">
       <ConstructionAlert
         type="WARNING"
-        title="試験的にリニューアル版を運用中です。"
-        fallbackURL="https://www.aipictors.com/post"
+        message="このページは現在開発中のため不具合が起きる可能性があります。"
+        fallbackURL={`https://www.aipictors.com/edit-works?id=${work.id}`}
       />
       <div className="space-y-4">
         <EditImageFormUploader state={state} dispatch={dispatch} />

@@ -303,7 +303,7 @@ export default function NewAnimation() {
     <div className="m-auto w-full max-w-[1200px] space-y-2">
       <ConstructionAlert
         type="WARNING"
-        title="試験的にリニューアル版を運用中です。"
+        message="このページは現在開発中のため不具合が起きる可能性があります。"
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
