@@ -1,17 +1,19 @@
 import { Button } from "@/_components/ui/button"
 import { Dialog, DialogContent } from "@/_components/ui/dialog"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { XIntent } from "@/routes/($lang)._main.posts.$post/_components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { useEffect } from "react"
 
 type Props = {
-  title: string
+  title: string | null
   isOpen: boolean
-  imageBase64: string
-  workId: string
-  uuid: string
+  imageBase64: string | null
+  workId: string | null
+  uuid: string | null
   shareTags: string[]
   createdAt: number
+  accessType: IntrospectionEnum<"AccessType">
 }
 
 export const SuccessCreatedWorkDialog = (props: Props) => {
@@ -60,6 +62,20 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
     }, 1000)
   }, [props.isOpen, props.workId])
 
+  const link = () => {
+    if (
+      props.createdAt > new Date().getTime() ||
+      props.accessType === "DRAFT" ||
+      props.accessType === "LIMITED" ||
+      props.accessType === "PRIVATE"
+    ) {
+      return "/dashboard/posts"
+    }
+    if (props.uuid) {
+      return `/posts/${props.uuid}`
+    }
+    return `/posts/${props.workId}`
+  }
   return (
     <>
       <Dialog
@@ -67,13 +83,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           if (!isOpen) {
             // ページ遷移
             if (typeof window !== "undefined") {
-              if (props.createdAt > new Date().getTime()) {
-                window.location.href = "/dashboard/posts"
-              } else if (props.uuid !== "") {
-                window.location.href = `/posts/${props.uuid}`
-              } else {
-                window.location.href = `/posts/${props.workId}`
-              }
+              window.location.href = link()
             }
           }
         }}
@@ -85,22 +95,8 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
               id="confetti-container"
               className="relative h-40 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900"
             />
-            {props.createdAt > new Date().getTime() ? (
-              <Link to={"/dashboard/posts"}>
-                <img
-                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
-                  src={props.imageBase64}
-                  alt="work-image"
-                />
-              </Link>
-            ) : (
-              <Link
-                to={
-                  props.uuid !== ""
-                    ? `/posts/${props.uuid}`
-                    : `/posts/${props.workId}`
-                }
-              >
+            {props.imageBase64 && (
+              <Link to={link()}>
                 <img
                   className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
                   src={props.imageBase64}
@@ -115,7 +111,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
             <XIntent
               text={`${props.title}\n`}
               url={`${
-                props.uuid !== ""
+                props.uuid
                   ? `https://aipictors.com/works/${props.uuid}`
                   : `https://aipictors.com/works/${props.workId}`
               }\n`}
@@ -125,13 +121,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           <Button
             onClick={() => {
               if (typeof window !== "undefined") {
-                if (props.createdAt > new Date().getTime()) {
-                  window.location.href = "/dashboard/posts"
-                } else if (props.uuid !== "") {
-                  window.location.href = `/posts/${props.uuid}`
-                } else {
-                  window.location.href = `/posts/${props.workId}`
-                }
+                window.location.href = link()
               }
             }}
             className="mt-2"

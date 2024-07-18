@@ -32,6 +32,10 @@ export const TagList: React.FC<TagListProps> = ({
     setDraggedTagId(null)
   }
 
+  if (tags.length === 0) {
+    return null
+  }
+
   return (
     <div
       className={cn("rounded-md", {

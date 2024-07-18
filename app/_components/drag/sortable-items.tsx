@@ -22,8 +22,8 @@ import { SortableItem } from "@/_components/drag/sortable-item"
 
 type Props = {
   items: TSortableItem[]
-  setItems: React.Dispatch<React.SetStateAction<TSortableItem[]>>
-  setIndexList: React.Dispatch<React.SetStateAction<number[]>>
+  setItems: (items: TSortableItem[]) => void
+  setIndexList(value: number[]): void
   isDeletable?: boolean
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void
@@ -62,15 +62,12 @@ export const SortableItems = (props: Props) => {
         ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
         : props.items
     setActiveItem(undefined)
-
-    // itemsの各itemsのidをいまの並び順ごとに0, 1, 2...と振り直す
-    props.setItems(() =>
+    props.setItems(
       newItems.map((item, index) => ({
         ...item,
         id: index,
       })),
     )
-
     // インデックス並び替え
     changeIndexList(activeIndex, overIndex)
   }
@@ -94,15 +91,15 @@ export const SortableItems = (props: Props) => {
     console.log("deletedId", deletedId)
 
     // deletedId以降は1つずつ前にずらす
-    props.setIndexList((prev) =>
-      prev
-        .filter((id) => id !== deletedId)
-        .map((id) => (id > deletedId ? id - 1 : id)),
-    )
+    const draftIds = props.items
+      .map((item) => item.id)
+      .filter((id) => id !== deletedId)
+      .map((id) => (id > deletedId ? id - 1 : id))
+    props.setIndexList(draftIds)
 
+    // itemsの各itemsのidを今の並び順ごとに0, 1, 2...と振り直す
     const newItems = props.items.filter((item) => item.id !== deletedId)
-    // itemsの各itemsのidをいまの並び順ごとに0, 1, 2...と振り直す
-    props.setItems(() =>
+    props.setItems(
       newItems.map((item, index) => ({
         ...item,
         id: index,

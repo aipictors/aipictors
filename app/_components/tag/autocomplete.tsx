@@ -1,10 +1,14 @@
+// https://github.com/JaleelB/emblor/blob/main/website/components/tag/autocomplete.tsx
+
+import type React from "react"
 import {
   Command,
   CommandList,
   CommandItem,
   CommandGroup,
+  CommandEmpty,
 } from "@/_components/ui/command"
-import type { Tag as TagType } from "@/_components/tag/tag-input"
+import type { Tag as TagType } from "./tag-input"
 
 type AutocompleteProps = {
   tags: TagType[]
@@ -26,31 +30,31 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   children,
 }) => {
   return (
-    <Command className="border">
+    <Command className="min-w-[400px] border">
       {children}
       <CommandList>
+        <CommandEmpty>{"検索結果なし"}</CommandEmpty>
         <CommandGroup heading="">
-          {autocompleteOptions.length !== 0 &&
-            autocompleteOptions.map((option) => (
-              <CommandItem key={option.id}>
-                {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-                <div
-                  className="w-full"
-                  onClick={() => {
-                    if (maxTags && tags.length >= maxTags) return
-                    if (
-                      !allowDuplicates &&
-                      tags.some((tag) => tag.text === option.text)
-                    )
-                      return
-                    setTags([...tags, option])
-                    onTagAdd?.(option.text)
-                  }}
-                >
-                  {option.text}
-                </div>
-              </CommandItem>
-            ))}
+          {autocompleteOptions.map((option) => (
+            <CommandItem key={option.id}>
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+              <div
+                className="w-full"
+                onClick={() => {
+                  if (maxTags && tags.length >= maxTags) return
+                  if (
+                    !allowDuplicates &&
+                    tags.some((tag) => tag.text === option.text)
+                  )
+                    return
+                  setTags([...tags, option])
+                  onTagAdd?.(option.text)
+                }}
+              >
+                {option.text}
+              </div>
+            </CommandItem>
+          ))}
         </CommandGroup>
       </CommandList>
     </Command>

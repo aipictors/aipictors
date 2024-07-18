@@ -3,10 +3,12 @@ import { PencilIcon } from "lucide-react"
 import { useContext } from "react"
 import { AuthContext } from "@/_contexts/auth-context"
 import { Link } from "@remix-run/react"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
+  type: IntrospectionEnum<"WorkType">
 }
 
 /**
@@ -19,10 +21,24 @@ export const WorkEditorButton = (props: Props) => {
     return null
   }
 
+  const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
+    if (workType === "WORK") {
+      return `/posts/${id}/image/edit`
+    }
+    if (workType === "VIDEO") {
+      return `/posts/${id}/animation/edit`
+    }
+    if (workType === "COLUMN" || workType === "NOVEL") {
+      return `/posts/${id}/text/edit`
+    }
+
+    return "/"
+  }
+
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
-        <Link to={`/posts/${props.targetWorkId}/edit`}>
+        <Link to={editUrl(props.targetWorkId, props.type)}>
           <Button className="space-x-2" aria-label={"編集"} variant="secondary">
             <PencilIcon width={16} />
             <p>編集</p>

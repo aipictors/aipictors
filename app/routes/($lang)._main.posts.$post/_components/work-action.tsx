@@ -1,20 +1,20 @@
-import {} from "lucide-react"
 import { MenuPopover } from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 import { LikeButton } from "@/_components/like-button"
 import { createImageFileFromUrl } from "@/routes/($lang).generation._index/_utils/create-image-file-from-url"
 import { downloadImageFile } from "@/routes/($lang).generation._index/_utils/download-image-file"
 import { WorkEditorButton } from "@/routes/($lang)._main.posts.$post/_components/work-editor-button"
-import {} from "@apollo/client/index"
 import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "@/routes/($lang)._main.posts.$post/_components/work-action-bookmark"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AuthContext } from "@/_contexts/auth-context"
 import { RecommendButton } from "@/_components/recommend-button"
+import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
   title?: string
   imageUrl?: string
+  workType: IntrospectionEnum<"WorkType">
   bookmarkFolderId: string | null
   workLikesCount: number
   defaultLiked: boolean
@@ -61,6 +61,7 @@ export const WorkAction = (props: Props) => {
           <WorkEditorButton
             targetWorkId={props.targetWorkId}
             targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+            type={props.workType}
           />
         )}
         {props.targetWorkOwnerUserId !== appContext.userId && (

@@ -8,22 +8,22 @@ interface PNGItem {
 }
 
 interface ImageParameters {
-  prompt: string
-  negativePrompt: string
-  seed: string
-  steps: string
-  strength: string
-  noise: string
-  scale: string
-  sampler: string
-  vae: string
-  modelHash: string
-  model: string
+  prompt: string | null
+  negativePrompt: string | null
+  seed: string | null
+  steps: string | null
+  strength: string | null
+  noise: string | null
+  scale: string | null
+  sampler: string | null
+  vae: string | null
+  modelHash: string | null
+  model: string | null
 }
 
 export interface PNGInfo {
   params: ImageParameters
-  src: string
+  src: string | null
 }
 
 /**
@@ -36,6 +36,32 @@ export const getExtractInfoFromPNG = async (file: File): Promise<PNGInfo> => {
   const pngInfo = parsePNGInfo(chunks)
   const pngStr = getPngInfo(chunks)
   return { params: exchangeFromPNGItem(pngInfo), src: pngStr }
+}
+
+/**
+ * Converts an image URL to a File object.
+ * @param imageUrl - The URL of the image.
+ * @param fileName - The desired name of the file.
+ * @returns A promise that resolves to the File object.
+ */
+async function urlToFile(imageUrl: string, fileName: string): Promise<File> {
+  // Fetch the image data
+  const response = await fetch(imageUrl)
+  const blob = await response.blob()
+
+  // Create a File object from the Blob
+  return new File([blob], fileName, { type: blob.type })
+}
+
+/**
+ * Base64からPNGInfoを解析する
+ * @param imageUrl
+ */
+export const getExtractInfoFromBase64 = async (
+  imageUrl: string,
+): Promise<PNGInfo> => {
+  const file = await urlToFile(imageUrl, "image.png")
+  return await getExtractInfoFromPNG(file)
 }
 
 /**

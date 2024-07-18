@@ -40,7 +40,7 @@ export const InProgressGenerationCard = (props: Props) => {
 
   return (
     <>
-      <Card>
+      <Card className="p-1">
         <div>
           <div className="relative flex">
             <div className="m-auto flex flex-col gap-y-2 p-4">

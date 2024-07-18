@@ -34,6 +34,20 @@ type Props = {
   orderBy: IntrospectionEnum<"WorkOrderBy">
 }
 
+const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
+  if (workType === "WORK") {
+    return `/posts/${id}/image/edit`
+  }
+  if (workType === "VIDEO") {
+    return `/posts/${id}/animation/edit`
+  }
+  if (workType === "COLUMN" || workType === "NOVEL") {
+    return `/posts/${id}/text/edit`
+  }
+
+  return "/"
+}
+
 /**
  * スマホ向け作品一覧
  */
@@ -114,7 +128,7 @@ export const WorksSpList = (props: Props) => {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              <Link to={`/posts/${work.id}/edit`}>
+              <Link to={editUrl(work.id, work.workType)}>
                 <PencilIcon />
               </Link>
             </div>
