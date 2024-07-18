@@ -47,7 +47,7 @@ function getReservationDetails(createdAt: number) {
       const reservationDate = reservedDate
         .toISOString()
         .slice(0, 10)
-        .replace(/-/g, "/")
+        .replace(/-/g, "-")
       const reservationTime = reservedDate.toISOString().slice(11, 16)
       return {
         reservationDate,
@@ -477,6 +477,7 @@ export default function EditImage() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          eventInputHidden={true}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"更新"}
@@ -490,6 +491,7 @@ export default function EditImage() {
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
         createdAt={createdAt.getTime()}
+        accessType={inputState.accessType}
       />
       <CreatingWorkDialog
         progress={state.progress}

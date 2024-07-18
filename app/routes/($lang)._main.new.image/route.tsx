@@ -17,6 +17,7 @@ import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/redu
 import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
@@ -313,7 +314,21 @@ export default function NewImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
-        <PostImageFormUploader state={state} dispatch={dispatch} />
+        <div>
+          <div className="flex w-full items-center">
+            <Link className="w-full text-center" to={"/new/image"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                画像
+              </div>
+            </Link>
+            <Link className="w-full text-center" to={"/new/animation"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                動画
+              </div>
+            </Link>
+          </div>
+          <PostImageFormUploader state={state} dispatch={dispatch} />
+        </div>
         <PostImageFormInput
           imageInformation={state.pngInfo}
           state={inputState}
@@ -333,6 +348,7 @@ export default function NewImage() {
         uuid={state.uploadedWorkUuid}
         shareTags={["Aipictors", "AIイラスト", "AIart"]}
         createdAt={createdAt.getTime()}
+        accessType={inputState.accessType}
       />
       <CreatingWorkDialog
         progress={state.progress}

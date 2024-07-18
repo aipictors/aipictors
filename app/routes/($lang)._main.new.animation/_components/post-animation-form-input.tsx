@@ -32,6 +32,7 @@ type Props = {
   state: PostAnimationFormInputState
   albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
   currentPass: FragmentOf<typeof passFieldsFragment> | null
+  eventInputHidden?: boolean
 }
 
 export function PostAnimationFormInput(props: Props) {
@@ -193,7 +194,7 @@ export function PostAnimationFormInput(props: Props) {
           />
         )}
 
-      {data && 0 < data?.appEvents.length && (
+      {data && 0 < data?.appEvents.length && !props.eventInputHidden && (
         <PostFormItemEvent
           eventName={data?.appEvents[0]?.title ?? null}
           eventDescription={data?.appEvents[0]?.description ?? null}

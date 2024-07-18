@@ -137,30 +137,34 @@ export const PostFormItemVideo = (props: Props) => {
       <div
         {...getRootProps()}
         className={cn(
-          "h-[100%] w-[100%] border-2 border-gray-800",
+          "h-[100%] w-[100%] border-2 border-zinc-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
-        {props.isEnabledSelectVideo === undefined ||
-          (props.isEnabledSelectVideo && (
-            <>
-              <input id="video_input" {...getInputProps()} />
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <div
-                className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
-                onClick={() => {
-                  const inputElement = document.getElementById(
-                    "video_input",
-                  ) as HTMLInputElement
-                  if (inputElement) {
-                    inputElement.click()
-                  }
-                }}
-              >
-                <p className="font-bold">動画を選択</p>
-              </div>
-            </>
-          ))}
+        {(props.isEnabledSelectVideo === undefined ||
+          props.isEnabledSelectVideo) && (
+          <>
+            <input id="video_input" {...getInputProps()} />
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            <div
+              className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+              onClick={() => {
+                const inputElement = document.getElementById(
+                  "video_input",
+                ) as HTMLInputElement
+                if (inputElement) {
+                  inputElement.click()
+                }
+              }}
+            >
+              <p className="font-bold">動画を選択</p>
+            </div>
+            <div className="m-4 flex flex-col text-white">
+              <p className="text-center text-sm">{"MP4"}</p>
+              <p className="text-center text-sm">{"12秒まで"}</p>
+            </div>
+          </>
+        )}
         {props.videoFile && (
           <VideoItem
             videoFile={props.videoFile}

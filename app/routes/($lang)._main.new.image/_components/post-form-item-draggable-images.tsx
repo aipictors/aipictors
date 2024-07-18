@@ -208,7 +208,7 @@ export const PostFormItemDraggableImages = (props: Props) => {
       <div
         {...getRootProps()}
         className={cn(
-          "h-[100%] w-[100%] border-2 border-gray-800",
+          "h-[100%] w-[100%] border-2 border-zinc-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
         )}
       >
