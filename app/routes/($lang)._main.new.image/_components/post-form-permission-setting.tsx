@@ -22,7 +22,7 @@ export const PostFormPermissionSetting = (props: Props) => {
               props.onTagEditableChange(value)
             }}
             id="tag-editable"
-            checked={props.isTagEditableChecked}
+            checked={!props.isTagEditableChecked}
           />
           <label className="text-sm" htmlFor="tag-editable">
             {"タグの編集を許可しない"}
@@ -34,7 +34,7 @@ export const PostFormPermissionSetting = (props: Props) => {
               props.onCommentsEditableChange(value)
             }}
             id="comments-editable"
-            checked={props.isCommentsEditableChecked}
+            checked={!props.isCommentsEditableChecked}
           />
           <label className="text-sm" htmlFor="comments-editable">
             {"コメントを許可しない"}

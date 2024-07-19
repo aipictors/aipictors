@@ -58,10 +58,10 @@ export default function NewAnimation() {
       tags: [],
       themeId: null,
       title: "",
-      useCommentFeature: false,
+      useCommentFeature: true,
       useGenerationParams: true,
       usePromotionFeature: false,
-      useTagFeature: false,
+      useTagFeature: true,
     },
   )
 
