@@ -271,7 +271,7 @@ export const ImagesPreview = (props: Props) => {
     <div className="flex flex-col space-y-2">
       <div className="relative">
         {/* Display thumbnail */}
-        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-gray-100 object-contain dark:bg-zinc-900">
+        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card object-contain ">
           {props.imageURLs.length > 1 && (
             <Badge
               variant="secondary"
@@ -282,7 +282,7 @@ export const ImagesPreview = (props: Props) => {
           )}
           <div className="inline-block overflow-hidden text-center">
             <img
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900"
+              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
               draggable={false}
               key={props.thumbnailUrl}
               alt="thumbnail"

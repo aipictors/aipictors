@@ -187,10 +187,14 @@ export const LikeButton = ({
         />
       </div>
       {text && (
-        <span className={cn("mr-3 text-black text-sm dark:text-white")}>
-          {text}
-          {likedCount}
-        </span>
+        <div
+          className={cn(
+            "mr-4 flex space-x-1 text-black text-sm dark:text-white",
+          )}
+        >
+          <p>{text}</p>
+          <p>{likedCount}</p>
+        </div>
       )}
     </button>
   )
