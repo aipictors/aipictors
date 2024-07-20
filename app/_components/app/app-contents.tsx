@@ -1,8 +1,10 @@
 import { AppAside } from "@/_components/app/app-aside"
 import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-route-list"
+import type React from "react"
 import { useState } from "react"
 
 type Props = Readonly<{
+  header: React.ReactNode
   outlet: React.ReactNode
   footer: React.ReactNode
 }>
@@ -26,6 +28,7 @@ export function AppContents(props: Props) {
         <div
           className={`container m-auto max-w-[100%] space-y-4 overflow-hidden ${isOpen ? "px-4 md:pr-8 md:pl-48" : "px-4 md:px-8"}`}
         >
+          {props.header}
           {props.outlet}
           {props.footer}
         </div>

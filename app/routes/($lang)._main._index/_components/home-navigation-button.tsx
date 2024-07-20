@@ -12,70 +12,63 @@ type Props = {
   isDisabled?: boolean
 }
 
+const renderButtonContent = (props: Props) => (
+  <>
+    {props.icon && <props.icon className="mr-4 w-4" />}
+    <span>{props.children}</span>
+  </>
+)
+
 export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
   (props, ref) => {
-    if (props.isDisabled) {
+    const { href, isDisabled, onClick } = props
+
+    if (isDisabled) {
       return (
         <Button
           ref={ref}
           variant={"ghost"}
-          disabled={true}
+          disabled
           size={"sm"}
           className="w-full justify-start"
         >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
+          {renderButtonContent(props)}
         </Button>
       )
     }
 
-    if (props.href === undefined) {
+    if (!href) {
       return (
         <Button
           ref={ref}
           variant={"ghost"}
           className="w-full justify-start"
           size={"sm"}
-          onClick={props.onClick}
+          onClick={onClick}
         >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
+          {renderButtonContent(props)}
         </Button>
       )
     }
 
-    if (props.href.startsWith("http")) {
-      return (
+    const isExternalLink = href.startsWith("http")
+    return (
+      <Button
+        variant={"ghost"}
+        size={"sm"}
+        className="w-full justify-start"
+        asChild
+        disabled={isDisabled}
+      >
         <Link
           className="block"
-          to={props.href}
-          target="_blank"
-          rel="noopener noreferrer"
+          to={href}
+          target={isExternalLink ? "_blank" : undefined}
+          rel={isExternalLink ? "noopener noreferrer" : undefined}
         >
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            className="w-full justify-start"
-          >
-            {props.icon && <props.icon className="mr-4 w-4" />}
-            <span>{props.children}</span>
-          </Button>
+          {renderButtonContent(props)}
         </Link>
-      )
-    }
-
-    return (
-      <Link className="block" to={props.href}>
-        <Button
-          variant={"ghost"}
-          className="w-full justify-start"
-          size={"sm"}
-          disabled={props.isDisabled}
-        >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
-        </Button>
-      </Link>
+      </Button>
     )
   },
 )

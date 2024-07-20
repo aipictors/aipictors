@@ -11,8 +11,11 @@ export const meta: MetaFunction = () => {
 export default function MainLayout() {
   return (
     <>
-      <HomeHeader />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppContents
+        header={<HomeHeader />}
+        outlet={<Outlet />}
+        footer={<HomeFooter />}
+      />
     </>
   )
 }

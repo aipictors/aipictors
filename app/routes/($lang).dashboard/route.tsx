@@ -15,8 +15,11 @@ export default function DashboardLayout() {
 
   return (
     <>
-      <HomeHeader />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppContents
+        header={<HomeHeader />}
+        outlet={<Outlet />}
+        footer={<HomeFooter />}
+      />
     </>
   )
 }

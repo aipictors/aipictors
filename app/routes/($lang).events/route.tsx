@@ -6,8 +6,11 @@ import { Outlet } from "@remix-run/react"
 export default function EventsLayout() {
   return (
     <>
-      <HomeHeader />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppContents
+        header={<HomeHeader />}
+        outlet={<Outlet />}
+        footer={<HomeFooter />}
+      />
     </>
   )
 }

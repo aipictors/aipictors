@@ -23,8 +23,11 @@ export default function SettingsLayout() {
 
   return (
     <>
-      <HomeHeader title={"アカウント"} />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppContents
+        header={<HomeHeader title={"アカウント"} />}
+        outlet={<Outlet />}
+        footer={<HomeFooter />}
+      />
     </>
   )
 }
