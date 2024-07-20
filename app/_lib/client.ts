@@ -8,6 +8,7 @@ import {
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
+import { createClient as createCmsClient } from "microcms-js-sdk"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
@@ -60,3 +61,8 @@ export const createClient = () => {
     cache: cache,
   })
 }
+
+export const microCmsClient = createCmsClient({
+  serviceDomain: "aipictors",
+  apiKey: config.microCMS.apiKey,
+})
