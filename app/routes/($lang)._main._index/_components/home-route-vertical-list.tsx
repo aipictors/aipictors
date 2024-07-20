@@ -103,6 +103,11 @@ export const HomeRouteList = () => {
               </HomeNavigationButton>
             </CarouselItem>
             <CarouselItem className="basis-1/1 xl:basis-1/8">
+              <HomeNavigationButton href={"/releases"} icon={RocketIcon}>
+                {"更新情報"}
+              </HomeNavigationButton>
+            </CarouselItem>
+            <CarouselItem className="basis-1/1 xl:basis-1/8">
               <div className={"py-2"}>
                 <Separator />
               </div>

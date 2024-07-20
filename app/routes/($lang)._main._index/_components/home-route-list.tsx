@@ -57,6 +57,9 @@ export const HomeRouteList = () => {
       <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
         {"開発予定"}
       </HomeNavigationButton>
+      <HomeNavigationButton href={"/releases"} icon={RocketIcon}>
+        {"更新情報"}
+      </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
         href={"/generation"}
