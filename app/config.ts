@@ -227,12 +227,6 @@ export const config = {
     measurementId: env.VITE_FIREBASE_MEASUREMENT_ID,
   },
   /**
-   * microCMS
-   */
-  microCMS: {
-    apiKey: import.meta.env.VITE_MICRO_CMS_API_KEY,
-  },
-  /**
    * Googleアドセンス
    */
   googleAdsense: {

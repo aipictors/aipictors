@@ -1,5 +1,5 @@
 import { json, Link, useLoaderData } from "@remix-run/react"
-import { microCmsClient } from "@/_lib/client"
+import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "@/_components/ui/button"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { ReleaseItem } from "@/routes/($lang)._main.releases.$id._index/_components/release-item"
@@ -29,6 +29,11 @@ export async function loader(props: LoaderFunctionArgs) {
     // 404
     throw new Response(null, { status: 404 })
   }
+
+  const microCmsClient = createCmsClient({
+    serviceDomain: "aipictors",
+    apiKey: import.meta.env.VITE_MICRO_CMS_API_KEY,
+  })
 
   const data: ApiResponse = await microCmsClient.get({
     endpoint: `releases?id=${props.params.id}`,
