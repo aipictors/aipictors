@@ -90,90 +90,24 @@ export const HomeRouteList = () => {
       <div className="space-y-1">
         <Carousel opts={{ dragFree: true, loop: false }}>
           <CarouselContent className="m-auto">
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/"} icon={HomeIcon}>
-                {"ホーム"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/themes"}
-                icon={LightbulbIcon}
-              >
-                {"創作アイデア"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
-                {"スタンプ広場"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/rankings"}
-                icon={AwardIcon}
-              >
-                {"ランキング"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/albums"}
-                icon={LibraryBigIcon}
-              >
-                {"シリーズ"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/collections"}
-                icon={FolderIcon}
-              >
-                {"コレクション"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
-                {"開発予定"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/releases"} icon={RocketIcon}>
-                {"更新情報"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <div className={"py-2"}>
-                <Separator />
-              </div>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/posts/2d"}
-                icon={ImageIcon}
-              >
-                {"イラスト"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/posts/2.5d"}
-                icon={BookImageIcon}
-              >
-                {"フォト"}
-              </HomeNavigationButton>
-            </CarouselItem>
-            <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/sensitive"} icon={BoxIcon}>
-                {"センシティブ"}
-              </HomeNavigationButton>
-            </CarouselItem>
+            {navItems.map((item, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              <CarouselItem key={index} className="basis-1/1 xl:basis-1/8">
+                {item.separator ? (
+                  <div className="py-2">
+                    <Separator />
+                  </div>
+                ) : (
+                  <HomeNavigationButton
+                    href={item.href}
+                    icon={item.icon}
+                    isDisabled={item.isDisabled}
+                  >
+                    {item.label}
+                  </HomeNavigationButton>
+                )}
+              </CarouselItem>
+            ))}
           </CarouselContent>
         </Carousel>
       </div>

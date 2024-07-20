@@ -1,6 +1,6 @@
 import { createContext } from "react"
 
-type Value =
+export type AuthContextType =
   /**
    * 読み込み中
    */
@@ -44,7 +44,7 @@ type Value =
       refresh(): Promise<void>
     }
 
-const defaultValue: Value = {
+const defaultValue: AuthContextType = {
   isLoading: true,
   isNotLoading: false,
   isLoggedIn: false,
@@ -56,4 +56,4 @@ const defaultValue: Value = {
   async refresh() {},
 }
 
-export const AuthContext = createContext<Value>(defaultValue)
+export const AuthContext = createContext<AuthContextType>(defaultValue)
