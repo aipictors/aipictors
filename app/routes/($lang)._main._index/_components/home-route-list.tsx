@@ -25,7 +25,7 @@ export const HomeRouteList = () => {
   const authContext = useContext(AuthContext)
 
   return (
-    <div className="space-y-1">
+    <div className="w-40 space-y-1">
       {authContext.isNotLoggedIn && (
         <>
           <LoginDialogButton variant="secondary" isWidthFull />
