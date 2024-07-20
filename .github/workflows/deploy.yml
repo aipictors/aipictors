@@ -11,9 +11,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  VITE_MICRO_CMS_API_KEY: ${{ secrets.VITE_MICRO_CMS_API_KEY }}
-
 jobs:
   call-workflow-test:
     uses: ./.github/workflows/test.yml
@@ -24,6 +21,8 @@ jobs:
     environment:
       name: ${{ github.ref_name == 'main' && 'Production' || 'Preview' }}
       url: ${{ steps.deployment_url.outputs.DEPLOYMENT_URL }}
+    env:
+      VITE_MICRO_CMS_API_KEY: ${{ secrets.VITE_MICRO_CMS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
