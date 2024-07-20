@@ -19,7 +19,7 @@ export const PostFormItemAdvertising = (props: Props) => {
         <p className="font-bold text-sm">宣伝作品</p>
         <div className="items-center text-sm opacity-65">
           <p>
-            広告枠を使って自身のサービスやプランを宣伝できます。\nスタンダード、プレミアムプランの場合、1週間に1作品可能です。
+            広告枠を使って自身のサービスやプランを宣伝できます。スタンダード、プレミアムプランの場合、1週間に1作品可能です。
           </p>
           <p>広告枠以外の宣伝は規約違反となります。</p>
           <p>一度設定した広告枠は取り消せません。</p>

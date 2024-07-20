@@ -18,8 +18,9 @@ import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link, useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
@@ -284,20 +285,19 @@ export default function NewAnimation() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // TODO_2024_08: 仕組みが分からなかった
-  // useBeforeUnload(
-  //   React.useCallback(
-  //     (event) => {
-  //       if (state.state) {
-  //         const confirmationMessage =
-  //           "ページ遷移すると変更が消えますが問題無いですか？"
-  //         event.returnValue = confirmationMessage
-  //         return confirmationMessage
-  //       }
-  //     },
-  //     [state.state],
-  //   ),
-  // )
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state],
+    ),
+  )
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-2">
