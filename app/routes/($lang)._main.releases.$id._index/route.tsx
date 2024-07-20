@@ -36,7 +36,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const data: ApiResponse = await microCmsClient.get({
-    endpoint: `releases?id=${props.params.id}`,
+    endpoint: `releases?ids=${props.params.id}`,
   })
 
   const list: ApiResponse = await microCmsClient.get({
@@ -53,6 +53,8 @@ export default function Release() {
   const data = useLoaderData<typeof loader>()
 
   const release: Release = data.data.contents[0]
+
+  console.log(release)
 
   const releases: Release[] = data.list.contents
 

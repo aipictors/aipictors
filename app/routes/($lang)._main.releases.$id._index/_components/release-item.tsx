@@ -1,3 +1,5 @@
+import { Badge } from "@/_components/ui/badge"
+
 type Props = {
   title: string
   description: string
@@ -19,6 +21,11 @@ export const ReleaseItem = (props: Props) => {
 
   return (
     <>
+      <div className="font-bold text-lg">{title}</div>
+      <Badge variant={"secondary"} className="w-12 text-xs">
+        <p className="w-auto text-center">{platform}</p>
+      </Badge>
+      <div className="whitespace-pre text-wrap text-sm">{description}</div>
       {thumbnailUrl && (
         <img
           src={thumbnailUrl}
@@ -26,9 +33,6 @@ export const ReleaseItem = (props: Props) => {
           className="m-auto mb-4 h-32 w-full max-w-64 rounded object-cover"
         />
       )}
-      <div className="font-bold text-lg">{title}</div>
-      <div className="mb-2 text-gray-500 text-sm">{platform}</div>
-      <div className="text-sm">{description}</div>
       <div className="mt-4 text-gray-400 text-xs">{formatDate(createdAt)}</div>
     </>
   )
