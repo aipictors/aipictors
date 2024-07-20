@@ -177,8 +177,8 @@ export const LikeButton = ({
             isLiked
               ? "fill-rose-500 text-rose-500"
               : isBackgroundNone
-                ? "fill-white text-black dark:text-white"
-                : "fill-transparent text-black dark:text-white",
+                ? "fill-white "
+                : "fill-transparent ",
             isLiked ? "like-animation" : "like-animation-end",
           )}
           size={Math.floor(size / 2)}
@@ -187,11 +187,7 @@ export const LikeButton = ({
         />
       </div>
       {text && (
-        <div
-          className={cn(
-            "mr-4 flex space-x-1 text-black text-sm dark:text-white",
-          )}
-        >
+        <div className={cn("mr-4 flex space-x-1 text-sm ")}>
           <p>{text}</p>
           <p>{likedCount}</p>
         </div>
