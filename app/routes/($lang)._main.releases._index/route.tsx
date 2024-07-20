@@ -37,6 +37,9 @@ export async function loader(props: LoaderFunctionArgs) {
 
 export default function Milestone() {
   const data = useLoaderData<typeof loader>()
+
+  console.log(data)
+
   const [limit] = useState(10)
   const [offset, setOffset] = useState(data.data.offset)
 
@@ -66,11 +69,13 @@ export default function Milestone() {
           key={release.createdAt}
           className="flex items-center space-x-4 border-b p-4"
         >
-          <img
-            src={release.thumbnail_url.url}
-            alt={release.title}
-            className="h-16 w-16 rounded-md object-cover"
-          />
+          {release.thumbnail_url && (
+            <img
+              src={release.thumbnail_url.url}
+              alt={release.title}
+              className="h-16 w-16 rounded-md object-cover"
+            />
+          )}
           <div className="flex flex-1 flex-col">
             <div className="flex justify-between">
               <p className="font-bold text-lg">{release.title}</p>

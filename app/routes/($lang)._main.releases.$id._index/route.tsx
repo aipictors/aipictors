@@ -67,7 +67,7 @@ export default function Release() {
       <ReleaseItem
         title={release.title}
         description={release.description}
-        thumbnailUrl={release.thumbnail_url.url}
+        thumbnailUrl={release.thumbnail_url ? release.thumbnail_url.url : null}
         platform={release.platform}
         createdAt={release.createdAt}
       />
@@ -78,11 +78,13 @@ export default function Release() {
           key={release.createdAt}
           className="flex items-center space-x-4 border-b p-4"
         >
-          <img
-            src={release.thumbnail_url.url}
-            alt={release.title}
-            className="h-16 w-16 rounded-md object-cover"
-          />
+          {release.thumbnail_url && (
+            <img
+              src={release.thumbnail_url.url}
+              alt={release.title}
+              className="h-16 w-16 rounded-md object-cover"
+            />
+          )}
           <div className="flex flex-1 flex-col">
             <div className="flex justify-between">
               <p className="font-bold text-lg">{release.title}</p>

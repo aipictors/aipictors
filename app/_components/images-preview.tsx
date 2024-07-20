@@ -271,7 +271,7 @@ export const ImagesPreview = (props: Props) => {
     <div className="flex flex-col space-y-2">
       <div className="relative">
         {/* Display thumbnail */}
-        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card object-contain ">
+        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto bg-card object-contain ">
           {props.imageURLs.length > 1 && (
             <Badge
               variant="secondary"
@@ -282,7 +282,7 @@ export const ImagesPreview = (props: Props) => {
           )}
           <div className="inline-block overflow-hidden text-center">
             <img
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain"
+              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-card object-contain"
               draggable={false}
               key={props.thumbnailUrl}
               alt="thumbnail"
@@ -298,7 +298,7 @@ export const ImagesPreview = (props: Props) => {
               <img
                 // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                 key={index}
-                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer rounded bg-card object-contain md:max-h-[72vh]"
+                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-card object-contain md:max-h-[72vh]"
                 draggable={false}
                 alt={`thumbnail-${index}`}
                 src={url}

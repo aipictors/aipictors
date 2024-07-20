@@ -1,7 +1,7 @@
 type Props = {
   title: string
   description: string
-  thumbnailUrl: string
+  thumbnailUrl: string | null
   platform: string
   createdAt: number
 }
@@ -19,11 +19,13 @@ export const ReleaseItem = (props: Props) => {
 
   return (
     <>
-      <img
-        src={thumbnailUrl}
-        alt={title}
-        className="m-auto mb-4 h-32 w-full max-w-64 rounded object-cover"
-      />
+      {thumbnailUrl && (
+        <img
+          src={thumbnailUrl}
+          alt={title}
+          className="m-auto mb-4 h-32 w-full max-w-64 rounded object-cover"
+        />
+      )}
       <div className="font-bold text-lg">{title}</div>
       <div className="mb-2 text-gray-500 text-sm">{platform}</div>
       <div className="text-sm">{description}</div>

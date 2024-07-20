@@ -230,7 +230,7 @@ export const config = {
    * microCMS
    */
   microCMS: {
-    apiKey: env.VITE_MICRO_CMS_API_KEY,
+    apiKey: import.meta.env.VITE_MICRO_CMS_API_KEY,
   },
   /**
    * Googleアドセンス
