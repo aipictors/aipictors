@@ -1,3 +1,4 @@
+import { AppAside } from "@/_components/app/app-aside"
 import { AppHeader } from "@/_components/app/app-header"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
@@ -14,7 +15,7 @@ import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-ro
 import { HomeUserNavigationMenu } from "@/routes/($lang)._main._index/_components/home-user-navigation-menu"
 import { Link, useNavigation } from "@remix-run/react"
 import { Loader2Icon, MenuIcon } from "lucide-react"
-import { Suspense, useContext } from "react"
+import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -23,7 +24,6 @@ type Props = {
 
 const HomeHeader = (props: Props) => {
   const navigation = useNavigation()
-
   const authContext = useContext(AuthContext)
 
   const {
@@ -32,10 +32,19 @@ const HomeHeader = (props: Props) => {
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
 
+  const [isAsideOpen, setIsAsideOpen] = useState(false)
+
+  const handleToggle = () => {
+    setIsAsideOpen(!isAsideOpen)
+  }
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
         <div className="flex min-w-fit items-center md:flex">
+          <Button variant={"ghost"} size={"icon"} onClick={handleToggle}>
+            <MenuIcon className="h-6 w-6" />
+          </Button>
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -114,6 +123,9 @@ const HomeHeader = (props: Props) => {
           />
         </div>
       </AppHeader>
+      <AppAside isOpen={isAsideOpen} onToggle={handleToggle}>
+        <HomeRouteList />
+      </AppAside>
     </Suspense>
   )
 }

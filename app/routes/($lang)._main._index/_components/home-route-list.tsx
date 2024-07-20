@@ -1,7 +1,6 @@
-import React, { useContext } from "react"
+import { Fragment, useContext } from "react"
 import { LoginDialogButton } from "@/_components/login-dialog-button"
 import { NavigationLogoutDialogButton } from "@/_components/logout-navigation-dialog-button"
-import { Separator } from "@/_components/ui/separator"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import {
@@ -84,18 +83,18 @@ const RenderNavItems = ({ authContext }: { authContext: AuthContextType }) => (
       if (item.authRequired && !authContext.isLoggedIn) return null
       return (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-        <React.Fragment key={index}>
-          <HomeNavigationButton
-            href={item.href}
-            icon={item.icon}
-            isDisabled={item.isDisabled}
-          >
-            {item.label}
-          </HomeNavigationButton>
-          <div className="py-2">
-            <Separator />
-          </div>
-        </React.Fragment>
+        <Fragment key={index}>
+          <li>
+            <HomeNavigationButton
+              href={item.href}
+              icon={item.icon}
+              isDisabled={item.isDisabled}
+            >
+              {item.label}
+            </HomeNavigationButton>
+            <div className="py-2" />
+          </li>
+        </Fragment>
       )
     })}
   </>
@@ -106,16 +105,18 @@ export const HomeRouteList = () => {
 
   return (
     <div className="space-y-1">
-      {authContext.isNotLoggedIn && (
-        <>
-          <LoginDialogButton variant="secondary" isWidthFull />
-          <div className="py-2">
+      <ol>
+        {authContext.isNotLoggedIn && (
+          <li>
+            <LoginDialogButton variant="secondary" isWidthFull />
+            {/* <div className="py-2">
             <Separator />
-          </div>
-        </>
-      )}
-      <RenderNavItems authContext={authContext} />
-      {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
+          </div> */}
+          </li>
+        )}
+        <RenderNavItems authContext={authContext} />
+        <li>{authContext.isLoggedIn && <NavigationLogoutDialogButton />}</li>
+      </ol>
     </div>
   )
 }

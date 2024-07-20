@@ -22,13 +22,13 @@ export function AppContents(props: Props) {
   return (
     <>
       <div className="flex">
-        <AppAside isOpen={isOpen} onToggle={onToggle}>
-          <HomeRouteList />
-        </AppAside>
         <div
           className={`container m-auto max-w-[100%] space-y-4 overflow-hidden ${isOpen ? "px-4 md:pr-8 md:pl-48" : "px-4 md:px-8"}`}
         >
           {props.header}
+          <AppAside isOpen={isOpen} onToggle={onToggle}>
+            <HomeRouteList />
+          </AppAside>
           {props.outlet}
           {props.footer}
         </div>

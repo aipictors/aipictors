@@ -4,7 +4,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/_components/ui/carousel"
-import { Separator } from "@/_components/ui/separator"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
 import {
@@ -19,6 +18,7 @@ import {
   RocketIcon,
   StampIcon,
 } from "lucide-react"
+import { Separator } from "@/_components/ui/separator"
 
 const navItems = [
   { href: "/", icon: HomeIcon, label: "ホーム" },
@@ -94,9 +94,7 @@ export const HomeRouteList = () => {
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               <CarouselItem key={index} className="basis-1/1 xl:basis-1/8">
                 {item.separator ? (
-                  <div className="py-2">
-                    <Separator />
-                  </div>
+                  <div className="py-2">{<Separator />}</div>
                 ) : (
                   <HomeNavigationButton
                     href={item.href}

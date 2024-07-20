@@ -30,7 +30,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           variant={"ghost"}
           disabled
           size={"sm"}
-          className="w-full justify-start"
+          className="justify-start"
         >
           {renderButtonContent(props)}
         </Button>
@@ -42,7 +42,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
         <Button
           ref={ref}
           variant={"ghost"}
-          className="w-full justify-start"
+          className="justify-start"
           size={"sm"}
           onClick={onClick}
         >
@@ -51,7 +51,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
       )
     }
 
-    const isExternalLink = href.startsWith("http")
+    const isExternalLink = href.startsWith("https")
     return (
       <Button
         variant={"ghost"}
