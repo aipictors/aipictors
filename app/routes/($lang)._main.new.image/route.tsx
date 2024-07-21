@@ -474,8 +474,8 @@ export default function NewImage() {
           </div>
           {state.isOpenLoadingAi && (
             <div className="absolute top-7 right-2 z-10 flex items-center space-x-2 opacity-80">
-              <Loader2Icon className="h-4 w-4 animate-spin" />
-              <p>{"AIでテイスト、年齢種別を判定中"}</p>
+              <Loader2Icon className="h-4 w-4 animate-spin text-white" />
+              <p className="text-white">{"AIでテイスト、年齢種別を判定中"}</p>
             </div>
           )}
           <PostImageFormUploader
