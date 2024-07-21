@@ -28,6 +28,14 @@ export default defineConfig({
           src: "./public/nsfw_model/*.onnx",
           dest: "./debug",
         },
+        {
+          src: "./node_modules/onnxruntime-web/dist/*.wasm",
+          dest: "./new",
+        },
+        {
+          src: "./public/nsfw_model/*.onnx",
+          dest: "./new",
+        },
       ],
     }),
   ],

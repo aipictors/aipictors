@@ -19,6 +19,7 @@ export const vPostImageFormState = object({
   isDrawing: boolean(),
   isHovered: boolean(),
   isOpenImageGenerationDialog: boolean(),
+  isOpenLoadingAi: boolean(),
   isThumbnailLandscape: boolean(),
   items: array(vSortableItem),
   isSelectedGenerationImage: boolean(),

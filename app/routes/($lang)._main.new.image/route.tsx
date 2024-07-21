@@ -6,6 +6,10 @@ import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-f
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
+import {
+  getNsfwPredictions,
+  type NsfwResults,
+} from "@/_utils/get-nsfw-predictions"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
@@ -21,6 +25,7 @@ import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_ut
 import { useQuery, useMutation } from "@apollo/client/index"
 import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
@@ -66,6 +71,7 @@ export default function NewImage() {
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
+    isOpenLoadingAi: false,
   })
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
@@ -101,11 +107,6 @@ export default function NewImage() {
               result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
             )
             .filter((url) => url !== ""),
-        )
-
-        console.log(
-          "viewer.viewer.imageGenerationResults",
-          viewer.viewer.imageGenerationResults,
         )
 
         dispatch({
@@ -365,6 +366,72 @@ export default function NewImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  const onInputFiles = async (files: FileList) => {
+    // OPEN_IMAGE_GENERATION_DIALOG
+    dispatch({ type: "OPEN_LOADING_AI", payload: true })
+
+    const fileArray = Array.from(files)
+
+    const results = await Promise.all(
+      fileArray.map(async (file) => {
+        try {
+          const nsfwInfo = await getNsfwPredictions(file)
+          return nsfwInfo
+        } catch (error) {
+          console.error("Error processing NSFW predictions:", error)
+          return null
+        }
+      }),
+    )
+
+    const validResults = results.filter(
+      (nsfwInfo) => nsfwInfo !== null,
+    ) as NsfwResults[]
+
+    const mostSuitableStyle = validResults.reduce(
+      (currentStyle, nsfwInfo) => {
+        if (nsfwInfo.drawings >= 0.7) {
+          return "ILLUSTRATION"
+        }
+        if (nsfwInfo.drawings >= 0.5) {
+          return "SEMI_REAL"
+        }
+        return "REAL"
+      },
+      "REAL" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
+    )
+
+    const strictestRating = validResults.reduce(
+      (currentRating, nsfwInfo) => {
+        const newRating =
+          nsfwInfo.hentai >= 0.8
+            ? "R18"
+            : nsfwInfo.hentai >= 0.05 ||
+                nsfwInfo.porn >= 0.5 ||
+                nsfwInfo.sexy >= 0.8
+              ? "R15"
+              : "G"
+
+        if (
+          inputState.ratingRestriction === "R18G" ||
+          inputState.ratingRestriction === "R18"
+        ) {
+          return inputState.ratingRestriction
+        }
+
+        return newRating === "R18" ||
+          (newRating === "R15" && currentRating === "G")
+          ? newRating
+          : currentRating
+      },
+      "G" as "G" | "R15" | "R18" | "R18G",
+    )
+
+    dispatchInput({ type: "SET_RATING_RESTRICTION", payload: strictestRating })
+    dispatchInput({ type: "SET_IMAGE_STYLE", payload: mostSuitableStyle })
+    dispatch({ type: "OPEN_LOADING_AI", payload: false })
+  }
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
@@ -387,7 +454,7 @@ export default function NewImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
-        <div>
+        <div className="relative">
           <div className="flex w-full items-center">
             <Link className="w-full text-center" to={"/new/image"}>
               <div className="w-full bg-zinc-900 text-center text-white">
@@ -399,8 +466,23 @@ export default function NewImage() {
                 動画
               </div>
             </Link>
+            {/* <Link className="w-full text-center" to={"/new/text"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                コラム/小説
+              </div>
+            </Link> */}
           </div>
-          <PostImageFormUploader state={state} dispatch={dispatch} />
+          {state.isOpenLoadingAi && (
+            <div className="absolute top-7 right-2 z-10 flex items-center space-x-2 opacity-80">
+              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <p>{"AIでテイスト、年齢種別を判定中"}</p>
+            </div>
+          )}
+          <PostImageFormUploader
+            state={state}
+            dispatch={dispatch}
+            onInputFiles={onInputFiles}
+          />
         </div>
         <PostImageFormInput
           imageInformation={state.pngInfo}

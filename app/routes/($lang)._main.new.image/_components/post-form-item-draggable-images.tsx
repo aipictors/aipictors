@@ -26,6 +26,7 @@ type Props = {
   onMosaicButtonClick?(content: string): void
   onChangeItems(items: TSortableItem[]): void
   onChangeIndexList?(indexList: number[]): void
+  onInputFiles?: (files: FileList) => void
 }
 
 /**
@@ -189,6 +190,10 @@ export const PostFormItemDraggableImages = (props: Props) => {
           newFileList.items.add(file)
         })
         inputElement.files = newFileList.files
+
+        if (props.onInputFiles) {
+          props.onInputFiles(inputElement.files)
+        }
       }
     },
     onDragEnter: () => {

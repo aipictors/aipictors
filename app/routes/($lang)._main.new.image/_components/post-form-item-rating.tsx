@@ -16,6 +16,12 @@ export const PostFormItemRating = (props: Props) => {
     <Card>
       <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">年齢制限</p>
+        <p className="font-bold text-xs opacity-70">
+          入力画像からAIで判定されます
+        </p>
+        <p className="font-bold text-xs opacity-70">
+          誤っている場合は手動で補正してください
+        </p>
         <RadioGroup
           value={props.rating}
           onValueChange={(value) => {

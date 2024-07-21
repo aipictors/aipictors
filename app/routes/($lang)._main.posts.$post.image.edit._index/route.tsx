@@ -234,6 +234,7 @@ export default function EditImage() {
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
+    isOpenLoadingAi: false,
   })
 
   const { reservationDate, reservationTime } = getReservationDetails(

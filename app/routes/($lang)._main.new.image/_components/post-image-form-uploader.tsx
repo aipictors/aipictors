@@ -19,6 +19,7 @@ import { PostFormItemDraggableImages } from "@/routes/($lang)._main.new.image/_c
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
   state: PostImageFormState
+  onInputFiles?: (files: FileList) => void
 }
 
 export function PostImageFormUploader(props: Props) {
@@ -119,6 +120,7 @@ export function PostImageFormUploader(props: Props) {
                 payload: value,
               })
             }}
+            onInputFiles={props.onInputFiles}
           />
         </div>
         {props.state.thumbnailBase64 !== null && (

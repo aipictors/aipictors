@@ -319,6 +319,11 @@ export default function NewAnimation() {
                 動画
               </div>
             </Link>
+            {/* <Link className="w-full text-center" to={"/new/text"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                コラム/小説
+              </div>
+            </Link> */}
           </div>
           <PostAnimationFormUploader state={state} dispatch={dispatch} />
         </div>
