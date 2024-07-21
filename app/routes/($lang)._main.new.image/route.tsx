@@ -14,6 +14,7 @@ import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { config } from "@/config"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
 import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
@@ -404,7 +405,7 @@ export default function NewImage() {
     const strictestRating = validResults.reduce(
       (currentRating, nsfwInfo) => {
         const newRating =
-          nsfwInfo.hentai >= 0.8
+          nsfwInfo.hentai >= 0.7
             ? "R18"
             : nsfwInfo.hentai >= 0.05 ||
                 nsfwInfo.porn >= 0.5 ||
@@ -466,11 +467,13 @@ export default function NewImage() {
                 動画
               </div>
             </Link>
-            {/* <Link className="w-full text-center" to={"/new/text"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                コラム/小説
-              </div>
-            </Link> */}
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
           </div>
           {state.isOpenLoadingAi && (
             <div className="absolute top-7 right-2 z-10 flex items-center space-x-2 opacity-80">

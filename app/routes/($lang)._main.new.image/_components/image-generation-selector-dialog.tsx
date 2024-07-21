@@ -82,7 +82,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
                 >
                   <img
                     className="h-24 w-24 rounded-md object-cover"
-                    src={result.imageUrl ?? ""}
+                    src={result.thumbnailUrl ?? ""}
                     alt={""}
                   />
                 </Card>

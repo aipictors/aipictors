@@ -10,6 +10,7 @@ import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
+import { config } from "@/config"
 import { PostAnimationFormInput } from "@/routes/($lang)._main.new.animation/_components/post-animation-form-input"
 import { PostAnimationFormUploader } from "@/routes/($lang)._main.new.animation/_components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "@/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -319,11 +320,13 @@ export default function NewAnimation() {
                 動画
               </div>
             </Link>
-            {/* <Link className="w-full text-center" to={"/new/text"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                コラム/小説
-              </div>
-            </Link> */}
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
           </div>
           <PostAnimationFormUploader state={state} dispatch={dispatch} />
         </div>

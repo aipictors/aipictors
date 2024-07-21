@@ -1,5 +1,4 @@
 import { ConstructionAlert } from "@/_components/construction-alert"
-import TextEditor from "@/_components/text-editor"
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
 import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
@@ -11,13 +10,14 @@ import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { config } from "@/config"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
-import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
-import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
+import { PostTextFormInput } from "@/routes/($lang)._main.new.image/_components/post-text-form-input"
+import { PostTextFormUploader } from "@/routes/($lang)._main.new.image/_components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
-import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
-import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
+import { postTextFormInputReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
+import { postTextFormReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
@@ -48,7 +48,7 @@ export default function NewText() {
     },
   })
 
-  const [state, dispatch] = useReducer(postImageFormReducer, {
+  const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
     isDrawing: false,
@@ -70,7 +70,7 @@ export default function NewText() {
     isOpenLoadingAi: false,
   })
 
-  const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
+  const [inputState, dispatchInput] = useReducer(postTextFormInputReducer, {
     accessType: "PUBLIC",
     generationParamAccessType: "PUBLIC",
     aiModelId: "1",
@@ -92,6 +92,7 @@ export default function NewText() {
     useGenerationParams: true,
     usePromotionFeature: false,
     useTagFeature: true,
+    md: "",
   })
 
   useEffect(() => {
@@ -401,21 +402,17 @@ export default function NewText() {
                 動画
               </div>
             </Link>
-            {/* <Link className="w-full text-center" to={"/new/text"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                コラム/小説
-              </div>
-            </Link> */}
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
           </div>
-          <PostImageFormUploader state={state} dispatch={dispatch} />
+          <PostTextFormUploader state={state} dispatch={dispatch} />
         </div>
-        <TextEditor
-          value={inputState.caption}
-          onChange={(value) =>
-            dispatchInput({ type: "SET_CAPTION", payload: value })
-          }
-        />
-        <PostImageFormInput
+        <PostTextFormInput
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}

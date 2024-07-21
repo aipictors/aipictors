@@ -3,6 +3,10 @@ import StarterKit from "@tiptap/starter-kit"
 import { Bold, Strikethrough, Italic, List, ListOrdered } from "lucide-react"
 import { Toggle } from "@/_components/ui/toggle"
 import { Separator } from "@/_components/ui/separator"
+import { Markdown } from "tiptap-markdown"
+import Image from "@tiptap/extension-image"
+import { useCallback } from "react"
+import { Button } from "@/_components/ui/button"
 
 const TextEditor = ({
   value,
@@ -31,10 +35,15 @@ const TextEditor = ({
           },
         },
       }),
+      Markdown,
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+      }),
     ],
     content: value, // Set the initial content with the provided value
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML()) // Call the onChange callback with the updated HTML content
+      onChange(editor.storage.markdown.getMarkdown()) // Call the onChange callback with the updated HTML content
     },
   })
 
@@ -47,6 +56,14 @@ const TextEditor = ({
 }
 
 const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
+  const addImage = useCallback(() => {
+    const url = window.prompt("URL")
+
+    if (url) {
+      editor?.chain().focus().setImage({ src: url }).run()
+    }
+  }, [editor])
+
   return (
     <div className="flex flex-row items-center gap-1 rounded-br-md rounded-bl-md border border-input bg-transparent p-1">
       <Toggle
@@ -85,6 +102,9 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <ListOrdered className="h-4 w-4" />
       </Toggle>
+      <Button size="sm" onClick={addImage}>
+        {"Image"}
+      </Button>
     </div>
   )
 }
