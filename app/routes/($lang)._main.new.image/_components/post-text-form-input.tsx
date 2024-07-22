@@ -167,7 +167,7 @@ export function PostTextFormInput(props: Props) {
         onChange={(value) => {
           props.dispatch({ type: "SET_MD", payload: value })
         }}
-        value={props.state.caption}
+        value={props.state.md}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}

@@ -6,14 +6,14 @@ import { config } from "@/config"
 import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/_components/image-generation-selector-dialog"
 import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/_components/post-form-item-thumbnail-position-adjust"
 import { PostFormItemOgp } from "@/routes/($lang)._main.new.image/_components/post-form-item-ogp"
-import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
-import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { Dispatch } from "react"
 import { PostFormItemDraggableImages } from "@/routes/($lang)._main.new.image/_components/post-form-item-draggable-images"
+import type { PostTextFormAction } from "@/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
+import type { PostTextFormState } from "@/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
 
 type Props = {
-  dispatch: Dispatch<PostImageFormAction>
-  state: PostImageFormState
+  dispatch: Dispatch<PostTextFormAction>
+  state: PostTextFormState
 }
 
 export function EditTextFormUploader(props: Props) {

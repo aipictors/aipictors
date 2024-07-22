@@ -1,5 +1,5 @@
-import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information";
-import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item";
+import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item"
 import {
   array,
   boolean,
@@ -10,9 +10,9 @@ import {
   string,
   union,
   type InferInput,
-} from "valibot";
+} from "valibot"
 
-export type PostTextFormAction = InferInput<typeof vPostTextFormAction>;
+export type PostTextFormAction = InferInput<typeof vPostTextFormAction>
 
 export const vPostTextFormAction = union([
   object({
@@ -127,6 +127,7 @@ export const vPostTextFormAction = union([
       pngInfo: nullable(vImageInformation),
       thumbnailPosX: number(),
       thumbnailPosY: number(),
+      md: nullable(string()),
     }),
   }),
-]);
+])

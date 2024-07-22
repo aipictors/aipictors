@@ -1,6 +1,14 @@
 import { useEditor, EditorContent, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import { Bold, Strikethrough, Italic, List, ListOrdered } from "lucide-react"
+import {
+  Bold,
+  Strikethrough,
+  Italic,
+  List,
+  ListOrdered,
+  Code,
+  ImageIcon,
+} from "lucide-react"
 import { Toggle } from "@/_components/ui/toggle"
 import { Separator } from "@/_components/ui/separator"
 import { Markdown } from "tiptap-markdown"
@@ -11,6 +19,7 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { AuthContext } from "@/_contexts/auth-context"
 import { TextEditorUploaderDialog } from "@/_components/text-editor-uploader-dialog"
+import CodeBlock from "@tiptap/extension-code-block"
 
 const TextEditor = ({
   value,
@@ -44,10 +53,16 @@ const TextEditor = ({
         inline: true,
         allowBase64: true,
       }),
+      CodeBlock.configure({
+        HTMLAttributes: {
+          class: "bg-gray-800 text-white text-sm p-2 rounded-md",
+          languageClassPrefix: "language-",
+        },
+      }),
     ],
-    content: value, // Set the initial content with the provided value
+    content: value,
     onUpdate: ({ editor }) => {
-      onChange(editor.storage.markdown.getMarkdown()) // Call the onChange callback with the updated HTML content
+      onChange(editor.storage.markdown.getMarkdown())
     },
   })
 
@@ -113,13 +128,41 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <ListOrdered className="h-4 w-4" />
       </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 1 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+      >
+        {"H1"}
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 2 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+      >
+        {"H2"}
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 3 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+      >
+        {"H3"}
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("codeBlock")}
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+      >
+        <Code className="h-4 w-4" />
+      </Toggle>
       {token?.viewer?.token && (
         <TextEditorUploaderDialog
           token={token?.viewer?.token}
           onSelectImage={addImage}
         >
-          <Button size="sm" variant={"secondary"}>
-            {"画像"}
+          <Button size="sm" variant={"ghost"}>
+            <ImageIcon className="h-4 w-4" />
           </Button>
         </TextEditorUploaderDialog>
       )}

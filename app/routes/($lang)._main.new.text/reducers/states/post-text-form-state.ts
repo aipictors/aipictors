@@ -1,6 +1,6 @@
-import { vFile } from "@/routes/($lang)._main.new.image/validations/file";
-import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information";
-import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item";
+import { vFile } from "@/routes/($lang)._main.new.image/validations/file"
+import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
+import { vSortableItem } from "@/routes/($lang)._main.new.image/validations/sortable-item"
 import {
   array,
   boolean,
@@ -9,9 +9,9 @@ import {
   number,
   object,
   string,
-} from "valibot";
+} from "valibot"
 
-export type PostTextFormState = InferInput<typeof vPostTextFormState>;
+export type PostTextFormState = InferInput<typeof vPostTextFormState>
 
 export const vPostTextFormState = object({
   editTargetImageBase64: nullable(string()),
@@ -33,4 +33,5 @@ export const vPostTextFormState = object({
   uploadedWorkId: nullable(string()),
   uploadedWorkUuid: nullable(string()),
   videoFile: nullable(vFile),
-});
+  md: string(),
+})

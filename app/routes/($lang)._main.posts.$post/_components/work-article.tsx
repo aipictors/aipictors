@@ -9,7 +9,6 @@ import { Suspense, useContext } from "react"
 import { WorkArticleTags } from "@/routes/($lang)._main.posts.$post/_components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "@/_components/icon-url"
-import { WorkHtmlView } from "@/routes/($lang)._main.posts.$post/_components/work-html-view"
 import { WorkVideoView } from "@/routes/($lang)._main.posts.$post/_components/work-video-view"
 import { AuthContext } from "@/_contexts/auth-context"
 import { WorkLikedUser } from "@/routes/($lang)._main.posts.$post/_components/work-liked-user"
@@ -23,6 +22,7 @@ import { ConstructionAlert } from "@/_components/construction-alert"
 import { PostAccessTypeBanner } from "@/routes/($lang)._main.posts.$post/_components/post-acess-type-banner"
 import { subWorkFieldsFragment } from "@/_graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "@/_graphql/fragments/user-fields"
+import { WorkMarkdownView } from "@/routes/($lang)._main.posts.$post/_components/work-markdown-view"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -61,15 +61,15 @@ export const WorkArticle = (props: Props) => {
         <WorkVideoView videoUrl={props.work.url ?? ""} />
       )}
       {props.work.type === "COLUMN" && (
-        <WorkHtmlView
+        <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
-          html={props.work.html ?? ""}
+          md={props.work.md ?? ""}
         />
       )}
       {props.work.type === "NOVEL" && (
-        <WorkHtmlView
+        <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
-          html={props.work.html ?? ""}
+          md={props.work.md ?? ""}
         />
       )}
       <section className="mt-4 space-y-4">

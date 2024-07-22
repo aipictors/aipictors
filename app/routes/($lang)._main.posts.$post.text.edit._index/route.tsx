@@ -13,8 +13,6 @@ import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
-import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
-import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer } from "react"
@@ -27,6 +25,8 @@ import React from "react"
 import { EditTextFormUploader } from "@/routes/($lang)._main.posts.$post.text.edit._index/_components/edit-text-form-uploader"
 import { postTextFormInputReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import { PostTextFormInput } from "@/routes/($lang)._main.new.image/_components/post-text-form-input"
+import { postTextFormReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
+import { vPostTextForm } from "@/routes/($lang)._main.new.image/validations/post-text-form"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -92,6 +92,7 @@ export default function EditText() {
               content: subWork.imageUrl ?? "",
             })),
           ],
+          md: work?.md ?? "",
           indexList: [],
           isThumbnailLandscape:
             (work?.smallThumbnailImageWidth ?? 0) >
@@ -182,7 +183,7 @@ export default function EditText() {
     }
   }, [work])
 
-  const [state, dispatch] = useReducer(postImageFormReducer, {
+  const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
     isDrawing: false,
@@ -219,6 +220,7 @@ export default function EditText() {
         vae: "",
       },
     },
+    md: work?.md ?? "",
     progress: 0,
     selectedImageGenerationIds: [],
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
@@ -303,13 +305,14 @@ export default function EditText() {
   const [updateWork, { loading: isUpdatedLoading }] =
     useMutation(updateWorkMutation)
 
-  const formResult = safeParse(vPostImageForm, {
+  const formResult = safeParse(vPostTextForm, {
     title: inputState.title,
     caption: inputState.caption,
     enTitle: inputState.enTitle,
     enCaption: inputState.enCaption,
     imagesCount: state.items.length,
     thumbnailBase64: state.thumbnailBase64,
+    md: state.md,
   })
 
   const uploadImages = async () => {
@@ -486,7 +489,7 @@ export default function EditText() {
               ? state.thumbnailPosX
               : state.thumbnailPosY,
             modelId: inputState.aiModelId,
-            type: "WORK",
+            type: inputState.type ?? "COLUMN",
             subjectId: inputState.themeId,
             albumId: inputState.albumId,
             isPromotion: inputState.usePromotionFeature,
