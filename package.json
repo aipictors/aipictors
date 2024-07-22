@@ -95,7 +95,7 @@
     "onnxruntime-web": "^1.18.0",
     "postcss": "^8.4.38",
     "react": "18.3.0",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9.0.0",
     "react-dom": "18.2.0",
     "react-dropzone-esm": "^15.0.1",
     "react-easy-crop": "^5.0.6",
