@@ -2,6 +2,7 @@ import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/
 import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
 import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
 import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
+import { vPostType } from "@/routes/($lang)._main.new.image/validations/post-type"
 import {
   array,
   boolean,
@@ -90,6 +91,10 @@ export const vPostTextFormInputAction = union([
     payload: vPostRating,
   }),
   object({
+    type: literal("SET_TYPE"),
+    payload: vPostType,
+  }),
+  object({
     type: literal("SET_ACCESS_TYPE"),
     payload: vPostAccessType,
   }),
@@ -149,6 +154,7 @@ export const vPostTextFormInputAction = union([
       reservationTime: nullable(string()),
       imageInformation: nullable(vImageInformation),
       md: string(),
+      type: nullable(vPostType),
     }),
   }),
 ])

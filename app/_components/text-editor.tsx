@@ -5,8 +5,12 @@ import { Toggle } from "@/_components/ui/toggle"
 import { Separator } from "@/_components/ui/separator"
 import { Markdown } from "tiptap-markdown"
 import Image from "@tiptap/extension-image"
-import { useCallback } from "react"
+import { useCallback, useContext } from "react"
 import { Button } from "@/_components/ui/button"
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { AuthContext } from "@/_contexts/auth-context"
+import { TextEditorUploaderDialog } from "@/_components/text-editor-uploader-dialog"
 
 const TextEditor = ({
   value,
@@ -19,7 +23,7 @@ const TextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "min-h-[150px] max-h-[150px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+          "min-h-[150px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
       },
     },
     extensions: [
@@ -56,13 +60,20 @@ const TextEditor = ({
 }
 
 const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
-  const addImage = useCallback(() => {
-    const url = window.prompt("URL")
+  const authContext = useContext(AuthContext)
 
-    if (url) {
-      editor?.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const addImage = useCallback(
+    (url: string) => {
+      if (url) {
+        editor?.chain().focus().setImage({ src: url }).run()
+      }
+    },
+    [editor],
+  )
 
   return (
     <div className="flex flex-row items-center gap-1 rounded-br-md rounded-bl-md border border-input bg-transparent p-1">
@@ -102,11 +113,26 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <ListOrdered className="h-4 w-4" />
       </Toggle>
-      <Button size="sm" onClick={addImage}>
-        {"Image"}
-      </Button>
+      {token?.viewer?.token && (
+        <TextEditorUploaderDialog
+          token={token?.viewer?.token}
+          onSelectImage={addImage}
+        >
+          <Button size="sm" variant={"secondary"}>
+            {"画像"}
+          </Button>
+        </TextEditorUploaderDialog>
+      )}
     </div>
   )
 }
+
+const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      token
+    }
+  }`,
+)
 
 export default TextEditor

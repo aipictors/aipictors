@@ -4,6 +4,7 @@ import { vPostGenerationParamAccessType } from "@/routes/($lang)._main.new.image
 import { vPostImageStyle } from "@/routes/($lang)._main.new.image/validations/post-image-style"
 import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
 import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
+import { vPostType } from "@/routes/($lang)._main.new.image/validations/post-type"
 import {
   object,
   string,
@@ -39,4 +40,5 @@ export const vPostTextFormInputState = object({
   usePromotionFeature: boolean(),
   useTagFeature: boolean(),
   md: string(),
+  type: nullable(vPostType),
 })

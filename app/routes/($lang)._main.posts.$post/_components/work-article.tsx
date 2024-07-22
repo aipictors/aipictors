@@ -210,6 +210,7 @@ export const workArticleFragment = graphql(
     id
     isMyRecommended
     title
+    md
     accessType
     type
     adminAccessType
