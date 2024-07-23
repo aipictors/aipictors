@@ -8,6 +8,10 @@ import {
   ListOrdered,
   Code,
   ImageIcon,
+  Quote,
+  Minus,
+  Undo,
+  Redo,
 } from "lucide-react"
 import { Toggle } from "@/_components/ui/toggle"
 import { Separator } from "@/_components/ui/separator"
@@ -16,10 +20,12 @@ import Image from "@tiptap/extension-image"
 import { useCallback, useContext } from "react"
 import { Button } from "@/_components/ui/button"
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
 import { AuthContext } from "@/_contexts/auth-context"
 import { TextEditorUploaderDialog } from "@/_components/text-editor-uploader-dialog"
 import CodeBlock from "@tiptap/extension-code-block"
+import Blockquote from "@tiptap/extension-blockquote"
+import HorizontalRule from "@tiptap/extension-horizontal-rule"
+import { graphql } from "gql.tada"
 
 const TextEditor = ({
   value,
@@ -59,6 +65,8 @@ const TextEditor = ({
           languageClassPrefix: "language-",
         },
       }),
+      Blockquote,
+      HorizontalRule,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -68,7 +76,9 @@ const TextEditor = ({
 
   return (
     <>
-      <EditorContent editor={editor} />
+      <div className="prose dark:prose-invert">
+        <EditorContent editor={editor} />
+      </div>
       {editor ? <RichTextEditorToolbar editor={editor} /> : null}
     </>
   )
@@ -113,21 +123,15 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <Strikethrough className="h-4 w-4" />
       </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("codeBlock")}
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+      >
+        <Code className="h-4 w-4" />
+      </Toggle>
+
       <Separator orientation="vertical" className="h-8 w-[1px]" />
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("bulletList")}
-        onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-      >
-        <List className="h-4 w-4" />
-      </Toggle>
-      <Toggle
-        size="sm"
-        pressed={editor.isActive("orderedList")}
-        onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-      >
-        <ListOrdered className="h-4 w-4" />
-      </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("heading", { level: 1 })}
@@ -151,10 +155,17 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       </Toggle>
       <Toggle
         size="sm"
-        pressed={editor.isActive("codeBlock")}
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        pressed={editor.isActive("bulletList")}
+        onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
       >
-        <Code className="h-4 w-4" />
+        <List className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("orderedList")}
+        onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
+      >
+        <ListOrdered className="h-4 w-4" />
       </Toggle>
       {token?.viewer?.token && (
         <TextEditorUploaderDialog
@@ -166,6 +177,36 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
           </Button>
         </TextEditorUploaderDialog>
       )}
+      <Separator orientation="vertical" className="h-8 w-[1px]" />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("blockquote")}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+      >
+        <Quote className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("horizontalRule")}
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus className="h-4 w-4" />
+      </Toggle>
+      <Separator orientation="vertical" className="h-8 w-[1px]" />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("undo")}
+        onClick={() => editor.chain().focus().undo().run()}
+      >
+        <Undo className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("redo")}
+        onClick={() => editor.chain().focus().redo().run()}
+      >
+        <Redo className="h-4 w-4" />
+      </Toggle>
     </div>
   )
 }

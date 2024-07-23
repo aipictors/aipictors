@@ -40,7 +40,7 @@
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark'] {
+  html[data-theme="dark"] {
     --background: 20 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;
     --card: 20 14.3% 4.1%;
@@ -57,22 +57,22 @@
     --accent-foreground: 60 9.1% 97.8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 24.0%;
+    --border: 12 6.5% 24%;
     --input: 12 6.5% 15.1%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --ring: 24 5.7% 82.9%;
   }
 
-  html[data-theme='light-gray'] {
+  html[data-theme="light-gray"] {
     --background: 192 0% 95%;
     --foreground: 192 0% 0%;
     --card: 192 0% 90%;
@@ -105,7 +105,7 @@
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-gray'] {
+  html[data-theme="dark-gray"] {
     --background: 202 10% 10%;
     --foreground: 202 0% 100%;
     --card: 202 0% 10%;
@@ -126,18 +126,19 @@
     --input: 202 20% 50%;
     --ring: 202 0% 76%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
-html[data-theme='light-red'] {
+
+  html[data-theme="light-red"] {
     --background: 0 100% 95%;
     --foreground: 0 5% 10%;
     --card: 0 50% 90%;
@@ -170,7 +171,7 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-red'] {
+  html[data-theme="dark-red"] {
     --background: 0 50% 10%;
     --foreground: 0 5% 90%;
     --card: 0 50% 10%;
@@ -191,19 +192,19 @@ html[data-theme='light-red'] {
     --input: 0 30% 50%;
     --ring: 0 95% 50%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-pink'] {
+  html[data-theme="light-pink"] {
     --background: 310 100% 97%;
     --foreground: 310 5% 10%;
     --card: 310 50% 92%;
@@ -236,7 +237,7 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-pink'] {
+  html[data-theme="dark-pink"] {
     --background: 310 50% 15%;
     --foreground: 310 100% 95%;
     --card: 310 50% 20%;
@@ -257,20 +258,20 @@ html[data-theme='light-red'] {
     --input: 310 30% 60%;
     --ring: 310 95% 60%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-orange'] {
-      --background: 34 100% 95%;
+  html[data-theme="light-orange"] {
+    --background: 34 100% 95%;
     --foreground: 34 5% 10%;
     --card: 34 50% 90%;
     --card-foreground: 34 5% 15%;
@@ -300,10 +301,10 @@ html[data-theme='light-red'] {
     --monotone-800: 0 0% 20%;
     --monotone-900: 0 0% 10%;
     --radius: 0.5rem;
-}
+  }
 
-  html[data-theme='dark-orange'] {
-      --background: 34 50% 10%;
+  html[data-theme="dark-orange"] {
+    --background: 34 50% 10%;
     --foreground: 34 5% 90%;
     --card: 34 50% 10%;
     --card-foreground: 34 5% 90%;
@@ -323,19 +324,19 @@ html[data-theme='light-red'] {
     --input: 34 30% 50%;
     --ring: 34 95% 50%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-green'] {
+  html[data-theme="light-green"] {
     --background: 146 100% 95%;
     --foreground: 146 5% 10%;
     --card: 146 50% 90%;
@@ -368,8 +369,8 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-green'] {
-      --background: 146 50% 10%;
+  html[data-theme="dark-green"] {
+    --background: 146 50% 10%;
     --foreground: 146 5% 90%;
     --card: 146 50% 10%;
     --card-foreground: 146 5% 90%;
@@ -389,19 +390,19 @@ html[data-theme='light-red'] {
     --input: 146 30% 50%;
     --ring: 146 93% 24%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-blue'] {
+  html[data-theme="light-blue"] {
     --background: 194 100% 95%;
     --foreground: 194 5% 0%;
     --card: 194 50% 90%;
@@ -434,8 +435,8 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-blue'] {
-      --background: 194 50% 5%;
+  html[data-theme="dark-blue"] {
+    --background: 194 50% 5%;
     --foreground: 194 5% 90%;
     --card: 194 50% 0%;
     --card-foreground: 194 5% 90%;
@@ -455,20 +456,20 @@ html[data-theme='light-red'] {
     --input: 194 30% 18%;
     --ring: 194 100% 60%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-yellow'] {
-      --background: 61 100% 95%;
+  html[data-theme="light-yellow"] {
+    --background: 61 100% 95%;
     --foreground: 61 5% 10%;
     --card: 61 50% 90%;
     --card-foreground: 61 5% 15%;
@@ -500,8 +501,8 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-yellow'] {
-      --background: 61 50% 10%;
+  html[data-theme="dark-yellow"] {
+    --background: 61 50% 10%;
     --foreground: 61 5% 90%;
     --card: 61 50% 10%;
     --card-foreground: 61 5% 90%;
@@ -521,20 +522,20 @@ html[data-theme='light-red'] {
     --input: 61 30% 50%;
     --ring: 61 93% 24%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
 
-  html[data-theme='light-violet'] {
-      --background: 288 100% 95%;
+  html[data-theme="light-violet"] {
+    --background: 288 100% 95%;
     --foreground: 288 5% 10%;
     --card: 288 50% 90%;
     --card-foreground: 288 5% 15%;
@@ -566,8 +567,8 @@ html[data-theme='light-red'] {
     --radius: 0.5rem;
   }
 
-  html[data-theme='dark-violet'] {
-      --background: 288 50% 10%;
+  html[data-theme="dark-violet"] {
+    --background: 288 50% 10%;
     --foreground: 288 5% 90%;
     --card: 288 50% 10%;
     --card-foreground: 288 5% 90%;
@@ -587,18 +588,17 @@ html[data-theme='light-red'] {
     --input: 288 30% 50%;
     --ring: 288 93% 24%;
     --monotone-50: 0 0% 5%;
-    --monotone-100: 0 0% 10%; 
-    --monotone-200: 0 0% 20%; 
-    --monotone-300: 0 0% 30%; 
-    --monotone-400: 0 0% 40%; 
-    --monotone-500: 0 0% 50%; 
-    --monotone-600: 0 0% 60%; 
-    --monotone-700: 0 0% 70%; 
-    --monotone-800: 0 0% 80%; 
-    --monotone-900: 0 0% 90%; 
+    --monotone-100: 0 0% 10%;
+    --monotone-200: 0 0% 20%;
+    --monotone-300: 0 0% 30%;
+    --monotone-400: 0 0% 40%;
+    --monotone-500: 0 0% 50%;
+    --monotone-600: 0 0% 60%;
+    --monotone-700: 0 0% 70%;
+    --monotone-800: 0 0% 80%;
+    --monotone-900: 0 0% 90%;
     --radius: 0.5rem;
   }
-
 }
 
 @layer base {
@@ -636,12 +636,11 @@ html {
   }
 }
 
-
 /**
  * いいねボタンのアニメーション
  * @see https://inari-tech.net/components/like-button
  */
- .like-animation {
+.like-animation {
   animation: heart-beat 0.4s ease forwards;
 }
 

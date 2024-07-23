@@ -131,6 +131,7 @@
     "@storybook/blocks": "^8.0.8",
     "@storybook/react": "^8.0.8",
     "@storybook/test": "^8.0.8",
+    "@tailwindcss/typography": "^0.5.13",
     "@types/bun": "^1.0.12",
     "@types/google-libphonenumber": "^7.4.30",
     "@types/lodash-es": "^4.17.12",
