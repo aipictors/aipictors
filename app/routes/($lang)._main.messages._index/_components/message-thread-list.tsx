@@ -72,6 +72,7 @@ export const MessageThreadList = () => {
 const viewerMessageThreadsQuery = graphql(
   `query ViewerMessageThreads($offset: Int!, $limit: Int!) {
     viewer {
+      id
       messageThreads(offset: $offset, limit: $limit) {
         ...MessageThreadFields
       }

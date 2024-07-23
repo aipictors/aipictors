@@ -401,6 +401,7 @@ export function GenerationTaskSheetView(props: Props) {
 const viewerImageGenerationTasksQuery = graphql(
   `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
     viewer {
+      id
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationTaskFields
       }

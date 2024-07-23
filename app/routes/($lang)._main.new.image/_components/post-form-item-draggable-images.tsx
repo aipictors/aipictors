@@ -26,6 +26,8 @@ type Props = {
   onMosaicButtonClick?(content: string): void
   onChangeItems(items: TSortableItem[]): void
   onChangeIndexList?(indexList: number[]): void
+  onInputFiles?: (files: FileList) => void
+  submitText?: string
 }
 
 /**
@@ -189,6 +191,10 @@ export const PostFormItemDraggableImages = (props: Props) => {
           newFileList.items.add(file)
         })
         inputElement.files = newFileList.files
+
+        if (props.onInputFiles) {
+          props.onInputFiles(inputElement.files)
+        }
       }
     },
     onDragEnter: () => {
@@ -227,7 +233,11 @@ export const PostFormItemDraggableImages = (props: Props) => {
                 }
               }}
             >
-              <p className="font-bold">画像を追加</p>
+              {props.submitText ? (
+                <p className="font-bold">{props.submitText}</p>
+              ) : (
+                <p className="font-bold">画像を追加</p>
+              )}
             </div>
           </>
         )}
@@ -252,6 +262,7 @@ export const PostFormItemDraggableImages = (props: Props) => {
           }}
           dummyEnableDragItem={
             props.items.length !== 0 &&
+            props.items.length !== props.maxItemsCount &&
             !props.isOnlyMove && (
               // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
               <div

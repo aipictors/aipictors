@@ -122,6 +122,7 @@ export const WorkNextAndPrevious = (props: Props) => {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid

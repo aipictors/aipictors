@@ -154,6 +154,7 @@ export const NotificationListItems = (props: Props) => {
 const viewerNotificationsQuery = graphql(
   `query ViewerNotifications($offset: Int!, $limit: Int!, $where: NotificationsWhereInput) {
     viewer {
+      id
       notifications(offset: $offset, limit: $limit, where: $where) {
         ... on LikedWorkNotificationNode {
           ...LikedWorkNotificationFields

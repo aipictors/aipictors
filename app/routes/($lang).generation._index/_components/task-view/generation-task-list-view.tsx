@@ -247,6 +247,7 @@ export const GenerationTaskListView = (props: Props) => {
 const viewerImageGenerationResultsQuery = graphql(
   `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
     viewer {
+      id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationResultFields
       }
@@ -258,6 +259,7 @@ const viewerImageGenerationResultsQuery = graphql(
 const viewerImageGenerationTasksQuery = graphql(
   `query ViewerImageGenerationTasks($offset: Int!, $limit: Int!, $where: ImageGenerationTasksWhereInput) {
     viewer {
+      id
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationTaskFields
       }

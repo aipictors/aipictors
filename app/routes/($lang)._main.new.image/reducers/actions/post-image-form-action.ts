@@ -78,6 +78,10 @@ export const vPostImageFormAction = union([
     payload: boolean(),
   }),
   object({
+    type: literal("OPEN_LOADING_AI"),
+    payload: boolean(),
+  }),
+  object({
     type: literal("SET_ITEMS"),
     payload: array(vSortableItem),
   }),

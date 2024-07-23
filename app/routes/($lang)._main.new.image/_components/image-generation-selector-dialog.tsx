@@ -82,7 +82,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
                 >
                   <img
                     className="h-24 w-24 rounded-md object-cover"
-                    src={result.imageUrl ?? ""}
+                    src={result.thumbnailUrl ?? ""}
                     alt={""}
                   />
                 </Card>
@@ -109,6 +109,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
 export const viewerImageGenerationResultsQuery = graphql(
   `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
     viewer {
+      id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationResultFields
       }

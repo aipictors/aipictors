@@ -162,6 +162,7 @@ export const StickerDialog = (props: Props) => {
 const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
+      id
       userStickersCount(where: $where)
     }
   }`,
@@ -170,6 +171,7 @@ const viewerUserStickersCountQuery = graphql(
 const viewerUserStickersQuery = graphql(
   `query ViewerUserStickers($offset: Int!, $limit: Int!, $orderBy: StickerOrderBy, $where: UserStickersWhereInput) {
     viewer {
+      id
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
         ...PartialStickerFields
       }

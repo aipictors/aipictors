@@ -132,6 +132,7 @@ export const VerificationDialog = (props: Props) => {
 const verificationUrlQuery = graphql(
   `query VerificationUrl {
     viewer {
+      id
       verificationUrl
     }
   }`,

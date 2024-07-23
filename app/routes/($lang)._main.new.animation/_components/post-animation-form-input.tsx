@@ -184,16 +184,16 @@ export function PostAnimationFormInput(props: Props) {
         }}
       />
       {data?.dailyTheme &&
-        props.state.reservationDate &&
-        new Date(props.state.reservationDate) <
-          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && (
+        (!props.state.reservationDate ||
+          (props.state.reservationDate &&
+            new Date(props.state.reservationDate) <
+              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))) && (
           <PostFormItemTheme
             title={data?.dailyTheme?.title}
             isLoading={loading}
             onChange={onChangeTheme}
           />
         )}
-
       {data && 0 < data?.appEvents.length && !props.eventInputHidden && (
         <PostFormItemEvent
           eventName={data?.appEvents[0]?.title ?? null}

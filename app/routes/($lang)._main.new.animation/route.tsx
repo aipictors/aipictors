@@ -10,6 +10,7 @@ import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
 import { uploadPublicVideo } from "@/_utils/upload-public-video"
+import { config } from "@/config"
 import { PostAnimationFormInput } from "@/routes/($lang)._main.new.animation/_components/post-animation-form-input"
 import { PostAnimationFormUploader } from "@/routes/($lang)._main.new.animation/_components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "@/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -18,8 +19,9 @@ import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link, useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
@@ -58,10 +60,10 @@ export default function NewAnimation() {
       tags: [],
       themeId: null,
       title: "",
-      useCommentFeature: false,
+      useCommentFeature: true,
       useGenerationParams: true,
       usePromotionFeature: false,
-      useTagFeature: false,
+      useTagFeature: true,
     },
   )
 
@@ -284,20 +286,19 @@ export default function NewAnimation() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // TODO_2024_08: 仕組みが分からなかった
-  // useBeforeUnload(
-  //   React.useCallback(
-  //     (event) => {
-  //       if (state.state) {
-  //         const confirmationMessage =
-  //           "ページ遷移すると変更が消えますが問題無いですか？"
-  //         event.returnValue = confirmationMessage
-  //         return confirmationMessage
-  //       }
-  //     },
-  //     [state.state],
-  //   ),
-  // )
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state],
+    ),
+  )
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-2">
@@ -319,6 +320,13 @@ export default function NewAnimation() {
                 動画
               </div>
             </Link>
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
           </div>
           <PostAnimationFormUploader state={state} dispatch={dispatch} />
         </div>

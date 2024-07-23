@@ -1,9 +1,505 @@
-import { AppPage } from "@/_components/app/app-page"
+import { ConstructionAlert } from "@/_components/construction-alert"
+import { Button } from "@/_components/ui/button"
+import { AuthContext } from "@/_contexts/auth-context"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
+import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
+import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
+import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
+import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
+import { resizeImage } from "@/_utils/resize-image"
+import { sha256 } from "@/_utils/sha256"
+import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { config } from "@/config"
+import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
+import { PostTextFormInput } from "@/routes/($lang)._main.new.image/_components/post-text-form-input"
+import { PostTextFormUploader } from "@/routes/($lang)._main.new.image/_components/post-text-form-uploader"
+import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
+import { vPostTextForm } from "@/routes/($lang)._main.new.image/validations/post-text-form"
+import { postTextFormInputReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
+import { postTextFormReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
+import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
+import { useQuery, useMutation } from "@apollo/client/index"
+import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import React, { useEffect } from "react"
+import { useContext, useReducer } from "react"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
 
 export default function NewText() {
+  const authContext = useContext(AuthContext)
+
+  const [searchParams] = useSearchParams()
+
+  const ref = searchParams.get("generation")
+
+  const { data: viewer } = useQuery(viewerQuery, {
+    skip: authContext.isNotLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: authContext.userId,
+      generationLimit: 64,
+      generationOffset: 0,
+      generationWhere: {
+        nanoids: ref?.split("|") ?? [],
+      },
+    },
+  })
+
+  const [state, dispatch] = useReducer(postTextFormReducer, {
+    editTargetImageBase64: null,
+    indexList: [],
+    isDrawing: false,
+    isHovered: false,
+    isOpenImageGenerationDialog: false,
+    isSelectedGenerationImage: false,
+    isThumbnailLandscape: false,
+    items: [],
+    ogpBase64: null,
+    pngInfo: null,
+    progress: 0,
+    selectedImageGenerationIds: [],
+    thumbnailBase64: null,
+    thumbnailPosX: 0,
+    thumbnailPosY: 0,
+    uploadedWorkId: null,
+    uploadedWorkUuid: null,
+    videoFile: null,
+    isOpenLoadingAi: false,
+  })
+
+  const [inputState, dispatchInput] = useReducer(postTextFormInputReducer, {
+    accessType: "PUBLIC",
+    generationParamAccessType: "PUBLIC",
+    aiModelId: "1",
+    albumId: null,
+    caption: "",
+    date: new Date(),
+    enCaption: "",
+    enTitle: "",
+    imageInformation: null,
+    imageStyle: "ILLUSTRATION",
+    link: "",
+    ratingRestriction: "G",
+    reservationDate: null,
+    reservationTime: null,
+    tags: [],
+    themeId: null,
+    title: "",
+    useCommentFeature: true,
+    useGenerationParams: true,
+    usePromotionFeature: false,
+    useTagFeature: true,
+    md: "",
+    type: "COLUMN",
+  })
+
+  useEffect(() => {
+    const processImages = async () => {
+      if (viewer?.viewer?.imageGenerationResults) {
+        const base64Urls = await Promise.all(
+          viewer.viewer.imageGenerationResults
+            .map((result) =>
+              result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
+            )
+            .filter((url) => url !== ""),
+        )
+
+        console.log(
+          "viewer.viewer.imageGenerationResults",
+          viewer.viewer.imageGenerationResults,
+        )
+
+        dispatch({
+          type: "SET_ITEMS",
+          payload: viewer.viewer.imageGenerationResults.map(
+            (result, index) => ({
+              id: index + 1,
+              content: base64Urls[index],
+            }),
+          ),
+        })
+
+        dispatch({
+          type: "SET_THUMBNAIL_BASE64",
+          payload: base64Urls[0],
+        })
+
+        dispatch({
+          type: "SET_PNG_INFO",
+          payload: {
+            src: null,
+            params: {
+              prompt: viewer.viewer.imageGenerationResults[0].prompt,
+              negativePrompt:
+                viewer.viewer.imageGenerationResults[0].negativePrompt,
+              seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
+              sampler: viewer.viewer.imageGenerationResults[0].sampler,
+              strength: "",
+              noise: "",
+              model: viewer.viewer.imageGenerationResults[0].model?.name,
+              modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
+              steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
+              scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
+              vae: "",
+            },
+          },
+        })
+
+        dispatch({
+          type: "IS_SELECTED_GENERATION_IMAGE",
+          payload: true,
+        })
+      }
+    }
+
+    processImages()
+  }, [viewer?.viewer?.imageGenerationResults, dispatch])
+
+  const [createWork, { loading: isCreatedLoading }] =
+    useMutation(createWorkMutation)
+
+  const formResult = safeParse(vPostTextForm, {
+    title: inputState.title,
+    caption: inputState.caption,
+    enTitle: inputState.enTitle,
+    enCaption: inputState.enCaption,
+    imagesCount: state.items.length,
+    thumbnailBase64: state.thumbnailBase64,
+    md: inputState.md,
+  })
+
+  const uploadImages = async () => {
+    if (authContext.userId === null) {
+      return []
+    }
+    const images = state.items.map((item) => item.content)
+    const uploads = images.map((image) => {
+      if (image === null) {
+        return null
+      }
+      return uploadPublicImage(image, viewer?.viewer?.token)
+    })
+    const imageUrls = await Promise.all(uploads)
+    return imageUrls
+  }
+
+  const onPost = async () => {
+    if (formResult.success === false) {
+      for (const issue of formResult.issues) {
+        toast(issue.message)
+        return
+      }
+      return
+    }
+
+    if (
+      inputState.reservationDate !== null &&
+      inputState.reservationTime === null
+    ) {
+      toast("予約投稿の時間を入力してください")
+      return
+    }
+
+    if (
+      inputState.reservationDate === null &&
+      inputState.reservationTime !== null
+    ) {
+      toast("予約投稿の時間を入力してください")
+      return
+    }
+
+    const uploadedImageUrls = []
+
+    try {
+      dispatch({ type: "SET_PROGRESS", payload: 10 })
+
+      const smallThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
+        : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+
+      dispatch({ type: "SET_PROGRESS", payload: 20 })
+
+      const largeThumbnail = state.isThumbnailLandscape
+        ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
+        : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+
+      dispatch({ type: "SET_PROGRESS", payload: 30 })
+
+      const smallThumbnailUrl = await uploadPublicImage(
+        smallThumbnail.base64,
+        viewer?.viewer?.token,
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 40 })
+
+      uploadedImageUrls.push(smallThumbnailUrl)
+
+      const largeThumbnailUrl = await uploadPublicImage(
+        largeThumbnail.base64,
+        viewer?.viewer?.token,
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 50 })
+
+      uploadedImageUrls.push(largeThumbnailUrl)
+
+      const ogpBase64Url = state.ogpBase64
+        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
+        : null
+
+      dispatch({ type: "SET_PROGRESS", payload: 60 })
+
+      if (ogpBase64Url !== null) {
+        uploadedImageUrls.push(ogpBase64Url)
+      }
+
+      const reservedAt =
+        inputState.reservationDate !== null &&
+        inputState.reservationTime !== null
+          ? new Date(
+              `${inputState.reservationDate}T${inputState.reservationTime}`,
+            ).getTime() +
+            3600000 * 9
+          : undefined
+
+      const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
+
+      const mainImageSize = await getSizeFromBase64(
+        formResult.output.thumbnailBase64,
+      )
+
+      dispatch({ type: "SET_PROGRESS", payload: 70 })
+
+      const uploadResults = await uploadImages()
+
+      const imageUrls = uploadResults.filter((url) => url !== null)
+
+      if (imageUrls.length === 0) {
+        toast("画像のアップロードに失敗しました")
+        return
+      }
+
+      const work = await createWork({
+        variables: {
+          input: {
+            title: formResult.output.title,
+            entitle: formResult.output.enTitle,
+            explanation: formResult.output.caption,
+            enExplanation: formResult.output.enCaption,
+            rating: inputState.ratingRestriction,
+            prompt: state.pngInfo?.params.prompt ?? null,
+            negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
+            seed: state.pngInfo?.params.seed ?? null,
+            sampler: state.pngInfo?.params.sampler ?? null,
+            strength: state.pngInfo?.params.strength ?? null,
+            noise: state.pngInfo?.params.noise ?? null,
+            modelName: state.pngInfo?.params.model ?? null,
+            modelHash: state.pngInfo?.params.modelHash ?? null,
+            otherGenerationParams: state.pngInfo?.src ?? null,
+            pngInfo: state.pngInfo?.src ?? null,
+            imageStyle: inputState.imageStyle,
+            relatedUrl: inputState.link,
+            tags: inputState.tags.map((tag) => tag.text),
+            isTagEditable: inputState.useTagFeature,
+            isCommentEditable: inputState.useCommentFeature,
+            thumbnailPosition: state.isThumbnailLandscape
+              ? state.thumbnailPosX
+              : state.thumbnailPosY,
+            modelId: inputState.aiModelId,
+            type: inputState.type ?? "COLUMN",
+            subjectId: inputState.themeId,
+            albumId: inputState.albumId,
+            isPromotion: inputState.usePromotionFeature,
+            reservedAt: reservedAt,
+            mainImageSha256: mainImageSha256,
+            accessType: inputState.accessType,
+            imageUrls: imageUrls,
+            smallThumbnailImageURL: smallThumbnailUrl,
+            smallThumbnailImageWidth: smallThumbnail.width,
+            smallThumbnailImageHeight: smallThumbnail.height,
+            largeThumbnailImageURL: largeThumbnailUrl,
+            largeThumbnailImageWidth: largeThumbnail.width,
+            largeThumbnailImageHeight: largeThumbnail.height,
+            videoUrl: null,
+            ogpImageUrl: ogpBase64Url,
+            imageHeight: mainImageSize.height,
+            imageWidth: mainImageSize.width,
+            accessGenerationType:
+              state.isSelectedGenerationImage && inputState.useGenerationParams
+                ? "PUBLIC_IN_OWN_PRODUCT"
+                : inputState.useGenerationParams
+                  ? "PUBLIC"
+                  : "PRIVATE",
+            md: inputState.md,
+          },
+        },
+      })
+
+      if (work.data?.createWork === undefined) {
+        toast("作品の投稿に失敗しました")
+        return
+      }
+
+      dispatch({
+        type: "MARK_AS_DONE",
+        payload: {
+          uploadedWorkId: work.data?.createWork.id,
+          uploadedWorkUuid:
+            inputState.accessType !== "PRIVATE"
+              ? null
+              : work.data?.createWork.uuid ?? null,
+        },
+      })
+
+      toast("作品を投稿しました")
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+      const promises = uploadedImageUrls.map((url) => {
+        return deleteUploadedImage(url)
+      })
+      await Promise.all(promises)
+      dispatch({ type: "SET_PROGRESS", payload: 0 })
+    }
+  }
+
+  const createdAt = new Date(
+    `${inputState.reservationDate}T${inputState.reservationTime}`,
+  )
+
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state],
+    ),
+  )
+
   return (
-    <AppPage>
-      <p>メンテナンス中</p>
-    </AppPage>
+    <div className="m-auto w-full max-w-[1200px] space-y-2">
+      <ConstructionAlert
+        type="WARNING"
+        message="試験的にリニューアル版を運用中です。"
+        fallbackURL="https://www.aipictors.com/post"
+      />
+      <div className="space-y-4">
+        <div>
+          <div className="flex w-full items-center">
+            <Link className="w-full text-center" to={"/new/image"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                画像
+              </div>
+            </Link>
+            <Link className="w-full text-center" to={"/new/animation"}>
+              <div className="w-full bg-zinc-900 text-center text-white">
+                動画
+              </div>
+            </Link>
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
+          </div>
+          <PostTextFormUploader state={state} dispatch={dispatch} />
+        </div>
+        <PostTextFormInput
+          imageInformation={state.pngInfo}
+          state={inputState}
+          dispatch={dispatchInput}
+          albums={viewer?.albums ?? []}
+          currentPass={viewer?.viewer?.currentPass ?? null}
+        />
+        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
+          {"投稿"}
+        </Button>
+      </div>
+      <SuccessCreatedWorkDialog
+        isOpen={state.progress === 100}
+        title={inputState.title}
+        imageBase64={state.thumbnailBase64}
+        workId={state.uploadedWorkId}
+        uuid={state.uploadedWorkUuid}
+        shareTags={["Aipictors", "AIイラスト", "AIart"]}
+        createdAt={createdAt.getTime()}
+        accessType={inputState.accessType}
+      />
+      <CreatingWorkDialog
+        progress={state.progress}
+        isOpen={state.progress !== 0 && state.progress !== 100}
+      />
+    </div>
   )
 }
+
+const viewerQuery = graphql(
+  `query ViewerQuery(
+    $limit: Int!,
+    $offset: Int!,
+    $ownerUserId: ID
+    $generationOffset: Int!
+    $generationLimit: Int!
+    $generationWhere: ImageGenerationResultsWhereInput
+  ) {
+    viewer {
+      id
+      token
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+      imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
+        ...ImageGenerationResultFields
+      }
+    }
+    albums(
+      offset: $offset,
+      limit: $limit,
+      where: {
+        ownerUserId: $ownerUserId,
+        isSensitiveAndAllRating: true,
+        needInspected: false,
+        needsThumbnailImage: false,
+      }
+    ) {
+      ...PartialAlbumFields
+      user {
+        ...PartialUserFields
+      }
+    }
+  }`,
+  [
+    partialAlbumFieldsFragment,
+    partialUserFieldsFragment,
+    passFieldsFragment,
+    imageGenerationResultFieldsFragment,
+  ],
+)
+
+const createWorkMutation = graphql(
+  `mutation CreateWork($input: CreateWorkInput!) {
+    createWork(input: $input) {
+      id
+      title
+      accessType
+      nanoid
+      uuid
+    }
+  }`,
+)

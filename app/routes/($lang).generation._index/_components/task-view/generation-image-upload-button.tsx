@@ -15,9 +15,7 @@ type Props = {
  */
 export function GenerationImagePostButton(props: Props) {
   const onClick = async () => {
-    const url = `https://www.aipictors.com/post?generation=${props.selectedTaskIds.join(
-      "%7C",
-    )}`
+    const url = `/new/image?generation=${props.selectedTaskIds.join("%7C")}`
     window.open(url, "_blank")
   }
 

@@ -23,9 +23,10 @@ import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { EditImageFormUploader } from "@/routes/($lang)._main.posts.$post.image.edit._index/_components/edit-image-form-uploader"
+import React from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -233,6 +234,7 @@ export default function EditImage() {
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
+    isOpenLoadingAi: false,
   })
 
   const { reservationDate, reservationTime } = getReservationDetails(
@@ -549,20 +551,19 @@ export default function EditImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // TODO_2024_08: 仕組みが分からなかった
-  // useBeforeUnload(
-  //   React.useCallback(
-  //     (event) => {
-  //       if (state.state) {
-  //         const confirmationMessage =
-  //           "ページ遷移すると変更が消えますが問題無いですか？"
-  //         event.returnValue = confirmationMessage
-  //         return confirmationMessage
-  //       }
-  //     },
-  //     [state.state],
-  //   ),
-  // )
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state],
+    ),
+  )
 
   return work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-2">

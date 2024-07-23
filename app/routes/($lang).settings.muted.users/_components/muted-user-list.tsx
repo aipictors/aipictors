@@ -51,6 +51,7 @@ export const MutedUserList = () => {
 const viewerMutedUsersQuery = graphql(
   `query ViewerMutedUsers($offset: Int!, $limit: Int!) {
     viewer {
+      id
       mutedUsers(offset: $offset, limit: $limit) {
         ...PartialUserFields
       }

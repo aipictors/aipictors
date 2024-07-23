@@ -25,7 +25,7 @@ export const HomeRouteList = () => {
   const authContext = useContext(AuthContext)
 
   return (
-    <div className="space-y-1">
+    <div className="w-40 space-y-1">
       {authContext.isNotLoggedIn && (
         <>
           <LoginDialogButton variant="secondary" isWidthFull />
@@ -56,6 +56,9 @@ export const HomeRouteList = () => {
       </HomeNavigationButton>
       <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
         {"開発予定"}
+      </HomeNavigationButton>
+      <HomeNavigationButton href={"/releases"} icon={RocketIcon}>
+        {"更新情報"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}

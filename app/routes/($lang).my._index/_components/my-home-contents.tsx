@@ -178,6 +178,7 @@ export const DashboardHomeContents = () => {
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
         id
         biography

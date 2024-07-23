@@ -1,14 +1,20 @@
 import { ConstructionAlert } from "@/_components/construction-alert"
 import { Button } from "@/_components/ui/button"
 import { AuthContext } from "@/_contexts/auth-context"
+import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
 import { partialAlbumFieldsFragment } from "@/_graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "@/_graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "@/_utils/delete-uploaded-image"
+import {
+  getNsfwPredictions,
+  type NsfwResults,
+} from "@/_utils/get-nsfw-predictions"
 import { getSizeFromBase64 } from "@/_utils/get-size-from-base64"
 import { resizeImage } from "@/_utils/resize-image"
 import { sha256 } from "@/_utils/sha256"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
+import { config } from "@/config"
 import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components/creating-work-dialog"
 import { PostImageFormInput } from "@/routes/($lang)._main.new.image/_components/post-image-form-input"
 import { PostImageFormUploader } from "@/routes/($lang)._main.new.image/_components/post-image-form-uploader"
@@ -16,15 +22,36 @@ import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_comp
 import { postImageFormInputReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "@/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
+import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
+import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
+
+  const [searchParams] = useSearchParams()
+
+  const ref = searchParams.get("generation")
+
+  const { data: viewer } = useQuery(viewerQuery, {
+    skip: authContext.isNotLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: authContext.userId,
+      generationLimit: 64,
+      generationOffset: 0,
+      generationWhere: {
+        nanoids: ref?.split("|") ?? [],
+      },
+    },
+  })
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -45,6 +72,7 @@ export default function NewImage() {
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
+    isOpenLoadingAi: false,
   })
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
@@ -65,20 +93,68 @@ export default function NewImage() {
     tags: [],
     themeId: null,
     title: "",
-    useCommentFeature: false,
+    useCommentFeature: true,
     useGenerationParams: true,
     usePromotionFeature: false,
-    useTagFeature: false,
+    useTagFeature: true,
   })
 
-  const { data: viewer } = useQuery(viewerQuery, {
-    skip: authContext.isNotLoggedIn,
-    variables: {
-      offset: 0,
-      limit: 128,
-      ownerUserId: authContext.userId,
-    },
-  })
+  useEffect(() => {
+    const processImages = async () => {
+      if (viewer?.viewer?.imageGenerationResults) {
+        const base64Urls = await Promise.all(
+          viewer.viewer.imageGenerationResults
+            .map((result) =>
+              result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
+            )
+            .filter((url) => url !== ""),
+        )
+
+        dispatch({
+          type: "SET_ITEMS",
+          payload: viewer.viewer.imageGenerationResults.map(
+            (result, index) => ({
+              id: index + 1,
+              content: base64Urls[index],
+            }),
+          ),
+        })
+
+        dispatch({
+          type: "SET_THUMBNAIL_BASE64",
+          payload: base64Urls[0],
+        })
+
+        dispatch({
+          type: "SET_PNG_INFO",
+          payload: {
+            src: null,
+            params: {
+              prompt: viewer.viewer.imageGenerationResults[0].prompt,
+              negativePrompt:
+                viewer.viewer.imageGenerationResults[0].negativePrompt,
+              seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
+              sampler: viewer.viewer.imageGenerationResults[0].sampler,
+              strength: "",
+              noise: "",
+              model: viewer.viewer.imageGenerationResults[0].model?.name,
+              modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
+              steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
+              scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
+              vae: "",
+            },
+          },
+        })
+
+        dispatch({
+          type: "IS_SELECTED_GENERATION_IMAGE",
+          payload: true,
+        })
+      }
+    }
+
+    processImages()
+  }, [viewer?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
@@ -291,20 +367,85 @@ export default function NewImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // TODO_2024_08: 仕組みが分からなかった
-  // useBeforeUnload(
-  //   React.useCallback(
-  //     (event) => {
-  //       if (state.state) {
-  //         const confirmationMessage =
-  //           "ページ遷移すると変更が消えますが問題無いですか？"
-  //         event.returnValue = confirmationMessage
-  //         return confirmationMessage
-  //       }
-  //     },
-  //     [state.state],
-  //   ),
-  // )
+  const onInputFiles = async (files: FileList) => {
+    // OPEN_IMAGE_GENERATION_DIALOG
+    dispatch({ type: "OPEN_LOADING_AI", payload: true })
+
+    const fileArray = Array.from(files)
+
+    const results = await Promise.all(
+      fileArray.map(async (file) => {
+        try {
+          const nsfwInfo = await getNsfwPredictions(file)
+          return nsfwInfo
+        } catch (error) {
+          console.error("Error processing NSFW predictions:", error)
+          return null
+        }
+      }),
+    )
+
+    const validResults = results.filter(
+      (nsfwInfo) => nsfwInfo !== null,
+    ) as NsfwResults[]
+
+    const mostSuitableStyle = validResults.reduce(
+      (currentStyle, nsfwInfo) => {
+        if (nsfwInfo.drawings >= 0.7) {
+          return "ILLUSTRATION"
+        }
+        if (nsfwInfo.drawings >= 0.5) {
+          return "SEMI_REAL"
+        }
+        return "REAL"
+      },
+      "REAL" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
+    )
+
+    const strictestRating = validResults.reduce(
+      (currentRating, nsfwInfo) => {
+        const newRating =
+          nsfwInfo.hentai >= 0.7
+            ? "R18"
+            : nsfwInfo.hentai >= 0.05 ||
+                nsfwInfo.porn >= 0.5 ||
+                nsfwInfo.sexy >= 0.8
+              ? "R15"
+              : "G"
+
+        if (
+          inputState.ratingRestriction === "R18G" ||
+          inputState.ratingRestriction === "R18"
+        ) {
+          return inputState.ratingRestriction
+        }
+
+        return newRating === "R18" ||
+          (newRating === "R15" && currentRating === "G")
+          ? newRating
+          : currentRating
+      },
+      "G" as "G" | "R15" | "R18" | "R18G",
+    )
+
+    dispatchInput({ type: "SET_RATING_RESTRICTION", payload: strictestRating })
+    dispatchInput({ type: "SET_IMAGE_STYLE", payload: mostSuitableStyle })
+    dispatch({ type: "OPEN_LOADING_AI", payload: false })
+  }
+
+  useBeforeUnload(
+    React.useCallback(
+      (event) => {
+        if (state) {
+          const confirmationMessage =
+            "ページ遷移すると変更が消えますが問題無いですか？"
+          event.returnValue = confirmationMessage
+          return confirmationMessage
+        }
+      },
+      [state],
+    ),
+  )
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-2">
@@ -314,7 +455,7 @@ export default function NewImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
-        <div>
+        <div className="relative">
           <div className="flex w-full items-center">
             <Link className="w-full text-center" to={"/new/image"}>
               <div className="w-full bg-zinc-900 text-center text-white">
@@ -326,8 +467,25 @@ export default function NewImage() {
                 動画
               </div>
             </Link>
+            {config.isDevelopmentMode && (
+              <Link className="w-full text-center" to={"/new/text"}>
+                <div className="w-full bg-zinc-900 text-center text-white">
+                  コラム/小説
+                </div>
+              </Link>
+            )}
           </div>
-          <PostImageFormUploader state={state} dispatch={dispatch} />
+          {state.isOpenLoadingAi && (
+            <div className="absolute top-7 right-2 z-10 flex items-center space-x-2 opacity-80">
+              <Loader2Icon className="h-4 w-4 animate-spin text-white" />
+              <p className="text-white">{"AIでテイスト、年齢種別を判定中"}</p>
+            </div>
+          )}
+          <PostImageFormUploader
+            state={state}
+            dispatch={dispatch}
+            onInputFiles={onInputFiles}
+          />
         </div>
         <PostImageFormInput
           imageInformation={state.pngInfo}
@@ -363,6 +521,9 @@ const viewerQuery = graphql(
     $limit: Int!,
     $offset: Int!,
     $ownerUserId: ID
+    $generationOffset: Int!
+    $generationLimit: Int!
+    $generationWhere: ImageGenerationResultsWhereInput
   ) {
     viewer {
       id
@@ -374,6 +535,9 @@ const viewerQuery = graphql(
       }
       currentPass {
         ...PassFields
+      }
+      imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
+        ...ImageGenerationResultFields
       }
     }
     albums(
@@ -392,7 +556,12 @@ const viewerQuery = graphql(
       }
     }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
+  [
+    partialAlbumFieldsFragment,
+    partialUserFieldsFragment,
+    passFieldsFragment,
+    imageGenerationResultFieldsFragment,
+  ],
 )
 
 const createWorkMutation = graphql(

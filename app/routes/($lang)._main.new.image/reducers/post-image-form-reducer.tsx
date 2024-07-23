@@ -68,6 +68,12 @@ export const postImageFormReducer = (
         isOpenImageGenerationDialog: action.payload,
       }
     }
+    case "OPEN_LOADING_AI": {
+      return {
+        ...state,
+        isOpenLoadingAi: action.payload,
+      }
+    }
     case "SET_IS_DRAWING": {
       return {
         ...state,

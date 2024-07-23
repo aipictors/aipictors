@@ -493,24 +493,20 @@ const PaintCanvas: React.FC<IProps> = ({
   return (
     <section className="relative h-[100%] w-[100%]">
       <div className="block h-[100%] w-[100%] md:flex">
-        <div className="mb-1 flex md:flex-col">
+        <div className="mb-1 flex bg-card md:flex-col">
           {!isMosaicMode && (
             <Button
-              className={cn(
-                tool === "brush" ? "mr-2 bg-gray-200 dark:bg-gray-800" : "mr-2",
-              )}
+              className={cn(tool === "brush" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
               onClick={() => setTool("brush")}
             >
-              <BrushIcon className="m-auto" />
+              <BrushIcon className="m-auto text-black" />
             </Button>
           )}
           {!isMosaicMode && (
             <Button // 2. 投げ縄ボタンを追加
-              className={cn(
-                tool === "lasso" ? "mr-2 bg-gray-200 dark:bg-gray-800" : "mr-2",
-              )}
+              className={cn(tool === "lasso" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
               onClick={() => setTool("lasso")}
@@ -520,11 +516,7 @@ const PaintCanvas: React.FC<IProps> = ({
           )}
           {isMosaicMode && (
             <Button // 2. 投げ縄ボタンを追加
-              className={cn(
-                tool === "lasso-mosaic"
-                  ? "mr-2 bg-gray-200 dark:bg-gray-800"
-                  : "mr-2",
-              )}
+              className={cn(tool === "lasso-mosaic" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
               onClick={() => setTool("lasso-mosaic")}
@@ -534,9 +526,7 @@ const PaintCanvas: React.FC<IProps> = ({
           )}
 
           <Button
-            className={cn(
-              tool === "eraser" ? "mr-2 bg-gray-200 dark:bg-gray-800" : "mr-2",
-            )}
+            className={cn(tool === "eraser" ? "mr-2 border" : "mr-2")}
             size="icon"
             variant="ghost"
             onClick={() => setTool("eraser")}
@@ -634,7 +624,7 @@ const PaintCanvas: React.FC<IProps> = ({
         </div>
         <div
           className={cn(
-            "flex h-[100%] w-full items-center justify-center overflow-hidden border border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-900",
+            "flex h-[100%] w-full items-center justify-center overflow-hidden border border-gray-300 bg-card",
           )}
         >
           <div
