@@ -240,7 +240,7 @@ export const config = {
    */
   graphql: {
     get endpoint() {
-      if (typeof window === "undefined") {
+      if (typeof document === "undefined") {
         return env.VITE_GRAPHQL_ENDPOINT_REMIX
       }
       return env.VITE_GRAPHQL_ENDPOINT

@@ -4,7 +4,7 @@ export const useNavigation = () => {
   const [flag, setFlag] = useState(true)
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     const handleResize = () => {
       setFlag(800 < window.innerWidth)
     }

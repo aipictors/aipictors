@@ -67,7 +67,7 @@ type Props = Readonly<{
  */
 export function Layout(props: Props) {
   if (
-    typeof window !== "undefined" &&
+    typeof document !== "undefined" &&
     typeof import.meta.env.VITE_SENTRY_DSN === "string"
   ) {
     init({

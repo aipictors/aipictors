@@ -6,7 +6,7 @@ export const useBreakpoint = () => {
   const [breakpoint, setBreakpoint] = useState(getBreakpoint(window.innerWidth))
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     const calcInnerWidth = throttle(() => {
       setBreakpoint(getBreakpoint(window.innerWidth))
     }, 128)

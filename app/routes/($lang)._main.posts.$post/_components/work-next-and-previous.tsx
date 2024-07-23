@@ -37,7 +37,7 @@ export const WorkNextAndPrevious = (props: Props) => {
         }
       }
 
-      if (typeof window !== "undefined") {
+      if (typeof document !== "undefined") {
         if (e.code === "KeyQ" && props.work?.nextWork) {
           window.location.href = `/posts/${props.work?.nextWork.id}`
         }

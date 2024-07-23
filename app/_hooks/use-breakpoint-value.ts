@@ -16,7 +16,7 @@ export const useBreakpointValue = <T>(props: Props<T>) => {
   > | null>(null)
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     setBreakpoint(getBreakpoint(window.innerWidth))
     const calcInnerWidth = throttle(() => {
       setBreakpoint(getBreakpoint(window.innerWidth))

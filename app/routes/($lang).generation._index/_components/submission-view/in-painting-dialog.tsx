@@ -39,7 +39,7 @@ export const InPaintingDialog = (props: Props) => {
   const invertImageColors = (base64Image: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       // ブラウザ環境でのみ実行
-      if (typeof window === "undefined") {
+      if (typeof document === "undefined") {
         reject("この関数はブラウザでのみ使用可能です")
         return
       }
@@ -110,7 +110,7 @@ export const InPaintingDialog = (props: Props) => {
   const binarizeImage = (base64Image: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       // ブラウザ環境でのみ実行
-      if (typeof window === "undefined") {
+      if (typeof document === "undefined") {
         reject("この関数はブラウザでのみ使用可能です")
         return
       }
