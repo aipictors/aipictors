@@ -449,6 +449,7 @@ const userQuery = graphql(
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid

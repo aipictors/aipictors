@@ -100,6 +100,7 @@ export const PassPlanList = (props: Props) => {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid

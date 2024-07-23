@@ -43,6 +43,7 @@ export function ChatMessageListContent(props: Props) {
 const messageThreadMessagesQuery = graphql(
   `query MessageThreadMessages($threadId: ID!, $offset: Int!, $limit: Int!) {
     viewer {
+      id
       messageThread(threadId: $threadId) {
         id
         ...MessageThreadFields

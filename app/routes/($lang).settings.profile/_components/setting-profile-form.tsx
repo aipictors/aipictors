@@ -488,6 +488,7 @@ const userQuery = graphql(
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,

@@ -200,6 +200,7 @@ export const WorkArticle = (props: Props) => {
 const viewerBookmarkFolderIdQuery = graphql(
   `query ViewerBookmarkFolderId {
     viewer {
+      id
       bookmarkFolderId
     }
   }`,

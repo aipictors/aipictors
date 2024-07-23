@@ -185,6 +185,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid

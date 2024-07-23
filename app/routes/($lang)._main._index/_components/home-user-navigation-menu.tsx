@@ -256,6 +256,7 @@ const userSettingQuery = graphql(
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,
@@ -264,6 +265,7 @@ const viewerTokenQuery = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
         id
         biography

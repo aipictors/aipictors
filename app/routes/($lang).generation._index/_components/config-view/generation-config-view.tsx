@@ -268,6 +268,7 @@ const userSettingQuery = graphql(
 const viewerCurrentImageGenerationMemosQuery = graphql(
   `query ViewerCurrentImageGenerationMemos {
     viewer {
+      id
       currentImageGenerationMemos {
         ...ImageGenerationMemoFields
       }
@@ -279,6 +280,7 @@ const viewerCurrentImageGenerationMemosQuery = graphql(
 const viewerFavoritedImageGenerationModelsQuery = graphql(
   `query ViewerFavoritedImageGenerationModels {
     viewer {
+      id
       favoritedImageGenerationModels {
         id
         name

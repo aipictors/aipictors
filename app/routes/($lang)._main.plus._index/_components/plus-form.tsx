@@ -119,6 +119,7 @@ export const PlusForm = () => {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid

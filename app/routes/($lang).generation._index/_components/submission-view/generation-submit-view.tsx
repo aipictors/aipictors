@@ -573,6 +573,7 @@ export function GenerationSubmissionView(props: Props) {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       user {
         id
         nanoid
@@ -589,6 +590,7 @@ const viewerCurrentPassQuery = graphql(
 const viewerLineUserIdQuery = graphql(
   `query viewerLineUserId {
     viewer {
+      id
       lineUserId
     }
   }`,
@@ -597,6 +599,7 @@ const viewerLineUserIdQuery = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
         id
         biography
