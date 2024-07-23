@@ -3,6 +3,7 @@ import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "@/_components/ui/button"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { ReleaseItem } from "@/routes/($lang)._main.releases.$id._index/_components/release-item"
+import { config } from "@/config"
 
 interface Release {
   id: string
@@ -32,7 +33,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const microCmsClient = createCmsClient({
     serviceDomain: "aipictors",
-    apiKey: import.meta.env.VITE_MICRO_CMS_API_KEY,
+    apiKey: config.cms.microCms.apiKey,
   })
 
   const data: ApiResponse = await microCmsClient.get({
@@ -78,7 +79,7 @@ export default function Release() {
         platform={release.platform}
         createdAt={release.createdAt}
       />
-      <h2 className="border-b p-4">最新リリース一覧</h2>
+      <h2 className="border-b p-4">{"最新リリース一覧"}</h2>
       {releases.map((release) => (
         <Link
           to={`/releases/${release.id}`}
@@ -101,8 +102,17 @@ export default function Release() {
           </div>
         </Link>
       ))}
-      <div className="flex items-center justify-center space-x-4 pt-4">
-        <Button onClick={handleMoveList}>一覧へ戻る</Button>
+      <div className="flex items-center justify-center space-x-4">
+        <Button onClick={handleMoveList}>{"一覧へ戻る"}</Button>
+      </div>
+      <div className="flex items-center justify-center space-x-4">
+        <Link
+          target="_blank"
+          rel="noreferrer"
+          to={"https://github.com/aipictors/aipictors/releases"}
+        >
+          {"GitHub Releases"}
+        </Link>
       </div>
     </div>
   )
