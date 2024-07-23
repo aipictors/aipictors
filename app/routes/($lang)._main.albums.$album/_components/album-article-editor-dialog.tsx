@@ -12,7 +12,7 @@ import {
 import { AuthContext } from "@/_contexts/auth-context"
 import { workUserFieldsFragment } from "@/_graphql/fragments/work-user-fields"
 import { uploadPublicImage } from "@/_utils/upload-public-image"
-import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).dashboard._index/_components/select-created-works-dialog-with-ids"
+import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).my._index/_components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
@@ -202,6 +202,7 @@ export const albumArticleFragment = graphql(
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,

@@ -1,12 +1,31 @@
 import { useEditor, EditorContent, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import { Bold, Strikethrough, Italic, List, ListOrdered } from "lucide-react"
+import {
+  Bold,
+  Strikethrough,
+  Italic,
+  List,
+  ListOrdered,
+  Code,
+  ImageIcon,
+  Quote,
+  Minus,
+  Undo,
+  Redo,
+} from "lucide-react"
 import { Toggle } from "@/_components/ui/toggle"
 import { Separator } from "@/_components/ui/separator"
 import { Markdown } from "tiptap-markdown"
 import Image from "@tiptap/extension-image"
-import { useCallback } from "react"
+import { useCallback, useContext } from "react"
 import { Button } from "@/_components/ui/button"
+import { useQuery } from "@apollo/client/index"
+import { AuthContext } from "@/_contexts/auth-context"
+import { TextEditorUploaderDialog } from "@/_components/text-editor-uploader-dialog"
+import CodeBlock from "@tiptap/extension-code-block"
+import Blockquote from "@tiptap/extension-blockquote"
+import HorizontalRule from "@tiptap/extension-horizontal-rule"
+import { graphql } from "gql.tada"
 
 const TextEditor = ({
   value,
@@ -19,7 +38,7 @@ const TextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "min-h-[150px] max-h-[150px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+          "prose dark:prose-invert min-h-[150px] w-full rounded-md rounded-br-none rounded-bl-none border border-input bg-transparent px-3 py-2 border-b-0 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
       },
     },
     extensions: [
@@ -40,10 +59,18 @@ const TextEditor = ({
         inline: true,
         allowBase64: true,
       }),
+      CodeBlock.configure({
+        HTMLAttributes: {
+          class: "bg-gray-800 text-white text-sm p-2 rounded-md",
+          languageClassPrefix: "language-",
+        },
+      }),
+      Blockquote,
+      HorizontalRule,
     ],
-    content: value, // Set the initial content with the provided value
+    content: value,
     onUpdate: ({ editor }) => {
-      onChange(editor.storage.markdown.getMarkdown()) // Call the onChange callback with the updated HTML content
+      onChange(editor.storage.markdown.getMarkdown())
     },
   })
 
@@ -56,13 +83,20 @@ const TextEditor = ({
 }
 
 const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
-  const addImage = useCallback(() => {
-    const url = window.prompt("URL")
+  const authContext = useContext(AuthContext)
 
-    if (url) {
-      editor?.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const addImage = useCallback(
+    (url: string) => {
+      if (url) {
+        editor?.chain().focus().setImage({ src: url }).run()
+      }
+    },
+    [editor],
+  )
 
   return (
     <div className="flex flex-row items-center gap-1 rounded-br-md rounded-bl-md border border-input bg-transparent p-1">
@@ -87,7 +121,36 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <Strikethrough className="h-4 w-4" />
       </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("codeBlock")}
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+      >
+        <Code className="h-4 w-4" />
+      </Toggle>
+
       <Separator orientation="vertical" className="h-8 w-[1px]" />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 1 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+      >
+        {"H1"}
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 2 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+      >
+        {"H2"}
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("heading", { level: 3 })}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+      >
+        {"H3"}
+      </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("bulletList")}
@@ -102,11 +165,57 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
       >
         <ListOrdered className="h-4 w-4" />
       </Toggle>
-      <Button size="sm" onClick={addImage}>
-        {"Image"}
-      </Button>
+      {token?.viewer?.token && (
+        <TextEditorUploaderDialog
+          token={token?.viewer?.token}
+          onSelectImage={addImage}
+        >
+          <Button size="sm" variant={"ghost"}>
+            <ImageIcon className="h-4 w-4" />
+          </Button>
+        </TextEditorUploaderDialog>
+      )}
+      <Separator orientation="vertical" className="h-8 w-[1px]" />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("blockquote")}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+      >
+        <Quote className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("horizontalRule")}
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus className="h-4 w-4" />
+      </Toggle>
+      <Separator orientation="vertical" className="h-8 w-[1px]" />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("undo")}
+        onClick={() => editor.chain().focus().undo().run()}
+      >
+        <Undo className="h-4 w-4" />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive("redo")}
+        onClick={() => editor.chain().focus().redo().run()}
+      >
+        <Redo className="h-4 w-4" />
+      </Toggle>
     </div>
   )
 }
+
+const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      id
+      token
+    }
+  }`,
+)
 
 export default TextEditor

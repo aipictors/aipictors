@@ -158,12 +158,12 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="マイページ"
           />
           <MenuItemLink
-            href={"/dashboard"}
+            href={"/my"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label="ダッシュボード"
           />
           <MenuItemLink
-            href={"/dashboard/posts"}
+            href={"/my/posts"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label="自分の作品"
           />
@@ -256,6 +256,7 @@ const userSettingQuery = graphql(
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,
@@ -264,6 +265,7 @@ const viewerTokenQuery = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
         id
         biography

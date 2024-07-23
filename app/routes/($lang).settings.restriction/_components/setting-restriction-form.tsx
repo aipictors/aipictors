@@ -131,6 +131,7 @@ const userSettingQuery = graphql(
 const viewerIsBlurSensitiveImageQuery = graphql(
   `query ViewerIsBlurSensitiveImage {
     viewer {
+      id
       isBlurSensitiveImage
     }
   }`,

@@ -23,12 +23,12 @@ import type { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import type { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
 import type { InferInput } from "valibot"
-import {} from "@/_components/ui/card"
 import { PostFormPermissionSetting } from "@/routes/($lang)._main.new.image/_components/post-form-permission-setting"
 import { PostFormItemEnglish } from "@/routes/($lang)._main.new.image/_components/post-form-item-english"
 import type { PostTextFormInputAction } from "@/routes/($lang)._main.new.text/reducers/actions/post-text-form-input-action"
 import type { PostTextFormInputState } from "@/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
 import { PostFormItemMd } from "@/routes/($lang)._main.new.image/_components/post-form-item-md"
+import { PostFormItemType } from "@/routes/($lang)._main.new.image/_components/post-form-item-text-type"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -54,8 +54,6 @@ export function PostTextFormInput(props: Props) {
       day: props.state.date.getDate(),
     },
   })
-
-  const hasImageInfo = props.imageInformation
 
   const onChangeTheme = (value: boolean) => {
     if (data === undefined) {
@@ -142,13 +140,6 @@ export function PostTextFormInput(props: Props) {
 
   return (
     <div className="space-y-4">
-      <PostFormItemMd
-        label="本文"
-        onChange={(value) => {
-          props.dispatch({ type: "SET_MD", payload: value })
-        }}
-        value={props.state.caption}
-      />
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
@@ -171,10 +162,23 @@ export function PostTextFormInput(props: Props) {
         title={props.state.enTitle}
         caption={props.state.enCaption}
       />
+      <PostFormItemMd
+        label="本文"
+        onChange={(value) => {
+          props.dispatch({ type: "SET_MD", payload: value })
+        }}
+        value={props.state.md}
+      />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
         setRating={(value) => {
           props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
+        }}
+      />
+      <PostFormItemType
+        type={props.state.type ?? "COLUMN"}
+        setType={(type) => {
+          props.dispatch({ type: "SET_TYPE", payload: type })
         }}
       />
       <PostFormItemView

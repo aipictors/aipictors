@@ -109,6 +109,7 @@ export const ImageGenerationSelectorDialog = (props: Props) => {
 export const viewerImageGenerationResultsQuery = graphql(
   `query ViewerImageGenerationResults($offset: Int!, $limit: Int!, $where: ImageGenerationResultsWhereInput) {
     viewer {
+      id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
         ...ImageGenerationResultFields
       }

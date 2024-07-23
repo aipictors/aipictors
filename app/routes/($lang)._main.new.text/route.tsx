@@ -15,7 +15,7 @@ import { CreatingWorkDialog } from "@/routes/($lang)._main.new.image/_components
 import { PostTextFormInput } from "@/routes/($lang)._main.new.image/_components/post-text-form-input"
 import { PostTextFormUploader } from "@/routes/($lang)._main.new.image/_components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "@/routes/($lang)._main.new.image/_components/success-created-work-dialog"
-import { vPostImageForm } from "@/routes/($lang)._main.new.image/validations/post-image-form"
+import { vPostTextForm } from "@/routes/($lang)._main.new.image/validations/post-text-form"
 import { postTextFormInputReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import { postTextFormReducer } from "@/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "@/routes/($lang).generation._index/_utils/create-base64-from-image-url"
@@ -93,6 +93,7 @@ export default function NewText() {
     usePromotionFeature: false,
     useTagFeature: true,
     md: "",
+    type: "COLUMN",
   })
 
   useEffect(() => {
@@ -160,13 +161,14 @@ export default function NewText() {
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(createWorkMutation)
 
-  const formResult = safeParse(vPostImageForm, {
+  const formResult = safeParse(vPostTextForm, {
     title: inputState.title,
     caption: inputState.caption,
     enTitle: inputState.enTitle,
     enCaption: inputState.enCaption,
     imagesCount: state.items.length,
     thumbnailBase64: state.thumbnailBase64,
+    md: inputState.md,
   })
 
   const uploadImages = async () => {
@@ -307,7 +309,7 @@ export default function NewText() {
               ? state.thumbnailPosX
               : state.thumbnailPosY,
             modelId: inputState.aiModelId,
-            type: "WORK",
+            type: inputState.type ?? "COLUMN",
             subjectId: inputState.themeId,
             albumId: inputState.albumId,
             isPromotion: inputState.usePromotionFeature,
@@ -331,6 +333,7 @@ export default function NewText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
+            md: inputState.md,
           },
         },
       })

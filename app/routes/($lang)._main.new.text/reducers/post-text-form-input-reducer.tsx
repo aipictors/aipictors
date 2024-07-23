@@ -121,6 +121,12 @@ export const postTextFormInputReducer = (
         ratingRestriction: action.payload,
       }
     }
+    case "SET_TYPE": {
+      return {
+        ...state,
+        type: action.payload,
+      }
+    }
     case "SET_ACCESS_TYPE": {
       return {
         ...state,
@@ -203,6 +209,7 @@ export const postTextFormInputReducer = (
         reservationTime: action.payload.reservationTime,
         imageInformation: action.payload.imageInformation,
         md: action.payload.md,
+        type: action.payload.type,
       }
     }
   }

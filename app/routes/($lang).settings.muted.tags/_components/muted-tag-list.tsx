@@ -117,6 +117,7 @@ export const MutedTagList = () => {
 const viewerMutedTagsQuery = graphql(
   `query ViewerMutedTags($offset: Int!, $limit: Int!) {
     viewer {
+      id
       mutedTags(offset: $offset, limit: $limit) {
         ...PartialMutedTagFields
       }

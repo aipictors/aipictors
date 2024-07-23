@@ -1,6 +1,5 @@
 import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
-import { Input } from "@/_components/ui/input"
 import { Toggle } from "@/_components/ui/toggle"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { config } from "@/config"
@@ -51,7 +50,7 @@ export const GenerationWorkListActions = (props: Props) => {
       {/* 作品一覧（検索）の操作一覧 */}
       <div className="px-2 pb-2 md:px-4 xl:px-4">
         <div className="flex items-center gap-x-2">
-          <Input
+          {/* <Input
             minLength={1}
             maxLength={120}
             required
@@ -70,7 +69,7 @@ export const GenerationWorkListActions = (props: Props) => {
             variant={"secondary"}
           >
             検索
-          </Button>
+          </Button> */}
           {isDesktop && state !== "WORK_LIST_FULL" && (
             <GenerationTaskPreviewModeButton
               onTogglePreviewMode={props.onTogglePreviewMode}

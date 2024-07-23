@@ -162,6 +162,7 @@ export const SettingFcmForm = () => {
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
         id
         biography
