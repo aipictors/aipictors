@@ -20,7 +20,7 @@ jobs:
         env:
           TZ: 'Asia/Tokyo' # タイムゾーン指定
         id: date
-        run: echo "RELEASE_DATE=$(date -u +'%Y.%m.%d')" >> $GITHUB_ENV
+        run: echo "RELEASE_DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
