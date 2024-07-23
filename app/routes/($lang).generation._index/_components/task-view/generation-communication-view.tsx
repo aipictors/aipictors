@@ -72,6 +72,7 @@ export const GenerationCommunicationView = () => {
 const viewerSupportMessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
+      id
       supportMessages(offset: $offset, limit: $limit) {
         ...MessageFields
       }

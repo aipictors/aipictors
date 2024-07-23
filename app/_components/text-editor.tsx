@@ -212,6 +212,7 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,

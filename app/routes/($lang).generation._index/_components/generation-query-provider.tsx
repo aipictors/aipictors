@@ -124,6 +124,7 @@ const viewerImageGenerationStatusQuery = graphql(
       ...ImageGenerationStatusContext
     }
     viewer {
+      id
       ...ImageGenerationViewerContext
     }
   }`,

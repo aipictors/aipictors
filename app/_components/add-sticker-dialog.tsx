@@ -291,6 +291,7 @@ export const AddStickerDialog = (props: Props) => {
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,

@@ -270,6 +270,7 @@ export const CreateAlbumDialog = (props: Props) => {
 const viewerTokenQuery = graphql(
   `query ViewerToken {
     viewer {
+      id
       token
     }
   }`,
