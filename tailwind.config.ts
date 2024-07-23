@@ -4,7 +4,7 @@ import { fontFamily } from "tailwindcss/defaultTheme"
 
 export default {
   plugins: [animatePlugin, require("@tailwindcss/typography")],
-  darkMode: ["class", '[data-theme^="dark-"]'],
+  darkMode: ["class", '[data-theme^="dark"]'],
   content: [".storybook/**/*.tsx", "app/**/*.tsx"],
   theme: {
     /**
