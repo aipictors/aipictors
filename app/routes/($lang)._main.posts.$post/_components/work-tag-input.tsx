@@ -8,7 +8,7 @@ type Props = {
   postId: string
   tags: Tag[]
   isEditable?: boolean
-  setTags: (tags: Tag[]) => void
+  setTags: React.Dispatch<React.SetStateAction<Tag[]>>
 }
 
 export const WorkTagInput = (props: Props) => {
@@ -34,9 +34,7 @@ export const WorkTagInput = (props: Props) => {
         placeholder="追加するタグを入力"
         tags={props.tags}
         className="sm:min-w-[450px]"
-        setTags={(newTags) => {
-          props.setTags(newTags as [Tag, ...Tag[]])
-        }}
+        setTags={props.setTags}
       />
       <Button
         className="w-full"
