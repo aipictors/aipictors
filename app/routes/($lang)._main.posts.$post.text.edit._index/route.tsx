@@ -92,7 +92,6 @@ export default function EditText() {
               content: subWork.imageUrl ?? "",
             })),
           ],
-          md: work?.md ?? "",
           indexList: [],
           isThumbnailLandscape:
             (work?.smallThumbnailImageWidth ?? 0) >
@@ -127,8 +126,6 @@ export default function EditText() {
               : work?.thumbnailImagePosition ?? 0,
         },
       })
-
-      console.log(getReservationDetails(work?.createdAt ?? 0).reservationDate)
 
       dispatchInput({
         type: "INITIALIZE",
@@ -220,7 +217,6 @@ export default function EditText() {
         vae: "",
       },
     },
-    md: work?.md ?? "",
     progress: 0,
     selectedImageGenerationIds: [],
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
@@ -312,7 +308,7 @@ export default function EditText() {
     enCaption: inputState.enCaption,
     imagesCount: state.items.length,
     thumbnailBase64: state.thumbnailBase64,
-    md: state.md,
+    md: inputState.md,
   })
 
   const uploadImages = async () => {

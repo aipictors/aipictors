@@ -182,7 +182,6 @@ export const postTextFormReducer = (
         pngInfo: action.payload.pngInfo,
         thumbnailPosX: action.payload.thumbnailPosX,
         thumbnailPosY: action.payload.thumbnailPosY,
-        md: action.payload.md,
       }
   }
 

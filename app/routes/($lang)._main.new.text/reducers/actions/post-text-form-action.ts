@@ -127,7 +127,6 @@ export const vPostTextFormAction = union([
       pngInfo: nullable(vImageInformation),
       thumbnailPosX: number(),
       thumbnailPosY: number(),
-      md: nullable(string()),
     }),
   }),
 ])

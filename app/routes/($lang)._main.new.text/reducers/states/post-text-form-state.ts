@@ -33,5 +33,4 @@ export const vPostTextFormState = object({
   uploadedWorkId: nullable(string()),
   uploadedWorkUuid: nullable(string()),
   videoFile: nullable(vFile),
-  md: string(),
 })
