@@ -1,8 +1,8 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import { AlbumsListTable } from "@/routes/($lang).dashboard._index/_components/albums-list-table"
-import { AlbumsSpList } from "@/routes/($lang).dashboard._index/_components/albums-sp-list"
+import { AlbumsListTable } from "@/routes/($lang).my._index/_components/albums-list-table"
+import { AlbumsSpList } from "@/routes/($lang).my._index/_components/albums-sp-list"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {

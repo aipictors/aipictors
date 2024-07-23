@@ -1,7 +1,6 @@
 import type { SortType } from "@/_types/sort-type"
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import type { WorkTabType } from "@/routes/($lang).dashboard._index/_types/work-tab-type"
 import {
   Select,
   SelectTrigger,
@@ -10,20 +9,15 @@ import {
   SelectItem,
 } from "@/_components/ui/select"
 import { useState } from "react"
-import { WorksListFilterSettingButton } from "@/routes/($lang).dashboard._index/_components/works-list-filter-setting-button"
 import { toRatingText } from "@/_utils/work/to-rating-text"
-import { WorksSettingContents } from "@/routes/($lang).dashboard._index/_components/works-settings-contents"
-import { AlbumsListSortableSetting } from "@/routes/($lang).dashboard._index/_components/albums-list-sortable-setting"
+import { AlbumsListSortableSetting } from "@/routes/($lang).my._index/_components/albums-list-sortable-setting"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 
 type Props = {
-  workTabType: WorkTabType | null
   sort: SortType
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   rating: IntrospectionEnum<"AlbumRating"> | null
-  sumWorksCount: number
   sumAlbumsCount: number
-  setWorkTabType: (workTabType: WorkTabType | null) => void
   setRating: (rating: IntrospectionEnum<"AlbumRating"> | null) => void
   setSort: (sort: SortType) => void
   onClickAlbumTitleSortButton: () => void
@@ -62,19 +56,6 @@ export const AlbumsSetting = (props: Props) => {
     <>
       <div className="mb-4">
         <>
-          <div className="flex items-center">
-            <WorksSettingContents
-              workTabType={props.workTabType}
-              sumWorksCount={props.sumWorksCount}
-              sumAlbumsCount={props.sumAlbumsCount}
-              setWorkTabType={props.setWorkTabType}
-            />
-            <div className="ml-auto flex space-x-2">
-              <WorksListFilterSettingButton
-                onToggleFilterButton={onToggleFilterButton}
-              />
-            </div>
-          </div>
           <div
             className="mt-4 mb-4"
             style={{

@@ -1,14 +1,9 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AuthContext } from "@/_contexts/auth-context"
-import { DashboardContents } from "@/routes/($lang).dashboard._index/_components/dashboard-contents"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { Suspense, useContext } from "react"
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "max-age=0, s-maxage=0",
-  }
-}
+import { AppContents } from "@/_components/app/app-contents"
+import { HomeFooter } from "@/_components/home-footer"
+import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
+import { MyContents } from "@/routes/($lang).my/_components/my-contents"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { Outlet } from "@remix-run/react"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors - ダッシュボード"
@@ -33,16 +28,14 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export default function DashboardLayout() {
-  const authContext = useContext(AuthContext)
-
+export default function MyLayout() {
   return (
     <>
-      <Suspense fallback={<AppLoadingPage />}>
-        {authContext.isLoggedIn && (
-          <DashboardContents dashboardContentType="HOME" />
-        )}
-      </Suspense>
+      <HomeHeader />
+      <AppContents
+        outlet={<MyContents outlet={<Outlet />} />}
+        footer={<HomeFooter />}
+      />
     </>
   )
 }

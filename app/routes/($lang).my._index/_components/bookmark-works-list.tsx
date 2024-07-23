@@ -1,8 +1,8 @@
 import { config } from "@/config"
 import { useMediaQuery } from "usehooks-ts"
-import { RecommendedWorksListTable } from "@/routes/($lang).dashboard._index/_components/recommended-works-list-table"
-import { RecommendedWorksSpList } from "@/routes/($lang).dashboard._index/_components/recommended-works-sp-list"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
+import { BookmarkWorksListTable } from "@/routes/($lang).my._index/_components/bookmark-works-list-table"
+import { BookmarkWorksSpList } from "@/routes/($lang).my._index/_components/bookmark-works-sp-list"
 
 type Props = {
   works: {
@@ -22,7 +22,7 @@ type Props = {
 /**
  * 推薦作品一覧
  */
-export const RecommendedWorksList = (props: Props) => {
+export const BookmarkWorksList = (props: Props) => {
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const truncateTitle = (title: string, maxLength: number) => {
@@ -39,9 +39,9 @@ export const RecommendedWorksList = (props: Props) => {
   return (
     <>
       {isDesktop ? (
-        <RecommendedWorksListTable works={displayWorks} />
+        <BookmarkWorksListTable works={displayWorks} />
       ) : (
-        <RecommendedWorksSpList works={displayWorks} />
+        <BookmarkWorksSpList works={displayWorks} />
       )}
     </>
   )

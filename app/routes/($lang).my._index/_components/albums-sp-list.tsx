@@ -1,5 +1,5 @@
 import {} from "@/_components/ui/table"
-import { AlbumsSpListItem } from "@/routes/($lang).dashboard._index/_components/albums-sp-list-item"
+import { AlbumsSpListItem } from "@/routes/($lang).my._index/_components/albums-sp-list-item"
 
 type Props = {
   albums: {
