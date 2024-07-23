@@ -83,7 +83,7 @@ export const GenerationConfigProvider = (props: Props) => {
   })
 
   const stateText =
-    typeof window !== "undefined"
+    typeof document !== "undefined"
       ? localStorage.getItem("generation.state")
       : null
 

@@ -27,7 +27,7 @@ export const ContextProviders = (props: Props) => {
   )
 }
 
-if (typeof window !== "undefined" && getApps().length === 0) {
+if (typeof document !== "undefined" && getApps().length === 0) {
   initializeApp(config.firebaseConfig)
   initializeAnalytics(getApp())
   try {

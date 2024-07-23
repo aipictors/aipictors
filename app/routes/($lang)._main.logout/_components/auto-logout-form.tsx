@@ -23,7 +23,7 @@ export const AutoLogoutForm = () => {
   }
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     handleLogout()
   }, [])
 

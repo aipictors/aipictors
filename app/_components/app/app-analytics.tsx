@@ -9,7 +9,7 @@ export function AppAnalytics() {
   const [searchParams] = useSearchParams()
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     if (import.meta.env.NODE_ENV === "development") return
     if (getApps().length === 0) return
     logEvent(getAnalytics(), "page_view", {

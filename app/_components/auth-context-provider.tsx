@@ -44,7 +44,7 @@ export const AuthContextProvider = (props: Props) => {
   }
 
   useEffect(() => {
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
     onAuthStateChanged(getAuth(), (user) => {
       setUserId(getAnalytics(), user?.uid ?? null)
       if (user === null) {
