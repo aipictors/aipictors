@@ -18,15 +18,42 @@ jobs:
         with:
           ref: "main"
 
-      - name: Get current date
-        id: date
-        run: echo "RELEASE_DATE=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Get previous release tag
+        id: prev_tag
+        run: |
+          # Get the latest release tag
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+      - name: Calculate new tag
+        id: new_tag
+        run: |
+          # Get the current date
+          DATE=$(date -u +'%Y.%m.%d')
+          
+          # Extract the date and MICRO part from the latest tag
+          LATEST_DATE=$(echo ${{ env.latest_tag }} | awk -F. '{print $1"."$2"."$3}')
+          MICRO=$(echo ${{ env.latest_tag }} | awk -F. '{print $NF}')
+
+          # Check if the current date is different from the latest release date
+          if [[ "$DATE" == "$LATEST_DATE" && "$MICRO" =~ ^[0-9]+$ ]]; then
+            NEW_MICRO=$((MICRO + 1))
+            if [[ "$NEW_MICRO" == "1" ]]; then
+              NEW_TAG="${DATE}"
+            else
+              NEW_TAG="${DATE}.${NEW_MICRO}"
+            fi
+          else
+            NEW_TAG="${DATE}"
+          fi
+
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.RELEASE_DATE }}
+          tag_name: ${{ env.NEW_TAG }}
           draft: false
           prerelease: false
           generate_release_notes: true

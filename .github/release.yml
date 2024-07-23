@@ -8,7 +8,7 @@ changelog:
         - '*'
       exclude:
         labels:
-          - dependencies
+          - Dependabot
     - title: Dependabot
       labels:
         - Dependabot
