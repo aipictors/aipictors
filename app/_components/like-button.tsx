@@ -34,6 +34,55 @@ export const LikeButton = ({
   isParticle = false,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)
+  const [createWorkLike, { loading: isCreateLoading }] = useMutation(
+    createWorkLikeMutation,
+  )
+  const [deleteWorkLike, { loading: isDeleteLoading }] = useMutation(
+    deleteWorkLikeMutation,
+  )
+  const [isLiked, setIsLiked] = useState(defaultLiked)
+  const [likedCount, setLikedCount] = useState(defaultLikedCount)
+
+  useEffect(() => {
+    setIsLiked(defaultLiked)
+    setLikedCount(defaultLikedCount)
+  }, [defaultLiked, defaultLikedCount, targetWorkId])
+
+  const handleOnClick = async () => {
+    if (onClick) {
+      onClick(!isLiked)
+    }
+
+    try {
+      if (!isLiked) {
+        setLikedCount((prevCount) => prevCount + 1)
+        await createWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
+          },
+        })
+      } else {
+        setLikedCount((prevCount) => prevCount - 1)
+        await deleteWorkLike({
+          variables: {
+            input: {
+              workId: targetWorkId,
+            },
+          },
+        })
+      }
+      setIsLiked(!isLiked)
+    } catch (error) {
+      console.error("Error updating like status", error)
+    }
+  }
+
+  /* 自分自身の作品の場合はいいねボタンを表示しない */
+  if (authContext.userId === targetWorkOwnerUserId) {
+    return null
+  }
 
   /* 未ログイン */
   if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -88,59 +137,7 @@ export const LikeButton = ({
     )
   }
 
-  const [createWorkLike, { loading: isCreateLoading }] = useMutation(
-    createWorkLikeMutation,
-  )
-
-  const [deleteWorkLike, { loading: isDeleteLoading }] = useMutation(
-    deleteWorkLikeMutation,
-  )
-
   const width = Math.floor(size * 24)
-
-  const [isLiked, setIsLiked] = useState(defaultLiked)
-  const [likedCount, setLikedCount] = useState(defaultLikedCount)
-
-  useEffect(() => {
-    setIsLiked(defaultLiked)
-    setLikedCount(defaultLikedCount)
-  }, [targetWorkId])
-
-  const handleOnClick = async () => {
-    if (onClick) {
-      onClick(!isLiked)
-    }
-
-    try {
-      if (!isLiked) {
-        setLikedCount((prevCount) => prevCount + 1)
-        await createWorkLike({
-          variables: {
-            input: {
-              workId: targetWorkId,
-            },
-          },
-        })
-      } else {
-        setLikedCount((prevCount) => prevCount - 1)
-        await deleteWorkLike({
-          variables: {
-            input: {
-              workId: targetWorkId,
-            },
-          },
-        })
-      }
-      setIsLiked(!isLiked)
-    } catch (error) {
-      console.error("Error updating like status", error)
-    }
-  }
-
-  /* 自分自身の作品の場合はいいねボタンを表示しない */
-  if (authContext.userId === targetWorkOwnerUserId) {
-    return null
-  }
 
   return (
     <button
