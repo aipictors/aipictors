@@ -82,7 +82,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
         onOpenChange={(isOpen) => {
           if (!isOpen) {
             // ページ遷移
-            if (typeof window !== "undefined") {
+            if (typeof document !== "undefined") {
               window.location.href = link()
             }
           }
@@ -120,7 +120,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
           </div>
           <Button
             onClick={() => {
-              if (typeof window !== "undefined") {
+              if (typeof document !== "undefined") {
                 window.location.href = link()
               }
             }}

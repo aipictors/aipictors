@@ -15,7 +15,7 @@ export const AutoLoginProvider = (props: Props) => {
 
   useEffect(() => {
     // 未ログイン
-    if (typeof window === "undefined") return
+    if (typeof document === "undefined") return
 
     const currentUser = getAuth().currentUser
 

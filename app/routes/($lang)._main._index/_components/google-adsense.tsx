@@ -28,7 +28,7 @@ export const GoogleAdsense = (props: Props) => {
 
   useEffect(() => {
     try {
-      if (typeof window === "undefined") return
+      if (typeof document === "undefined") return
       if (window.adsbygoogle === undefined) {
         window.adsbygoogle = []
       }

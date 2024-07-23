@@ -82,7 +82,7 @@ export function GenerationSideTabsView() {
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
-                if (typeof window !== "undefined") {
+                if (typeof document !== "undefined") {
                   window.location.href = "https://www.aipictors.com/generate/"
                 }
               }}
