@@ -12,8 +12,11 @@ export const HomeEventBanner = () => {
           AI IDOLプロジェクトを応援してみよう！
         </p>
         <Link to="https://beta.aipictors.com/events/ai-idol-project">
-          {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-          <button className="m-auto mt-2 mb-2 w-32 rounded-full bg-blue-500 px-4 py-1 text-white">
+          {/** TODO_2024_07: Buttonに変更する */}
+          <button
+            type={"button"}
+            className="m-auto mt-2 mb-2 w-32 rounded-full bg-blue-500 px-4 py-1 text-white"
+          >
             詳細
           </button>
         </Link>

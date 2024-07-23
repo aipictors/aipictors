@@ -48,18 +48,28 @@ export async function loader() {
 
   const date = new Date()
 
-  const homeQueryResp = await client.query({
+  const yesterday = new Date()
+
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  const resp = await client.query({
     query: query,
     variables: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
       after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
+      awardDay: yesterday.getDate() - 1,
+      awardMonth: yesterday.getMonth() + 1,
+      awardYear: yesterday.getFullYear(),
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
     },
   })
 
-  // おすすめタグ一覧
-  // タグからランダムに8つ取得
+  /**
+   * おすすめタグ一覧
+   * タグからランダムに8つ取得
+   * TODO_2024_08: GraphQLに変更する
+   */
   const tags = await fetch(
     "https://www.aipictors.com/wp-content/themes/AISite/json/hashtag/hashtag-image-0.json",
   )
@@ -79,14 +89,55 @@ export async function loader() {
 
   const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
-  const adWorks = homeQueryResp.data.adWorks
+  /**
+   * TODO_2024_08: ランダム
+   */
+  const adWorks = resp.data.adWorks
+
+  /**
+   * TODO_2024_08: ランダム
+   */
+  const generationWorks = resp.data.generationWorks.slice(0, 16)
+
+  const awardDateText = [
+    yesterday.getFullYear(),
+    yesterday.getMonth() + 1,
+    yesterday.getDate(),
+  ].join("/")
 
   return json({
+    /**
+     * HomeBanners
+     */
     adWorks: adWorks,
-    suggestedWorkResp: homeQueryResp.data.works,
-    imageGenerationWorks: homeQueryResp.data.imageGenerationWorks,
-    themeResp: homeQueryResp.data.dailyTheme,
-    hotTags: homeQueryResp.data.hotTags,
+    /**
+     * HomeTagList
+     */
+    dailyTheme: resp.data.dailyTheme,
+    /**
+     * HomeTagList
+     */
+    hotTags: resp.data.hotTags,
+    /**
+     * HomeAwardWorkSection
+     */
+    awardDateText: awardDateText,
+    /**
+     * HomeAwardWorkSection
+     */
+    workAwards: resp.data.workAwards,
+    /**
+     * HomeWorksGeneratedSection
+     */
+    generationWorks: generationWorks,
+
+    /**
+     * HomeWorksUsersRecommendedSection
+     */
+    promotionWorks: resp.data.promotionWorks,
+    /**
+     * HomeTagsSection
+     */
     tags: randomTags,
   })
 }
@@ -106,32 +157,41 @@ export default function Index() {
         deadline={"2024-07-30"}
       />
       <HomeBanners adWorks={data.adWorks} />
-      {data && (
-        <div className="space-y-8">
-          <HomeTagList
-            themeTitle={data.themeResp?.title}
-            hotTags={data.hotTags}
-          />
-          <HomeWorksGeneratedSection />
-          <HomeAwardWorkSection title={"前日ランキング"} />
-          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-          <HomeWorksRecommendedSection />
-          <HomeWorksUsersRecommendedSection />
-          <HomeNovelsSection title={"小説"} />
-          <HomeVideosSection title={"動画"} />
-          <HomeColumnsSection title={"コラム"} />
-        </div>
-      )}
+      <div className="space-y-8">
+        <HomeTagList
+          themeTitle={data.dailyTheme?.title}
+          hotTags={data.hotTags}
+        />
+        <HomeWorksGeneratedSection
+        // works={data.generationWorks}
+        />
+        <HomeAwardWorkSection
+          title={"前日ランキング"}
+          // awardDateText={data.awardDateText}
+          // works={data.workAwards.map((award) => award.work)}
+        />
+        <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+        <HomeWorksRecommendedSection />
+        <HomeWorksUsersRecommendedSection
+        // works={data.promotionWorks}
+        />
+        <HomeNovelsSection title={"小説"} />
+        <HomeVideosSection title={"動画"} />
+        <HomeColumnsSection title={"コラム"} />
+      </div>
     </AppPage>
   )
 }
 
 const query = graphql(
   `query HomeQuery(
-    $after: String
-    $year: Int
-    $month: Int
-    $day: Int
+    $after: String!
+    $year: Int!
+    $month: Int!
+    $day: Int!
+    $awardYear: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
   ) {
     adWorks: works(
       offset: 0,
@@ -143,29 +203,24 @@ const query = graphql(
     ) {
       ...HomeGenerationBannerWorkField
     }
-    works: works(
-      offset: 0,
-      limit: 80,
+    generationWorks: works(
+      offset: 0
+      limit: 40
       where: {
-        orderBy: LIKES_COUNT,
-        sort: DESC,
-        createdAtAfter: $after,
-        ratings: [G],
-      },
+        orderBy: LIKES_COUNT
+        sort: DESC
+        ratings: [G]
+        isFeatured: true
+        createdAtAfter: $after
+      }
     ) {
       ...PartialWorkFields
     }
-    imageGenerationWorks: works(
-      offset: 0,
-      limit: 54,
-      where: {
-        isRecommended: true,
-        ratings: [G],
-      },
+    dailyTheme(
+      year: $year
+      month: $month
+      day: $day
     ) {
-      ...PartialWorkFields
-    }
-    dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
       dateText
@@ -180,6 +235,33 @@ const query = graphql(
     hotTags {
       ...PartialTagFields
       firstWork {
+        ...PartialWorkFields
+      }
+    }
+    promotionWorks: works(
+      offset: 0,
+      limit: 80,
+      where: {
+        isRecommended: true
+        ratings: [G]
+      }
+    ) {
+      ...PartialWorkFields
+    }
+    workAwards(
+      offset: 0
+      limit: 20
+      where: {
+        year: $awardYear
+        month: $awardMonth
+        day: $awardDay
+        isSensitive: false
+      }
+    ) {
+      id
+      index
+      dateText
+      work {
         ...PartialWorkFields
       }
     }

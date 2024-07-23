@@ -153,6 +153,7 @@ export const WorkArticle = (props: Props) => {
             </div>
           )}
           <WorkArticleTags
+            postId={props.work.id}
             tagNames={props.work.tagNames}
             isEditable={props.work.isTagEditable}
           />
