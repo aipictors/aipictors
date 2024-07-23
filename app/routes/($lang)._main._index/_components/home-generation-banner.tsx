@@ -20,8 +20,11 @@ export const HomeGenerationBanner = (props: Props) => {
           投稿できる！
         </p>
         <Link to="/generation">
-          {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-          <button className="mt-2 mb-2 w-full rounded-full bg-blue-500 px-4 py-1 text-white">
+          {/** TODO_2024_07: Buttonに変更する */}
+          <button
+            type={"button"}
+            className="mt-2 mb-2 w-full rounded-full bg-blue-500 px-4 py-1 text-white"
+          >
             生成
           </button>
         </Link>

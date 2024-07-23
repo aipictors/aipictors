@@ -1,21 +1,15 @@
 import { AppPage } from "@/_components/app/app-page"
+import { ConstructionAlert } from "@/_components/construction-alert"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
-import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
-import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
-import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
-import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
-import { HomeWorkDummies } from "@/routes/($lang)._main._index/_components/home-work-dummies"
-import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import { type MetaFunction, json } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | センシティブ"
@@ -44,39 +38,30 @@ export const meta: MetaFunction = () => {
 export async function loader() {
   const client = createClient()
 
-  // おすすめ作品
-  const suggestedWorkResp = await client.query({
-    query: worksQuery,
+  const date = new Date()
+
+  const yesterday = new Date()
+
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  const resp = await client.query({
+    query: query,
     variables: {
-      offset: 0,
-      limit: 80,
-      where: {
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
-        // 直近1週間の作品
-        createdAtAfter: new Date(
-          Date.now() - 7 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
-        ratings: ["R18", "R18G"],
-      },
+      after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
+      awardDay: yesterday.getDate() - 1,
+      awardMonth: yesterday.getMonth() + 1,
+      awardYear: yesterday.getFullYear(),
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
     },
   })
 
-  // 推薦作品
-  const recommendedWorksResp = await client.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 54,
-      where: {
-        isRecommended: true,
-        ratings: ["R18", "R18G"],
-      },
-    },
-  })
-
-  // おすすめタグ一覧
-  // タグからランダムに8つ取得
+  /**
+   * おすすめタグ一覧
+   * タグからランダムに8つ取得
+   * TODO_2024_08: GraphQLに変更する
+   */
   const tags = await fetch(
     "https://www.aipictors.com/wp-content/themes/AISite/json/hashtag/hashtag-image-1.json",
   )
@@ -94,31 +79,20 @@ export async function loader() {
     tag.thumbnailUrl = `https://www.aipictors.com/wp-content/uploads/${tag.thumbnailUrl}`
   }
 
-  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 8)
+  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
-  const date = new Date()
-  const { data: themeResp } = await client.query({
-    query: dailyThemeQuery,
-    variables: {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1, // getMonth()は0から始まるので、1を足す
-      day: date.getDate(), // getDate()は月の日にちを返す
-      offset: 0,
-      limit: 0,
-    },
-  })
-
-  // コレクション
-  const hotTagsResp = await client.query({
-    query: hotSensitiveTagsQuery,
-  })
+  const awardDateText = [
+    yesterday.getFullYear(),
+    yesterday.getMonth() + 1,
+    yesterday.getDate(),
+  ].join("/")
 
   return json({
-    suggestedWorkResp: suggestedWorkResp.data.works,
-    recommendedWorks: recommendedWorksResp.data.works,
-    themeResp: themeResp.dailyTheme,
-    hotTags: hotTagsResp.data.hotSensitiveTags,
+    awardDateText: awardDateText,
+    hotTags: resp.data.hotTags,
+    promotionWorks: resp.data.promotionWorks,
     tags: randomTags,
+    workAwards: resp.data.workAwards,
   })
 }
 
@@ -127,109 +101,80 @@ export default function SensitivePage() {
 
   return (
     <AppPage className="space-y-6">
-      {data && (
-        <>
-          <HomeTagList
-            themeTitle={data.themeResp?.title}
-            hotTags={data.hotTags}
-          />
-          <Suspense fallback={<HomeWorkDummies />}>
-            <HomeAwardWorkSection title={"前日ランキング"} isSensitive={true} />
-          </Suspense>
-          <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksRecommendedSection isSensitive={true} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeWorksUsersRecommendedSection isSensitive={true} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeNovelsSection title={"小説"} isSensitive={true} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeVideosSection title={"動画"} isSensitive={true} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <>
-                <HomeWorkDummies />
-                <HomeWorkDummies />
-              </>
-            }
-          >
-            <HomeColumnsSection title={"コラム"} isSensitive={true} />
-          </Suspense>
-        </>
-      )}
+      <ConstructionAlert
+        type="WARNING"
+        fallbackURL="https://www.aipictors.com/"
+        message={"このページは開発中です"}
+      />
+      <HomeAwardWorkSection
+        title={"前日ランキング"}
+        // awardDateText={data.awardDateText}
+        // works={data.workAwards.map((award) => award.work)}
+      />
+      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+      {/* <HomeWorksRecommendedSection /> */}
+      <HomeWorksUsersRecommendedSection
+      // works={data.promotionWorks}
+      />
+      {/* <HomeNovelsSection title={"小説"} /> */}
+      {/* <HomeVideosSection title={"動画"} /> */}
+      {/* <HomeColumnsSection title={"コラム"} /> */}
     </AppPage>
   )
 }
 
-const dailyThemeQuery = graphql(
-  `query DailyTheme($year: Int, $month: Int, $day: Int, $offset: Int!, $limit: Int!) {
-    dailyTheme(year: $year, month: $month, day: $day) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount,
-      works(offset: $offset, limit: $limit) {
-        ...PartialWorkFields
-      }
+const query = graphql(
+  `query HomeQuery(
+    $after: String!
+    $awardYear: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
+  ) {
+    works: works(
+      offset: 0,
+      limit: 80,
+      where: {
+        orderBy: LIKES_COUNT,
+        sort: DESC,
+        createdAtAfter: $after,
+        ratings: [R15, R18, R18G]
+      },
+    ) {
+      ...PartialWorkFields
     }
-  }`,
-  [partialWorkFieldsFragment],
-)
-
-const hotSensitiveTagsQuery = graphql(
-  `query HotSensitiveTags {
-    hotSensitiveTags {
+    hotTags {
       ...PartialTagFields
       firstWork {
         ...PartialWorkFields
       }
     }
-  }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
-)
-
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    promotionWorks: works(
+      offset: 0,
+      limit: 80,
+      where: {
+        isRecommended: true
+        ratings: [R15, R18, R18G]
+      }
+    ) {
       ...PartialWorkFields
     }
+    workAwards(
+      offset: 0
+      limit: 20
+      where: {
+        year: $awardYear
+        month: $awardMonth
+        day: $awardDay
+        isSensitive: true
+      }
+    ) {
+      id
+      index
+      dateText
+      work {
+        ...PartialWorkFields
+      }
+    }
   }`,
-  [partialWorkFieldsFragment],
+  [partialTagFieldsFragment, partialWorkFieldsFragment],
 )
