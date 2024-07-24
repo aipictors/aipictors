@@ -66,7 +66,7 @@ export const PostFormItemTags = (props: Props) => {
         <p className="font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
         <TagInput
           placeholder="タグを追加してください"
-          tags={formattedTags}
+          tags={props.tags}
           maxTags={10}
           maxLength={160}
           className="sm:min-w-[450px]"

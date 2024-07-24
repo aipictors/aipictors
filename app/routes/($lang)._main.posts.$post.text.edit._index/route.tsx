@@ -161,11 +161,7 @@ export default function EditText() {
           reservationTime: getReservationDetails(work?.createdAt ?? 0)
             .reservationTime,
           tags: work?.tagNames.length
-            ? [
-                ...(work?.tagNames[0]
-                  .split(",")
-                  .map((tag) => ({ id: tag, text: tag })) ?? []),
-              ]
+            ? work?.tagNames.map((tag) => ({ id: tag, text: tag }))
             : [],
           themeId: work?.dailyTheme?.id ?? null,
           title: work?.title ?? "",
@@ -273,11 +269,7 @@ export default function EditText() {
     reservationDate: reservationDate,
     reservationTime: reservationTime,
     tags: work?.tagNames.length
-      ? [
-          ...(work?.tagNames[0]
-            .split(",")
-            .map((tag) => ({ id: tag, text: tag })) ?? []),
-        ]
+      ? work?.tagNames.map((tag) => ({ id: tag, text: tag }))
       : [],
     themeId: work?.dailyTheme?.id ?? null,
     title: work?.title ?? "",
