@@ -3,12 +3,13 @@ import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fie
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   isSensitive?: boolean
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
@@ -30,7 +31,7 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
     },
   })
 
-  const suggestedWorks = recommendedWorksResp?.works ?? []
+  const workDisplayed = recommendedWorksResp?.works ?? props.works
 
   const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
@@ -38,7 +39,7 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
     <>
       <HomeWorkSection
         title={"ユーザからの推薦"}
-        works={suggestedWorks}
+        works={workDisplayed}
         isCropped={!isDesktop}
       />
     </>

@@ -6,14 +6,16 @@ import { Button } from "@/_components/ui/button"
 import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import type { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
   title: string
   isSensitive?: boolean
+  works: FragmentOf<typeof workAwardFieldsFragment>[]
 }
 
 /**
@@ -40,13 +42,9 @@ export const HomeAwardWorkSection = (props: Props) => {
     },
   })
 
-  const workList = workAwardsResp?.workAwards ?? null
+  const workDisplayed = workAwardsResp?.workAwards ?? props.works
 
-  if (workList === null) {
-    return null
-  }
-
-  const works = workList.map((work) => ({
+  const works = workDisplayed.map((work) => ({
     id: work.work.id,
     src: work.work.smallThumbnailImageURL,
     width: work.work.smallThumbnailImageWidth,

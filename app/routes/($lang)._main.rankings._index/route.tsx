@@ -3,12 +3,10 @@ import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "@/_lib/client"
 import { AppPage } from "@/_components/app/app-page"
 import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
-import {
-  RankingWorkList,
-  workAwardFieldsFragment,
-} from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
+import { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
+import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/_components/ranking-work-list"
 
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()

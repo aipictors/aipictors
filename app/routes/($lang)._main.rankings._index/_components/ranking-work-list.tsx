@@ -2,8 +2,8 @@ import { CroppedWorkSquare } from "@/_components/cropped-work-square"
 import { IconUrl } from "@/_components/icon-url"
 import { LikeButton } from "@/_components/like-button"
 import { UserNameBadge } from "@/_components/user-name-badge"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { type FragmentOf, graphql } from "gql.tada"
+import type { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
   awards: FragmentOf<typeof workAwardFieldsFragment>[]
@@ -61,15 +61,3 @@ export const RankingWorkList = (props: Props) => {
     </div>
   )
 }
-
-export const workAwardFieldsFragment = graphql(
-  `fragment WorkAwardFields on WorkAwardNode @_unmask {
-      id
-      index
-      dateText
-      work {
-        ...PartialWorkFields
-      }
-  }`,
-  [partialWorkFieldsFragment],
-)

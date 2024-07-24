@@ -12,12 +12,12 @@ import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
 import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
-import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "@/_graphql/fragments/partial-recommended-tag-fields"
+import { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -150,19 +150,13 @@ export default function Index() {
           themeTitle={data.dailyTheme?.title}
           hotTags={data.hotTags}
         />
-        <HomeWorksGeneratedSection
-        // works={data.generationWorks}
-        />
+        <HomeWorksGeneratedSection works={data.generationWorks} />
         <HomeAwardWorkSection
           title={"前日ランキング"}
-          // awardDateText={data.awardDateText}
-          // works={data.workAwards.map((award) => award.work)}
+          works={data.workAwards}
         />
         <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-        <HomeWorksRecommendedSection />
-        <HomeWorksUsersRecommendedSection
-        // works={data.promotionWorks}
-        />
+        <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
         <HomeNovelsSection works={data.novelWorks} title={"小説"} />
         <HomeVideosSection works={data.videoWorks} title={"動画"} />
         <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
@@ -284,12 +278,7 @@ const query = graphql(
         isSensitive: false
       }
     ) {
-      id
-      index
-      dateText
-      work {
-        ...PartialWorkFields
-      }
+      ...WorkAwardFields
     }
   }`,
   [
@@ -297,5 +286,6 @@ const query = graphql(
     partialWorkFieldsFragment,
     homeGenerationBannerWorkFieldFragment,
     partialRecommendedTagFieldsFragment,
+    workAwardFieldsFragment,
   ],
 )
