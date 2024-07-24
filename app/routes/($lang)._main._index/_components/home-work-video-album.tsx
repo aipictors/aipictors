@@ -3,8 +3,6 @@ import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 import { useRef } from "react"
 import { Badge } from "@/_components/ui/badge"
-import { useMediaQuery } from "usehooks-ts"
-import { config } from "@/config"
 import { IconUrl } from "@/_components/icon-url"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
@@ -31,8 +29,6 @@ export function HomeWorkVideoAlbum({
   url,
 }: HomeWorkAlbumProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const handleMouseEnter = () => {
     if (videoRef.current) {
@@ -66,17 +62,15 @@ export function HomeWorkVideoAlbum({
             alt={""}
             className={"rounded"}
           />
-          {isDesktop && (
-            <video
-              src={url}
-              ref={videoRef}
-              className="absolute top-0 left-0 rounded"
-              style={{ zIndex: "-1" }}
-              muted
-            >
-              <track kind="captions" src={url} label="English" />
-            </video>
-          )}
+          <video
+            src={url}
+            ref={videoRef}
+            className="absolute top-0 left-0 rounded"
+            style={{ zIndex: "-1" }}
+            muted
+          >
+            <track kind="captions" src={url} label="English" />
+          </video>
           <div className="absolute top-1 left-1 opacity-50">
             <Badge variant={"secondary"} className="text-xs">
               {"video"}

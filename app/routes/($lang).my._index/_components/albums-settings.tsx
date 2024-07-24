@@ -1,6 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import {
   Select,
   SelectTrigger,
@@ -28,8 +26,6 @@ type Props = {
  * アルバム設定
  */
 export const AlbumsSetting = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")
@@ -94,7 +90,7 @@ export const AlbumsSetting = (props: Props) => {
             </div>
           </div>
         </>
-        {!isDesktop && (
+        <div className="block md:hidden">
           <AlbumsListSortableSetting
             nowSort={props.sort}
             nowOrderBy={props.orderBy}
@@ -103,7 +99,7 @@ export const AlbumsSetting = (props: Props) => {
             onClickAlbumTitleSortButton={props.onClickAlbumTitleSortButton}
             onClickAlbumDateSortButton={props.onClickAlbumDateSortButton}
           />
-        )}
+        </div>
       </div>
     </>
   )

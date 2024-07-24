@@ -4,7 +4,6 @@ import {
   ResizablePanelGroup,
 } from "@/_components/ui/resizable"
 import { Separator } from "@/_components/ui/separator"
-import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useMediaQuery } from "usehooks-ts"
 
@@ -22,8 +21,6 @@ type Props = {
  * 画像生画面のメイン部分
  */
 export const GenerationMainView = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
@@ -31,7 +28,7 @@ export const GenerationMainView = (props: Props) => {
   /**
    * スマホの場合リサイザーなし
    */
-  if (!isDesktop) {
+  if (!useMediaQuery("(min-width: 768px)")) {
     return (
       <div className="flex flex-1 flex-col gap-2 overflow-hidden lg:flex-row">
         <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>

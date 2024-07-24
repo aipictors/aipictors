@@ -1,9 +1,7 @@
 import type { partialStickerFieldsFragment } from "@/_graphql/fragments/partial-sticker-fields"
-import { config } from "@/config"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   stickers: FragmentOf<typeof partialStickerFieldsFragment>[]
@@ -17,8 +15,6 @@ export const ResponsiveStickersList = (props: Props) => {
   if (props.stickers === null || props.stickers.length === 0) {
     return null
   }
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <div className="flex flex-wrap">

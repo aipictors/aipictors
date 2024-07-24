@@ -1,12 +1,10 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   isSensitive?: boolean
@@ -34,14 +32,12 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
 
   const workDisplayed = recommendedWorksResp?.works ?? props.works
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <>
       <HomeWorkSection
         title={"ユーザからの推薦"}
         works={workDisplayed}
-        isCropped={!isDesktop}
+        isCropped={false}
       />
     </>
   )

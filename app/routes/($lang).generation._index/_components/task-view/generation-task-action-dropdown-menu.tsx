@@ -13,7 +13,6 @@ import {
 } from "@/_components/ui/dropdown-menu"
 import { imageReservedGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-reserved-task-field"
 import { passFieldsFragment } from "@/_graphql/fragments/pass-fields"
-import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import type { TaskContentPositionType } from "@/routes/($lang).generation._index/_types/task-content-position-type"
 import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/_types/task-list-thumbnail-type"
@@ -21,7 +20,6 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 type Props = {
   thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
@@ -35,8 +33,6 @@ type Props = {
  * その他ボタン
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const context = useGenerationContext()
 
   /**
@@ -110,7 +106,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        {isDesktop && (
+        <div className="hidden md:block">
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               {"履歴詳細の表示場所"}
@@ -140,7 +136,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-        )}
+        </div>
         {isEnabledReservedGeneration() && (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>{"一括操作"}</DropdownMenuSubTrigger>

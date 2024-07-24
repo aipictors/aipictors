@@ -1,13 +1,11 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { config } from "@/config"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
 import { HomeVideosWorksSection } from "@/routes/($lang)._main._index/_components/home-video-works-section"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   userId: string
@@ -127,29 +125,23 @@ export const UserContentsContainer = (props: Props) => {
 
   const videoWorks = [...(videoWorkRes?.works || [])]
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <div className="space-y-4">
       {worksCountResp.data?.worksCount !== 0 && (
-        <HomeWorkSection
-          works={works}
-          title={"人気作品"}
-          isCropped={!isDesktop}
-        />
+        <HomeWorkSection works={works} title={"人気作品"} isCropped={false} />
       )}
       {novelWorksCountResp.data?.worksCount !== 0 && (
         <HomeNovelsWorksSection
           works={novelWorks}
           title={"人気小説"}
-          isCropped={!isDesktop}
+          isCropped={false}
         />
       )}
       {columnWorksCountResp.data?.worksCount !== 0 && (
         <HomeNovelsWorksSection
           works={columnWorks}
           title={"人気コラム"}
-          isCropped={!isDesktop}
+          isCropped={false}
         />
       )}
 
@@ -157,7 +149,7 @@ export const UserContentsContainer = (props: Props) => {
         <HomeVideosWorksSection
           works={videoWorks}
           title={"人気動画"}
-          isCropped={!isDesktop}
+          isCropped={false}
         />
       )}
     </div>

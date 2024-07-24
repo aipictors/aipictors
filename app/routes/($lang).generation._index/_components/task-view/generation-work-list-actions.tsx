@@ -2,14 +2,12 @@ import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
 import { Toggle } from "@/_components/ui/toggle"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
-import { config } from "@/config"
 import { GenerationTaskPreviewModeButton } from "@/routes/($lang).generation._index/_components/task-view/generation-task-preview-mode-button"
 import { GenerationWorkActionDropdownMenu } from "@/routes/($lang).generation._index/_components/task-view/generation-work-action-dropdown-menu"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
 import { useState } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   thumbnailSize: number
@@ -26,8 +24,6 @@ type Props = {
  */
 export const GenerationWorkListActions = (props: Props) => {
   const context = useGenerationContext()
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
@@ -70,10 +66,12 @@ export const GenerationWorkListActions = (props: Props) => {
           >
             検索
           </Button> */}
-          {isDesktop && state !== "WORK_LIST_FULL" && (
-            <GenerationTaskPreviewModeButton
-              onTogglePreviewMode={props.onTogglePreviewMode}
-            />
+          {state !== "WORK_LIST_FULL" && (
+            <div className="hidden md:block">
+              <GenerationTaskPreviewModeButton
+                onTogglePreviewMode={props.onTogglePreviewMode}
+              />
+            </div>
           )}
           <GenerationWorkActionDropdownMenu
             sortType={props.sortType}
@@ -82,18 +80,20 @@ export const GenerationWorkListActions = (props: Props) => {
             onChange={props.setThumbnailSize}
           />
           {/* 全画面表示 */}
-          {isDesktop && props.showHistoryExpandButton && (
-            <Toggle
-              onClick={openFullTask}
-              variant={"outline"}
-              title="作品一覧の全画面モード切替"
-            >
-              {state === "WORK_LIST_FULL" ? (
-                <MinimizeIcon className="w-4" />
-              ) : (
-                <MaximizeIcon className="w-4" />
-              )}
-            </Toggle>
+          {props.showHistoryExpandButton && (
+            <div className="hidden md:block">
+              <Toggle
+                onClick={openFullTask}
+                variant={"outline"}
+                title="作品一覧の全画面モード切替"
+              >
+                {state === "WORK_LIST_FULL" ? (
+                  <MinimizeIcon className="w-4" />
+                ) : (
+                  <MaximizeIcon className="w-4" />
+                )}
+              </Toggle>
+            </div>
           )}
         </div>
         <div className="mt-2" />

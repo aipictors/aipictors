@@ -89,12 +89,6 @@ export const config = {
     maxImageCount: 200,
   },
   /**
-   * メディアクエリ
-   */
-  mediaQuery: {
-    isDesktop: "(min-width: 768px)",
-  },
-  /**
    * ログイベント
    */
   logEvent: {

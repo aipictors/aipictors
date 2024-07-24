@@ -1,9 +1,6 @@
 import { Badge } from "@/_components/ui/badge"
 import { Button } from "@/_components/ui/button"
-import { config } from "@/config"
-import { Link } from "@remix-run/react"
 import { SearchIcon } from "lucide-react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   imageURL: string
@@ -17,8 +14,6 @@ type Props = {
 }
 
 export const ConfigModelButton = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <div className="relative">
       <Button
@@ -53,29 +48,17 @@ export const ConfigModelButton = (props: Props) => {
           </div>
         </div>
       </Button>
-      {!props.isHideSearchButton &&
-        (isDesktop ? (
-          <Button
-            disabled={props.isDisabled}
-            onClick={props.onSearchClick}
-            className="absolute top-1 right-1 h-8 w-8 rounded-full border-2"
-            size={"icon"}
-            variant={"secondary"}
-          >
-            <SearchIcon className="w-4" />
-          </Button>
-        ) : (
-          <Link to={"#generation-works-from-model-view"}>
-            <Button
-              disabled={props.isDisabled}
-              onClick={props.onSearchClick}
-              className="absolute top-1 right-1 h-8 w-8 rounded-full border-2"
-              size={"icon"}
-            >
-              <SearchIcon className="w-4" />
-            </Button>
-          </Link>
-        ))}
+      {!props.isHideSearchButton && (
+        <Button
+          disabled={props.isDisabled}
+          onClick={props.onSearchClick}
+          className="absolute top-1 right-1 h-8 w-8 rounded-full border-2"
+          size={"icon"}
+          variant={"secondary"}
+        >
+          <SearchIcon className="w-4" />
+        </Button>
+      )}
     </div>
   )
 }

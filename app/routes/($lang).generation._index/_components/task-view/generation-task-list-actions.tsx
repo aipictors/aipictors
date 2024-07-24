@@ -2,7 +2,6 @@ import { Button } from "@/_components/ui/button"
 import { Slider } from "@/_components/ui/slider"
 import { Toggle } from "@/_components/ui/toggle"
 import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
-import { config } from "@/config"
 import { GenerationTasksDeleteButton } from "@/routes/($lang).generation._index/_components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "@/routes/($lang).generation._index/_components/task-view/generation-image-download-button"
 import { GenerationImagePostButton } from "@/routes/($lang).generation._index/_components/task-view/generation-image-upload-button"
@@ -18,7 +17,6 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useState } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   rating: number
@@ -91,8 +89,6 @@ export const GenerationTaskListActions = (props: Props) => {
 
   const isEmpty = props.selectedTaskIds.length === 0
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <>
       {/* 操作一覧 */}
@@ -133,11 +129,13 @@ export const GenerationTaskListActions = (props: Props) => {
               onChange={props.onChangeProtect}
             />
           )}
-          {isDesktop && state !== "HISTORY_LIST_FULL" && (
-            <GenerationTaskPreviewModeButton
-              onTogglePreviewMode={props.onTogglePreviewMode}
-              defaultChecked={props.previewMode}
-            />
+          {state !== "HISTORY_LIST_FULL" && (
+            <div className="hidden md:block">
+              <GenerationTaskPreviewModeButton
+                onTogglePreviewMode={props.onTogglePreviewMode}
+                defaultChecked={props.previewMode}
+              />
+            </div>
           )}
           {props.showCountInput && props.viewCount && (
             <GenerationTaskCountSelect
@@ -149,18 +147,20 @@ export const GenerationTaskListActions = (props: Props) => {
           )}
         </div>
         {/* 履歴全画面表示 */}
-        {isDesktop && props.showHistoryExpandButton && (
-          <Toggle
-            onClick={openFullHistory}
-            variant={"outline"}
-            title="履歴一覧の全画面モード切替"
-          >
-            {state === "HISTORY_LIST_FULL" ? (
-              <MinimizeIcon className="w-4" />
-            ) : (
-              <MaximizeIcon className="w-4" />
-            )}
-          </Toggle>
+        {props.showHistoryExpandButton && (
+          <div className="hidden md:block">
+            <Toggle
+              onClick={openFullHistory}
+              variant={"outline"}
+              title="履歴一覧の全画面モード切替"
+            >
+              {state === "HISTORY_LIST_FULL" ? (
+                <MinimizeIcon className="w-4" />
+              ) : (
+                <MaximizeIcon className="w-4" />
+              )}
+            </Toggle>
+          </div>
         )}
       </div>
       <div className="flex items-center space-x-2 px-2 pb-2 md:px-4 xl:px-4">

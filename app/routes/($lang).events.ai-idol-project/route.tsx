@@ -1,11 +1,9 @@
 import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
 import {} from "@/_components/ui/card"
-import { config } from "@/config"
 import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/_components/character-card"
 import { ImageSliderAnimation } from "@/routes/($lang).events.ai-idol-project/_components/image-slider-animation"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
-import { useMediaQuery } from "usehooks-ts"
 
 export default function EventAiIdolProject() {
   const imageUrls = [
@@ -112,8 +110,6 @@ export default function EventAiIdolProject() {
     />
   ))
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <>
       <ImageSliderAnimation imageURLs={imageUrls} />
@@ -151,7 +147,7 @@ export default function EventAiIdolProject() {
       {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
       <iframe
         className="m-auto mt-8 mb-24"
-        width={isDesktop ? "560" : "auto"}
+        width={"auto"}
         height="315"
         src="https://www.youtube.com/embed/q1wVDZe5rMg?si=wu-mwywyLZ9xZLVD"
         title="YouTube video player"

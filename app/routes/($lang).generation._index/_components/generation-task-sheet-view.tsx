@@ -13,7 +13,6 @@ import {
 import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 import { type FragmentOf, graphql } from "gql.tada"
 import { imageGenerationTaskFieldsFragment } from "@/_graphql/fragments/image-generation-task-field"
 import { imageGenerationResultFieldsFragment } from "@/_graphql/fragments/image-generation-result-field"
@@ -97,8 +96,6 @@ export function GenerationTaskSheetView(props: Props) {
   )
 
   const [showInPaintDialog, setShowInPaintDialog] = useState(false)
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const onRestore = (isWithSeed: boolean) => {
     context.updateSettings(
@@ -332,39 +329,6 @@ export function GenerationTaskSheetView(props: Props) {
   }, [imageGenerationTask])
 
   if (!imageGenerationTask) return null
-
-  if (isDesktop) {
-    return (
-      <GenerationTaskSheetViewContent
-        task={imageGenerationTask}
-        isScroll={props.isScroll ?? false}
-        isDisplayImageListButton={false}
-        isListFullSize={true}
-        showInPaintDialog={showInPaintDialog}
-        userNanoid={userNanoid}
-        generationSize={generationSize}
-        rating={rating}
-        isProtected={isProtected}
-        GenerationParameters={GenerationParameters}
-        isProtectedLoading={isProtectedLoading}
-        isRatingLoading={isRatingLoading}
-        isDeletedLoading={isDeletedLoading}
-        onReference={onReference}
-        onPost={onPost}
-        onDelete={onDelete}
-        onInPaint={onInPaint}
-        onChangeRating={onChangeRating}
-        onNextTask={onNextTask}
-        onPrevTask={onPrevTask}
-        setRating={setRating}
-        setShowInPaintDialog={setShowInPaintChange}
-        saveGenerationImage={saveGenerationImage}
-        toggleProtectedImage={toggleProtectedImage}
-        copyGeneration={copyGeneration}
-        copyUrl={copyUrl}
-      />
-    )
-  }
 
   return (
     <GenerationTaskSheetViewContent

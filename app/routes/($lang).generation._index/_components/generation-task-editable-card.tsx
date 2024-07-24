@@ -1,12 +1,10 @@
 import { SelectableCardButton } from "@/_components/selectable-card-button"
 import { Skeleton } from "@/_components/ui/skeleton"
-import { config } from "@/config"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { useGenerationQuery } from "@/routes/($lang).generation._index/_hooks/use-generation-query"
 import { useMutation } from "@apollo/client/index"
 import { useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { ReservedGenerationCard } from "@/routes/($lang).generation._index/_components/reserved-generation-card"
 import { InProgressGenerationCard } from "@/routes/($lang).generation._index/_components/in-progress-generation-card"
@@ -44,8 +42,6 @@ export const GenerationTaskEditableCard = (props: Props) => {
   const context = useGenerationContext()
 
   const data = useGenerationQuery()
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const [isHovered, setIsHovered] = useState(false)
 
@@ -212,21 +208,18 @@ export const GenerationTaskEditableCard = (props: Props) => {
         )}
       </SelectableCardButton>
       {/* 拡大ボタン */}
-      {isDesktop &&
-        isHovered &&
-        props.task.imageUrl &&
-        props.task.thumbnailUrl && (
-          <GenerationTaskZoomUpButton
-            taskId={props.taskId}
-            token={props.userToken}
-            size={optionButtonSize(props.optionButtonSize)}
-            setIsHovered={setIsHovered}
-            imageUrl={props.task.imageUrl}
-            thumbnailUrl={props.task.thumbnailUrl}
-          />
-        )}
+      {isHovered && props.task.imageUrl && props.task.thumbnailUrl && (
+        <GenerationTaskZoomUpButton
+          taskId={props.taskId}
+          token={props.userToken}
+          size={optionButtonSize(props.optionButtonSize)}
+          setIsHovered={setIsHovered}
+          imageUrl={props.task.imageUrl}
+          thumbnailUrl={props.task.thumbnailUrl}
+        />
+      )}
       {/* お気に入りボタン */}
-      {isDesktop && (isHovered || rating !== 0) && props.taskNanoid && (
+      {(isHovered || rating !== 0) && props.taskNanoid && (
         <GenerationTaskRatingButton
           nowRating={rating}
           taskNanoid={props.taskNanoid}
@@ -237,14 +230,14 @@ export const GenerationTaskEditableCard = (props: Props) => {
         />
       )}
       {/* 削除ボタン */}
-      {isDesktop && isHovered && props.isSelectDisabled && (
+      {isHovered && props.isSelectDisabled && (
         <GenerationTaskDeleteButton
           onDelete={onDeleteTask}
           isDeletedLoading={isDeletedLoading}
         />
       )}
       {/* 保護ボタン */}
-      {isDesktop && (isHovered || isProtected) && props.taskNanoid && (
+      {(isHovered || isProtected) && props.taskNanoid && (
         <GenerationTaskProtectedButton
           isProtected={isProtected}
           taskNanoid={props.taskNanoid}

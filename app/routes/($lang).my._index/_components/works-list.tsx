@@ -1,6 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import { WorksSpList } from "@/routes/($lang).my._index/_components/works-sp-list"
 import { WorksListTable } from "@/routes/($lang).my._index/_components/works-list-table"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
@@ -41,8 +39,6 @@ type Props = {
  * 作品一覧
  */
 export const WorksList = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
@@ -56,7 +52,7 @@ export const WorksList = (props: Props) => {
 
   return (
     <>
-      {isDesktop ? (
+      <div className="hidden md:block">
         <WorksListTable
           works={displayWorks}
           sort={props.sort}
@@ -70,13 +66,14 @@ export const WorksList = (props: Props) => {
           onClickDateSortButton={props.onClickDateSortButton}
           onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
         />
-      ) : (
+      </div>
+      <div className="block md:hidden">
         <WorksSpList
           works={displayWorks}
           sort={props.sort}
           orderBy={props.orderBy}
         />
-      )}
+      </div>
     </>
   )
 }

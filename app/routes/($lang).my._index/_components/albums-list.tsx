@@ -1,6 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import { AlbumsListTable } from "@/routes/($lang).my._index/_components/albums-list-table"
 import { AlbumsSpList } from "@/routes/($lang).my._index/_components/albums-sp-list"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
@@ -24,8 +22,6 @@ type Props = {
  * シリーズ一覧
  */
 export const AlbumsList = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
@@ -39,7 +35,7 @@ export const AlbumsList = (props: Props) => {
 
   return (
     <>
-      {isDesktop ? (
+      <div className="hidden md:block">
         <AlbumsListTable
           albums={displayAlbums}
           sort={props.sort}
@@ -47,9 +43,10 @@ export const AlbumsList = (props: Props) => {
           onClickTitleSortButton={props.onClickTitleSortButton}
           onClickDateSortButton={props.onClickDateSortButton}
         />
-      ) : (
+      </div>
+      <div className="block md:hidden">
         <AlbumsSpList albums={displayAlbums} />
-      )}
+      </div>
     </>
   )
 }

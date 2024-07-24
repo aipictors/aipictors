@@ -1,6 +1,4 @@
 import type { SortType } from "@/_types/sort-type"
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import { WorksListSortableSetting } from "@/routes/($lang).my._index/_components/works-list-sortable-setting"
 import {
   Select,
@@ -40,8 +38,6 @@ type Props = {
  * 一覧設定
  */
 export const WorksSetting = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")
@@ -72,28 +68,7 @@ export const WorksSetting = (props: Props) => {
     <>
       <div className="mb-4">
         <>
-          {/* <div className="flex items-center">
-            <WorksSettingContents
-              workTabType={props.workTabType}
-              sumWorksCount={props.sumWorksCount}
-              sumAlbumsCount={props.sumAlbumsCount}
-              setWorkTabType={props.setWorkTabType}
-            />
-            <div className="ml-auto">
-              <WorksListFilterSettingButton
-                onToggleFilterButton={onToggleFilterButton}
-              />
-            </div>
-          </div> */}
-          <div
-            className="mt-4 mb-4"
-            style={{
-              maxHeight: maxHeight,
-              overflow: "hidden",
-              transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
-              opacity: opacity,
-            }}
-          >
+          <div className="mt-4 mb-4">
             <div className="flex space-x-4">
               {/* 公開範囲 */}
               <Select
@@ -111,12 +86,12 @@ export const WorksSetting = (props: Props) => {
                     placeholder={
                       props.accessType
                         ? toAccessTypeText(props.accessType)
-                        : "すべての公開範囲"
+                        : "公開範囲"
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">{"すべての公開範囲"}</SelectItem>
+                  <SelectItem value="ALL">{"公開範囲"}</SelectItem>
                   <SelectItem value="PUBLIC">{"公開"}</SelectItem>
                   <SelectItem value="SILENT">{"公開(新着無)"}</SelectItem>
                   <SelectItem value="LIMITED">{"限定公開"}</SelectItem>
@@ -138,14 +113,12 @@ export const WorksSetting = (props: Props) => {
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      props.workType
-                        ? toWorkTypeText(props.workType)
-                        : "すべての種別"
+                      props.workType ? toWorkTypeText(props.workType) : "種類"
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">{"すべての種別"}</SelectItem>
+                  <SelectItem value="ALL">{"種類"}</SelectItem>
                   <SelectItem value="WORK">{"画像"}</SelectItem>
                   <SelectItem value="VIDEO">{"動画"}</SelectItem>
                   <SelectItem value="NOVEL">{"小説"}</SelectItem>
@@ -167,14 +140,12 @@ export const WorksSetting = (props: Props) => {
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      props.rating
-                        ? toRatingText(props.rating)
-                        : "すべての年齢制限"
+                      props.rating ? toRatingText(props.rating) : "年齢制限"
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
+                  <SelectItem value="ALL">{"年齢制限"}</SelectItem>
                   <SelectItem value="G">{"全年齢"}</SelectItem>
                   <SelectItem value="R15">{"R15"}</SelectItem>
                   <SelectItem value="R18">{"R18"}</SelectItem>
@@ -184,7 +155,7 @@ export const WorksSetting = (props: Props) => {
             </div>
           </div>
         </>
-        {!isDesktop && (
+        <div className="block md:hidden">
           <WorksListSortableSetting
             nowSort={props.sort}
             nowOrderBy={props.orderBy}
@@ -199,7 +170,7 @@ export const WorksSetting = (props: Props) => {
             onClickDateSortButton={props.onClickDateSortButton}
             onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
           />
-        )}
+        </div>
       </div>
     </>
   )

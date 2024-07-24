@@ -1,10 +1,8 @@
 import { Tabs, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { AuthContext } from "@/_contexts/auth-context"
-import { config } from "@/config"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   activeTab: string
@@ -16,8 +14,6 @@ export const UserTabs = (props: Props) => {
   const handleTabClick = (value: string) => {
     props.setActiveTab(value)
   }
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   const authContext = useContext(AuthContext)
 
@@ -135,34 +131,31 @@ export const UserTabs = (props: Props) => {
 
   return (
     <div>
-      {isDesktop ? (
-        <Tabs defaultValue="ポートフォリオ">
-          <TabsList className="border-b">
-            {tabList().map((tabValue) => (
-              <TabsTrigger
-                key={removeParentheses(tabValue)}
-                value={removeParentheses(tabValue)}
-                onClick={() => handleTabClick(removeParentheses(tabValue))}
-              >
-                {tabValue}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      ) : (
-        <div className="grid grid-cols-3 gap-2">
+      <Tabs defaultValue="ポートフォリオ">
+        <TabsList className="hidden border-b md:block">
           {tabList().map((tabValue) => (
-            // biome-ignore lint/a11y/useButtonType: <explanation>
-            <button
+            <TabsTrigger
               key={removeParentheses(tabValue)}
+              value={removeParentheses(tabValue)}
               onClick={() => handleTabClick(removeParentheses(tabValue))}
-              className="rounded-md border border-gray-300 bg-white px-2 py-1 text-center font-medium text-gray-600 text-sm hover:text-gray-800 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               {tabValue}
-            </button>
+            </TabsTrigger>
           ))}
-        </div>
-      )}
+        </TabsList>
+      </Tabs>
+      <div className="grid grid-cols-3 gap-2 md:hidden">
+        {tabList().map((tabValue) => (
+          // biome-ignore lint/a11y/useButtonType: <explanation>
+          <button
+            key={removeParentheses(tabValue)}
+            onClick={() => handleTabClick(removeParentheses(tabValue))}
+            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-center font-medium text-gray-600 text-sm hover:text-gray-800 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            {tabValue}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

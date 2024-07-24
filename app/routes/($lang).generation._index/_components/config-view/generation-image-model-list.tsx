@@ -9,7 +9,6 @@ import {
 } from "@/_components/ui/select"
 import { cn } from "@/_lib/cn"
 import { removeDuplicates } from "@/_utils/remove-duplicates"
-import { config } from "@/config"
 import { ConfigModelButton } from "@/routes/($lang).generation._index/_components/config-view/config-model-button"
 import { ImageModelCard } from "@/routes/($lang).generation._index/_components/config-view/image-model-card"
 import type { imageModelContextFragment } from "@/routes/($lang).generation._index/_contexts/generation-query-context"
@@ -17,7 +16,6 @@ import { toCategoryName } from "@/routes/($lang).generation._index/_utils/to-cat
 import type { FragmentOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   models: FragmentOf<typeof imageModelContextFragment>[]
@@ -97,8 +95,6 @@ export const ImageModelsList = (props: Props) => {
     return { category, models }
   })
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <>
       <div className="flex gap-x-2">
@@ -168,99 +164,94 @@ export const ImageModelsList = (props: Props) => {
             <div key={item.category} className="space-y-2 px-4">
               <p className="font-bold">{toCategoryName(item.category)}</p>
 
-              {isDesktop && (
-                <div className="grid grid-cols-4 gap-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
-                  {item.models.map((model) => (
-                    <div className="relative" key={model.id}>
-                      <ImageModelCard
-                        displayName={model.displayName}
-                        thumbnailImageURL={model.thumbnailImageURL}
-                        type={model.type}
-                        isActive={props.selectedModelId === model.id}
-                        onSelect={() => {
-                          if (model.type === null) return
-                          props.onSelect(
-                            model.id,
-                            model.type,
-                            model?.prompts.join(",") ?? "",
-                          )
-                        }}
+              <div className="hidden grid-cols-4 gap-2 md:grid md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+                {item.models.map((model) => (
+                  <div className="relative" key={model.id}>
+                    <ImageModelCard
+                      displayName={model.displayName}
+                      thumbnailImageURL={model.thumbnailImageURL}
+                      type={model.type}
+                      isActive={props.selectedModelId === model.id}
+                      onSelect={() => {
+                        if (model.type === null) return
+                        props.onSelect(
+                          model.id,
+                          model.type,
+                          model?.prompts.join(",") ?? "",
+                        )
+                      }}
+                    />
+                    <Button
+                      className="absolute top-2 right-2"
+                      aria-label={"お気に入り"}
+                      size={"icon"}
+                      variant="ghost"
+                      onClick={() => {
+                        if (isSelectorOpen) return
+                        props.onChangeFavoritedModel(
+                          Number(model.id),
+                          isFavorited(Number(model.id)) ? 0 : 1,
+                        )
+                      }}
+                    >
+                      <StarIcon
+                        className={cn(
+                          isFavorited(Number(model.id))
+                            ? "fill-yellow-500"
+                            : "",
+                        )}
                       />
-                      <Button
-                        className="absolute top-2 right-2"
-                        aria-label={"お気に入り"}
-                        size={"icon"}
-                        variant="ghost"
-                        onClick={() => {
-                          if (isSelectorOpen) return
-                          props.onChangeFavoritedModel(
-                            Number(model.id),
-                            isFavorited(Number(model.id)) ? 0 : 1,
-                          )
-                        }}
-                      >
-                        <StarIcon
-                          className={cn(
-                            isFavorited(Number(model.id))
-                              ? "fill-yellow-500"
-                              : "",
-                          )}
-                        />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <div className="block md:hidden">
+                {item.models.map((model) => (
+                  <div className="relative mt-2" key={model?.id}>
+                    <ConfigModelButton
+                      imageURL={model?.thumbnailImageURL ?? ""}
+                      name={model?.displayName ?? ""}
+                      isSelected={props?.selectedModelId === model.id}
+                      type={model?.type ?? ""}
+                      isDisabled={isSelectorOpen}
+                      isHideSearchButton={true}
+                      onClick={() => {
+                        if (model.type === null) return
+                        props.onSelect(
+                          model.id,
+                          model.type,
+                          model?.prompts.join(",") ?? "",
+                        )
+                      }}
+                      onSearchClick={() => {
+                        if (isSelectorOpen) return
+                        props.onSearchClick(model.id, model.displayName)
+                      }}
+                    />
 
-              {!isDesktop && (
-                <div className="">
-                  {item.models.map((model) => (
-                    <div className="relative mt-2" key={model?.id}>
-                      <ConfigModelButton
-                        imageURL={model?.thumbnailImageURL ?? ""}
-                        name={model?.displayName ?? ""}
-                        isSelected={props?.selectedModelId === model.id}
-                        type={model?.type ?? ""}
-                        isDisabled={isSelectorOpen}
-                        isHideSearchButton={true}
-                        onClick={() => {
-                          if (model.type === null) return
-                          props.onSelect(
-                            model.id,
-                            model.type,
-                            model?.prompts.join(",") ?? "",
-                          )
-                        }}
-                        onSearchClick={() => {
-                          if (isSelectorOpen) return
-                          props.onSearchClick(model.id, model.displayName)
-                        }}
+                    <Button
+                      className="absolute top-8 right-2"
+                      aria-label={"お気に入り"}
+                      size={"icon"}
+                      variant="ghost"
+                      onClick={() => {
+                        props.onChangeFavoritedModel(
+                          Number(model.id),
+                          isFavorited(Number(model.id)) ? 0 : 1,
+                        )
+                      }}
+                    >
+                      <StarIcon
+                        className={cn(
+                          isFavorited(Number(model.id))
+                            ? "fill-yellow-500"
+                            : "",
+                        )}
                       />
-
-                      <Button
-                        className="absolute top-8 right-2"
-                        aria-label={"お気に入り"}
-                        size={"icon"}
-                        variant="ghost"
-                        onClick={() => {
-                          props.onChangeFavoritedModel(
-                            Number(model.id),
-                            isFavorited(Number(model.id)) ? 0 : 1,
-                          )
-                        }}
-                      >
-                        <StarIcon
-                          className={cn(
-                            isFavorited(Number(model.id))
-                              ? "fill-yellow-500"
-                              : "",
-                          )}
-                        />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>

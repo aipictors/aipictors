@@ -1,12 +1,10 @@
 import { AppConfirmDialog } from "@/_components/app/app-confirm-dialog"
 import { SelectableCardButton } from "@/_components/selectable-card-button"
-import { config } from "@/config"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
 import { useGenerationContext } from "@/routes/($lang).generation._index/_hooks/use-generation-context"
 import { GenerationWorkLinkButton } from "@/routes/($lang).generation._index/_components/generation-work-link-button"
 import { useState } from "react"
 import { toast } from "sonner"
-import { useMediaQuery } from "usehooks-ts"
 import { GenerationWorkZoomUpButton } from "@/routes/($lang).generation._index/_components/generation-work-zoom-up-button"
 
 type Props = {
@@ -24,8 +22,6 @@ export const GenerationWorkCard = (props: Props) => {
   const context = useGenerationContext()
 
   const { send } = GenerationConfigContext.useActorRef()
-
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
 
   return (
     <div
@@ -79,7 +75,7 @@ export const GenerationWorkCard = (props: Props) => {
         </SelectableCardButton>
       </AppConfirmDialog>
       {/* 拡大ボタン */}
-      {isDesktop && isHovered && (
+      {isHovered && (
         <GenerationWorkZoomUpButton
           imageUrl={props.work.largeThumbnailImageURL}
           setIsHovered={setIsHovered}

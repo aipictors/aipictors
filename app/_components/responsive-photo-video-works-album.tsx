@@ -1,9 +1,7 @@
 import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { config } from "@/config"
 import { HomeWorkVideoAlbum } from "@/routes/($lang)._main._index/_components/home-work-video-album"
 import type { FragmentOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -13,8 +11,6 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   if (props.works === null || props.works.length === 0) {
     return null
   }
@@ -37,7 +33,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
 
   return (
     <PhotoAlbum
-      layout={isDesktop ? "rows" : "columns"}
+      layout={"rows"}
       columns={2}
       photos={photos}
       renderPhoto={(photoProps) => (

@@ -1,18 +1,14 @@
 import { OmissionNumber } from "@/_components/omission-number"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { toOmissionNumberText } from "@/_utils/to-omission-number-text"
-import { config } from "@/config"
 import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/_components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   user: FragmentOf<typeof userProfileIconFragment>
 }
 
 export const UserProfileNameIcon = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <header className="relative">
       <div

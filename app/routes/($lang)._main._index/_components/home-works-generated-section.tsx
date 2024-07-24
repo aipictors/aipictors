@@ -1,12 +1,10 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
 import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
-import { useMediaQuery } from "usehooks-ts"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -37,15 +35,13 @@ export const HomeWorksGeneratedSection = (props: Props) => {
 
   const workDisplayed = resp?.works ?? props.works
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   return (
     <>
       <HomeWorkSection
         title={"作品を選んで無料生成"}
         works={workDisplayed}
         link="https://www.aipictors.com/search/?promptstatus=2&order=favorite"
-        isCropped={!isDesktop}
+        isCropped={false}
       />
     </>
   )

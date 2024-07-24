@@ -1,5 +1,3 @@
-import { config } from "@/config"
-import { useMediaQuery } from "usehooks-ts"
 import type { IntrospectionEnum } from "@/_lib/introspection-enum"
 import { BookmarkWorksListTable } from "@/routes/($lang).my._index/_components/bookmark-works-list-table"
 import { BookmarkWorksSpList } from "@/routes/($lang).my._index/_components/bookmark-works-sp-list"
@@ -23,8 +21,6 @@ type Props = {
  * 推薦作品一覧
  */
 export const BookmarkWorksList = (props: Props) => {
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
@@ -38,11 +34,12 @@ export const BookmarkWorksList = (props: Props) => {
 
   return (
     <>
-      {isDesktop ? (
+      <div className="hidden md:block">
         <BookmarkWorksListTable works={displayWorks} />
-      ) : (
+      </div>
+      <div className="block md:hidden">
         <BookmarkWorksSpList works={displayWorks} />
-      )}
+      </div>
     </>
   )
 }

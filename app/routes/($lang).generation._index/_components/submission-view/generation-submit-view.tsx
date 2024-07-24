@@ -30,8 +30,6 @@ export function GenerationSubmissionView(props: Props) {
 
   const queryData = useGenerationQuery()
 
-  const isDesktop = useMediaQuery(config.mediaQuery.isDesktop)
-
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
@@ -40,7 +38,7 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        if (isDesktop) {
+        if (useMediaQuery("(min-width: 768px)")) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -55,7 +53,7 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        if (isDesktop) {
+        if (useMediaQuery("(min-width: 768px)")) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -243,7 +241,7 @@ export function GenerationSubmissionView(props: Props) {
       context.config.modelType === "SDXL" &&
       context.config.controlNetImageBase64 !== null
     ) {
-      if (isDesktop) {
+      if (useMediaQuery("(min-width: 768px)")) {
         toast("SDXLモデルはControlNetを使用できません。")
         return
       }
@@ -254,7 +252,7 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (context.config.modelType === "SDXL" && context.config.i2iImageBase64) {
-      if (isDesktop) {
+      if (useMediaQuery("(min-width: 768px)")) {
         toast(
           "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
         )
@@ -270,7 +268,7 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
-      if (isDesktop) {
+      if (useMediaQuery("(min-width: 768px)")) {
         toast(
           "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
         )
