@@ -115,6 +115,18 @@ export async function loader() {
      * HomeTagsSection
      */
     tags: resp.data.recommendedTags,
+    /**
+     * HomeNovelsSection
+     */
+    novelWorks: resp.data.novelWorks,
+    /**
+     * HomeVideosSection
+     */
+    videoWorks: resp.data.videoWorks,
+    /**
+     * HomeColumnsSection
+     */
+    columnWorks: resp.data.columnWorks,
   })
 }
 
@@ -151,9 +163,9 @@ export default function Index() {
         <HomeWorksUsersRecommendedSection
         // works={data.promotionWorks}
         />
-        <HomeNovelsSection title={"小説"} />
-        <HomeVideosSection title={"動画"} />
-        <HomeColumnsSection title={"コラム"} />
+        <HomeNovelsSection works={data.novelWorks} title={"小説"} />
+        <HomeVideosSection works={data.videoWorks} title={"動画"} />
+        <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
       </div>
     </AppPage>
   )
@@ -178,6 +190,36 @@ const query = graphql(
       }
     ) {
       ...HomeGenerationBannerWorkField
+    }
+    novelWorks: works(
+      offset: 0,
+      limit: 16,
+      where: {
+        ratings: [G, R15],
+        workType: NOVEL,
+      }
+    ) {
+      ...PartialWorkFields
+    }
+    videoWorks: works(
+      offset: 0,
+      limit: 16,
+      where: {
+        ratings: [G, R15],
+        workType: VIDEO,
+      }
+    ) {
+      ...PartialWorkFields
+    }
+    columnWorks: works(
+      offset: 0,
+      limit: 16,
+      where: {
+        ratings: [G, R15],
+        workType: COLUMN,
+      }
+    ) {
+      ...PartialWorkFields
     }
     generationWorks: works(
       offset: 0

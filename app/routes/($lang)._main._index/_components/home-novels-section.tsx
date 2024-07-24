@@ -2,12 +2,13 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
   title: string
   isSensitive?: boolean
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
@@ -17,10 +18,10 @@ export const HomeNovelsSection = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const { data: novelWorks } = useQuery(worksQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 0,
-      limit: 64,
+      limit: 16,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "NOVEL",
@@ -28,32 +29,9 @@ export const HomeNovelsSection = (props: Props) => {
     },
   })
 
-  const workList = novelWorks?.works ?? null
+  const workDisplayed = novelWorks?.works ?? props.works
 
-  if (workList === null) {
-    return null
-  }
-
-  // const workResults = workList.map((work) => ({
-  //   id: work.id,
-  //   src: work.smallThumbnailImageURL,
-  //   width: work.smallThumbnailImageWidth,
-  //   height: work.smallThumbnailImageHeight,
-  //   workId: work.id,
-  //   thumbnailImagePosition: work.thumbnailImagePosition,
-  //   userId: work.user.id,
-  //   userIcon: work.user.iconUrl,
-  //   userName: work.user.name,
-  //   title: work.title,
-  //   isLiked: work.isLiked,
-  //   text: work.description,
-  //   tags: work.tags.map((tag) => tag.name).slice(0, 2),
-  // }))
-
-  // ランダムに24作品を選ぶ
-  const works = workList.filter((_, index) => index % 2 === 0)
-
-  return <HomeNovelsWorksSection works={works} title={props.title} />
+  return <HomeNovelsWorksSection works={workDisplayed} title={props.title} />
 }
 
 const worksQuery = graphql(

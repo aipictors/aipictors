@@ -2,12 +2,13 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeVideosWorksSection } from "@/routes/($lang)._main._index/_components/home-video-works-section"
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
   title: string
   isSensitive?: boolean
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
@@ -28,9 +29,9 @@ export const HomeVideosSection = (props: Props) => {
     },
   })
 
-  const workList = videoWorks?.works.filter((_, index) => index % 2 === 0) ?? []
+  const workDisplayed = videoWorks?.works ?? props.works
 
-  return <HomeVideosWorksSection works={workList} title={props.title} />
+  return <HomeVideosWorksSection works={workDisplayed} title={props.title} />
 }
 
 const worksQuery = graphql(

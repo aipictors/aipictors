@@ -6,12 +6,13 @@ import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
   title: string
   isSensitive?: boolean
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 /**
@@ -32,26 +33,7 @@ export const HomeColumnsSection = (props: Props) => {
     },
   })
 
-  const workList = novelWorks?.works ?? null
-
-  const workResults = workList?.map((work) => ({
-    id: work.id,
-    src: work.smallThumbnailImageURL,
-    width: work.smallThumbnailImageWidth,
-    height: work.smallThumbnailImageHeight,
-    workId: work.id,
-    thumbnailImagePosition: work.thumbnailImagePosition,
-    userId: work.user.id,
-    userIcon: work.user.iconUrl,
-    userName: work.user.name,
-    title: work.title,
-    isLiked: work.isLiked,
-    text: work.description,
-    tags: work.tags.map((tag) => tag.name).slice(0, 2),
-  }))
-
-  // ランダムに24作品を選ぶ
-  const works = workResults?.filter((_, index) => index % 2 === 0)
+  const workDisplayed = novelWorks?.works ?? props.works
 
   return (
     <section className="relative space-y-4">
@@ -62,7 +44,7 @@ export const HomeColumnsSection = (props: Props) => {
       </div>
       <CarouselWithGradation
         items={
-          works?.map((work, index) => (
+          workDisplayed?.map((work, index) => (
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
@@ -71,23 +53,22 @@ export const HomeColumnsSection = (props: Props) => {
               <div className="relative">
                 <NovelWorkPreviewItem
                   workId={work.id}
-                  imageUrl={work.src}
+                  imageUrl={work.largeThumbnailImageURL}
                   title={work.title}
-                  text={work.text ?? ""}
-                  tags={work.tags}
+                  text={work.description ?? ""}
                 />
               </div>
               <UserNameBadge
-                userId={work.userId}
-                userIconImageURL={IconUrl(work.userIcon)}
-                name={work.userName}
+                userId={work.user.id}
+                userIconImageURL={IconUrl(work.user.iconUrl)}
+                name={work.user.name}
                 width={"lg"}
               />
               <div className="absolute right-0 bottom-0">
                 <LikeButton
                   size={56}
                   targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.userId}
+                  targetWorkOwnerUserId={work.user.id}
                   defaultLiked={work.isLiked}
                   defaultLikedCount={0}
                   isBackgroundNone={true}

@@ -64,7 +64,6 @@ export const HomeNovelsWorksSection = (props: Props) => {
                 imageUrl={work.src}
                 title={work.title}
                 text={work.text ?? ""}
-                tags={[]}
               />
             </div>
             <UserNameBadge

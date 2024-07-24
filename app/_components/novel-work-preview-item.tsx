@@ -5,7 +5,6 @@ type Props = {
   imageUrl: string
   title: string
   text: string
-  tags: string[]
 }
 
 /**
