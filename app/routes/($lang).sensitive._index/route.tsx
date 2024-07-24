@@ -2,11 +2,11 @@ import { AppPage } from "@/_components/app/app-page"
 import { ConstructionAlert } from "@/_components/construction-alert"
 import { partialTagFieldsFragment } from "@/_graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { partialRecommendedTagFieldsFragment } from "@/_graphql/fragments/partial-recommended-tag-fields"
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
-import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import { type MetaFunction, json } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -57,29 +57,7 @@ export async function loader() {
     },
   })
 
-  /**
-   * おすすめタグ一覧
-   * タグからランダムに8つ取得
-   * TODO_2024_08: GraphQLに変更する
-   */
-  const tags = await fetch(
-    "https://www.aipictors.com/wp-content/themes/AISite/json/hashtag/hashtag-image-1.json",
-  )
-    .then((res) => res.json())
-    .then((data: unknown) => {
-      return (data as [string, string][]).map(
-        ([name, thumbnailUrl]): WorkTag => ({
-          name,
-          thumbnailUrl,
-        }),
-      )
-    })
-
-  for (const tag of tags) {
-    tag.thumbnailUrl = `https://www.aipictors.com/wp-content/uploads/${tag.thumbnailUrl}`
-  }
-
-  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
+  console.log(resp.data.recommendedTags)
 
   const awardDateText = [
     yesterday.getFullYear(),
@@ -91,7 +69,7 @@ export async function loader() {
     awardDateText: awardDateText,
     hotTags: resp.data.hotTags,
     promotionWorks: resp.data.promotionWorks,
-    tags: randomTags,
+    tags: resp.data.recommendedTags,
     workAwards: resp.data.workAwards,
   })
 }
@@ -148,6 +126,14 @@ const query = graphql(
         ...PartialWorkFields
       }
     }
+    recommendedTags: recommendedTags(
+      limit: 8
+      where: {
+        isSensitive: true
+      }
+    ) {
+      ...PartialRecommendedTagFields
+    }
     promotionWorks: works(
       offset: 0,
       limit: 80,
@@ -176,5 +162,9 @@ const query = graphql(
       }
     }
   }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
+  [
+    partialTagFieldsFragment,
+    partialWorkFieldsFragment,
+    partialRecommendedTagFieldsFragment,
+  ],
 )

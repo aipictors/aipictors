@@ -14,10 +14,10 @@ import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/hom
 import { HomeWorksGeneratedSection } from "@/routes/($lang)._main._index/_components/home-works-generated-section"
 import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
-import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { partialRecommendedTagFieldsFragment } from "@/_graphql/fragments/partial-recommended-tag-fields"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -64,30 +64,6 @@ export async function loader() {
       year: date.getFullYear(),
     },
   })
-
-  /**
-   * おすすめタグ一覧
-   * タグからランダムに8つ取得
-   * TODO_2024_08: GraphQLに変更する
-   */
-  const tags = await fetch(
-    "https://www.aipictors.com/wp-content/themes/AISite/json/hashtag/hashtag-image-0.json",
-  )
-    .then((res) => res.json())
-    .then((data: unknown) => {
-      return (data as [string, string][]).map(
-        ([name, thumbnailUrl]): WorkTag => ({
-          name,
-          thumbnailUrl,
-        }),
-      )
-    })
-
-  for (const tag of tags) {
-    tag.thumbnailUrl = `https://www.aipictors.com/wp-content/uploads/${tag.thumbnailUrl}`
-  }
-
-  const randomTags = tags.sort(() => Math.random() - 0.5).slice(0, 24)
 
   /**
    * TODO_2024_08: ランダム
@@ -138,7 +114,7 @@ export async function loader() {
     /**
      * HomeTagsSection
      */
-    tags: randomTags,
+    tags: resp.data.recommendedTags,
   })
 }
 
@@ -238,6 +214,14 @@ const query = graphql(
         ...PartialWorkFields
       }
     }
+    recommendedTags: recommendedTags(
+      limit: 8
+      where: {
+        isSensitive: true
+      }
+    ) {
+      ...PartialRecommendedTagFields
+    }
     promotionWorks: works(
       offset: 0,
       limit: 80,
@@ -270,5 +254,6 @@ const query = graphql(
     partialTagFieldsFragment,
     partialWorkFieldsFragment,
     homeGenerationBannerWorkFieldFragment,
+    partialRecommendedTagFieldsFragment,
   ],
 )
