@@ -12,6 +12,8 @@ import { graphql } from "gql.tada"
 import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
 import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
 import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
+import { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
+import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | センシティブ"
@@ -49,7 +51,6 @@ export async function loader() {
   const resp = await client.query({
     query: query,
     variables: {
-      after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
       awardDay: yesterday.getDate() - 1,
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
@@ -59,8 +60,6 @@ export async function loader() {
     },
   })
 
-  console.log(resp.data.recommendedTags)
-
   const awardDateText = [
     yesterday.getFullYear(),
     yesterday.getMonth() + 1,
@@ -68,11 +67,42 @@ export async function loader() {
   ].join("/")
 
   return json({
-    awardDateText: awardDateText,
+    /**
+     * HomeTagList
+     */
+    dailyTheme: resp.data.dailyTheme,
+    /**
+     * HomeTagList
+     */
     hotTags: resp.data.hotTags,
-    promotionWorks: resp.data.promotionWorks,
-    tags: resp.data.recommendedTags,
+    /**
+     * HomeAwardWorkSection
+     */
+    awardDateText: awardDateText,
+    /**
+     * HomeAwardWorkSection
+     */
     workAwards: resp.data.workAwards,
+    /**
+     * HomeWorksUsersRecommendedSection
+     */
+    // promotionWorks: resp.data.promotionWorks,
+    /**
+     * HomeTagsSection
+     */
+    tags: resp.data.recommendedTags,
+    /**
+     * HomeNovelsSection
+     */
+    novelWorks: resp.data.novelWorks,
+    /**
+     * HomeVideosSection
+     */
+    videoWorks: resp.data.videoWorks,
+    /**
+     * HomeColumnsSection
+     */
+    columnWorks: resp.data.columnWorks,
   })
 }
 
@@ -80,39 +110,102 @@ export default function SensitivePage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage className="space-y-6">
+    <AppPage>
       <ConstructionAlert
         type="WARNING"
+        message="不具合が起きる可能性があります。"
         fallbackURL="https://www.aipictors.com/"
-        message={"このページは開発中です"}
+        deadline={"2024-07-30"}
       />
-      <HomeAwardWorkSection title={"前日ランキング"} isSensitive={true} />
-      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-      <HomeNovelsSection isSensitive={true} title={"小説"} />
-      <HomeVideosSection isSensitive={true} title={"動画"} />
-      <HomeColumnsSection isSensitive={true} title={"コラム"} />
+      <div className="space-y-8">
+        <HomeTagList
+          themeTitle={data.dailyTheme?.title}
+          hotTags={data.hotTags}
+        />
+        <HomeAwardWorkSection
+          title={"前日ランキング"}
+          works={data.workAwards}
+          isSensitive={true}
+        />
+        <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+        {/* <HomeWorksUsersRecommendedSection
+          isSensitive={true}
+          works={data.promotionWorks}
+        /> */}
+        <HomeNovelsSection
+          isSensitive={true}
+          works={data.novelWorks}
+          title={"小説"}
+        />
+        <HomeVideosSection
+          isSensitive={true}
+          works={data.videoWorks}
+          title={"動画"}
+        />
+        <HomeColumnsSection
+          isSensitive={true}
+          works={data.columnWorks}
+          title={"コラム"}
+        />
+      </div>
     </AppPage>
   )
 }
 
 const query = graphql(
   `query HomeQuery(
-    $after: String!
+    $year: Int!
+    $month: Int!
+    $day: Int!
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
   ) {
-    works: works(
+    novelWorks: works(
       offset: 0,
-      limit: 80,
+      limit: 16,
       where: {
-        orderBy: LIKES_COUNT,
-        sort: DESC,
-        createdAtAfter: $after,
-        ratings: [R15, R18, R18G]
-      },
+        ratings: [R18, R18G],
+        workType: NOVEL,
+      }
     ) {
       ...PartialWorkFields
+    }
+    videoWorks: works(
+      offset: 0,
+      limit: 16,
+      where: {
+        ratings: [R18, R18G],
+        workType: VIDEO,
+      }
+    ) {
+      ...PartialWorkFields
+    }
+    columnWorks: works(
+      offset: 0,
+      limit: 16,
+      where: {
+        ratings: [R18, R18G],
+        workType: COLUMN,
+      }
+    ) {
+      ...PartialWorkFields
+    }
+    dailyTheme(
+      year: $year
+      month: $month
+      day: $day
+    ) {
+      id
+      title
+      dateText
+      year
+      month
+      day
+      worksCount,
+      works(offset: 0, limit: 0) {
+        ...PartialWorkFields
+      }
     }
     hotTags {
       ...PartialTagFields
@@ -128,16 +221,16 @@ const query = graphql(
     ) {
       ...PartialRecommendedTagFields
     }
-    promotionWorks: works(
-      offset: 0,
-      limit: 80,
-      where: {
-        isRecommended: true
-        ratings: [R15, R18, R18G]
-      }
-    ) {
-      ...PartialWorkFields
-    }
+    # promotionWorks: works(
+    #   offset: 0,
+    #   limit: 80,
+    #   where: {
+    #     isRecommended: true
+    #     ratings: [R18, R18G],
+    #   }
+    # ) {
+    #   ...PartialWorkFields
+    # }
     workAwards(
       offset: 0
       limit: 20
@@ -148,17 +241,13 @@ const query = graphql(
         isSensitive: true
       }
     ) {
-      id
-      index
-      dateText
-      work {
-        ...PartialWorkFields
-      }
+      ...WorkAwardFields
     }
   }`,
   [
     partialTagFieldsFragment,
     partialWorkFieldsFragment,
     partialRecommendedTagFieldsFragment,
+    workAwardFieldsFragment,
   ],
 )

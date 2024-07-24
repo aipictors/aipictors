@@ -6,6 +6,7 @@ type Props = {
   name: string
   userIconImageURL?: string
   width: "sm" | "md" | "lg"
+  padding?: "sm" | "md" | "lg"
 }
 
 /**
@@ -23,11 +24,24 @@ export const UserNameBadge = (props: Props) => {
     return "max-w-40"
   }
 
+  const padding = () => {
+    if (props.padding === "sm") {
+      return "p-1"
+    }
+    if (props.padding === "md") {
+      return "p-2"
+    }
+    if (props.padding === "lg") {
+      return "p-3"
+    }
+    return "p-0"
+  }
+
   return (
     <Link
       to={`/users/${props.userId}`}
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`flex items-center space-x-2 text-ellipsis overflow-hidden ${width()}`}
+      className={`flex items-center space-x-2 text-ellipsis overflow-hidden ${width()} ${padding()}`}
     >
       <img
         alt="user icon"

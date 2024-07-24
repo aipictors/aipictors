@@ -53,7 +53,7 @@ export const RankingWorkList = (props: Props) => {
               userId={workItem.work.user.id}
               userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
               name={workItem.work.user.name}
-              width={"lg"}
+              width={"md"}
             />
           </div>
         )

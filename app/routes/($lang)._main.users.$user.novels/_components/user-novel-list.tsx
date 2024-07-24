@@ -49,13 +49,13 @@ export const UserNovelList = (props: Props) => {
               imageUrl={work.src}
               title={work.title}
               text={work.text ?? ""}
-              tags={[]}
             />
             <UserNameBadge
               userId={work.userId}
               userIconImageURL={IconUrl(work.userIcon)}
               name={work.userName}
               width={"lg"}
+              padding={"md"}
             />
             <div className="absolute right-0 bottom-0">
               <LikeButton

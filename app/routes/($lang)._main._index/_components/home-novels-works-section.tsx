@@ -71,6 +71,7 @@ export const HomeNovelsWorksSection = (props: Props) => {
               userIconImageURL={IconUrl(work.userIcon)}
               name={work.userName}
               width={"lg"}
+              padding={"md"}
             />
             <div className="absolute right-0 bottom-0">
               <LikeButton

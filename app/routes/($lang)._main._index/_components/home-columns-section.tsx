@@ -63,6 +63,7 @@ export const HomeColumnsSection = (props: Props) => {
                 userIconImageURL={IconUrl(work.user.iconUrl)}
                 name={work.user.name}
                 width={"lg"}
+                padding={"md"}
               />
               <div className="absolute right-0 bottom-0">
                 <LikeButton
