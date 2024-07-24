@@ -14,6 +14,7 @@ import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/hom
 import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
 import { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
 import { HomeTagList } from "@/routes/($lang)._main._index/_components/home-tag-list"
+import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | センシティブ"
@@ -57,6 +58,13 @@ export async function loader() {
       day: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
+      adWorksLimit: WORK_COUNT_DEFINE.AD_WORKS,
+      novelWorksLimit: WORK_COUNT_DEFINE.NOVEL_WORKS,
+      videoWorksLimit: WORK_COUNT_DEFINE.VIDEO_WORKS,
+      columnWorksLimit: WORK_COUNT_DEFINE.COLUMN_WORKS,
+      generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
+      promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
+      awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
     },
   })
 
@@ -160,10 +168,17 @@ const query = graphql(
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
+    # $adWorksLimit: Int!
+    $novelWorksLimit: Int!
+    $videoWorksLimit: Int!
+    $columnWorksLimit: Int!
+    # $generationWorksLimit: Int!
+    # $promotionWorksLimit: Int!
+    $awardWorksLimit: Int!
   ) {
     novelWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $novelWorksLimit,
       where: {
         ratings: [R18, R18G],
         workType: NOVEL,
@@ -173,7 +188,7 @@ const query = graphql(
     }
     videoWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $videoWorksLimit,
       where: {
         ratings: [R18, R18G],
         workType: VIDEO,
@@ -183,7 +198,7 @@ const query = graphql(
     }
     columnWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $columnWorksLimit,
       where: {
         ratings: [R18, R18G],
         workType: COLUMN,
@@ -233,7 +248,7 @@ const query = graphql(
     # }
     workAwards(
       offset: 0
-      limit: 20
+      limit: $awardWorksLimit
       where: {
         year: $awardYear
         month: $awardMonth

@@ -7,6 +7,7 @@ import { UserNameBadge } from "@/_components/user-name-badge"
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import type { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
+import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -32,7 +33,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: 20,
+      limit: WORK_COUNT_DEFINE.AWARD_WORKS,
       where: {
         year: yesterday.getFullYear(),
         month: yesterday.getMonth() + 1,

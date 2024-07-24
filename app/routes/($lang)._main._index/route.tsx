@@ -19,6 +19,16 @@ import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "@/_graphql/fragments/partial-recommended-tag-fields"
 import { workAwardFieldsFragment } from "@/_graphql/fragments/work-award-field"
 
+export const WORK_COUNT_DEFINE = {
+  AD_WORKS: 16,
+  NOVEL_WORKS: 16,
+  VIDEO_WORKS: 16,
+  COLUMN_WORKS: 16,
+  GENERATION_WORKS: 16,
+  PROMOTION_WORKS: 16,
+  AWARD_WORKS: 16,
+}
+
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
 
@@ -62,18 +72,15 @@ export async function loader() {
       day: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
+      adWorksLimit: WORK_COUNT_DEFINE.AD_WORKS,
+      novelWorksLimit: WORK_COUNT_DEFINE.NOVEL_WORKS,
+      videoWorksLimit: WORK_COUNT_DEFINE.VIDEO_WORKS,
+      columnWorksLimit: WORK_COUNT_DEFINE.COLUMN_WORKS,
+      generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
+      promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
+      awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
     },
   })
-
-  /**
-   * TODO_2024_08: ランダム
-   */
-  const adWorks = resp.data.adWorks
-
-  /**
-   * TODO_2024_08: ランダム
-   */
-  const generationWorks = resp.data.generationWorks.slice(0, 16)
 
   const awardDateText = [
     yesterday.getFullYear(),
@@ -85,7 +92,7 @@ export async function loader() {
     /**
      * HomeBanners
      */
-    adWorks: adWorks,
+    adWorks: resp.data.adWorks,
     /**
      * HomeTagList
      */
@@ -105,7 +112,7 @@ export async function loader() {
     /**
      * HomeWorksGeneratedSection
      */
-    generationWorks: generationWorks,
+    generationWorks: resp.data.generationWorks,
 
     /**
      * HomeWorksUsersRecommendedSection
@@ -174,10 +181,17 @@ const query = graphql(
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
+    $adWorksLimit: Int!
+    $novelWorksLimit: Int!
+    $videoWorksLimit: Int!
+    $columnWorksLimit: Int!
+    $generationWorksLimit: Int!
+    $promotionWorksLimit: Int!
+    $awardWorksLimit: Int!
   ) {
     adWorks: works(
       offset: 0,
-      limit: 54,
+      limit: $adWorksLimit,
       where: {
         isFeatured: true,
         ratings: [G],
@@ -187,7 +201,7 @@ const query = graphql(
     }
     novelWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $novelWorksLimit,
       where: {
         ratings: [G, R15],
         workType: NOVEL,
@@ -197,7 +211,7 @@ const query = graphql(
     }
     videoWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $videoWorksLimit,
       where: {
         ratings: [G, R15],
         workType: VIDEO,
@@ -207,7 +221,7 @@ const query = graphql(
     }
     columnWorks: works(
       offset: 0,
-      limit: 16,
+      limit: $columnWorksLimit,
       where: {
         ratings: [G, R15],
         workType: COLUMN,
@@ -217,7 +231,7 @@ const query = graphql(
     }
     generationWorks: works(
       offset: 0
-      limit: 40
+      limit: $generationWorksLimit
       where: {
         orderBy: LIKES_COUNT
         sort: DESC
@@ -260,7 +274,7 @@ const query = graphql(
     }
     promotionWorks: works(
       offset: 0,
-      limit: 80,
+      limit: $promotionWorksLimit,
       where: {
         isRecommended: true
         ratings: [G]
@@ -270,7 +284,7 @@ const query = graphql(
     }
     workAwards(
       offset: 0
-      limit: 20
+      limit: $awardWorksLimit
       where: {
         year: $awardYear
         month: $awardMonth

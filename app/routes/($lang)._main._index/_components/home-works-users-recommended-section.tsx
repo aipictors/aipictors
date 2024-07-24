@@ -2,6 +2,7 @@ import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { config } from "@/config"
 import { HomeWorkSection } from "@/routes/($lang)._main._index/_components/home-work-section"
+import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
@@ -23,7 +24,7 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
-      limit: 80,
+      limit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
       where: {
         isRecommended: true,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],

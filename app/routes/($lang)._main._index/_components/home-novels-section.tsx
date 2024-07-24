@@ -1,6 +1,7 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
+import { WORK_COUNT_DEFINE } from "@/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
@@ -21,7 +22,7 @@ export const HomeNovelsSection = (props: Props) => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: WORK_COUNT_DEFINE.NOVEL_WORKS,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "NOVEL",
