@@ -23,9 +23,11 @@ export const CarouselWithGradation = (props: Props) => {
       <Carousel opts={{ dragFree: true, loop: false }}>
         <CarouselContent>
           <CarouselItem className="relative w-4 basis-1/3.5 space-y-2" />
-          {props.items.map((item) => (
-            // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-            <CarouselItem className="relative basis-1/3.5 space-y-2">
+          {props.items.map((item, index) => (
+            <CarouselItem
+              key={`carousel-${index}-${item}`}
+              className="relative basis-1/3.5 space-y-2"
+            >
               {item}
             </CarouselItem>
           ))}
