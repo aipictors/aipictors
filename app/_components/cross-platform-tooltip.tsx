@@ -1,8 +1,9 @@
+import {} from "@/_components/ui/hover-card"
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/_components/ui/hover-card"
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/_components/ui/popover"
 import { Link } from "@remix-run/react"
 import { HelpCircleIcon } from "lucide-react"
 
@@ -15,23 +16,16 @@ type Props = {
 /**
  * PCとスマホの両方で使えるホバーカード
  */
-export const CrossPlatformHoverCard = (props: Props) => {
+export const CrossPlatformTooltip = (props: Props) => {
   return (
-    <HoverCard>
-      <HoverCardTrigger>
+    <Popover>
+      <PopoverTrigger asChild>
         <HelpCircleIcon className="w-4" />
-      </HoverCardTrigger>
-      <HoverCardContent className="whitespace-pre-wrap font-size-md">
+      </PopoverTrigger>
+      <PopoverContent className="whitespace-pre-wrap font-size-md">
         {props.text}
-        {props.detailLink && !props.isTargetBlank && (
-          <Link to={props.detailLink}>{"(詳細)"}</Link>
-        )}
-        {props.detailLink && props.isTargetBlank === true && (
-          <Link to={props.detailLink} rel="noopener noreferrer" target="_blank">
-            {"(詳細)"}
-          </Link>
-        )}
-      </HoverCardContent>
-    </HoverCard>
+        {props.detailLink && <Link to={props.detailLink}>{"(詳細)"}</Link>}
+      </PopoverContent>
+    </Popover>
   )
 }
