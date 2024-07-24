@@ -1,4 +1,3 @@
-import type { WorkTag } from "@/routes/($lang)._main._index/_types/work-tag"
 import {
   Carousel,
   CarouselContent,
@@ -10,7 +9,10 @@ import { Link } from "@remix-run/react"
 
 type Props = {
   title?: string
-  tags: WorkTag[]
+  tags: {
+    thumbnailUrl: string
+    tagName: string
+  }[]
 }
 
 export const HomeTagsSection = (props: Props) => {
@@ -35,16 +37,16 @@ export const HomeTagsSection = (props: Props) => {
             <CarouselItem className="basis-auto" key={index}>
               <div className="group relative overflow-hidden rounded-md">
                 <Link
-                  to={`https://www.aipictors.com/search/?tag=${tag.name}`}
+                  to={`https://www.aipictors.com/search/?tag=${tag.tagName}`}
                   className="rounded-md"
                 >
                   <img
                     className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
                     src={tag.thumbnailUrl}
-                    alt={tag.name}
+                    alt={tag.tagName}
                   />
                   <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-                    <p className="text-white">{`#${tag.name}`}</p>
+                    <p className="text-white">{`#${tag.tagName}`}</p>
                   </div>
                 </Link>
               </div>
