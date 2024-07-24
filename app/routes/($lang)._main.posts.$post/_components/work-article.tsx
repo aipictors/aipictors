@@ -52,9 +52,11 @@ export const WorkArticle = (props: Props) => {
       {props.work.type === "WORK" && (
         <WorkImageView
           workImageURL={props.work.imageURL}
-          subWorkImageURLs={props.work.subWorks.map((subWork) => {
-            return subWork.imageUrl ?? ""
-          })}
+          subWorkImageURLs={props.work.subWorks
+            .filter((subWork) => subWork.imageUrl !== null)
+            .map((subWork) => {
+              return subWork.imageUrl ?? ""
+            })}
         />
       )}
       {props.work.type === "VIDEO" && (

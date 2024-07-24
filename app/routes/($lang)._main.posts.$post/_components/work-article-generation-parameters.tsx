@@ -1,7 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/_components/ui/tabs"
 import { useState } from "react"
 import { Card } from "@/_components/ui/card"
-import {} from "@/_components/ui/accordion"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/_components/ui/accordion"
+import { Button } from "@/_components/ui/button"
+import { toast } from "sonner"
 
 type Props = {
   prompt: string | null
@@ -35,9 +42,16 @@ export const WorkArticleGenerationParameters = (props: Props) => {
     return null
   }
 
+  const copyToClipboard = (text: string | null) => {
+    if (!text) return
+    navigator.clipboard.writeText(text).then(() => {
+      toast("コピーしました")
+    })
+  }
+
   return (
     <>
-      <Tabs value={viewGenerationType}>
+      <Tabs className="hidden md:block" value={viewGenerationType}>
         <TabsList>
           {props.prompt && (
             <TabsTrigger
@@ -89,6 +103,15 @@ export const WorkArticleGenerationParameters = (props: Props) => {
             <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
               {props.prompt}
             </Card>
+            <Button
+              onClick={() => {
+                copyToClipboard(props.prompt)
+              }}
+              variant={"secondary"}
+              className="h-8 w-full"
+            >
+              {"Copy"}
+            </Button>
           </TabsContent>
         )}
         {props.negativePrompt && (
@@ -96,6 +119,15 @@ export const WorkArticleGenerationParameters = (props: Props) => {
             <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
               {props.negativePrompt}
             </Card>
+            <Button
+              onClick={() => {
+                copyToClipboard(props.negativePrompt)
+              }}
+              variant={"secondary"}
+              className="h-8 w-full"
+            >
+              {"Copy"}
+            </Button>
           </TabsContent>
         )}
         {(props.steps || props.scale || props.seed || props.sampler) && (
@@ -156,6 +188,113 @@ export const WorkArticleGenerationParameters = (props: Props) => {
           </TabsContent>
         )}
       </Tabs>
+      <div className="block md:hidden">
+        <Accordion type="single" collapsible>
+          <AccordionItem value="setting">
+            <AccordionTrigger>
+              <Button variant={"secondary"} className="w-full">
+                生成情報
+              </Button>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              <div className="space-y-2">
+                {props.prompt && (
+                  <div className="space-y-2">
+                    <p className="text-md">{"プロンプト"}</p>
+                    <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
+                      {props.prompt}
+                    </Card>
+                    <Button
+                      onClick={() => {
+                        copyToClipboard(props.prompt)
+                      }}
+                      variant={"secondary"}
+                      className="w-full"
+                    >
+                      {"コピー"}
+                    </Button>
+                  </div>
+                )}
+                {props.negativePrompt && (
+                  <div className="space-y-2">
+                    <p className="text-md">{"ネガティブプロンプト"}</p>
+                    <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
+                      {props.negativePrompt}
+                    </Card>
+                    <Button
+                      onClick={() => {
+                        copyToClipboard(props.negativePrompt)
+                      }}
+                      variant={"secondary"}
+                      className="w-full"
+                    >
+                      {"コピー"}
+                    </Button>
+                  </div>
+                )}
+                {(props.steps ||
+                  props.scale ||
+                  props.seed ||
+                  props.sampler) && (
+                  <div>
+                    <p className="text-md">{"Stepsなど"}</p>
+                    <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-center text-sm opacity-50">
+                          Steps
+                        </span>
+                        <span className="text-center text-lg">
+                          {props.steps}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-center text-sm opacity-50">
+                          Scale
+                        </span>
+                        <span className="text-center text-lg">
+                          {props.scale}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-center text-sm opacity-50">
+                          Seed
+                        </span>
+                        <span className="text-center text-lg">
+                          {props.seed}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-center text-sm opacity-50">
+                          Sampler
+                        </span>
+                        <span className="text-center text-lg">
+                          {props.sampler}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-center text-sm opacity-50">
+                          Strength
+                        </span>
+                        <span className="text-center text-lg">
+                          {props.strength}
+                        </span>
+                      </div>
+                    </Card>
+                  </div>
+                )}
+                {props.otherGenerationParams && (
+                  <div>
+                    <p className="text-md">{"Other"}</p>
+                    <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
+                      {props.otherGenerationParams}
+                    </Card>
+                  </div>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
     </>
   )
 }

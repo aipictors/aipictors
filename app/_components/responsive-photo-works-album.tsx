@@ -13,10 +13,6 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export const ResponsivePhotoWorksAlbum = (props: Props) => {
-  if (props.works === null || props.works.length === 0) {
-    return null
-  }
-
   const photos = props.works.map((work) => ({
     src: work.largeThumbnailImageURL,
     width: work.largeThumbnailImageWidth,
@@ -54,14 +50,14 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           workTitle={photoProps.photo.title}
         />
       )}
-      defaultContainerWidth={120}
+      // defaultContainerWidth={120}
       targetRowHeight={
         props.targetRowHeight !== undefined ? props.targetRowHeight : 240
       }
-      sizes={{
-        size: "calc(100vw - 240px)",
-        sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-      }}
+      // sizes={{
+      //   size: "calc(100vw - 240px)",
+      //   sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+      // }}
     />
   )
 }

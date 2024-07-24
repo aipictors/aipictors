@@ -34,7 +34,7 @@ export const WorkMarkdownView = ({ thumbnailUrl, md }: Props) => {
   })
 
   return (
-    <div className="relative m-0 bg-gray-100 dark:bg-zinc-950">
+    <div className="relative m-0">
       <img
         src={thumbnailUrl}
         alt="Thumbnail"

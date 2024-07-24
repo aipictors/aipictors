@@ -270,8 +270,7 @@ export const ImagesPreview = (props: Props) => {
   return (
     <div className="flex flex-col space-y-2">
       <div className="relative">
-        {/* Display thumbnail */}
-        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto bg-card object-contain ">
+        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900 ">
           {props.imageURLs.length > 1 && (
             <Badge
               variant="secondary"
