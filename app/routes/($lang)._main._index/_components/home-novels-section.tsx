@@ -1,10 +1,9 @@
 import { AuthContext } from "@/_contexts/auth-context"
 import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { getRecommendedWorkIds } from "@/_utils/get-recommended-work-ids"
 import { HomeNovelsWorksSection } from "@/routes/($lang)._main._index/_components/home-novels-works-section"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 
 type Props = {
   title: string
@@ -17,36 +16,14 @@ type Props = {
 export const HomeNovelsSection = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const [recommendedIds, setRecommendedIds] = useState<string[]>([])
-
-  useEffect(() => {
-    const fetchRecommendedIds = async () => {
-      const userId = authContext.userId ?? "-1"
-
-      try {
-        const ids = await getRecommendedWorkIds(
-          userId,
-          undefined,
-          "novel",
-          props.isSensitive ? "R18" : "G",
-        )
-        setRecommendedIds(ids)
-      } catch (error) {
-        console.error("Error fetching recommended work IDs:", error)
-      }
-    }
-
-    fetchRecommendedIds()
-  }, [authContext.userId])
-
   const { data: novelWorks } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
       limit: 64,
       where: {
-        ids: recommendedIds,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        workType: "NOVEL",
       },
     },
   })

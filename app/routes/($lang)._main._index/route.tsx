@@ -217,7 +217,7 @@ const query = graphql(
     recommendedTags: recommendedTags(
       limit: 8
       where: {
-        isSensitive: true
+        isSensitive: false
       }
     ) {
       ...PartialRecommendedTagFields

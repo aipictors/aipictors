@@ -6,10 +6,12 @@ import { partialRecommendedTagFieldsFragment } from "@/_graphql/fragments/partia
 import { createClient } from "@/_lib/client"
 import { HomeAwardWorkSection } from "@/routes/($lang)._main._index/_components/home-award-work-section"
 import { HomeTagsSection } from "@/routes/($lang)._main._index/_components/home-tags-section"
-import { HomeWorksUsersRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-users-recommended-section"
 import { type MetaFunction, json } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { HomeColumnsSection } from "@/routes/($lang)._main._index/_components/home-columns-section"
+import { HomeNovelsSection } from "@/routes/($lang)._main._index/_components/home-novels-section"
+import { HomeVideosSection } from "@/routes/($lang)._main._index/_components/home-videos-section"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | センシティブ"
@@ -84,19 +86,11 @@ export default function SensitivePage() {
         fallbackURL="https://www.aipictors.com/"
         message={"このページは開発中です"}
       />
-      <HomeAwardWorkSection
-        title={"前日ランキング"}
-        // awardDateText={data.awardDateText}
-        // works={data.workAwards.map((award) => award.work)}
-      />
+      <HomeAwardWorkSection title={"前日ランキング"} isSensitive={true} />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-      {/* <HomeWorksRecommendedSection /> */}
-      <HomeWorksUsersRecommendedSection
-      // works={data.promotionWorks}
-      />
-      {/* <HomeNovelsSection title={"小説"} /> */}
-      {/* <HomeVideosSection title={"動画"} /> */}
-      {/* <HomeColumnsSection title={"コラム"} /> */}
+      <HomeNovelsSection isSensitive={true} title={"小説"} />
+      <HomeVideosSection isSensitive={true} title={"動画"} />
+      <HomeColumnsSection isSensitive={true} title={"コラム"} />
     </AppPage>
   )
 }

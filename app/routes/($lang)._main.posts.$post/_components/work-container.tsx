@@ -9,7 +9,6 @@ import { WorkUser } from "@/routes/($lang)._main.posts.$post/_components/work-us
 import { Suspense, useContext } from "react"
 import { WorkTagsWorks } from "@/routes/($lang)._main.posts.$post/_components/work-tags-works"
 import { graphql, type FragmentOf } from "gql.tada"
-import { HomeWorksRecommendedSection } from "@/routes/($lang)._main._index/_components/home-works-recommended-section"
 import { IconUrl } from "@/_components/icon-url"
 import {
   type commentFragment,
@@ -119,7 +118,7 @@ export const WorkContainer = (props: Props) => {
         </div>
       </div>
       <section className="m-auto space-y-4">
-        {randomTag ? (
+        {randomTag && (
           <>
             <div className="flex justify-between">
               <h2 className="items-center space-x-2 font-bold text-md">
@@ -130,12 +129,6 @@ export const WorkContainer = (props: Props) => {
               <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
             </Suspense>
           </>
-        ) : (
-          <Suspense fallback={<AppLoadingPage />}>
-            <HomeWorksRecommendedSection
-              isSensitive={work.rating === "R18" || work.rating === "R18G"}
-            />
-          </Suspense>
         )}
       </section>
     </div>
