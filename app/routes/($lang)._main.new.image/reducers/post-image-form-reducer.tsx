@@ -182,6 +182,7 @@ export const postImageFormReducer = (
         pngInfo: action.payload.pngInfo,
         thumbnailPosX: action.payload.thumbnailPosX,
         thumbnailPosY: action.payload.thumbnailPosY,
+        isSelectedGenerationImage: action.payload.isSelectedGenerationImage,
       }
   }
 

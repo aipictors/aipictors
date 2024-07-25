@@ -124,10 +124,9 @@ export default function EditImage() {
             0 > (work?.smallThumbnailImageHeight ?? 0)
               ? 0
               : work?.thumbnailImagePosition ?? 0,
+          isSelectedGenerationImage: work?.isGeneration ?? false,
         },
       })
-
-      console.log(getReservationDetails(work?.createdAt ?? 0).reservationDate)
 
       dispatchInput({
         type: "INITIALIZE",

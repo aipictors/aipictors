@@ -127,6 +127,7 @@ export const vPostImageFormAction = union([
       pngInfo: nullable(vImageInformation),
       thumbnailPosX: number(),
       thumbnailPosY: number(),
+      isSelectedGenerationImage: boolean(),
     }),
   }),
 ])

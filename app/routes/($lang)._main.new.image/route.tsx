@@ -135,15 +135,26 @@ export default function NewImage() {
                 viewer.viewer.imageGenerationResults[0].negativePrompt,
               seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
               sampler: viewer.viewer.imageGenerationResults[0].sampler,
-              strength: "",
+              strength:
+                viewer.viewer.imageGenerationResults[0]
+                  .t2tDenoisingStrengthSize ?? "",
               noise: "",
               model: viewer.viewer.imageGenerationResults[0].model?.name,
-              modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
+              modelHash:
+                viewer.viewer.imageGenerationResults[0].modelHash ?? "",
               steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
               scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
-              vae: "",
+              vae: viewer.viewer.imageGenerationResults[0].vae ?? "",
             },
           },
+        })
+
+        // 選択AIモデルを設定
+        dispatchInput({
+          type: "SET_AI_MODEL_ID",
+          payload:
+            viewer.viewer.imageGenerationResults[0].postModelId?.toString() ??
+            "",
         })
 
         dispatch({

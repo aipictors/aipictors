@@ -19,6 +19,8 @@ export const imageGenerationResultFieldsFragment = graphql(
     completedAt
     isProtected
     generationType
+    postModelId
+    modelHash
     model {
       id
       name
