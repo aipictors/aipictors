@@ -473,7 +473,7 @@ export default function EditImage() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
-          eventInputHidden={true}
+          eventInputHidden={false}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"更新"}

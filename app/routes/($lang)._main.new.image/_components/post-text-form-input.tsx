@@ -240,6 +240,9 @@ export function PostTextFormInput(props: Props) {
           removeTag={(tag) => {
             props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
           }}
+          isAttending={props.state.tags.some(
+            (tag) => tag.text === data?.appEvents[0]?.tag,
+          )}
         />
       )}
       <PostFormItemTags

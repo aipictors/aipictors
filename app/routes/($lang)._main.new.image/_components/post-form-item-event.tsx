@@ -12,13 +12,14 @@ type Props = {
   slug: string | null
   removeTag: (tag: Tag) => void
   addTag: (tag: Tag) => void
+  isAttending?: boolean
 }
 
 /**
  * イベント入力
  */
 export const PostFormItemEvent = (props: Props) => {
-  const [isAttending, setIsAttending] = useState(false)
+  const [isAttending, setIsAttending] = useState(props.isAttending ?? false)
 
   const handleAttendanceChange = (isChecked: boolean) => {
     setIsAttending(isChecked)
