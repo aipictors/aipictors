@@ -1,8 +1,6 @@
-import { AppContents } from "@/_components/app/app-contents"
+import { AppCommonLayout } from "@/_components/app/app-common-layout"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { HomeFooter } from "@/_components/home-footer"
 import { AuthContext } from "@/_contexts/auth-context"
-import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
@@ -23,8 +21,7 @@ export default function SettingsLayout() {
 
   return (
     <>
-      <HomeHeader title="設定" />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppCommonLayout outlet={<Outlet />} />
     </>
   )
 }

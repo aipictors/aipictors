@@ -130,7 +130,7 @@ export function GenerationConfigView() {
       <ScrollArea type="always">
         <div
           className={cn(
-            "flex flex-col gap-y-4 px-4",
+            "flex flex-col gap-y-4 px-0 md:px-4",
             "max-h-auto md:max-h-full",
           )}
         >

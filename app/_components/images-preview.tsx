@@ -281,7 +281,7 @@ export const ImagesPreview = (props: Props) => {
           )}
           <div className="inline-block overflow-hidden text-center">
             <img
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-card object-contain"
+              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain dark:bg-zinc-900"
               draggable={false}
               key={props.thumbnailUrl}
               alt="thumbnail"
@@ -297,7 +297,7 @@ export const ImagesPreview = (props: Props) => {
               <img
                 // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                 key={index}
-                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-card object-contain md:max-h-[72vh]"
+                className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
                 draggable={false}
                 alt={`thumbnail-${index}`}
                 src={url}

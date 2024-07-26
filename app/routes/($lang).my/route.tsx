@@ -1,6 +1,4 @@
-import { AppContents } from "@/_components/app/app-contents"
-import { HomeFooter } from "@/_components/home-footer"
-import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
+import { AppCommonLayout } from "@/_components/app/app-common-layout"
 import { MyContents } from "@/routes/($lang).my/_components/my-contents"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
@@ -31,11 +29,7 @@ export const meta: MetaFunction = () => {
 export default function MyLayout() {
   return (
     <>
-      <HomeHeader />
-      <AppContents
-        outlet={<MyContents outlet={<Outlet />} />}
-        footer={<HomeFooter />}
-      />
+      <AppCommonLayout outlet={<MyContents outlet={<Outlet />} />} />
     </>
   )
 }

@@ -1,6 +1,4 @@
-import { AppContents } from "@/_components/app/app-contents"
-import { HomeFooter } from "@/_components/home-footer"
-import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
+import { AppCommonLayout } from "@/_components/app/app-common-layout"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
 
@@ -11,8 +9,7 @@ export const meta: MetaFunction = () => {
 export default function FollowingLayout() {
   return (
     <>
-      <HomeHeader />
-      <AppContents outlet={<Outlet />} footer={<HomeFooter />} />
+      <AppCommonLayout outlet={<Outlet />} />
     </>
   )
 }

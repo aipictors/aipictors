@@ -19,6 +19,7 @@ import { useBoolean } from "usehooks-ts"
 
 type Props = {
   title?: string
+  onToggleSideMenu?: () => void
 }
 
 const HomeHeader = (props: Props) => {
@@ -35,14 +36,20 @@ const HomeHeader = (props: Props) => {
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
-        <div className="flex min-w-fit items-center md:flex">
+        <div className="flex min-w-fit items-center gap-x-2 md:flex">
+          {props.onToggleSideMenu && (
+            <Button
+              variant={"ghost"}
+              size={"icon"}
+              onClick={props.onToggleSideMenu}
+              className="hidden md:flex"
+            >
+              <MenuIcon className="h-6 w-6" />
+            </Button>
+          )}
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                className="mr-2 md:hidden"
-                variant={"ghost"}
-                size={"icon"}
-              >
+              <Button className="md:hidden" variant={"ghost"} size={"icon"}>
                 <MenuIcon />
               </Button>
             </SheetTrigger>
@@ -52,7 +59,7 @@ const HomeHeader = (props: Props) => {
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <div className="flex items-center space-x-2 pl-0 md:pl-11">
+          <div className="flex items-center space-x-2">
             <Link
               className="items-center md:flex"
               to="https://www.aipictors.com"
@@ -73,7 +80,9 @@ const HomeHeader = (props: Props) => {
               )}
             </Link>
             <div className="hidden flex-grow flex-row items-center md:flex">
-              <span className="font-bold text-xl">{props.title ?? "Beta"}</span>
+              <span className="font-bold text-xl">
+                {props.title ?? "Aipictors β"}
+              </span>
             </div>
           </div>
         </div>

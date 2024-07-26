@@ -152,22 +152,14 @@ export default function Index() {
         deadline={"2024-07-30"}
       />
       <HomeBanners adWorks={data.adWorks} />
-      <div className="space-y-8">
-        <HomeTagList
-          themeTitle={data.dailyTheme?.title}
-          hotTags={data.hotTags}
-        />
-        <HomeWorksGeneratedSection works={data.generationWorks} />
-        <HomeAwardWorkSection
-          title={"前日ランキング"}
-          works={data.workAwards}
-        />
-        <HomeTagsSection title={"人気タグ"} tags={data.tags} />
-        <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
-        <HomeNovelsSection works={data.novelWorks} title={"小説"} />
-        <HomeVideosSection works={data.videoWorks} title={"動画"} />
-        <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
-      </div>
+      <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
+      <HomeWorksGeneratedSection works={data.generationWorks} />
+      <HomeAwardWorkSection title={"前日ランキング"} works={data.workAwards} />
+      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+      <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
+      <HomeNovelsSection works={data.novelWorks} title={"小説"} />
+      <HomeVideosSection works={data.videoWorks} title={"動画"} />
+      <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
     </AppPage>
   )
 }

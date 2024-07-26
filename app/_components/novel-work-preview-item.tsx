@@ -29,7 +29,7 @@ export const NovelWorkPreviewItem = (props: Props) => {
         <div className="h-6 overflow-hidden font-bold text-sm">
           {props.title}
         </div>
-        <div className="h-16 overflow-hidden text-ellipsis text-wrap text-gray-500 text-xs">
+        <div className="h-8 overflow-hidden text-ellipsis text-wrap text-gray-500 text-xs">
           {props.text}
         </div>
       </div>

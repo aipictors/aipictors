@@ -4,6 +4,7 @@ import { Separator } from "@/_components/ui/separator"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
 import { HomeNavigationButton } from "@/routes/($lang)._main._index/_components/home-navigation-button"
+import { Link } from "@remix-run/react"
 import {} from "@remixicon/react"
 import {
   AwardIcon,
@@ -25,7 +26,7 @@ export const HomeRouteList = () => {
   const authContext = useContext(AuthContext)
 
   return (
-    <div className="w-40 space-y-1">
+    <div className="h-[80vh] w-full space-y-1 pr-4 pb-16 md:w-40">
       {authContext.isNotLoggedIn && (
         <>
           <LoginDialogButton variant="secondary" isWidthFull />
@@ -114,6 +115,17 @@ export const HomeRouteList = () => {
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
+      <footer>
+        <div className="flex flex-col space-y-2 p-2">
+          <Link className="text-xs opacity-80" to="/about">
+            {"概要"}
+          </Link>
+          <Link className="text-xs opacity-80" to="/terms">
+            {"利用規約"}
+          </Link>
+          <p className="text-xs opacity-80">{"©2024 Aipictors LLC"}</p>
+        </div>
+      </footer>
     </div>
   )
 }

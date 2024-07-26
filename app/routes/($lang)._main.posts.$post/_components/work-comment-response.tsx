@@ -18,6 +18,7 @@ type Props = {
   createdAt: number
   replyId: string
   userId: string
+  iconUrl: string
   /* コメントで使われてるスタンプ情報 */
   stickerImageURL?: string
   stickerTitle?: string
@@ -144,6 +145,7 @@ export const WorkCommentResponse = (props: Props) => {
               props.onReplyCompleted(id, text, stickerId, stickerImageURL)
             }
           }}
+          iconUrl={props.iconUrl}
         />
       )}
     </>
