@@ -123,7 +123,7 @@ export const HomeRouteList = () => {
           <Link className="text-xs opacity-80" to="/terms">
             {"利用規約"}
           </Link>
-          <p className="text-xs opacity-80">{"©2024 Aipictors LLC"}</p>
+          <p className="text-xs opacity-80">{"©2024 Aipictors Co.,Ltd."}</p>
         </div>
       </footer>
     </div>
