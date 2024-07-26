@@ -12,24 +12,20 @@ export const HomeGenerationBanner = (props: Props) => {
   const [workA, workB, workC] = props.works
 
   return (
-    <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
-      <div className="m-auto">
-        <p className="font-semibold text-md">
-          無料で生成して
-          <br />
-          投稿できる！
-        </p>
+    <div className="flex w-full items-center overflow-hidden rounded-md border p-4">
+      <div className="w-64">
+        <p className="font-semibold text-md">無料で生成して投稿できる！</p>
         <Link to="/generation">
           {/** TODO_2024_07: Buttonに変更する */}
           <button
             type={"button"}
-            className="mt-2 mb-2 w-full rounded-full bg-blue-500 px-4 py-1 text-white"
+            className="mt-2 mb-2 w-32 rounded-full bg-blue-500 px-4 py-1 text-white"
           >
             生成
           </button>
         </Link>
       </div>
-      <div className="ml-2 flex">
+      <div className="ml-2 flex justify-center rounded">
         {workA && (
           <Link to={`/generation?work=${workA.id}`}>
             <div className="h-32 w-32 overflow-hidden">

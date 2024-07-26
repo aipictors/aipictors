@@ -9,7 +9,7 @@ export const HomeEventBanner = () => {
   }
 
   return (
-    <div className="flex w-full items-center overflow-hidden rounded-md border p-1">
+    <div className="flex w-full items-center overflow-hidden rounded-md border p-4">
       <div className="m-auto ml-2">
         <p className="font-semibold text-lg">水着企画</p>
         <p className="font-semibold text-sm">
@@ -26,7 +26,7 @@ export const HomeEventBanner = () => {
       <button
         type={"button"}
         onClick={onClick}
-        className="ml-4 h-32 w-96 overflow-hidden"
+        className="ml-4 h-32 w-96 overflow-hidden rounded"
       >
         <img
           src={"https://assets.aipictors.com/event-mizugi-2024.webp"}

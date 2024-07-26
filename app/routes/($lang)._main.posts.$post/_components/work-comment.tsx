@@ -8,6 +8,7 @@ import { ReplyCommentInput } from "@/routes/($lang)._main.posts.$post/_component
 import { StickerInfoDialog } from "@/_components/sticker-info-dialog"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { IconUrl } from "@/_components/icon-url"
 
 type Props = {
   userId: string
@@ -142,6 +143,7 @@ export const WorkComment = (props: Props) => {
           ) => {
             props.onReplyCompleted(id, text, stickerId, stickerImageURL)
           }}
+          iconUrl={IconUrl(props.userIconImageURL)}
         />
       )}
     </>

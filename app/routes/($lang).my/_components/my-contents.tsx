@@ -51,7 +51,7 @@ export const MyContents = (props: Props) => {
   return (
     <>
       <div
-        className="container m-auto w-full"
+        className="m-auto w-full"
         style={{
           margin: "0 auto",
         }}

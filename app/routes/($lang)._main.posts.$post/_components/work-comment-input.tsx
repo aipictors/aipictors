@@ -1,8 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
-import { AuthContext } from "@/_contexts/auth-context"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { Suspense, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { StickerDialog } from "@/routes/($lang)._main.posts.$post/_components/sticker-dialog"
@@ -13,6 +12,7 @@ import { graphql } from "gql.tada"
 
 type Props = {
   targetCommentId: string
+  iconUrl: string
   onReplyCompleted: (
     id: string,
     text: string,
@@ -26,8 +26,6 @@ type Props = {
  */
 export const ReplyCommentInput = (props: Props) => {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
-
-  const appContext = useContext(AuthContext)
 
   const [createReplyComment, { loading: isCreatingReplyComment }] = useMutation(
     createResponseCommentMutation,
@@ -84,7 +82,7 @@ export const ReplyCommentInput = (props: Props) => {
     <>
       <div className="flex w-full items-center space-x-2 pl-16">
         <Avatar>
-          <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
+          <AvatarImage src={props.iconUrl} alt="" />
           <AvatarFallback />
         </Avatar>
         <AutoResizeTextarea

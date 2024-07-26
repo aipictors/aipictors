@@ -352,6 +352,7 @@ export const WorkCommentList = (props: Props) => {
                     userIconImageURL={IconUrl(reply.user?.iconUrl)}
                     userName={reply.user?.name}
                     replyId={reply.id}
+                    iconUrl={IconUrl(userIcon)}
                     onDeleteComment={() => {
                       onDeleteComment(reply.id)
                     }}
@@ -396,7 +397,7 @@ export const WorkCommentList = (props: Props) => {
                       createdAt={newReply.createdAt}
                       stickerImageURL={newReply.sticker?.image?.downloadURL}
                       text={newReply.text}
-                      userIconImageURL={IconUrl(newReply.user?.iconUrl)}
+                      iconUrl={IconUrl(userIcon)}
                       userName={newReply.user?.name}
                       replyId={newReply.id}
                       onDeleteComment={() => {
@@ -481,6 +482,7 @@ export const WorkCommentList = (props: Props) => {
                         userIconImageURL={IconUrl(reply.user?.iconUrl)}
                         userName={reply.user?.name}
                         replyId={reply.id}
+                        iconUrl={IconUrl(userIcon)}
                         onDeleteComment={() => {
                           onDeleteComment(reply.id)
                         }}
@@ -528,6 +530,7 @@ export const WorkCommentList = (props: Props) => {
                           userIconImageURL={IconUrl(newReply.user?.iconUrl)}
                           userName={newReply.user?.name}
                           replyId={newReply.id}
+                          iconUrl={IconUrl(userIcon)}
                           onDeleteComment={() => {
                             onDeleteComment(newReply.id)
                           }}

@@ -77,7 +77,6 @@ export const HomeAwardWorkSection = (props: Props) => {
           </Button>
         </Link>
       </div>
-
       <CarouselWithGradation
         items={works.map((work, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
