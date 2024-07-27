@@ -57,7 +57,9 @@ export default function SensitiveWorkPage() {
   return (
     <ArticlePage>
       <WorkArticle work={data.work} />
-      <WorkCommentList workId={data.work.id} comments={data.workComments} />
+      {data.work?.isCommentsEditable && (
+        <WorkCommentList workId={data.work.id} comments={data.workComments} />
+      )}
     </ArticlePage>
   )
 }

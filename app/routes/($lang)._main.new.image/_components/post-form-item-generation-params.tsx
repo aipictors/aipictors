@@ -42,7 +42,7 @@ export const PostFormItemGenerationParams = (props: Props) => {
 
   return (
     <Card>
-      <CardContent className="flex flex-col space-y-4">
+      <CardContent className="flex flex-col space-y-4 pt-4 pb-4">
         <ExpansionTransition
           triggerChildren={
             <Button variant={"secondary"} className="w-full">

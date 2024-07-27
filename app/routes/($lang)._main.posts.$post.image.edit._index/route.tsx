@@ -128,6 +128,8 @@ export default function EditImage() {
         },
       })
 
+      console.log(work?.isCommentsEditable)
+
       dispatchInput({
         type: "INITIALIZE",
         payload: {
@@ -445,6 +447,8 @@ export default function EditImage() {
         return
       }
 
+      console.log(inputState.useCommentFeature)
+
       const updatedWork = await updateWork({
         variables: {
           input: {
@@ -454,6 +458,7 @@ export default function EditImage() {
             explanation: formResult.output.caption,
             enExplanation: formResult.output.enCaption,
             rating: inputState.ratingRestriction,
+
             prompt: state.pngInfo?.params.prompt ?? null,
             negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
             seed: state.pngInfo?.params.seed ?? null,

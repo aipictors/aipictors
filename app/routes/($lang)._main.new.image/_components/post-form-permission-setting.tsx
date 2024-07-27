@@ -1,5 +1,6 @@
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Card, CardContent } from "@/_components/ui/card"
+import { useState } from "react"
 
 type Props = {
   isTagEditableChecked?: boolean
@@ -12,6 +13,14 @@ type Props = {
  * 許可設定
  */
 export const PostFormPermissionSetting = (props: Props) => {
+  const [isTagEditableChecked, setIsTagEditableChecked] = useState(
+    props.isTagEditableChecked ?? false,
+  )
+
+  const [isCommentsEditableChecked, setIsCommentsEditableChecked] = useState(
+    props.isCommentsEditableChecked ?? false,
+  )
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
@@ -19,10 +28,11 @@ export const PostFormPermissionSetting = (props: Props) => {
         <div className="flex items-center space-x-2">
           <Checkbox
             onCheckedChange={(value: boolean) => {
-              props.onTagEditableChange(value)
+              setIsTagEditableChecked(!isTagEditableChecked)
+              props.onTagEditableChange(isTagEditableChecked)
             }}
             id="tag-editable"
-            checked={!props.isTagEditableChecked}
+            checked={!isTagEditableChecked}
           />
           <label className="text-sm" htmlFor="tag-editable">
             {"タグの編集を許可しない"}
@@ -31,10 +41,11 @@ export const PostFormPermissionSetting = (props: Props) => {
         <div className="flex items-center space-x-2">
           <Checkbox
             onCheckedChange={(value: boolean) => {
-              props.onCommentsEditableChange(value)
+              setIsCommentsEditableChecked(!isCommentsEditableChecked)
+              props.onCommentsEditableChange(isCommentsEditableChecked)
             }}
             id="comments-editable"
-            checked={!props.isCommentsEditableChecked}
+            checked={!isCommentsEditableChecked}
           />
           <label className="text-sm" htmlFor="comments-editable">
             {"コメントを許可しない"}
