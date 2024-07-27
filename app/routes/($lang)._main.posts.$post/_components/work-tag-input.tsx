@@ -3,6 +3,7 @@ import { Button } from "@/_components/ui/button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
+import { toast } from "sonner"
 
 type Props = {
   postId: string
@@ -26,6 +27,7 @@ export const WorkTagInput = (props: Props) => {
         },
       },
     })
+    toast("タグを保存しました")
   }
 
   return (

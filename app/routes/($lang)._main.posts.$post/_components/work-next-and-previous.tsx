@@ -88,17 +88,15 @@ export const WorkNextAndPrevious = (props: Props) => {
             />
           </div>
         )}
-        <div className="opacity-50">
-          <div className="w-full">
-            <CroppedWorkSquare
-              workId={props.work.id}
-              imageUrl={props.work.smallThumbnailImageURL}
-              imageWidth={props.work.smallThumbnailImageWidth}
-              imageHeight={props.work.smallThumbnailImageHeight}
-              thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
-              size={"sm"}
-            />{" "}
-          </div>
+        <div className="w-full opacity-50">
+          <CroppedWorkSquare
+            workId={props.work.id}
+            imageUrl={props.work.smallThumbnailImageURL}
+            imageWidth={props.work.smallThumbnailImageWidth}
+            imageHeight={props.work.smallThumbnailImageHeight}
+            thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
+            size={"sm"}
+          />
         </div>
         {props.work.previousWork && (
           <div className="w-full">
