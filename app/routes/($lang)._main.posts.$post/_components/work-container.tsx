@@ -82,11 +82,7 @@ export const WorkContainer = (props: Props) => {
             </Suspense>
             <WorkRelatedList works={relatedWorks} />
             <Suspense fallback={<AppLoadingPage />}>
-              <WorkCommentList
-                iconUrl={props.iconUrl}
-                workId={work.id}
-                comments={props.comments}
-              />
+              <WorkCommentList workId={work.id} comments={props.comments} />
             </Suspense>
             <div className="block md:mt-0 lg:hidden">
               <Suspense>
