@@ -1,5 +1,4 @@
 import { Badge } from "@/_components/ui/badge"
-import { Separator } from "@/_components/ui/separator"
 import {} from "@/_components/ui/table"
 import { toAccessTypeText } from "@/_utils/work/to-access-type-text"
 import type { SortType } from "@/_types/sort-type"
@@ -57,7 +56,7 @@ export const WorksSpList = (props: Props) => {
       {props.works.map((work, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index}>
-          <div className="mt-2 mb-2 flex">
+          <div className="flex border-b">
             {new Date(work.createdAt * 1000).getTime() >
             new Date().getTime() ? (
               <img
@@ -82,8 +81,8 @@ export const WorksSpList = (props: Props) => {
                 />
               </Link>
             )}
-            <div className="w-full space-y-2">
-              <div className="w-full max-w-40 space-y-2 overflow-hidden text-ellipsis">
+            <div className="w-full">
+              <div className="w-full max-w-40 space-y-4 overflow-hidden text-ellipsis">
                 {new Date(work.createdAt * 1000).getTime() >
                 new Date().getTime() ? (
                   <div className="w-full font-bold">{work.title}</div>
@@ -133,7 +132,6 @@ export const WorksSpList = (props: Props) => {
               </Link>
             </div>
           </div>
-          <Separator />
         </div>
       ))}
     </>

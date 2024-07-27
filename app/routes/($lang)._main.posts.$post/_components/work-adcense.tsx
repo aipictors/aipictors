@@ -5,7 +5,7 @@ export const WorkAdSense = () => {
     <>
       <Link to={"/generation"}>
         <img
-          className="m-auto max-w-64 rounded-md border-2 border-gray-200 border-solid"
+          className="w-full rounded-md border-2 border-gray-200 border-solid"
           src="https://assets.aipictors.com/generator_ad.webp"
           alt="広告"
         />

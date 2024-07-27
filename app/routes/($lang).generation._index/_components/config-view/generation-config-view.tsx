@@ -25,6 +25,7 @@ import { GenerationConfigScale } from "@/routes/($lang).generation._index/_compo
 import { GenerationConfigSeed } from "@/routes/($lang).generation._index/_components/config-view/generation-config-seed"
 import { GenerationConfigSize } from "@/routes/($lang).generation._index/_components/config-view/generation-config-size"
 import { GenerationConfigStep } from "@/routes/($lang).generation._index/_components/config-view/generation-config-step"
+import { GenerationConfigUpscale } from "@/routes/($lang).generation._index/_components/config-view/generation-config-upscale"
 import { GenerationConfigVae } from "@/routes/($lang).generation._index/_components/config-view/generation-config-vae"
 import { GenerationViewCard } from "@/routes/($lang).generation._index/_components/generation-view-card"
 import { GenerationConfigContext } from "@/routes/($lang).generation._index/_contexts/generation-config-context"
@@ -173,12 +174,12 @@ export function GenerationConfigView() {
             setGenerationCount={context.changeGenerationCount}
             generationCount={context.config.generationCount}
           />
-
           <GenerationConfigSize
             modelType={configModelType}
             value={context.config.sizeType}
             onChange={context.updateSizeType}
           />
+          <GenerationConfigUpscale />
           <Separator />
           <GenerationConfigI2i />
           <Separator />

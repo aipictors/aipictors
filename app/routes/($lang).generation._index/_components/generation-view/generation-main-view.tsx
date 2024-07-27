@@ -91,7 +91,10 @@ export const GenerationMainView = (props: Props) => {
                 {props.negativePromptEditor}
               </div>
             </ResizablePanelWithMemory>
-            <div className="mt-4 mb-4">{props.submissionView}</div>
+            <div className="flex flex-col">
+              <Separator className="mt-2 mb-2" />
+              {props.submissionView}
+            </div>
           </ResizablePanelGroup>
         </ResizablePanelWithMemory>
       </ResizablePanelGroup>

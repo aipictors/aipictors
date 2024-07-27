@@ -59,7 +59,7 @@ export const WorkNextAndPrevious = (props: Props) => {
   }, [props.work])
 
   return (
-    <div className="invisible flex flex-col space-y-4 lg:visible">
+    <div className="invisible flex w-full flex-col space-y-4 lg:visible">
       <div className="flex text-md">
         <h2>{"前後の作品"}</h2>
         <TooltipProvider>
@@ -73,40 +73,46 @@ export const WorkNextAndPrevious = (props: Props) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex justify-center space-x-4">
+      <div className="flex space-x-4">
         {props.work.nextWork && (
-          <CroppedWorkSquare
-            workId={props.work.nextWork.id}
-            imageUrl={props.work.nextWork.smallThumbnailImageURL}
-            imageWidth={props.work.nextWork.smallThumbnailImageWidth}
-            imageHeight={props.work.nextWork.smallThumbnailImageHeight}
-            thumbnailImagePosition={
-              props.work.nextWork.thumbnailImagePosition ?? 0
-            }
-            size={"sm"}
-          />
+          <div className="w-full">
+            <CroppedWorkSquare
+              workId={props.work.nextWork.id}
+              imageUrl={props.work.nextWork.smallThumbnailImageURL}
+              imageWidth={props.work.nextWork.smallThumbnailImageWidth}
+              imageHeight={props.work.nextWork.smallThumbnailImageHeight}
+              thumbnailImagePosition={
+                props.work.nextWork.thumbnailImagePosition ?? 0
+              }
+              size={"sm"}
+            />
+          </div>
         )}
         <div className="opacity-50">
-          <CroppedWorkSquare
-            workId={props.work.id}
-            imageUrl={props.work.smallThumbnailImageURL}
-            imageWidth={props.work.smallThumbnailImageWidth}
-            imageHeight={props.work.smallThumbnailImageHeight}
-            thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
-            size={"sm"}
-          />
+          <div className="w-full">
+            <CroppedWorkSquare
+              workId={props.work.id}
+              imageUrl={props.work.smallThumbnailImageURL}
+              imageWidth={props.work.smallThumbnailImageWidth}
+              imageHeight={props.work.smallThumbnailImageHeight}
+              thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
+              size={"sm"}
+            />{" "}
+          </div>
         </div>
         {props.work.previousWork && (
-          <CroppedWorkSquare
-            workId={props.work.previousWork.id}
-            imageUrl={props.work.previousWork.smallThumbnailImageURL}
-            imageWidth={props.work.previousWork.smallThumbnailImageWidth}
-            imageHeight={props.work.previousWork.smallThumbnailImageHeight}
-            thumbnailImagePosition={
-              props.work.previousWork.thumbnailImagePosition ?? 0
-            }
-            size={"sm"}
-          />
+          <div className="w-full">
+            <CroppedWorkSquare
+              workId={props.work.previousWork.id}
+              imageUrl={props.work.previousWork.smallThumbnailImageURL}
+              imageWidth={props.work.previousWork.smallThumbnailImageWidth}
+              imageHeight={props.work.previousWork.smallThumbnailImageHeight}
+              thumbnailImagePosition={
+                props.work.previousWork.thumbnailImagePosition ?? 0
+              }
+              size={"sm"}
+            />
+          </div>
         )}
       </div>
       {passData?.type !== "LITE" &&

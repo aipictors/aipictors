@@ -215,29 +215,6 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user !== null &&
           context.user?.hasSignedImageGenerationTerms !== true && (
             <>
-              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
-                <Switch
-                  onClick={() => {
-                    context.changeUpscaleSize(
-                      context.config.upscaleSize === 2 ? 1 : 2,
-                    )
-                  }}
-                  checked={context.config.upscaleSize === 2}
-                  id="extras-mode"
-                />
-                <div className="text-center leading-3">
-                  <Label htmlFor="extras-mode" className="block text-center">
-                    高解像度
-                  </Label>
-                  <Label
-                    htmlFor="extras-mode"
-                    className="block text-center text-xs"
-                  >
-                    2枚消費
-                  </Label>
-                </div>
-              </div>
-
               <GenerationTermsButton
                 termsMarkdownText={props.termsText}
                 isLoading={props.isCreatingTask}
@@ -259,28 +236,6 @@ export function GenerationSubmitOperationParts(props: Props) {
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <>
-              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
-                <Switch
-                  onClick={() => {
-                    context.changeUpscaleSize(
-                      context.config.upscaleSize === 2 ? 1 : 2,
-                    )
-                  }}
-                  checked={context.config.upscaleSize === 2}
-                  id="extras-mode"
-                />
-                <div className="text-center leading-3">
-                  <Label htmlFor="extras-mode" className="block text-center">
-                    高解像度
-                  </Label>
-                  <Label
-                    htmlFor="extras-mode"
-                    className="block text-center text-xs"
-                  >
-                    2枚消費
-                  </Label>
-                </div>
-              </div>
               <GenerationSubmitButton
                 onClick={async () => {
                   await props.onCreateTask()
@@ -307,29 +262,6 @@ export function GenerationSubmitOperationParts(props: Props) {
               (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <>
-              <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
-                <Switch
-                  onClick={() => {
-                    context.changeUpscaleSize(
-                      context.config.upscaleSize === 2 ? 1 : 2,
-                    )
-                  }}
-                  checked={context.config.upscaleSize === 2}
-                  id="extras-mode"
-                />
-                <div className="text-center leading-3">
-                  <Label htmlFor="extras-mode" className="block text-center">
-                    高解像度
-                  </Label>
-                  <Label
-                    htmlFor="extras-mode"
-                    className="block text-center text-xs"
-                  >
-                    2枚消費
-                  </Label>
-                </div>
-              </div>
-
               <GenerationSubmitButton
                 onClick={async () => {
                   await props.onCreateTask()

@@ -42,7 +42,7 @@ export const PostFormItemGenerationParams = (props: Props) => {
 
   return (
     <Card>
-      <CardContent className="space-y-2 p-4">
+      <CardContent className="flex flex-col space-y-4">
         <ExpansionTransition
           triggerChildren={
             <Button variant={"secondary"} className="w-full">
@@ -52,7 +52,7 @@ export const PostFormItemGenerationParams = (props: Props) => {
           }
           onExpandChange={setIsExpanded}
         >
-          <div className="space-y-4">
+          <div className="flex flex-col space-y-4">
             <p className="text-xs">プロンプト</p>
             <Textarea
               onChange={(event) => handleChange("prompt", event.target.value)}
@@ -74,8 +74,8 @@ export const PostFormItemGenerationParams = (props: Props) => {
             />
             {/* Seed, Steps, Scale */}
             <p className="text-xs">詳細</p>
-            <div className="mb-1 space-y-1">
-              <div className="flex space-x-1">
+            <div className="flex flex-col space-y-4">
+              <div className="flex">
                 <Input
                   onChange={(event) => handleChange("seed", event.target.value)}
                   value={props.pngInfo?.params?.seed ?? ""}
@@ -143,7 +143,7 @@ export const PostFormItemGenerationParams = (props: Props) => {
                   className="w-full"
                 />
               </div>
-              <div className="flex space-x-1">
+              <div className="flex">
                 <Input
                   onChange={(event) =>
                     handleChange("model", event.target.value)

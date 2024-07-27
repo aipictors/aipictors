@@ -26,7 +26,7 @@ type Props = {
  */
 export function WorkRelatedList(props: Props) {
   return (
-    <div className="relative space-y-2">
+    <div className="relative space-y-4">
       <CarouselWithGradation
         items={props.works.map((work) => (
           <div key={work.id} className="relative">
