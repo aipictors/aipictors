@@ -5,6 +5,7 @@ import { LogoutDialogLegacy } from "@/_components/logout-dialog-legacy"
 import { Button } from "@/_components/ui/button"
 import { Input } from "@/_components/ui/input"
 import { ScrollArea } from "@/_components/ui/scroll-area"
+import { Separator } from "@/_components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/_components/ui/sheet"
 import { AuthContext } from "@/_contexts/auth-context"
 import { config } from "@/config"
@@ -13,8 +14,8 @@ import { HomeNotificationsMenu } from "@/routes/($lang)._main._index/_components
 import { HomeRouteList } from "@/routes/($lang)._main._index/_components/home-route-list"
 import { HomeUserNavigationMenu } from "@/routes/($lang)._main._index/_components/home-user-navigation-menu"
 import { Link, useNavigation } from "@remix-run/react"
-import { Loader2Icon, MenuIcon } from "lucide-react"
-import { Suspense, useContext } from "react"
+import { Loader2Icon, MenuIcon, Search } from "lucide-react"
+import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
@@ -26,6 +27,16 @@ const HomeHeader = (props: Props) => {
   const navigation = useNavigation()
 
   const authContext = useContext(AuthContext)
+
+  const [searchText, setSearchText] = useState("")
+
+  const onSearch = () => {
+    window.location.href = `https://www.aipictors.com/search/?word=${searchText}`
+  }
+
+  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value)
+  }
 
   const {
     value: isOpenLogoutDialog,
@@ -86,10 +97,20 @@ const HomeHeader = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="flex gap-x-2">
+        <div className="flex w-full justify-end gap-x-2">
           {config.isDevelopmentMode && (
-            <div className="hidden w-full flex-1 md:block">
-              <Input placeholder={"作品を検索"} />
+            <div className="hidden w-full space-x-2 md:flex">
+              <div className="w-full flex-1">
+                <Input
+                  onChange={onChangeSearchText}
+                  placeholder={"作品を検索"}
+                  onKeyPress={onSearch}
+                />
+              </div>
+              <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
+                <Search />
+              </Button>
+              <Separator orientation="vertical" />
             </div>
           )}
           {authContext.isLoggedIn && (
