@@ -459,7 +459,7 @@ export default function NewImage() {
   )
 
   return (
-    <div className="m-auto w-full max-w-[1200px] space-y-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
         message="試験的にリニューアル版を運用中です。"

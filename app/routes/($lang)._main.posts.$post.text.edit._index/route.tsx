@@ -273,10 +273,13 @@ export default function EditText() {
       : [],
     themeId: work?.dailyTheme?.id ?? null,
     title: work?.title ?? "",
-    useCommentFeature: work?.isCommentsEditable ?? true,
+    useCommentFeature:
+      work?.isCommentsEditable === undefined ? true : work?.isCommentsEditable,
     useGenerationParams: work?.promptAccessType === "PUBLIC",
-    usePromotionFeature: work?.isPromotion ?? false,
-    useTagFeature: work?.isTagEditable ?? true,
+    usePromotionFeature:
+      work?.isPromotion === undefined ? false : work?.isPromotion,
+    useTagFeature:
+      work?.isTagEditable === undefined ? true : work?.isTagEditable,
     md: work?.md ?? "",
     type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
   })
@@ -561,7 +564,7 @@ export default function EditText() {
   )
 
   return work?.user.id === authContext.userId ? (
-    <div className="m-auto w-full max-w-[1200px] space-y-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中のため不具合が起きる可能性があります。"

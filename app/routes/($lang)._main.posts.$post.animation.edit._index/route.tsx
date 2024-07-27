@@ -143,10 +143,15 @@ export default function EditImage() {
             : [],
           themeId: work?.dailyTheme?.id ?? null,
           title: work?.title ?? "",
-          useCommentFeature: work?.isCommentsEditable ?? true,
+          useCommentFeature:
+            work?.isCommentsEditable === undefined
+              ? true
+              : work?.isCommentsEditable,
           useGenerationParams: work?.promptAccessType === "PUBLIC",
-          usePromotionFeature: work?.isPromotion ?? false,
-          useTagFeature: work?.isTagEditable ?? true,
+          usePromotionFeature:
+            work?.isPromotion === undefined ? false : work?.isPromotion,
+          useTagFeature:
+            work?.isTagEditable === undefined ? true : work?.isTagEditable,
         },
       })
     }
@@ -456,7 +461,7 @@ export default function EditImage() {
   )
 
   return work?.user.id === authContext.userId ? (
-    <div className="m-auto w-full max-w-[1200px] space-y-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中のため不具合が起きる可能性があります。"

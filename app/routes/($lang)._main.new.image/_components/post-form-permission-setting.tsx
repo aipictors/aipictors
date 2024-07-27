@@ -1,6 +1,6 @@
 import { Checkbox } from "@/_components/ui/checkbox"
 import { Card, CardContent } from "@/_components/ui/card"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 type Props = {
   isTagEditableChecked?: boolean
@@ -14,12 +14,21 @@ type Props = {
  */
 export const PostFormPermissionSetting = (props: Props) => {
   const [isTagEditableChecked, setIsTagEditableChecked] = useState(
-    props.isTagEditableChecked ?? false,
+    props.isTagEditableChecked,
   )
 
   const [isCommentsEditableChecked, setIsCommentsEditableChecked] = useState(
-    props.isCommentsEditableChecked ?? false,
+    props.isCommentsEditableChecked,
   )
+
+  useEffect(() => {
+    setIsTagEditableChecked(props.isTagEditableChecked)
+    setIsCommentsEditableChecked(props.isCommentsEditableChecked)
+  }, [props.isTagEditableChecked, props.isCommentsEditableChecked])
+
+  console.log("isTagEditableChecked", isTagEditableChecked)
+
+  console.log("isCommentsEditableChecked", isCommentsEditableChecked)
 
   return (
     <Card>
@@ -29,7 +38,7 @@ export const PostFormPermissionSetting = (props: Props) => {
           <Checkbox
             onCheckedChange={(value: boolean) => {
               setIsTagEditableChecked(!isTagEditableChecked)
-              props.onTagEditableChange(isTagEditableChecked)
+              props.onTagEditableChange(!isCommentsEditableChecked)
             }}
             id="tag-editable"
             checked={!isTagEditableChecked}
@@ -42,7 +51,7 @@ export const PostFormPermissionSetting = (props: Props) => {
           <Checkbox
             onCheckedChange={(value: boolean) => {
               setIsCommentsEditableChecked(!isCommentsEditableChecked)
-              props.onCommentsEditableChange(isCommentsEditableChecked)
+              props.onCommentsEditableChange(!isCommentsEditableChecked)
             }}
             id="comments-editable"
             checked={!isCommentsEditableChecked}

@@ -301,7 +301,7 @@ export default function NewAnimation() {
   )
 
   return (
-    <div className="m-auto w-full max-w-[1200px] space-y-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中のため不具合が起きる可能性があります。"

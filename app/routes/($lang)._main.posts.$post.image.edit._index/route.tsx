@@ -128,7 +128,8 @@ export default function EditImage() {
         },
       })
 
-      console.log(work?.isCommentsEditable)
+      console.log("work?.isTagEditable", work?.isTagEditable)
+      console.log("work?.isCommentsEditable", work?.isCommentsEditable)
 
       dispatchInput({
         type: "INITIALIZE",
@@ -171,7 +172,7 @@ export default function EditImage() {
           useCommentFeature: work?.isCommentsEditable ?? true,
           useGenerationParams: work?.promptAccessType === "PUBLIC",
           usePromotionFeature: work?.isPromotion ?? false,
-          useTagFeature: work?.isTagEditable ?? true,
+          useTagFeature: work?.isTagEditable ?? false,
         },
       })
     }
@@ -238,6 +239,10 @@ export default function EditImage() {
     work?.createdAt ?? 0,
   )
 
+  console.log(
+    work?.isCommentsEditable === undefined ? true : work?.isCommentsEditable,
+  )
+
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
     accessType: work?.accessType ?? "PUBLIC",
     generationParamAccessType:
@@ -274,10 +279,13 @@ export default function EditImage() {
       : [],
     themeId: work?.dailyTheme?.id ?? null,
     title: work?.title ?? "",
-    useCommentFeature: work?.isCommentsEditable ?? true,
+    useCommentFeature:
+      work?.isCommentsEditable === undefined ? true : work?.isCommentsEditable,
     useGenerationParams: work?.promptAccessType === "PUBLIC",
-    usePromotionFeature: work?.isPromotion ?? false,
-    useTagFeature: work?.isTagEditable ?? true,
+    usePromotionFeature:
+      work?.isPromotion === undefined ? false : work?.isPromotion,
+    useTagFeature:
+      work?.isTagEditable === undefined ? true : work?.isTagEditable,
   })
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -447,8 +455,6 @@ export default function EditImage() {
         return
       }
 
-      console.log(inputState.useCommentFeature)
-
       const updatedWork = await updateWork({
         variables: {
           input: {
@@ -458,7 +464,6 @@ export default function EditImage() {
             explanation: formResult.output.caption,
             enExplanation: formResult.output.enCaption,
             rating: inputState.ratingRestriction,
-
             prompt: state.pngInfo?.params.prompt ?? null,
             negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
             seed: state.pngInfo?.params.seed ?? null,
@@ -562,7 +567,7 @@ export default function EditImage() {
   )
 
   return work?.user.id === authContext.userId ? (
-    <div className="m-auto w-full max-w-[1200px] space-y-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中のため不具合が起きる可能性があります。"

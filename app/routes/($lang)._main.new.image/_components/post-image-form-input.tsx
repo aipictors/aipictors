@@ -41,6 +41,8 @@ type Props = {
 }
 
 export function PostImageFormInput(props: Props) {
+  console.log("props.state.useTagFeature", props.state.useTagFeature)
+
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
