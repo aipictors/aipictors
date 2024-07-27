@@ -65,7 +65,7 @@ export const WorkUser = (props: Props) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex w-full flex-col space-y-4">
-        <div className="m-auto flex items-center">
+        <div className="m-auto flex items-center space-x-4">
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
             <p className="text-sm opacity-50">{"投稿"}</p>

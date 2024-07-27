@@ -38,8 +38,8 @@ export const HomeNotificationsMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"secondary"} size={"icon"} aria-label={"通知"}>
-          <BellIcon className="w-4" />
+        <Button size={"icon"} variant={"secondary"} aria-label={"通知"}>
+          <BellIcon className="w-16" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
