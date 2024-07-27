@@ -29,19 +29,14 @@ export const WorkTagInput = (props: Props) => {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-2">
+    <div className="flex flex-col items-center space-y-4">
       <TagInput
         placeholder="追加するタグを入力"
         tags={props.tags}
         className="sm:min-w-[450px]"
         setTags={props.setTags}
       />
-      <Button
-        className="w-full"
-        onClick={handleSave}
-        size={"icon"}
-        variant={"secondary"}
-      >
+      <Button className="w-full" onClick={handleSave} size={"icon"}>
         {isUpdatingWorkTags ? (
           <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
         ) : (

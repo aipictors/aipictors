@@ -24,13 +24,14 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
 
   return (
     <>
-      <div className="flex flex-row flex-wrap items-center">
+      <div className="flex flex-row flex-wrap items-center space-x-4">
         {tagNames.map((tagName) => (
           <Link
             to={`https://www.aipictors.com/search/?tag=${tagName}`}
             key={tagName}
+            className="p-0"
           >
-            <Button variant={"link"}>{`#${tagName}`}</Button>
+            <Button className="p-0" variant={"link"}>{`#${tagName}`}</Button>
           </Link>
         ))}
         {isEditable && (

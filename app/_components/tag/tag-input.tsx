@@ -232,7 +232,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 
     return (
       <div
-        className={`flex w-full gap-3 ${
+        className={`flex w-full gap-4 ${
           inputFieldPosition === "bottom"
             ? "flex-col"
             : inputFieldPosition === "top"

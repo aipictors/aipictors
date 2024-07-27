@@ -20,7 +20,7 @@ import {
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
-import { Suspense } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { Toaster } from "@/_components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
 import styles from "@/tailwind.css?url"
@@ -68,6 +68,11 @@ type Props = Readonly<{
  */
 export function Layout(props: Props) {
   const location = useLocation()
+  const [key, setKey] = useState(location.pathname)
+
+  useEffect(() => {
+    setKey(location.pathname)
+  }, [location.pathname])
 
   if (
     typeof document !== "undefined" &&
@@ -123,7 +128,7 @@ export function Layout(props: Props) {
           <ContextProviders>
             <PhotoProvider maskOpacity={0.7}>
               <Suspense fallback={<AppLoadingPage />}>
-                {props.children}
+                <div key={key}>{props.children}</div>
               </Suspense>
             </PhotoProvider>
           </ContextProviders>
