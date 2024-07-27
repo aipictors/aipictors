@@ -125,7 +125,7 @@ export default function SensitivePage() {
         fallbackURL="https://www.aipictors.com/"
         deadline={"2024-07-30"}
       />
-      <div className="space-y-8">
+      <div className="space-y-4">
         <HomeTagList
           themeTitle={data.dailyTheme?.title}
           hotTags={data.hotTags}

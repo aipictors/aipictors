@@ -41,7 +41,7 @@ export const WorkArticle = (props: Props) => {
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
   return (
-    <article className="flex flex-col space-y-2">
+    <article className="flex flex-col space-y-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中です。不具合が起きる可能性があります。"

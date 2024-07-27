@@ -240,10 +240,10 @@ export const WorkCommentList = (props: Props) => {
             </Button>
           )}
         </div>
-        <div className="space-y-8">
+        <div className="space-y-4">
           {/* 新しくコメント追加したコメント一覧 */}
           {showNewComments && (
-            <div className="space-y-8">
+            <div className="space-y-4">
               {showNewComments.map((comment) => (
                 <div key={comment.id}>
                   <WorkComment
@@ -289,7 +289,7 @@ export const WorkCommentList = (props: Props) => {
           )}
           {/* 既にコメント済みのコメント一覧 */}
           {showCommentsBeforeMore.map((comment) => (
-            <div key={comment.id} className="space-y-8">
+            <div key={comment.id} className="space-y-4">
               {/* 作品へのコメント内容 */}
               <WorkComment
                 userId={comment.user?.id ?? ""}
@@ -417,9 +417,10 @@ export const WorkCommentList = (props: Props) => {
                 </Button>
               }
               oneTimeExpand={true}
+              className="space-y-4 flex flex-col"
             >
               {showCommentsAfterMore.map((comment) => (
-                <div key={comment.id} className="space-y-8">
+                <div key={comment.id} className="space-y-4">
                   {/* 作品へのコメント内容 */}
                   <WorkComment
                     userId={comment.user?.id ?? ""}

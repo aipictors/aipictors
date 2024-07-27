@@ -268,7 +268,7 @@ export const ImagesPreview = (props: Props) => {
   }
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-4">
       <div className="relative">
         <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900 ">
           {props.imageURLs.length > 1 && (

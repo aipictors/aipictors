@@ -59,57 +59,55 @@ export const WorkNextAndPrevious = (props: Props) => {
   }, [props.work])
 
   return (
-    <div className="invisible flex flex-col space-y-8 lg:visible">
-      <div>
-        <div className="flex py-2 text-md">
-          <h2>{"前後の作品"}</h2>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircleIcon className="ml-1 w-4" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{"[Q][E]キーで移動することもできます"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+    <div className="invisible flex flex-col space-y-4 lg:visible">
+      <div className="flex text-md">
+        <h2>{"前後の作品"}</h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircleIcon className="ml-1 w-4" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{"[Q][E]キーで移動することもできます"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div className="flex justify-center space-x-2">
+        {props.work.nextWork && (
+          <CroppedWorkSquare
+            workId={props.work.nextWork.id}
+            imageUrl={props.work.nextWork.smallThumbnailImageURL}
+            imageWidth={props.work.nextWork.smallThumbnailImageWidth}
+            imageHeight={props.work.nextWork.smallThumbnailImageHeight}
+            thumbnailImagePosition={
+              props.work.nextWork.thumbnailImagePosition ?? 0
+            }
+            size={"sm"}
+          />
+        )}
+        <div className="opacity-50">
+          <CroppedWorkSquare
+            workId={props.work.id}
+            imageUrl={props.work.smallThumbnailImageURL}
+            imageWidth={props.work.smallThumbnailImageWidth}
+            imageHeight={props.work.smallThumbnailImageHeight}
+            thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
+            size={"sm"}
+          />
         </div>
-        <div className="flex justify-center space-x-2">
-          {props.work.nextWork && (
-            <CroppedWorkSquare
-              workId={props.work.nextWork.id}
-              imageUrl={props.work.nextWork.smallThumbnailImageURL}
-              imageWidth={props.work.nextWork.smallThumbnailImageWidth}
-              imageHeight={props.work.nextWork.smallThumbnailImageHeight}
-              thumbnailImagePosition={
-                props.work.nextWork.thumbnailImagePosition ?? 0
-              }
-              size={"sm"}
-            />
-          )}
-          <div className="opacity-50">
-            <CroppedWorkSquare
-              workId={props.work.id}
-              imageUrl={props.work.smallThumbnailImageURL}
-              imageWidth={props.work.smallThumbnailImageWidth}
-              imageHeight={props.work.smallThumbnailImageHeight}
-              thumbnailImagePosition={props.work.thumbnailImagePosition ?? 0}
-              size={"sm"}
-            />
-          </div>
-          {props.work.previousWork && (
-            <CroppedWorkSquare
-              workId={props.work.previousWork.id}
-              imageUrl={props.work.previousWork.smallThumbnailImageURL}
-              imageWidth={props.work.previousWork.smallThumbnailImageWidth}
-              imageHeight={props.work.previousWork.smallThumbnailImageHeight}
-              thumbnailImagePosition={
-                props.work.previousWork.thumbnailImagePosition ?? 0
-              }
-              size={"sm"}
-            />
-          )}
-        </div>
+        {props.work.previousWork && (
+          <CroppedWorkSquare
+            workId={props.work.previousWork.id}
+            imageUrl={props.work.previousWork.smallThumbnailImageURL}
+            imageWidth={props.work.previousWork.smallThumbnailImageWidth}
+            imageHeight={props.work.previousWork.smallThumbnailImageHeight}
+            thumbnailImagePosition={
+              props.work.previousWork.thumbnailImagePosition ?? 0
+            }
+            size={"sm"}
+          />
+        )}
       </div>
       {passData?.type !== "LITE" &&
         passData?.type !== "STANDARD" &&

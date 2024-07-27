@@ -99,7 +99,7 @@ export const WorkContainer = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="mt-2 hidden w-full items-start pl-4 md:mt-0 lg:block lg:max-w-80">
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 lg:flex lg:max-w-80">
           <div className="mt-2 md:mt-0">
             <Suspense>
               <WorkUser

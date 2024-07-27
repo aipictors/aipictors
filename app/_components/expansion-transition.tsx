@@ -6,6 +6,7 @@ type Props = {
   children: React.ReactNode
   oneTimeExpand?: boolean // 一度切りの展開フラグ
   onExpandChange?: (isOpen: boolean) => void
+  className?: string
 }
 
 export const ExpansionTransition = (props: Props) => {
@@ -43,17 +44,20 @@ export const ExpansionTransition = (props: Props) => {
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div onClick={onToggleFilterButton}>{props.triggerChildren}</div>
       )}
-      <div
-        ref={contentRef}
-        style={{
-          maxHeight: maxHeight,
-          opacity: opacity,
-          overflow: "hidden",
-          transition: "max-height 0.5s ease, opacity 0.5s ease",
-        }}
-      >
-        {props.children}
-      </div>
+      {isFilterOpen && (
+        <div
+          ref={contentRef}
+          style={{
+            maxHeight: maxHeight,
+            opacity: opacity,
+            overflow: "hidden",
+            transition: "max-height 0.5s ease, opacity 0.5s ease",
+          }}
+          className={props.className}
+        >
+          {props.children}
+        </div>
+      )}
     </>
   )
 }

@@ -10,7 +10,7 @@ export const AppAboutHeader = () => {
       <div className="relative flex justify-center py-16">
         <img src="/icon.svg" alt="icon" className="w-64" />
       </div>
-      <div className="space-y-8">
+      <div className="space-y-4">
         <div className="flex justify-center">
           <div className="w-full max-w-md space-y-4">
             <p className="text-center font-bold text-3xl">
