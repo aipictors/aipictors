@@ -80,7 +80,7 @@ export const HomeAwardWorkSection = (props: Props) => {
       <CarouselWithGradation
         items={works.map((work, index) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <div key={index}>
+          <div key={index} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
                 workId={work.workId}

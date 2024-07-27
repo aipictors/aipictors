@@ -38,7 +38,7 @@ export const HomeCroppedWorkList = (props: Props) => {
     <section className="relative space-y-4">
       <CarouselWithGradation
         items={works.map((work, index) => (
-          <div key={work.id}>
+          <div key={work.id} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
                 workId={work.id}

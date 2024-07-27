@@ -19,7 +19,7 @@ export const RankingWorkList = (props: Props) => {
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             key={index}
-            className="relative"
+            className="relative flex flex-col space-y-2"
           >
             <div className="relative">
               <CroppedWorkSquare
