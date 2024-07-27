@@ -232,11 +232,11 @@ export const WorkCommentList = (props: Props) => {
             placeholder="コメントする"
           />
           <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
-            <StampIcon />
+            <StampIcon className="w-16" />
           </Button>
           {isCreatingWorkComment ? (
             <Button onClick={() => {}}>
-              <Loader2Icon className={"animate-spin"} />
+              <Loader2Icon className={"w-16 animate-spin"} />
             </Button>
           ) : (
             <Button variant={"secondary"} onClick={onWorkComment}>

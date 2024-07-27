@@ -103,12 +103,12 @@ export const ReplyCommentInput = (props: Props) => {
         />
         <div>
           <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
-            <StampIcon />
+            <StampIcon className="w-16" />
           </Button>
         </div>
         {isCreatingReplyComment ? (
           <Button onClick={() => {}}>
-            <Loader2Icon className={"animate-spin"} />
+            <Loader2Icon className={"w-16 animate-spin"} />
           </Button>
         ) : (
           <Button variant={"secondary"} onClick={onComment}>
