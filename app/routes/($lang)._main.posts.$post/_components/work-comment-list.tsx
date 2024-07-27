@@ -231,11 +231,9 @@ export const WorkCommentList = (props: Props) => {
             value={comment}
             placeholder="コメントする"
           />
-          <div>
-            <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
-              <StampIcon />
-            </Button>
-          </div>
+          <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
+            <StampIcon />
+          </Button>
           {isCreatingWorkComment ? (
             <Button onClick={() => {}}>
               <Loader2Icon className={"animate-spin"} />

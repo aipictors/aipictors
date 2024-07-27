@@ -74,7 +74,7 @@ const HomeHeaderNotLoggedInMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={"ghost"} size={"icon"}>
-          <EllipsisVerticalIcon />
+          <EllipsisVerticalIcon className="w-16" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
