@@ -54,7 +54,7 @@ export const HomeNotificationsContents = (props: Props) => {
   return (
     <>
       <ScrollArea className="h-96 overflow-y-auto">
-        <div className="max-w-96 space-y-2 overflow-hidden p-2">
+        <div className="max-w-96 overflow-hidden p-2">
           {props.type === "LIKED_WORK" &&
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             (notificationList as any[])?.map((notification) => {

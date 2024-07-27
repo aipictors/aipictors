@@ -417,7 +417,7 @@ export const WorkCommentList = (props: Props) => {
                 </Button>
               }
               oneTimeExpand={true}
-              className="space-y-4 flex flex-col"
+              className="flex flex-col space-y-4"
             >
               {showCommentsAfterMore.map((comment) => (
                 <div key={comment.id} className="space-y-4">

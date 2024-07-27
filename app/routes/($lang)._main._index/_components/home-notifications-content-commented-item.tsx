@@ -42,77 +42,75 @@ export const HomeNotificationsContentCommentedItem = (props: Props) => {
     : stickerSizeClasses.md
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-col space-y-1 border-b p-1">
-        <Link
-          to={`/posts/${props.workId}`}
-          className="flex items-center rounded-md p-1 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
-        >
-          <>
-            <img
-              src={IconUrl(props.iconUrl)}
-              alt="thumbnail"
-              className="h-8 w-8 rounded-full object-cover"
-            />
-            <div className="ml-2 w-full overflow-hidden">
-              <p className="text-ellipsis">
-                {props.userName}さんがコメントしました
-                {props.comment && (
-                  <>
-                    {"「"}
-                    {props.comment}
-                    {"」"}
-                  </>
-                )}
-              </p>
-              {props.stickerUrl && (
-                <img
-                  src={props.stickerUrl}
-                  alt="sticker"
-                  className={`${stickerClass} object-cover`}
-                />
-              )}
-              <div className="flex items-center space-x-2">
-                <p className="text-sm opacity-80">{props.createdAt}</p>
-                {props.isReplied && <Badge variant="secondary">返信済み</Badge>}
-              </div>
-            </div>
-            <div className="h-12 w-12 overflow-hidden rounded-md">
-              <img
-                src={props.thumbnailUrl}
-                alt="thumbnail"
-                className="h-16 w-16 object-cover"
-              />
-            </div>
-          </>
-        </Link>
-        {props.repliedItem && (
-          <div className="ml-12 flex items-center space-x-2">
-            <img
-              src={IconUrl(props.repliedItem.user.iconUrl)}
-              alt="thumbnail"
-              className="h-8 w-8 rounded-full object-cover"
-            />
+    <div className="flex flex-col border-b">
+      <Link
+        to={`/posts/${props.workId}`}
+        className="flex items-center rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+      >
+        <>
+          <img
+            src={IconUrl(props.iconUrl)}
+            alt="thumbnail"
+            className="h-8 w-8 rounded-full object-cover"
+          />
+          <div className="ml-2 w-full overflow-hidden">
             <p className="text-ellipsis">
-              {props.repliedItem.user.name}返信しました
-              {props.repliedItem.comment && (
+              {props.userName}さんがコメントしました
+              {props.comment && (
                 <>
                   {"「"}
-                  {props.repliedItem.comment}
+                  {props.comment}
                   {"」"}
                 </>
               )}
             </p>
-            {props.repliedItem.stickerUrl && (
+            {props.stickerUrl && (
               <img
-                src={props.repliedItem.stickerUrl}
+                src={props.stickerUrl}
                 alt="sticker"
                 className={`${stickerClass} object-cover`}
               />
             )}
+            <div className="flex items-center space-x-2">
+              <p className="text-sm opacity-80">{props.createdAt}</p>
+              {props.isReplied && <Badge variant="secondary">返信済み</Badge>}
+            </div>
           </div>
-        )}
-      </div>
+          <div className="h-12 w-12 overflow-hidden rounded-md">
+            <img
+              src={props.thumbnailUrl}
+              alt="thumbnail"
+              className="h-16 w-16 object-cover"
+            />
+          </div>
+        </>
+      </Link>
+      {props.repliedItem && (
+        <div className="ml-12 flex items-center space-x-2">
+          <img
+            src={IconUrl(props.repliedItem.user.iconUrl)}
+            alt="thumbnail"
+            className="h-8 w-8 rounded-full object-cover"
+          />
+          <p className="text-ellipsis">
+            {props.repliedItem.user.name}返信しました
+            {props.repliedItem.comment && (
+              <>
+                {"「"}
+                {props.repliedItem.comment}
+                {"」"}
+              </>
+            )}
+          </p>
+          {props.repliedItem.stickerUrl && (
+            <img
+              src={props.repliedItem.stickerUrl}
+              alt="sticker"
+              className={`${stickerClass} object-cover`}
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }
