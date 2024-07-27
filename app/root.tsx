@@ -128,7 +128,7 @@ export function Layout(props: Props) {
           <ContextProviders>
             <PhotoProvider maskOpacity={0.7}>
               <Suspense fallback={<AppLoadingPage />}>
-                <div key={key}>{props.children}</div>
+                {props.children}
               </Suspense>
             </PhotoProvider>
           </ContextProviders>

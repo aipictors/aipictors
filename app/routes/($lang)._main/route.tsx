@@ -1,12 +1,24 @@
 import { AppCommonLayout } from "@/_components/app/app-common-layout"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
+import { AuthContext } from "@/_contexts/auth-context"
 import { Outlet } from "@remix-run/react"
+import { useContext } from "react"
 
-export const meta: MetaFunction = () => {
-  return [{ name: "robots", content: "noindex" }]
+export function HydrateFallback() {
+  return <AppLoadingPage />
 }
 
 export default function MainLayout() {
+  const authContext = useContext(AuthContext)
+
+  if (authContext.isLoading) {
+    return null
+  }
+
+  if (authContext.isNotLoggedIn) {
+    return null
+  }
+
   return (
     <>
       <AppCommonLayout outlet={<Outlet />} />

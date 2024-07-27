@@ -134,7 +134,7 @@ export default function EditText() {
           aiModelId: work?.workModelId?.toString() ?? "1",
           albumId: work?.album?.id ?? null,
           caption: work?.description ?? "",
-          date: new Date(work?.createdAt ?? new Date()),
+          date: new Date(work?.createdAt * 1000),
           enCaption: work?.enDescription ?? "",
           enTitle: work?.enTitle ?? "",
           imageInformation: {

@@ -1,7 +1,9 @@
 import { AppCommonLayout } from "@/_components/app/app-common-layout"
+import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { MyContents } from "@/routes/($lang).my/_components/my-contents"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
+import { Suspense } from "react"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors - ダッシュボード"
@@ -29,7 +31,9 @@ export const meta: MetaFunction = () => {
 export default function MyLayout() {
   return (
     <>
-      <AppCommonLayout outlet={<MyContents outlet={<Outlet />} />} />
+      <Suspense fallback={<AppLoadingPage />}>
+        <AppCommonLayout outlet={<MyContents outlet={<Outlet />} />} />
+      </Suspense>
     </>
   )
 }

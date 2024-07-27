@@ -137,7 +137,7 @@ export default function EditImage() {
           aiModelId: work?.workModelId?.toString() ?? "1",
           albumId: work?.album?.id ?? null,
           caption: work?.description ?? "",
-          date: new Date(work?.createdAt * 1000 ?? new Date()),
+          date: new Date(work?.createdAt * 1000),
           enCaption: work?.enDescription ?? "",
           enTitle: work?.enTitle ?? "",
           imageInformation: {
