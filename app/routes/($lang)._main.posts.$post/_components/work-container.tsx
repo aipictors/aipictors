@@ -75,7 +75,7 @@ export const WorkContainer = (props: Props) => {
     >
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
-          <div className="mx-auto w-full space-y-2">
+          <div className="mx-auto w-full space-y-4">
             <Suspense fallback={<AppLoadingPage />}>
               <WorkArticle work={work} />
             </Suspense>
@@ -83,7 +83,7 @@ export const WorkContainer = (props: Props) => {
             <Suspense fallback={<AppLoadingPage />}>
               <WorkCommentList workId={work.id} comments={props.comments} />
             </Suspense>
-            <div className="mt-2 block md:mt-0 lg:hidden">
+            <div className="block md:mt-0 lg:hidden">
               <Suspense>
                 <WorkUser
                   userId={work.user.id}
@@ -100,7 +100,7 @@ export const WorkContainer = (props: Props) => {
           </div>
         </div>
         <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 lg:flex lg:max-w-80">
-          <div className="mt-2 md:mt-0">
+          <div className="w-full">
             <Suspense>
               <WorkUser
                 userId={work.user.id}

@@ -210,7 +210,7 @@ export const WorkCommentList = (props: Props) => {
   return (
     <>
       {/* コメント一覧 */}
-      <div className="space-y-4 pt-2">
+      <div className="space-y-4">
         <p>{`コメント (${showComments.length + (showNewComments?.length ?? 0)})`}</p>
         {/* コメント入力欄 */}
         <div className="flex w-full items-center space-x-2">

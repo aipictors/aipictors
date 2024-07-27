@@ -73,7 +73,7 @@ export const WorkNextAndPrevious = (props: Props) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="flex justify-center space-x-2">
+      <div className="flex justify-center space-x-4">
         {props.work.nextWork && (
           <CroppedWorkSquare
             workId={props.work.nextWork.id}
