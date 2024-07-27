@@ -69,7 +69,7 @@ export function PostTextFormUploader(props: Props) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       <div className="rounded-md">
         <div
           className={cn(

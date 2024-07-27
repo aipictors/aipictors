@@ -35,55 +35,52 @@ export const UserContents = (props: Props) => {
   const [stickersPage, setStickersPage] = useState(0)
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col">
       <UserTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         userId={props.user.id}
       />
-      <div className="min-h-96">
+      <div className="flex min-h-96 flex-col gap-y-4">
         <Suspense fallback={<AppLoadingPage />}>
           {activeTab === "ポートフォリオ" && (
             <>
-              <div className="p-1">
-                <Card className="p-2">
-                  <p className="font-bold">プロフィール</p>
-                  <p className="text-sm">{props.user.biography}</p>
-                  <div className="flex items-center space-x-2.5 p-2">
-                    {props.user.twitterAccountId && (
-                      <SnsIconLink
-                        url={`https://twitter.com/${props.user.twitterAccountId}`}
-                      />
-                    )}
-                    {props.user.instagramAccountId && (
-                      <SnsIconLink
-                        url={`https://www.instagram.com/${props.user.instagramAccountId}`}
-                      />
-                    )}
-                    {props.user.githubAccountId && (
-                      <SnsIconLink
-                        url={`https://www.github.com/${props.user.githubAccountId}`}
-                      />
-                    )}
-                    {props.user.mailAddress && (
-                      <SnsIconLink url={`mailto:${props.user.mailAddress}`} />
-                    )}
-                  </div>
-                </Card>
-
-                <UserPickupContents
-                  userPickupWorks={props.user.featuredWorks ?? []}
-                  userPickupSensitiveWorks={
-                    props.user.featuredSensitiveWorks ?? []
-                  }
+              <Card className="flex flex-col space-y-4 p-4">
+                <p className="font-bold">プロフィール</p>
+                <p className="text-sm">{props.user.biography}</p>
+                <div className="flex items-center gap-x-4">
+                  {props.user.twitterAccountId && (
+                    <SnsIconLink
+                      url={`https://twitter.com/${props.user.twitterAccountId}`}
+                    />
+                  )}
+                  {props.user.instagramAccountId && (
+                    <SnsIconLink
+                      url={`https://www.instagram.com/${props.user.instagramAccountId}`}
+                    />
+                  )}
+                  {props.user.githubAccountId && (
+                    <SnsIconLink
+                      url={`https://www.github.com/${props.user.githubAccountId}`}
+                    />
+                  )}
+                  {props.user.mailAddress && (
+                    <SnsIconLink url={`mailto:${props.user.mailAddress}`} />
+                  )}
+                </div>
+              </Card>
+              <UserPickupContents
+                userPickupWorks={props.user.featuredWorks ?? []}
+                userPickupSensitiveWorks={
+                  props.user.featuredSensitiveWorks ?? []
+                }
+              />
+              <Suspense fallback={<AppLoadingPage />}>
+                <UserContentsContainer
+                  userId={props.user.id}
+                  userLogin={props.user.login}
                 />
-                <Suspense fallback={<AppLoadingPage />}>
-                  <UserContentsContainer
-                    userId={props.user.id}
-                    userLogin={props.user.login}
-                  />
-                </Suspense>
-              </div>
+              </Suspense>
             </>
           )}
           {activeTab === "画像" && (

@@ -456,7 +456,7 @@ export default function EditImage() {
   )
 
   return work?.user.id === authContext.userId ? (
-    <div className="m-auto w-full max-w-[1200px] space-y-2">
+    <div className="m-auto w-full max-w-[1200px] space-y-4">
       <ConstructionAlert
         type="WARNING"
         message="このページは現在開発中のため不具合が起きる可能性があります。"

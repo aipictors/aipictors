@@ -30,9 +30,10 @@ export const HomeNotificationCommentsTabs = () => {
       <ScrollArea className="relative h-96 overflow-y-auto">
         <Tabs className="sticky top-0 z-10 bg-card" defaultValue={defaultTab}>
           <div className="border-b">
-            <TabsList className="mx-0 mb-1 md:mx-4">
+            <TabsList className="mx-0 w-full">
               {tabValues.map((tabValue) => (
                 <TabsTrigger
+                  className="w-full"
                   key={tabValue}
                   value={tabValue}
                   onClick={() => handleTabClick(tabValue)}

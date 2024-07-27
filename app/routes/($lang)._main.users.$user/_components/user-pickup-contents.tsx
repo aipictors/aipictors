@@ -9,7 +9,7 @@ type Props = {
 
 export const UserPickupContents = (props: Props) => {
   return (
-    <div className="mt-4 block items-center space-x-0 md:flex md:space-x-4">
+    <div className="flex flex-col items-center space-x-4 space-y-4 md:flex-row md:space-y-0">
       {props.userPickupWorks && props.userPickupWorks.length > 0 && (
         <HomeWorkSection
           title="ピックアップ"

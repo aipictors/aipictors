@@ -33,7 +33,7 @@ export const HomeNotificationCommentsContents = (props: Props) => {
   const notificationList = notifications?.viewer?.notifications
 
   return (
-    <div className="max-w-96 space-y-2 overflow-hidden p-2">
+    <div className="max-w-96 overflow-hidden p-2">
       {props.type === "WORK_COMMENT" &&
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         (notificationList as any[])?.map((notification) => {

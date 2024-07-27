@@ -43,13 +43,13 @@ export const HomeNotificationsMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <div className="w-96">
-          <div className="p-2 text-center font-bold opacity-80">{"通知"}</div>
+        <div className="flex w-96 flex-col">
           <Tabs defaultValue={defaultTab}>
             <div className="border-b">
-              <TabsList className="mx-0 mb-1 md:mx-4">
+              <TabsList className="flex justify-center">
                 {tabValues.map((tabValue) => (
                   <TabsTrigger
+                    className="w-full"
                     key={tabValue}
                     value={tabValue}
                     onClick={() => handleTabClick(tabValue)}
@@ -60,7 +60,7 @@ export const HomeNotificationsMenu = () => {
               </TabsList>
             </div>
           </Tabs>
-          <div className="relative h-96">
+          <div className="relative m-0 h-96">
             <Suspense
               fallback={
                 <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">
