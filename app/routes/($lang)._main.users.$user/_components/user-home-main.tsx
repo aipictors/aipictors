@@ -27,7 +27,7 @@ export const UserHomeMain = (props: Props) => {
   return (
     <div className="relative m-auto h-64 w-full md:h-24">
       <div className="absolute top-8 right-0 hidden md:block">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-4">
           <FollowButton
             targetUserId={props.user.id}
             isFollow={isFollow}

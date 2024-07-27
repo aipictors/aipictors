@@ -2,6 +2,7 @@ import { FollowButton } from "@/_components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -62,12 +63,14 @@ export const WorkUser = (props: Props) => {
             </p>
           </Link>
         </CardTitle>
-        <div className="m-auto flex items-center space-x-1">
-          <div className="flex items-center space-x-1">
+      </CardHeader>
+      <CardContent className="flex w-full flex-col space-y-4">
+        <div className="m-auto flex items-center">
+          <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
             <p className="text-sm opacity-50">{"投稿"}</p>
           </div>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
             <p className="text-sm opacity-50">{"フォロワー"}</p>
           </div>
@@ -76,7 +79,7 @@ export const WorkUser = (props: Props) => {
         {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
         )}
-      </CardHeader>
+      </CardContent>
       <CardDescription className="px-6 pb-4">
         {props.userBiography && (
           <CardDescription>{props.userBiography}</CardDescription>

@@ -176,7 +176,7 @@ export const WorkArticle = (props: Props) => {
         />
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4">
             <Link
               className="flex items-center space-x-2"
               to={`/users/${props.work.user.login}`}
