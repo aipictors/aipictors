@@ -446,6 +446,8 @@ export default function EditImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  const [disabledSubmit, setDisabledSubmit] = React.useState(false)
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
@@ -479,8 +481,15 @@ export default function EditImage() {
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
           eventInputHidden={false}
+          setDisabledSubmit={setDisabledSubmit}
         />
-        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
+        <Button
+          disabled={disabledSubmit}
+          size={"lg"}
+          className="w-full"
+          type="submit"
+          onClick={onPost}
+        >
           {"更新"}
         </Button>
       </div>

@@ -128,8 +128,7 @@ export default function EditImage() {
         },
       })
 
-      console.log("work?.isTagEditable", work?.isTagEditable)
-      console.log("work?.isCommentsEditable", work?.isCommentsEditable)
+      console.log("work?.dailyTheme?.id", work?.dailyTheme?.id)
 
       dispatchInput({
         type: "INITIALIZE",
@@ -138,7 +137,7 @@ export default function EditImage() {
           aiModelId: work?.workModelId?.toString() ?? "1",
           albumId: work?.album?.id ?? null,
           caption: work?.description ?? "",
-          date: new Date(work?.createdAt ?? new Date()),
+          date: new Date(work?.createdAt * 1000 ?? new Date()),
           enCaption: work?.enDescription ?? "",
           enTitle: work?.enTitle ?? "",
           imageInformation: {
@@ -237,10 +236,6 @@ export default function EditImage() {
 
   const { reservationDate, reservationTime } = getReservationDetails(
     work?.createdAt ?? 0,
-  )
-
-  console.log(
-    work?.isCommentsEditable === undefined ? true : work?.isCommentsEditable,
   )
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
@@ -552,6 +547,8 @@ export default function EditImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  const [disabledSubmit, setDisabledSubmit] = React.useState(false)
+
   useBeforeUnload(
     React.useCallback(
       (event) => {
@@ -582,8 +579,15 @@ export default function EditImage() {
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
           eventInputHidden={false}
+          setDisabledSubmit={setDisabledSubmit}
         />
-        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
+        <Button
+          disabled={disabledSubmit}
+          size={"lg"}
+          className="w-full"
+          type="submit"
+          onClick={onPost}
+        >
           {"更新"}
         </Button>
       </div>
