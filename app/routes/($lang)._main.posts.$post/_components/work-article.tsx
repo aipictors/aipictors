@@ -93,7 +93,7 @@ export const WorkArticle = (props: Props) => {
           />
         </Suspense>
         <h1 className="font-bold text-lg">{props.work.title}</h1>
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
           {appContext.userId === props.work.user.id && (
             <ToggleContent
