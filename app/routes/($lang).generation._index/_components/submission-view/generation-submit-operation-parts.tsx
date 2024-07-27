@@ -289,7 +289,7 @@ export function GenerationSubmitOperationParts(props: Props) {
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
-                <div className="flex w-full items-center space-x-2">
+                <div className="flex w-full items-center space-x-4">
                   <div className="flex w-48 items-center md:w-40">
                     <Switch
                       onClick={() => {

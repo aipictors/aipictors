@@ -93,7 +93,7 @@ export const GenerationTaskListActions = (props: Props) => {
     <>
       {/* 操作一覧 */}
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
-        <div className="flex w-full items-center space-x-2">
+        <div className="flex w-full items-center space-x-4">
           <Toggle
             title="履歴を複数選択してダウンロード、一括削除などを行えます"
             onClick={props.onToggleEditMode}

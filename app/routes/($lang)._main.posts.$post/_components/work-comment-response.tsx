@@ -61,7 +61,7 @@ export const WorkCommentResponse = (props: Props) => {
         <Link to={`/users/${props.userId}`}>
           <Avatar>
             <AvatarImage
-              className="w-12 rounded-full"
+              className="h-10 w-10 rounded-full"
               src={props.userIconImageURL}
               alt=""
             />

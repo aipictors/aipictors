@@ -1,14 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/_components/ui/avatar"
 import { Button } from "@/_components/ui/button"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { Suspense, useState } from "react"
-import { useMutation } from "@apollo/client/index"
+import { Suspense, useContext, useState } from "react"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { StickerDialog } from "@/routes/($lang)._main.posts.$post/_components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
 import { AppLoadingPage } from "@/_components/app/app-loading-page"
 import { AutoResizeTextarea } from "@/_components/auto-resize-textarea"
 import { graphql } from "gql.tada"
+import { AuthContext } from "@/_contexts/auth-context"
+import { IconUrl } from "@/_components/icon-url"
 
 type Props = {
   targetCommentId: string
@@ -78,11 +80,19 @@ export const ReplyCommentInput = (props: Props) => {
     sendComment(inputComment, props.targetCommentId)
   }
 
+  const authContext = useContext(AuthContext)
+
+  const { data = null } = useQuery(viewerUserQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+
   return (
     <>
-      <div className="flex w-full items-center space-x-2 pl-16">
+      <div className="flex w-full items-center space-x-4 pl-16">
         <Avatar>
-          <AvatarImage src={props.iconUrl} alt="" />
+          <AvatarImage src={IconUrl(iconUrl)} alt="" />
           <AvatarFallback />
         </Avatar>
         <AutoResizeTextarea
@@ -92,7 +102,7 @@ export const ReplyCommentInput = (props: Props) => {
           placeholder="コメントする"
         />
         <div>
-          <Button size={"icon"} onClick={onOpen}>
+          <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
             <StampIcon />
           </Button>
         </div>
@@ -101,7 +111,9 @@ export const ReplyCommentInput = (props: Props) => {
             <Loader2Icon className={"animate-spin"} />
           </Button>
         ) : (
-          <Button onClick={onComment}>{"送信"}</Button>
+          <Button variant={"secondary"} onClick={onComment}>
+            {"送信"}
+          </Button>
         )}
       </div>
       <Suspense fallback={<AppLoadingPage />}>
@@ -130,6 +142,16 @@ const createResponseCommentMutation = graphql(
   `mutation CreateResponseComment($input: CreateResponseCommentInput!) {
     createResponseComment(input: $input) {
       id
+    }
+  }`,
+)
+
+const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        iconUrl
+      }
     }
   }`,
 )

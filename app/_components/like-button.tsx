@@ -55,25 +55,28 @@ export const LikeButton = ({
 
     try {
       if (!isLiked) {
-        setLikedCount((prevCount) => prevCount + 1)
         await createWorkLike({
           variables: {
             input: {
               workId: targetWorkId,
             },
           },
+        }).then(() => {
+          setIsLiked(!isLiked)
+          setLikedCount((prevCount) => prevCount + 1)
         })
       } else {
-        setLikedCount((prevCount) => prevCount - 1)
         await deleteWorkLike({
           variables: {
             input: {
               workId: targetWorkId,
             },
           },
+        }).then(() => {
+          setIsLiked(!isLiked)
+          setLikedCount((prevCount) => prevCount - 1)
         })
       }
-      setIsLiked(!isLiked)
     } catch (error) {
       console.error("Error updating like status", error)
     }

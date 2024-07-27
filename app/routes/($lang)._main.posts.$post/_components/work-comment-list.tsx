@@ -207,15 +207,21 @@ export const WorkCommentList = (props: Props) => {
   // もっと見る以降のコメント一覧、showCommentsから8件以降を表示
   const showCommentsAfterMore = showComments.slice(8)
 
+  const { data = null } = useQuery(viewerUserQuery, {
+    skip: authContext.isLoading,
+  })
+
+  const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+
   return (
     <>
       {/* コメント一覧 */}
       <div className="space-y-4">
         <p>{`コメント (${showComments.length + (showNewComments?.length ?? 0)})`}</p>
         {/* コメント入力欄 */}
-        <div className="flex w-full items-center space-x-2">
+        <div className="flex w-full items-center space-x-4">
           <Avatar>
-            <AvatarImage src={appContext.avatarPhotoURL ?? undefined} alt="" />
+            <AvatarImage src={IconUrl(iconUrl)} alt="" />
             <AvatarFallback />
           </Avatar>
           <AutoResizeTextarea
@@ -668,6 +674,16 @@ const createWorkCommentMutation = graphql(
   `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
       id
+    }
+  }`,
+)
+
+const viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      user {
+        iconUrl
+      }
     }
   }`,
 )
