@@ -20,7 +20,6 @@ import { useSuspenseQuery } from "@apollo/client/index"
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
   comments: FragmentOf<typeof commentFragment>[]
-  iconUrl: string
 }
 
 /**
