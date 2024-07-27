@@ -1,4 +1,4 @@
-import type { Dispatch } from "react"
+import { useEffect, type Dispatch } from "react"
 import {} from "@/_components/ui/accordion"
 import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
 import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
@@ -38,11 +38,10 @@ type Props = {
   albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
   currentPass: FragmentOf<typeof passFieldsFragment> | null
   eventInputHidden?: boolean
+  setDisabledSubmit?: (value: boolean) => void
 }
 
 export function PostImageFormInput(props: Props) {
-  console.log("props.state.useTagFeature", props.state.useTagFeature)
-
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
@@ -57,6 +56,12 @@ export function PostImageFormInput(props: Props) {
       day: props.state.date.getDate(),
     },
   })
+
+  useEffect(() => {
+    if (props.setDisabledSubmit) {
+      props.setDisabledSubmit(loading)
+    }
+  }, [loading])
 
   const hasImageInfo = props.imageInformation
 
@@ -248,6 +253,7 @@ export function PostImageFormInput(props: Props) {
             title={data?.dailyTheme?.title}
             isLoading={loading}
             onChange={onChangeTheme}
+            isChecked={props.state.themeId === data?.dailyTheme?.id}
           />
         )}
       {data && 0 < data?.appEvents.length && !props.eventInputHidden && (

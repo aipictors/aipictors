@@ -1,4 +1,4 @@
-import type { Dispatch } from "react"
+import { useEffect, type Dispatch } from "react"
 import {} from "@/_components/ui/accordion"
 import { PostFormItemModel } from "@/routes/($lang)._main.new.image/_components/post-form-item-model"
 import { PostFormItemRating } from "@/routes/($lang)._main.new.image/_components/post-form-item-rating"
@@ -33,6 +33,7 @@ type Props = {
   albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
   currentPass: FragmentOf<typeof passFieldsFragment> | null
   eventInputHidden?: boolean
+  setDisabledSubmit?: (value: boolean) => void
 }
 
 export function PostAnimationFormInput(props: Props) {
@@ -47,6 +48,12 @@ export function PostAnimationFormInput(props: Props) {
       day: props.state.date.getDate(),
     },
   })
+
+  useEffect(() => {
+    if (props.setDisabledSubmit) {
+      props.setDisabledSubmit(loading)
+    }
+  }, [loading])
 
   const onChangeTheme = (value: boolean) => {
     if (data === undefined) {

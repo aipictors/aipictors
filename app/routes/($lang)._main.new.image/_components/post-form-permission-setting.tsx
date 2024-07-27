@@ -26,10 +26,6 @@ export const PostFormPermissionSetting = (props: Props) => {
     setIsCommentsEditableChecked(props.isCommentsEditableChecked)
   }, [props.isTagEditableChecked, props.isCommentsEditableChecked])
 
-  console.log("isTagEditableChecked", isTagEditableChecked)
-
-  console.log("isCommentsEditableChecked", isCommentsEditableChecked)
-
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

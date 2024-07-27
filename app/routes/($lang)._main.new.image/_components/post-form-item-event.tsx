@@ -48,7 +48,6 @@ export const PostFormItemEvent = (props: Props) => {
             onCheckedChange={handleAttendanceChange}
             id="attend-checkbox"
           />
-          {/* TODO: 参加するボタンを何度も押したらタグが無限に複数追加されるので直す */}
           <label htmlFor="attend-checkbox" className="ml-2 font-medium text-sm">
             参加する
           </label>
