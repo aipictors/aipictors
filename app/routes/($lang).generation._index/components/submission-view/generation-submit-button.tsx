@@ -1,4 +1,4 @@
-import { GradientBlueButton } from "@/components/button/gradient-blue-button"
+import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {

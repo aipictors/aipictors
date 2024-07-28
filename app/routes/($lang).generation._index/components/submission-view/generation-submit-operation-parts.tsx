@@ -1,7 +1,7 @@
-import { GradientBlueButton } from "@/components/button/gradient-blue-button"
-import { GradientBorderButton } from "@/components/button/gradient-border-button"
-import { LoginDialogButton } from "@/components/login-dialog-button"
-import { Button } from "@/components/ui/button"
+import { GradientBlueButton } from "~/components/button/gradient-blue-button"
+import { GradientBorderButton } from "~/components/button/gradient-border-button"
+import { LoginDialogButton } from "~/components/login-dialog-button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,20 +9,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "~/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { AuthContext } from "@/contexts/auth-context"
-import { GenerationReserveCountInput } from "@/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
-import { GenerationSubmitButton } from "@/routes/($lang).generation._index/components/submission-view/generation-submit-button"
-import { GenerationTermsButton } from "@/routes/($lang).generation._index/components/submission-view/generation-terms-button"
-import { SubscriptionDialogContent } from "@/routes/($lang).generation._index/components/submission-view/subscription-dialog-content"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+} from "~/components/ui/dropdown-menu"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { AuthContext } from "~/contexts/auth-context"
+import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
+import { GenerationSubmitButton } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-button"
+import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
+import { SubscriptionDialogContent } from "~/routes/($lang).generation._index/components/submission-view/subscription-dialog-content"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
 

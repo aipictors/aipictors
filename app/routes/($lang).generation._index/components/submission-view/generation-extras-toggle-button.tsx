@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { CircleCheckIcon, CircleIcon } from "lucide-react"
 
 type Props = {

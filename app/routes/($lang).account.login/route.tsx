@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { AccountLoginForm } from "@/routes/($lang).account.login/components/account-login-form"
+import { AppPageCenter } from "~/components/app/app-page-center"
+import { AccountLoginForm } from "~/routes/($lang).account.login/components/account-login-form"
 
 export default function AccountLogin() {
   return (

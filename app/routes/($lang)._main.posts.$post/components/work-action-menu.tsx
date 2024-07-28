@@ -1,11 +1,11 @@
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Button } from "~/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { ReportDialog } from "@/routes/($lang)._main.posts.$post/components/report-dialog"
+} from "~/components/ui/popover"
+import { ReportDialog } from "~/routes/($lang)._main.posts.$post/components/report-dialog"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { DownloadIcon, Loader2Icon, MoreHorizontal } from "lucide-react"

@@ -1,5 +1,5 @@
-import { partialFeedWorkFieldsFragment } from "@/graphql/fragments/partial-feed-work-fields"
-import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
+import { partialFeedWorkFieldsFragment } from "~/graphql/fragments/partial-feed-work-fields"
+import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 
 export default function Route() {

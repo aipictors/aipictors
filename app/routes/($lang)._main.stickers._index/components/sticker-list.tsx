@@ -1,5 +1,5 @@
-import type { partialStickerFieldsFragment } from "@/graphql/fragments/partial-sticker-fields"
-import { StickerCard } from "@/routes/($lang)._main.stickers._index/components/sticker-card"
+import type { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
+import { StickerCard } from "~/routes/($lang)._main.stickers._index/components/sticker-card"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 

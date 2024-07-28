@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { SettingProfileForm } from "@/routes/($lang).settings.profile/components/setting-profile-form"
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { SettingProfileForm } from "~/routes/($lang).settings.profile/components/setting-profile-form"
 
 type Props = {
   triggerChildren: React.ReactNode

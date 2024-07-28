@@ -1,4 +1,4 @@
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu"
 import { Link } from "@remix-run/react"
 
 type Props = {

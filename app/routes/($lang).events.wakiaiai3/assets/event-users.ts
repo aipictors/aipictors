@@ -1,4 +1,4 @@
-import type { EventUser } from "@/routes/($lang).events/types/event-user"
+import type { EventUser } from "~/routes/($lang).events/types/event-user"
 
 export const eventUsers: EventUser[] = [
   {

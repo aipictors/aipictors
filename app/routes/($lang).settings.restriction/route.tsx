@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { SettingRestrictionForm } from "@/routes/($lang).settings.restriction/components/setting-restriction-form"
+import { AppPageCenter } from "~/components/app/app-page-center"
+import { SettingRestrictionForm } from "~/routes/($lang).settings.restriction/components/setting-restriction-form"
 
 export default function SettingRestriction() {
   return (

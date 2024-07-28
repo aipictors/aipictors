@@ -1,5 +1,5 @@
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent } from "@/components/ui/card"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Card, CardContent } from "~/components/ui/card"
 import { useEffect, useState } from "react"
 
 type Props = {

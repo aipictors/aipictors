@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -7,11 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { userSettingFieldsFragment } from "@/graphql/fragments/user-setting-fields"
-import { ImageModelsList } from "@/routes/($lang).generation._index/components/config-view/generation-image-model-list"
-import type { imageModelContextFragment } from "@/routes/($lang).generation._index/contexts/generation-query-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+} from "~/components/ui/dialog"
+import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
+import { ImageModelsList } from "~/routes/($lang).generation._index/components/config-view/generation-image-model-list"
+import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"

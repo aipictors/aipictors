@@ -1,11 +1,11 @@
-import { FollowButton } from "@/components/button/follow-button"
-import { Button } from "@/components/ui/button"
-import { PromptonRequestColorfulButton } from "@/routes/($lang)._main.posts.$post/components/prompton-request-colorful-button"
+import { FollowButton } from "~/components/button/follow-button"
+import { Button } from "~/components/ui/button"
+import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-colorful-button"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { ProfileEditDialog } from "@/components/profile-edit-dialog"
+import { ProfileEditDialog } from "~/components/profile-edit-dialog"
 
 type Props = {
   user: FragmentOf<typeof userHomeMainFragment>

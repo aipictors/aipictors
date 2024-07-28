@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "~/components/ui/card"
 import { DownloadIcon, StampIcon } from "lucide-react"
 
 type Props = {

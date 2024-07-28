@@ -1,6 +1,6 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { PlusAbout } from "@/routes/($lang)._main.plus._index/components/plus-about"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
 import { Link } from "@remix-run/react"
 import { Suspense } from "react"
 

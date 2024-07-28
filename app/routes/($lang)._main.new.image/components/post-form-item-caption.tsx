@@ -1,5 +1,5 @@
-import { AutoResizeTextarea } from "@/components/auto-resize-textarea"
-import { Card, CardContent } from "@/components/ui/card"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   label?: string

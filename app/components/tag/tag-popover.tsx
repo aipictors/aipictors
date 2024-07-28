@@ -3,9 +3,9 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { TagList, type TagListProps } from "@/components/tag/tag-list"
-import type { Tag as TagType } from "@/components/tag/tag-input"
+} from "~/components/ui/popover"
+import { TagList, type TagListProps } from "~/components/tag/tag-list"
+import type { Tag as TagType } from "~/components/tag/tag-input"
 
 type TagPopoverProps = {
   children: React.ReactNode

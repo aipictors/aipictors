@@ -1,7 +1,3 @@
-import {} from "@/components/ui/accordion"
-import {} from "@dnd-kit/core"
-import {} from "react"
-
 type Props = {
   imageBase64: string
 }

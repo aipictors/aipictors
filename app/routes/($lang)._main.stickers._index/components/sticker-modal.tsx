@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
+} from "~/components/ui/dialog"
 import { useNavigate } from "@remix-run/react"
 
 export const StickerModal = () => {

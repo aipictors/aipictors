@@ -1,7 +1,7 @@
-import { AppAside } from "@/components/app/app-aside"
-import { AppContents } from "@/components/app/app-contents"
-import HomeHeader from "@/routes/($lang)._main._index/components/home-header"
-import { HomeRouteList } from "@/routes/($lang)._main._index/components/home-route-list"
+import { AppAside } from "~/components/app/app-aside"
+import { AppContents } from "~/components/app/app-contents"
+import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
+import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import { useState } from "react"
 
 type Props = Readonly<{

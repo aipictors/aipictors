@@ -5,9 +5,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { AiModel } from "@/routes/($lang)._main.new.image/types/model"
-import { Card, CardContent } from "@/components/ui/card"
+} from "~/components/ui/select"
+import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   model: string | null

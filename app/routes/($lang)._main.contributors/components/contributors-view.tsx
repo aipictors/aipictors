@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { contributors } from "@/routes/($lang)._main.contributors/assets/contributors"
-import { ContributorCard } from "@/routes/($lang)._main.contributors/components/contributors-card"
-import type { Contributor } from "@/routes/($lang)._main.contributors/types/contributor"
+import { Button } from "~/components/ui/button"
+import { contributors } from "~/routes/($lang)._main.contributors/assets/contributors"
+import { ContributorCard } from "~/routes/($lang)._main.contributors/components/contributors-card"
+import type { Contributor } from "~/routes/($lang)._main.contributors/types/contributor"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 

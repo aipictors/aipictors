@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { GenerationConfigMemoUpdateContent } from "@/routes/($lang).generation._index/components/config-view/generation-config-memo-update-contents"
+} from "~/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { GenerationConfigMemoUpdateContent } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-update-contents"
 import { useState } from "react"
 
 type Props = {

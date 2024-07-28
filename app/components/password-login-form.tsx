@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import type { FormLogin } from "@/types/form-login"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import type { FormLogin } from "~/types/form-login"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 

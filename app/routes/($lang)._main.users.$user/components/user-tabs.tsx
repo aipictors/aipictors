@@ -1,5 +1,5 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AuthContext } from "@/contexts/auth-context"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"

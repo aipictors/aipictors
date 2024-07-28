@@ -1,5 +1,5 @@
-import { messageFieldsFragment } from "@/graphql/fragments/message-fields"
-import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
+import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
+import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 
 export const messageThreadFieldsFragment = graphql(

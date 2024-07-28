@@ -1,6 +1,6 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   BrushIcon,
   EraserIcon,
@@ -14,10 +14,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Slider } from "@/components/ui/slider"
-import { cn } from "@/lib/cn"
-import MosaicCanvas from "@/components/mosaic-canvas"
+} from "~/components/ui/dropdown-menu"
+import { Slider } from "~/components/ui/slider"
+import { cn } from "~/lib/cn"
+import MosaicCanvas from "~/components/mosaic-canvas"
 
 interface IProps {
   width?: number // キャンバスの横幅

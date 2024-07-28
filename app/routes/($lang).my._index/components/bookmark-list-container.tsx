@@ -1,10 +1,10 @@
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
-import { toDateTimeText } from "@/utils/to-date-time-text"
-import { BookmarkWorksList } from "@/routes/($lang).my._index/components/bookmark-works-list"
-import { ResponsivePagination } from "@/components/responsive-pagination"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { BookmarkWorksList } from "~/routes/($lang).my._index/components/bookmark-works-list"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import { useQuery } from "@apollo/client/index"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 type Props = {

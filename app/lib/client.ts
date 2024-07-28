@@ -1,5 +1,5 @@
-import { typePolicies } from "@/lib/type-policies"
-import { config } from "@/config"
+import { typePolicies } from "~/lib/type-policies"
+import { config } from "~/config"
 import {
   ApolloClient,
   InMemoryCache,

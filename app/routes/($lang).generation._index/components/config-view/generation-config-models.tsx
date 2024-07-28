@@ -1,8 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ConfigModelButton } from "@/routes/($lang).generation._index/components/config-view/config-model-button"
-import { GenerationModelListButton } from "@/routes/($lang).generation._index/components/config-view/generation-model-list-button"
-import type { imageModelContextFragment } from "@/routes/($lang).generation._index/contexts/generation-query-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
+import { GenerationModelListButton } from "~/routes/($lang).generation._index/components/config-view/generation-model-list-button"
+import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { FragmentOf } from "gql.tada"
 import { CheckIcon } from "lucide-react"
 

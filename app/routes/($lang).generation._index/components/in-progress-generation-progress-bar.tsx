@@ -1,4 +1,4 @@
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "~/components/ui/progress"
 
 type Props = {
   per: number

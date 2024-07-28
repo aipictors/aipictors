@@ -1,12 +1,12 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { AuthContext } from "@/contexts/auth-context"
-import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import { GenerationTaskSheetView } from "@/routes/($lang).generation._index/components/generation-task-sheet-view"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { AuthContext } from "~/contexts/auth-context"
+import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { GenerationTaskSheetView } from "~/routes/($lang).generation._index/components/generation-task-sheet-view"
 import { Suspense, useContext } from "react"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
 
 /**
  * 画像生成履歴の詳細

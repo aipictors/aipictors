@@ -1,20 +1,20 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
   WorkArticle,
   workArticleFragment,
-} from "@/routes/($lang)._main.posts.$post/components/work-article"
-import { WorkNextAndPrevious } from "@/routes/($lang)._main.posts.$post/components/work-next-and-previous"
-import { WorkRelatedList } from "@/routes/($lang)._main.posts.$post/components/work-related-list"
-import { WorkUser } from "@/routes/($lang)._main.posts.$post/components/work-user"
+} from "~/routes/($lang)._main.posts.$post/components/work-article"
+import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
+import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
+import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
 import { Suspense, useContext } from "react"
-import { WorkTagsWorks } from "@/routes/($lang)._main.posts.$post/components/work-tags-works"
+import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
 import { graphql, type FragmentOf } from "gql.tada"
-import { IconUrl } from "@/components/icon-url"
+import { IconUrl } from "~/components/icon-url"
 import {
   type commentFragment,
   WorkCommentList,
-} from "@/routes/($lang)._main.posts.$post/components/work-comment-list"
-import { AuthContext } from "@/contexts/auth-context"
+} from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 
 type Props = {

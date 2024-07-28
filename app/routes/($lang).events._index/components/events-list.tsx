@@ -1,7 +1,7 @@
 import {
   type appEventItemFragment,
   EventItem,
-} from "@/routes/($lang).events._index/components/events-item"
+} from "~/routes/($lang).events._index/components/events-item"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

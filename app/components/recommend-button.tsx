@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
+import { AuthContext } from "~/contexts/auth-context"
+import { Button } from "~/components/ui/button"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover"
+} from "~/components/ui/popover"
 import { Link } from "@remix-run/react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"

@@ -1,11 +1,11 @@
-import type { TaskContentPositionType } from "@/routes/($lang).generation._index/types/task-content-position-type"
-import { ErrorResultCard } from "@/routes/($lang).generation._index/components/error-result-card"
-import { GenerationTaskButton } from "@/routes/($lang).generation._index/components/generation-task-button"
-import { GenerationTaskDialogButton } from "@/routes/($lang).generation._index/components/generation-task-dialog-button"
-import { ReservedGenerationLinkCard } from "@/routes/($lang).generation._index/components/reserved-generation-link-card"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
+import { GenerationTaskButton } from "~/routes/($lang).generation._index/components/generation-task-button"
+import { GenerationTaskDialogButton } from "~/routes/($lang).generation._index/components/generation-task-dialog-button"
+import { ReservedGenerationLinkCard } from "~/routes/($lang).generation._index/components/reserved-generation-link-card"
 import { ErrorBoundary } from "react-error-boundary"
-import type { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
+import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

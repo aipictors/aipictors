@@ -1,8 +1,8 @@
 import { useMutation } from "@apollo/client/index"
 import { useContext, useState } from "react"
-import { AuthContext } from "@/contexts/auth-context"
-import { LoginDialogButton } from "@/components/login-dialog-button"
-import { cn } from "@/lib/cn"
+import { AuthContext } from "~/contexts/auth-context"
+import { LoginDialogButton } from "~/components/login-dialog-button"
+import { cn } from "~/lib/cn"
 import { graphql } from "gql.tada"
 
 type Props = {

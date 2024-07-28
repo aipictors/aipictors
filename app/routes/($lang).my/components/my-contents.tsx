@@ -1,5 +1,5 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AuthContext } from "@/contexts/auth-context"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { Link, useLocation } from "@remix-run/react"
 import React from "react"

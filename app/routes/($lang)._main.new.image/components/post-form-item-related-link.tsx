@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   link: string | null

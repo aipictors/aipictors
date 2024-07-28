@@ -1,4 +1,4 @@
-import { PasswordLoginForm } from "@/components/password-login-form"
+import { PasswordLoginForm } from "~/components/password-login-form"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

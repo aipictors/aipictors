@@ -1,4 +1,4 @@
-import { config } from "@/config"
+import { config } from "~/config"
 
 /**
  * 同じ作品をいいねしたユーザがいいねしたスコアの高い作品ID一覧を取得

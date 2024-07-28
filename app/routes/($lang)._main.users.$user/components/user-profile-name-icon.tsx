@@ -1,7 +1,7 @@
-import { OmissionNumber } from "@/components/omission-number"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { toOmissionNumberText } from "@/utils/to-omission-number-text"
-import { UserProfileAvatar } from "@/routes/($lang)._main.users.$user/components/user-profile-avatar"
+import { OmissionNumber } from "~/components/omission-number"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { toOmissionNumberText } from "~/utils/to-omission-number-text"
+import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {

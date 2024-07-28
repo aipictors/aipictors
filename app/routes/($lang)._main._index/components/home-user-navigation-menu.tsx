@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { AuthContext } from "@/contexts/auth-context"
+} from "~/components/ui/dropdown-menu"
+import { AuthContext } from "~/contexts/auth-context"
 import {
   CoffeeIcon,
   GemIcon,
@@ -29,9 +29,9 @@ import {
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useTheme } from "next-themes"
-import { MenuItemLink } from "@/routes/($lang)._main._index/components/menu-item-link"
+import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { Link } from "@remix-run/react"
-import { userSettingFieldsFragment } from "@/graphql/fragments/user-setting-fields"
+import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { graphql } from "gql.tada"
 
 type Props = {

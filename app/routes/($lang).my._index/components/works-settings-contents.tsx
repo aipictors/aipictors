@@ -1,5 +1,5 @@
-import { RoundedLightButton } from "@/components/button/rounded-light-button"
-import type { WorkTabType } from "@/routes/($lang).my._index/types/work-tab-type"
+import { RoundedLightButton } from "~/components/button/rounded-light-button"
+import type { WorkTabType } from "~/routes/($lang).my._index/types/work-tab-type"
 
 type Props = {
   workTabType: WorkTabType | null

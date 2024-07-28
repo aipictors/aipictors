@@ -1,4 +1,4 @@
-import { Button, type ButtonProps } from "@/components/ui/button"
+import { Button, type ButtonProps } from "~/components/ui/button"
 import { RiInstagramLine } from "@remixicon/react"
 
 type Props = ButtonProps

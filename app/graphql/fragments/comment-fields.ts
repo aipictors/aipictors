@@ -1,4 +1,4 @@
-import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
+import { workUserFieldsFragment } from "~/graphql/fragments/work-user-fields"
 import { graphql } from "gql.tada"
 
 export const commentFieldsFragment = graphql(

@@ -1,4 +1,4 @@
-import { AppPage } from "@/components/app/app-page"
+import { AppPage } from "~/components/app/app-page"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 

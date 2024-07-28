@@ -1,5 +1,5 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { toPassFeatures } from "@/routes/($lang)._main.plus._index/utils/to-pass-features"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
 
 type Props = {
   passType: IntrospectionEnum<"PassType">

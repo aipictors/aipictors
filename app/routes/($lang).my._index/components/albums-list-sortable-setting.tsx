@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
-import type { SortType } from "@/types/sort-type"
-import { SortListSelector } from "@/components/sort-list-selector"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer"
+import type { SortType } from "~/types/sort-type"
+import { SortListSelector } from "~/components/sort-list-selector"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   nowSort: SortType

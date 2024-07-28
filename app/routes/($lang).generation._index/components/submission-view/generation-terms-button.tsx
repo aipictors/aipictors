@@ -1,4 +1,4 @@
-import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppMarkdown } from "~/components/app/app-markdown"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,9 +9,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "~/components/ui/alert-dialog"
+import { Button } from "~/components/ui/button"
+import { ScrollArea } from "~/components/ui/scroll-area"
 
 type Props = {
   termsMarkdownText: string

@@ -1,4 +1,4 @@
-import { ThumbnailPositionAdjustDialog } from "@/routes/($lang)._main.new.image/components/thumbnail-position-adjust-dialog"
+import { ThumbnailPositionAdjustDialog } from "~/routes/($lang)._main.new.image/components/thumbnail-position-adjust-dialog"
 
 type Props = {
   thumbnailBase64: string

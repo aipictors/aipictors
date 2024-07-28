@@ -1,9 +1,9 @@
-import { TableRow, TableCell } from "@/components/ui/table"
+import { TableRow, TableCell } from "~/components/ui/table"
 import { Loader2Icon, TrashIcon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 

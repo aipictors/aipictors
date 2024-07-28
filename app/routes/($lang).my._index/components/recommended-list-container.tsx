@@ -1,9 +1,9 @@
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { RecommendedWorksList } from "@/routes/($lang).my._index/components/recommended-works-list"
-import { toDateTimeText } from "@/utils/to-date-time-text"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { RecommendedWorksList } from "~/routes/($lang).my._index/components/recommended-works-list"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 /**

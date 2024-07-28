@@ -1,17 +1,17 @@
-import type { SortType } from "@/types/sort-type"
-import { WorksListSortableSetting } from "@/routes/($lang).my._index/components/works-list-sortable-setting"
+import type { SortType } from "~/types/sort-type"
+import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from "~/components/ui/select"
 import { useState } from "react"
-import { toAccessTypeText } from "@/utils/work/to-access-type-text"
-import { toRatingText } from "@/utils/work/to-rating-text"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { toWorkTypeText } from "@/utils/work/to-work-type-text"
+import { toAccessTypeText } from "~/utils/work/to-access-type-text"
+import { toRatingText } from "~/utils/work/to-rating-text"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 type Props = {
   sort: SortType

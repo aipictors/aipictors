@@ -1,5 +1,5 @@
-import { useBreakpoint } from "@/hooks/use-breakpoint"
-import { SettingsRouteList } from "@/routes/($lang).settings/components/settings-route-list"
+import { useBreakpoint } from "~/hooks/use-breakpoint"
+import { SettingsRouteList } from "~/routes/($lang).settings/components/settings-route-list"
 
 export const SettingsNavigation = () => {
   const breakpoint = useBreakpoint()

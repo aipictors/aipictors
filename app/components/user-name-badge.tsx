@@ -1,4 +1,4 @@
-import { IconUrl } from "@/components/icon-url"
+import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 
 type Props = {

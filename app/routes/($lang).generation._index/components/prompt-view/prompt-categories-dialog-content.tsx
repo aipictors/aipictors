@@ -3,16 +3,16 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button"
+} from "~/components/ui/accordion"
+import { Button } from "~/components/ui/button"
 import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { PromptCategoryIcon } from "@/routes/($lang).generation._index/components/prompt-view/prompt-category-icon"
-import type { promptCategoryContextFragment } from "@/routes/($lang).generation._index/contexts/generation-query-context"
+} from "~/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { PromptCategoryIcon } from "~/routes/($lang).generation._index/components/prompt-view/prompt-category-icon"
+import type { promptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

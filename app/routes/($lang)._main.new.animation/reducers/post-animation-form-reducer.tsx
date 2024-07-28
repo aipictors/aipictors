@@ -1,5 +1,5 @@
-import type { PostAnimationFormAction } from "@/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-action"
-import type { PostAnimationFormState } from "@/routes/($lang)._main.new.animation/reducers/states/post-animation-form-state"
+import type { PostAnimationFormAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-action"
+import type { PostAnimationFormState } from "~/routes/($lang)._main.new.animation/reducers/states/post-animation-form-state"
 
 export const postAnimationFormReducer = (
   state: PostAnimationFormState,

@@ -7,7 +7,7 @@ import {
   CommandItem,
   CommandGroup,
   CommandEmpty,
-} from "@/components/ui/command"
+} from "~/components/ui/command"
 import type { Tag as TagType } from "./tag-input"
 
 type AutocompleteProps = {

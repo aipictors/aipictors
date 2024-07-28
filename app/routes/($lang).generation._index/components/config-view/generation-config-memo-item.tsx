@@ -1,4 +1,4 @@
-import { GenerationMemoItemContents } from "@/routes/($lang).generation._index/components/config-view/generation-memo-item-contents"
+import { GenerationMemoItemContents } from "~/routes/($lang).generation._index/components/config-view/generation-memo-item-contents"
 
 type Props = {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>

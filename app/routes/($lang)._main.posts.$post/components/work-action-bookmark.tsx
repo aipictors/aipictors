@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { FolderIcon, Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"

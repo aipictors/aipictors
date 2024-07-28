@@ -1,4 +1,4 @@
-import { GenerationWorkDialogButton } from "@/routes/($lang).generation._index/components/generation-work-dialog-button"
+import { GenerationWorkDialogButton } from "~/routes/($lang).generation._index/components/generation-work-dialog-button"
 import { ZoomIn } from "lucide-react"
 
 type Props = {

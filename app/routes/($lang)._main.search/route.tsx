@@ -1,11 +1,11 @@
-import { AppPage } from "@/components/app/app-page"
-import { createClient } from "@/lib/client"
-import { RelatedModelList } from "@/routes/($lang)._main.search/components/related-model-list"
-import { RelatedTagList } from "@/routes/($lang)._main.search/components/related-tag-list"
-import { SearchHeader } from "@/routes/($lang)._main.search/components/search-header"
-import { WorkList } from "@/routes/($lang)._main.posts._index/components/work-list"
+import { AppPage } from "~/components/app/app-page"
+import { createClient } from "~/lib/client"
+import { RelatedModelList } from "~/routes/($lang)._main.search/components/related-model-list"
+import { RelatedTagList } from "~/routes/($lang)._main.search/components/related-tag-list"
+import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
+import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 export async function loader() {

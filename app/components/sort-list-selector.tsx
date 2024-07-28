@@ -1,6 +1,6 @@
 import { CheckIcon, ChevronDown, ChevronUp } from "lucide-react"
-import type { SortType } from "@/types/sort-type"
-import type { SortListSelectorType } from "@/types/sort-list-selector-type"
+import type { SortType } from "~/types/sort-type"
+import type { SortListSelectorType } from "~/types/sort-list-selector-type"
 
 type Props = {
   sortList: SortListSelectorType[]

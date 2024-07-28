@@ -1,4 +1,3 @@
-import {} from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -6,9 +5,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { Album } from "@/routes/($lang)._main.new.image/types/album"
-import { Card, CardContent } from "@/components/ui/card"
+} from "~/components/ui/select"
+import type { Album } from "~/routes/($lang)._main.new.image/types/album"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   album: string | null

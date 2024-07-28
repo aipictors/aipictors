@@ -1,7 +1,7 @@
-import { ResizablePanelWithMemory } from "@/components/resizable-panel-with-memory"
-import { ResizableHandle, ResizablePanelGroup } from "@/components/ui/resizable"
-import { Separator } from "@/components/ui/separator"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
+import { ResizablePanelWithMemory } from "~/components/resizable-panel-with-memory"
+import { ResizableHandle, ResizablePanelGroup } from "~/components/ui/resizable"
+import { Separator } from "~/components/ui/separator"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useMediaQuery } from "usehooks-ts"
 
 type Props = {

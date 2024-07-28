@@ -1,7 +1,7 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { HomeNotificationCommentsContents } from "@/routes/($lang)._main._index/components/home-notifications-comments-contents"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { HomeNotificationCommentsContents } from "~/routes/($lang)._main._index/components/home-notifications-comments-contents"
 import { useState } from "react"
 
 /**

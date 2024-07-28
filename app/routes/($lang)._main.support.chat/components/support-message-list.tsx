@@ -1,6 +1,6 @@
-import type { messageFieldsFragment } from "@/graphql/fragments/message-fields"
-import { RecipientMessage } from "@/routes/($lang)._main.support.chat/components/recipient-message"
-import { SenderMessage } from "@/routes/($lang)._main.support.chat/components/sender-message"
+import type { messageFieldsFragment } from "~/graphql/fragments/message-fields"
+import { RecipientMessage } from "~/routes/($lang)._main.support.chat/components/recipient-message"
+import { SenderMessage } from "~/routes/($lang)._main.support.chat/components/sender-message"
 import type { FragmentOf } from "gql.tada"
 
 import { useEffect, useRef } from "react"

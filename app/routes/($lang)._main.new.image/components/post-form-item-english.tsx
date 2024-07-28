@@ -1,9 +1,8 @@
-import {} from "@/components/ui/radio-group"
-import { Card, CardContent } from "@/components/ui/card"
-import { ExpansionTransition } from "@/components/expansion-transition"
-import { Button } from "@/components/ui/button"
-import { PostFormItemCaption } from "@/routes/($lang)._main.new.image/components/post-form-item-caption"
-import { PostFormItemTitle } from "@/routes/($lang)._main.new.image/components/post-form-item-title"
+import { Card, CardContent } from "~/components/ui/card"
+import { ExpansionTransition } from "~/components/expansion-transition"
+import { Button } from "~/components/ui/button"
+import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
+import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
 import { useState } from "react"
 
 type Props = {

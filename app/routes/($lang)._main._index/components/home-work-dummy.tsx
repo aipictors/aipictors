@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "~/components/ui/skeleton"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkDummyProps = RenderPhotoProps & {

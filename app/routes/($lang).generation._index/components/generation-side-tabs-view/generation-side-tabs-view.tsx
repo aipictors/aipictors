@@ -1,6 +1,6 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 /**
  * サイドコンテンツ切替タブ

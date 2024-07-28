@@ -3,10 +3,10 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import { Separator } from "@/components/ui/separator"
-import { config } from "@/config"
-import { HomeNavigationButton } from "@/routes/($lang)._main._index/components/home-navigation-button"
+} from "~/components/ui/carousel"
+import { Separator } from "~/components/ui/separator"
+import { config } from "~/config"
+import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import {
   AwardIcon,
   BookImageIcon,

@@ -1,8 +1,8 @@
-import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
-import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
-import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
-import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
-import { vPostType } from "@/routes/($lang)._main.new.image/validations/post-type"
+import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
+import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
+import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
+import { vPostType } from "~/routes/($lang)._main.new.image/validations/post-type"
 import {
   array,
   boolean,

@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card"
-import TextEditor from "@/components/text-editor"
+import { Card, CardContent } from "~/components/ui/card"
+import TextEditor from "~/components/text-editor"
 
 type Props = {
   label?: string

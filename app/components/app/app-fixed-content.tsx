@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn"
+import { cn } from "~/lib/cn"
 
 type Props = Readonly<{
   position: "top" | "bottom" | "left" | "right"

@@ -27,7 +27,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["./app/*"] },
+    "paths": { "~/*": ["./app/*"] },
     "noEmit": true,
     "declaration": true,
     "declarationMap": true,

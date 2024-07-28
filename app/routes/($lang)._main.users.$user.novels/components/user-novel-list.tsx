@@ -1,8 +1,8 @@
-import { IconUrl } from "@/components/icon-url"
-import { LikeButton } from "@/components/like-button"
-import { NovelWorkPreviewItem } from "@/components/novel-work-preview-item"
-import { UserNameBadge } from "@/components/user-name-badge"
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { IconUrl } from "~/components/icon-url"
+import { LikeButton } from "~/components/like-button"
+import { NovelWorkPreviewItem } from "~/components/novel-work-preview-item"
+import { UserNameBadge } from "~/components/user-name-badge"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

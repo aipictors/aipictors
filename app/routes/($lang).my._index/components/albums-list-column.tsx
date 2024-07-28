@@ -1,6 +1,5 @@
-import {} from "@/components/ui/table"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import type { SortType } from "@/types/sort-type"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 type Props = {

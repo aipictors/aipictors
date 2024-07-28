@@ -1,9 +1,9 @@
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import type { TaskContentPositionType } from "@/routes/($lang).generation._index/types/task-content-position-type"
-import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/components/generation-task-editable-card"
-import type { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { GenerationTaskEditableCard } from "~/routes/($lang).generation._index/components/generation-task-editable-card"
+import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

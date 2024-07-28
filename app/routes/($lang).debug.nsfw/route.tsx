@@ -1,6 +1,6 @@
 import { ImageUp } from "lucide-react"
 import { useState } from "react"
-import { config } from "@/config"
+import { config } from "~/config"
 import { load } from "@l4ph/nsfwts"
 
 const modelUrl = "./nsfwjs.onnx"

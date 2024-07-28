@@ -4,9 +4,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { Card, CardContent } from "@/components/ui/card"
+} from "~/components/ui/select"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   imageStyle: IntrospectionEnum<"ImageStyle">

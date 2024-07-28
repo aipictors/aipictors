@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
+import { Button } from "~/components/ui/button"
+import { Switch } from "~/components/ui/switch"
 import { PlusIcon } from "lucide-react"
 
 export const UserPickUp = () => {

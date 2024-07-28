@@ -2,9 +2,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import type { partialTagFieldsFragment } from "@/graphql/fragments/partial-tag-fields"
-import { TagButton } from "@/routes/($lang)._main._index/components/tag-button"
+} from "~/components/ui/carousel"
+import type { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
+import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

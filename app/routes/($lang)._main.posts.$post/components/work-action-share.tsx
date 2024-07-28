@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "~/components/ui/popover"
 import { useLocation } from "@remix-run/react"
 import { Share2 } from "lucide-react"
 import { CopyWorkUrlButton } from "./work-action-copy-url"

@@ -1,16 +1,16 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
-import { StickerDialog } from "@/routes/($lang)._main.posts.$post/components/sticker-dialog"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { AutoResizeTextarea } from "@/components/auto-resize-textarea"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
-import { AuthContext } from "@/contexts/auth-context"
-import { IconUrl } from "@/components/icon-url"
+import { AuthContext } from "~/contexts/auth-context"
+import { IconUrl } from "~/components/icon-url"
 
 type Props = {
   targetCommentId: string

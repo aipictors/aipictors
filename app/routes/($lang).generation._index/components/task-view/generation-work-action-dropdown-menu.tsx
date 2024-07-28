@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,9 +10,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Slider } from "@/components/ui/slider"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+} from "~/components/ui/dropdown-menu"
+import { Slider } from "~/components/ui/slider"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { MoreHorizontalIcon } from "lucide-react"
 
 type Props = {

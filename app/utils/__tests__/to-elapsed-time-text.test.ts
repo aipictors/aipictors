@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { toElapsedTimeText } from "@/utils/to-elapsed-time-text"
+import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 describe("toElapsedTimeText", () => {
   test("1分前", () => {

@@ -1,4 +1,4 @@
-import { AppPageCenter } from "@/components/app/app-page-center"
+import { AppPageCenter } from "~/components/app/app-page-center"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 

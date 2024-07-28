@@ -1,4 +1,4 @@
-import { config } from "@/config"
+import { config } from "~/config"
 
 /**
  * 自身の生成状況をチェックして一覧を再フェッチするかどうか確認する

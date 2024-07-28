@@ -1,5 +1,5 @@
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { HomeWorkSection } from "@/routes/($lang)._main._index/components/home-work-section"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

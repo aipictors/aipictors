@@ -4,12 +4,12 @@ import {
   TableRow,
   TableHead,
   TableBody,
-} from "@/components/ui/table"
-import { WorksListColumn } from "@/routes/($lang).my._index/components/works-list-column"
-import type { SortType } from "@/types/sort-type"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { WorksListTableRow } from "@/routes/($lang).my._index/components/works-list-table-row"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+} from "~/components/ui/table"
+import { WorksListColumn } from "~/routes/($lang).my._index/components/works-list-column"
+import type { SortType } from "~/types/sort-type"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { WorksListTableRow } from "~/routes/($lang).my._index/components/works-list-table-row"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   works: {

@@ -2,8 +2,8 @@ import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from "@/components/ui/hover-card"
-import { toOmissionNumberText } from "@/utils/to-omission-number-text"
+} from "~/components/ui/hover-card"
+import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 
 type Props = {
   number: number

@@ -1,5 +1,5 @@
-import { FollowButton } from "@/components/button/follow-button"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { FollowButton } from "~/components/button/follow-button"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
 
 type Props = {

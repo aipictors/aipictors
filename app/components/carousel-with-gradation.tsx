@@ -4,7 +4,7 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "@/components/ui/carousel"
+} from "~/components/ui/carousel"
 
 type Props = {
   items: React.ReactNode[]

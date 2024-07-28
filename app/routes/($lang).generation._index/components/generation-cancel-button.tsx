@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { Loader2, XIcon } from "lucide-react"
 
 type Props = {

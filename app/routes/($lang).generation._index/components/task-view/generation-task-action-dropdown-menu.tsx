@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -10,12 +10,12 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { imageReservedGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-reserved-task-field"
-import { passFieldsFragment } from "@/graphql/fragments/pass-fields"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import type { TaskContentPositionType } from "@/routes/($lang).generation._index/types/task-content-position-type"
-import type { TaskListThumbnailType } from "@/routes/($lang).generation._index/types/task-list-thumbnail-type"
+} from "~/components/ui/dropdown-menu"
+import { imageReservedGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-reserved-task-field"
+import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"

@@ -1,5 +1,5 @@
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { HomeWorkAlbum } from "@/routes/($lang)._main._index/components/home-work-album"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { HomeWorkAlbum } from "~/routes/($lang)._main._index/components/home-work-album"
 import type { FragmentOf } from "gql.tada"
 import PhotoAlbum from "react-photo-album"
 

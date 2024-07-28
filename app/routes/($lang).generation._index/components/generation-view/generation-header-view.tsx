@@ -1,4 +1,4 @@
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
 type Props = {
   submission: React.ReactNode

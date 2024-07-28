@@ -1,4 +1,4 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 export const toNotificationTypeName = (
   type: IntrospectionEnum<"NotificationType"> | null,

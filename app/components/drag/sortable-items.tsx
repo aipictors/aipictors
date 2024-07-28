@@ -14,11 +14,11 @@ import {
   arrayMove,
   rectSortingStrategy,
 } from "@dnd-kit/sortable"
-import type { TSortableItem } from "@/components/drag/sortable-item"
+import type { TSortableItem } from "~/components/drag/sortable-item"
 import type React from "react"
 import { useState } from "react"
-import { ImageItem } from "@/components/drag/image-item"
-import { SortableItem } from "@/components/drag/sortable-item"
+import { ImageItem } from "~/components/drag/image-item"
+import { SortableItem } from "~/components/drag/sortable-item"
 
 type Props = {
   items: TSortableItem[]

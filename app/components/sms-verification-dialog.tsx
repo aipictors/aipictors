@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "~/components/ui/dialog"
 import { useEffect, useRef, useState } from "react"
 import {
   RecaptchaVerifier,
@@ -13,9 +13,9 @@ import {
   setPersistence,
   signInWithPhoneNumber,
 } from "firebase/auth"
-import { telStringToNumber } from "@/utils/tel-string-to-number"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { telStringToNumber } from "~/utils/tel-string-to-number"
+import { Input } from "~/components/ui/input"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   children: React.ReactNode

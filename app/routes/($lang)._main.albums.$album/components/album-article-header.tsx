@@ -1,12 +1,12 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { AuthContext } from "@/contexts/auth-context"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { Button } from "~/components/ui/button"
+import { Card } from "~/components/ui/card"
+import { AuthContext } from "~/contexts/auth-context"
 import {
   AlbumArticleEditorDialog,
   type albumArticleFragment,
-} from "@/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
-import { XIntent } from "@/routes/($lang)._main.posts.$post/components/work-action-share-x"
+} from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"

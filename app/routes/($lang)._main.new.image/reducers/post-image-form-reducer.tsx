@@ -1,5 +1,5 @@
-import type { PostImageFormAction } from "@/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
-import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 
 export const postImageFormReducer = (
   state: PostImageFormState,

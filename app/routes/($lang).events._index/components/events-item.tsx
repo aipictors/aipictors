@@ -1,5 +1,5 @@
-import { Card, CardHeader } from "@/components/ui/card"
-import { toDateTimeText } from "@/utils/to-date-time-text"
+import { Card, CardHeader } from "~/components/ui/card"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 

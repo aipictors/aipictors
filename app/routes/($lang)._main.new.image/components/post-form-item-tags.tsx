@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from "react"
-import { type Tag, TagInput } from "@/components/tag/tag-input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { type Tag, TagInput } from "~/components/tag/tag-input"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   tags: Tag[]

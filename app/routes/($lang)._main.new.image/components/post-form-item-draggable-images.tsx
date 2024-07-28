@@ -1,12 +1,11 @@
-import type { TSortableItem } from "@/components/drag/sortable-item"
-import { SortableItems } from "@/components/drag/sortable-items"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/cn"
+import type { TSortableItem } from "~/components/drag/sortable-item"
+import { SortableItems } from "~/components/drag/sortable-items"
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/cn"
 import {
   getExtractInfoFromPNG,
   type PNGInfo,
-} from "@/utils/get-extract-info-from-png"
-import {} from "@dnd-kit/core"
+} from "~/utils/get-extract-info-from-png"
 import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"

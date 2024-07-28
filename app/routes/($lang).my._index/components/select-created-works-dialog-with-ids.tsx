@@ -1,16 +1,16 @@
 import { useContext, useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
+import { Button } from "~/components/ui/button"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type React from "react"
-import { ResponsivePagination } from "@/components/responsive-pagination"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
   children?: React.ReactNode

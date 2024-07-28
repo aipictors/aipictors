@@ -1,12 +1,12 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
 import { json, useLoaderData } from "@remix-run/react"
-import { createClient } from "@/lib/client"
-import { AppPage } from "@/components/app/app-page"
-import { RankingHeader } from "@/routes/($lang)._main.rankings._index/components/ranking-header"
+import { createClient } from "~/lib/client"
+import { AppPage } from "~/components/app/app-page"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import { workAwardFieldsFragment } from "@/graphql/fragments/work-award-field"
-import { RankingWorkList } from "@/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
+import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()

@@ -1,6 +1,6 @@
-import { AutoResizeTextarea } from "@/components/auto-resize-textarea"
-import { CropImageField } from "@/components/crop-image-field"
-import { Button } from "@/components/ui/button"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CropImageField } from "~/components/crop-image-field"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogTrigger,
@@ -8,11 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { AuthContext } from "@/contexts/auth-context"
-import { workUserFieldsFragment } from "@/graphql/fragments/work-user-fields"
-import { uploadPublicImage } from "@/utils/upload-public-image"
-import { SelectCreatedWorksDialogWithIds } from "@/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
+} from "~/components/ui/dialog"
+import { AuthContext } from "~/contexts/auth-context"
+import { workUserFieldsFragment } from "~/graphql/fragments/work-user-fields"
+import { uploadPublicImage } from "~/utils/upload-public-image"
+import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"

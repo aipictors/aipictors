@@ -1,4 +1,4 @@
-import { vFile } from "@/routes/($lang)._main.new.image/validations/file"
+import { vFile } from "~/routes/($lang)._main.new.image/validations/file"
 import {
   boolean,
   type InferInput,

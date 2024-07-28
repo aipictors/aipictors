@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { XIntent } from "@/routes/($lang)._main.posts.$post/components/work-action-share-x"
+import { Button } from "~/components/ui/button"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { useEffect } from "react"
 

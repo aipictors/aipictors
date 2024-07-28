@@ -1,5 +1,5 @@
-import { IconUrl } from "@/components/icon-url"
-import { LikeButton } from "@/components/like-button"
+import { IconUrl } from "~/components/icon-url"
+import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 

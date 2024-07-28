@@ -1,12 +1,12 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "~/components/ui/card"
 import { useState } from "react"
-import { CropImageField } from "@/components/crop-image-field"
-import { uploadPublicImage } from "@/utils/upload-public-image"
-import { Button } from "@/components/ui/button"
+import { CropImageField } from "~/components/crop-image-field"
+import { uploadPublicImage } from "~/utils/upload-public-image"
+import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
 import { Loader2Icon, XIcon } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
 
 type Props = {
   token: string

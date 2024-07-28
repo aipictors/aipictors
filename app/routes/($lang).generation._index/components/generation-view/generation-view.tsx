@@ -1,11 +1,11 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { ResizablePanelWithMemory } from "@/components/resizable-panel-with-memory"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { ResizablePanelWithMemory } from "~/components/resizable-panel-with-memory"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
+} from "~/components/ui/resizable"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { Suspense } from "react"
 import { useMediaQuery } from "usehooks-ts"
 

@@ -1,4 +1,4 @@
-import type { TSortableItem } from "@/components/drag/sortable-item"
+import type { TSortableItem } from "~/components/drag/sortable-item"
 import { forwardRef, type CSSProperties, type HTMLAttributes } from "react"
 
 type Props = {

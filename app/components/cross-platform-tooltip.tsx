@@ -1,9 +1,8 @@
-import {} from "@/components/ui/hover-card"
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover"
+} from "~/components/ui/popover"
 import { Link } from "@remix-run/react"
 import { HelpCircleIcon } from "lucide-react"
 

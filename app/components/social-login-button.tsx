@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { RiRestartLine } from "@remixicon/react"
 import { type AuthProvider, getAuth, signInWithPopup } from "firebase/auth"
 import type { ReactElement } from "react"

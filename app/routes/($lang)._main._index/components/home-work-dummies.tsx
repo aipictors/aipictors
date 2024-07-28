@@ -1,4 +1,4 @@
-import { HomeWorkDummy } from "@/routes/($lang)._main._index/components/home-work-dummy"
+import { HomeWorkDummy } from "~/routes/($lang)._main._index/components/home-work-dummy"
 import { PhotoAlbum } from "react-photo-album"
 
 /**

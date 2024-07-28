@@ -1,8 +1,8 @@
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { AuthContext } from "@/contexts/auth-context"
-import { ResponsivePhotoWorksAlbum } from "@/components/responsive-photo-works-album"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { AuthContext } from "~/contexts/auth-context"
+import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 type Props = {

@@ -1,7 +1,7 @@
-import type { SortType } from "@/types/sort-type"
-import { WorksSpList } from "@/routes/($lang).my._index/components/works-sp-list"
-import { WorksListTable } from "@/routes/($lang).my._index/components/works-list-table"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
+import { WorksSpList } from "~/routes/($lang).my._index/components/works-sp-list"
+import { WorksListTable } from "~/routes/($lang).my._index/components/works-list-table"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   works: {

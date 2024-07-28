@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { AuthContext } from "@/contexts/auth-context"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { AuthContext } from "~/contexts/auth-context"
 import {
   ApolloError,
   useMutation,

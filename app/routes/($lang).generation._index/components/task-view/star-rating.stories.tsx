@@ -1,4 +1,4 @@
-import { StarRating } from "@/routes/($lang).generation._index/components/task-view/star-rating"
+import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

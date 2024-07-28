@@ -1,5 +1,5 @@
-import { CrossPlatformTooltip } from "@/components/cross-platform-tooltip"
-import { Input } from "@/components/ui/input"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Input } from "~/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -7,8 +7,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
+} from "~/components/ui/select"
+import { Slider } from "~/components/ui/slider"
 import { useEffect } from "react"
 
 type Props = {

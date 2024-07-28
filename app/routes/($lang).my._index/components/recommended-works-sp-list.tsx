@@ -1,8 +1,7 @@
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import {} from "@/components/ui/table"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { toAccessTypeText } from "@/utils/work/to-access-type-text"
+import { Badge } from "~/components/ui/badge"
+import { Separator } from "~/components/ui/separator"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { Link } from "@remix-run/react"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
 

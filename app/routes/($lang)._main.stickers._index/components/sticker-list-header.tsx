@@ -1,4 +1,4 @@
-import { AddStickerModal } from "@/routes/($lang)._main.stickers._index/components/add-sticker-modal"
+import { AddStickerModal } from "~/routes/($lang)._main.stickers._index/components/add-sticker-modal"
 import { useBoolean } from "usehooks-ts"
 
 export const StickerListHeader = () => {

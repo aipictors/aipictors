@@ -1,4 +1,4 @@
-import { GenerationConfigState } from "@/routes/($lang).generation._index/machines/models/generation-config-state"
+import { GenerationConfigState } from "~/routes/($lang).generation._index/machines/models/generation-config-state"
 
 export class GenerationConfig extends GenerationConfigState {
   get loraModelPromptTexts() {

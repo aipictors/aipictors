@@ -1,4 +1,4 @@
-import type { SortType } from "@/types/sort-type"
+import type { SortType } from "~/types/sort-type"
 
 export type SortListSelectorType = {
   sort: SortType

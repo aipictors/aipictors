@@ -1,4 +1,4 @@
-import { MyStickersList } from "@/routes/($lang).settings.sticker/components/my-stickers-list"
+import { MyStickersList } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
 
 export default function SettingSticker() {
   return (

@@ -1,12 +1,12 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { ImageModelCard } from "@/routes/($lang).generation._index/components/config-view/image-model-card"
+} from "~/components/ui/select"
+import { ImageModelCard } from "~/routes/($lang).generation._index/components/config-view/image-model-card"
 import { useMemo, useState } from "react"
 
 type Model = {

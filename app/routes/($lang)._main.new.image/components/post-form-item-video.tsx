@@ -1,5 +1,5 @@
-import { cn } from "@/lib/cn"
-import { VideoItem } from "@/routes/($lang)._main.new.image/components/video-item"
+import { cn } from "~/lib/cn"
+import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"

@@ -2,7 +2,7 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
+} from "~/components/ui/carousel"
 import React from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { Link } from "@remix-run/react"

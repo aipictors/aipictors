@@ -1,4 +1,4 @@
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
 

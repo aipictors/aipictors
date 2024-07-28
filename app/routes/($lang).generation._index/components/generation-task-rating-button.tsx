@@ -1,5 +1,5 @@
-import { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
-import { cn } from "@/lib/cn"
+import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import { cn } from "~/lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { StarIcon } from "lucide-react"

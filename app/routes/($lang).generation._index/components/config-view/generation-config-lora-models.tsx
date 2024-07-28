@@ -1,13 +1,13 @@
-import { ConfigLoraModel } from "@/routes/($lang).generation._index/components/config-view/config-lora-model"
-import { LoraModelListDialogButton } from "@/routes/($lang).generation._index/components/config-view/lora-model-list-dialog-button"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { ConfigLoraModel } from "~/routes/($lang).generation._index/components/config-view/config-lora-model"
+import { LoraModelListDialogButton } from "~/routes/($lang).generation._index/components/config-view/lora-model-list-dialog-button"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useBoolean } from "usehooks-ts"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "~/components/ui/accordion"
 
 export const GenerationConfigLoraModels = () => {
   const context = useGenerationContext()

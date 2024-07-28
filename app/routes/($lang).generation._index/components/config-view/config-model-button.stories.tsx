@@ -1,4 +1,4 @@
-import { ConfigModelButton } from "@/routes/($lang).generation._index/components/config-view/config-model-button"
+import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

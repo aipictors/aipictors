@@ -1,4 +1,4 @@
-import { GenerationQueryContext } from "@/routes/($lang).generation._index/contexts/generation-query-context"
+import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useContext } from "react"
 
 export const useGenerationQuery = () => {
