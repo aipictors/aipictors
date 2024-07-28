@@ -4,6 +4,7 @@ import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
+  src: string
   userId: string
   userName: string
   userIcon: string
@@ -16,8 +17,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
 }
 
 export function HomeWorkAlbum({
-  photo,
-  wrapperStyle,
+  src,
   userId,
   userName,
   userIcon,
@@ -31,11 +31,11 @@ export function HomeWorkAlbum({
   return (
     <div
       className="cursor overflow-hidden rounded transition-all"
-      style={{ ...wrapperStyle, position: "relative" }}
+      style={{ position: "relative" }}
     >
       <Link to={`/posts/${workId}`} className="group">
         <img
-          src={photo.src}
+          src={src}
           alt={workTitle}
           className="rounded transition-transform duration-300 group-hover:scale-105"
         />
