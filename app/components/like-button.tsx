@@ -89,6 +89,8 @@ export const LikeButton = ({
     return null
   }
 
+  const width = Math.floor(size * 24)
+
   /* 未ログイン */
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
@@ -99,50 +101,58 @@ export const LikeButton = ({
         description={"ログインして、いいねしてみましょう！"}
         triggerChildren={
           <button
-            className={
+            className={`${
+              isParticle ? "like-button " : ""
+            }relative flex items-center justify-center rounded-md ${
               isBackgroundNone
-                ? "relative flex items-center justify-center rounded-md text-secondary-foreground"
-                : "relative flex items-center justify-center rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            }
+                ? ""
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
             style={{
               width: text ? "auto" : `${size - (isBackgroundNone ? 8 : 0)}px`,
               height: `${size - (isBackgroundNone ? 8 : 0)}px`,
-              paddingLeft: text ? `${size}px` : "0",
             }}
-            onClick={() => {}}
             type="button"
           >
             <div
               className={cn(
-                "absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+                "top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
               )}
               style={{
                 width: `${size}px`,
                 height: `${size}px`,
                 backgroundSize: `auto ${size}px`,
                 transition: "background-position steps(25)",
-                transitionDuration: "0s",
-                backgroundPosition: "0 0",
+                transitionDuration: isLiked ? "1s" : "0s",
+                backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
               }}
             >
               <Heart
-                className={"fill-white text-black dark:text-white"}
+                className={cn(
+                  isLiked
+                    ? "fill-rose-500 text-rose-500"
+                    : isBackgroundNone
+                      ? "fill-white "
+                      : "fill-transparent ",
+                  isLiked ? "like-animation" : "like-animation-end",
+                )}
                 size={Math.floor(size / 2)}
-                strokeWidth={1}
+                strokeWidth={strokeWidth}
+                stroke={isBackgroundNone ? "black" : "currentColor"}
               />
             </div>
             {text && (
-              <span className={cn("mr-3 text-black text-sm dark:text-white")}>
-                {text}
-              </span>
+              <div className={cn("mr-4 flex space-x-1 text-sm ")}>
+                <p>{text}</p>
+                <p>{likedCount}</p>
+              </div>
             )}
           </button>
         }
       />
     )
   }
-
-  const width = Math.floor(size * 24)
 
   return (
     <button
