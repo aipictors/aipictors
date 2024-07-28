@@ -94,8 +94,15 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           },
           image(props, context) {
             return (
-              <Link to={context.photo.href}>
-                <img {...props} alt={props.alt} />
+              <Link
+                to={context.photo.href}
+                className="block overflow-hidden rounded"
+              >
+                <img
+                  {...props}
+                  alt={props.alt}
+                  className="transition-transform duration-300 ease-in-out hover:scale-105"
+                />
               </Link>
             )
           },

@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
-import { skipToken, useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
@@ -32,18 +32,14 @@ type Props = {
 export const WorkUser = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data = null } = useSuspenseQuery(
-    userFolloweesQuery,
-    appContext.isLoading || appContext.userId === null
-      ? skipToken
-      : {
-          variables: {
-            user_id: appContext.userId,
-            offset: 0,
-            limit: 128,
-          },
-        },
-  )
+  const { data = null } = useQuery(userFolloweesQuery, {
+    skip: appContext.isLoading || !appContext.userId,
+    variables: {
+      user_id: appContext.userId ?? "",
+      offset: 0,
+      limit: 100,
+    },
+  })
 
   const isFollow =
     data?.user?.followees?.some((followee) => followee.id === props.userId) ??

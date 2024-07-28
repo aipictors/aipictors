@@ -5,7 +5,7 @@ import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post/compon
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post/components/work-article-generation-parameters"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
@@ -82,16 +82,14 @@ export const WorkArticle = (props: Props) => {
             </Button>
           </Link>
         )}
-        <Suspense>
-          <WorkActionContainer
-            workLikesCount={props.work.likesCount}
-            title={props.work.title}
-            imageUrl={props.work.imageURL}
-            targetWorkId={props.work.id}
-            bookmarkFolderId={bookmarkFolderId}
-            targetWorkOwnerUserId={props.work.user.id}
-          />
-        </Suspense>
+        <WorkActionContainer
+          workLikesCount={props.work.likesCount}
+          title={props.work.title}
+          imageUrl={props.work.imageURL}
+          targetWorkId={props.work.id}
+          bookmarkFolderId={bookmarkFolderId}
+          targetWorkOwnerUserId={props.work.user.id}
+        />
         <h1 className="font-bold text-lg">{props.work.title}</h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}

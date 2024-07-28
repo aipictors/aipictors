@@ -7,7 +7,6 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -23,16 +22,24 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  if (workResp.data.work === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  // 非公開の場合はエラー
+  if (
+    workResp.data.work.accessType === "PRIVATE" ||
+    workResp.data.work.accessType === "DRAFT"
+  ) {
+    throw new Response(null, { status: 404 })
+  }
+
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
       workId: props.params.post,
     },
   })
-
-  if (workResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
 
   if (workCommentsResp.data.work === null) {
     throw new Response(null, { status: 404 })
@@ -56,11 +63,7 @@ export default function Work() {
 
   const data = useLoaderData<typeof loader>()
 
-  return (
-    <Suspense>
-      <WorkContainer work={data.work} comments={data.workComments} />
-    </Suspense>
-  )
+  return <WorkContainer work={data.work} comments={data.workComments} />
 }
 
 const workCommentsQuery = graphql(

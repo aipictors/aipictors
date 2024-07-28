@@ -1,7 +1,7 @@
 import { WorkAction } from "~/routes/($lang)._main.posts.$post/components/work-action"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { graphql } from "gql.tada"
@@ -21,7 +21,7 @@ type Props = {
 export const WorkActionContainer = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data } = useSuspenseQuery(workQuery, {
+  const { data } = useQuery(workQuery, {
     skip: appContext.isLoading,
     variables: {
       id: props.targetWorkId,

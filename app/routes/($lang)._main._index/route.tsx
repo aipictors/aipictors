@@ -140,9 +140,6 @@ export async function loader() {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
-  /**
-   * TODO_2024_07 Suspenseを減らす
-   */
   return (
     <AppPage>
       <ConstructionAlert

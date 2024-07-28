@@ -7,7 +7,6 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -56,11 +55,7 @@ export default function Work() {
 
   const data = useLoaderData<typeof loader>()
 
-  return (
-    <Suspense>
-      <WorkContainer work={data.work} comments={data.workComments} />
-    </Suspense>
-  )
+  return <WorkContainer work={data.work} comments={data.workComments} />
 }
 
 const workCommentsQuery = graphql(

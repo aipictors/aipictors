@@ -1,108 +1,110 @@
-import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
-import type { RenderPhotoProps } from "react-photo-album"
-import { useRef } from "react"
-import { Badge } from "~/components/ui/badge"
+import type { FragmentOf } from "gql.tada"
+import { RowsPhotoAlbum } from "react-photo-album"
+import { UnstableSSR as SSR } from "react-photo-album/ssr"
+import "react-photo-album/rows.css"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { IconUrl } from "~/components/icon-url"
+import { Link } from "@remix-run/react"
+import { LikeButton } from "~/components/like-button"
 
-type HomeWorkAlbumProps = RenderPhotoProps & {
-  src: string
-  userId: string
-  userName: string
-  userIcon: string
-  workId: string
-  workTitle: string
-  workOwnerUserId: string
-  isLiked: boolean
-  url: string
+type Props = {
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  targetRowHeight?: number
+  direction?: "rows" | "columns"
 }
 
-export function HomeWorkVideoAlbum({
-  src,
-  userId,
-  userName,
-  userIcon,
-  workId,
-  workTitle,
-  workOwnerUserId,
-  isLiked,
-  url,
-}: HomeWorkAlbumProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.style.zIndex = "10" // 動画を前面に表示
-      videoRef.current.play() // 動画を再生
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause() // 動画を停止
-      videoRef.current.style.zIndex = "-1" // 動画を背面に戻す
-    }
-  }
-
+/**
+ * レスポンシブ対応の作品一覧
+ */
+export const ResponsivePhotoWorksAlbum = (props: Props) => {
   return (
-    <div className="relative transition-all" style={{ position: "relative" }}>
-      <div
-        className="relative inline-block"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <Link to={`/posts/${workId}`}>
-          <img
-            src={src}
-            // @ts-ignore
-            placeholder={"blurDataURL" in photo ? "blur" : ""}
-            alt={""}
-            className={"rounded"}
-          />
-          <video
-            src={url}
-            ref={videoRef}
-            className="absolute top-0 left-0 rounded"
-            style={{ zIndex: "-1" }}
-            muted
-          >
-            <track kind="captions" src={url} label="English" />
-          </video>
-          <div className="absolute top-1 left-1 opacity-50">
-            <Badge variant={"secondary"} className="text-xs">
-              {"video"}
-            </Badge>
-          </div>
-        </Link>
-        <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-          <Link to={`/posts/${workId}`}>
-            <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
-              {workTitle}
-            </p>
-          </Link>
-          <Link to={`/users/${userId}`}>
-            <div className="flex items-center space-x-2">
-              <img
-                src={IconUrl(userIcon)}
-                alt=""
-                className="h-4 w-4 rounded-full"
-              />
-              <span className="text-sm text-white">{userName}</span>
+    <SSR breakpoints={[300, 600, 900, 1200]}>
+      <RowsPhotoAlbum
+        photos={props.works.map((work) => ({
+          ket: work.id,
+          src: work.largeThumbnailImageURL,
+          width: work.largeThumbnailImageWidth,
+          height: work.largeThumbnailImageHeight,
+          workId: work.id, // 各作品のID
+          userId: work.user.id, // 作品の所有者のID
+          userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
+          userName: work.user.name, // 作品の所有者の名前
+          workOwnerUserId: work.user.id,
+          isLiked: work.isLiked,
+          title: work.title,
+          isSensitive: work.rating === "R18" || work.rating === "R18G",
+          subWorksCount: work.subWorksCount,
+          to: `/posts/${work.id}`,
+          href: `/posts/${work.id}`,
+        }))}
+        targetRowHeight={
+          props.targetRowHeight !== undefined ? props.targetRowHeight : 240
+        }
+        sizes={{
+          size: "calc(100vw - 240px)",
+          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+        }}
+        render={{
+          // TODO: コンポーネントを分ける
+          extras: (_, { photo, index }) => (
+            <div key={index}>
+              <div className="absolute right-1 bottom-12 z-10">
+                <LikeButton
+                  size={56}
+                  targetWorkId={photo.workId}
+                  targetWorkOwnerUserId={photo.userId}
+                  defaultLiked={photo.isLiked}
+                  defaultLikedCount={0}
+                  isBackgroundNone={true}
+                  strokeWidth={2}
+                />
+              </div>
+              <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
+                <Link className="w-48 font-bold" to={`/posts/${photo.workId}`}>
+                  <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                    {photo.title}
+                  </p>
+                </Link>
+                <Link to={`/users/${photo.userId}`}>
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={IconUrl(photo.userIcon)}
+                      alt={photo.userName}
+                      className="h-4 w-4 rounded-full"
+                    />
+                    <span className="text-nowrap font-bold text-sm ">
+                      {photo.userName}
+                    </span>
+                  </div>
+                </Link>
+              </div>
             </div>
-          </Link>
-        </div>
-        <div className="absolute right-1 bottom-1 z-20">
-          <LikeButton
-            size={56}
-            targetWorkId={workId}
-            targetWorkOwnerUserId={workOwnerUserId}
-            defaultLiked={isLiked}
-            defaultLikedCount={0}
-            isBackgroundNone={true}
-            strokeWidth={2}
-          />
-        </div>
-      </div>
-    </div>
+          ),
+          link(props) {
+            return (
+              <div
+                style={props.style}
+                className={props.className}
+                aria-label={props["aria-label"]}
+                role={props.role}
+              >
+                {props.children}
+              </div>
+            )
+          },
+          image(props, context) {
+            return (
+              <Link className="overflow-hidden" to={context.photo.href}>
+                <img
+                  className="cursor-pointer duration-500 hover:scale-105"
+                  {...props}
+                  alt={props.alt}
+                />
+              </Link>
+            )
+          },
+        }}
+      />
+    </SSR>
   )
 }

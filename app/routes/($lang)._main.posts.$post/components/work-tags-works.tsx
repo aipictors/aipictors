@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
@@ -16,7 +16,7 @@ type Props = {
 export const WorkTagsWorks = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data: suggestedWorkResp } = useSuspenseQuery(worksQuery, {
+  const { data: suggestedWorkResp } = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,

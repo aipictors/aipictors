@@ -1,4 +1,3 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
   WorkArticle,
   workArticleFragment,
@@ -6,7 +5,7 @@ import {
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
 import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
@@ -15,7 +14,7 @@ import {
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -28,16 +27,7 @@ type Props = {
 export const WorkContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const workQuery = graphql(
-    `query Work($id: ID!) {
-      work(id: $id) {
-        ...WorkArticle
-      }
-    }`,
-    [workArticleFragment],
-  )
-
-  const { data, refetch } = useSuspenseQuery(workQuery, {
+  const { data, refetch } = useQuery(workQuery, {
     skip: authContext.userId !== props.work.user.id,
     variables: {
       id: props.work.id,
@@ -45,10 +35,6 @@ export const WorkContainer = (props: Props) => {
   })
 
   const work = data?.work ?? props.work
-
-  if (!work) {
-    return null
-  }
 
   const relatedWorks = work.user.works.map((relatedWork) => ({
     smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
@@ -68,7 +54,7 @@ export const WorkContainer = (props: Props) => {
 
   return (
     <div
-      className="max-w-[100%] space-y-4 overflow-hidden"
+      className="space-y-4 overflow-hidden"
       style={{
         margin: "auto",
       }}
@@ -76,45 +62,37 @@ export const WorkContainer = (props: Props) => {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <Suspense fallback={<AppLoadingPage />}>
-              <WorkArticle work={work} />
-            </Suspense>
+            <WorkArticle work={work} />
             <WorkRelatedList works={relatedWorks} />
             {work.isCommentsEditable && (
-              <Suspense fallback={<AppLoadingPage />}>
-                <WorkCommentList workId={work.id} comments={props.comments} />
-              </Suspense>
+              <WorkCommentList workId={work.id} comments={props.comments} />
             )}
             <div className="block md:mt-0 lg:hidden">
-              <Suspense>
-                <WorkUser
-                  userId={work.user.id}
-                  userLogin={work.user.login}
-                  userName={work.user.name}
-                  userIconImageURL={IconUrl(work.user.iconUrl)}
-                  userFollowersCount={work.user.followersCount}
-                  userBiography={work.user.biography}
-                  userPromptonId={work.user.promptonUser?.id}
-                  userWorksCount={work.user.worksCount}
-                />
-              </Suspense>
-            </div>
-          </div>
-        </div>
-        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 lg:flex lg:max-w-80">
-          <div className="w-full">
-            <Suspense>
               <WorkUser
                 userId={work.user.id}
-                userName={work.user.name}
                 userLogin={work.user.login}
+                userName={work.user.name}
                 userIconImageURL={IconUrl(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography}
                 userPromptonId={work.user.promptonUser?.id}
                 userWorksCount={work.user.worksCount}
               />
-            </Suspense>
+            </div>
+          </div>
+        </div>
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 lg:flex lg:max-w-80">
+          <div className="w-full">
+            <WorkUser
+              userId={work.user.id}
+              userName={work.user.name}
+              userLogin={work.user.login}
+              userIconImageURL={IconUrl(work.user.iconUrl)}
+              userFollowersCount={work.user.followersCount}
+              userBiography={work.user.biography}
+              userPromptonId={work.user.promptonUser?.id}
+              userWorksCount={work.user.worksCount}
+            />
           </div>
           <WorkNextAndPrevious work={work} />
         </div>
@@ -127,12 +105,19 @@ export const WorkContainer = (props: Props) => {
                 {"おすすめ"}
               </h2>
             </div>
-            <Suspense fallback={<AppLoadingPage />}>
-              <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
-            </Suspense>
+            <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
           </>
         )}
       </section>
     </div>
   )
 }
+
+const workQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      ...WorkArticle
+    }
+  }`,
+  [workArticleFragment],
+)

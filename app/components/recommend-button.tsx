@@ -1,16 +1,12 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Button } from "~/components/ui/button"
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "~/components/ui/popover"
-import { Link } from "@remix-run/react"
-import { useMutation } from "@apollo/client/index"
+import {} from "~/components/ui/popover"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react"
 import { graphql } from "gql.tada"
+import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 
 type Props = {
   workId: string
@@ -20,6 +16,13 @@ type Props = {
 
 export const RecommendButton = (props: Props) => {
   const authContext = useContext(AuthContext)
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const passData = pass?.viewer?.currentPass
+
+  const isStandardOrPremium =
+    passData?.type === "STANDARD" || passData?.type === "PREMIUM"
 
   const [isRecommended, setIsRecommended] = useState(props.isRecommended)
 
@@ -53,6 +56,20 @@ export const RecommendButton = (props: Props) => {
   }
 
   const onCreateRecommend = async () => {
+    if (props.ownerUserId === authContext.userId) {
+      toast("自分の作品には推薦できません")
+      return
+    }
+    if (authContext.isNotLoggedIn) {
+      toast("ログインしてください")
+      return
+    }
+    if (!isStandardOrPremium) {
+      toast(
+        "作品を推薦して、注目度をアップできます！スタンダード、プレミアムプランのみ対応しています",
+      )
+      return
+    }
     try {
       await createRecommend({
         variables: {
@@ -67,26 +84,6 @@ export const RecommendButton = (props: Props) => {
         toast(error.message)
       }
     }
-  }
-
-  if (authContext.isLoading || authContext.isNotLoggedIn) {
-    return (
-      <Popover>
-        <PopoverTrigger>
-          <Button variant={"secondary"}>{"推薦"}</Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <p>{"作品を推薦して、注目度をアップできます！"}</p>
-          <Link to={"/plus"}>
-            {"スタンダード、プレミアムプランのみ対応しています"}
-          </Link>
-        </PopoverContent>
-      </Popover>
-    )
-  }
-
-  if (props.ownerUserId === authContext.userId) {
-    return null
   }
 
   return (
@@ -124,4 +121,20 @@ const deleteRecommendedWorkMutation = graphql(
   `mutation DeleteRecommendedWork($input: DeleteRecommendedWorkInput!) {
     deleteRecommendedWork(input: $input)
   }`,
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      user {
+        id
+        nanoid
+        hasSignedImageGenerationTerms
+      }
+      currentPass {
+        ...PassFields
+      }
+    }
+  }`,
+  [passFieldsFragment],
 )

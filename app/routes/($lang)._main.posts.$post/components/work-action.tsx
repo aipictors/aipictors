@@ -4,9 +4,8 @@ import { LikeButton } from "~/components/like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post/components/work-editor-button"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post/components/work-action-bookmark"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { RecommendButton } from "~/components/recommend-button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -65,13 +64,11 @@ export const WorkAction = (props: Props) => {
           />
         )}
         {props.targetWorkOwnerUserId !== appContext.userId && (
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorkActionBookmark
-              targetWorkId={props.targetWorkId}
-              bookmarkFolderId={props.bookmarkFolderId}
-              defaultBookmarked={props.defaultBookmarked}
-            />
-          </Suspense>
+          <WorkActionBookmark
+            targetWorkId={props.targetWorkId}
+            bookmarkFolderId={props.bookmarkFolderId}
+            defaultBookmarked={props.defaultBookmarked}
+          />
         )}
         <SharePopover title={props.title} />
         <MenuPopover
