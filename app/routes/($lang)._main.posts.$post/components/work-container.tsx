@@ -3,10 +3,8 @@ import {
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post/components/work-article"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
-import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
 import { useContext } from "react"
-import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
 import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import {
@@ -15,6 +13,8 @@ import {
 } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
+import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -74,7 +74,7 @@ export const WorkContainer = (props: Props) => {
                 userName={work.user.name}
                 userIconImageURL={IconUrl(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
-                userBiography={work.user.biography}
+                userBiography={work.user.biography ?? ""}
                 userPromptonId={work.user.promptonUser?.id}
                 userWorksCount={work.user.worksCount}
               />
@@ -89,7 +89,7 @@ export const WorkContainer = (props: Props) => {
               userLogin={work.user.login}
               userIconImageURL={IconUrl(work.user.iconUrl)}
               userFollowersCount={work.user.followersCount}
-              userBiography={work.user.biography}
+              userBiography={work.user.biography ?? ""}
               userPromptonId={work.user.promptonUser?.id}
               userWorksCount={work.user.worksCount}
             />

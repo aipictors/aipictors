@@ -1,12 +1,6 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -33,11 +27,11 @@ export const WorkUser = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useQuery(userFolloweesQuery, {
-    skip: appContext.isLoading || !appContext.userId,
+    skip: appContext.isLoading || appContext.userId === null,
     variables: {
       user_id: appContext.userId ?? "",
       offset: 0,
-      limit: 100,
+      limit: 128,
     },
   })
 
@@ -75,12 +69,8 @@ export const WorkUser = (props: Props) => {
         {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
         )}
+        <div>{props.userBiography}</div>
       </CardContent>
-      <CardDescription className="px-6 pb-4">
-        {props.userBiography && (
-          <CardDescription>{props.userBiography}</CardDescription>
-        )}
-      </CardDescription>
     </Card>
   )
 }

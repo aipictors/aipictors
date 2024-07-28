@@ -126,11 +126,6 @@ const deleteRecommendedWorkMutation = graphql(
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
         ...PassFields
       }

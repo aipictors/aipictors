@@ -7,6 +7,11 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+
+export function HydrateFallback() {
+  return <AppLoadingPage />
+}
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
