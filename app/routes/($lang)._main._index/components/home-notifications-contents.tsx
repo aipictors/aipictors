@@ -1,5 +1,3 @@
-import {} from "~/components/ui/dropdown-menu"
-import {} from "~/components/ui/tabs"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { HomeNotificationsContentLikedItem } from "~/routes/($lang)._main._index/components/home-notifications-content-liked-item"
 import { toDateText } from "~/utils/to-date-text"

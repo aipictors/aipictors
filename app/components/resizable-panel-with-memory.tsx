@@ -1,7 +1,6 @@
 import type * as ResizablePrimitive from "react-resizable-panels"
 import { cn } from "~/lib/cn"
 import { ResizablePanel } from "~/components/ui/resizable"
-import {} from "react"
 import { getCookie } from "~/utils/get-cookie"
 import { setCookie } from "~/utils/set-cookie"
 

@@ -1,5 +1,4 @@
 import { Separator } from "~/components/ui/separator"
-import {} from "~/components/ui/table"
 import { Loader2Icon, TrashIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useMutation } from "@apollo/client/index"

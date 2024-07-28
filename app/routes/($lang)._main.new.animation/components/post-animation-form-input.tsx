@@ -1,5 +1,4 @@
 import { useEffect, type Dispatch } from "react"
-import {} from "~/components/ui/accordion"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -21,7 +20,6 @@ import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
-import {} from "~/components/ui/card"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import type { PostAnimationFormInputAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-input-action"

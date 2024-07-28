@@ -1,5 +1,3 @@
-import {} from "~/components/ui/avatar"
-import {} from "~/components/ui/carousel"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {

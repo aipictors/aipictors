@@ -1,4 +1,3 @@
-import {} from "~/components/ui/table"
 import { AlbumsSpListItem } from "~/routes/($lang).my._index/components/albums-sp-list-item"
 
 type Props = {

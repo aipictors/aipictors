@@ -5,7 +5,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import { Link } from "@remix-run/react"
-import {} from "@remixicon/react"
 import {
   AwardIcon,
   BookImageIcon,

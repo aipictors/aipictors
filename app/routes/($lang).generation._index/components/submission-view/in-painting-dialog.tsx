@@ -1,4 +1,3 @@
-import {} from "~/components/ui/dialog"
 import PrivateImagePaintCanvas from "~/components/private-image-paint-canvas"
 import { InPaintingImageForm } from "~/routes/($lang).generation._index/components/submission-view/InPaintingImageForm"
 import { useEffect, useState } from "react"

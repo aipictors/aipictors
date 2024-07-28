@@ -1,5 +1,4 @@
 import { useEffect, type Dispatch } from "react"
-import {} from "~/components/ui/accordion"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -27,7 +26,6 @@ import type { InferInput } from "valibot"
 import { PostFormItemGenerationParams } from "~/routes/($lang)._main.new.image/components/post-form-item-generation-params"
 import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
-import {} from "~/components/ui/card"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 

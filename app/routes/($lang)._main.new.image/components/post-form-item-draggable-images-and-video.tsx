@@ -7,7 +7,6 @@ import {
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
 import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
-import {} from "@dnd-kit/core"
 import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"

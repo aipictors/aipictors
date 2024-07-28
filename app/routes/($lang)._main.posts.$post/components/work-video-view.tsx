@@ -1,5 +1,3 @@
-import {} from "react"
-
 type Props = {
   videoUrl: string
 }

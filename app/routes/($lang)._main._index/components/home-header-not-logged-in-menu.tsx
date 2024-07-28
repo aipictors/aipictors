@@ -1,4 +1,3 @@
-import {} from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
@@ -13,7 +12,6 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "~/components/ui/dropdown-menu"
-import {} from "~/components/ui/sheet"
 import {
   EllipsisVerticalIcon,
   MoonIcon,
