@@ -44,22 +44,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
         }}
-        componentsProps={{
-          // @ts-ignore
-          link: (props) => <Link {...props} />,
-        }}
         render={{
           // TODO: コンポーネントを分ける
           extras: (_, { photo, index }) => (
-            // typeof window === "undefined" ? (
-            //   <div className="mt-2 flex flex-col space-y-2">
-            //     <Skeleton className="h-4 w-full rounded-full" />
-            //     <div className="flex items-center space-x-2">
-            //       <Skeleton className="h-4 w-4 rounded-full" />
-            //       <Skeleton className="h-4 w-full rounded-full" />
-            //     </div>
-            //   </div>
-            // ) : (
             <div key={index}>
               <div className="absolute right-1 bottom-12 z-10">
                 <LikeButton
@@ -93,7 +80,25 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
               </div>
             </div>
           ),
-          // ),
+          link(props) {
+            return (
+              <div
+                style={props.style}
+                className={props.className}
+                aria-label={props["aria-label"]}
+                role={props.role}
+              >
+                {props.children}
+              </div>
+            )
+          },
+          image(props, context) {
+            return (
+              <Link to={context.photo.href}>
+                <img {...props} alt={props.alt} />
+              </Link>
+            )
+          },
         }}
       />
     </SSR>
