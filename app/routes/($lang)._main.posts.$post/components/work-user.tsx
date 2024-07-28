@@ -8,6 +8,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
 import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
+import { Skeleton } from "~/components/ui/skeleton"
 
 type Props = {
   userId: string
@@ -46,7 +47,9 @@ export const WorkUser = (props: Props) => {
           <Link to={`/users/${props.userLogin}`}>
             <Avatar className="m-auto h-auto w-24">
               <AvatarImage src={props.userIconImageURL} alt="" />
-              <AvatarFallback />
+              <AvatarFallback>
+                <Skeleton className="h-24 w-24 rounded-full" />
+              </AvatarFallback>
             </Avatar>
             <p className="mt-2 text-center font-bold text-md">
               {props.userName}
