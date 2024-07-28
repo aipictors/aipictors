@@ -48,7 +48,9 @@ export const LikeButton = ({
     setLikedCount(defaultLikedCount)
   }, [defaultLiked, defaultLikedCount, targetWorkId])
 
-  const handleOnClick = async () => {
+  const handleOnClick = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
+
     if (onClick) {
       onClick(!isLiked)
     }
