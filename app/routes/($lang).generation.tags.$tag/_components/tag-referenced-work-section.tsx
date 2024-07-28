@@ -1,7 +1,7 @@
 import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { HomeWorkAlbum } from "@/routes/($lang)._main._index/_components/home-work-album"
 import type { FragmentOf } from "gql.tada"
-import PhotoAlbum from "react-photo-album"
+import { RowsPhotoAlbum } from "react-photo-album"
+import { UnstableSSR as SSR } from "react-photo-album/ssr"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -25,24 +25,24 @@ export const TagReferencedWorkSection = (props: Props) => {
           {props.title}
         </h2>
       </div>
-      <PhotoAlbum
-        layout="rows"
-        columns={3}
-        photos={photos}
-        renderPhoto={(photoProps) => (
-          // @ts-ignore 後で考える
-          <HomeWorkAlbum
-            {...photoProps}
-            workId={photoProps.photo.workId}
-            workOwnerUserId={photoProps.photo.workOwnerUserId}
-          />
-        )}
-        defaultContainerWidth={1600}
-        sizes={{
-          size: "calc(100vw - 240px)",
-          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-        }}
-      />
+      <SSR breakpoints={[300, 600, 900, 1200]}>
+        <RowsPhotoAlbum
+          photos={photos}
+          // renderPhoto={(photoProps) => (
+          //   // @ts-ignore 後で考える
+          //   <HomeWorkAlbum
+          //     {...photoProps}
+          //     workId={photoProps.photo.workId}
+          //     workOwnerUserId={photoProps.photo.workOwnerUserId}
+          //   />
+          // )}
+          // defaultContainerWidth={1600}
+          // sizes={{
+          //   size: "calc(100vw - 240px)",
+          //   sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+          // }}
+        />
+      </SSR>
     </section>
   )
 }

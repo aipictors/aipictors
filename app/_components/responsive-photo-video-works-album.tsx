@@ -1,7 +1,7 @@
 import type { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { HomeWorkVideoAlbum } from "@/routes/($lang)._main._index/_components/home-work-video-album"
 import type { FragmentOf } from "gql.tada"
-import PhotoAlbum from "react-photo-album"
+import { RowsPhotoAlbum } from "react-photo-album"
+import { UnstableSSR as SSR } from "react-photo-album/ssr"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -32,30 +32,30 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   }))
 
   return (
-    <PhotoAlbum
-      layout={"rows"}
-      columns={2}
-      photos={photos}
-      renderPhoto={(photoProps) => (
-        // @ts-ignore 後で考える
-        <HomeWorkVideoAlbum
-          {...photoProps}
-          userId={photoProps.photo.userId}
-          userName={photoProps.photo.userName}
-          userIcon={photoProps.photo.userIcon}
-          workId={photoProps.photo.workId}
-          workOwnerUserId={photoProps.photo.workOwnerUserId}
-          isLiked={photoProps.photo.isLiked}
-          workTitle={photoProps.photo.title}
-          url={photoProps.photo.url}
-        />
-      )}
-      defaultContainerWidth={640}
-      targetRowHeight={240}
-      sizes={{
-        size: "calc(100vw - 240px)",
-        sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-      }}
-    />
+    <SSR breakpoints={[300, 600, 900, 1200]}>
+      <RowsPhotoAlbum
+        photos={photos}
+        // renderPhoto={(photoProps) => (
+        //   // @ts-ignore 後で考える
+        //   <HomeWorkVideoAlbum
+        //     {...photoProps}
+        //     userId={photoProps.photo.userId}
+        //     userName={photoProps.photo.userName}
+        //     userIcon={photoProps.photo.userIcon}
+        //     workId={photoProps.photo.workId}
+        //     workOwnerUserId={photoProps.photo.workOwnerUserId}
+        //     isLiked={photoProps.photo.isLiked}
+        //     workTitle={photoProps.photo.title}
+        //     url={photoProps.photo.url}
+        //   />
+        // )}
+        // defaultContainerWidth={640}
+        // targetRowHeight={240}
+        // sizes={{
+        //   size: "calc(100vw - 240px)",
+        //   sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+        // }}
+      />
+    </SSR>
   )
 }

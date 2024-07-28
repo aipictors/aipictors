@@ -51,12 +51,10 @@ export const HomeWorkSection = (props: Props) => {
       {props.isCropped ? (
         <HomeCroppedWorkList works={props.works} />
       ) : (
-        <div className="w-[1200px]">
-          <ResponsivePhotoWorksAlbum
-            works={props.works}
-            targetRowHeight={props.targetRowHeight}
-          />
-        </div>
+        <ResponsivePhotoWorksAlbum
+          works={props.works}
+          targetRowHeight={props.targetRowHeight}
+        />
       )}
     </section>
   )
