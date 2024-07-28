@@ -1,4 +1,4 @@
-import { AppCommonLayout } from "@/_components/app/app-common-layout"
+import { AppCommonLayout } from "@/components/app/app-common-layout"
 import { Outlet } from "@remix-run/react"
 
 export default function EventsLayout() {

@@ -1,10 +1,10 @@
-import { Button } from "@/_components/ui/button"
-import { AppPage } from "@/_components/app/app-page"
-import { createClient } from "@/_lib/client"
+import { Button } from "@/components/ui/button"
+import { AppPage } from "@/components/app/app-page"
+import { createClient } from "@/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Link, json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {

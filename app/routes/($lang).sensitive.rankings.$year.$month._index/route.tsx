@@ -1,6 +1,6 @@
-import { AppPage } from "@/_components/app/app-page"
-import { ParamsError } from "@/_errors/params-error"
-import { RankingHeader } from "@/routes/($lang)._main.rankings._index/_components/ranking-header"
+import { AppPage } from "@/components/app/app-page"
+import { ParamsError } from "@/errors/params-error"
+import { RankingHeader } from "@/routes/($lang)._main.rankings._index/components/ranking-header"
 import { useParams } from "@remix-run/react"
 
 export default function SensitiveMonthAward() {

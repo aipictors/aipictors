@@ -1,6 +1,6 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { LoginPage } from "@/_components/page/login-page"
-import { AuthContext } from "@/_contexts/auth-context"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { LoginPage } from "@/components/page/login-page"
+import { AuthContext } from "@/contexts/auth-context"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 

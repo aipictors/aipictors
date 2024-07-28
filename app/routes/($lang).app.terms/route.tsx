@@ -1,8 +1,8 @@
-import text from "@/_assets/flutter/terms.md?raw"
+import text from "@/assets/flutter/terms.md?raw"
 
-import { AppMarkdown } from "@/_components/app/app-markdown"
-import { AppPageCenter } from "@/_components/app/app-page-center"
-import { AppFooter } from "@/routes/($lang).app._index/_components/app-footer"
+import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppPageCenter } from "@/components/app/app-page-center"
+import { AppFooter } from "@/routes/($lang).app._index/components/app-footer"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 export default function AppTerms() {

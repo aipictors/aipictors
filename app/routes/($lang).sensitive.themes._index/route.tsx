@@ -1,7 +1,7 @@
-import { AppPage } from "@/_components/app/app-page"
-import { partialWorkFieldsFragment } from "@/_graphql/fragments/partial-work-fields"
-import { createClient } from "@/_lib/client"
-import { ThemeList } from "@/routes/($lang)._main.themes._index/_components/theme-list"
+import { AppPage } from "@/components/app/app-page"
+import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { createClient } from "@/lib/client"
+import { ThemeList } from "@/routes/($lang)._main.themes._index/components/theme-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 

@@ -1,5 +1,5 @@
-import { AppPage } from "@/_components/app/app-page"
-import { AlbumCard } from "@/routes/($lang)._main.albums._index/_components/album-card"
+import { AppPage } from "@/components/app/app-page"
+import { AlbumCard } from "@/routes/($lang)._main.albums._index/components/album-card"
 
 export default function SensitiveAlbumsPage() {
   return (

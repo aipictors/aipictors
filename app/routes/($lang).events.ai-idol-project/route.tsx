@@ -1,7 +1,7 @@
-import { GlowingGradientBorderButton } from "@/_components/button/glowing-gradient-border-button"
-import {} from "@/_components/ui/card"
-import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/_components/character-card"
-import { ImageSliderAnimation } from "@/routes/($lang).events.ai-idol-project/_components/image-slider-animation"
+import { GlowingGradientBorderButton } from "@/components/button/glowing-gradient-border-button"
+import {} from "@/components/ui/card"
+import { CharacterCard } from "@/routes/($lang).events.ai-idol-project/components/character-card"
+import { ImageSliderAnimation } from "@/routes/($lang).events.ai-idol-project/components/image-slider-animation"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 

@@ -1,8 +1,8 @@
-import { AppCommonLayout } from "@/_components/app/app-common-layout"
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AuthContext } from "@/_contexts/auth-context"
-import { createMeta } from "@/_utils/create-meta"
-import { MyContents } from "@/routes/($lang).my/_components/my-contents"
+import { AppCommonLayout } from "@/components/app/app-common-layout"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AuthContext } from "@/contexts/auth-context"
+import { createMeta } from "@/utils/create-meta"
+import { MyContents } from "@/routes/($lang).my/components/my-contents"
 import { Outlet } from "@remix-run/react"
 import { Suspense, useContext } from "react"
 
