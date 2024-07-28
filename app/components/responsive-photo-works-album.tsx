@@ -6,7 +6,6 @@ import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
-import { Skeleton } from "~/components/ui/skeleton"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -51,52 +50,50 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
         }}
         render={{
           // TODO: コンポーネントを分ける
-          extras: (_, { photo, index }) =>
-            typeof window === "undefined" ? (
-              <div className="mt-2 flex flex-col space-y-2">
-                <Skeleton className="h-4 w-full rounded-full" />
-                <div className="flex items-center space-x-2">
-                  <Skeleton className="h-4 w-4 rounded-full" />
-                  <Skeleton className="h-4 w-full rounded-full" />
-                </div>
+          extras: (_, { photo, index }) => (
+            // typeof window === "undefined" ? (
+            //   <div className="mt-2 flex flex-col space-y-2">
+            //     <Skeleton className="h-4 w-full rounded-full" />
+            //     <div className="flex items-center space-x-2">
+            //       <Skeleton className="h-4 w-4 rounded-full" />
+            //       <Skeleton className="h-4 w-full rounded-full" />
+            //     </div>
+            //   </div>
+            // ) : (
+            <div key={index}>
+              <div className="absolute right-1 bottom-12 z-10">
+                <LikeButton
+                  size={56}
+                  targetWorkId={photo.workId}
+                  targetWorkOwnerUserId={photo.userId}
+                  defaultLiked={photo.isLiked}
+                  defaultLikedCount={0}
+                  isBackgroundNone={true}
+                  strokeWidth={2}
+                />
               </div>
-            ) : (
-              <div key={index}>
-                <div className="absolute right-1 bottom-12 z-10">
-                  <LikeButton
-                    size={56}
-                    targetWorkId={photo.workId}
-                    targetWorkOwnerUserId={photo.userId}
-                    defaultLiked={photo.isLiked}
-                    defaultLikedCount={0}
-                    isBackgroundNone={true}
-                    strokeWidth={2}
-                  />
-                </div>
-                <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
-                  <Link
-                    className="w-48 font-bold"
-                    to={`/posts/${photo.workId}`}
-                  >
-                    <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
-                      {photo.title}
-                    </p>
-                  </Link>
-                  <Link to={`/users/${photo.userId}`}>
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src={IconUrl(photo.userIcon)}
-                        alt={photo.userName}
-                        className="h-4 w-4 rounded-full"
-                      />
-                      <span className="text-nowrap font-bold text-sm text-white">
-                        {photo.userName}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
+              <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
+                <Link className="w-48 font-bold" to={`/posts/${photo.workId}`}>
+                  <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                    {photo.title}
+                  </p>
+                </Link>
+                <Link to={`/users/${photo.userId}`}>
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={IconUrl(photo.userIcon)}
+                      alt={photo.userName}
+                      className="h-4 w-4 rounded-full"
+                    />
+                    <span className="text-nowrap font-bold text-sm ">
+                      {photo.userName}
+                    </span>
+                  </div>
+                </Link>
               </div>
-            ),
+            </div>
+          ),
+          // ),
         }}
       />
     </SSR>
