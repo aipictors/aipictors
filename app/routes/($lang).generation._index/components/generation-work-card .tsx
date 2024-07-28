@@ -1,11 +1,11 @@
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { SelectableCardButton } from "@/components/selectable-card-button"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import { GenerationWorkLinkButton } from "@/routes/($lang).generation._index/components/generation-work-link-button"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { SelectableCardButton } from "~/components/selectable-card-button"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/components/generation-work-link-button"
 import { useState } from "react"
 import { toast } from "sonner"
-import { GenerationWorkZoomUpButton } from "@/routes/($lang).generation._index/components/generation-work-zoom-up-button"
+import { GenerationWorkZoomUpButton } from "~/routes/($lang).generation._index/components/generation-work-zoom-up-button"
 
 type Props = {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>

@@ -1,11 +1,11 @@
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircleIcon } from "lucide-react"
-import { DashboardHomeContentContainer } from "@/routes/($lang).my._index/components/my-home-content-container"
+import { DashboardHomeContentContainer } from "~/routes/($lang).my._index/components/my-home-content-container"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 export const DashboardHomeContents = () => {
   const appContext = useContext(AuthContext)

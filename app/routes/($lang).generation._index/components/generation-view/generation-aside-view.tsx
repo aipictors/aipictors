@@ -1,6 +1,6 @@
-import { KeyCodes } from "@/config"
-import { GenerationConfigContext } from "@/routes/($lang).generation._index/contexts/generation-config-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { KeyCodes } from "~/config"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useCallback, useEffect } from "react"
 
 type Props = {

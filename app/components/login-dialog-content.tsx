@@ -1,11 +1,11 @@
 import CloudflareTurnstile, {
   type Status,
-} from "@/components/cloudflare-turnstile"
-import { PasswordLoginForm } from "@/components/password-login-form"
-import { SocialLoginButton } from "@/components/social-login-button"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import type { FormLogin } from "@/types/form-login"
+} from "~/components/cloudflare-turnstile"
+import { PasswordLoginForm } from "~/components/password-login-form"
+import { SocialLoginButton } from "~/components/social-login-button"
+import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import type { FormLogin } from "~/types/form-login"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import {

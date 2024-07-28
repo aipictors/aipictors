@@ -1,5 +1,5 @@
-import { FollowButton } from "@/components/button/follow-button"
-import { Avatar } from "@/components/ui/avatar"
+import { FollowButton } from "~/components/button/follow-button"
+import { Avatar } from "~/components/ui/avatar"
 import { FlagIcon } from "lucide-react"
 
 export const CollectionHeader = () => {

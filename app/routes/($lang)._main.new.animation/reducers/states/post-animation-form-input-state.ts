@@ -1,7 +1,7 @@
-import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
-import { vPostImageStyle } from "@/routes/($lang)._main.new.image/validations/post-image-style"
-import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
-import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
+import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
+import { vPostImageStyle } from "~/routes/($lang)._main.new.image/validations/post-image-style"
+import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
+import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
 import {
   object,
   string,

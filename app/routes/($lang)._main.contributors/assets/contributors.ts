@@ -1,4 +1,4 @@
-import type { Contributor } from "@/routes/($lang)._main.contributors/types/contributor"
+import type { Contributor } from "~/routes/($lang)._main.contributors/types/contributor"
 
 export const contributors: Contributor[] = [
   {

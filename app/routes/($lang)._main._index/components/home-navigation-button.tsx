@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
 import type { RemixiconComponentType } from "@remixicon/react"
 import type { LucideIcon } from "lucide-react"

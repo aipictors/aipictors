@@ -8,10 +8,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { resetCookieLoginToken } from "@/utils/reset-cookie-login-token"
-import { config } from "@/config"
-import { HomeNavigationButton } from "@/routes/($lang)._main._index/components/home-navigation-button"
+} from "~/components/ui/alert-dialog"
+import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
+import { config } from "~/config"
+import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"
 import { toast } from "sonner"

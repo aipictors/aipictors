@@ -2,11 +2,11 @@
  * 作品の関連作品一覧
  */
 
-import { CarouselWithGradation } from "@/components/carousel-with-gradation"
-import { CroppedWorkSquare } from "@/components/cropped-work-square"
-import { LikeButton } from "@/components/like-button"
-import {} from "@/components/ui/carousel"
-import { Separator } from "@/components/ui/separator"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { LikeButton } from "~/components/like-button"
+import {} from "~/components/ui/carousel"
+import { Separator } from "~/components/ui/separator"
 
 type Props = {
   works: {

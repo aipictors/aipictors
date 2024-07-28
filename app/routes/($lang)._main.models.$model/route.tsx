@@ -1,12 +1,12 @@
-import { AppPage } from "@/components/app/app-page"
-import { ParamsError } from "@/errors/params-error"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { createClient } from "@/lib/client"
+import { AppPage } from "~/components/app/app-page"
+import { ParamsError } from "~/errors/params-error"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { createClient } from "~/lib/client"
 import {
   imageModelHeaderFragment,
   ModelHeader,
-} from "@/routes/($lang)._main.models.$model/components/model-header"
-import { WorkList } from "@/routes/($lang)._main.posts._index/components/work-list"
+} from "~/routes/($lang)._main.models.$model/components/model-header"
+import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

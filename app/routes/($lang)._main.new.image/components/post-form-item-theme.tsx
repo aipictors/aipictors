@@ -1,5 +1,5 @@
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent } from "@/components/ui/card"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Card, CardContent } from "~/components/ui/card"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {

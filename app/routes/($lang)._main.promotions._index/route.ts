@@ -1,4 +1,4 @@
-import { partialPromotionFieldsFragment } from "@/graphql/fragments/partial-promotion-fields"
+import { partialPromotionFieldsFragment } from "~/graphql/fragments/partial-promotion-fields"
 import { graphql } from "gql.tada"
 
 export default function Route() {

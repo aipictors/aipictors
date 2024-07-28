@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card"
-import { AuthContext } from "@/contexts/auth-context"
-import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
-import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { Card } from "~/components/ui/card"
+import { AuthContext } from "~/contexts/auth-context"
+import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
+import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useContext } from "react"
 
 /**

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "~/components/ui/button"
+import { Textarea } from "~/components/ui/textarea"
 import { RiCloseCircleLine } from "@remixicon/react"
 import { Send } from "lucide-react"
 import { useState } from "react"

@@ -1,19 +1,19 @@
-import FullScreenContainer from "@/components/full-screen-container"
-import PaintCanvas from "@/components/paint-canvas"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/cn"
+import FullScreenContainer from "~/components/full-screen-container"
+import PaintCanvas from "~/components/paint-canvas"
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/cn"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
-} from "@/utils/get-extract-info-from-png"
-import { ImageGenerationSelectorDialog } from "@/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import { PostFormItemThumbnailPositionAdjust } from "@/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import { PostFormItemOgp } from "@/routes/($lang)._main.new.image/components/post-form-item-ogp"
-import type { PostImageFormState } from "@/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+} from "~/utils/get-extract-info-from-png"
+import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
+import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
+import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
 import type { Dispatch } from "react"
 import { toast } from "sonner"
-import { PostFormItemDraggableImages } from "@/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
-import type { PostTextFormAction } from "@/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
+import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
+import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
 
 type Props = {
   dispatch: Dispatch<PostTextFormAction>

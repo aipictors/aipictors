@@ -1,6 +1,6 @@
-import { CropImageField } from "@/components/crop-image-field"
-import { CrossPlatformTooltip } from "@/components/cross-platform-tooltip"
-import { Button } from "@/components/ui/button"
+import { CropImageField } from "~/components/crop-image-field"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,11 +8,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { getBase64FromImageUrl } from "@/utils/get-base64-from-image-url"
-import { GenerationConfigControlNetDialogContents } from "@/routes/($lang).generation._index/components/config-view/generation-config-control-net-dialog-contents"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import { parseGenerationSize } from "@/routes/($lang).generation._index/types/generation-size"
+} from "~/components/ui/dialog"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+import { GenerationConfigControlNetDialogContents } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net-dialog-contents"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
 

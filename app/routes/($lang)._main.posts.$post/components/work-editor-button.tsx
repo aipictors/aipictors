@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
 import { useContext } from "react"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   targetWorkId: string

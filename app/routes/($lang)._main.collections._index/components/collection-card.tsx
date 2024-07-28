@@ -1,4 +1,4 @@
-import { Card, CardHeader } from "@/components/ui/card"
+import { Card, CardHeader } from "~/components/ui/card"
 
 export const CollectionCard = () => {
   return (

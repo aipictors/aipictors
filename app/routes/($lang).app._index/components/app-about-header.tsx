@@ -1,4 +1,4 @@
-import { AppCanvas } from "@/routes/($lang).app._index/components/app-canvas"
+import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
 import { Link } from "@remix-run/react"
 
 export const AppAboutHeader = () => {

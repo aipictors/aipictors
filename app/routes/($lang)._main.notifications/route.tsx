@@ -1,6 +1,6 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { AuthContext } from "@/contexts/auth-context"
-import { NotificationList } from "@/routes/($lang)._main.notifications/components/notification-list"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AuthContext } from "~/contexts/auth-context"
+import { NotificationList } from "~/routes/($lang)._main.notifications/components/notification-list"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
 

@@ -4,14 +4,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "~/components/ui/select"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { config } from "@/config"
+} from "~/components/ui/tooltip"
+import { config } from "~/config"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {

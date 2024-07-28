@@ -1,4 +1,4 @@
-import { AppDevelopmentPage } from "@/components/app/app-development-page"
+import { AppDevelopmentPage } from "~/components/app/app-development-page"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

@@ -1,12 +1,12 @@
-import { AppPage } from "@/components/app/app-page"
+import { AppPage } from "~/components/app/app-page"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+} from "~/components/ui/accordion"
+import { Card } from "~/components/ui/card"
+import { Separator } from "~/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -14,9 +14,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { createClient } from "@/lib/client"
+} from "~/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { createClient } from "~/lib/client"
 import { Link, json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 

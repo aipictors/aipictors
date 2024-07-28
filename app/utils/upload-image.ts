@@ -1,4 +1,4 @@
-import { config } from "@/config"
+import { config } from "~/config"
 
 /**
  * 画像アップロード

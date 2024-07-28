@@ -1,13 +1,13 @@
-import { CroppedWorkSquare } from "@/components/cropped-work-square"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { passFieldsFragment } from "@/graphql/fragments/pass-fields"
-import { WorkAdSense } from "@/routes/($lang)._main.posts.$post/components/work-adcense"
-import type { workArticleFragment } from "@/routes/($lang)._main.posts.$post/components/work-article"
+} from "~/components/ui/tooltip"
+import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
+import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
+import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"

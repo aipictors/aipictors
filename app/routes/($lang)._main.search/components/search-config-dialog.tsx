@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+} from "~/components/ui/dialog"
+import { Input } from "~/components/ui/input"
+import { Separator } from "~/components/ui/separator"
 import { CheckIcon } from "lucide-react"
 
 type Props = {

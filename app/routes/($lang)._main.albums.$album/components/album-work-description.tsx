@@ -1,13 +1,13 @@
-import { FollowButton } from "@/components/button/follow-button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
+import { FollowButton } from "~/components/button/follow-button"
+import { Avatar, AvatarFallback } from "~/components/ui/avatar"
+import { Card, CardContent } from "~/components/ui/card"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { type FragmentOf, graphql } from "gql.tada"
-import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
-import type { albumArticleFragment } from "@/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
+import type { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 
 type Props = {
   album: FragmentOf<typeof albumArticleFragment>

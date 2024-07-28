@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { getBase64FromImageUrl } from "@/utils/get-base64-from-image-url"
+import { Button } from "~/components/ui/button"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 type Props = {
   module: string

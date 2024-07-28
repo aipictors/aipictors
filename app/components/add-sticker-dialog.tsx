@@ -1,4 +1,4 @@
-import { CropImageField } from "@/components/crop-image-field"
+import { CropImageField } from "~/components/crop-image-field"
 import {
   Dialog,
   DialogContent,
@@ -6,21 +6,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { getBase64FromImageUrl } from "@/utils/get-base64-from-image-url"
+} from "~/components/ui/dialog"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { useContext, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
-import { createRandomString } from "@/routes/($lang).generation._index/utils/create-random-string"
-import { AuthContext } from "@/contexts/auth-context"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
+import { AuthContext } from "~/contexts/auth-context"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Input } from "~/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
-import { uploadPublicImage } from "@/utils/upload-public-image"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { deleteUploadedImage } from "@/utils/delete-uploaded-image"
+import { uploadPublicImage } from "~/utils/upload-public-image"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { graphql } from "gql.tada"
 
 type Props = {

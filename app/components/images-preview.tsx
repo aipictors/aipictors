@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
 import { ChevronLeft, ChevronRight, XIcon } from "lucide-react"
 import type React from "react"
 import { useState, useEffect, useRef } from "react"

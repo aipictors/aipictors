@@ -1,4 +1,4 @@
-import type { partialStickerFieldsFragment } from "@/graphql/fragments/partial-sticker-fields"
+import type { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"

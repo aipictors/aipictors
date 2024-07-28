@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
-} from "@/components/ui/pagination"
+} from "~/components/ui/pagination"
 
 type Props = {
   maxCount: number // 最大個数

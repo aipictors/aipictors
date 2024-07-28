@@ -1,5 +1,5 @@
-import type { EventUserLink } from "@/routes/($lang).events/types/event-user-link"
-import type { EventUserType } from "@/routes/($lang).events/types/event-user-type"
+import type { EventUserLink } from "~/routes/($lang).events/types/event-user-link"
+import type { EventUserType } from "~/routes/($lang).events/types/event-user-type"
 
 export type EventUser = {
   name: string

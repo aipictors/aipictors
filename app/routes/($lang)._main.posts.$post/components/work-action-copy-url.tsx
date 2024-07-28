@@ -1,6 +1,6 @@
 // copy-work-url.tsx
 
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import { RiFileCopyLine } from "@remixicon/react"
 import { toast } from "sonner"
 

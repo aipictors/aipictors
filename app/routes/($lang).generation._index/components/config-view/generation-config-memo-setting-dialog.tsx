@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-} from "@/components/ui/dialog"
-import { GenerationConfigMemoList } from "@/routes/($lang).generation._index/components/config-view/generation-config-memo-list"
-import { GenerationConfigMemoOperationParts } from "@/routes/($lang).generation._index/components/config-view/generation-config-memo-operation-parts"
+} from "~/components/ui/dialog"
+import { GenerationConfigMemoList } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-list"
+import { GenerationConfigMemoOperationParts } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-operation-parts"
 
 type Props = {
   isOpen: boolean

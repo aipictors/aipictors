@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "~/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
 
 type Props = {

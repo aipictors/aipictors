@@ -1,5 +1,5 @@
-import { AppBreadcrumb } from "@/components/app/app-breadcrumb"
-import { cn } from "@/lib/cn"
+import { AppBreadcrumb } from "~/components/app/app-breadcrumb"
+import { cn } from "~/lib/cn"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 
 type Props = Readonly<{

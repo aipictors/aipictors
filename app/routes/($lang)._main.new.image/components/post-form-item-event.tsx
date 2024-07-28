@@ -1,8 +1,8 @@
-import type { Tag } from "@/components/tag/tag-input"
-import { Checkbox } from "@/components/ui/checkbox"
+import type { Tag } from "~/components/tag/tag-input"
+import { Checkbox } from "~/components/ui/checkbox"
 import { Link } from "@remix-run/react"
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   eventName: string | null

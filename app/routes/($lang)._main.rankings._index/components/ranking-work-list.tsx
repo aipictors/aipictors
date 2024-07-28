@@ -1,8 +1,8 @@
-import { CroppedWorkSquare } from "@/components/cropped-work-square"
-import { IconUrl } from "@/components/icon-url"
-import { LikeButton } from "@/components/like-button"
-import { UserNameBadge } from "@/components/user-name-badge"
-import type { workAwardFieldsFragment } from "@/graphql/fragments/work-award-field"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { IconUrl } from "~/components/icon-url"
+import { LikeButton } from "~/components/like-button"
+import { UserNameBadge } from "~/components/user-name-badge"
+import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

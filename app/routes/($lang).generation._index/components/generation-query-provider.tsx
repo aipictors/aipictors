@@ -1,6 +1,6 @@
-import { AuthContext } from "@/contexts/auth-context"
-import { useFocusTimeout } from "@/hooks/use-focus-timeout"
-import { checkInGenerationProgressStatus } from "@/utils/check-in-generation-progress-status"
+import { AuthContext } from "~/contexts/auth-context"
+import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { checkInGenerationProgressStatus } from "~/utils/check-in-generation-progress-status"
 import {
   type controlNetCategoryContextFragment,
   currentPassContextFragment,
@@ -10,7 +10,7 @@ import {
   type imageLoraModelContextFragment,
   type imageModelContextFragment,
   type promptCategoryContextFragment,
-} from "@/routes/($lang).generation._index/contexts/generation-query-context"
+} from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"

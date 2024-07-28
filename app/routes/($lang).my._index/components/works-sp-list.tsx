@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge"
-import {} from "@/components/ui/table"
-import { toAccessTypeText } from "@/utils/work/to-access-type-text"
-import type { SortType } from "@/types/sort-type"
+import { Badge } from "~/components/ui/badge"
+import {} from "~/components/ui/table"
+import { toAccessTypeText } from "~/utils/work/to-access-type-text"
+import type { SortType } from "~/types/sort-type"
 import {
   EyeIcon,
   FolderIcon,
@@ -9,10 +9,10 @@ import {
   MessageCircle,
   PencilIcon,
 } from "lucide-react"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { toWorkTypeText } from "@/utils/work/to-work-type-text"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Link } from "@remix-run/react"
-import { toDateTimeText } from "@/utils/to-date-time-text"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   works: {

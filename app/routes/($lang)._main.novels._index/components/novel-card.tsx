@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle } from "~/components/ui/card"
 
 export const NovelCard = () => {
   return (

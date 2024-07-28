@@ -1,13 +1,13 @@
-import { ResponsivePhotoWorksAlbum } from "@/components/responsive-photo-works-album"
-import { Button } from "@/components/ui/button"
+import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import { Button } from "~/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { HomeCroppedWorkList } from "@/routes/($lang)._main._index/components/home-cropped-work-list"
+} from "~/components/ui/tooltip"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
 import type { FragmentOf } from "gql.tada"

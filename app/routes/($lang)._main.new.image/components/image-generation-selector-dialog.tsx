@@ -1,11 +1,11 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { useState } from "react"
 import { useQuery } from "@apollo/client/index"
-import { Button } from "@/components/ui/button"
-import { getBase64FromImageUrl } from "@/utils/get-base64-from-image-url"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card } from "@/components/ui/card"
-import { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
+import { Button } from "~/components/ui/button"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Card } from "~/components/ui/card"
+import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { graphql } from "gql.tada"
 
 type Props = {

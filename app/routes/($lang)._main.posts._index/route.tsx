@@ -1,5 +1,5 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { AppPlaceholder } from "@/components/app/app-placeholder"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AppPlaceholder } from "~/components/app/app-placeholder"
 import { Suspense } from "react"
 
 /**

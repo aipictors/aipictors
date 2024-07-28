@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { SettingProfileForm } from "@/routes/($lang).settings.profile/components/setting-profile-form"
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
+import { SettingProfileForm } from "~/routes/($lang).settings.profile/components/setting-profile-form"
 
 type Props = {
   triggerChildren: React.ReactNode

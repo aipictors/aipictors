@@ -1,4 +1,4 @@
-import { toLocalHref } from "@/lib/app/utils/to-local-href"
+import { toLocalHref } from "~/lib/app/utils/to-local-href"
 
 export const toLocalHrefFactory = (locale: string) => {
   return (hashes: `/${string}` | TemplateStringsArray, ...values: string[]) => {

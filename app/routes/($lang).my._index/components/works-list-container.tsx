@@ -1,12 +1,12 @@
-import type { SortType } from "@/types/sort-type"
-import { AuthContext } from "@/contexts/auth-context"
+import type { SortType } from "~/types/sort-type"
+import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
-import { ResponsivePagination } from "@/components/responsive-pagination"
-import { WorksList } from "@/routes/($lang).my._index/components/works-list"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { WorksList } from "~/routes/($lang).my._index/components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
   page: number

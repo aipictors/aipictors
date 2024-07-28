@@ -1,4 +1,4 @@
-import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppMarkdown } from "~/components/app/app-markdown"
 import {
   Table,
   TableBody,
@@ -6,8 +6,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { imageModelContextFragment } from "@/routes/($lang).generation._index/contexts/generation-query-context"
+} from "~/components/ui/table"
+import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

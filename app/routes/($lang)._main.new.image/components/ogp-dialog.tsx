@@ -1,6 +1,6 @@
-import {} from "@/components/ui/dialog"
+import {} from "~/components/ui/dialog"
 import { useEffect, useState } from "react"
-import { ImageCropperModal } from "@/components/modal-image-cropper"
+import { ImageCropperModal } from "~/components/modal-image-cropper"
 
 type Props = {
   imageBase64: string

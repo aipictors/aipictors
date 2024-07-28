@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card"
+import { Card } from "~/components/ui/card"
 import { Link } from "@remix-run/react"
 
 type Props = {

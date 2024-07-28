@@ -1,5 +1,5 @@
-import { AddStickerDialog } from "@/components/add-sticker-dialog"
-import { Button } from "@/components/ui/button"
+import { AddStickerDialog } from "~/components/add-sticker-dialog"
+import { Button } from "~/components/ui/button"
 import { PlusIcon } from "lucide-react"
 
 type Props = {

@@ -1,18 +1,18 @@
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { imageGenerationMemoFieldsFragment } from "@/graphql/fragments/image-reserved-generation-memo-field"
-import { passFieldsFragment } from "@/graphql/fragments/pass-fields"
-import { config } from "@/config"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+} from "~/components/ui/select"
+import { Textarea } from "~/components/ui/textarea"
+import { imageGenerationMemoFieldsFragment } from "~/graphql/fragments/image-reserved-generation-memo-field"
+import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
+import { config } from "~/config"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2, Trash2Icon } from "lucide-react"

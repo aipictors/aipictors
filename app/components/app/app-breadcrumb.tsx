@@ -1,4 +1,4 @@
-import { config } from "@/config"
+import { config } from "~/config"
 import { Link } from "@remix-run/react"
 import type { BreadcrumbList, WithContext } from "schema-dts"
 

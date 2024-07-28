@@ -1,22 +1,22 @@
-import { config, KeyCodes } from "@/config"
-import { useCachedImageGenerationTask } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import { createImageFileFromUrl } from "@/routes/($lang).generation._index/utils/create-image-file-from-url"
-import { downloadImageFile } from "@/routes/($lang).generation._index/utils/download-image-file"
-import { GenerationTaskSheetViewContent } from "@/routes/($lang).generation._index/components/generation-task-sheet-view-content"
-import { InProgressImageGenerationTaskResult } from "@/routes/($lang).generation._index/components/in-progress-image-generation-task-result"
-import type { GenerationParameters } from "@/routes/($lang).generation._index/types/generation-parameters"
+import { config, KeyCodes } from "~/config"
+import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
+import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { GenerationTaskSheetViewContent } from "~/routes/($lang).generation._index/components/generation-task-sheet-view-content"
+import { InProgressImageGenerationTaskResult } from "~/routes/($lang).generation._index/components/in-progress-image-generation-task-result"
+import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/routes/($lang).generation._index/types/generation-size"
+} from "~/routes/($lang).generation._index/types/generation-size"
 import { useMutation } from "@apollo/client/index"
 import { useCallback, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { type FragmentOf, graphql } from "gql.tada"
-import { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
-import { useCachedImageGenerationResult } from "@/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
+import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
+import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
 
 type Props = {
   task:

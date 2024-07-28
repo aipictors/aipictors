@@ -1,15 +1,15 @@
-import type { SortType } from "@/types/sort-type"
+import type { SortType } from "~/types/sort-type"
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from "~/components/ui/select"
 import { useState } from "react"
-import { toRatingText } from "@/utils/work/to-rating-text"
-import { AlbumsListSortableSetting } from "@/routes/($lang).my._index/components/albums-list-sortable-setting"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { toRatingText } from "~/utils/work/to-rating-text"
+import { AlbumsListSortableSetting } from "~/routes/($lang).my._index/components/albums-list-sortable-setting"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   sort: SortType

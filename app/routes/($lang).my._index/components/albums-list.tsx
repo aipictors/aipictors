@@ -1,7 +1,7 @@
-import type { SortType } from "@/types/sort-type"
-import { AlbumsListTable } from "@/routes/($lang).my._index/components/albums-list-table"
-import { AlbumsSpList } from "@/routes/($lang).my._index/components/albums-sp-list"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
+import { AlbumsListTable } from "~/routes/($lang).my._index/components/albums-list-table"
+import { AlbumsSpList } from "~/routes/($lang).my._index/components/albums-sp-list"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   albums: {

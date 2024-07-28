@@ -1,4 +1,4 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 /**
  * 作品の年齢制限の文言を返す

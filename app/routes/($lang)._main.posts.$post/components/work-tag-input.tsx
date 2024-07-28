@@ -1,5 +1,5 @@
-import { type Tag, TagInput } from "@/components/tag/tag-input"
-import { Button } from "@/components/ui/button"
+import { type Tag, TagInput } from "~/components/tag/tag-input"
+import { Button } from "~/components/ui/button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"

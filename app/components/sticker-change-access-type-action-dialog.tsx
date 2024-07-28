@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { AuthContext } from "@/contexts/auth-context"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+} from "~/components/ui/dialog"
+import { Input } from "~/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"

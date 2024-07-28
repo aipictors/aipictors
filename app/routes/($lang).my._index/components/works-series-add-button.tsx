@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { CreateAlbumDialog } from "@/routes/($lang).my._index/components/create-album-dialog"
+import { Button } from "~/components/ui/button"
+import { CreateAlbumDialog } from "~/routes/($lang).my._index/components/create-album-dialog"
 import { PlusIcon } from "lucide-react"
 
 type Props = {

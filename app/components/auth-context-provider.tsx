@@ -1,5 +1,5 @@
-import { AuthContext } from "@/contexts/auth-context"
-import { config } from "@/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { config } from "~/config"
 import {
   getAnalytics,
   logEvent,

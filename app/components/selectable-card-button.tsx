@@ -1,5 +1,5 @@
-import { cn } from "@/lib/cn"
-// import Theme from "@/routes/($lang)._main.themes.$year.$month.$day._index/route"
+import { cn } from "~/lib/cn"
+// import Theme from "~/routes/($lang)._main.themes.$year.$month.$day._index/route"
 import { CheckIcon } from "lucide-react"
 
 type Props = {

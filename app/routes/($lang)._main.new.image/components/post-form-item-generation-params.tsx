@@ -1,10 +1,10 @@
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import type { PNGInfo } from "@/utils/get-extract-info-from-png"
-import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { Textarea } from "~/components/ui/textarea"
+import type { PNGInfo } from "~/utils/get-extract-info-from-png"
+import { Card, CardContent } from "~/components/ui/card"
 import { useState } from "react"
-import { ExpansionTransition } from "@/components/expansion-transition"
-import { Button } from "@/components/ui/button"
+import { ExpansionTransition } from "~/components/expansion-transition"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   pngInfo: PNGInfo | null

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { ThemeCard } from "@/routes/($lang)._main.themes._index/components/theme-card"
+import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import { ThemeCard } from "~/routes/($lang)._main.themes._index/components/theme-card"
 
 export const ThemeHeader = () => {
   return (

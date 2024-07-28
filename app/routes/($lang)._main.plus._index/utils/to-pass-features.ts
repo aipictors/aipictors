@@ -1,5 +1,5 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { config } from "@/config"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { config } from "~/config"
 
 export const toPassFeatures = (passType: IntrospectionEnum<"PassType">) => {
   if (passType === "LITE") {

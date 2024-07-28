@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { Card } from "~/components/ui/card"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 /**
  * 作品プレビュー内容

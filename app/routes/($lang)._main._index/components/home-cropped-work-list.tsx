@@ -1,9 +1,9 @@
-import { CarouselWithGradation } from "@/components/carousel-with-gradation"
-import { CroppedWorkSquare } from "@/components/cropped-work-square"
-import { IconUrl } from "@/components/icon-url"
-import { LikeButton } from "@/components/like-button"
-import { UserNameBadge } from "@/components/user-name-badge"
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { IconUrl } from "~/components/icon-url"
+import { LikeButton } from "~/components/like-button"
+import { UserNameBadge } from "~/components/user-name-badge"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

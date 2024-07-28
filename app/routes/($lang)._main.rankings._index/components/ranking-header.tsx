@@ -2,7 +2,7 @@ import type React from "react"
 import { useState } from "react"
 import { Link, useNavigate } from "@remix-run/react"
 import { ChevronLeftIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   year: number

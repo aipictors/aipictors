@@ -1,9 +1,9 @@
 import type * as ResizablePrimitive from "react-resizable-panels"
-import { cn } from "@/lib/cn"
-import { ResizablePanel } from "@/components/ui/resizable"
+import { cn } from "~/lib/cn"
+import { ResizablePanel } from "~/components/ui/resizable"
 import {} from "react"
-import { getCookie } from "@/utils/get-cookie"
-import { setCookie } from "@/utils/set-cookie"
+import { getCookie } from "~/utils/get-cookie"
+import { setCookie } from "~/utils/set-cookie"
 
 /**
  * リサイザーパネルのサイズ記憶付きハンドル

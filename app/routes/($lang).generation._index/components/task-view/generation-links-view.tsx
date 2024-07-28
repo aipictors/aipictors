@@ -1,5 +1,5 @@
-import { GenerationViewCard } from "@/routes/($lang).generation._index/components/generation-view-card"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { Link } from "@remix-run/react"
 
 /**

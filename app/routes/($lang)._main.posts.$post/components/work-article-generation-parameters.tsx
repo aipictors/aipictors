@@ -1,13 +1,13 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useState } from "react"
-import { Card } from "@/components/ui/card"
+import { Card } from "~/components/ui/card"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button"
+} from "~/components/ui/accordion"
+import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
 
 type Props = {

@@ -1,5 +1,5 @@
-import { ResponsivePhotoVideoWorksAlbum } from "@/components/responsive-photo-video-works-album"
-import type { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
+import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
+import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

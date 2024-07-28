@@ -1,4 +1,4 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

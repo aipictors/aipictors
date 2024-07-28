@@ -1,5 +1,5 @@
-import type { PostTextFormAction } from "@/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
-import type { PostTextFormState } from "@/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
+import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
+import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
 
 export const postTextFormReducer = (
   state: PostTextFormState,

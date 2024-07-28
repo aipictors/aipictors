@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator"
-import { HomeNavigationButton } from "@/routes/($lang)._main._index/components/home-navigation-button"
+import { Separator } from "~/components/ui/separator"
+import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import {
   AwardIcon,
   FolderIcon,

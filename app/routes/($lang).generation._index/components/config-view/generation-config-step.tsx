@@ -1,10 +1,10 @@
-import { Input } from "@/components/ui/input"
+import { Input } from "~/components/ui/input"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "~/components/ui/tooltip"
 import { HelpCircleIcon } from "lucide-react"
 
 type Props = {

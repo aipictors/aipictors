@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { Card, CardContent } from "~/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   type: IntrospectionEnum<"WorkType">

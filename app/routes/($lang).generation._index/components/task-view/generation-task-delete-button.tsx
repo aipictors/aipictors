@@ -1,5 +1,5 @@
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
-import { Button } from "@/components/ui/button"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Button } from "~/components/ui/button"
 import { Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
 

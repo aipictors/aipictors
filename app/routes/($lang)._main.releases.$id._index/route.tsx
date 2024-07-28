@@ -1,9 +1,9 @@
 import { json, Link, useLoaderData } from "@remix-run/react"
 import { createClient as createCmsClient } from "microcms-js-sdk"
-import { Button } from "@/components/ui/button"
+import { Button } from "~/components/ui/button"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { ReleaseItem } from "@/routes/($lang)._main.releases.$id._index/components/release-item"
-import { config } from "@/config"
+import { ReleaseItem } from "~/routes/($lang)._main.releases.$id._index/components/release-item"
+import { config } from "~/config"
 
 interface Release {
   id: string

@@ -1,6 +1,6 @@
-import { Switch } from "@/components/ui/switch"
-import type { partialAlbumFieldsFragment } from "@/graphql/fragments/partial-album-fields"
-import { WorkCard } from "@/routes/($lang)._main.posts._index/components/work-card"
+import { Switch } from "~/components/ui/switch"
+import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
+import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 

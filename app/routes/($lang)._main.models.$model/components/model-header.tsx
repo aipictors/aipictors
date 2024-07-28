@@ -1,4 +1,4 @@
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "~/components/ui/switch"
 import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {

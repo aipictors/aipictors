@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Button } from "~/components/ui/button"
+import { Card } from "~/components/ui/card"
 import { Link } from "@remix-run/react"
 import { RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"

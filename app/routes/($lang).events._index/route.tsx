@@ -1,7 +1,7 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { AuthContext } from "@/contexts/auth-context"
-import { createClient } from "@/lib/client"
-import { EventsList } from "@/routes/($lang).events._index/components/events-list"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AuthContext } from "~/contexts/auth-context"
+import { createClient } from "~/lib/client"
+import { EventsList } from "~/routes/($lang).events._index/components/events-list"
 import {
   json,
   type LoaderFunctionArgs,

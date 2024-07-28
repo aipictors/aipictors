@@ -1,4 +1,4 @@
-import { getBreakpoint } from "@/utils/get-breakpoints"
+import { getBreakpoint } from "~/utils/get-breakpoints"
 import { throttle } from "../lib/throttle"
 import { useEffect, useState } from "react"
 

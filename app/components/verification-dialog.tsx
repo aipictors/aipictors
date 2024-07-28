@@ -3,10 +3,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "~/components/ui/dialog"
 import { useQuery } from "@apollo/client/index"
 import { useEffect, useState } from "react"
-import { LineLoggedInButton } from "@/components/button/line-logged-in-button"
+import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 

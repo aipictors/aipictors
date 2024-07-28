@@ -4,12 +4,12 @@ import {
   TableRow,
   TableHead,
   TableBody,
-} from "@/components/ui/table"
-import type { SortType } from "@/types/sort-type"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { AlbumsListTableRow } from "@/routes/($lang).my._index/components/albums-list-table-row"
-import { AlbumsListColumn } from "@/routes/($lang).my._index/components/albums-list-column"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+} from "~/components/ui/table"
+import type { SortType } from "~/types/sort-type"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { AlbumsListTableRow } from "~/routes/($lang).my._index/components/albums-list-table-row"
+import { AlbumsListColumn } from "~/routes/($lang).my._index/components/albums-list-column"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   albums: {

@@ -2,12 +2,12 @@ import {
   albumItemFragment,
   albumItemWorkFragment,
   ResponsiveAlbumsList,
-} from "@/components/responsive-albums-list"
-import { ResponsivePagination } from "@/components/responsive-pagination"
-import { AuthContext } from "@/contexts/auth-context"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import type { SortType } from "@/types/sort-type"
-import { WorksSeriesAddButton } from "@/routes/($lang).my._index/components/works-series-add-button"
+} from "~/components/responsive-albums-list"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
+import { WorksSeriesAddButton } from "~/routes/($lang).my._index/components/works-series-add-button"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"

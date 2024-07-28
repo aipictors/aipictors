@@ -4,12 +4,12 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
-import { HomeEventBanner } from "@/routes/($lang)._main._index/components/home-event-banner"
+} from "~/components/ui/carousel"
+import { HomeEventBanner } from "~/routes/($lang)._main._index/components/home-event-banner"
 import {
   HomeGenerationBanner,
   type homeGenerationBannerWorkFieldFragment,
-} from "@/routes/($lang)._main._index/components/home-generation-banner"
+} from "~/routes/($lang)._main._index/components/home-generation-banner"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

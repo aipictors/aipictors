@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { GenerationTaskContentImagePlaceHolder } from "@/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
+import { GenerationTaskContentImagePlaceHolder } from "~/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
 import { Suspense } from "react"
 
 type Props = {

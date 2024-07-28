@@ -1,5 +1,5 @@
-import { ImageItem } from "@/components/drag/image-item"
-import { Button } from "@/components/ui/button"
+import { ImageItem } from "~/components/drag/image-item"
+import { Button } from "~/components/ui/button"
 import { useSortable } from "@dnd-kit/sortable"
 import { XIcon } from "lucide-react"
 import { useState, type HTMLAttributes } from "react"

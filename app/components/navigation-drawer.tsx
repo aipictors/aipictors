@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetOverlay } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetOverlay } from "~/components/ui/sheet"
 
 type Props = {
   children: React.ReactNode

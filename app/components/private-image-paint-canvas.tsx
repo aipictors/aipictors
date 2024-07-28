@@ -1,4 +1,4 @@
-import PaintCanvas from "@/components/paint-canvas"
+import PaintCanvas from "~/components/paint-canvas"
 import { useEffect, useState } from "react"
 
 type Props = {

@@ -1,4 +1,4 @@
-import { runAnimation } from "@/routes/($lang).app._index/utils/run-animation"
+import { runAnimation } from "~/routes/($lang).app._index/utils/run-animation"
 import { useEffect, useRef } from "react"
 
 export const AppCanvas = () => {

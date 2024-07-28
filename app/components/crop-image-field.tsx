@@ -1,8 +1,8 @@
-import { ImageCropperModal } from "@/components/modal-image-cropper"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { getBase64FromImageUrl } from "@/utils/get-base64-from-image-url"
+import { ImageCropperModal } from "~/components/modal-image-cropper"
+import { Button } from "~/components/ui/button"
+import { Card } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
 import { useCallback, useState, useRef } from "react"
 

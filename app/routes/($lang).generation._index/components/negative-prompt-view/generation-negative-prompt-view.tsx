@@ -1,9 +1,9 @@
-import { Textarea } from "@/components/ui/textarea"
-import { GenerationViewCard } from "@/routes/($lang).generation._index/components/generation-view-card"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { NegativePromptsDialogContent } from "@/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
+import { Textarea } from "~/components/ui/textarea"
+import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { Dialog, DialogTrigger } from "~/components/ui/dialog"
+import { Button } from "~/components/ui/button"
+import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
 import { useBoolean } from "usehooks-ts"
 
 /**

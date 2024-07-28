@@ -1,5 +1,5 @@
-import { CrossPlatformTooltip } from "@/components/cross-platform-tooltip"
-import { Card } from "@/components/ui/card"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Card } from "~/components/ui/card"
 
 type Props = {
   title?: string

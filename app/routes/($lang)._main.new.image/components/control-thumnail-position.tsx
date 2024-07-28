@@ -1,4 +1,4 @@
-import {} from "@/components/ui/accordion"
+import {} from "~/components/ui/accordion"
 import {} from "@dnd-kit/core"
 import {} from "react"
 

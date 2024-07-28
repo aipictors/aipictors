@@ -1,9 +1,9 @@
-import { vImageInformation } from "@/routes/($lang)._main.new.image/validations/image-information"
-import { vPostAccessType } from "@/routes/($lang)._main.new.image/validations/post-access-type"
-import { vPostGenerationParamAccessType } from "@/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
-import { vPostImageStyle } from "@/routes/($lang)._main.new.image/validations/post-image-style"
-import { vPostRating } from "@/routes/($lang)._main.new.image/validations/post-rating"
-import { vTag } from "@/routes/($lang)._main.new.image/validations/post-tag"
+import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
+import { vPostGenerationParamAccessType } from "~/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
+import { vPostImageStyle } from "~/routes/($lang)._main.new.image/validations/post-image-style"
+import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
+import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
 import {
   object,
   string,

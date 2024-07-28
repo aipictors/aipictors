@@ -4,10 +4,10 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from "~/components/ui/select"
 import { useState } from "react"
-import { toNotificationTypeName } from "@/routes/($lang).generation._index/utils/to-notify-type-name"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { toNotificationTypeName } from "~/routes/($lang).generation._index/utils/to-notify-type-name"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   notificationType: IntrospectionEnum<"NotificationType"> | null

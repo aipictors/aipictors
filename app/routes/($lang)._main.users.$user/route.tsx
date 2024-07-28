@@ -1,21 +1,21 @@
-import { AppPage } from "@/components/app/app-page"
-import { ConstructionAlert } from "@/components/construction-alert"
-import { IconUrl } from "@/components/icon-url"
-import { ParamsError } from "@/errors/params-error"
-import { partialWorkFieldsFragment } from "@/graphql/fragments/partial-work-fields"
-import { createClient } from "@/lib/client"
+import { AppPage } from "~/components/app/app-page"
+import { ConstructionAlert } from "~/components/construction-alert"
+import { IconUrl } from "~/components/icon-url"
+import { ParamsError } from "~/errors/params-error"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { createClient } from "~/lib/client"
 import {
   UserContents,
   userProfileFragment,
-} from "@/routes/($lang)._main.users.$user/components/user-contents"
+} from "~/routes/($lang)._main.users.$user/components/user-contents"
 import {
   UserHomeMain,
   userHomeMainFragment,
-} from "@/routes/($lang)._main.users.$user/components/user-home-main"
+} from "~/routes/($lang)._main.users.$user/components/user-home-main"
 import {
   userProfileIconFragment,
   UserProfileNameIcon,
-} from "@/routes/($lang)._main.users.$user/components/user-profile-name-icon"
+} from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"

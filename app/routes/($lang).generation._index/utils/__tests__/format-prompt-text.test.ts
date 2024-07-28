@@ -1,4 +1,4 @@
-import { formatPromptText } from "@/routes/($lang).generation._index/utils/format-prompt-text"
+import { formatPromptText } from "~/routes/($lang).generation._index/utils/format-prompt-text"
 import { describe, expect, test } from "bun:test"
 
 describe("formatPromptText", () => {

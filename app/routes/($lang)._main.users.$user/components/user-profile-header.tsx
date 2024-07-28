@@ -1,4 +1,4 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { AspectRatio } from "~/components/ui/aspect-ratio"
 
 type Props = {
   headerImageUrl?: string

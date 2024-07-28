@@ -1,10 +1,10 @@
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { GenerationMenuButton } from "@/routes/($lang).generation._index/components/generation-menu-button"
+import { Separator } from "~/components/ui/separator"
+import { Skeleton } from "~/components/ui/skeleton"
+import { GenerationMenuButton } from "~/routes/($lang).generation._index/components/generation-menu-button"
 import {
   type GenerationSize,
   parseGenerationSize,
-} from "@/routes/($lang).generation._index/types/generation-size"
+} from "~/routes/($lang).generation._index/types/generation-size"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -13,11 +13,11 @@ import {
   Trash2,
 } from "lucide-react"
 import { CopyButton } from "./copy-button"
-import { StarRating } from "@/routes/($lang).generation._index/components/task-view/star-rating"
-import { AutoResizeTextarea } from "@/components/auto-resize-textarea"
+import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import type { FragmentOf } from "gql.tada"
-import type { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
+import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
+import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 
 type Props = {
   task:

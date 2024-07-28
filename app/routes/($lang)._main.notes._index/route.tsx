@@ -1,5 +1,5 @@
-import { AppPage } from "@/components/app/app-page"
-import { NoteCard } from "@/routes/($lang)._main.notes._index/components/note-card"
+import { AppPage } from "~/components/app/app-page"
+import { NoteCard } from "~/routes/($lang)._main.notes._index/components/note-card"
 
 /**
  * コラムの一覧

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { ApolloError, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { EyeIcon } from "lucide-react"

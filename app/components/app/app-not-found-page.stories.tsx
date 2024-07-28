@@ -1,4 +1,4 @@
-import { AppNotFoundPage } from "@/components/app/app-not-found-page"
+import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

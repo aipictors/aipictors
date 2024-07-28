@@ -1,6 +1,6 @@
-import { AuthContext } from "@/contexts/auth-context"
-import { resetCookieLoginToken } from "@/utils/reset-cookie-login-token"
-import { config } from "@/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
+import { config } from "~/config"
 import { getAuth, signOut } from "firebase/auth"
 import { useContext, useEffect } from "react"
 

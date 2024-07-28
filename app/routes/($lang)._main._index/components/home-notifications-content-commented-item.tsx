@@ -1,7 +1,7 @@
-import { IconUrl } from "@/components/icon-url"
-import { Badge } from "@/components/ui/badge"
-import {} from "@/components/ui/dropdown-menu"
-import {} from "@/components/ui/tabs"
+import { IconUrl } from "~/components/icon-url"
+import { Badge } from "~/components/ui/badge"
+import {} from "~/components/ui/dropdown-menu"
+import {} from "~/components/ui/tabs"
 import { Link } from "@remix-run/react"
 
 type Props = {

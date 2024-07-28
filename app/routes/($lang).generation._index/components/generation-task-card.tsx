@@ -1,8 +1,8 @@
-import type { imageGenerationResultFieldsFragment } from "@/graphql/fragments/image-generation-result-field"
-import type { imageGenerationTaskFieldsFragment } from "@/graphql/fragments/image-generation-task-field"
-import { GenerationTaskEditableCard } from "@/routes/($lang).generation._index/components/generation-task-editable-card"
-import { GenerationTaskResponsiveCard } from "@/routes/($lang).generation._index/components/generation-task-responsive-card"
-import type { TaskContentPositionType } from "@/routes/($lang).generation._index/types/task-content-position-type"
+import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
+import { GenerationTaskEditableCard } from "~/routes/($lang).generation._index/components/generation-task-editable-card"
+import { GenerationTaskResponsiveCard } from "~/routes/($lang).generation._index/components/generation-task-responsive-card"
+import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {

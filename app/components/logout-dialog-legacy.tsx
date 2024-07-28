@@ -7,9 +7,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { resetCookieLoginToken } from "@/utils/reset-cookie-login-token"
-import { config } from "@/config"
+} from "~/components/ui/alert-dialog"
+import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
+import { config } from "~/config"
 import { getAuth, signOut } from "firebase/auth"
 import { toast } from "sonner"
 

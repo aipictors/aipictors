@@ -1,9 +1,9 @@
-import { LikeButton } from "@/components/like-button"
+import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 import { useRef } from "react"
-import { Badge } from "@/components/ui/badge"
-import { IconUrl } from "@/components/icon-url"
+import { Badge } from "~/components/ui/badge"
+import { IconUrl } from "~/components/icon-url"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
   userId: string

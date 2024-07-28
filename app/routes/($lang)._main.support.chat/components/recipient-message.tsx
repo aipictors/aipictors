@@ -1,6 +1,6 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Card } from "@/components/ui/card"
-import { toElapsedTimeText } from "@/utils/to-elapsed-time-text"
+import { Avatar, AvatarImage } from "~/components/ui/avatar"
+import { Card } from "~/components/ui/card"
+import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { AvatarFallback } from "@radix-ui/react-avatar"
 
 type Props = {

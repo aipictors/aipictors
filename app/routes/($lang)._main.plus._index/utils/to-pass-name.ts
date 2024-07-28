@@ -1,4 +1,4 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 export const toPassName = (passType: IntrospectionEnum<"PassType">) => {
   if (passType === "LITE") {

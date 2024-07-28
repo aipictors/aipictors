@@ -1,8 +1,8 @@
-import { CrossPlatformTooltip } from "@/components/cross-platform-tooltip"
-import { Slider } from "@/components/ui/slider"
-import { GenerationReserveCountInput } from "@/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
-import { GenerationQueryContext } from "@/routes/($lang).generation._index/contexts/generation-query-context"
-import { useGenerationContext } from "@/routes/($lang).generation._index/hooks/use-generation-context"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Slider } from "~/components/ui/slider"
+import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
+import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useContext, useEffect } from "react"
 
 type Props = {

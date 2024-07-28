@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react"
 import { Heart } from "lucide-react"
-import { cn } from "@/lib/cn"
-import { AuthContext } from "@/contexts/auth-context"
-import { LoginDialogButton } from "@/components/login-dialog-button"
+import { cn } from "~/lib/cn"
+import { AuthContext } from "~/contexts/auth-context"
+import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 

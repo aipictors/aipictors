@@ -1,14 +1,14 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { Button } from "@/components/ui/button"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { HomeNotificationCommentsTabs } from "@/routes/($lang)._main._index/components/home-notifications-comments-tabs"
-import { HomeNotificationsContents } from "@/routes/($lang)._main._index/components/home-notifications-contents"
+} from "~/components/ui/dropdown-menu"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { HomeNotificationCommentsTabs } from "~/routes/($lang)._main._index/components/home-notifications-comments-tabs"
+import { HomeNotificationsContents } from "~/routes/($lang)._main._index/components/home-notifications-contents"
 import { Link } from "@remix-run/react"
 import { BellIcon } from "lucide-react"
 import { Suspense, useState } from "react"

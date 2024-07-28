@@ -1,6 +1,6 @@
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
-import { BookmarkWorksListTable } from "@/routes/($lang).my._index/components/bookmark-works-list-table"
-import { BookmarkWorksSpList } from "@/routes/($lang).my._index/components/bookmark-works-sp-list"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { BookmarkWorksListTable } from "~/routes/($lang).my._index/components/bookmark-works-list-table"
+import { BookmarkWorksSpList } from "~/routes/($lang).my._index/components/bookmark-works-sp-list"
 
 type Props = {
   works: {

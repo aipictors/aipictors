@@ -1,10 +1,10 @@
-import { GlowingGradientBorderButton } from "@/components/button/glowing-gradient-border-button"
+import { GlowingGradientBorderButton } from "~/components/button/glowing-gradient-border-button"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import { Separator } from "@/components/ui/separator"
+} from "~/components/ui/carousel"
+import { Separator } from "~/components/ui/separator"
 import { Link } from "@remix-run/react"
 
 /**

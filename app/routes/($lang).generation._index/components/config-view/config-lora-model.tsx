@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
+import { Slider } from "~/components/ui/slider"
 import { XIcon } from "lucide-react"
 
 type Props = {

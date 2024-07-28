@@ -1,7 +1,7 @@
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { LoginPage } from "@/components/page/login-page"
-import { AuthContext } from "@/contexts/auth-context"
-import { MessageThreadList } from "@/routes/($lang)._main.messages._index/components/message-thread-list"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { LoginPage } from "~/components/page/login-page"
+import { AuthContext } from "~/contexts/auth-context"
+import { MessageThreadList } from "~/routes/($lang)._main.messages._index/components/message-thread-list"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 

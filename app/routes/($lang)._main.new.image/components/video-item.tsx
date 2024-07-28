@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import {} from "@/utils/get-extract-info-from-png"
+import { Button } from "~/components/ui/button"
+import {} from "~/utils/get-extract-info-from-png"
 import {} from "@dnd-kit/core"
 import { XIcon } from "lucide-react"
 import {} from "react"

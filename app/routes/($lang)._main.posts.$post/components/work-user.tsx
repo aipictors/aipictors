@@ -1,18 +1,18 @@
-import { FollowButton } from "@/components/button/follow-button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { FollowButton } from "~/components/button/follow-button"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { PromptonRequestTextButton } from "@/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
+} from "~/components/ui/card"
+import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
 import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
-import { AuthContext } from "@/contexts/auth-context"
+import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
-import { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
+import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 
 type Props = {

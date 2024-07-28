@@ -1,5 +1,5 @@
-import { config } from "@/config"
-import { currentPassContextFragment } from "@/routes/($lang).generation._index/contexts/generation-query-context"
+import { config } from "~/config"
+import { currentPassContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"

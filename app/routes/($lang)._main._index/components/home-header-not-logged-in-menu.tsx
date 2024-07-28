@@ -1,5 +1,5 @@
-import {} from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import {} from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "@/components/ui/dropdown-menu"
-import {} from "@/components/ui/sheet"
+} from "~/components/ui/dropdown-menu"
+import {} from "~/components/ui/sheet"
 import {
   EllipsisVerticalIcon,
   MoonIcon,
@@ -22,8 +22,8 @@ import {
 } from "lucide-react"
 import { useContext } from "react"
 import { useTheme } from "next-themes"
-import { AuthContext } from "@/contexts/auth-context"
-import { LoginDialogButton } from "@/components/login-dialog-button"
+import { AuthContext } from "~/contexts/auth-context"
+import { LoginDialogButton } from "~/components/login-dialog-button"
 
 const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)

@@ -1,4 +1,4 @@
-import { getCookieLoginToken } from "@/utils/get-cookie-login-token"
+import { getCookieLoginToken } from "~/utils/get-cookie-login-token"
 import { useMutation } from "@apollo/client/index"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { graphql } from "gql.tada"

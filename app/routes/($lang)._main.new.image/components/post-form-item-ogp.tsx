@@ -1,4 +1,4 @@
-import { OgpDialog } from "@/routes/($lang)._main.new.image/components/ogp-dialog"
+import { OgpDialog } from "~/routes/($lang)._main.new.image/components/ogp-dialog"
 import { useEffect, useState } from "react"
 
 type Props = {

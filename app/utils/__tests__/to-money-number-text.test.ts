@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { toMoneyNumberText } from "@/utils/to-money-number-text"
+import { toMoneyNumberText } from "~/utils/to-money-number-text"
 
 describe("toMoneyNumberText", () => {
   test("数値を3桁区切りのテキストに変換する", () => {

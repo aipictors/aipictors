@@ -1,4 +1,4 @@
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "~/components/ui/textarea"
 import { forwardRef, useState, useEffect, useCallback, useRef } from "react"
 
 type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {

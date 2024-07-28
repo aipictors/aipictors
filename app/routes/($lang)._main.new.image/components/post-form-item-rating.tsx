@@ -1,7 +1,7 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Link } from "@remix-run/react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   rating: IntrospectionEnum<"Rating">

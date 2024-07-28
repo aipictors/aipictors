@@ -1,6 +1,6 @@
-import { RecommendedWorksListTable } from "@/routes/($lang).my._index/components/recommended-works-list-table"
-import { RecommendedWorksSpList } from "@/routes/($lang).my._index/components/recommended-works-sp-list"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+import { RecommendedWorksListTable } from "~/routes/($lang).my._index/components/recommended-works-list-table"
+import { RecommendedWorksSpList } from "~/routes/($lang).my._index/components/recommended-works-sp-list"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   works: {

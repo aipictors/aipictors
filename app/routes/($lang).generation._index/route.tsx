@@ -1,6 +1,6 @@
-import text from "@/assets/terms.md?raw"
-import { AppLoadingPage } from "@/components/app/app-loading-page"
-import { GenerationForm } from "@/routes/($lang).generation._index/components/generation-form"
+import text from "~/assets/terms.md?raw"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { GenerationForm } from "~/routes/($lang).generation._index/components/generation-form"
 import { json } from "@remix-run/react"
 
 export function HydrateFallback() {

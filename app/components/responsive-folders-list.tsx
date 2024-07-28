@@ -1,5 +1,5 @@
-import type { partialFolderFieldsFragment } from "@/graphql/fragments/partial-folder-fields"
-import type { partialUserFieldsFragment } from "@/graphql/fragments/partial-user-fields"
+import type { partialFolderFieldsFragment } from "~/graphql/fragments/partial-folder-fields"
+import type { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 

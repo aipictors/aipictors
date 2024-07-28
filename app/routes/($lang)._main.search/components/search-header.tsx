@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { SearchConfigDialog } from "@/routes/($lang)._main.search/components/search-config-dialog"
+import { Button } from "~/components/ui/button"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { SearchConfigDialog } from "~/routes/($lang)._main.search/components/search-config-dialog"
 import { useBoolean } from "usehooks-ts"
 
 export const SearchHeader = () => {

@@ -1,5 +1,5 @@
-import { type Tag, TagInput } from "@/components/tag/tag-input"
-import {} from "@/components/ui/form"
+import { type Tag, TagInput } from "~/components/tag/tag-input"
+import {} from "~/components/ui/form"
 import React from "react"
 
 type Props = {

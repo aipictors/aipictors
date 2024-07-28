@@ -4,10 +4,10 @@ import {
   TableRow,
   TableHead,
   TableBody,
-} from "@/components/ui/table"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { RecommendedWorksListTableRow } from "@/routes/($lang).my._index/components/recommended-works-list-table-row"
-import type { IntrospectionEnum } from "@/lib/introspection-enum"
+} from "~/components/ui/table"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { RecommendedWorksListTableRow } from "~/routes/($lang).my._index/components/recommended-works-list-table-row"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   works: {

@@ -1,4 +1,4 @@
-import { ConfigLoraModel } from "@/routes/($lang).generation._index/components/config-view/config-lora-model"
+import { ConfigLoraModel } from "~/routes/($lang).generation._index/components/config-view/config-lora-model"
 import type { Meta, StoryObj } from "@storybook/react"
 
 const meta = {

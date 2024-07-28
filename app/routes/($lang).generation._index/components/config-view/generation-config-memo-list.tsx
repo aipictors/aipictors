@@ -1,6 +1,6 @@
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { GenerationConfigMemoItem } from "@/routes/($lang).generation._index/components/config-view/generation-config-memo-item"
+import { Input } from "~/components/ui/input"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { GenerationConfigMemoItem } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-item"
 import { useEffect, useState } from "react"
 
 type Props = {

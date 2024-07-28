@@ -1,5 +1,5 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Progress } from "@/components/ui/progress"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
+import { Progress } from "~/components/ui/progress"
 
 type Props = {
   isOpen: boolean

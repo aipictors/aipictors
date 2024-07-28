@@ -1,14 +1,14 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toDateTimeText } from "@/utils/to-date-time-text"
-import { AppConfirmDialog } from "@/components/app/app-confirm-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useMutation } from "@apollo/client/index"
 import { ArrowDownToLine, Loader2Icon } from "lucide-react"
 import React from "react"
-import { ReplyCommentInput } from "@/routes/($lang)._main.posts.$post/components/work-comment-input"
-import { StickerInfoDialog } from "@/components/sticker-info-dialog"
+import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post/components/work-comment-input"
+import { StickerInfoDialog } from "~/components/sticker-info-dialog"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { IconUrl } from "@/components/icon-url"
+import { IconUrl } from "~/components/icon-url"
 
 type Props = {
   userId: string

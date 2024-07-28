@@ -1,5 +1,5 @@
-import {} from "@/components/ui/dropdown-menu"
-import {} from "@/components/ui/tabs"
+import {} from "~/components/ui/dropdown-menu"
+import {} from "~/components/ui/tabs"
 import { HeartIcon } from "lucide-react"
 
 type Props = {

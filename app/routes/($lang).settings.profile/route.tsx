@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/components/app/app-page-center"
-import { SettingProfileForm } from "@/routes/($lang).settings.profile/components/setting-profile-form"
+import { AppPageCenter } from "~/components/app/app-page-center"
+import { SettingProfileForm } from "~/routes/($lang).settings.profile/components/setting-profile-form"
 
 /**
  * プロフィール設定ページ
