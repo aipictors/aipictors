@@ -41,6 +41,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
         subWorksCount: work.subWorksCount,
       }))}
       renderPhoto={(photoProps) => (
+        // @ts-ignore 後で考える
         <HomeWorkAlbum
           {...photoProps}
           subWorksCount={photoProps.photo.subWorksCount}
