@@ -7,6 +7,9 @@ export default {
   darkMode: ["class", '[data-theme^="dark"]'],
   content: [".storybook/**/*.tsx", "app/**/*.tsx"],
   theme: {
+    zIndex: {
+      infinity: "calc(infinity)",
+    },
     /**
      * shadcn/ui
      */
