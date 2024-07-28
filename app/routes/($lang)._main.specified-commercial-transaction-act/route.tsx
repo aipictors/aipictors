@@ -1,7 +1,7 @@
-import text from "@/_assets/specified-commercial-transaction-act.md?raw"
+import text from "@/assets/specified-commercial-transaction-act.md?raw"
 
-import { AppMarkdown } from "@/_components/app/app-markdown"
-import { AppPage } from "@/_components/app/app-page"
+import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppPage } from "@/components/app/app-page"
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/_components/ui/table"
+} from "@/components/ui/table"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 

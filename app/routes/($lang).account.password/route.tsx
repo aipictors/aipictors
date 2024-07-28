@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/_components/app/app-page-center"
-import { AccountPasswordForm } from "@/routes/($lang).account.password/_components/setting-password-form"
+import { AppPageCenter } from "@/components/app/app-page-center"
+import { AccountPasswordForm } from "@/routes/($lang).account.password/components/setting-password-form"
 
 export default function AccountPassword() {
   return (

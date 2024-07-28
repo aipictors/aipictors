@@ -1,16 +1,16 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AuthContext } from "@/_contexts/auth-context"
-import { createClient } from "@/_lib/client"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AuthContext } from "@/contexts/auth-context"
+import { createClient } from "@/lib/client"
 import { config } from "@/config"
-import HomeHeader from "@/routes/($lang)._main._index/_components/home-header"
-import { GenerationConfigProvider } from "@/routes/($lang).generation._index/_components/generation-config-provider"
-import { GenerationQueryProvider } from "@/routes/($lang).generation._index/_components/generation-query-provider"
+import HomeHeader from "@/routes/($lang)._main._index/components/home-header"
+import { GenerationConfigProvider } from "@/routes/($lang).generation._index/components/generation-config-provider"
+import { GenerationQueryProvider } from "@/routes/($lang).generation._index/components/generation-query-provider"
 import {
   controlNetCategoryContextFragment,
   imageLoraModelContextFragment,
   imageModelContextFragment,
   promptCategoryContextFragment,
-} from "@/routes/($lang).generation._index/_contexts/generation-query-context"
+} from "@/routes/($lang).generation._index/contexts/generation-query-context"
 import { ApolloError } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, json, useLoaderData } from "@remix-run/react"

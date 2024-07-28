@@ -1,6 +1,6 @@
-import text from "@/_assets/flutter/privacy.md?raw"
+import text from "@/assets/flutter/privacy.md?raw"
 
-import { AppMarkdown } from "@/_components/app/app-markdown"
+import { AppMarkdown } from "@/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 export default function FlutterPrivacyPage() {

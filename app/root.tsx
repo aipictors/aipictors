@@ -1,11 +1,11 @@
 import "react-photo-view/dist/react-photo-view.css"
 import "@fontsource-variable/m-plus-2"
 
-import { AppAnalytics } from "@/_components/app/app-analytics"
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AppNotFoundPage } from "@/_components/app/app-not-found-page"
-import { ContextProviders } from "@/_components/context-providers"
-import { cn } from "@/_lib/cn"
+import { AppAnalytics } from "@/components/app/app-analytics"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AppNotFoundPage } from "@/components/app/app-not-found-page"
+import { ContextProviders } from "@/components/context-providers"
+import { cn } from "@/lib/cn"
 import { config } from "@/config"
 import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare"
 import {
@@ -21,11 +21,11 @@ import {
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
 import { Suspense, useEffect, useState } from "react"
-import { Toaster } from "@/_components/app/app-sonner"
+import { Toaster } from "@/components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
 import styles from "@/tailwind.css?url"
-import { AppErrorPage } from "@/_components/app/app-error-page"
-import { ProgressBar } from "@/_components/progress-bar"
+import { AppErrorPage } from "@/components/app/app-error-page"
+import { ProgressBar } from "@/components/progress-bar"
 
 export const links: LinksFunction = () => {
   return [

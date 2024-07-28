@@ -1,5 +1,5 @@
-import { ParamsError } from "@/_errors/params-error"
-import { ChatMessageView } from "@/routes/($lang)._main.messages.$recipient/_components/chat-message-view"
+import { ParamsError } from "@/errors/params-error"
+import { ChatMessageView } from "@/routes/($lang)._main.messages.$recipient/components/chat-message-view"
 import { useParams } from "@remix-run/react"
 
 /**

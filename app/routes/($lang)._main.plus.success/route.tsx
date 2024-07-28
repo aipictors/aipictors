@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/_components/app/app-page-center"
-import { Button } from "@/_components/ui/button"
+import { AppPageCenter } from "@/components/app/app-page-center"
+import { Button } from "@/components/ui/button"
 import { Link } from "@remix-run/react"
 import { ThumbsUpIcon } from "lucide-react"
 

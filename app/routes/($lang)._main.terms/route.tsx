@@ -1,7 +1,7 @@
-import text from "@/_assets/terms.md?raw"
+import text from "@/assets/terms.md?raw"
 
-import { AppMarkdown } from "@/_components/app/app-markdown"
-import { AppPageCenter } from "@/_components/app/app-page-center"
+import { AppMarkdown } from "@/components/app/app-markdown"
+import { AppPageCenter } from "@/components/app/app-page-center"
 
 export default function Terms() {
   return (

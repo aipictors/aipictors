@@ -1,6 +1,6 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { AuthContext } from "@/_contexts/auth-context"
-import { FollowingList } from "@/routes/($lang).following._index/_components/following-list"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { AuthContext } from "@/contexts/auth-context"
+import { FollowingList } from "@/routes/($lang).following._index/components/following-list"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
 

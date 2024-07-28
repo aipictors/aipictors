@@ -1,5 +1,5 @@
-import { AppPageCenter } from "@/_components/app/app-page-center"
-import { MutedTagList } from "@/routes/($lang).settings.muted.tags/_components/muted-tag-list"
+import { AppPageCenter } from "@/components/app/app-page-center"
+import { MutedTagList } from "@/routes/($lang).settings.muted.tags/components/muted-tag-list"
 
 export default function SettingMutedTags() {
   return (

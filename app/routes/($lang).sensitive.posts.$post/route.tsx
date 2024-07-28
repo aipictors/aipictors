@@ -1,13 +1,13 @@
-import { ArticlePage } from "@/_components/page/article-page"
-import { createClient } from "@/_lib/client"
+import { ArticlePage } from "@/components/page/article-page"
+import { createClient } from "@/lib/client"
 import {
   WorkArticle,
   workArticleFragment,
-} from "@/routes/($lang)._main.posts.$post/_components/work-article"
+} from "@/routes/($lang)._main.posts.$post/components/work-article"
 import {
   commentFragment,
   WorkCommentList,
-} from "@/routes/($lang)._main.posts.$post/_components/work-comment-list"
+} from "@/routes/($lang)._main.posts.$post/components/work-comment-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"

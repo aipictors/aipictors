@@ -1,4 +1,4 @@
-import { AppCommonLayout } from "@/_components/app/app-common-layout"
+import { AppCommonLayout } from "@/components/app/app-common-layout"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet } from "@remix-run/react"
 

@@ -1,5 +1,5 @@
-import { ParamsError } from "@/_errors/params-error"
-import { UserCollectionList } from "@/routes/($lang)._main.users.$user.collections/_components/user-collection-list"
+import { ParamsError } from "@/errors/params-error"
+import { UserCollectionList } from "@/routes/($lang)._main.users.$user.collections/components/user-collection-list"
 import { useParams } from "@remix-run/react"
 
 export default function UserCollections() {

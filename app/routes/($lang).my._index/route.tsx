@@ -1,5 +1,5 @@
-import { AppLoadingPage } from "@/_components/app/app-loading-page"
-import { DashboardHomeContents } from "@/routes/($lang).my._index/_components/my-home-contents"
+import { AppLoadingPage } from "@/components/app/app-loading-page"
+import { DashboardHomeContents } from "@/routes/($lang).my._index/components/my-home-contents"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Suspense } from "react"
 

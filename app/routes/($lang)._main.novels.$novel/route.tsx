@@ -1,6 +1,6 @@
-import { AppPage } from "@/_components/app/app-page"
-import { ParamsError } from "@/_errors/params-error"
-import { NovelArticle } from "@/routes/($lang)._main.novels.$novel/_components/novel-article"
+import { AppPage } from "@/components/app/app-page"
+import { ParamsError } from "@/errors/params-error"
+import { NovelArticle } from "@/routes/($lang)._main.novels.$novel/components/novel-article"
 import { useParams } from "@remix-run/react"
 
 /**
