@@ -6,6 +6,7 @@ import { Badge } from "~/components/ui/badge"
 import { IconUrl } from "~/components/icon-url"
 
 type HomeWorkAlbumProps = RenderPhotoProps & {
+  src: string
   userId: string
   userName: string
   userIcon: string
@@ -17,8 +18,7 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
 }
 
 export function HomeWorkVideoAlbum({
-  photo,
-  wrapperStyle,
+  src,
   userId,
   userName,
   userIcon,
@@ -45,10 +45,7 @@ export function HomeWorkVideoAlbum({
   }
 
   return (
-    <div
-      className="relative transition-all"
-      style={{ ...wrapperStyle, position: "relative" }}
-    >
+    <div className="relative transition-all" style={{ position: "relative" }}>
       <div
         className="relative inline-block"
         onMouseEnter={handleMouseEnter}
@@ -56,7 +53,7 @@ export function HomeWorkVideoAlbum({
       >
         <Link to={`/posts/${workId}`}>
           <img
-            src={photo.src}
+            src={src}
             // @ts-ignore
             placeholder={"blurDataURL" in photo ? "blur" : ""}
             alt={""}
