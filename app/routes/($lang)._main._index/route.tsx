@@ -18,6 +18,7 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
+import { config } from "~/config"
 
 export const WORK_COUNT_DEFINE = {
   AD_WORKS: 16,
@@ -55,7 +56,7 @@ export const meta: MetaFunction = () => {
 
 export const headers: HeadersFunction = () => {
   return {
-    "Cache-Control": "max-age=240, s-maxage=240",
+    "Cache-Control": config.cacheControl.home,
   }
 }
 
