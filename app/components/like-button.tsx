@@ -138,6 +138,7 @@ export const LikeButton = ({
                       ? "fill-white "
                       : "fill-transparent ",
                   isLiked ? "like-animation" : "like-animation-end",
+                  "stroke-2",
                 )}
                 size={Math.floor(size / 2)}
                 strokeWidth={strokeWidth}
@@ -145,7 +146,7 @@ export const LikeButton = ({
               />
             </div>
             {text && (
-              <div className={cn("mr-4 flex space-x-1 font-bold text-sm")}>
+              <div className={cn("flex space-x-1 pr-3 font-bold text-sm")}>
                 <p>{text}</p>
                 <p>{likedCount}</p>
               </div>
@@ -194,6 +195,7 @@ export const LikeButton = ({
                 ? "fill-white "
                 : "fill-transparent ",
             isLiked ? "like-animation" : "like-animation-end",
+            "stroke-2",
           )}
           size={Math.floor(size / 2)}
           strokeWidth={strokeWidth}
@@ -203,7 +205,7 @@ export const LikeButton = ({
       {text !== undefined && (
         <div
           className={cn(
-            "mr-4 flex space-x-1 font-bold text-sm",
+            "flex space-x-1 pr-3 font-bold text-sm",
             textColor
               ? textColor === "black"
                 ? "text-black"
