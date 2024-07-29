@@ -1,12 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useState } from "react"
 import { Card } from "~/components/ui/card"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/ui/accordion"
+import {} from "~/components/ui/accordion"
 import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
 
@@ -51,7 +46,7 @@ export const WorkArticleGenerationParameters = (props: Props) => {
 
   return (
     <>
-      <Tabs className="hidden md:block" value={viewGenerationType}>
+      <Tabs className="block" value={viewGenerationType}>
         <TabsList>
           {props.prompt && (
             <TabsTrigger
@@ -188,7 +183,7 @@ export const WorkArticleGenerationParameters = (props: Props) => {
           </TabsContent>
         )}
       </Tabs>
-      <div className="block md:hidden">
+      {/* <div className="block md:hidden">
         <Accordion type="single" collapsible>
           <AccordionItem value="setting">
             <AccordionTrigger>
@@ -294,7 +289,7 @@ export const WorkArticleGenerationParameters = (props: Props) => {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </div>
+      </div> */}
     </>
   )
 }

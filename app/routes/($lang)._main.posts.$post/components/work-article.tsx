@@ -4,7 +4,6 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post/components/work-article-generation-parameters"
-import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
 import { useContext } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -23,6 +22,7 @@ import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post/compone
 import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post/components/work-markdown-view"
+import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -172,7 +172,6 @@ export const WorkArticle = (props: Props) => {
           strength={props.work.strength}
           otherGenerationParams={props.work.otherGenerationParams}
         />
-
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Button } from "~/components/ui/button"
 import {} from "~/components/ui/popover"
@@ -17,7 +17,9 @@ type Props = {
 export const RecommendButton = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: authContext.isNotLoggedIn || authContext.isLoading,
+  })
 
   const passData = pass?.viewer?.currentPass
 
@@ -26,9 +28,9 @@ export const RecommendButton = (props: Props) => {
 
   const [isRecommended, setIsRecommended] = useState(props.isRecommended)
 
-  useEffect(() => {
-    setIsRecommended(props.isRecommended)
-  }, [props.isRecommended])
+  // useEffect(() => {
+  //   setIsRecommended(props.isRecommended)
+  // }, [props.isRecommended])
 
   const [deleteRecommend, { loading: isDeleting }] = useMutation(
     deleteRecommendedWorkMutation,
