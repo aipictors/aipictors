@@ -13,7 +13,7 @@ import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-t
 import { HomeVideosSection } from "~/routes/($lang)._main._index/components/home-videos-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
@@ -51,6 +51,12 @@ export const meta: MetaFunction = () => {
     { property: "og:image", content: metaImage },
     { property: "og:site_name", content: metaTitle },
   ]
+}
+
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": "max-age=240, s-maxage=240",
+  }
 }
 
 export async function loader() {
