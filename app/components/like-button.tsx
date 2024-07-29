@@ -145,7 +145,7 @@ export const LikeButton = ({
               />
             </div>
             {text && (
-              <div className={cn("mr-4 flex space-x-1 text-sm ")}>
+              <div className={cn("mr-4 flex space-x-1 font-bold text-sm")}>
                 <p>{text}</p>
                 <p>{likedCount}</p>
               </div>
@@ -203,7 +203,7 @@ export const LikeButton = ({
       {text !== undefined && (
         <div
           className={cn(
-            "mr-4 flex space-x-1 font-bold",
+            "mr-4 flex space-x-1 font-bold text-sm",
             textColor
               ? textColor === "black"
                 ? "text-black"

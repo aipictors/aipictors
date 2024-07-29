@@ -125,7 +125,7 @@ export const CroppedWorkSquare = (props: Props) => {
         )}
         {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
           <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-            <Images className="h-3 w-3" />
+            <Images className="h-3 w-3 text-white" />
             <div className="font-bold text-white text-xs">
               {props.subWorksCount + 1}
             </div>
