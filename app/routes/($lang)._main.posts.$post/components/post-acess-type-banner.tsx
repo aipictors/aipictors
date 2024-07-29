@@ -46,6 +46,10 @@ export const PostAccessTypeBanner = (props: Props) => {
     return ""
   }
 
+  if (accessTypeText() === "" && getFuturePost() === "") {
+    return null
+  }
+
   return (
     <div
       className={`flex h-12 w-full items-center justify-center rounded-md bg-opacity-20 ${getBackgroundColor()} bg-opacity-50 font-bold`}
