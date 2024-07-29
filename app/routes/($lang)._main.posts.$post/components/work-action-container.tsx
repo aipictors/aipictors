@@ -13,6 +13,7 @@ type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
   bookmarkFolderId: string | null
+  isDisabledShare?: boolean
 }
 
 /**
@@ -47,6 +48,7 @@ export const WorkActionContainer = (props: Props) => {
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={isHideEditButton}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      isDisabledShare={props.isDisabledShare}
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }

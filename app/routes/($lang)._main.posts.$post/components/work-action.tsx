@@ -22,6 +22,7 @@ type Props = {
   targetWorkOwnerUserId: string
   isHideEditButton: boolean
   isRecommended: boolean
+  isDisabledShare?: boolean
 }
 
 /**
@@ -72,7 +73,10 @@ export const WorkAction = (props: Props) => {
             defaultBookmarked={props.defaultBookmarked}
           />
         )}
-        <SharePopover title={props.title} />
+        <SharePopover
+          isDisabledShare={props.isDisabledShare}
+          title={props.title}
+        />
         <MenuPopover
           onDownload={onDownload}
           isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}

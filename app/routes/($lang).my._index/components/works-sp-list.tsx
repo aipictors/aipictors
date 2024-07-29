@@ -46,6 +46,25 @@ const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
   return "/"
 }
 
+const postUrl = (work: {
+  id: string
+  createdAt: number
+  accessType: IntrospectionEnum<"AccessType">
+  uuid: string
+}) => {
+  if (
+    new Date(work.createdAt * 1000).getTime() > new Date().getTime() ||
+    work.accessType === "PRIVATE" ||
+    work.accessType === "DRAFT"
+  ) {
+    return `/posts/${work.id}/draft`
+  }
+  if (work.accessType === "LIMITED") {
+    return `/posts/${work.uuid}`
+  }
+  return `/posts/${work.id}`
+}
+
 /**
  * スマホ向け作品一覧
  */
@@ -56,44 +75,18 @@ export const WorksSpList = (props: Props) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
         <div key={index}>
           <div className="flex border-b">
-            {new Date(work.createdAt * 1000).getTime() >
-            new Date().getTime() ? (
+            <Link to={postUrl(work)}>
               <img
                 src={work.thumbnailImageUrl}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
-            ) : work.accessType === "LIMITED" ? (
-              <Link to={`/posts/${work.uuid}`}>
-                <img
-                  src={work.thumbnailImageUrl}
-                  alt=""
-                  className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
-                />
-              </Link>
-            ) : (
-              <Link to={`/posts/${work.id}`}>
-                <img
-                  src={work.thumbnailImageUrl}
-                  alt=""
-                  className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
-                />
-              </Link>
-            )}
+            </Link>
             <div className="w-full">
               <div className="w-full max-w-40 space-y-4 overflow-hidden text-ellipsis">
-                {new Date(work.createdAt * 1000).getTime() >
-                new Date().getTime() ? (
+                <Link to={postUrl(work)}>
                   <div className="w-full font-bold">{work.title}</div>
-                ) : work.accessType === "LIMITED" ? (
-                  <Link to={`/posts/${work.uuid}`}>
-                    <div className="w-full font-bold">{work.title}</div>
-                  </Link>
-                ) : (
-                  <Link to={`/posts/${work.id}`}>
-                    <div className="w-full font-bold">{work.title}</div>
-                  </Link>
-                )}
+                </Link>
                 <div className="space-x-2">
                   <Badge variant={"secondary"}>
                     {toAccessTypeText(work.accessType)}

@@ -11,6 +11,7 @@ import { XIntent } from "./work-action-share-x"
 
 type Props = {
   title?: string
+  isDisabledShare?: boolean
 }
 
 export const SharePopover = (props: Props) => {
@@ -29,23 +30,28 @@ export const SharePopover = (props: Props) => {
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">作品を共有する</h4>
+            {props.isDisabledShare && (
+              <p>下書きもしくは未来の作品のため、共有できません</p>
+            )}
           </div>
-          <div className="grid gap-2">
-            <CopyWorkUrlButton currentUrl={currentUrl} />
-            <XIntent
-              text={`${props.title}\n`}
-              url={`${currentUrl}\n`}
-              hashtags={["Aipictors", "AIIllust"]}
-            />
-            {/* <Button
-              disabled
-              className="flex items-center gap-2"
-              variant="outline"
-            >
-              <Files />
-              イラストをコピー
-            </Button> */}
-          </div>
+          {!props.isDisabledShare && (
+            <div className="grid gap-2">
+              <CopyWorkUrlButton currentUrl={currentUrl} />
+              <XIntent
+                text={`${props.title}\n`}
+                url={`${currentUrl}\n`}
+                hashtags={["Aipictors", "AIIllust"]}
+              />
+              {/* <Button
+            disabled
+            className="flex items-center gap-2"
+            variant="outline"
+          >
+            <Files />
+            イラストをコピー
+          </Button> */}
+            </div>
+          )}
         </div>
       </PopoverContent>
     </Popover>

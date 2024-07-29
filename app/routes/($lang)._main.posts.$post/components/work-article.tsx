@@ -26,6 +26,7 @@ import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/componen
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
+  isDraft?: boolean
 }
 
 /**
@@ -48,7 +49,10 @@ export const WorkArticle = (props: Props) => {
         fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
-      <PostAccessTypeBanner postAccessType={props.work.accessType} />
+      <PostAccessTypeBanner
+        createdAt={props.work.createdAt}
+        postAccessType={props.work.accessType}
+      />
       {props.work.type === "WORK" && (
         <WorkImageView
           workImageURL={props.work.imageURL}
@@ -89,6 +93,7 @@ export const WorkArticle = (props: Props) => {
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user.id}
+          isDisabledShare={props.isDraft}
         />
         <h1 className="font-bold text-lg">{props.work.title}</h1>
         <div className="flex flex-col space-y-4">

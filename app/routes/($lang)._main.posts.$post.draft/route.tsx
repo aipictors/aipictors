@@ -29,20 +29,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (workResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  if (workCommentsResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  // 作品と同じ年齢種別で新着順の作品一覧を取得
-  const rating = workResp.data.work.rating
-
   return json({
+    post: props.params.post,
     work: workResp.data.work,
-    workComments: workCommentsResp.data.work.comments,
+    workComments: workCommentsResp?.data?.work?.comments ?? [],
   })
 }
 
@@ -55,7 +45,14 @@ export default function Work() {
 
   const data = useLoaderData<typeof loader>()
 
-  return <WorkContainer work={data.work} comments={data.workComments} />
+  return (
+    <WorkContainer
+      post={data.post}
+      isDraft={true}
+      work={data.work}
+      comments={data.workComments}
+    />
+  )
 }
 
 const workCommentsQuery = graphql(

@@ -18,8 +18,10 @@ import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/componen
 import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
 
 type Props = {
-  work: FragmentOf<typeof workArticleFragment>
+  post: string
+  work: FragmentOf<typeof workArticleFragment> | null
   comments: FragmentOf<typeof commentFragment>[]
+  isDraft?: boolean
 }
 
 /**
@@ -29,13 +31,17 @@ export const WorkContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
-    skip: authContext.userId !== props.work.user.id,
+    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
     variables: {
-      id: props.work.id,
+      id: props.post,
     },
   })
 
   const work = data?.work ?? props.work
+
+  if (work === null) {
+    return null
+  }
 
   const relatedWorks = work.user.works.map((relatedWork) => ({
     smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
@@ -63,7 +69,7 @@ export const WorkContainer = (props: Props) => {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
+            <WorkArticle isDraft={props.isDraft} work={work} />
             <WorkRelatedList works={relatedWorks} />
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={props.comments} />
