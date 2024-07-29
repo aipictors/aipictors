@@ -12,11 +12,13 @@ import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
+import { Heart } from "lucide-react"
 
 type Props = {
   title: string
   isSensitive?: boolean
   works: FragmentOf<typeof workAwardFieldsFragment>[]
+  awardDateText: string
 }
 
 /**
@@ -24,6 +26,10 @@ type Props = {
  */
 export const HomeAwardWorkSection = (props: Props) => {
   const authContext = useContext(AuthContext)
+
+  const year = props.awardDateText.split("/")[0]
+  const month = props.awardDateText.split("/")[1]
+  const day = props.awardDateText.split("/")[2]
 
   // ランキング
   // 前日のランキングを取得
@@ -35,9 +41,9 @@ export const HomeAwardWorkSection = (props: Props) => {
       offset: 0,
       limit: WORK_COUNT_DEFINE.AWARD_WORKS,
       where: {
-        year: yesterday.getFullYear(),
-        month: yesterday.getMonth() + 1,
-        day: yesterday.getDate() - 1,
+        year: Number(year),
+        month: Number(month),
+        day: Number(day),
         isSensitive: props.isSensitive ?? false,
       },
     },
@@ -58,6 +64,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     title: work.work.title,
     isLiked: work.work.isLiked,
     subWorksCount: work.work.subWorksCount,
+    likesCount: work.work.likesCount,
   }))
 
   const yesterdayStr = `${yesterday.getFullYear()}/${
@@ -108,12 +115,20 @@ export const HomeAwardWorkSection = (props: Props) => {
             <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
               {work.title}
             </p>
-            <UserNameBadge
-              userId={work.userId}
-              userIconImageURL={IconUrl(work.userIcon)}
-              name={work.userName}
-              width={"lg"}
-            />
+            <div className="flex max-w-40 items-center justify-between">
+              <UserNameBadge
+                userId={work.userId}
+                userIconImageURL={IconUrl(work.userIcon)}
+                name={work.userName}
+                width={"lg"}
+              />
+              <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-1">
+                  <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                  <span className="text-xs">{work.likesCount}</span>
+                </div>
+              </div>
+            </div>
           </div>
         ))}
       />

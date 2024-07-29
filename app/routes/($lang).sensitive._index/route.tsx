@@ -134,6 +134,7 @@ export default function SensitivePage() {
           title={"前日ランキング"}
           works={data.workAwards}
           isSensitive={true}
+          awardDateText={data.awardDateText}
         />
         <HomeTagsSection title={"人気タグ"} tags={data.tags} />
         {/* <HomeWorksUsersRecommendedSection

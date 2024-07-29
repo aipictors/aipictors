@@ -66,7 +66,7 @@ export async function loader() {
     query: query,
     variables: {
       after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
-      awardDay: yesterday.getDate() - 1,
+      awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
       day: date.getDate(),
@@ -151,7 +151,11 @@ export default function Index() {
       <HomeBanners adWorks={data.adWorks} />
       <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
       <HomeWorksGeneratedSection works={data.generationWorks} />
-      <HomeAwardWorkSection title={"前日ランキング"} works={data.workAwards} />
+      <HomeAwardWorkSection
+        awardDateText={data.awardDateText}
+        title={"前日ランキング"}
+        works={data.workAwards}
+      />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
       <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
       <HomeNovelsSection works={data.novelWorks} title={"小説"} />

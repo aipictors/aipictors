@@ -9,6 +9,7 @@ import { graphql } from "gql.tada"
 type LikeButtonProps = {
   size?: number
   text?: string
+  textColor?: "black" | "white" | null
   onClick?: (liked: boolean) => void
   defaultLiked?: boolean
   defaultLikedCount: number
@@ -32,6 +33,7 @@ export const LikeButton = ({
   isBackgroundNone = true,
   strokeWidth = 1,
   isParticle = false,
+  textColor,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
@@ -198,8 +200,17 @@ export const LikeButton = ({
           stroke={isBackgroundNone ? "black" : "currentColor"}
         />
       </div>
-      {text && (
-        <div className={cn("mr-4 flex space-x-1 text-sm ")}>
+      {text !== undefined && (
+        <div
+          className={cn(
+            "mr-4 flex space-x-1 font-bold",
+            textColor
+              ? textColor === "black"
+                ? "text-black"
+                : "text-white"
+              : "",
+          )}
+        >
           <p>{text}</p>
           <p>{likedCount}</p>
         </div>

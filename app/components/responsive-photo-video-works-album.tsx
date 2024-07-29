@@ -8,6 +8,7 @@ import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { useRef, useCallback } from "react"
 import { Badge } from "~/components/ui/badge"
+import { Heart } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -21,7 +22,6 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
   const handleMouseEnter = useCallback((index: number) => {
-    console.log("enter")
     const video = videoRefs.current[index]
     if (video) {
       video.style.zIndex = "10" // 動画を前面に表示
@@ -30,7 +30,6 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   }, [])
 
   const handleMouseLeave = useCallback((index: number) => {
-    console.log("leave")
     const video = videoRefs.current[index]
     if (video) {
       video.pause() // 動画を停止
@@ -58,6 +57,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
           subWorksCount: work.subWorksCount,
           to: `/posts/${work.id}`,
           href: `/posts/${work.id}`,
+          likesCount: work.likesCount,
         }))}
         targetRowHeight={
           props.targetRowHeight !== undefined ? props.targetRowHeight : 240
@@ -78,6 +78,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                   defaultLikedCount={0}
                   isBackgroundNone={true}
                   strokeWidth={2}
+                  likedCount={photo.likesCount}
                 />
               </div>
               <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
@@ -87,15 +88,23 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                   </p>
                 </Link>
                 <Link to={`/users/${photo.userId}`}>
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src={IconUrl(photo.userIcon)}
-                      alt={photo.userName}
-                      className="h-4 w-4 rounded-full"
-                    />
-                    <span className="text-nowrap font-bold text-sm">
-                      {photo.userName}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={IconUrl(photo.userIcon)}
+                        alt={photo.userName}
+                        className="h-4 w-4 rounded-full"
+                      />
+                      <span className="block text-nowrap font-bold text-sm ">
+                        {photo.userName}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex items-center space-x-1">
+                        <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                        <span className="text-xs">{photo.likesCount}</span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               </div>
