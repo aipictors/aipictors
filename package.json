@@ -86,7 +86,7 @@
     "immer": "^10.0.4",
     "isbot": "^5",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.414.0",
+    "lucide-react": "^0.417.0",
     "marked": "^12.0.2",
     "microcms-js-sdk": "^3.1.2",
     "million": "^3.0.6",
