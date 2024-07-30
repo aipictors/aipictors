@@ -347,10 +347,7 @@ export default function NewText() {
         type: "MARK_AS_DONE",
         payload: {
           uploadedWorkId: work.data?.createWork.id,
-          uploadedWorkUuid:
-            inputState.accessType !== "PRIVATE"
-              ? null
-              : work.data?.createWork.uuid ?? null,
+          uploadedWorkUuid: work.data?.createWork.uuid,
         },
       })
 

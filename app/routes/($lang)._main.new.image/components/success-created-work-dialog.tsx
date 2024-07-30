@@ -66,7 +66,7 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
     if (props.accessType === "DRAFT" || props.accessType === "PRIVATE") {
       return `/posts/${props.workId}/draft`
     }
-    if (props.uuid) {
+    if (props.accessType === "LIMITED") {
       return `/posts/${props.uuid}`
     }
     return `/posts/${props.workId}`
