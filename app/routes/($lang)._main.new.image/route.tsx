@@ -14,7 +14,6 @@ import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { config } from "~/config"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
@@ -24,13 +23,14 @@ import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
+import { useBeforeUnload, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -464,27 +464,9 @@ export default function NewImage() {
       />
       <div className="space-y-4">
         <div className="relative">
-          <div className="flex w-full items-center">
-            <Link className="w-full text-center" to={"/new/image"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                画像
-              </div>
-            </Link>
-            <Link className="w-full text-center" to={"/new/animation"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                動画
-              </div>
-            </Link>
-            {config.isDevelopmentMode && (
-              <Link className="w-full text-center" to={"/new/text"}>
-                <div className="w-full bg-zinc-900 text-center text-white">
-                  コラム/小説
-                </div>
-              </Link>
-            )}
-          </div>
+          <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (
-            <div className="absolute top-7 right-2 z-10 flex items-center space-x-2 opacity-80">
+            <div className="absolute top-12 right-2 z-10 flex items-center space-x-2 opacity-80">
               <Loader2Icon className="h-4 w-4 animate-spin text-white" />
               <p className="text-white">{"AIでテイスト、年齢種別を判定中"}</p>
             </div>

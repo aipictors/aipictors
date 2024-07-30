@@ -153,6 +153,7 @@ export default function Index() {
       />
       <HomeBanners adWorks={data.adWorks} />
       <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
+
       <HomeWorksGeneratedSection works={data.generationWorks} />
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}

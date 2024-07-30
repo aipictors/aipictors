@@ -215,6 +215,7 @@ export const PostFormItemDraggableImages = (props: Props) => {
         className={cn(
           "h-[100%] w-[100%] border-2 border-zinc-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
+          props.items.length ? "" : "rounded-b",
         )}
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
@@ -281,7 +282,7 @@ export const PostFormItemDraggableImages = (props: Props) => {
           }
         />
         {!props.items.length && (
-          <div className="m-4 flex flex-col text-white">
+          <div className="m-4 flex flex-col rounded-b text-white">
             <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>
             <p className="text-center text-sm">{"1枚32MB以内、最大200枚"}</p>
           </div>

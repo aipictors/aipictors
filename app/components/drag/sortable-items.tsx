@@ -3,6 +3,7 @@ import {
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
+  type DragOverEvent,
   PointerSensor,
   TouchSensor,
   closestCenter,
@@ -44,47 +45,22 @@ export const SortableItems = (props: Props) => {
     setActiveItem(props.items.find((item) => item.id === active.id))
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
 
-    const activeItem = props.items.find((item) => item.id === active.id)
-    const overItem = props.items.find((item) => item.id === over.id)
-
-    if (!activeItem || !overItem) {
-      return
-    }
-
     const activeIndex = props.items.findIndex((item) => item.id === active.id)
     const overIndex = props.items.findIndex((item) => item.id === over.id)
-    const newItems =
-      activeIndex !== overIndex
-        ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
-        : props.items
-    setActiveItem(undefined)
-    props.setItems(
-      newItems.map((item, index) => ({
-        ...item,
-        id: index,
-      })),
-    )
-    // インデックス並び替え
-    changeIndexList(activeIndex, overIndex)
+
+    if (activeIndex !== overIndex) {
+      const newItems = arrayMove(props.items, activeIndex, overIndex)
+      props.setItems(newItems)
+      props.setIndexList(newItems.map((item) => item.id))
+    }
   }
 
-  const changeIndexList = (activeIndex: number, overIndex: number) => {
-    const newIds = props.items
-      .map((item) => item.id)
-      .map((id) => {
-        if (id === activeIndex) {
-          return overIndex
-        }
-        if (id === overIndex) {
-          return activeIndex
-        }
-        return id
-      })
-    props.setIndexList(newIds)
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveItem(undefined)
   }
 
   const deleteIndex = (deletedId: number) => {
@@ -112,8 +88,8 @@ export const SortableItems = (props: Props) => {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      onDragCancel={undefined}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
         <div className="flex w-full flex-wrap justify-center gap-4">

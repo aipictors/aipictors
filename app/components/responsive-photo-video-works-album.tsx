@@ -42,10 +42,10 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
       <RowsPhotoAlbum
         photos={props.works.map((work, index) => ({
           key: work.id,
-          src: work.largeThumbnailImageURL,
+          src: work.smallThumbnailImageURL,
           url: work.url,
-          width: work.largeThumbnailImageWidth,
-          height: work.largeThumbnailImageHeight,
+          width: work.smallThumbnailImageWidth,
+          height: work.smallThumbnailImageHeight,
           workId: work.id,
           userId: work.user.id,
           userIcon: IconUrl(work.user?.iconUrl),
