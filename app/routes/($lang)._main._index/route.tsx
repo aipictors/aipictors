@@ -85,10 +85,13 @@ export async function loader({ response }: LoaderFunctionArgs) {
   pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastPromotionDate.setDate(Math.floor(Math.random() * 28) + 1)
 
+  const pastGenerationDate = new Date(now)
+  pastGenerationDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastGenerationDate.setDate(Math.floor(Math.random() * 28) + 1)
+
   const resp = await client.query({
     query: query,
     variables: {
-      after: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000).toDateString(),
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
@@ -102,6 +105,7 @@ export async function loader({ response }: LoaderFunctionArgs) {
       generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
       promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
       awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      pastGenerationBefore: pastGenerationDate.toISOString(),
       novelWorksBefore: pastNovelDate.toISOString(),
       videoWorksBefore: pastVideoDate.toISOString(),
       columnWorksBefore: pastColumnDate.toISOString(),
@@ -110,6 +114,7 @@ export async function loader({ response }: LoaderFunctionArgs) {
   })
 
   const awardDateText = dateToText(yesterday)
+  const generationDateText = pastGenerationDate.toISOString()
   const novelWorksBeforeText = pastNovelDate.toISOString()
   const videoWorksBeforeText = pastVideoDate.toISOString()
   const columnWorksBeforeText = pastColumnDate.toISOString()
@@ -142,7 +147,10 @@ export async function loader({ response }: LoaderFunctionArgs) {
      * HomeWorksGeneratedSection
      */
     generationWorks: resp.data.generationWorks,
-
+    /**
+     * generationDateText
+     */
+    generationDateText,
     /**
      * HomeWorksUsersRecommendedSection
      */
@@ -195,8 +203,10 @@ export default function Index() {
       />
       <HomeBanners adWorks={data.adWorks} />
       <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
-
-      <HomeWorksGeneratedSection works={data.generationWorks} />
+      <HomeWorksGeneratedSection
+        dateText={data.generationDateText}
+        works={data.generationWorks}
+      />
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}
         title={"前日ランキング"}
@@ -225,7 +235,7 @@ export default function Index() {
 
 const query = graphql(
   `query HomeQuery(
-    $after: String!
+    $pastGenerationBefore: String!
     $year: Int!
     $month: Int!
     $day: Int!
@@ -295,7 +305,7 @@ const query = graphql(
         sort: DESC
         ratings: [G]
         isFeatured: true
-        beforeCreatedAt: $after
+        beforeCreatedAt: $pastGenerationBefore
       }
     ) {
       ...PartialWorkFields
