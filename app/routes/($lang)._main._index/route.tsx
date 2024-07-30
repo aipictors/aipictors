@@ -13,7 +13,7 @@ import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-t
 import { HomeVideosSection } from "~/routes/($lang)._main._index/components/home-videos-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
@@ -54,13 +54,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": config.cacheControl.home,
-  }
-}
-
-export async function loader() {
+export async function loader({ response }: LoaderFunctionArgs) {
   const client = createClient()
 
   const date = new Date()
@@ -94,6 +88,8 @@ export async function loader() {
     yesterday.getMonth() + 1,
     yesterday.getDate(),
   ].join("/")
+
+  response?.headers.append("Cache-Control", config.cacheControl.home)
 
   return json({
     /**
