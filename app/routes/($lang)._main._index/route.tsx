@@ -109,8 +109,6 @@ export async function loader({ response }: LoaderFunctionArgs) {
     },
   })
 
-  console.log(pastVideoDate)
-
   const awardDateText = dateToText(yesterday)
   const novelWorksBeforeText = pastNovelDate.toISOString()
   const videoWorksBeforeText = pastVideoDate.toISOString()
