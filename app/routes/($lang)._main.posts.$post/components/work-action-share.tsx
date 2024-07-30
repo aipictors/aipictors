@@ -31,7 +31,7 @@ export const SharePopover = (props: Props) => {
           <div className="space-y-2">
             <h4 className="font-medium leading-none">作品を共有する</h4>
             {props.isDisabledShare && (
-              <p>下書きもしくは未来の作品のため、共有できません</p>
+              <p>下書きもしくは予約作品のため、共有できません</p>
             )}
           </div>
           {!props.isDisabledShare && (
