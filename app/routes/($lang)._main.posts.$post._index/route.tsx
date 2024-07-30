@@ -8,6 +8,7 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { config } from "~/config"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -50,10 +51,10 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  // 作品と同じ年齢種別で新着順の作品一覧を取得
-  const rating = workResp.data.work.rating
+  props.response?.headers.set("Cache-Control", config.cacheControl.oneHour)
 
   return json({
+    post: props.params.post,
     work: workResp.data.work,
     workComments: workCommentsResp.data.work.comments,
   })
@@ -68,7 +69,13 @@ export default function Work() {
 
   const data = useLoaderData<typeof loader>()
 
-  return <WorkContainer work={data.work} comments={data.workComments} />
+  return (
+    <WorkContainer
+      post={data.post}
+      work={data.work}
+      comments={data.workComments}
+    />
+  )
 }
 
 const workCommentsQuery = graphql(

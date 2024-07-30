@@ -67,7 +67,7 @@ export const LikeButton = ({
           },
         }).then(() => {
           setIsLiked(!isLiked)
-          setLikedCount((prevCount) => prevCount + 1)
+          // setLikedCount((prevCount) => prevCount + 1)
         })
       } else {
         await deleteWorkLike({
@@ -78,7 +78,7 @@ export const LikeButton = ({
           },
         }).then(() => {
           setIsLiked(!isLiked)
-          setLikedCount((prevCount) => prevCount - 1)
+          // setLikedCount((prevCount) => prevCount - 1)
         })
       }
     } catch (error) {
