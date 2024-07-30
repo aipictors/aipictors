@@ -23,9 +23,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
           ket: work.id,
-          src: work.largeThumbnailImageURL,
-          width: work.largeThumbnailImageWidth,
-          height: work.largeThumbnailImageHeight,
+          src: work.smallThumbnailImageURL,
+          width: work.smallThumbnailImageWidth,
+          height: work.smallThumbnailImageHeight,
           workId: work.id, // 各作品のID
           userId: work.user.id, // 作品の所有者のID
           userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
@@ -39,9 +39,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           href: `/posts/${work.id}`,
           likesCount: work.likesCount,
         }))}
-        targetRowHeight={
-          props.targetRowHeight !== undefined ? props.targetRowHeight : 240
-        }
+        targetRowHeight={180}
         sizes={{
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],

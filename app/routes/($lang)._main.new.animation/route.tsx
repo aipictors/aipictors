@@ -10,7 +10,6 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadPublicVideo } from "~/utils/upload-public-video"
-import { config } from "~/config"
 import { PostAnimationFormInput } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -19,12 +18,13 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link, useBeforeUnload } from "@remix-run/react"
+import { useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 
 export default function NewAnimation() {
   const authContext = useContext(AuthContext)
@@ -306,25 +306,7 @@ export default function NewAnimation() {
       />
       <div className="space-y-4">
         <div>
-          <div className="flex w-full items-center">
-            <Link className="w-full text-center" to={"/new/image"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                画像
-              </div>
-            </Link>
-            <Link className="w-full text-center" to={"/new/animation"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                動画
-              </div>
-            </Link>
-            {config.isDevelopmentMode && (
-              <Link className="w-full text-center" to={"/new/text"}>
-                <div className="w-full bg-zinc-900 text-center text-white">
-                  コラム/小説
-                </div>
-              </Link>
-            )}
-          </div>
+          <PostFormHeader type="animation" />
           <PostAnimationFormUploader state={state} dispatch={dispatch} />
         </div>
         <PostAnimationFormInput

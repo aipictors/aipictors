@@ -10,7 +10,6 @@ import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { config } from "~/config"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
@@ -20,12 +19,13 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link, useBeforeUnload, useSearchParams } from "@remix-run/react"
+import { useBeforeUnload, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 
 export default function NewText() {
   const authContext = useContext(AuthContext)
@@ -391,25 +391,7 @@ export default function NewText() {
       />
       <div className="space-y-4">
         <div>
-          <div className="flex w-full items-center">
-            <Link className="w-full text-center" to={"/new/image"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                画像
-              </div>
-            </Link>
-            <Link className="w-full text-center" to={"/new/animation"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                動画
-              </div>
-            </Link>
-            {config.isDevelopmentMode && (
-              <Link className="w-full text-center" to={"/new/text"}>
-                <div className="w-full bg-zinc-900 text-center text-white">
-                  コラム/小説
-                </div>
-              </Link>
-            )}
-          </div>
+          <PostFormHeader type="text" />
           <PostTextFormUploader state={state} dispatch={dispatch} />
         </div>
         <PostTextFormInput
