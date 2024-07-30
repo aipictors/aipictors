@@ -523,10 +523,7 @@ export default function EditImage() {
         type: "MARK_AS_DONE",
         payload: {
           uploadedWorkId: updatedWork?.data?.updateWork.id,
-          uploadedWorkUuid:
-            inputState.accessType !== "PRIVATE"
-              ? null
-              : updatedWork?.data?.updateWork.uuid ?? null,
+          uploadedWorkUuid: updatedWork?.data?.updateWork.uuid,
         },
       })
 
