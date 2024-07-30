@@ -10,6 +10,7 @@ type Props = {
   title: string
   isSensitive?: boolean
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  dateText: string
 }
 
 /**
@@ -26,6 +27,7 @@ export const HomeNovelsSection = (props: Props) => {
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "NOVEL",
+        beforeCreatedAt: props.dateText,
       },
     },
   })

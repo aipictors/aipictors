@@ -1,4 +1,3 @@
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { ChevronLeft, ChevronRight, XIcon } from "lucide-react"
 import type React from "react"
@@ -271,14 +270,6 @@ export const ImagesPreview = (props: Props) => {
     <div className="flex flex-col space-y-4">
       <div className="relative">
         <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900 ">
-          {props.imageURLs.length > 1 && (
-            <Badge
-              variant="secondary"
-              className="absolute right-0 m-auto opacity-50"
-            >
-              {props.currentIndex + 1} / {props.imageURLs.length}
-            </Badge>
-          )}
           <div className="inline-block overflow-hidden text-center">
             <img
               className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain dark:bg-zinc-900"

@@ -54,6 +54,10 @@ export const meta: MetaFunction = () => {
   ]
 }
 
+export const dateToText = (date: Date) => {
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
+}
+
 export async function loader({ response }: LoaderFunctionArgs) {
   const client = createClient()
 
@@ -63,10 +67,28 @@ export async function loader({ response }: LoaderFunctionArgs) {
 
   yesterday.setDate(yesterday.getDate() - 1)
 
+  const now = new Date()
+
+  const pastNovelDate = new Date(now)
+  pastNovelDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastNovelDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastVideoDate = new Date(now)
+  pastVideoDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastVideoDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastColumnDate = new Date(now)
+  pastColumnDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastColumnDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastPromotionDate = new Date(now)
+  pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastPromotionDate.setDate(Math.floor(Math.random() * 28) + 1)
+
   const resp = await client.query({
     query: query,
     variables: {
-      after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
+      after: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000).toDateString(),
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
@@ -80,14 +102,20 @@ export async function loader({ response }: LoaderFunctionArgs) {
       generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
       promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
       awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      novelWorksBefore: pastNovelDate.toISOString(),
+      videoWorksBefore: pastVideoDate.toISOString(),
+      columnWorksBefore: pastColumnDate.toISOString(),
+      promotionWorksBefore: pastPromotionDate.toISOString(),
     },
   })
 
-  const awardDateText = [
-    yesterday.getFullYear(),
-    yesterday.getMonth() + 1,
-    yesterday.getDate(),
-  ].join("/")
+  console.log(pastVideoDate)
+
+  const awardDateText = dateToText(yesterday)
+  const novelWorksBeforeText = pastNovelDate.toISOString()
+  const videoWorksBeforeText = pastVideoDate.toISOString()
+  const columnWorksBeforeText = pastColumnDate.toISOString()
+  const promotionWorksBeforeText = pastPromotionDate.toISOString()
 
   response?.headers.append("Cache-Control", config.cacheControl.home)
 
@@ -137,6 +165,22 @@ export async function loader({ response }: LoaderFunctionArgs) {
      * HomeColumnsSection
      */
     columnWorks: resp.data.columnWorks,
+    /**
+     * novelWorksBeforeText
+     */
+    novelWorksBeforeText,
+    /**
+     * videoWorksBeforeText
+     */
+    videoWorksBeforeText,
+    /**
+     * columnWorksBeforeText
+     */
+    columnWorksBeforeText,
+    /**
+     * promotionWorksBeforeText
+     */
+    promotionWorksBeforeText,
   })
 }
 
@@ -162,9 +206,21 @@ export default function Index() {
       />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
       <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
-      <HomeNovelsSection works={data.novelWorks} title={"小説"} />
-      <HomeVideosSection works={data.videoWorks} title={"動画"} />
-      <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
+      <HomeNovelsSection
+        dateText={data.novelWorksBeforeText}
+        works={data.novelWorks}
+        title={"小説"}
+      />
+      <HomeVideosSection
+        dateText={data.videoWorksBeforeText}
+        works={data.videoWorks}
+        title={"動画"}
+      />
+      <HomeColumnsSection
+        dateText={data.columnWorksBeforeText}
+        works={data.columnWorks}
+        title={"コラム"}
+      />
     </AppPage>
   )
 }
@@ -180,10 +236,14 @@ const query = graphql(
     $awardDay: Int!
     $adWorksLimit: Int!
     $novelWorksLimit: Int!
+    $novelWorksBefore: String!
     $videoWorksLimit: Int!
+    $videoWorksBefore: String!
     $columnWorksLimit: Int!
+    $columnWorksBefore: String!
     $generationWorksLimit: Int!
     $promotionWorksLimit: Int!
+    $promotionWorksBefore: String!
     $awardWorksLimit: Int!
   ) {
     adWorks: works(
@@ -202,6 +262,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: NOVEL,
+        beforeCreatedAt: $novelWorksBefore 
       }
     ) {
       ...PartialWorkFields
@@ -212,6 +273,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: VIDEO,
+        beforeCreatedAt: $videoWorksBefore   
       }
     ) {
       ...PartialWorkFields
@@ -222,6 +284,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: COLUMN,
+        beforeCreatedAt: $columnWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -230,11 +293,11 @@ const query = graphql(
       offset: 0
       limit: $generationWorksLimit
       where: {
-        orderBy: LIKES_COUNT
+        orderBy: DATE_CREATED,
         sort: DESC
         ratings: [G]
         isFeatured: true
-        createdAtAfter: $after
+        beforeCreatedAt: $after
       }
     ) {
       ...PartialWorkFields
@@ -275,6 +338,7 @@ const query = graphql(
       where: {
         isRecommended: true
         ratings: [G]
+        beforeCreatedAt: $promotionWorksBefore
       }
     ) {
       ...PartialWorkFields

@@ -4,7 +4,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post/components/work-article-generation-parameters"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
@@ -38,6 +38,8 @@ export const WorkArticle = (props: Props) => {
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
+
+  const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
 
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
@@ -159,7 +161,8 @@ export const WorkArticle = (props: Props) => {
           )}
           <WorkArticleTags
             postId={props.work.id}
-            tagNames={props.work.tagNames}
+            tagNames={tagNames}
+            setTagNames={setTagNames}
             isEditable={props.work.isTagEditable}
           />
         </div>

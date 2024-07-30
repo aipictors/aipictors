@@ -7,6 +7,7 @@ import React from "react"
 
 type WorkArticleTagProps = {
   tagNames: string[]
+  setTagNames: React.Dispatch<React.SetStateAction<string[]>>
   isEditable?: boolean
   postId: string
 }
@@ -15,6 +16,7 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
   tagNames,
   isEditable = false,
   postId,
+  setTagNames,
 }) => {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
@@ -50,9 +52,11 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
       {isOpenEdit && (
         <WorkTagInput
           postId={postId}
+          setTagNames={setTagNames}
           tags={tags}
           setTags={setTags}
           isEditable={true}
+          setIsOpenEdit={setIsOpenEdit}
         />
       )}
     </>

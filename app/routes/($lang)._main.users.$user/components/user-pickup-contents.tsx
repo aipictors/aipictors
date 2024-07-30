@@ -8,25 +8,20 @@ type Props = {
 }
 
 export const UserPickupContents = (props: Props) => {
+  // 結合
+  const combinedWorks = props.userPickupWorks.concat(
+    props.userPickupSensitiveWorks,
+  )
+
   return (
-    <div className="flex flex-col items-center space-x-4 space-y-4 md:flex-row md:space-y-0">
-      {props.userPickupWorks && props.userPickupWorks.length > 0 && (
+    <div className="items-center">
+      {combinedWorks && combinedWorks.length > 0 && (
         <HomeWorkSection
           title="ピックアップ"
-          works={props.userPickupWorks}
+          works={combinedWorks}
           isCropped={false}
-          targetRowHeight={96}
         />
       )}
-      {props.userPickupSensitiveWorks &&
-        props.userPickupSensitiveWorks.length > 0 && (
-          <HomeWorkSection
-            title="ピックアップセンシティブ"
-            works={props.userPickupSensitiveWorks}
-            isCropped={false}
-            targetRowHeight={96}
-          />
-        )}
     </div>
   )
 }
