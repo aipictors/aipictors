@@ -21,7 +21,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const year = Number.parseInt(props.params.year)
 
-  const month = Number.parseInt(props.params.month)
+  const month = Number.parseInt(props.params.month) - 1
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,
