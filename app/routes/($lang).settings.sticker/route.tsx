@@ -1,10 +1,12 @@
 import { MyStickersList } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 
 export default function SettingSticker() {
   return (
-    <div className="w-full space-y-8">
-      <h1 className="font-bold text-2xl">{"スタンプ一覧"}</h1>
-      <p>{"スタンプを管理できます。"}</p>
+    <div className="w-full space-y-4">
+      <div className="block md:hidden">
+        <SettingsHeader title={"スタンプ一覧"} />
+      </div>
       <div className="space-y-4">
         <MyStickersList />
       </div>

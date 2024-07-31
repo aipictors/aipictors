@@ -130,7 +130,7 @@ export const HomeRouteList = (props: Props) => {
       )}
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/account/login"}
+          href={"/settings/account/login"}
           icon={UserIcon}
           onClick={closeHeaderMenu}
         >

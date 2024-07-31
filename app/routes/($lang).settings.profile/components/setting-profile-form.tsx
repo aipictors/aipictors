@@ -383,7 +383,7 @@ export const SettingProfileForm = () => {
           )}
         </Button>
         <Separator />
-        <a className="m-auto block" href="/account/login">
+        <a className="m-auto block" href="settings/account/login">
           <Button className="m-auto block" variant={"secondary"}>
             ログイン情報を変更する
           </Button>
