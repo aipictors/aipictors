@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
@@ -32,13 +31,13 @@ export default function SensitiveThemes() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <ThemeList
         year={data.year}
         month={data.month}
         dailyThemes={data.dailyThemesResp.data.dailyThemes}
       />
-    </AppPage>
+    </>
   )
 }
 

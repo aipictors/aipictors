@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { StickerArticle } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
 import { useParams } from "@remix-run/react"
@@ -14,8 +13,8 @@ export default function Sticker() {
   }
 
   return (
-    <AppPage>
+    <>
       <StickerArticle />
-    </AppPage>
+    </>
   )
 }

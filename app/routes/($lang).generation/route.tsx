@@ -127,7 +127,7 @@ export default function GenerationLayout() {
         imageLoraModels={data.imageLoraModels}
       >
         <GenerationConfigProvider>
-          <div className="container max-w-none">
+          <div className="container max-w-none px-8">
             <Outlet />
           </div>
         </GenerationConfigProvider>

@@ -1,4 +1,3 @@
-import { AppPageCenter } from "~/components/app/app-page-center"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
@@ -92,7 +91,7 @@ export default function SettingColor() {
   }
 
   return (
-    <AppPageCenter>
+    <>
       <div className="w-full space-y-8">
         <p className="font-bold text-2xl">{"カラーテーマ"}</p>
         <RadioGroup
@@ -208,6 +207,6 @@ export default function SettingColor() {
           setPage(page)
         }}
       />
-    </AppPageCenter>
+    </>
   )
 }

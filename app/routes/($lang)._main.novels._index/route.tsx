@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { NovelCard } from "~/routes/($lang)._main.novels._index/components/novel-card"
 
 /**
@@ -6,10 +5,10 @@ import { NovelCard } from "~/routes/($lang)._main.novels._index/components/novel
  */
 export default function Novels() {
   return (
-    <AppPage>
+    <>
       <div>
         <NovelCard />
       </div>
-    </AppPage>
+    </>
   )
 }

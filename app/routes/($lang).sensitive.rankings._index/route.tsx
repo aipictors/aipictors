@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
@@ -46,10 +45,10 @@ export default function SensitiveAwards() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <RankingHeader year={data.year} month={data.month} day={data.day} />
       <RankingWorkList awards={data.workAwards.data.workAwards} />
-    </AppPage>
+    </>
   )
 }
 

@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -37,7 +36,7 @@ export default function Themes() {
     "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう。午前0時に更新されます。"
 
   return (
-    <AppPage>
+    <>
       <AppPageHeader title={"創作アイディアページ"} description={description} />
       <ThemeHeader />
       <ThemeList
@@ -45,7 +44,7 @@ export default function Themes() {
         month={data.month}
         dailyThemes={data.dailyThemes}
       />
-    </AppPage>
+    </>
   )
 }
 

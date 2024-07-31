@@ -13,7 +13,7 @@ export function AppContents(props: Props) {
       <div className="flex">
         {props.aside && props.aside}
         <div
-          className={`container m-auto space-y-4 overflow-auto ${props.isOpen ? "px-4 md:pr-8 md:pl-52" : "px-4 md:px-8"}`}
+          className={`container m-auto space-y-4 overflow-auto pb-4 ${props.isOpen ? "px-4 md:pr-8 md:pl-52" : "px-0 md:px-8"}`}
         >
           {props.outlet}
         </div>
