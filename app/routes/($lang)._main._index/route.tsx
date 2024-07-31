@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
@@ -194,7 +193,7 @@ export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <ConstructionAlert
         type="WARNING"
         message="不具合が起きる可能性があります。"
@@ -229,7 +228,7 @@ export default function Index() {
         works={data.columnWorks}
         title={"コラム"}
       />
-    </AppPage>
+    </>
   )
 }
 

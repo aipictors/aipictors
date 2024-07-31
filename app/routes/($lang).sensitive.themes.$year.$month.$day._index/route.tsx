@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -44,11 +43,9 @@ export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
-      <article>
-        <h1>{data.dailyTheme.title}</h1>
-      </article>
-    </AppPage>
+    <article>
+      <h1>{data.dailyTheme.title}</h1>
+    </article>
   )
 }
 

@@ -45,7 +45,7 @@ export const DashboardHomeContents = () => {
         <div className="block items-stretch space-x-0 space-y-2 md:flex md:space-x-2 md:space-y-0">
           <div className="h-full w-full items-stretch">
             <DashboardHomeContentContainer title={"合計リアクション数"}>
-              <div className="rounded-md p-4">
+              <div className="rounded-md md:p-4">
                 <div className="mb-4">
                   <div className="flex items-center">
                     <EyeIcon className="mr-2 w-3" />
@@ -97,7 +97,7 @@ export const DashboardHomeContents = () => {
           {works?.length === 0 ? null : (
             <div className="h-full w-full items-stretch">
               <DashboardHomeContentContainer title={"いいねランキングトップ3"}>
-                <div className="rounded-md p-4">
+                <div className="rounded-md md:p-4">
                   {works?.map((work, index) => (
                     <Link
                       key={work.id}

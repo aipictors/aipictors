@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -41,12 +40,12 @@ export default function Tag() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <TagWorkSection
         title={decodeURIComponent(params.tag)}
         works={data.works}
       />
-    </AppPage>
+    </>
   )
 }
 

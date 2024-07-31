@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { IconUrl } from "~/components/icon-url"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
@@ -74,7 +73,7 @@ export default function albums() {
     : work?.largeThumbnailImageURL
 
   return (
-    <AppPage>
+    <>
       <article className="flex">
         <div className="m-auto flex flex-col justify-center">
           <AlbumArticleHeader
@@ -92,7 +91,7 @@ export default function albums() {
         albumWorks={data.albumWorks}
         maxCount={data.album.worksCount}
       />
-    </AppPage>
+    </>
   )
 }
 

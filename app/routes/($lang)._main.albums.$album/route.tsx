@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -61,7 +60,7 @@ export default function albums() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <article className="flex">
         <div className="flex flex-col">
           <AlbumArticleHeader
@@ -79,7 +78,7 @@ export default function albums() {
         </div>
         <AlbumWorkDescription album={data.album} />
       </article>
-    </AppPage>
+    </>
   )
 }
 

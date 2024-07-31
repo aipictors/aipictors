@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { NoteCard } from "~/routes/($lang)._main.notes._index/components/note-card"
 
 /**
@@ -6,10 +5,8 @@ import { NoteCard } from "~/routes/($lang)._main.notes._index/components/note-ca
  */
 export default function Notes() {
   return (
-    <AppPage>
-      <div>
-        <NoteCard />
-      </div>
-    </AppPage>
+    <div>
+      <NoteCard />
+    </div>
   )
 }

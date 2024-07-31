@@ -1,5 +1,4 @@
 import { Button } from "~/components/ui/button"
-import { AppPage } from "~/components/app/app-page"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Link, json, useParams } from "@remix-run/react"
@@ -96,7 +95,7 @@ export default function Theme() {
   const tomorrowLink = dateLink(tomorrow)
 
   return (
-    <AppPage>
+    <>
       <article>
         <h1>お題</h1>
         <div className="m-4">
@@ -127,7 +126,7 @@ export default function Theme() {
           </p>
         </div>
       </article>
-    </AppPage>
+    </>
   )
 }
 

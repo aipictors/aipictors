@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import {
   Accordion,
   AccordionContent,
@@ -59,7 +58,7 @@ export default function Milestone() {
   }
 
   return (
-    <AppPage>
+    <>
       <h1 className="font-bold">{"開発予定"}</h1>
       <Tabs defaultValue="web" className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2">
@@ -269,7 +268,7 @@ export default function Milestone() {
           </div>
         </TabsContent>
       </Tabs>
-    </AppPage>
+    </>
   )
 }
 
