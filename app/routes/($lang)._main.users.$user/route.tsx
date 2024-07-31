@@ -91,7 +91,7 @@ export default function UserLayout() {
                       boxShadow: "0px 0px 20px rgba(0,0,0,0.5)",
                     }}
                   />
-                  <div className="relative m-auto w-[1600px]">
+                  <div className="relative m-auto">
                     <img
                       className="absolute top-0 left-0 block h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500"
                       src={data.user.headerImageUrl}
@@ -116,7 +116,7 @@ export default function UserLayout() {
                   boxShadow: "0px 0px 20px rgba(0,0,0,0.5)",
                 }}
               /> */}
-                  <div className="relative m-auto w-[1600px]">
+                  <div className="relative m-auto">
                     <img
                       className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
                       src={IconUrl(data.user.iconUrl)}
