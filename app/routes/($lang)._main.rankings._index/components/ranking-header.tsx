@@ -1,8 +1,9 @@
 import type React from "react"
-import { useEffect, useState } from "react"
-import { Link, useNavigate } from "@remix-run/react"
-import { ChevronLeftIcon } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
+import { useNavigate, useLocation } from "@remix-run/react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
+import { Card } from "~/components/ui/card"
 
 type Props = {
   year: number
@@ -16,14 +17,22 @@ export const RankingHeader = (props: Props) => {
   const [day, setDay] = useState(props.day)
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
-  >(day ? "デイリー" : "マンスリー")
+  >(props.day ? "デイリー" : "マンスリー")
   const navigate = useNavigate()
+  const location = useLocation()
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
     setYear(props.year)
     setMonth(props.month)
     setDay(props.day)
   }, [props.year, props.month, props.day])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+    }
+  }, [])
 
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setYear(Number(e.target.value))
@@ -36,129 +45,145 @@ export const RankingHeader = (props: Props) => {
     view: "マンスリー" | "デイリー" | "ウィークリー",
   ) => {
     setViewType(view)
-    if (view === "マンスリー") {
-      navigate(`/rankings/${year}/${month}`)
-    } else if (view === "デイリー") {
-      // 昨日の日付
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-      // 昨日の日付を取得
-      const yesterdayDay = yesterday.getDate()
-      navigate(`/rankings/${year}/${month}/${yesterdayDay}`)
-    } else if (view === "ウィークリー") {
-      navigate(`/rankings/${year}/${month}/week`)
-    }
   }
 
   const handleNavigate = () => {
+    let newPath = ""
+
     if (viewType === "マンスリー") {
-      navigate(`/rankings/${year}/${month}`)
+      newPath = `/rankings/${year}/${month}`
     } else if (viewType === "デイリー") {
-      navigate(`/rankings/${year}/${month}/${day}`)
+      const actualDay = day === 0 || day == null ? 1 : day
+      newPath = `/rankings/${year}/${month}/${actualDay}`
     } else if (viewType === "ウィークリー") {
-      navigate(`/rankings/${year}/${month}/week`)
+      newPath = `/rankings/${year}/${month}/week`
+    }
+
+    if (location.pathname !== newPath) {
+      navigate(newPath)
     }
   }
 
-  const beforeLink = () => {
-    if (props.day === null) {
-      return `/rankings/${props.year}/${props.month - 1}`
-    }
-    if (props.day !== null) {
-      if (props.day - 1 === 0) {
-        // 先月の終盤の日付
-        const lastDay = new Date(props.year, props.month - 1, 0).getDate()
-        return `/rankings/${props.year}/${props.month - 1}/${lastDay}`
+  const handlePrevious = () => {
+    if (viewType === "デイリー" && day) {
+      const newDate = new Date(year, month - 1, day - 1)
+      setYear(newDate.getFullYear())
+      setMonth(newDate.getMonth() + 1)
+      setDay(newDate.getDate())
+    } else if (viewType === "マンスリー") {
+      if (month === 1) {
+        setMonth(12)
+        setYear((prevYear) => prevYear - 1)
+      } else {
+        setMonth((prevMonth) => prevMonth - 1)
       }
-      return `/rankings/${props.year}/${props.month}/${props.day - 1}`
+    } else if (viewType === "ウィークリー") {
+      const newDate = new Date(year, month - 1, day ?? new Date().getDate())
+      newDate.setDate(newDate.getDate() - 7)
+      setYear(newDate.getFullYear())
+      setMonth(newDate.getMonth() + 1)
+      setDay(newDate.getDate())
     }
-    return `/rankings/${props.year}/${props.month}`
+  }
+
+  const handleNext = () => {
+    if (viewType === "デイリー" && day) {
+      const newDate = new Date(year, month - 1, day + 1)
+      setYear(newDate.getFullYear())
+      setMonth(newDate.getMonth() + 1)
+      setDay(newDate.getDate())
+    } else if (viewType === "マンスリー") {
+      if (month === 12) {
+        setMonth(1)
+        setYear((prevYear) => prevYear + 1)
+      } else {
+        setMonth((prevMonth) => prevMonth + 1)
+      }
+    } else if (viewType === "ウィークリー") {
+      const newDate = new Date(year, month - 1, day ?? new Date().getDate())
+      newDate.setDate(newDate.getDate() + 7)
+      setYear(newDate.getFullYear())
+      setMonth(newDate.getMonth() + 1)
+      setDay(newDate.getDate())
+    }
   }
 
   const maxDay = new Date(year, month, 0).getDate()
   const maxYear = new Date().getFullYear()
 
   return (
-    <div className="flex justify-center">
-      <div className="flex flex-col items-center space-y-4">
-        <p className="text-center text-2xl">{"ランキング"}</p>
+    <Card className="flex flex-col items-center space-y-4 p-4">
+      <p className="text-center font-bold text-md">ランキング</p>
+      <div className="flex items-center">
+        <Button variant={"ghost"} className="mr-2" onClick={handlePrevious}>
+          <ChevronLeftIcon />
+        </Button>
         <div className="flex items-center space-x-2">
-          <Link to={beforeLink()}>
-            <ChevronLeftIcon />
-          </Link>
-          <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              value={year}
-              onChange={handleYearChange}
-              className="w-16 rounded-md border border-gray-300 text-center"
-              min={"2023"}
-              max={maxYear}
-            />
-            <span>年</span>
-            <input
-              type="number"
-              value={month}
-              onChange={handleMonthChange}
-              className="w-12 rounded-md border border-gray-300 text-center"
-              min="1"
-              max="12"
-            />
-            <span>月</span>
-            {viewType === "デイリー" && day && (
-              <>
-                <input
-                  type="number"
-                  // 今日の日付
-                  value={day}
-                  onChange={handleDayChange}
-                  className="w-12 rounded-md border border-gray-300 text-center"
-                  min="1"
-                  max="31"
-                />
-                <span>日</span>
-              </>
-            )}
-          </div>
-          <Button
-            variant={"secondary"}
-            className="rounded-2xl"
-            onClick={handleNavigate}
-          >
-            変更
-          </Button>
+          <input
+            type="number"
+            value={year}
+            onChange={handleYearChange}
+            className="w-16 rounded-md border border-gray-300 text-center"
+            min={"2023"}
+            max={maxYear}
+          />
+          <span>年</span>
+          <input
+            type="number"
+            value={month}
+            onChange={handleMonthChange}
+            className="w-12 rounded-md border border-gray-300 text-center"
+            min="1"
+            max="12"
+          />
+          <span>月</span>
+          {viewType === "デイリー" && day && (
+            <>
+              <input
+                type="number"
+                value={day}
+                onChange={handleDayChange}
+                className="w-12 rounded-md border border-gray-300 text-center"
+                min="1"
+                max={maxDay}
+              />
+              <span>日</span>
+            </>
+          )}
         </div>
-        <div className="flex items-center justify-center space-x-4">
-          <Button
-            variant={"secondary"}
-            onClick={() => handleViewChange("マンスリー")}
-            className={
-              viewType === "マンスリー" ? "bg-blue-500 text-white" : ""
-            }
-            disabled={viewType === "マンスリー"}
-          >
-            マンスリー
-          </Button>
-          <Button
-            variant={"secondary"}
-            onClick={() => handleViewChange("デイリー")}
-            className={viewType === "デイリー" ? "bg-blue-500 text-white" : ""}
-            disabled={viewType === "デイリー"}
-          >
-            デイリー
-          </Button>
-          <Button
-            variant={"secondary"}
-            onClick={() => handleViewChange("ウィークリー")}
-            className={
-              viewType === "ウィークリー" ? "bg-blue-500 text-white" : ""
-            }
-            disabled={viewType === "ウィークリー"}
-          >
-            ウィークリー
-          </Button>
-        </div>
+        <Button variant={"ghost"} className="ml-2" onClick={handleNext}>
+          <ChevronRightIcon />
+        </Button>
       </div>
-    </div>
+      <div className="flex justify-center space-x-4">
+        <Button
+          variant={"secondary"}
+          onClick={() => handleViewChange("マンスリー")}
+          className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
+          disabled={viewType === "マンスリー"}
+        >
+          マンスリー
+        </Button>
+        <Button
+          variant={"secondary"}
+          onClick={() => handleViewChange("デイリー")}
+          className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
+          disabled={viewType === "デイリー"}
+        >
+          デイリー
+        </Button>
+        {/* <Button
+          variant={"secondary"}
+          onClick={() => handleViewChange("ウィークリー")}
+          className={viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"}
+          disabled={viewType === "ウィークリー"}
+        >
+          ウィークリー
+        </Button> */}
+      </div>
+      <Button className="w-full" variant={"secondary"} onClick={handleNavigate}>
+        変更を反映
+      </Button>
+    </Card>
   )
 }

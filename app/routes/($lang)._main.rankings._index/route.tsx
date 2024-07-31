@@ -10,12 +10,16 @@ import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/componen
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
 
+  const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth() + 1
+
   const year = params.params.year
     ? Number.parseInt(params.params.year)
-    : new Date().getFullYear()
-  const month = params.params.month
+    : currentYear
+  const inputMonth = params.params.month
     ? Number.parseInt(params.params.month)
-    : new Date().getMonth() + 1
+    : currentMonth
+  const month = inputMonth === currentMonth ? currentMonth - 1 : inputMonth
   const day = params.params.day ? Number.parseInt(params.params.day) : null
 
   const variables = {
@@ -50,7 +54,12 @@ export default function Rankings() {
   return (
     <>
       <RankingHeader year={data.year} month={data.month} day={data.day} />
-      <RankingWorkList awards={data.workAwards.data.workAwards} />
+      <RankingWorkList
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        awards={data.workAwards.data.workAwards}
+      />
     </>
   )
 }

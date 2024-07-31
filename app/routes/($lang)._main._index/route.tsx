@@ -9,7 +9,6 @@ import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._i
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
 import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeVideosSection } from "~/routes/($lang)._main._index/components/home-videos-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
@@ -218,11 +217,11 @@ export default function Index() {
         works={data.novelWorks}
         title={"小説"}
       />
-      <HomeVideosSection
+      {/* <HomeVideosSection
         dateText={data.videoWorksBeforeText}
         works={data.videoWorks}
         title={"動画"}
-      />
+      /> */}
       <HomeColumnsSection
         dateText={data.columnWorksBeforeText}
         works={data.columnWorks}
