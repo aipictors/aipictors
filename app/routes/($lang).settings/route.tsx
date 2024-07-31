@@ -3,6 +3,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
+import { SettingsNavigation } from "~/routes/($lang).settings._index/components/settings-navigation"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -21,7 +22,16 @@ export default function SettingsLayout() {
 
   return (
     <>
-      <AppCommonLayout outlet={<Outlet />} />
+      <AppCommonLayout
+        outlet={
+          <div className="md:flex md:space-x-4">
+            <div className="hidden md:block">
+              <SettingsNavigation />
+            </div>
+            <Outlet />
+          </div>
+        }
+      />
     </>
   )
 }

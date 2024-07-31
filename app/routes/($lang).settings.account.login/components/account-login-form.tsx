@@ -40,7 +40,7 @@ export const AccountLoginForm = () => {
   }
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-4">
       <div className="space-y-2">
         <p>現在のユーザID</p>
         <Input

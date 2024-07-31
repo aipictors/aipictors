@@ -9,13 +9,16 @@ import {
 export const AccountRouteList = () => {
   return (
     <div className="space-y-1">
-      <HomeNavigationButton href={"/generation"} icon={ArrowLeftIcon}>
+      <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>
         {"もどる"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/account/login"} icon={SmileIcon}>
+      <HomeNavigationButton href={"/settings/account/login"} icon={SmileIcon}>
         {"ユーザID"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/account/password"} icon={LockKeyholeIcon}>
+      <HomeNavigationButton
+        href={"settings/account/password"}
+        icon={LockKeyholeIcon}
+      >
         {"パスワード"}
       </HomeNavigationButton>
       <HomeNavigationButton

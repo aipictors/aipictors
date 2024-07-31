@@ -24,7 +24,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           className="w-full justify-start"
         >
           {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
+          {props.children}
         </Button>
       )
     }
@@ -39,7 +39,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           onClick={props.onClick}
         >
           {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
+          {props.children}
         </Button>
       )
     }
@@ -59,7 +59,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
             onClick={props.onClick}
           >
             {props.icon && <props.icon className="mr-4 w-4" />}
-            <span>{props.children}</span>
+            {props.children}
           </Button>
         </Link>
       )
@@ -75,7 +75,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           onClick={props.onClick}
         >
           {props.icon && <props.icon className="mr-4 w-4" />}
-          <span>{props.children}</span>
+          {props.children}
         </Button>
       </Link>
     )

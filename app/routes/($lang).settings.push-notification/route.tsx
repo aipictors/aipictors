@@ -6,7 +6,7 @@ import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/comp
  */
 export default function SettingNotification() {
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-4">
       <p className="font-bold text-2xl">{"Push通知設定"}</p>
       <p>Push通知を設定することができます。</p>
       <p>
