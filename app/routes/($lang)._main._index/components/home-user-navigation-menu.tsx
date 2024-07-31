@@ -182,7 +182,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
               />
             ))}
           <MenuItemLink
-            href="/account/login"
+            href="/settings/account/login"
             icon={<UserIcon className="mr-2 inline-block w-4" />}
             label="アカウント"
           />
@@ -197,7 +197,7 @@ export const HomeUserNavigationMenu = (props: Props) => {
             label="Aipictors+"
           />
           <MenuItemLink
-            href="/settings/notification"
+            href="/settings"
             icon={<SettingsIcon className="mr-2 inline-block w-4" />}
             label="設定"
           />
