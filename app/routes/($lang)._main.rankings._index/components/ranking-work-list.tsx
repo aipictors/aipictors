@@ -13,6 +13,7 @@ type Props = {
   year: number
   month: number
   day: number | null
+  weekIndex: number | null
 }
 
 export const RankingWorkList = (props: Props) => {
