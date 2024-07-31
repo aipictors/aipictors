@@ -19,7 +19,7 @@ export default function SensitiveMonthAward() {
 
   return (
     <>
-      <RankingHeader year={year} month={month} day={1} />
+      <RankingHeader year={year} month={month} day={1} weekIndex={null} />
     </>
   )
 }
