@@ -182,35 +182,43 @@ export const RankingHeader = (props: Props) => {
           <ChevronRightIcon />
         </Button>
       </div>
-      <div className="flex justify-center space-x-4">
+      <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-96">
+        <div className="flex w-full justify-between space-x-1 md:space-x-4">
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("マンスリー")}
+            className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
+            disabled={viewType === "マンスリー"}
+          >
+            月間
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("デイリー")}
+            className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
+            disabled={viewType === "デイリー"}
+          >
+            日間
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("ウィークリー")}
+            className={
+              viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"
+            }
+            disabled={viewType === "ウィークリー"}
+          >
+            週間
+          </Button>
+        </div>
         <Button
+          className="w-72 md:w-96"
           variant={"secondary"}
-          onClick={() => handleViewChange("マンスリー")}
-          className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "マンスリー"}
+          onClick={handleNavigate}
         >
-          マンスリー
-        </Button>
-        <Button
-          variant={"secondary"}
-          onClick={() => handleViewChange("デイリー")}
-          className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "デイリー"}
-        >
-          デイリー
-        </Button>
-        <Button
-          variant={"secondary"}
-          onClick={() => handleViewChange("ウィークリー")}
-          className={viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "ウィークリー"}
-        >
-          ウィークリー
+          変更を反映
         </Button>
       </div>
-      <Button className="w-full" variant={"secondary"} onClick={handleNavigate}>
-        変更を反映
-      </Button>
     </Card>
   )
 }

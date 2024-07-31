@@ -30,6 +30,7 @@ export const RankingWorkList = (props: Props) => {
         year: props.year,
         month: props.month,
         ...(props.day && { day: props.day }),
+        ...(props.weekIndex && { weekIndex: props.weekIndex }),
       },
     },
   })
