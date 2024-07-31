@@ -68,7 +68,6 @@ export const HomeRouteList = (props: Props) => {
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/rankings"}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
