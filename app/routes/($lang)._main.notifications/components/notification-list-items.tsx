@@ -3,14 +3,16 @@ import { likedWorkNotificationFieldsFragment } from "~/graphql/fragments/liked-w
 import { likedWorksSummaryNotificationFieldsFragment } from "~/graphql/fragments/liked-works-summary-notification-fields"
 import { workAwardNotificationFieldsFragment } from "~/graphql/fragments/work-award-notification-fields"
 import { workCommentNotificationFieldsFragment } from "~/graphql/fragments/work-comment-notification-fields"
-import { workCommentReplyNotificationFieldsFragment } from "~/graphql/fragments/work-comment-reply-notification-fields"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toDateText } from "~/utils/to-date-text"
 import { HomeNotificationsContentAwardItem } from "~/routes/($lang)._main._index/components/home-notifications-content-award-item"
 import { HomeNotificationsContentCommentedItem } from "~/routes/($lang)._main._index/components/home-notifications-content-commented-item"
 import { HomeNotificationsContentFollowedItem } from "~/routes/($lang)._main._index/components/home-notifications-content-followed-item"
 import { HomeNotificationsContentLikedItem } from "~/routes/($lang)._main._index/components/home-notifications-content-liked-item"
-import { HomeNotificationsContentReplyItem } from "~/routes/($lang)._main._index/components/home-notifications-content-reply-item"
+import {
+  HomeNotificationsContentReplyItem,
+  WorkCommentReplyNotificationFragment,
+} from "~/routes/($lang)._main._index/components/home-notifications-content-reply-item"
 import { HomeNotificationsContentSumLikedItem } from "~/routes/($lang)._main._index/components/home-notifications-content-sum-liked-item"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -78,14 +80,7 @@ export const NotificationListItems = (props: Props) => {
           return (
             <HomeNotificationsContentReplyItem
               key={notification.id}
-              ownerUserId={notification.user?.id ?? ""}
-              workId={notification.work?.id ?? ""}
-              thumbnailUrl={notification.work?.smallThumbnailImageURL ?? ""}
-              iconUrl={notification.user?.iconUrl ?? ""}
-              stickerUrl={notification.sticker?.imageUrl ?? ""}
-              comment={notification.message ?? ""}
-              userName={notification.user?.name ?? ""}
-              createdAt={toDateText(notification.createdAt) ?? ""}
+              notification={notification}
               stickerSize="lg"
             />
           )
@@ -169,7 +164,7 @@ const viewerNotificationsQuery = graphql(
           ...WorkCommentNotificationFields
         }
         ... on WorkCommentReplyNotificationNode {
-          ...WorkCommentReplyNotificationFields
+          ...WorkCommentReplyNotification
         }
         ... on FollowNotificationNode {
           ...FollowNotificationFields
@@ -182,7 +177,7 @@ const viewerNotificationsQuery = graphql(
     likedWorksSummaryNotificationFieldsFragment,
     workAwardNotificationFieldsFragment,
     workCommentNotificationFieldsFragment,
-    workCommentReplyNotificationFieldsFragment,
     followNotificationFieldsFragment,
+    WorkCommentReplyNotificationFragment,
   ],
 )
