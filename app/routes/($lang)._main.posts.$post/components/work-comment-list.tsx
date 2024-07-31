@@ -230,8 +230,14 @@ export const WorkCommentList = (props: Props) => {
             }}
             value={comment}
             placeholder="コメントする"
+            disabled={!authContext.isLoggedIn}
           />
-          <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
+          <Button
+            disabled={!authContext.isLoggedIn}
+            variant={"secondary"}
+            size={"icon"}
+            onClick={onOpen}
+          >
             <StampIcon className="w-16" />
           </Button>
           {isCreatingWorkComment ? (
@@ -239,7 +245,11 @@ export const WorkCommentList = (props: Props) => {
               <Loader2Icon className={"w-16 animate-spin"} />
             </Button>
           ) : (
-            <Button variant={"secondary"} onClick={onWorkComment}>
+            <Button
+              disabled={!authContext.isLoggedIn}
+              variant={"secondary"}
+              onClick={onWorkComment}
+            >
               {"送信"}
             </Button>
           )}

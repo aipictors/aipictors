@@ -99,9 +99,15 @@ export const ReplyCommentInput = (props: Props) => {
             setComment(event.target.value)
           }}
           placeholder="コメントする"
+          disabled={!authContext.isLoggedIn}
         />
         <div>
-          <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
+          <Button
+            disabled={!authContext.isLoggedIn}
+            variant={"secondary"}
+            size={"icon"}
+            onClick={onOpen}
+          >
             <StampIcon className="w-16" />
           </Button>
         </div>
@@ -110,7 +116,11 @@ export const ReplyCommentInput = (props: Props) => {
             <Loader2Icon className={"w-16 animate-spin"} />
           </Button>
         ) : (
-          <Button variant={"secondary"} onClick={onComment}>
+          <Button
+            disabled={!authContext.isLoggedIn}
+            variant={"secondary"}
+            onClick={onComment}
+          >
             {"送信"}
           </Button>
         )}
