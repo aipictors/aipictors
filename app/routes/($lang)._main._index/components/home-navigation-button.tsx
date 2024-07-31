@@ -56,6 +56,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
             variant={"ghost"}
             size={"sm"}
             className="w-full justify-start"
+            onClick={props.onClick}
           >
             {props.icon && <props.icon className="mr-4 w-4" />}
             <span>{props.children}</span>
@@ -71,6 +72,7 @@ export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
           className="w-full justify-start"
           size={"sm"}
           disabled={props.isDisabled}
+          onClick={props.onClick}
         >
           {props.icon && <props.icon className="mr-4 w-4" />}
           <span>{props.children}</span>

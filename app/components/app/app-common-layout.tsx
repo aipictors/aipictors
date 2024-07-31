@@ -15,6 +15,10 @@ type Props = Readonly<{
 export function AppCommonLayout(props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
+  const close = () => {
+    setIsOpen(false)
+  }
+
   return (
     <>
       <HomeHeader
