@@ -512,6 +512,7 @@ export default function EditText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
+            md: inputState.md,
           },
         },
       })

@@ -128,6 +128,16 @@ export default {
          */
         header: "72px",
       },
+      /**
+       * 追加: typography
+       */
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "100vw", // add required value here
+          },
+        },
+      },
     },
   },
 } satisfies Config

@@ -72,12 +72,14 @@ export const WorkArticle = (props: Props) => {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          title={props.work.title}
         />
       )}
       {props.work.type === "NOVEL" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          title={props.work.title}
         />
       )}
       <section className="mt-4 space-y-4">
