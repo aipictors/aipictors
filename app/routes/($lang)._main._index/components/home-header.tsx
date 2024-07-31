@@ -44,6 +44,12 @@ const HomeHeader = (props: Props) => {
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
 
+  const [isOpen, setIsOpen] = useState(false)
+
+  const close = () => {
+    setIsOpen(false)
+  }
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
@@ -58,7 +64,7 @@ const HomeHeader = (props: Props) => {
               <MenuIcon className="h-6 w-6" />
             </Button>
           )}
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button className="md:hidden" variant={"ghost"} size={"icon"}>
                 <MenuIcon />
@@ -66,7 +72,7 @@ const HomeHeader = (props: Props) => {
             </SheetTrigger>
             <SheetContent className="p-0" side={"left"}>
               <ScrollArea className="h-full p-4">
-                <HomeRouteList />
+                <HomeRouteList onClickMenuItem={close} />
               </ScrollArea>
             </SheetContent>
           </Sheet>
