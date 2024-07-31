@@ -20,7 +20,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const year = Number.parseInt(props.params.year)
 
-  const month = Number.parseInt(props.params.month) - 1
+  const month = Number.parseInt(props.params.month)
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,
@@ -57,10 +57,17 @@ export default function MonthlyAwards() {
 
   const data = useLoaderData<typeof loader>()
 
+  console.log(data.month)
+
   return (
     <>
       <RankingHeader year={data.year} month={data.month} day={null} />
-      <RankingWorkList awards={data.workAwards.data.workAwards} />
+      <RankingWorkList
+        year={data.year}
+        month={data.month}
+        day={null}
+        awards={data.workAwards.data.workAwards}
+      />
     </>
   )
 }

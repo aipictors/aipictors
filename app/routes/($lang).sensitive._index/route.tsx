@@ -7,7 +7,6 @@ import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/hom
 import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeVideosSection } from "~/routes/($lang)._main._index/components/home-videos-section"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -198,12 +197,12 @@ export default function Index() {
         title={"小説"}
         isSensitive={true}
       />
-      <HomeVideosSection
+      {/* <HomeVideosSection
         dateText={data.videoWorksBeforeText}
         works={data.videoWorks}
         title={"動画"}
         isSensitive={true}
-      />
+      /> */}
       <HomeColumnsSection
         dateText={data.columnWorksBeforeText}
         works={data.columnWorks}

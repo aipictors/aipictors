@@ -88,7 +88,12 @@ export default function SensitiveAwardsPage() {
   return (
     <>
       <RankingHeader year={year} month={month} day={day} />
-      <RankingWorkList awards={data.workAwards} />
+      <RankingWorkList
+        year={year}
+        month={month}
+        day={day}
+        awards={data.workAwards}
+      />
     </>
   )
 }
