@@ -216,7 +216,7 @@ export const RankingHeader = (props: Props) => {
           variant={"secondary"}
           onClick={handleNavigate}
         >
-          変更を反映
+          変更した内容で表示
         </Button>
       </div>
     </Card>

@@ -1,13 +1,13 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { BookmarkListContainer } from "~/routes/($lang).my._index/components/bookmark-list-container"
 import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
 
+import { LikeListContainer } from "~/routes/($lang).my._index/components/like-list-container"
 export const headers: HeadersFunction = () => {
   return {
     "Cache-Control": "max-age=0, s-maxage=0",
@@ -15,9 +15,9 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - ダッシュボード - ブックマーク"
+  const metaTitle = "Aipictors - ダッシュボード - いいね"
 
-  const metaDescription = "ダッシュボード - ブックマーク"
+  const metaDescription = "ダッシュボード - いいね"
 
   const metaImage =
     "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
@@ -37,8 +37,8 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export default function MyBookmarks() {
-  const [bookmarkPage, setBookmarkPage] = React.useState(0)
+export default function MyLikes() {
+  const [likedPage, setLikedPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)
 
@@ -53,19 +53,19 @@ export default function MyBookmarks() {
     },
   })
 
-  const bookmarkMaxCount = userResp?.user?.createdBookmarksCount
-    ? userResp.user.createdBookmarksCount > 400
+  const likedMaxCount = userResp?.user?.createdLikesCount
+    ? userResp.user.createdLikesCount > 400
       ? 400
-      : userResp.user.createdBookmarksCount
+      : userResp.user.createdLikesCount
     : 0
 
   return (
     <>
       <Suspense fallback={<AppLoadingPage />}>
-        <BookmarkListContainer
-          page={bookmarkPage}
-          maxCount={bookmarkMaxCount}
-          setPage={setBookmarkPage}
+        <LikeListContainer
+          page={likedPage}
+          maxCount={likedMaxCount}
+          setPage={setLikedPage}
         />
       </Suspense>
     </>
@@ -78,7 +78,7 @@ const userQuery = graphql(
   ) {
     user(id: $userId) {
       id
-      createdBookmarksCount
+      createdLikesCount
     }
   }`,
   [partialWorkFieldsFragment],
