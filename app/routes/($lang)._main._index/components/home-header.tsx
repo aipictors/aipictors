@@ -75,9 +75,9 @@ const HomeHeader = (props: Props) => {
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Link
-              className="items-center md:flex"
+              className="items-center md:flex space-x-2"
               to="https://www.aipictors.com"
             >
               {navigation.state === "loading" && (
@@ -94,12 +94,12 @@ const HomeHeader = (props: Props) => {
                   height={40}
                 />
               )}
+              <div className="hidden flex-grow flex-row items-center md:flex">
+                <span className="font-bold text-xl">
+                  {props.title ?? "Aipictors β"}
+                </span>
+              </div>
             </Link>
-            <div className="hidden flex-grow flex-row items-center md:flex">
-              <span className="font-bold text-xl">
-                {props.title ?? "Aipictors β"}
-              </span>
-            </div>
           </div>
         </div>
         <div className="flex w-full justify-end gap-x-2">
