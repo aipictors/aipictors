@@ -75,11 +75,11 @@ export default function FollowingLayout() {
 
   return (
     <div className="flex flex-col space-y-4 p-4">
-      <Card className="m-auto max-w-96">
+      <Card className="m-auto w-full">
         <CardHeader>
           <div className="flex flex-col items-center">
             <img
-              className="h-auto w-full rounded-lg object-cover"
+              className="h-auto max-w-96 rounded-lg object-cover"
               src={data.appEvent.thumbnailImageUrl}
               alt=""
             />
