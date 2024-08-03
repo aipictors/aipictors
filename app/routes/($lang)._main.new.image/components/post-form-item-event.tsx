@@ -1,7 +1,7 @@
 import type { Tag } from "~/components/tag/tag-input"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Link } from "@remix-run/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
@@ -19,24 +19,30 @@ type Props = {
  * イベント入力
  */
 export const PostFormItemEvent = (props: Props) => {
-  const [isAttending, setIsAttending] = useState(props.isAttending ?? false)
+  const [isAttending, setIsAttending] = useState(
+    props.isAttending === undefined ? false : props.isAttending,
+  )
 
   const handleAttendanceChange = (isChecked: boolean) => {
     setIsAttending(isChecked)
     if (props.eventTag) {
       if (isChecked) {
         props.addTag({
-          id: "event",
+          id: props.eventTag,
           text: props.eventTag,
         })
         return
       }
       props.removeTag({
-        id: "event",
+        id: props.eventTag,
         text: props.eventTag,
       })
     }
   }
+
+  useEffect(() => {
+    setIsAttending(props.isAttending === undefined ? false : props.isAttending)
+  }, [props.isAttending])
 
   return (
     <Card>

@@ -27,6 +27,7 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
+import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -290,6 +291,13 @@ export default function EditText() {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
+      startAt: new Date().toISOString().split("T")[0],
+      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
     },
   })
 
@@ -580,6 +588,23 @@ export default function EditText() {
           currentPass={viewer?.viewer?.currentPass ?? null}
           eventInputHidden={false}
           setDisabledSubmit={setDisabledSubmit}
+          themes={
+            viewer?.dailyThemes
+              ? viewer.dailyThemes.map((theme) => ({
+                  date: theme.dateText,
+                  title: theme.title,
+                  id: theme.id,
+                }))
+              : null
+          }
+          aiModels={viewer?.aiModels ?? []}
+          event={{
+            title: viewer?.appEvents[0]?.title ?? null,
+            description: viewer?.appEvents[0]?.description ?? null,
+            tag: viewer?.appEvents[0]?.tag ?? null,
+            endAt: viewer?.appEvents[0]?.endAt ?? 0,
+            slug: viewer?.appEvents[0]?.slug ?? null,
+          }}
         />
         <Button
           disabled={disabledSubmit}
@@ -618,7 +643,10 @@ const viewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
-    $ownerUserId: ID
+    $ownerUserId: ID,
+    $startDate: String!,
+    $endDate: String!,
+    $startAt: String!,
   ) {
     viewer {
       id
@@ -647,8 +675,41 @@ const viewerQuery = graphql(
         ...PartialUserFields
       }
     }
+    aiModels(offset: 0, limit: 124, where: {}) {
+      ...AiModelFields
+    }
+    dailyThemes(
+      limit: 8,
+      offset: 0,
+      where: {
+        startDate: $startDate,
+        endDate: $endDate,
+      }) {
+      id
+      title
+      dateText
+    }
+    appEvents(
+      limit: 1,
+      offset: 0,
+      where: {
+        startAt: $startAt,
+      }
+    ) {
+      id
+      description
+      title
+      tag
+      slug
+      endAt
+    }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
+  [
+    aiModelFieldsFragment,
+    partialAlbumFieldsFragment,
+    partialUserFieldsFragment,
+    passFieldsFragment,
+  ],
 )
 
 const workQuery = graphql(
