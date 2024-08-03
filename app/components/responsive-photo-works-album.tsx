@@ -48,7 +48,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           // TODO: コンポーネントを分ける
           extras: (_, { photo, index }) => (
             <div key={index}>
-              <div className="absolute right-1 bottom-16 z-infinity">
+              <div className="absolute right-1 bottom-16 z-10">
                 <LikeButton
                   size={56}
                   targetWorkId={photo.workId}

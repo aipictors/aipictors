@@ -48,7 +48,7 @@ export const TagReferencedWorkSection = (props: Props) => {
           extras: (_, { photo, index }) => (
             // typeof window === "undefined" ? null : (
             <div key={index}>
-              <div className="absolute right-1 bottom-16 z-infinity">
+              <div className="absolute right-1 bottom-16 z-10">
                 <LikeButton
                   size={56}
                   key={index}
