@@ -88,7 +88,6 @@ export const HomeRouteList = (props: Props) => {
         {"更新情報"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/generation"}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
