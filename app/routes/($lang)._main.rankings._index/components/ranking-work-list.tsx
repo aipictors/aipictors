@@ -2,19 +2,46 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/components/user-name-badge"
-import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import type { FragmentOf } from "gql.tada"
-
+import { graphql } from "gql.tada"
+import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
+import { AuthContext } from "~/contexts/auth-context"
+import { useContext } from "react"
+import { useQuery } from "@apollo/client/index"
 type Props = {
   awards: FragmentOf<typeof workAwardFieldsFragment>[]
+  year: number
+  month: number
+  day: number | null
+  weekIndex: number | null
 }
 
 export const RankingWorkList = (props: Props) => {
+  const appContext = useContext(AuthContext)
+
   const works = props.awards
 
+  const { data: awardWorks } = useQuery(workAwardsQuery, {
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 200,
+      where: {
+        year: props.year,
+        month: props.month,
+        ...(props.day && { day: props.day }),
+        ...(props.weekIndex && { weekIndex: props.weekIndex }),
+      },
+    },
+  })
+
+  console.log(awardWorks)
+
+  const workAwards = awardWorks?.workAwards ?? works
+
   return (
-    <div className="flex flex-wrap justify-center gap-x-4 gap-y-8">
-      {works.map((workItem, index) => {
+    <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
+      {workAwards.map((workItem, index) => {
         return (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
@@ -29,7 +56,7 @@ export const RankingWorkList = (props: Props) => {
                 thumbnailImagePosition={
                   workItem.work.thumbnailImagePosition ?? 0
                 }
-                size="lg"
+                size="md"
                 imageWidth={workItem.work.smallThumbnailImageWidth}
                 imageHeight={workItem.work.smallThumbnailImageHeight}
                 ranking={index + 1}
@@ -46,7 +73,7 @@ export const RankingWorkList = (props: Props) => {
                 />
               </div>
             </div>
-            <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+            <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
               {workItem.work.title}
             </p>
             <UserNameBadge
@@ -61,3 +88,12 @@ export const RankingWorkList = (props: Props) => {
     </div>
   )
 }
+
+const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      ...WorkAwardFields
+    }
+  }`,
+  [workAwardFieldsFragment],
+)

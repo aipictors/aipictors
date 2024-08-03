@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent, DialogFooter } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
@@ -31,19 +31,16 @@ export const StickerDialog = (props: Props) => {
 
   const maxStickersPage = 120
 
-  const { data: stickers = null, refetch } = useSuspenseQuery(
-    viewerUserStickersQuery,
-    {
-      skip: appContext.isLoading,
-      variables: {
-        limit: maxStickersPage,
-        offset: createdSortStickerPage * maxStickersPage,
-        orderBy: "DATE_CREATED",
-      },
+  const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
+    skip: appContext.isLoading,
+    variables: {
+      limit: maxStickersPage,
+      offset: createdSortStickerPage * maxStickersPage,
+      orderBy: "DATE_CREATED",
     },
-  )
+  })
 
-  const { data: stickersCount = null } = useSuspenseQuery(
+  const { data: stickersCount = null } = useQuery(
     viewerUserStickersCountQuery,
     {
       skip: appContext.isLoading,

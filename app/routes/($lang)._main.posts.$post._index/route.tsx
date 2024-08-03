@@ -7,7 +7,12 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { config } from "~/config"
+
+export function HydrateFallback() {
+  return <AppLoadingPage />
+}
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -23,6 +28,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  if (workResp.data.work === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  // 非公開の場合はエラー
+  if (
+    workResp.data.work.accessType === "PRIVATE" ||
+    workResp.data.work.accessType === "DRAFT"
+  ) {
+    throw new Response(null, { status: 404 })
+  }
+
   const workCommentsResp = await client.query({
     query: workCommentsQuery,
     variables: {
@@ -30,18 +47,14 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (workResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   if (workCommentsResp.data.work === null) {
     throw new Response(null, { status: 404 })
   }
 
-  // 作品と同じ年齢種別で新着順の作品一覧を取得
-  const rating = workResp.data.work.rating
+  props.response?.headers.set("Cache-Control", config.cacheControl.oneHour)
 
   return json({
+    post: props.params.post,
     work: workResp.data.work,
     workComments: workCommentsResp.data.work.comments,
   })
@@ -57,9 +70,11 @@ export default function Work() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <Suspense>
-      <WorkContainer work={data.work} comments={data.workComments} />
-    </Suspense>
+    <WorkContainer
+      post={data.post}
+      work={data.work}
+      comments={data.workComments}
+    />
   )
 }
 

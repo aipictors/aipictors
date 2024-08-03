@@ -619,7 +619,7 @@ html {
  * 画面が小さい場合に余白を減らす
  * @see https://github.com/shadcn-ui/ui/blob/0fae3fd93ae749aca708bdfbbbeddc5d576bfb2e/apps/www/styles/globals.css#L76
  */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
     @apply px-4;
   }
@@ -642,10 +642,12 @@ html {
  */
 .like-animation {
   animation: heart-beat 0.4s ease forwards;
+  animation-play-state: paused;
 }
 
 .like-animation-end {
   animation: heart-beat-end 0.2s linear forwards;
+  animation-play-state: paused;
 }
 
 .like-image {

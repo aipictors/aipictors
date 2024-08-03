@@ -21,8 +21,19 @@ import {
 } from "lucide-react"
 import { useContext } from "react"
 
-export const HomeRouteList = () => {
+type Props = {
+  onClickMenuItem?: () => void
+}
+
+export const HomeRouteList = (props: Props) => {
   const authContext = useContext(AuthContext)
+
+  const closeHeaderMenu = () => {
+    if (props.onClickMenuItem) {
+      console.log("closeHeaderMenu")
+      props.onClickMenuItem()
+    }
+  }
 
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16 md:w-40">
@@ -34,36 +45,53 @@ export const HomeRouteList = () => {
           </div>
         </>
       )}
-      <HomeNavigationButton href={"/"} icon={HomeIcon}>
+      <HomeNavigationButton
+        onClick={closeHeaderMenu}
+        href={"/"}
+        icon={HomeIcon}
+      >
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/themes"}
         icon={LightbulbIcon}
+        onClick={closeHeaderMenu}
       >
         {"創作アイデア"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/stickers"} icon={StampIcon}>
+      <HomeNavigationButton
+        onClick={closeHeaderMenu}
+        href={"/stickers"}
+        icon={StampIcon}
+      >
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/rankings"}
         icon={AwardIcon}
+        onClick={closeHeaderMenu}
       >
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/milestones"} icon={RocketIcon}>
+      <HomeNavigationButton
+        onClick={closeHeaderMenu}
+        href={"/milestones"}
+        icon={RocketIcon}
+      >
         {"開発予定"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/releases"} icon={RocketIcon}>
+      <HomeNavigationButton
+        onClick={closeHeaderMenu}
+        href={"/releases"}
+        icon={RocketIcon}
+      >
         {"更新情報"}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
         href={"/generation"}
         icon={AwardIcon}
+        onClick={closeHeaderMenu}
       >
         {"画像生成"}
       </HomeNavigationButton>
@@ -74,6 +102,7 @@ export const HomeRouteList = () => {
         isDisabled={config.isReleaseMode}
         href={"/posts/2d"}
         icon={ImageIcon}
+        onClick={closeHeaderMenu}
       >
         {"イラスト"}
       </HomeNavigationButton>
@@ -81,10 +110,15 @@ export const HomeRouteList = () => {
         isDisabled={config.isReleaseMode}
         href={"/posts/2.5d"}
         icon={BookImageIcon}
+        onClick={closeHeaderMenu}
       >
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} icon={BoxIcon}>
+      <HomeNavigationButton
+        href={"/sensitive"}
+        icon={BoxIcon}
+        onClick={closeHeaderMenu}
+      >
         {"センシティブ"}
       </HomeNavigationButton>
       {authContext.isNotLoading && (
@@ -93,22 +127,35 @@ export const HomeRouteList = () => {
         </div>
       )}
       {authContext.isLoggedIn && (
-        <HomeNavigationButton href={"/account/login"} icon={UserIcon}>
+        <HomeNavigationButton
+          href={"/settings/account/login"}
+          icon={UserIcon}
+          onClick={closeHeaderMenu}
+        >
           {"アカウント"}
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && (
-        <HomeNavigationButton href={"/support/chat"} icon={MessageCircleIcon}>
+        <HomeNavigationButton
+          href={"/support/chat"}
+          icon={MessageCircleIcon}
+          onClick={closeHeaderMenu}
+        >
           {"お問い合わせ"}
         </HomeNavigationButton>
       )}
-      <HomeNavigationButton href={"/plus"} icon={GemIcon}>
+      <HomeNavigationButton
+        href={"/plus"}
+        icon={GemIcon}
+        onClick={closeHeaderMenu}
+      >
         {"Aipictors+"}
       </HomeNavigationButton>
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/settings/restriction"}
+          href={"/settings"}
           icon={SettingsIcon}
+          onClick={closeHeaderMenu}
         >
           {"設定"}
         </HomeNavigationButton>

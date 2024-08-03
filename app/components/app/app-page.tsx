@@ -18,7 +18,7 @@ export function AppPage(props: Props) {
   return (
     <main
       className={cn(
-        "mx-auto w-full pb-4",
+        "container mx-auto pb-4",
         "space-y-4 overflow-x-hidden",
         props.className,
       )}

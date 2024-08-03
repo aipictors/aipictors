@@ -33,7 +33,7 @@ export const GenerationConfigScale = (props: Props) => {
       <Input
         type="number"
         value={props.value}
-        min={1}
+        min={6}
         max={15}
         onChange={(event) => {
           props.onChange(Number(event.target.value))

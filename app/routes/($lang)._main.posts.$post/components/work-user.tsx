@@ -1,19 +1,14 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
-import { skipToken, useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
 import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
+import { Skeleton } from "~/components/ui/skeleton"
 
 type Props = {
   userId: string
@@ -32,18 +27,14 @@ type Props = {
 export const WorkUser = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data = null } = useSuspenseQuery(
-    userFolloweesQuery,
-    appContext.isLoading || appContext.userId === null
-      ? skipToken
-      : {
-          variables: {
-            user_id: appContext.userId,
-            offset: 0,
-            limit: 128,
-          },
-        },
-  )
+  const { data = null } = useQuery(userFolloweesQuery, {
+    skip: appContext.isLoading || appContext.userId === null,
+    variables: {
+      user_id: appContext.userId ?? "",
+      offset: 0,
+      limit: 128,
+    },
+  })
 
   const isFollow =
     data?.user?.followees?.some((followee) => followee.id === props.userId) ??
@@ -56,7 +47,9 @@ export const WorkUser = (props: Props) => {
           <Link to={`/users/${props.userLogin}`}>
             <Avatar className="m-auto h-auto w-24">
               <AvatarImage src={props.userIconImageURL} alt="" />
-              <AvatarFallback />
+              <AvatarFallback>
+                <Skeleton className="h-24 w-24 rounded-full" />
+              </AvatarFallback>
             </Avatar>
             <p className="mt-2 text-center font-bold text-md">
               {props.userName}
@@ -79,12 +72,8 @@ export const WorkUser = (props: Props) => {
         {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
         )}
+        <div>{props.userBiography}</div>
       </CardContent>
-      <CardDescription className="px-6 pb-4">
-        {props.userBiography && (
-          <CardDescription>{props.userBiography}</CardDescription>
-        )}
-      </CardDescription>
     </Card>
   )
 }

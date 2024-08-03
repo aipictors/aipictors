@@ -4,8 +4,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post/components/work-article-generation-parameters"
-import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
-import { Suspense, useContext } from "react"
+import { useContext, useState } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
@@ -23,9 +22,11 @@ import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post/compone
 import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post/components/work-markdown-view"
+import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
+  isDraft?: boolean
 }
 
 /**
@@ -38,6 +39,8 @@ export const WorkArticle = (props: Props) => {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 
+  const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
+
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
 
   return (
@@ -48,7 +51,10 @@ export const WorkArticle = (props: Props) => {
         fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
-      <PostAccessTypeBanner postAccessType={props.work.accessType} />
+      <PostAccessTypeBanner
+        createdAt={props.work.createdAt}
+        postAccessType={props.work.accessType}
+      />
       {props.work.type === "WORK" && (
         <WorkImageView
           workImageURL={props.work.imageURL}
@@ -66,12 +72,14 @@ export const WorkArticle = (props: Props) => {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          title={props.work.title}
         />
       )}
       {props.work.type === "NOVEL" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          title={props.work.title}
         />
       )}
       <section className="mt-4 space-y-4">
@@ -82,16 +90,15 @@ export const WorkArticle = (props: Props) => {
             </Button>
           </Link>
         )}
-        <Suspense>
-          <WorkActionContainer
-            workLikesCount={props.work.likesCount}
-            title={props.work.title}
-            imageUrl={props.work.imageURL}
-            targetWorkId={props.work.id}
-            bookmarkFolderId={bookmarkFolderId}
-            targetWorkOwnerUserId={props.work.user.id}
-          />
-        </Suspense>
+        <WorkActionContainer
+          workLikesCount={props.work.likesCount}
+          title={props.work.title}
+          imageUrl={props.work.imageURL}
+          targetWorkId={props.work.id}
+          bookmarkFolderId={bookmarkFolderId}
+          targetWorkOwnerUserId={props.work.user.id}
+          isDisabledShare={props.isDraft}
+        />
         <h1 className="font-bold text-lg">{props.work.title}</h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
@@ -156,7 +163,8 @@ export const WorkArticle = (props: Props) => {
           )}
           <WorkArticleTags
             postId={props.work.id}
-            tagNames={props.work.tagNames}
+            tagNames={tagNames}
+            setTagNames={setTagNames}
             isEditable={props.work.isTagEditable}
           />
         </div>
@@ -174,7 +182,6 @@ export const WorkArticle = (props: Props) => {
           strength={props.work.strength}
           otherGenerationParams={props.work.otherGenerationParams}
         />
-
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link

@@ -7,6 +7,7 @@ import React from "react"
 
 type WorkArticleTagProps = {
   tagNames: string[]
+  setTagNames: React.Dispatch<React.SetStateAction<string[]>>
   isEditable?: boolean
   postId: string
 }
@@ -15,6 +16,7 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
   tagNames,
   isEditable = false,
   postId,
+  setTagNames,
 }) => {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
@@ -24,7 +26,7 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
 
   return (
     <>
-      <div className="flex flex-row flex-wrap items-center space-x-4">
+      <div className="flex flex-row flex-wrap items-center gap-x-4">
         {tagNames.map((tagName) => (
           <Link
             to={`https://www.aipictors.com/search/?tag=${tagName}`}
@@ -50,9 +52,11 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
       {isOpenEdit && (
         <WorkTagInput
           postId={postId}
+          setTagNames={setTagNames}
           tags={tags}
           setTags={setTags}
           isEditable={true}
+          setIsOpenEdit={setIsOpenEdit}
         />
       )}
     </>

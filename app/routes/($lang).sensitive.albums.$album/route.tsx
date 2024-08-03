@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
@@ -46,25 +45,23 @@ export default function SensitiveAlbumPage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
-      <article className="flex">
-        <div className="flex flex-col">
-          <AlbumArticleHeader
-            album={data.album}
-            userLogin={""}
-            userId={""}
-            userName={""}
-            userProfileImageURL={""}
-          />
-          <AlbumWorkList
-            albumWorks={data.albumWorks}
-            maxCount={0}
-            albumId={data.album.id}
-          />
-        </div>
-        <AlbumWorkDescription album={data.album} />
-      </article>
-    </AppPage>
+    <article className="flex">
+      <div className="flex flex-col">
+        <AlbumArticleHeader
+          album={data.album}
+          userLogin={""}
+          userId={""}
+          userName={""}
+          userProfileImageURL={""}
+        />
+        <AlbumWorkList
+          albumWorks={data.albumWorks}
+          maxCount={0}
+          albumId={data.album.id}
+        />
+      </div>
+      <AlbumWorkDescription album={data.album} />
+    </article>
   )
 }
 

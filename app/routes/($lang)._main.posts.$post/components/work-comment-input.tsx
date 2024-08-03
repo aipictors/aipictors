@@ -1,12 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { useContext, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
@@ -100,9 +99,15 @@ export const ReplyCommentInput = (props: Props) => {
             setComment(event.target.value)
           }}
           placeholder="コメントする"
+          disabled={!authContext.isLoggedIn}
         />
         <div>
-          <Button variant={"secondary"} size={"icon"} onClick={onOpen}>
+          <Button
+            disabled={!authContext.isLoggedIn}
+            variant={"secondary"}
+            size={"icon"}
+            onClick={onOpen}
+          >
             <StampIcon className="w-16" />
           </Button>
         </div>
@@ -111,29 +116,31 @@ export const ReplyCommentInput = (props: Props) => {
             <Loader2Icon className={"w-16 animate-spin"} />
           </Button>
         ) : (
-          <Button variant={"secondary"} onClick={onComment}>
+          <Button
+            disabled={!authContext.isLoggedIn}
+            variant={"secondary"}
+            onClick={onComment}
+          >
             {"送信"}
           </Button>
         )}
       </div>
-      <Suspense fallback={<AppLoadingPage />}>
-        <StickerDialog
-          isOpen={isOpen}
-          onClose={onClose}
-          onSend={async (stickerId: string, stickerImageURL: string) => {
-            await sendComment(
-              comment,
-              props.targetCommentId,
-              stickerId,
-              stickerImageURL,
-            )
+      <StickerDialog
+        isOpen={isOpen}
+        onClose={onClose}
+        onSend={async (stickerId: string, stickerImageURL: string) => {
+          await sendComment(
+            comment,
+            props.targetCommentId,
+            stickerId,
+            stickerImageURL,
+          )
 
-            setComment("")
+          setComment("")
 
-            onClose()
-          }}
-        />
-      </Suspense>
+          onClose()
+        }}
+      />
     </>
   )
 }

@@ -17,7 +17,7 @@ export function PostAnimationFormUploader(props: Props) {
       <div className="rounded-md">
         <div
           className={cn(
-            "relative items-center bg-zinc-800",
+            "relative items-center rounded-b bg-zinc-800",
             props.state.isHovered && "border-2 border-white border-dashed",
           )}
         >

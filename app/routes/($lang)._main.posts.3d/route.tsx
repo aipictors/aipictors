@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -36,10 +35,10 @@ export default function Works3d() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <HomeTagList hotTags={data.hotTags} />
       <HomeWorkList works={data.works} />
-    </AppPage>
+    </>
   )
 }
 

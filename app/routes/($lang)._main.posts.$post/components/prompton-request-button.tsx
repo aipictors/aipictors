@@ -8,13 +8,13 @@ type Props = {
 /**
  * 投稿者への支援ボタン
  */
-export const PromptonRequestButton = (props: Props) => {
+export const PromptonRequestButton = ({ promptonId, ...rest }: Props) => {
   const onClick = () => {
-    window.open(`https://prompton.io/aipic/${props.promptonId}`, "_blank")
+    window.open(`https://prompton.io/aipic/${promptonId}`, "_blank")
   }
 
   return (
-    <Button onClick={onClick} variant={"secondary"} {...props}>
+    <Button onClick={onClick} variant={"secondary"} {...rest}>
       <div className="flex items-center space-x-2">
         <p>{"サポートする"}</p>
         <GiftIcon className="w-4" />

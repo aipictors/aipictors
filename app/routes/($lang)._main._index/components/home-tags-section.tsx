@@ -53,7 +53,7 @@ export const HomeTagsSection = (props: Props) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" />
+        {/* <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" /> */}
       </Carousel>
     </>
   )

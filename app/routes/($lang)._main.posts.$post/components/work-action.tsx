@@ -6,7 +6,6 @@ import { downloadImageFile } from "~/routes/($lang).generation._index/utils/down
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post/components/work-editor-button"
 import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post/components/work-action-bookmark"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { RecommendButton } from "~/components/recommend-button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -23,6 +22,7 @@ type Props = {
   targetWorkOwnerUserId: string
   isHideEditButton: boolean
   isRecommended: boolean
+  isDisabledShare?: boolean
 }
 
 /**
@@ -52,11 +52,13 @@ export const WorkAction = (props: Props) => {
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
         />
-        <RecommendButton
-          workId={props.targetWorkId}
-          ownerUserId={props.targetWorkOwnerUserId}
-          isRecommended={props.isRecommended}
-        />
+        <Suspense fallback={null}>
+          <RecommendButton
+            workId={props.targetWorkId}
+            ownerUserId={props.targetWorkOwnerUserId}
+            isRecommended={props.isRecommended}
+          />
+        </Suspense>
         {!props.isHideEditButton && (
           <WorkEditorButton
             targetWorkId={props.targetWorkId}
@@ -65,15 +67,16 @@ export const WorkAction = (props: Props) => {
           />
         )}
         {props.targetWorkOwnerUserId !== appContext.userId && (
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorkActionBookmark
-              targetWorkId={props.targetWorkId}
-              bookmarkFolderId={props.bookmarkFolderId}
-              defaultBookmarked={props.defaultBookmarked}
-            />
-          </Suspense>
+          <WorkActionBookmark
+            targetWorkId={props.targetWorkId}
+            bookmarkFolderId={props.bookmarkFolderId}
+            defaultBookmarked={props.defaultBookmarked}
+          />
         )}
-        <SharePopover title={props.title} />
+        <SharePopover
+          isDisabledShare={props.isDisabledShare}
+          title={props.title}
+        />
         <MenuPopover
           onDownload={onDownload}
           isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}

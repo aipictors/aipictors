@@ -8,6 +8,7 @@ import { useContext } from "react"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  dateText: string
 }
 
 /**
@@ -22,13 +23,11 @@ export const HomeWorksGeneratedSection = (props: Props) => {
       offset: 0,
       limit: WORK_COUNT_DEFINE.GENERATION_WORKS,
       where: {
-        orderBy: "LIKES_COUNT",
+        orderBy: "DATE_CREATED",
         sort: "DESC",
         ratings: ["G"],
         isFeatured: true,
-        createdAtAfter: new Date(
-          Date.now() - 7 * 24 * 60 * 60 * 1000,
-        ).toDateString(),
+        beforeCreatedAt: props.dateText,
       },
     },
   })

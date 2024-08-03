@@ -71,8 +71,21 @@ export const WorksListTableRow = (props: Props) => {
     if (props.work.workType === "COLUMN" || props.work.workType === "NOVEL") {
       return `/posts/${props.work.id}/text/edit`
     }
-
     return "/"
+  }
+
+  const postUrl = () => {
+    if (
+      new Date(props.work.createdAt * 1000).getTime() > new Date().getTime() ||
+      props.work.accessType === "PRIVATE" ||
+      props.work.accessType === "DRAFT"
+    ) {
+      return `/posts/${props.work.id}/draft`
+    }
+    if (props.work.accessType === "LIMITED") {
+      return `/posts/${props.work.uuid}`
+    }
+    return `/posts/${props.work.id}`
   }
 
   return (
@@ -90,14 +103,8 @@ export const WorksListTableRow = (props: Props) => {
               <div className="w-32 overflow-hidden text-ellipsis">
                 {props.work.title}
               </div>
-            ) : props.work.accessType === "LIMITED" ? (
-              <Link to={`/posts/${props.work.uuid}`}>
-                <div className="w-32 overflow-hidden text-ellipsis">
-                  {props.work.title}
-                </div>
-              </Link>
             ) : (
-              <Link to={`/posts/${props.work.id}`}>
+              <Link to={postUrl()}>
                 <div className="w-32 overflow-hidden text-ellipsis">
                   {props.work.title}
                 </div>
@@ -105,30 +112,13 @@ export const WorksListTableRow = (props: Props) => {
             )}
           </TableCell>
           <TableCell>
-            {new Date(props.work.createdAt * 1000).getTime() >
-            new Date().getTime() ? (
+            <Link to={postUrl()}>
               <img
                 src={props.work.thumbnailImageUrl}
                 alt="thumbnail"
                 className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
-              />
-            ) : props.work.accessType === "LIMITED" ? (
-              <Link to={`/posts/${props.work.uuid}`}>
-                <img
-                  src={props.work.thumbnailImageUrl}
-                  alt="thumbnail"
-                  className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
-                />{" "}
-              </Link>
-            ) : (
-              <Link to={`/posts/${props.work.id}`}>
-                <img
-                  src={props.work.thumbnailImageUrl}
-                  alt="thumbnail"
-                  className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
-                />{" "}
-              </Link>
-            )}
+              />{" "}
+            </Link>
           </TableCell>
           <TableCell>
             <Link to={editUrl()}>

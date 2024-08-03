@@ -8,9 +8,9 @@ type Props = {
 /**
  * 投稿者への支援ボタン
  */
-export const PromptonRequestTextButton = (props: Props) => {
+export const PromptonRequestTextButton = ({ promptonId, ...rest }: Props) => {
   const onClick = () => {
-    window.open(`https://prompton.io/aipic/${props.promptonId}`, "_blank")
+    window.open(`https://prompton.io/aipic/${promptonId}`, "_blank")
   }
 
   return (
@@ -19,7 +19,7 @@ export const PromptonRequestTextButton = (props: Props) => {
       onClick={onClick}
       size={"sm"}
       variant={"secondary"}
-      {...props}
+      {...rest}
     >
       <div className="flex items-center space-x-2">
         <p>{"サポート"}</p>

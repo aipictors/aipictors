@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 export const meta: MetaFunction = () => {
@@ -10,7 +9,7 @@ export const meta: MetaFunction = () => {
  */
 export default function AboutUs() {
   return (
-    <AppPage>
+    <>
       <div className="flex flex-col">
         <h2 className="py-2 font-bold text-2xl">運営会社について</h2>
         <p>
@@ -18,6 +17,6 @@ export default function AboutUs() {
           hello@aipictors.com からお願い致します。
         </p>
       </div>
-    </AppPage>
+    </>
   )
 }

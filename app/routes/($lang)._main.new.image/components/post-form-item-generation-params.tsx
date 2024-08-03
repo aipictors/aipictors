@@ -101,7 +101,7 @@ export const PostFormItemGenerationParams = (props: Props) => {
                     handleChange("scale", event.target.value)
                   }
                   value={props.pngInfo?.params?.scale ?? ""}
-                  minLength={1}
+                  minLength={6}
                   maxLength={100}
                   type="text"
                   placeholder={"Scale"}

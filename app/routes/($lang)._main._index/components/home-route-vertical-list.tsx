@@ -57,11 +57,7 @@ export const HomeRouteList = () => {
               </HomeNavigationButton>
             </CarouselItem>
             <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton
-                isDisabled={config.isReleaseMode}
-                href={"/themes"}
-                icon={LightbulbIcon}
-              >
+              <HomeNavigationButton href={"/themes"} icon={LightbulbIcon}>
                 {"創作アイデア"}
               </HomeNavigationButton>
             </CarouselItem>

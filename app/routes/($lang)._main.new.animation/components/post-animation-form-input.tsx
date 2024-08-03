@@ -5,7 +5,6 @@ import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
 import { useQuery } from "@apollo/client/index"
 import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
-import { Loader2Icon } from "lucide-react"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
 import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
 import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
@@ -14,10 +13,9 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
+import type { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
@@ -32,9 +30,29 @@ type Props = {
   currentPass: FragmentOf<typeof passFieldsFragment> | null
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
+  themes: { date: string; title: string; id: string }[] | null
+  event: {
+    title: string | null
+    description: string | null
+    tag: string | null
+    endAt: number
+    slug: string | null
+  }
+  aiModels: FragmentOf<typeof aiModelFieldsFragment>[]
+}
+
+// 日本時間の日付を計算する関数
+const getJSTDate = () => {
+  const date = new Date()
+  const jstOffset = date.getTimezoneOffset() + 9 * 60 // JST is UTC+9
+  const jstDate = new Date(date.getTime() + jstOffset * 60 * 1000)
+  return jstDate.toISOString().split("T")[0]
 }
 
 export function PostAnimationFormInput(props: Props) {
+  const jstDate = getJSTDate()
+  const reservationDate = props.state.reservationDate || jstDate
+
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
@@ -54,18 +72,19 @@ export function PostAnimationFormInput(props: Props) {
   }, [loading])
 
   const onChangeTheme = (value: boolean) => {
-    if (data === undefined) {
-      throw new Error("theme is undefined")
+    if (props.themes === null) {
+      throw new Error("お題がありません。")
     }
-    if (data.dailyTheme === null) {
-      throw new Error("theme.dailyTheme is null")
+    const theme = props.themes.find((theme) => theme.date === reservationDate)
+    if (theme === undefined) {
+      throw new Error("選択された日付にお題が見つかりませんでした。")
     }
     if (value === false) {
       props.dispatch({
         type: "SET_THEME_ID",
         payload: {
           themeId: null,
-          themeTitle: data.dailyTheme.title,
+          themeTitle: theme.title,
         },
       })
       return
@@ -73,8 +92,8 @@ export function PostAnimationFormInput(props: Props) {
     props.dispatch({
       type: "SET_THEME_ID",
       payload: {
-        themeId: data.dailyTheme.id,
-        themeTitle: data.dailyTheme.title,
+        themeId: theme.id,
+        themeTitle: theme.title,
       },
     })
   }
@@ -110,7 +129,7 @@ export function PostAnimationFormInput(props: Props) {
     if (data === undefined) {
       return []
     }
-    return data.aiModels
+    return props.aiModels
       .filter((model) => model.workModelId !== null)
       .map((model) => {
         return {
@@ -188,24 +207,28 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "SET_RESERVATION_TIME", payload: time })
         }}
       />
-      {data?.dailyTheme &&
-        (!props.state.reservationDate ||
-          (props.state.reservationDate &&
-            new Date(props.state.reservationDate) <
-              new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))) && (
-          <PostFormItemTheme
-            title={data?.dailyTheme?.title}
-            isLoading={loading}
-            onChange={onChangeTheme}
-          />
-        )}
-      {data && 0 < data?.appEvents.length && !props.eventInputHidden && (
+      {props.themes && (
+        <PostFormItemTheme
+          titles={props.themes.map((theme) => ({
+            date: theme.date,
+            title: theme.title,
+          }))}
+          targetDate={reservationDate}
+          isLoading={loading}
+          onChange={onChangeTheme}
+          isChecked={
+            props.state.themeId ===
+            props.themes.find((theme) => theme.date === reservationDate)?.id
+          }
+        />
+      )}
+      {props.event.title && !props.eventInputHidden && (
         <PostFormItemEvent
-          eventName={data?.appEvents[0]?.title ?? null}
-          eventDescription={data?.appEvents[0]?.description ?? null}
-          eventTag={data?.appEvents[0]?.tag ?? null}
-          endAt={data?.appEvents[0]?.endAt ?? 0}
-          slug={data?.appEvents[0]?.slug ?? null}
+          eventName={props.event.title ?? null}
+          eventDescription={props.event.description ?? null}
+          eventTag={props.event.tag ?? null}
+          endAt={props.event.endAt ?? 0}
+          slug={props.event.slug ?? null}
           addTag={(tag) => {
             props.dispatch({ type: "ADD_TAG", payload: tag })
           }}
@@ -213,7 +236,7 @@ export function PostAnimationFormInput(props: Props) {
             props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
           }}
           isAttending={props.state.tags.some(
-            (tag) => tag.text === data?.appEvents[0]?.tag,
+            (tag) => tag.text === props.event.tag,
           )}
         />
       )}
@@ -228,7 +251,6 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
-      {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {
@@ -276,26 +298,6 @@ const pageQuery = graphql(
     $month: Int,
     $day: Int,
   ) {
-    aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
-    }
-    appEvents(
-      limit: 1,
-      offset: 0,
-      where: {
-        startAt: $startAt,
-      }
-    ) {
-      id
-      description
-      title
-      slug
-      thumbnailImageUrl
-      headerImageUrl
-      startAt
-      endAt
-      tag
-    }
     whiteListTags(
       where: {
         isSensitive: $isSensitive
@@ -303,18 +305,6 @@ const pageQuery = graphql(
     ) {
       ...PartialTagFields
     }
-    dailyTheme(year: $year, month: $month, day: $day) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount,
-      works(offset: 0, limit: 1) {
-        ...PartialWorkFields
-      }
-    }
   }`,
-  [partialWorkFieldsFragment, aiModelFieldsFragment, partialTagFieldsFragment],
+  [partialTagFieldsFragment],
 )

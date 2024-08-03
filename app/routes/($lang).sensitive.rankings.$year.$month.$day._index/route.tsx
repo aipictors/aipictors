@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
@@ -87,10 +86,16 @@ export default function SensitiveAwardsPage() {
   const day = Number.parseInt(params.day)
 
   return (
-    <AppPage>
-      <RankingHeader year={year} month={month} day={day} />
-      <RankingWorkList awards={data.workAwards} />
-    </AppPage>
+    <>
+      <RankingHeader year={year} month={month} day={day} weekIndex={null} />
+      <RankingWorkList
+        year={year}
+        month={month}
+        day={day}
+        awards={data.workAwards}
+        weekIndex={null}
+      />
+    </>
   )
 }
 

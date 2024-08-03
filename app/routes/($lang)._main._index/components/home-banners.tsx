@@ -2,8 +2,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "~/components/ui/carousel"
 import { HomeEventBanner } from "~/routes/($lang)._main._index/components/home-event-banner"
 import {
@@ -30,8 +28,6 @@ export const HomeBanners = (props: Props) => {
           <HomeEventBanner />
         </CarouselItem>
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
     </Carousel>
   )
 }

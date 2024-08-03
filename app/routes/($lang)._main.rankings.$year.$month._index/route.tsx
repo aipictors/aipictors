@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
@@ -58,11 +57,24 @@ export default function MonthlyAwards() {
 
   const data = useLoaderData<typeof loader>()
 
+  console.log(data.month)
+
   return (
-    <AppPage>
-      <RankingHeader year={data.year} month={data.month} day={null} />
-      <RankingWorkList awards={data.workAwards.data.workAwards} />
-    </AppPage>
+    <>
+      <RankingHeader
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+      />
+      <RankingWorkList
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+        awards={data.workAwards.data.workAwards}
+      />
+    </>
   )
 }
 

@@ -9,6 +9,7 @@ import { graphql } from "gql.tada"
 type LikeButtonProps = {
   size?: number
   text?: string
+  textColor?: "black" | "white" | null
   onClick?: (liked: boolean) => void
   defaultLiked?: boolean
   defaultLikedCount: number
@@ -32,6 +33,7 @@ export const LikeButton = ({
   isBackgroundNone = true,
   strokeWidth = 1,
   isParticle = false,
+  textColor,
 }: LikeButtonProps) => {
   const authContext = useContext(AuthContext)
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
@@ -65,7 +67,7 @@ export const LikeButton = ({
           },
         }).then(() => {
           setIsLiked(!isLiked)
-          setLikedCount((prevCount) => prevCount + 1)
+          // setLikedCount((prevCount) => prevCount + 1)
         })
       } else {
         await deleteWorkLike({
@@ -76,7 +78,7 @@ export const LikeButton = ({
           },
         }).then(() => {
           setIsLiked(!isLiked)
-          setLikedCount((prevCount) => prevCount - 1)
+          // setLikedCount((prevCount) => prevCount - 1)
         })
       }
     } catch (error) {
@@ -136,6 +138,7 @@ export const LikeButton = ({
                       ? "fill-white "
                       : "fill-transparent ",
                   isLiked ? "like-animation" : "like-animation-end",
+                  "stroke-2",
                 )}
                 size={Math.floor(size / 2)}
                 strokeWidth={strokeWidth}
@@ -143,7 +146,7 @@ export const LikeButton = ({
               />
             </div>
             {text && (
-              <div className={cn("mr-4 flex space-x-1 text-sm ")}>
+              <div className={cn("flex space-x-1 pr-3 font-bold text-sm")}>
                 <p>{text}</p>
                 <p>{likedCount}</p>
               </div>
@@ -192,14 +195,24 @@ export const LikeButton = ({
                 ? "fill-white "
                 : "fill-transparent ",
             isLiked ? "like-animation" : "like-animation-end",
+            "stroke-2",
           )}
           size={Math.floor(size / 2)}
           strokeWidth={strokeWidth}
           stroke={isBackgroundNone ? "black" : "currentColor"}
         />
       </div>
-      {text && (
-        <div className={cn("mr-4 flex space-x-1 text-sm ")}>
+      {text !== undefined && (
+        <div
+          className={cn(
+            "flex space-x-1 pr-3 font-bold text-sm",
+            textColor
+              ? textColor === "black"
+                ? "text-black"
+                : "text-white"
+              : "",
+          )}
+        >
           <p>{text}</p>
           <p>{likedCount}</p>
         </div>

@@ -1,7 +1,7 @@
 import { WorkAction } from "~/routes/($lang)._main.posts.$post/components/work-action"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { graphql } from "gql.tada"
@@ -13,6 +13,7 @@ type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
   bookmarkFolderId: string | null
+  isDisabledShare?: boolean
 }
 
 /**
@@ -21,7 +22,7 @@ type Props = {
 export const WorkActionContainer = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data } = useSuspenseQuery(workQuery, {
+  const { data } = useQuery(workQuery, {
     skip: appContext.isLoading,
     variables: {
       id: props.targetWorkId,
@@ -31,9 +32,6 @@ export const WorkActionContainer = (props: Props) => {
   const isLiked = data?.work?.isLiked ?? false
 
   const isBookmarked = data?.work?.isBookmarked ?? false
-
-  const isHideEditButton =
-    data?.work?.type === "COLUMN" || data?.work?.type === "NOVEL"
 
   return (
     <WorkAction
@@ -45,8 +43,9 @@ export const WorkActionContainer = (props: Props) => {
       bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
-      isHideEditButton={isHideEditButton}
+      isHideEditButton={false}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      isDisabledShare={props.isDisabledShare}
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }

@@ -28,6 +28,9 @@ export const MyContents = (props: Props) => {
     if (path.includes("recommended")) {
       return "RECOMMENDED"
     }
+    if (path.includes("likes")) {
+      return "LIKES"
+    }
     return "HOME"
   }
 
@@ -117,6 +120,17 @@ export const MyContents = (props: Props) => {
               >
                 <Link to="/my/bookmarks" className="w-full">
                   ブックマーク
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("LIKES")
+                }}
+                className="w-full"
+                value="LIKES"
+              >
+                <Link to="/my/likes" className="w-full">
+                  いいね
                 </Link>
               </TabsTrigger>
             </TabsList>

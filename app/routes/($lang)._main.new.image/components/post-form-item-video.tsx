@@ -139,6 +139,7 @@ export const PostFormItemVideo = (props: Props) => {
         className={cn(
           "h-[100%] w-[100%] border-2 border-zinc-800",
           isHovered ? "border-2 border-clear-bright-blue" : "",
+          props.videoFile ? "" : "rounded-b",
         )}
       >
         {(props.isEnabledSelectVideo === undefined ||

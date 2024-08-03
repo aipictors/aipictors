@@ -1,4 +1,3 @@
-import { AppPageCenter } from "~/components/app/app-page-center"
 import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
 import { ThumbsUpIcon } from "lucide-react"
@@ -8,7 +7,7 @@ import { ThumbsUpIcon } from "lucide-react"
  */
 export default function PlusSuccess() {
   return (
-    <AppPageCenter>
+    <>
       <div className="mx-auto w-full max-w-sm space-y-16 px-6 pt-16">
         <div className="space-y-4">
           <div className="flex w-full justify-center">
@@ -31,6 +30,6 @@ export default function PlusSuccess() {
           </div>
         </div>
       </div>
-    </AppPageCenter>
+    </>
   )
 }

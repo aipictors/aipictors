@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -57,11 +56,7 @@ export default function MonthThemes() {
 
   const month = Number.parseInt(params.month)
 
-  return (
-    <AppPage>
-      <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
-    </AppPage>
-  )
+  return <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
 }
 
 const dailyThemesQuery = graphql(

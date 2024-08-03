@@ -132,7 +132,7 @@ export const SettingRequestForm = () => {
             {isUpdatingUserSetting ? (
               <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
             ) : (
-              <p>{"更新する"}</p>
+              <p>{"変更を保存する"}</p>
             )}
           </Button>
         </>
@@ -147,7 +147,7 @@ export const SettingRequestForm = () => {
       {promptonUserId && (
         <Link to="https://prompton.io/viewer/requests">
           <Button variant={"secondary"} className="mt-8 w-full">
-            管理画面
+            リクエスト管理画面
           </Button>
         </Link>
       )}
