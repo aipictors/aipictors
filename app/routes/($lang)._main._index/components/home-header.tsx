@@ -77,7 +77,7 @@ const HomeHeader = (props: Props) => {
           </Sheet>
           <div className="flex items-center">
             <Link
-              className="items-center md:flex space-x-2"
+              className="items-center space-x-2 md:flex"
               to="https://www.aipictors.com"
             >
               {navigation.state === "loading" && (
