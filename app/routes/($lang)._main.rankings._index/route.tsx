@@ -10,17 +10,19 @@ import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/componen
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
 
-  const currentYear = new Date().getFullYear()
-  const currentMonth = new Date().getMonth() + 1
+  // 昨日の日付を取得
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
 
   const year = params.params.year
     ? Number.parseInt(params.params.year)
-    : currentYear
-  const inputMonth = params.params.month
+    : yesterday.getFullYear()
+  const month = params.params.month
     ? Number.parseInt(params.params.month)
-    : currentMonth
-  const month = inputMonth === currentMonth ? currentMonth - 1 : inputMonth
-  const day = params.params.day ? Number.parseInt(params.params.day) : null
+    : yesterday.getMonth() + 1
+  const day = params.params.day
+    ? Number.parseInt(params.params.day)
+    : yesterday.getDate()
 
   const variables = {
     offset: 0,
@@ -50,6 +52,9 @@ export async function loader(params: LoaderFunctionArgs) {
  */
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
+
+  console.log(data)
+  console.log(data.year)
 
   return (
     <>
