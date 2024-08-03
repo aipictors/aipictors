@@ -13,6 +13,7 @@ type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
   bookmarkFolderId: string | null
+  isDisabledShare?: boolean
 }
 
 /**
@@ -32,9 +33,6 @@ export const WorkActionContainer = (props: Props) => {
 
   const isBookmarked = data?.work?.isBookmarked ?? false
 
-  const isHideEditButton =
-    data?.work?.type === "COLUMN" || data?.work?.type === "NOVEL"
-
   return (
     <WorkAction
       workLikesCount={props.workLikesCount}
@@ -45,8 +43,9 @@ export const WorkActionContainer = (props: Props) => {
       bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
-      isHideEditButton={isHideEditButton}
+      isHideEditButton={false}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      isDisabledShare={props.isDisabledShare}
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }

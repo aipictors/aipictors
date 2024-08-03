@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { createClient } from "~/lib/client"
 import { RelatedModelList } from "~/routes/($lang)._main.search/components/related-model-list"
 import { RelatedTagList } from "~/routes/($lang)._main.search/components/related-tag-list"
@@ -29,12 +28,12 @@ export default function Search() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <RelatedTagList />
       <RelatedModelList />
       <SearchHeader />
       <WorkList works={data.worksResp.data.works ?? []} />
-    </AppPage>
+    </>
   )
 }
 

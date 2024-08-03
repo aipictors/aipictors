@@ -3,6 +3,7 @@ import {
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
+  type DragOverEvent,
   PointerSensor,
   TouchSensor,
   closestCenter,
@@ -35,6 +36,7 @@ type Props = {
  */
 export const SortableItems = (props: Props) => {
   const [activeItem, setActiveItem] = useState<TSortableItem>()
+  const [isDragging, setIsDragging] = useState(false)
 
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
 
@@ -42,6 +44,21 @@ export const SortableItems = (props: Props) => {
     const { active } = event
     console.log("Drag started for item with id:", active.id) // ログ出力
     setActiveItem(props.items.find((item) => item.id === active.id))
+    setIsDragging(true)
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event
+    if (!over) return
+
+    const activeIndex = props.items.findIndex((item) => item.id === active.id)
+    const overIndex = props.items.findIndex((item) => item.id === over.id)
+
+    if (activeIndex !== overIndex) {
+      const newItems = arrayMove(props.items, activeIndex, overIndex)
+      props.setItems(newItems)
+      props.setIndexList(newItems.map((item) => item.id))
+    }
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -62,6 +79,7 @@ export const SortableItems = (props: Props) => {
         ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
         : props.items
     setActiveItem(undefined)
+    setIsDragging(false)
     props.setItems(
       newItems.map((item, index) => ({
         ...item,
@@ -112,8 +130,8 @@ export const SortableItems = (props: Props) => {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      onDragCancel={undefined}
     >
       <SortableContext items={props.items} strategy={rectSortingStrategy}>
         <div className="flex w-full flex-wrap justify-center gap-4">
@@ -130,9 +148,11 @@ export const SortableItems = (props: Props) => {
           {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}
         </div>
       </SortableContext>
-      <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
-        {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
-      </DragOverlay>
+      {isDragging && (
+        <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
+          {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
+        </DragOverlay>
+      )}
     </DndContext>
   )
 }

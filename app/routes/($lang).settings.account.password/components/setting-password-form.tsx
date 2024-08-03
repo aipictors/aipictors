@@ -38,7 +38,7 @@ export const AccountPasswordForm = () => {
   }
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-4">
       <div className="space-y-2">
         <p>{"現在のログインパスワード"}</p>
         <div className="flex space-x-2">

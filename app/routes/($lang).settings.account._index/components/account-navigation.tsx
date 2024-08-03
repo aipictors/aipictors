@@ -1,5 +1,5 @@
 import { useBreakpoint } from "~/hooks/use-breakpoint"
-import { AccountRouteList } from "~/routes/($lang).account/components/account-route-list"
+import { AccountRouteList } from "~/routes/($lang).settings.account/components/account-route-list"
 
 export const AccountNavigation = () => {
   const breakpoint = useBreakpoint()

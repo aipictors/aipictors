@@ -28,7 +28,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
     return (
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col">
         <ImagesPreview
           thumbnailUrl={allImageURLs[currentIndex]}
           imageURLs={allImageURLs}
@@ -38,6 +38,7 @@ export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
           selectedImage={allImageURLs[currentIndex]}
+          currentIndex={currentIndex}
           onSelectImage={handleSelectImage}
         />
       </div>

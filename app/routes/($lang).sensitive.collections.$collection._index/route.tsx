@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
@@ -27,10 +26,10 @@ export default function SensitiveCollection() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <CollectionArticle />
       <WorkList works={data.works} />
-    </AppPage>
+    </>
   )
 }
 

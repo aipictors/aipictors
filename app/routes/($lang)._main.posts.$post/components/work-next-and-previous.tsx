@@ -5,11 +5,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
-import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
 import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
-import { useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
+import type { FragmentOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"
 
@@ -19,10 +16,6 @@ type Props = {
 
 export const WorkNextAndPrevious = (props: Props) => {
   if (props.work === null) return null
-
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
-
-  const passData = pass?.viewer?.currentPass
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
@@ -59,7 +52,7 @@ export const WorkNextAndPrevious = (props: Props) => {
   }, [props.work])
 
   return (
-    <div className="invisible flex w-full flex-col space-y-4 lg:visible">
+    <>
       <div className="flex text-md">
         <h2>{"前後の作品"}</h2>
         <TooltipProvider>
@@ -113,27 +106,6 @@ export const WorkNextAndPrevious = (props: Props) => {
           </div>
         )}
       </div>
-      {passData?.type !== "LITE" &&
-        passData?.type !== "STANDARD" &&
-        passData?.type !== "PREMIUM" &&
-        passData?.type !== "TWO_DAYS" && <WorkAdSense />}
-    </div>
+    </>
   )
 }
-
-const viewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
-    viewer {
-      id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
-      currentPass {
-        ...PassFields
-      }
-    }
-  }`,
-  [passFieldsFragment],
-)

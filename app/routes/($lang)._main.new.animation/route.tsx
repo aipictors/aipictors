@@ -10,7 +10,6 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadPublicVideo } from "~/utils/upload-public-video"
-import { config } from "~/config"
 import { PostAnimationFormInput } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -19,12 +18,14 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Link, useBeforeUnload } from "@remix-run/react"
+import { useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export default function NewAnimation() {
   const authContext = useContext(AuthContext)
@@ -73,6 +74,13 @@ export default function NewAnimation() {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
+      startAt: new Date().toISOString().split("T")[0],
+      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
     },
   })
 
@@ -262,10 +270,7 @@ export default function NewAnimation() {
         type: "MARK_AS_DONE",
         payload: {
           uploadedWorkId: work.data?.createWork.id,
-          uploadedWorkUuid:
-            inputState.accessType !== "PRIVATE"
-              ? null
-              : work.data?.createWork.uuid ?? null,
+          uploadedWorkUuid: work.data?.createWork.uuid,
         },
       })
 
@@ -309,25 +314,7 @@ export default function NewAnimation() {
       />
       <div className="space-y-4">
         <div>
-          <div className="flex w-full items-center">
-            <Link className="w-full text-center" to={"/new/image"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                画像
-              </div>
-            </Link>
-            <Link className="w-full text-center" to={"/new/animation"}>
-              <div className="w-full bg-zinc-900 text-center text-white">
-                動画
-              </div>
-            </Link>
-            {config.isDevelopmentMode && (
-              <Link className="w-full text-center" to={"/new/text"}>
-                <div className="w-full bg-zinc-900 text-center text-white">
-                  コラム/小説
-                </div>
-              </Link>
-            )}
-          </div>
+          <PostFormHeader type="animation" />
           <PostAnimationFormUploader state={state} dispatch={dispatch} />
         </div>
         <PostAnimationFormInput
@@ -335,6 +322,23 @@ export default function NewAnimation() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          themes={
+            viewer?.dailyThemes
+              ? viewer.dailyThemes.map((theme) => ({
+                  date: theme.dateText,
+                  title: theme.title,
+                  id: theme.id,
+                }))
+              : null
+          }
+          aiModels={viewer?.aiModels ?? []}
+          event={{
+            title: viewer?.appEvents[0]?.title ?? null,
+            description: viewer?.appEvents[0]?.description ?? null,
+            tag: viewer?.appEvents[0]?.tag ?? null,
+            endAt: viewer?.appEvents[0]?.endAt ?? 0,
+            slug: viewer?.appEvents[0]?.slug ?? null,
+          }}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"投稿"}
@@ -362,7 +366,10 @@ const viewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
-    $ownerUserId: ID
+    $ownerUserId: ID,
+    $startDate: String!,
+    $endDate: String!,
+    $startAt: String!,
   ) {
     viewer {
       id
@@ -391,8 +398,41 @@ const viewerQuery = graphql(
         ...PartialUserFields
       }
     }
+    aiModels(offset: 0, limit: 124, where: {}) {
+      ...AiModelFields
+    }
+    dailyThemes(
+      limit: 8,
+      offset: 0,
+      where: {
+        startDate: $startDate,
+        endDate: $endDate,
+      }) {
+      id
+      title
+      dateText
+    }
+    appEvents(
+      limit: 1,
+      offset: 0,
+      where: {
+        startAt: $startAt,
+      }
+    ) {
+      id
+      description
+      title
+      tag
+      slug
+      endAt
+    }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment, passFieldsFragment],
+  [
+    aiModelFieldsFragment,
+    partialAlbumFieldsFragment,
+    partialUserFieldsFragment,
+    passFieldsFragment,
+  ],
 )
 
 const createWorkMutation = graphql(

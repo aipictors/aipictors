@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -54,10 +53,10 @@ export default function ModelPage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <ModelHeader imageModel={data.imageModel} />
       <WorkList works={data.works} />
-    </AppPage>
+    </>
   )
 }
 

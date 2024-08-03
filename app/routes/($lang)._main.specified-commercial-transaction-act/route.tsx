@@ -1,7 +1,6 @@
 import text from "~/assets/specified-commercial-transaction-act.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
-import { AppPage } from "~/components/app/app-page"
 import {
   Table,
   TableBody,
@@ -47,7 +46,7 @@ export default function SpecifiedCommercialTransactionActPage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <article>
         <h1 className="py-4 font-bold text-xl">{"特定商取引法に基づく表記"}</h1>
         <h2 className="py-4 font-bold text-md">会社情報</h2>
@@ -79,6 +78,6 @@ export default function SpecifiedCommercialTransactionActPage() {
         <h2 className="py-4 font-bold text-md">特定商取引法に基づく表記</h2>
         <AppMarkdown>{data.text}</AppMarkdown>
       </article>
-    </AppPage>
+    </>
   )
 }

@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
@@ -37,10 +36,10 @@ export default function Collections() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <CollectionArticle />
       <WorkList works={data.worksResp.data.works ?? []} />
-    </AppPage>
+    </>
   )
 }
 

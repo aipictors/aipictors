@@ -9,7 +9,9 @@ type Props = {
   postId: string
   tags: Tag[]
   isEditable?: boolean
+  setIsOpenEdit?: React.Dispatch<React.SetStateAction<boolean>>
   setTags: React.Dispatch<React.SetStateAction<Tag[]>>
+  setTagNames: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 export const WorkTagInput = (props: Props) => {
@@ -27,6 +29,10 @@ export const WorkTagInput = (props: Props) => {
         },
       },
     })
+    props.setTagNames(tags)
+    if (props.setIsOpenEdit) {
+      props.setIsOpenEdit(false)
+    }
     toast("タグを保存しました")
   }
 

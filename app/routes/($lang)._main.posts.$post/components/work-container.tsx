@@ -2,9 +2,8 @@ import {
   WorkArticle,
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post/components/work-article"
-import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
-import { useContext } from "react"
+import { Suspense, useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import {
@@ -15,10 +14,14 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
+import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
+import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
 
 type Props = {
-  work: FragmentOf<typeof workArticleFragment>
+  post: string
+  work: FragmentOf<typeof workArticleFragment> | null
   comments: FragmentOf<typeof commentFragment>[]
+  isDraft?: boolean
 }
 
 /**
@@ -28,13 +31,17 @@ export const WorkContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
-    skip: authContext.userId !== props.work.user.id,
+    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
     variables: {
-      id: props.work.id,
+      id: props.post,
     },
   })
 
   const work = data?.work ?? props.work
+
+  if (work === null) {
+    return null
+  }
 
   const relatedWorks = work.user.works.map((relatedWork) => ({
     smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
@@ -62,7 +69,7 @@ export const WorkContainer = (props: Props) => {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
+            <WorkArticle isDraft={props.isDraft} work={work} />
             <WorkRelatedList works={relatedWorks} />
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={props.comments} />
@@ -94,7 +101,12 @@ export const WorkContainer = (props: Props) => {
               userWorksCount={work.user.worksCount}
             />
           </div>
-          <WorkNextAndPrevious work={work} />
+          <div className="invisible flex w-full flex-col space-y-4 lg:visible">
+            <WorkNextAndPrevious work={work} />
+            <Suspense fallback={null}>
+              <WorkAdSense />
+            </Suspense>
+          </div>
         </div>
       </div>
       <section className="m-auto space-y-4">

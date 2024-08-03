@@ -20,7 +20,7 @@ export const VideoItem = (props: Props) => {
         <track kind="captions" src="path_to_captions.vtt" label="English" />
       </video>
       <Button
-        className="absolute top-2 right-2 h-6 w-6 md:h-8 md:w-8"
+        className="absolute top-1 right-1 h-6 w-6 md:h-8 md:w-8"
         size={"icon"}
         onClick={() => {
           props.onDelete()

@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 
@@ -11,7 +10,7 @@ export const meta: MetaFunction = () => {
  */
 export default function About() {
   return (
-    <AppPage>
+    <>
       <div className="flex flex-col">
         <h1 className="font-bold text-2xl">{"本サイトについて"}</h1>
         <h2 className="py-2 font-bold text-md">当サービスについて</h2>
@@ -46,6 +45,6 @@ export default function About() {
           {"をご参照ください"}
         </p>
       </div>
-    </AppPage>
+    </>
   )
 }

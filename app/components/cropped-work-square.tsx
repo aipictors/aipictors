@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { Images } from "lucide-react"
 import { useState } from "react"
 
 type Props = {
@@ -123,13 +124,11 @@ export const CroppedWorkSquare = (props: Props) => {
           </div>
         )}
         {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-          <div
-            className={
-              "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
-            }
-            style={{ backgroundColor: "#00000052" }}
-          >
-            {props.subWorksCount + 1}
+          <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+            <Images className="h-3 w-3 text-white" />
+            <div className="font-bold text-white text-xs">
+              {props.subWorksCount + 1}
+            </div>
           </div>
         )}
       </Link>

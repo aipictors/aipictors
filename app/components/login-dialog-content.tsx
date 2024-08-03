@@ -18,6 +18,8 @@ import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 import { graphql } from "gql.tada"
+import { ToggleContent } from "~/components/toggle-content"
+import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dialog-button"
 
 /**
  * ログイン
@@ -108,6 +110,20 @@ export function LoginDialogContent() {
             {"アカウント作成"}
           </Button>
         </Link>
+      </div>
+      <Separator />
+      <div className={"flex w-full flex-col gap-y-2"}>
+        <ToggleContent
+          trigger={
+            <span className="text-sm">
+              {"ログインしているけどログイン状態にならない"}
+            </span>
+          }
+        >
+          <div className="mt-2 w-full">
+            <NavigationLogoutDialogButton text="ログアウトを試す" />
+          </div>
+        </ToggleContent>
       </div>
     </>
   )

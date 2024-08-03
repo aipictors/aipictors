@@ -12,7 +12,6 @@ export default {
      */
     container: {
       center: true,
-      padding: "2rem",
       screens: {
         "2xl": "1400px",
       },
@@ -128,6 +127,16 @@ export default {
          * 追加: ヘッダーの高さ
          */
         header: "72px",
+      },
+      /**
+       * 追加: typography
+       */
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "100vw", // add required value here
+          },
+        },
       },
     },
   },

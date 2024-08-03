@@ -16,10 +16,14 @@ import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"
 import { toast } from "sonner"
 
+type Props = {
+  text?: string
+}
+
 /**
  * ログアウトする
  */
-export function NavigationLogoutDialogButton() {
+export function NavigationLogoutDialogButton(props: Props) {
   const handleLogout = async () => {
     await signOut(getAuth())
     resetCookieLoginToken()
@@ -33,7 +37,7 @@ export function NavigationLogoutDialogButton() {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <HomeNavigationButton icon={LogOutIcon}>
-          {"ログアウト"}
+          {props.text ?? "ログアウト"}
         </HomeNavigationButton>
       </AlertDialogTrigger>
       <AlertDialogContent>

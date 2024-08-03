@@ -1,4 +1,3 @@
-import { AppPage } from "~/components/app/app-page"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
@@ -10,14 +9,14 @@ import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._i
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
 import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeVideosSection } from "~/routes/($lang)._main._index/components/home-videos-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
+import { config } from "~/config"
 
 export const WORK_COUNT_DEFINE = {
   AD_WORKS: 16,
@@ -53,7 +52,11 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export async function loader() {
+export const dateToText = (date: Date) => {
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
+}
+
+export async function loader({ response }: LoaderFunctionArgs) {
   const client = createClient()
 
   const date = new Date()
@@ -62,11 +65,32 @@ export async function loader() {
 
   yesterday.setDate(yesterday.getDate() - 1)
 
+  const now = new Date()
+
+  const pastNovelDate = new Date(now)
+  pastNovelDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastNovelDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastVideoDate = new Date(now)
+  pastVideoDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastVideoDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastColumnDate = new Date(now)
+  pastColumnDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastColumnDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastPromotionDate = new Date(now)
+  pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastPromotionDate.setDate(Math.floor(Math.random() * 28) + 1)
+
+  const pastGenerationDate = new Date(now)
+  pastGenerationDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastGenerationDate.setDate(Math.floor(Math.random() * 28) + 1)
+
   const resp = await client.query({
     query: query,
     variables: {
-      after: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString(),
-      awardDay: yesterday.getDate() - 1,
+      awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
       day: date.getDate(),
@@ -79,14 +103,22 @@ export async function loader() {
       generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
       promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
       awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      pastGenerationBefore: pastGenerationDate.toISOString(),
+      novelWorksBefore: pastNovelDate.toISOString(),
+      videoWorksBefore: pastVideoDate.toISOString(),
+      columnWorksBefore: pastColumnDate.toISOString(),
+      promotionWorksBefore: pastPromotionDate.toISOString(),
     },
   })
 
-  const awardDateText = [
-    yesterday.getFullYear(),
-    yesterday.getMonth() + 1,
-    yesterday.getDate(),
-  ].join("/")
+  const awardDateText = dateToText(yesterday)
+  const generationDateText = pastGenerationDate.toISOString()
+  const novelWorksBeforeText = pastNovelDate.toISOString()
+  const videoWorksBeforeText = pastVideoDate.toISOString()
+  const columnWorksBeforeText = pastColumnDate.toISOString()
+  const promotionWorksBeforeText = pastPromotionDate.toISOString()
+
+  response?.headers.append("Cache-Control", config.cacheControl.home)
 
   return json({
     /**
@@ -113,7 +145,10 @@ export async function loader() {
      * HomeWorksGeneratedSection
      */
     generationWorks: resp.data.generationWorks,
-
+    /**
+     * generationDateText
+     */
+    generationDateText,
     /**
      * HomeWorksUsersRecommendedSection
      */
@@ -134,6 +169,22 @@ export async function loader() {
      * HomeColumnsSection
      */
     columnWorks: resp.data.columnWorks,
+    /**
+     * novelWorksBeforeText
+     */
+    novelWorksBeforeText,
+    /**
+     * videoWorksBeforeText
+     */
+    videoWorksBeforeText,
+    /**
+     * columnWorksBeforeText
+     */
+    columnWorksBeforeText,
+    /**
+     * promotionWorksBeforeText
+     */
+    promotionWorksBeforeText,
   })
 }
 
@@ -141,7 +192,7 @@ export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <AppPage>
+    <>
       <ConstructionAlert
         type="WARNING"
         message="不具合が起きる可能性があります。"
@@ -150,20 +201,39 @@ export default function Index() {
       />
       <HomeBanners adWorks={data.adWorks} />
       <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
-      <HomeWorksGeneratedSection works={data.generationWorks} />
-      <HomeAwardWorkSection title={"前日ランキング"} works={data.workAwards} />
+      <HomeWorksGeneratedSection
+        dateText={data.generationDateText}
+        works={data.generationWorks}
+      />
+      <HomeAwardWorkSection
+        awardDateText={data.awardDateText}
+        title={"前日ランキング"}
+        works={data.workAwards}
+      />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
       <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
-      <HomeNovelsSection works={data.novelWorks} title={"小説"} />
-      <HomeVideosSection works={data.videoWorks} title={"動画"} />
-      <HomeColumnsSection works={data.columnWorks} title={"コラム"} />
-    </AppPage>
+      <HomeNovelsSection
+        dateText={data.novelWorksBeforeText}
+        works={data.novelWorks}
+        title={"小説"}
+      />
+      {/* <HomeVideosSection
+        dateText={data.videoWorksBeforeText}
+        works={data.videoWorks}
+        title={"動画"}
+      /> */}
+      <HomeColumnsSection
+        dateText={data.columnWorksBeforeText}
+        works={data.columnWorks}
+        title={"コラム"}
+      />
+    </>
   )
 }
 
 const query = graphql(
   `query HomeQuery(
-    $after: String!
+    $pastGenerationBefore: String!
     $year: Int!
     $month: Int!
     $day: Int!
@@ -172,10 +242,14 @@ const query = graphql(
     $awardDay: Int!
     $adWorksLimit: Int!
     $novelWorksLimit: Int!
+    $novelWorksBefore: String!
     $videoWorksLimit: Int!
+    $videoWorksBefore: String!
     $columnWorksLimit: Int!
+    $columnWorksBefore: String!
     $generationWorksLimit: Int!
     $promotionWorksLimit: Int!
+    $promotionWorksBefore: String!
     $awardWorksLimit: Int!
   ) {
     adWorks: works(
@@ -194,6 +268,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: NOVEL,
+        beforeCreatedAt: $novelWorksBefore 
       }
     ) {
       ...PartialWorkFields
@@ -204,6 +279,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: VIDEO,
+        beforeCreatedAt: $videoWorksBefore   
       }
     ) {
       ...PartialWorkFields
@@ -214,6 +290,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: COLUMN,
+        beforeCreatedAt: $columnWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -222,11 +299,11 @@ const query = graphql(
       offset: 0
       limit: $generationWorksLimit
       where: {
-        orderBy: LIKES_COUNT
+        orderBy: DATE_CREATED,
         sort: DESC
         ratings: [G]
         isFeatured: true
-        createdAtAfter: $after
+        beforeCreatedAt: $pastGenerationBefore
       }
     ) {
       ...PartialWorkFields
@@ -267,6 +344,7 @@ const query = graphql(
       where: {
         isRecommended: true
         ratings: [G]
+        beforeCreatedAt: $promotionWorksBefore
       }
     ) {
       ...PartialWorkFields

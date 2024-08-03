@@ -63,15 +63,10 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
   }, [props.isOpen, props.workId])
 
   const link = () => {
-    if (
-      props.createdAt > new Date().getTime() ||
-      props.accessType === "DRAFT" ||
-      props.accessType === "LIMITED" ||
-      props.accessType === "PRIVATE"
-    ) {
-      return "/my/posts"
+    if (props.accessType === "DRAFT" || props.accessType === "PRIVATE") {
+      return `/posts/${props.workId}/draft`
     }
-    if (props.uuid) {
+    if (props.accessType === "LIMITED") {
       return `/posts/${props.uuid}`
     }
     return `/posts/${props.workId}`

@@ -1,13 +1,13 @@
-import { AppPageCenter } from "~/components/app/app-page-center"
 import { SettingRestrictionForm } from "~/routes/($lang).settings.restriction/components/setting-restriction-form"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 
 export default function SettingRestriction() {
   return (
-    <AppPageCenter>
-      <div className="w-full space-y-8">
-        <p className="font-bold text-2xl">{"表示するコンテンツ"}</p>
-        <SettingRestrictionForm />
+    <div className="w-full space-y-4">
+      <div className="block md:hidden">
+        <SettingsHeader title={"表示するコンテンツ"} />
       </div>
-    </AppPageCenter>
+      <SettingRestrictionForm />
+    </div>
   )
 }

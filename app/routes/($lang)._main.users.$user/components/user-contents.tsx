@@ -35,7 +35,7 @@ export const UserContents = (props: Props) => {
   const [stickersPage, setStickersPage] = useState(0)
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col space-y-4">
       <UserTabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}

@@ -4,7 +4,7 @@ import { LikeButton } from "~/components/like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post/components/work-editor-button"
-import { useContext } from "react"
+import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post/components/work-action-bookmark"
 import { AuthContext } from "~/contexts/auth-context"
 import { RecommendButton } from "~/components/recommend-button"
@@ -22,6 +22,7 @@ type Props = {
   targetWorkOwnerUserId: string
   isHideEditButton: boolean
   isRecommended: boolean
+  isDisabledShare?: boolean
 }
 
 /**
@@ -51,11 +52,13 @@ export const WorkAction = (props: Props) => {
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
         />
-        <RecommendButton
-          workId={props.targetWorkId}
-          ownerUserId={props.targetWorkOwnerUserId}
-          isRecommended={props.isRecommended}
-        />
+        <Suspense fallback={null}>
+          <RecommendButton
+            workId={props.targetWorkId}
+            ownerUserId={props.targetWorkOwnerUserId}
+            isRecommended={props.isRecommended}
+          />
+        </Suspense>
         {!props.isHideEditButton && (
           <WorkEditorButton
             targetWorkId={props.targetWorkId}
@@ -70,7 +73,10 @@ export const WorkAction = (props: Props) => {
             defaultBookmarked={props.defaultBookmarked}
           />
         )}
-        <SharePopover title={props.title} />
+        <SharePopover
+          isDisabledShare={props.isDisabledShare}
+          title={props.title}
+        />
         <MenuPopover
           onDownload={onDownload}
           isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}

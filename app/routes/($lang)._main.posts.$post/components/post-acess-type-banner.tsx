@@ -2,6 +2,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   postAccessType: IntrospectionEnum<"AccessType">
+  createdAt: number
 }
 
 /**
@@ -30,24 +31,32 @@ export const PostAccessTypeBanner = (props: Props) => {
       case "PRIVATE":
         return "bg-red-500"
       case "DRAFT":
-        return "bg-yellow-500"
+        return "bg-gray-500"
       case "LIMITED":
-        return "bg-blue-500"
+        return "bg-zinc-500"
       default:
         return "bg-black"
     }
   }
 
-  if (accessTypeText() === "") {
+  const getFuturePost = () => {
+    if (props.createdAt * 1000 > new Date().getTime()) {
+      return "予約投稿"
+    }
+    return ""
+  }
+
+  if (accessTypeText() === "" && getFuturePost() === "") {
     return null
   }
 
   return (
     <div
-      className={`flex h-12 w-full items-center justify-center rounded-md ${getBackgroundColor()} bg-opacity-50 text-white`}
+      className={`flex h-12 w-full items-center justify-center rounded-md bg-opacity-20 ${getBackgroundColor()} bg-opacity-50 font-bold`}
     >
       <div className="flex items-center justify-center">
         <span className="ml-2">{accessTypeText()}</span>
+        <span className="ml-2">{getFuturePost()}</span>
       </div>
     </div>
   )

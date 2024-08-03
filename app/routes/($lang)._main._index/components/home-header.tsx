@@ -8,7 +8,6 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
-import { config } from "~/config"
 import HomeHeaderNotLoggedInMenu from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
@@ -44,6 +43,12 @@ const HomeHeader = (props: Props) => {
     setFalse: onCloseLogoutDialog,
   } = useBoolean()
 
+  const [isOpen, setIsOpen] = useState(false)
+
+  const close = () => {
+    setIsOpen(false)
+  }
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
@@ -58,7 +63,7 @@ const HomeHeader = (props: Props) => {
               <MenuIcon className="h-6 w-6" />
             </Button>
           )}
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button className="md:hidden" variant={"ghost"} size={"icon"}>
                 <MenuIcon />
@@ -66,13 +71,13 @@ const HomeHeader = (props: Props) => {
             </SheetTrigger>
             <SheetContent className="p-0" side={"left"}>
               <ScrollArea className="h-full p-4">
-                <HomeRouteList />
+                <HomeRouteList onClickMenuItem={close} />
               </ScrollArea>
             </SheetContent>
           </Sheet>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Link
-              className="items-center md:flex"
+              className="items-center space-x-2 md:flex"
               to="https://www.aipictors.com"
             >
               {navigation.state === "loading" && (
@@ -89,30 +94,28 @@ const HomeHeader = (props: Props) => {
                   height={40}
                 />
               )}
+              <div className="hidden flex-grow flex-row items-center md:flex">
+                <span className="font-bold text-xl">
+                  {props.title ?? "Aipictors β"}
+                </span>
+              </div>
             </Link>
-            <div className="hidden flex-grow flex-row items-center md:flex">
-              <span className="font-bold text-xl">
-                {props.title ?? "Aipictors β"}
-              </span>
-            </div>
           </div>
         </div>
         <div className="flex w-full justify-end gap-x-2">
-          {config.isDevelopmentMode && (
-            <div className="hidden w-full space-x-2 md:flex">
-              <div className="w-full flex-1">
-                <Input
-                  onChange={onChangeSearchText}
-                  placeholder={"作品を検索"}
-                  onKeyPress={onSearch}
-                />
-              </div>
-              <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
-                <Search />
-              </Button>
-              <Separator orientation="vertical" />
+          <div className="hidden w-full space-x-2 md:flex">
+            <div className="w-full flex-1">
+              <Input
+                onChange={onChangeSearchText}
+                placeholder={"作品を検索"}
+                onKeyPress={onSearch}
+              />
             </div>
-          )}
+            <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
+              <Search />
+            </Button>
+            <Separator orientation="vertical" />
+          </div>
           {authContext.isLoggedIn && (
             <>
               <Link

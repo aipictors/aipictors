@@ -73,7 +73,7 @@ export function EditImageFormUploader(props: Props) {
       <div className="rounded-md">
         <div
           className={cn(
-            "relative items-center bg-zinc-800",
+            "relative items-center rounded-b bg-zinc-800",
             props.state.isHovered && "border-2 border-white border-dashed",
           )}
         >
@@ -159,7 +159,7 @@ export function EditImageFormUploader(props: Props) {
           onClick={onInputPngInfo}
           className="block"
         >
-          {"PNG情報のみ読み込み"}
+          {"画像から生成情報のみ反映"}
         </Button>
       </div>
 

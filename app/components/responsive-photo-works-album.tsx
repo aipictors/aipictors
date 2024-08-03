@@ -6,6 +6,7 @@ import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
+import { Heart, Images } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -22,9 +23,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
           ket: work.id,
-          src: work.largeThumbnailImageURL,
-          width: work.largeThumbnailImageWidth,
-          height: work.largeThumbnailImageHeight,
+          src: work.smallThumbnailImageURL,
+          width: work.smallThumbnailImageWidth,
+          height: work.smallThumbnailImageHeight,
           workId: work.id, // 各作品のID
           userId: work.user.id, // 作品の所有者のID
           userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
@@ -36,10 +37,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           subWorksCount: work.subWorksCount,
           to: `/posts/${work.id}`,
           href: `/posts/${work.id}`,
+          likesCount: work.likesCount,
         }))}
-        targetRowHeight={
-          props.targetRowHeight !== undefined ? props.targetRowHeight : 240
-        }
+        targetRowHeight={180}
         sizes={{
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
@@ -54,9 +54,10 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   targetWorkId={photo.workId}
                   targetWorkOwnerUserId={photo.userId}
                   defaultLiked={photo.isLiked}
-                  defaultLikedCount={0}
+                  defaultLikedCount={photo.likesCount}
                   isBackgroundNone={true}
                   strokeWidth={2}
+                  likedCount={photo.likesCount}
                 />
               </div>
               <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
@@ -66,15 +67,21 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   </p>
                 </Link>
                 <Link to={`/users/${photo.userId}`}>
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src={IconUrl(photo.userIcon)}
-                      alt={photo.userName}
-                      className="h-4 w-4 rounded-full"
-                    />
-                    <span className="text-nowrap font-bold text-sm ">
-                      {photo.userName}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={IconUrl(photo.userIcon)}
+                        alt={photo.userName}
+                        className="h-4 w-4 rounded-full"
+                      />
+                      <span className="block max-w-16 overflow-hidden text-ellipsis text-nowrap font-bold text-sm ">
+                        {photo.userName}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                      <span className="text-xs">{photo.likesCount}</span>
+                    </div>
                   </div>
                 </Link>
               </div>
@@ -103,6 +110,14 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   alt={props.alt}
                   className="transition-transform duration-300 ease-in-out hover:scale-105"
                 />
+                {context.photo.subWorksCount > 0 && (
+                  <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                    <Images className="h-3 w-3 text-white" />
+                    <div className="font-bold text-white text-xs">
+                      {context.photo.subWorksCount + 1}
+                    </div>
+                  </div>
+                )}
               </Link>
             )
           },

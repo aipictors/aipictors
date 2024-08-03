@@ -1,7 +1,6 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
 import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "~/lib/client"
-import { AppPage } from "~/components/app/app-page"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
@@ -11,13 +10,19 @@ import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/componen
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
 
+  // 昨日の日付を取得
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+
   const year = params.params.year
     ? Number.parseInt(params.params.year)
-    : new Date().getFullYear()
+    : yesterday.getFullYear()
   const month = params.params.month
     ? Number.parseInt(params.params.month)
-    : new Date().getMonth() + 1
-  const day = params.params.day ? Number.parseInt(params.params.day) : null
+    : yesterday.getMonth() + 1
+  const day = params.params.day
+    ? Number.parseInt(params.params.day)
+    : yesterday.getDate()
 
   const variables = {
     offset: 0,
@@ -48,11 +53,25 @@ export async function loader(params: LoaderFunctionArgs) {
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
 
+  console.log(data)
+  console.log(data.year)
+
   return (
-    <AppPage>
-      <RankingHeader year={data.year} month={data.month} day={data.day} />
-      <RankingWorkList awards={data.workAwards.data.workAwards} />
-    </AppPage>
+    <>
+      <RankingHeader
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        weekIndex={null}
+      />
+      <RankingWorkList
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        awards={data.workAwards.data.workAwards}
+        weekIndex={null}
+      />
+    </>
   )
 }
 
