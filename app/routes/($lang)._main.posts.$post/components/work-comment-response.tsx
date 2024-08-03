@@ -79,7 +79,7 @@ export const WorkCommentResponse = (props: Props) => {
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
               className="group block w-24 overflow-hidden rounded-md"
-              to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
+              to={`/stickers/${props.stickerId}`}
             >
               <img
                 className="w-24 overflow-hidden rounded-md py-2 transition-transform duration-300 group-hover:scale-105"

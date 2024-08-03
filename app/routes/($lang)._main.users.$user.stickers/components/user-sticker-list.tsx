@@ -11,10 +11,7 @@ export const UserStickerList = (props: Props) => {
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {props.stickers.map((sticker) => (
-        <Link
-          key={sticker.id}
-          to={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
-        >
+        <Link key={sticker.id} to={`/stickers/${sticker.id}`}>
           <StickerCard
             title={sticker.title}
             imageURL={sticker.imageUrl}

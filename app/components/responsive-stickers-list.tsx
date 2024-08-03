@@ -21,7 +21,7 @@ export const ResponsiveStickersList = (props: Props) => {
       {props.stickers.map((sticker) => (
         <div key={sticker.id} className="m-2 overflow-hidden rounded-md">
           <Link
-            to={`https://www.aipictors.com/stamp/?id=${sticker.id}`}
+            to={`/stickers/${sticker.id}`}
             className="group relative block p-1"
           >
             <div className="overflow-hidden rounded-md">

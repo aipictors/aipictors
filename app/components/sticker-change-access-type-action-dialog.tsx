@@ -82,10 +82,7 @@ export const StickerChangeAccessTypeActionDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>スタンプを公開する</DialogTitle>
         </DialogHeader>
-        <Link
-          className="m-auto w-24"
-          to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
-        >
+        <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
           <img
             className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
             src={props.imageUrl}
