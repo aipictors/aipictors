@@ -1,5 +1,3 @@
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -7,6 +5,7 @@ import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -107,15 +106,15 @@ export default function FollowingLayout() {
           </div>
         </CardContent>
       </Card>
-      <ResponsivePhotoWorksAlbum works={data.works} />
-      <ResponsivePagination
-        maxCount={Number(data.appEvent.worksCount?.toString() ?? "0")}
-        perPage={64}
-        currentPage={data.page}
-        onPageChange={(page: number) => {
-          navigate(`/events/${data.appEvent?.slug}?page=${page}`)
-        }}
-      />
+      {data.appEvent.slug && (
+        <EventWorkList
+          works={data.works}
+          isSensitive={false}
+          maxCount={data.worksCount}
+          page={data.page}
+          slug={data.appEvent.slug}
+        />
+      )}
     </div>
   )
 }
