@@ -37,7 +37,7 @@ export default function Themes() {
 
   return (
     <>
-      <AppPageHeader title={"創作アイディアページ"} description={description} />
+      <AppPageHeader title={"お題"} description={description} />
       <ThemeHeader />
       <ThemeList
         year={data.year}

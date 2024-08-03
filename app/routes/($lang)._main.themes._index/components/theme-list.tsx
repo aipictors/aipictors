@@ -1,11 +1,9 @@
 import { Button } from "~/components/ui/button"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { ThemeListItem } from "~/routes/($lang)._main.themes._index/components/theme-list-item"
 import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/create-calendar-cells"
 import { useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-
 type Props = {
   year: number
   month: number
@@ -15,16 +13,26 @@ type Props = {
 export const ThemeList = (props: Props) => {
   const navigate = useNavigate()
 
-  const cells = createCalendarCells(2023, 9)
+  const cells = createCalendarCells(props.year, props.month)
+
+  const currentDateInJapan = getCurrentDateInJapan()
 
   const blocks = cells.map((day, index) => {
     const theme = props.dailyThemes.find((dailyTheme) => {
       return dailyTheme.day === day
     })
+    const isToday =
+      props.year === currentDateInJapan.getFullYear() &&
+      props.month === currentDateInJapan.getMonth() + 1 &&
+      day === currentDateInJapan.getDate()
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
       title: theme?.title ?? null,
+      isSunday: index % 7 === 0,
+      isSaturday: index % 7 === 6,
+      isToday: isToday,
+      date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
     }
   })
 
@@ -46,39 +54,59 @@ export const ThemeList = (props: Props) => {
     navigate(`/themes/${props.year}/${nextMonth}`)
   }
 
+  const handleCellClick = (date: string) => {
+    const url = `https://www.aipictors.com/idea/search/?word=subjectDate:${date}`
+    window.location.href = url
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 dark:bg-gray-800 dark:text-white">
       <div className="flex justify-center">
         <p className="text-lg">{"お題一覧"}</p>
       </div>
       <div className="flex items-center justify-center space-x-4">
-        <Button aria-label="previous month" onClick={onPreviousMonth}>
+        <Button
+          variant={"secondary"}
+          aria-label="previous month"
+          onClick={onPreviousMonth}
+        >
           <ChevronLeftIcon className="text-lg" />
         </Button>
         <p className="text-sm leading-none">
           {`${props.year}年${props.month}月`}
         </p>
-        <Button aria-label="next month" onClick={onNextMonth}>
+        <Button
+          variant={"secondary"}
+          aria-label="next month"
+          onClick={onNextMonth}
+        >
           <ChevronRightIcon className="text-lg" />
         </Button>
       </div>
-      <ul className="grid w-full grid-cols-2 space-y-2 pr-4 md:grid-cols-4 lg:grid-cols-7">
-        {blocks.map((block) => (
-          <ThemeListItem
-            key={block.id}
-            year={props.year}
-            month={props.month}
-            day={block.day}
-            title={block.title}
-          />
-        ))}
-      </ul>
-      <div className="space-y-4">
-        <p className="text-sm">
-          {"毎日のお題の希望のお題がございましたら下記より受け付けております！"}
-        </p>
-        <div className="flex">
-          <Button>{"お題アイディア投稿BOX"}</Button>
+      <div className="overflow-x-auto">
+        <div className="grid min-w-[768px] grid-cols-7 gap-2 md:gap-4">
+          {["日", "月", "火", "水", "木", "金", "土"].map((day) => (
+            <div key={day} className="text-center font-bold">
+              {day}
+            </div>
+          ))}
+          {blocks.map((block) => (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+            <div
+              key={block.id}
+              onClick={() => handleCellClick(block.date)}
+              className={`h-24 cursor-pointer border p-2 ${block.isToday ? "bg-blue-200" : ""}`}
+            >
+              <div
+                className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+              >
+                {block.day}
+              </div>
+              {block.title && (
+                <div className="mt-2 text-center text-sm">{block.title}</div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -100,3 +128,10 @@ export const dailyThemeComponentFragment = graphql(
   }`,
   [partialWorkFieldsFragment],
 )
+
+export const getCurrentDateInJapan = () => {
+  const japanTimeZone = "Asia/Tokyo"
+  return new Date(
+    new Date().toLocaleString("en-US", { timeZone: japanTimeZone }),
+  )
+}
