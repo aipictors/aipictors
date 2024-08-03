@@ -79,7 +79,9 @@ export const PostFormItemTags = (props: Props) => {
         />
         <div className="space-y-2 pt-2">
           <p className="text-sm">
-            {"プロンプト付きの画像を読み込むとおすすめタグが更新されます"}
+            {
+              "プロンプト付きの画像を読み込むとおすすめタグが更新されます(Dall-Eなどは非対応)"
+            }
           </p>
           {props.recommendedTags.length !== 0 && (
             <div className="flex flex-wrap gap-2">
