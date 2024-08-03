@@ -11,7 +11,7 @@ import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
-import React from "react"
+import React, { useEffect } from "react"
 
 type Props = {
   title: string
@@ -40,6 +40,10 @@ export const StickerInfoDialog = (props: Props) => {
     setIsDownloaded(true)
   }
 
+  useEffect(() => {
+    setIsDownloaded(props.isDownloaded)
+  }, [props.isDownloaded])
+
   const [isDownloaded, setIsDownloaded] = React.useState(props.isDownloaded)
 
   return (
@@ -49,10 +53,7 @@ export const StickerInfoDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle>タイトル：{props.title}</DialogTitle>
         </DialogHeader>
-        <Link
-          className="m-auto w-24"
-          to={`https://www.aipictors.com/stamp/?id=${props.stickerId}`}
-        >
+        <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
           <img
             className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
             src={props.imageUrl}
