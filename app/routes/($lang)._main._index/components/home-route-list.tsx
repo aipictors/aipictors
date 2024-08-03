@@ -53,7 +53,6 @@ export const HomeRouteList = (props: Props) => {
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/themes"}
         icon={LightbulbIcon}
         onClick={closeHeaderMenu}
