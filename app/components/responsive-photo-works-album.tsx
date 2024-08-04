@@ -22,14 +22,14 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
-          ket: work.id,
+          key: work.id,
           src: work.smallThumbnailImageURL,
           width: work.smallThumbnailImageWidth,
           height: work.smallThumbnailImageHeight,
-          workId: work.id, // 各作品のID
-          userId: work.user.id, // 作品の所有者のID
-          userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
-          userName: work.user.name, // 作品の所有者の名前
+          workId: work.id,
+          userId: work.user.id,
+          userIcon: IconUrl(work.user?.iconUrl),
+          userName: work.user.name,
           workOwnerUserId: work.user.id,
           isLiked: work.isLiked,
           title: work.title,
@@ -38,6 +38,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           to: `/posts/${work.id}`,
           href: `/posts/${work.id}`,
           likesCount: work.likesCount,
+          context: work,
         }))}
         targetRowHeight={180}
         sizes={{

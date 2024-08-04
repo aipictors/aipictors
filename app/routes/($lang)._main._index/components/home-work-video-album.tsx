@@ -21,7 +21,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
-          ket: work.id,
+          key: work.id,
           src: work.largeThumbnailImageURL,
           width: work.largeThumbnailImageWidth,
           height: work.largeThumbnailImageHeight,

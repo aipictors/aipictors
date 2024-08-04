@@ -5,10 +5,10 @@ import { NovelWorkPreviewItem } from "~/components/novel-work-preview-item"
 import { UserNameBadge } from "~/components/user-name-badge"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { WORK_COUNT_DEFINE } from "~/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
+import { config } from "~/config"
 
 type Props = {
   title: string
@@ -27,7 +27,7 @@ export const HomeColumnsSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: WORK_COUNT_DEFINE.NOVEL_WORKS,
+      limit: config.query.homeWorkCount.novel,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "COLUMN",
