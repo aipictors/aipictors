@@ -9,15 +9,17 @@ type Props = {
   year: number
   month: number
   day: number | null
+  weekIndex: number | null
 }
 
 export const RankingHeader = (props: Props) => {
   const [year, setYear] = useState(props.year)
   const [month, setMonth] = useState(props.month)
   const [day, setDay] = useState(props.day)
+  const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
-  >(props.day ? "デイリー" : "マンスリー")
+  >(props.day ? "デイリー" : props.weekIndex ? "ウィークリー" : "マンスリー")
   const navigate = useNavigate()
   const location = useLocation()
   const isFirstRender = useRef(true)
@@ -26,7 +28,8 @@ export const RankingHeader = (props: Props) => {
     setYear(props.year)
     setMonth(props.month)
     setDay(props.day)
-  }, [props.year, props.month, props.day])
+    setWeekIndex(props.weekIndex ?? 1)
+  }, [props.year, props.month, props.day, props.weekIndex])
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -45,6 +48,9 @@ export const RankingHeader = (props: Props) => {
     view: "マンスリー" | "デイリー" | "ウィークリー",
   ) => {
     setViewType(view)
+    if (view === "ウィークリー") {
+      setWeekIndex(1)
+    }
   }
 
   const handleNavigate = () => {
@@ -56,7 +62,7 @@ export const RankingHeader = (props: Props) => {
       const actualDay = day === 0 || day == null ? 1 : day
       newPath = `/rankings/${year}/${month}/${actualDay}`
     } else if (viewType === "ウィークリー") {
-      newPath = `/rankings/${year}/${month}/week`
+      newPath = `/rankings/${year}/${month}/weeks/${weekIndex}`
     }
 
     if (location.pathname !== newPath) {
@@ -78,11 +84,15 @@ export const RankingHeader = (props: Props) => {
         setMonth((prevMonth) => prevMonth - 1)
       }
     } else if (viewType === "ウィークリー") {
-      const newDate = new Date(year, month - 1, day ?? new Date().getDate())
-      newDate.setDate(newDate.getDate() - 7)
-      setYear(newDate.getFullYear())
-      setMonth(newDate.getMonth() + 1)
-      setDay(newDate.getDate())
+      if (weekIndex > 1) {
+        setWeekIndex(weekIndex - 1)
+      } else {
+        const newDate = new Date(year, month - 1, 1)
+        newDate.setDate(newDate.getDate() - 1)
+        setYear(newDate.getFullYear())
+        setMonth(newDate.getMonth() + 1)
+        setWeekIndex(4) // Assuming 4 weeks in the previous month
+      }
     }
   }
 
@@ -100,11 +110,15 @@ export const RankingHeader = (props: Props) => {
         setMonth((prevMonth) => prevMonth + 1)
       }
     } else if (viewType === "ウィークリー") {
-      const newDate = new Date(year, month - 1, day ?? new Date().getDate())
-      newDate.setDate(newDate.getDate() + 7)
-      setYear(newDate.getFullYear())
-      setMonth(newDate.getMonth() + 1)
-      setDay(newDate.getDate())
+      if (weekIndex < 4) {
+        setWeekIndex(weekIndex + 1)
+      } else {
+        const newDate = new Date(year, month, 1)
+        newDate.setDate(newDate.getDate() + 30)
+        setYear(newDate.getFullYear())
+        setMonth(newDate.getMonth() + 1)
+        setWeekIndex(1)
+      }
     }
   }
 
@@ -150,40 +164,61 @@ export const RankingHeader = (props: Props) => {
               <span>日</span>
             </>
           )}
+          {viewType === "ウィークリー" && (
+            <>
+              <input
+                type="number"
+                value={weekIndex}
+                onChange={(e) => setWeekIndex(Number(e.target.value))}
+                className="w-12 rounded-md border border-gray-300 text-center"
+                min="1"
+                max="4"
+              />
+              <span>週</span>
+            </>
+          )}
         </div>
         <Button variant={"ghost"} className="ml-2" onClick={handleNext}>
           <ChevronRightIcon />
         </Button>
       </div>
-      <div className="flex justify-center space-x-4">
+      <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-96">
+        <div className="flex w-full justify-between space-x-1 md:space-x-4">
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("マンスリー")}
+            className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
+            disabled={viewType === "マンスリー"}
+          >
+            月間
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("デイリー")}
+            className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
+            disabled={viewType === "デイリー"}
+          >
+            日間
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => handleViewChange("ウィークリー")}
+            className={
+              viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"
+            }
+            disabled={viewType === "ウィークリー"}
+          >
+            週間
+          </Button>
+        </div>
         <Button
+          className="w-72 md:w-96"
           variant={"secondary"}
-          onClick={() => handleViewChange("マンスリー")}
-          className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "マンスリー"}
+          onClick={handleNavigate}
         >
-          マンスリー
+          変更した内容で表示
         </Button>
-        <Button
-          variant={"secondary"}
-          onClick={() => handleViewChange("デイリー")}
-          className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "デイリー"}
-        >
-          デイリー
-        </Button>
-        {/* <Button
-          variant={"secondary"}
-          onClick={() => handleViewChange("ウィークリー")}
-          className={viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"}
-          disabled={viewType === "ウィークリー"}
-        >
-          ウィークリー
-        </Button> */}
       </div>
-      <Button className="w-full" variant={"secondary"} onClick={handleNavigate}>
-        変更を反映
-      </Button>
     </Card>
   )
 }

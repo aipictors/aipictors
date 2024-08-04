@@ -160,7 +160,7 @@ export function PostImageFormUploader(props: Props) {
           onClick={onInputPngInfo}
           className="block"
         >
-          {"PNG情報のみ読み込み"}
+          {"画像から生成情報のみ反映"}
         </Button>
         <Button
           variant={"secondary"}

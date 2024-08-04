@@ -16,7 +16,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  if (props.params.day === undefined) {
+  if (props.params.week === undefined) {
     throw new Response(null, { status: 404 })
   }
 
@@ -26,7 +26,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const month = Number.parseInt(props.params.month)
 
-  const day = Number.parseInt(props.params.day)
+  const week = Number.parseInt(props.params.week)
 
   const workAwardsResp = await client.query({
     query: workAwardsQuery,
@@ -36,7 +36,7 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         year: year,
         month: month,
-        day: day,
+        weekIndex: week,
       },
     },
   })
@@ -44,15 +44,15 @@ export async function loader(props: LoaderFunctionArgs) {
   return json({
     year,
     month,
-    day,
+    weekIndex: week,
     workAwards: workAwardsResp,
   })
 }
 
 /**
- * ある日のランキングの履歴
+ * ある月のランキングの履歴
  */
-export default function DayAwards() {
+export default function MonthlyAwards() {
   const params = useParams()
 
   if (params.year === undefined) {
@@ -63,26 +63,24 @@ export default function DayAwards() {
     return null
   }
 
-  if (params.day === undefined) {
-    return null
-  }
-
   const data = useLoaderData<typeof loader>()
+
+  console.log(data.month)
 
   return (
     <>
       <RankingHeader
         year={data.year}
         month={data.month}
-        day={data.day}
-        weekIndex={null}
+        day={null}
+        weekIndex={data.weekIndex}
       />
       <RankingWorkList
         year={data.year}
         month={data.month}
-        day={data.day}
+        day={null}
+        weekIndex={data.weekIndex}
         awards={data.workAwards.data.workAwards}
-        weekIndex={null}
       />
     </>
   )

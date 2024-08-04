@@ -14,9 +14,9 @@ type Props = {
 }
 
 /**
- * ブックマーク一覧コンテナ
+ * いいね一覧コンテナ
  */
-export const BookmarkListContainer = (props: Props) => {
+export const LikeListContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   if (
@@ -30,13 +30,13 @@ export const BookmarkListContainer = (props: Props) => {
   const { data: userResp, refetch } = useQuery(userQuery, {
     skip: authContext.isLoading,
     variables: {
-      bookmarksOffset: 16 * props.page,
-      bookmarksLimit: 16,
+      likesOffset: 16 * props.page,
+      likesLimit: 16,
       userId: decodeURIComponent(authContext.userId),
     },
   })
 
-  const works = userResp?.user?.bookmarkWorks ?? []
+  const works = userResp?.user?.likedWorks ?? []
 
   return (
     <>
@@ -45,8 +45,8 @@ export const BookmarkListContainer = (props: Props) => {
           id: work.id,
           title: work.title,
           thumbnailImageUrl: work.smallThumbnailImageURL,
-          likesCount: work.likesCount,
           bookmarksCount: work.bookmarksCount ?? 0,
+          likesCount: work.likesCount ?? 0,
           commentsCount: work.commentsCount ?? 0,
           viewsCount: work.viewsCount,
           createdAt: toDateTimeText(work.createdAt), // Convert createdAt to string
@@ -71,13 +71,13 @@ export const BookmarkListContainer = (props: Props) => {
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
+    $likesOffset: Int!,
+    $likesLimit: Int!,
+    $likesWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
+      likedWorks(offset: $likesOffset, limit: $likesLimit, where: $likesWhere) {
         ...PartialWorkFields
       }
     }

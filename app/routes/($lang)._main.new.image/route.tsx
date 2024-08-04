@@ -1,10 +1,21 @@
+import React, { useEffect, useReducer, useContext } from "react"
+import { useQuery, useMutation } from "@apollo/client/index"
+import { useBeforeUnload, useSearchParams } from "@remix-run/react"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
+import { graphql } from "gql.tada"
+import { Loader2Icon } from "lucide-react"
+import { AuthContext } from "~/contexts/auth-context"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
-import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
+import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
+import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
+import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
+import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import {
   getNsfwPredictions,
@@ -14,29 +25,17 @@ import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
-import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
-import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
-import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
-import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
-import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
-import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload, useSearchParams } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { Loader2Icon } from "lucide-react"
-import React, { useEffect } from "react"
-import { useContext, useReducer } from "react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
-import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
+import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
+import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
+import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
-
   const ref = searchParams.get("generation")
 
   const { data: viewer } = useQuery(viewerQuery, {
@@ -50,6 +49,13 @@ export default function NewImage() {
       generationWhere: {
         nanoids: ref?.split("|") ?? [],
       },
+      startAt: new Date().toISOString().split("T")[0],
+      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
     },
   })
 
@@ -478,11 +484,28 @@ export default function NewImage() {
           />
         </div>
         <PostImageFormInput
-          imageInformation={state.pngInfo}
+          imageInformation={inputState.imageInformation}
           state={inputState}
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          themes={
+            viewer?.dailyThemes
+              ? viewer.dailyThemes.map((theme) => ({
+                  date: theme.dateText,
+                  title: theme.title,
+                  id: theme.id,
+                }))
+              : null
+          }
+          aiModels={viewer?.aiModels ?? []}
+          event={{
+            title: viewer?.appEvents[0]?.title ?? null,
+            description: viewer?.appEvents[0]?.description ?? null,
+            tag: viewer?.appEvents[0]?.tag ?? null,
+            endAt: viewer?.appEvents[0]?.endAt ?? 0,
+            slug: viewer?.appEvents[0]?.slug ?? null,
+          }}
         />
         <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
           {"投稿"}
@@ -514,6 +537,9 @@ const viewerQuery = graphql(
     $generationOffset: Int!
     $generationLimit: Int!
     $generationWhere: ImageGenerationResultsWhereInput
+    $startAt: String
+    $startDate: String
+    $endDate: String
   ) {
     viewer {
       id
@@ -545,8 +571,37 @@ const viewerQuery = graphql(
         ...PartialUserFields
       }
     }
+    aiModels(offset: 0, limit: 124, where: {}) {
+      ...AiModelFields
+    }
+    dailyThemes(
+      limit: 8,
+      offset: 0,
+      where: {
+        startDate: $startDate,
+        endDate: $endDate,
+      }) {
+      id
+      title
+      dateText
+    }
+    appEvents(
+      limit: 1,
+      offset: 0,
+      where: {
+        startAt: $startAt,
+      }
+    ) {
+      id
+      description
+      title
+      tag
+      slug
+      endAt
+    }
   }`,
   [
+    aiModelFieldsFragment,
     partialAlbumFieldsFragment,
     partialUserFieldsFragment,
     passFieldsFragment,

@@ -24,7 +24,7 @@ export async function loader() {
     query: stickersQuery,
     variables: {
       offset: 0,
-      limit: 256,
+      limit: 40,
       where: {},
     },
   })

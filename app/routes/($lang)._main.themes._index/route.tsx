@@ -1,10 +1,9 @@
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { ThemeHeader } from "~/routes/($lang)._main.themes._index/components/theme-header"
-import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
 
 export async function loader() {
   const client = createClient()
@@ -37,8 +36,8 @@ export default function Themes() {
 
   return (
     <>
-      <AppPageHeader title={"創作アイディアページ"} description={description} />
-      <ThemeHeader />
+      <AppPageHeader title={"お題"} description={description} />
+      {/* <ThemeHeader /> */}
       <ThemeList
         year={data.year}
         month={data.month}

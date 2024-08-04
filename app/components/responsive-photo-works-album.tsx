@@ -48,7 +48,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           // TODO: コンポーネントを分ける
           extras: (_, { photo, index }) => (
             <div key={index}>
-              <div className="absolute right-1 bottom-12 z-10">
+              <div className="absolute right-1 bottom-16 z-10">
                 <LikeButton
                   size={56}
                   targetWorkId={photo.workId}
@@ -60,9 +60,9 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   likedCount={photo.likesCount}
                 />
               </div>
-              <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
+              <div className="mt-2 flex flex-col space-y-2 overflow-hidden">
                 <Link className="w-48 font-bold" to={`/posts/${photo.workId}`}>
-                  <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                  <p className="overflow-hidden truncate text-nowrap text-base">
                     {photo.title}
                   </p>
                 </Link>

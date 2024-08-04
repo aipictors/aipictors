@@ -17,6 +17,7 @@ import {
   RocketIcon,
   SettingsIcon,
   StampIcon,
+  StarIcon,
   UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
@@ -53,7 +54,13 @@ export const HomeRouteList = (props: Props) => {
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
+        href={"/generation"}
+        icon={AwardIcon}
+        onClick={closeHeaderMenu}
+      >
+        {"画像生成"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
         href={"/themes"}
         icon={LightbulbIcon}
         onClick={closeHeaderMenu}
@@ -68,12 +75,18 @@ export const HomeRouteList = (props: Props) => {
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/rankings"}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
         {"ランキング"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        onClick={closeHeaderMenu}
+        href={"/events"}
+        icon={StarIcon}
+      >
+        {"イベント"}
       </HomeNavigationButton>
       <HomeNavigationButton
         onClick={closeHeaderMenu}
@@ -88,14 +101,6 @@ export const HomeRouteList = (props: Props) => {
         icon={RocketIcon}
       >
         {"更新情報"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
-        href={"/generation"}
-        icon={AwardIcon}
-        onClick={closeHeaderMenu}
-      >
-        {"画像生成"}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
@@ -155,7 +160,7 @@ export const HomeRouteList = (props: Props) => {
       </HomeNavigationButton>
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/settings/restriction"}
+          href={"/settings"}
           icon={SettingsIcon}
           onClick={closeHeaderMenu}
         >
