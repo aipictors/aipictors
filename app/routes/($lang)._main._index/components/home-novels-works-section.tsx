@@ -1,10 +1,10 @@
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
-import { NovelWorkPreviewItem } from "~/components/novel-work-preview-item"
-import { UserNameBadge } from "~/components/user-name-badge"
 import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -64,6 +64,7 @@ export const HomeNovelsWorksSection = (props: Props) => {
                 imageUrl={work.src}
                 title={work.title}
                 text={work.text ?? ""}
+                tags={[]}
               />
             </div>
             <UserNameBadge

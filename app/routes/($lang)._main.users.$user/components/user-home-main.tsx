@@ -5,7 +5,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { ProfileEditDialog } from "~/components/profile-edit-dialog"
+import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user/components/profile-edit-dialog"
 
 type Props = {
   user: FragmentOf<typeof userHomeMainFragment>

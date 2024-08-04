@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { WorkComment } from "~/routes/($lang)._main.posts.$post/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post/components/work-comment-response"
 import { Loader2Icon, StampIcon } from "lucide-react"
@@ -15,6 +14,7 @@ import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { commentFieldsFragment } from "~/graphql/fragments/comment-fields"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 
 type Props = {
   workId: string

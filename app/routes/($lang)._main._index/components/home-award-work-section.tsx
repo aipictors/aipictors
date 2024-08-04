@@ -3,7 +3,6 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
-import { UserNameBadge } from "~/components/user-name-badge"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
@@ -13,6 +12,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { Heart } from "lucide-react"
 import { config } from "~/config"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   title: string

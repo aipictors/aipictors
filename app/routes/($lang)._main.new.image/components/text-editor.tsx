@@ -21,11 +21,11 @@ import { useCallback, useContext } from "react"
 import { Button } from "~/components/ui/button"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { TextEditorUploaderDialog } from "~/components/text-editor-uploader-dialog"
 import CodeBlock from "@tiptap/extension-code-block"
 import Blockquote from "@tiptap/extension-blockquote"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
 import { graphql } from "gql.tada"
+import { TextEditorUploaderDialog } from "~/routes/($lang)._main.new.image/components/text-editor-uploader-dialog"
 
 const TextEditor = ({
   value,

@@ -1,4 +1,3 @@
-import { StickerChangeAccessTypeActionDialog } from "~/components/sticker-change-access-type-action-dialog"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -13,6 +12,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { toast } from "sonner"
+import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
 
 type Props = {
   title: string

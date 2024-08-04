@@ -2,9 +2,9 @@ import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
-import { UserNameBadge } from "~/components/user-name-badge"
 import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]

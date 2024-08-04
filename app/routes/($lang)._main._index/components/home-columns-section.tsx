@@ -1,14 +1,14 @@
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
-import { NovelWorkPreviewItem } from "~/components/novel-work-preview-item"
-import { UserNameBadge } from "~/components/user-name-badge"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   title: string
@@ -59,6 +59,7 @@ export const HomeColumnsSection = (props: Props) => {
                   imageUrl={work.largeThumbnailImageURL}
                   title={work.title}
                   text={work.description ?? ""}
+                  tags={[]}
                 />
               </div>
               <UserNameBadge

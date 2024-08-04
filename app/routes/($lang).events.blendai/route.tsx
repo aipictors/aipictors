@@ -1,9 +1,9 @@
-import { ImageGenerationReferenceCard } from "~/components/image-generation-reference-card"
 import { Button } from "~/components/ui/button"
 import { EventImage } from "~/routes/($lang).events.blendai/components/event-image"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
+import { ImageGenerationReferenceCard } from "~/routes/($lang).events.blendai/components/image-generation-reference-card"
 
 export default function BlendAi() {
   return (

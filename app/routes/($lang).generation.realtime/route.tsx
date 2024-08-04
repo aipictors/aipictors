@@ -1,7 +1,5 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import PaintCanvas from "~/components/paint-canvas"
-import RealTimeCanvas from "~/components/realtime-canvas"
 import { Input } from "~/components/ui/input"
 import { Slider } from "~/components/ui/slider"
 import { AuthContext } from "~/contexts/auth-context"
@@ -13,6 +11,8 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect, useState } from "react"
 import { useContext } from "react"
+import RealTimeCanvas from "~/routes/($lang).generation.realtime/components/realtime-canvas"
+import { PaintCanvas } from "~/components/paint-canvas"
 
 export const meta: MetaFunction = () => {
   const siteName = "無料AIイラスト生成 - スマホ対応"
@@ -266,12 +266,12 @@ export default function GenerationLayout() {
               isBackground={true}
               isColorPicker={true}
               isPadding={false}
-              onChangeSetDrawing={(value) => {
+              onChangeSetDrawing={(value: boolean) => {
                 setIsDrawing(value)
               }}
               onChangeCompositionCanvasBase64={onChangeCompositionCanvasBase64}
               backImageBase64={backImageBase64}
-              setBackImageBase64={(value) => {
+              setBackImageBase64={(value: string) => {
                 setBackImageBase64(value)
               }}
             />
