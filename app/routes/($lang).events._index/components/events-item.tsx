@@ -22,17 +22,26 @@ export const EventItem = (props: Props) => {
     return null
   }
 
+  const now = new Date()
+  const isOngoing =
+    new Date(props.startAt * 1000) <= now && now <= new Date(props.endAt * 1000)
+
   return (
     <Link to={`/events/${props.slug}`}>
       <Card>
         <CardHeader>
-          <div className="flex items-center">
+          <div className="relative flex items-center">
             <div className="m-auto">
               <img
                 className="m-auto h-24 max-w-auto rounded-lg object-cover"
                 src={props.thumbnailImageUrl}
                 alt=""
               />
+              {isOngoing && (
+                <div className="absolute top-0 left-0 rounded-br-lg bg-red-500 px-2 py-1 font-bold text-white text-xs">
+                  開催中
+                </div>
+              )}
             </div>
           </div>
           <div className="font-medium text-sm">{props.title}</div>
