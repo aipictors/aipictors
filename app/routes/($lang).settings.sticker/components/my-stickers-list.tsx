@@ -103,7 +103,7 @@ export const MyStickersList = () => {
           }}
           isActive={stickerStatus === "DOWNLOADED"}
         >
-          {"ダウンロード"}
+          {"マイスタンプ"}
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {

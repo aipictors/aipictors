@@ -66,12 +66,12 @@ export const StickerInfoDialog = (props: Props) => {
               {isCreatingUserSticker ? (
                 <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <span>{"ダウンロード"}</span>
+                <span>{"マイスタンプに追加"}</span>
               )}
             </Button>
           ) : (
             <Button disabled={true} className="w-full" onClick={onDownload}>
-              {"ダウンロード済み"}
+              {"追加済み"}
             </Button>
           )}
         </DialogFooter>
