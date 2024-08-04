@@ -5,14 +5,14 @@ import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
+import { EventSensitiveWorkList } from "~/routes/($lang).sensitive.events.$event._index/components/event-sensitive-work-list"
+import { Button } from "~/components/ui/button"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
 
-  const urlParams = new URL(props.request.url).searchParams
+  const urlParams = new URLSearchParams(props.request.url.split("?")[1])
   const pageParam = urlParams.get("page")
   const page = pageParam ? Number(pageParam) : 0
 
@@ -29,10 +29,10 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 64,
       slug: event,
       where: {
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         isNowCreatedAt: true,
       },
-      isSensitive: false,
+      isSensitive: true,
     },
   })
 
@@ -52,8 +52,16 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
+  // const authContext = useContext(AuthContext)
+
   const navigate = useNavigate()
 
+  // TODO: コンポーネントが不足している
+  // if (!authContext.isLoggedIn) {
+  //   return null
+  // }
+
+  // TODO: コンポーネントが不足している
   if (
     !data.appEvent?.title ||
     !data.appEvent?.thumbnailImageUrl ||
@@ -98,29 +106,21 @@ export default function FollowingLayout() {
             <div className="mt-2 mr-auto text-sm">
               <span>参加タグ: {data.appEvent.tag}</span>
             </div>
-            {data.appEvent.slug !== null && (
-              <AppConfirmDialog
-                title={"確認"}
-                description={
-                  "センシティブ作品を表示します。あなたは18歳以上ですか？"
-                }
-                onNext={() => {
-                  navigate(`/sensitive/events/${data.appEvent.slug}`)
-                }}
-                cookieKey={"check-sensitive-ranking"}
-                onCancel={() => {}}
-              >
-                <div className="mt-4 flex w-40 cursor-pointer justify-center">
-                  <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{"対象年齢"}</p>
-                </div>
-              </AppConfirmDialog>
-            )}
+            <Button
+              className="mt-4 flex w-40 cursor-pointer justify-center"
+              variant={"secondary"}
+              onClick={() => {
+                navigate(`/events/${data.appEvent.slug}`)
+              }}
+            >
+              <RefreshCcwIcon className="mr-1 w-3" />
+              <p className="text-sm">{"全年齢"}</p>
+            </Button>
           </div>
         </CardContent>
       </Card>
       {data.appEvent.slug && (
-        <EventWorkList
+        <EventSensitiveWorkList
           works={data.works}
           isSensitive={false}
           maxCount={data.worksCount}

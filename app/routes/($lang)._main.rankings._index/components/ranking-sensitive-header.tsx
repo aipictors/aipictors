@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "@remix-run/react"
 import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   year: number
@@ -13,7 +12,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export const RankingHeader = (props: Props) => {
+export const RankingSensitiveHeader = (props: Props) => {
   const [year, setYear] = useState(props.year)
   const [month, setMonth] = useState(props.month)
   const [day, setDay] = useState(props.day)
@@ -58,12 +57,12 @@ export const RankingHeader = (props: Props) => {
     let newPath = ""
 
     if (viewType === "マンスリー") {
-      newPath = `/rankings/${year}/${month}`
+      newPath = `/sensitive/rankings/${year}/${month}`
     } else if (viewType === "デイリー") {
       const actualDay = day === 0 || day == null ? 1 : day
-      newPath = `/rankings/${year}/${month}/${actualDay}`
+      newPath = `/sensitive/rankings/${year}/${month}/${actualDay}`
     } else if (viewType === "ウィークリー") {
-      newPath = `/rankings/${year}/${month}/weeks/${weekIndex}`
+      newPath = `/sensitive/rankings/${year}/${month}/weeks/${weekIndex}`
     }
 
     if (location.pathname !== newPath) {
@@ -213,21 +212,14 @@ export const RankingHeader = (props: Props) => {
           </Button>
         </div>
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
-          <AppConfirmDialog
-            title={"確認"}
-            description={"あなたは18歳以上ですか？"}
-            onNext={() => {
-              navigate("/sensitive/rankings")
-            }}
-            cookieKey={"check-sensitive-ranking"}
-            onCancel={() => {}}
+          <Button
+            className="w-24"
+            variant={"ghost"}
+            onClick={() => navigate("/rankings")}
           >
-            <div className="flex w-32 cursor-pointer items-center">
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{"対象年齢"}</p>
-            </div>
-          </AppConfirmDialog>
-
+            <RefreshCcwIcon className="mr-2 w-4" />
+            {"全年齢"}
+          </Button>
           <Button
             className="w-72 md:w-96"
             variant={"secondary"}
