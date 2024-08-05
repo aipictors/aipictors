@@ -19,21 +19,6 @@ export const HomeCroppedWorkList = (props: Props) => {
     return null
   }
 
-  const works = props.works.map((work) => ({
-    id: work.id,
-    src: work.smallThumbnailImageURL,
-    width: work.smallThumbnailImageWidth,
-    height: work.smallThumbnailImageHeight,
-    workId: work.id,
-    thumbnailImagePosition: work.thumbnailImagePosition,
-    subWorksCount: work.subWorksCount,
-    userId: work.user.id,
-    userIcon: work.user.iconUrl,
-    userName: work.user.name,
-    title: work.title,
-    isLiked: work.isLiked,
-  }))
-
   return (
     <section className="relative space-y-4">
       <CarouselWithGradation

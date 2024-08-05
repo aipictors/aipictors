@@ -25,17 +25,6 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           src: work.largeThumbnailImageURL,
           width: work.largeThumbnailImageWidth,
           height: work.largeThumbnailImageHeight,
-          // workId: work.id,
-          // userId: work.user.id,
-          // userIcon: IconUrl(work.user?.iconUrl),
-          // userName: work.user.name,
-          // workOwnerUserId: work.user.id,
-          // isLiked: work.isLiked,
-          // title: work.title,
-          // isSensitive: work.rating === "R18" || work.rating === "R18G",
-          // subWorksCount: work.subWorksCount,
-          // to: `/posts/${work.id}`,
-          // href: `/posts/${work.id}`,
           context: work,
         }))}
         targetRowHeight={
