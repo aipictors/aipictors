@@ -142,7 +142,13 @@ export const LikeButton = ({
                 )}
                 size={Math.floor(size / 2)}
                 strokeWidth={strokeWidth}
-                stroke={isBackgroundNone ? "black" : "currentColor"}
+                stroke={
+                  isBackgroundNone
+                    ? isLiked
+                      ? "none"
+                      : "gray"
+                    : "currentColor"
+                }
               />
             </div>
             {text && (
@@ -199,7 +205,9 @@ export const LikeButton = ({
           )}
           size={Math.floor(size / 2)}
           strokeWidth={strokeWidth}
-          stroke={isBackgroundNone ? "black" : "currentColor"}
+          stroke={
+            isBackgroundNone ? (isLiked ? "none" : "gray") : "currentColor"
+          }
         />
       </div>
       {text !== undefined && (
