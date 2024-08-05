@@ -85,7 +85,7 @@ export default function FollowingLayout() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="m-auto flex max-w-96 flex-col items-center text-left">
+          <div className="m-auto flex flex-col items-center text-left">
             <div className="mb-2 text-left text-sm ">
               {data.appEvent.description}
             </div>

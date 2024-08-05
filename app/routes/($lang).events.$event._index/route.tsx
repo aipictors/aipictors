@@ -59,9 +59,7 @@ export default function FollowingLayout() {
     !data.appEvent?.description ||
     !data.appEvent?.startAt ||
     !data.appEvent?.endAt ||
-    !data.appEvent.worksCount ||
-    !data.appEvent.awardWorks ||
-    !data.appEvent.works
+    !data.appEvent.worksCount
   ) {
     return null
   }
@@ -69,7 +67,7 @@ export default function FollowingLayout() {
   return (
     <div className="flex flex-col space-y-4">
       <img
-        className="h-auto max-h-40 w-full rounded-lg object-cover"
+        className="h-auto w-full rounded-lg object-cover"
         src={data.appEvent.thumbnailImageUrl}
         alt=""
       />
@@ -80,10 +78,8 @@ export default function FollowingLayout() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="m-auto flex max-w-96 flex-col items-center text-left">
-            <div className="mb-2 text-left text-sm ">
-              {data.appEvent.description}
-            </div>
+          <div className="m-auto flex flex-col items-center text-left">
+            <div className="mb-2 text-left text-sm" dangerouslySetInnerHTML={{ __html: data.appEvent.description }}></div>
             <div className="mr-auto text-sm">
               {toDateTimeText(data.appEvent.startAt)}～
               {toDateTimeText(data.appEvent.endAt)}
@@ -115,21 +111,21 @@ export default function FollowingLayout() {
           </div>
         </CardContent>
       </Card>
-      {data.appEvent.awardWorks && data.appEvent.slug && (
+      {data.appEvent.awardWorks && (
         <EventAwardWorkList
           works={data.appEvent.awardWorks}
-          slug={data.appEvent.slug}
+          slug={data.appEvent.slug ?? ""}
           isSensitive={false}
         />
       )}
       <h2 className="font-bold text-md">{"作品一覧"}</h2>
-      {data.appEvent.slug && (
+      {data.appEvent.works && (
         <EventWorkList
           works={data.appEvent.works}
           isSensitive={false}
           maxCount={data.appEvent.worksCount as number}
           page={data.page}
-          slug={data.appEvent.slug}
+          slug={data.appEvent.slug ?? ""}
         />
       )}
     </div>
