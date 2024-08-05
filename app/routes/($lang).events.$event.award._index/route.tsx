@@ -5,14 +5,15 @@ import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
-import { EventSensitiveWorkList } from "~/routes/($lang).sensitive.events.$event._index/components/event-sensitive-work-list"
+import { EventAwardPagingWorkList } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
 import { Button } from "~/components/ui/button"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
 
-  const urlParams = new URLSearchParams(props.request.url.split("?")[1])
+  const urlParams = new URL(props.request.url).searchParams
   const pageParam = urlParams.get("page")
   const page = pageParam ? Number(pageParam) : 0
 
@@ -25,14 +26,14 @@ export async function loader(props: LoaderFunctionArgs) {
   const eventsResp = await client.query({
     query: appEventQuery,
     variables: {
-      limit: 64,
-      offset: page * 64,
+      limit: 200,
+      offset: 0,
       slug: event,
-      where: {
-        ratings: ["R18", "R18G"],
-        isNowCreatedAt: true,
-      },
-      isSensitive: true,
+      // where: {
+      //   ratings: ["G", "R15"],
+      //   isNowCreatedAt: true,
+      // },
+      isSensitive: false,
     },
   })
 
@@ -42,9 +43,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     appEvent: eventsResp.data.appEvent,
-    works: eventsResp.data.appEvent.works,
-    worksCount: eventsResp.data.appEvent.worksCount as number,
-    awardWorks: eventsResp.data.appEvent.awardWorks,
     page,
   })
 }
@@ -52,16 +50,8 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
-  // const authContext = useContext(AuthContext)
-
   const navigate = useNavigate()
 
-  // TODO: コンポーネントが不足している
-  // if (!authContext.isLoggedIn) {
-  //   return null
-  // }
-
-  // TODO: コンポーネントが不足している
   if (
     !data.appEvent?.title ||
     !data.appEvent?.thumbnailImageUrl ||
@@ -70,14 +60,20 @@ export default function FollowingLayout() {
     !data.appEvent?.startAt ||
     !data.appEvent?.endAt ||
     !data.appEvent.worksCount ||
-    !data.appEvent.awardWorks ||
-    !data.works
+    !data.appEvent.awardWorks
   ) {
     return null
   }
 
+  console.log(data.appEvent.awardWorks)
+
   return (
     <div className="flex flex-col space-y-4">
+      <img
+        className="h-auto max-h-40 w-full rounded-lg object-cover"
+        src={data.appEvent.thumbnailImageUrl}
+        alt=""
+      />
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
@@ -99,26 +95,44 @@ export default function FollowingLayout() {
             <div className="mt-2 mr-auto text-sm">
               <span>参加タグ: {data.appEvent.tag}</span>
             </div>
-            <Button
-              className="mt-4 flex w-40 cursor-pointer justify-center"
-              variant={"secondary"}
-              onClick={() => {
-                navigate(`/events/${data.appEvent.slug}`)
-              }}
-            >
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{"全年齢"}</p>
-            </Button>
+            {data.appEvent.slug !== null && (
+              <AppConfirmDialog
+                title={"確認"}
+                description={
+                  "センシティブ作品を表示します。あなたは18歳以上ですか？"
+                }
+                onNext={() => {
+                  navigate(`/sensitive/events/${data.appEvent.slug}`)
+                }}
+                cookieKey={"check-sensitive-ranking"}
+                onCancel={() => {}}
+              >
+                <div className="mt-4 flex w-40 cursor-pointer justify-center">
+                  <RefreshCcwIcon className="mr-1 w-3" />
+                  <p className="text-sm">{"対象年齢"}</p>
+                </div>
+              </AppConfirmDialog>
+            )}
           </div>
         </CardContent>
       </Card>
-      {data.appEvent.slug && (
-        <EventSensitiveWorkList
-          works={data.works}
-          isSensitive={false}
-          maxCount={data.worksCount}
-          page={data.page}
+      <Button
+        onClick={() => {
+          navigate(`/events/${data.appEvent.slug}`)
+        }}
+        className="m-auto w-full"
+        variant={"secondary"}
+        size={"sm"}
+      >
+        {"戻る"}
+      </Button>
+      {data.appEvent.awardWorks && data.appEvent.slug && (
+        <EventAwardPagingWorkList
+          works={data.appEvent.awardWorks}
           slug={data.appEvent.slug}
+          isSensitive={false}
+          maxCount={data.appEvent.worksCount}
+          page={data.page}
         />
       )}
     </div>
@@ -126,7 +140,7 @@ export default function FollowingLayout() {
 }
 
 const appEventQuery = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
       id
       description
@@ -138,10 +152,7 @@ const appEventQuery = graphql(
       endAt
       tag
       worksCount
-      works(offset: $offset, limit: $limit, where: $where) {
-        ...PartialWorkFields
-      }
-      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+      awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
         ...PartialWorkFields
       }
     }

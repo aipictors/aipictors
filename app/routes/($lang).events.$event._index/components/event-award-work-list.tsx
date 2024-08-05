@@ -1,3 +1,8 @@
+import { useQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
+import { graphql, type FragmentOf } from "gql.tada"
+import { Heart } from "lucide-react"
+import { useContext } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
@@ -5,64 +10,38 @@ import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
-import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
-import { Heart } from "lucide-react"
-import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
-  title: string
-  isSensitive?: boolean
-  works: FragmentOf<typeof workAwardFieldsFragment>[]
-  awardDateText: string
+  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  isSensitive: boolean
+  slug: string
 }
 
 /**
- * ランキング作品一覧
+ * イベントランキング作品一覧
  */
-export const HomeAwardWorkSection = (props: Props) => {
+export function EventAwardWorkList(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const year = props.awardDateText.split("/")[0]
-  const month = props.awardDateText.split("/")[1]
-  const day = props.awardDateText.split("/")[2]
-
-  // ランキング
-  // 前日のランキングを取得
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  const { data: workAwardsResp } = useQuery(workAwardsQuery, {
-    skip: authContext.isLoading,
+  const { data: resp } = useQuery(appAwardEventQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
-      offset: 0,
-      limit: config.query.homeWorkCount.award,
-      where: {
-        year: Number(year),
-        month: Number(month),
-        day: Number(day),
-        isSensitive: props.isSensitive ?? false,
-      },
+      slug: props.slug,
+      isSensitive: props.isSensitive,
     },
   })
 
-  const workDisplayed = workAwardsResp?.workAwards ?? props.works
-
-  const yesterdayStr = `${yesterday.getFullYear()}/${
-    yesterday.getMonth() + 1
-  }/${yesterday.getDate()}`
+  const workDisplayed = resp?.appEvent?.awardWorks ?? props.works
 
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
-          {props.title}
+          {"ランキング"}
         </h2>
         {/* 昨日の日付 // /2024/05/01 */}
-        <Link to={`rankings/${yesterdayStr}`}>
+        <Link to={`/events/${props.slug}/award`}>
           <Button variant={"secondary"} size={"sm"}>
             {"すべて見る"}
           </Button>
@@ -71,25 +50,25 @@ export const HomeAwardWorkSection = (props: Props) => {
       <CarouselWithGradation
         items={workDisplayed
           .map((work) => ({
-            id: work.work.id,
-            src: work.work.smallThumbnailImageURL,
-            width: work.work.smallThumbnailImageWidth,
-            height: work.work.smallThumbnailImageHeight,
-            workId: work.work.id,
-            thumbnailImagePosition: work.work.thumbnailImagePosition,
-            userId: work.work.user.id,
-            userIcon: work.work.user.iconUrl,
-            userName: work.work.user.name,
-            title: work.work.title,
-            isLiked: work.work.isLiked,
-            subWorksCount: work.work.subWorksCount,
-            likesCount: work.work.likesCount,
+            id: work.id,
+            src: work.smallThumbnailImageURL,
+            width: work.smallThumbnailImageWidth,
+            height: work.smallThumbnailImageHeight,
+            workId: work.id,
+            thumbnailImagePosition: work.thumbnailImagePosition,
+            userId: work.user.id,
+            userIcon: work.user.iconUrl,
+            userName: work.user.name,
+            title: work.title,
+            isLiked: work.isLiked,
+            subWorksCount: work.subWorksCount,
+            likesCount: work.likesCount,
           }))
           .map((work, index) => (
             <div key={index.toString()} className="flex flex-col space-y-2">
               <div className="relative">
                 <CroppedWorkSquare
-                  workId={work.workId}
+                  workId={work.id}
                   imageUrl={work.src}
                   subWorksCount={work.subWorksCount}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
@@ -101,7 +80,7 @@ export const HomeAwardWorkSection = (props: Props) => {
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
                     size={56}
-                    targetWorkId={work.workId}
+                    targetWorkId={work.id}
                     targetWorkOwnerUserId={work.userId}
                     defaultLiked={work.isLiked}
                     defaultLikedCount={0}
@@ -135,13 +114,10 @@ export const HomeAwardWorkSection = (props: Props) => {
   )
 }
 
-const workAwardsQuery = graphql(
-  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
-    workAwards(offset: $offset, limit: $limit, where: $where) {
-      id
-      index
-      dateText
-      work {
+const appAwardEventQuery = graphql(
+  `query AppEvent($slug: String!, $isSensitive: Boolean!) {
+    appEvent(slug: $slug) {
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
         ...PartialWorkFields
       }
     }

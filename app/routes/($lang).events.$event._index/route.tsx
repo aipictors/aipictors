@@ -8,6 +8,7 @@ import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fiel
 import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
+import { EventAwardWorkList } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -42,9 +43,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     appEvent: eventsResp.data.appEvent,
-    works: eventsResp.data.appEvent.works,
-    worksCount: eventsResp.data.appEvent.worksCount as number,
-    awardWorks: eventsResp.data.appEvent.awardWorks,
     page,
   })
 }
@@ -63,24 +61,22 @@ export default function FollowingLayout() {
     !data.appEvent?.endAt ||
     !data.appEvent.worksCount ||
     !data.appEvent.awardWorks ||
-    !data.works
+    !data.appEvent.works
   ) {
     return null
   }
 
   return (
     <div className="flex flex-col space-y-4">
+      <img
+        className="h-auto max-h-40 w-full rounded-lg object-cover"
+        src={data.appEvent.thumbnailImageUrl}
+        alt=""
+      />
       <Card className="m-auto w-full">
         <CardHeader>
-          <div className="flex flex-col items-center">
-            <img
-              className="h-auto rounded-lg object-cover md:max-w-96"
-              src={data.appEvent.thumbnailImageUrl}
-              alt=""
-            />
-            <div className="mt-4 font-medium text-lg">
-              {data.appEvent.title}
-            </div>
+          <div className="mt-4 text-center font-medium text-lg">
+            {data.appEvent.title}
           </div>
         </CardHeader>
         <CardContent>
@@ -119,11 +115,19 @@ export default function FollowingLayout() {
           </div>
         </CardContent>
       </Card>
+      {data.appEvent.awardWorks && data.appEvent.slug && (
+        <EventAwardWorkList
+          works={data.appEvent.awardWorks}
+          slug={data.appEvent.slug}
+          isSensitive={false}
+        />
+      )}
+      <h2 className="font-bold text-md">{"作品一覧"}</h2>
       {data.appEvent.slug && (
         <EventWorkList
-          works={data.works}
+          works={data.appEvent.works}
           isSensitive={false}
-          maxCount={data.worksCount}
+          maxCount={data.appEvent.worksCount as number}
           page={data.page}
           slug={data.appEvent.slug}
         />
