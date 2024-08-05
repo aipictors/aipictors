@@ -1,13 +1,13 @@
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
-import { StickerInfoDialog } from "~/components/sticker-info-dialog"
 import { Button } from "~/components/ui/button"
 import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
+import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
 
 type Props = {
   sticker: {

@@ -3,16 +3,16 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
-import { UserNameBadge } from "~/components/user-name-badge"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
-import { WORK_COUNT_DEFINE } from "~/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { Heart } from "lucide-react"
+import { config } from "~/config"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   title: string
@@ -39,7 +39,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      limit: config.query.homeWorkCount.award,
       where: {
         year: Number(year),
         month: Number(month),
@@ -86,8 +86,7 @@ export const HomeAwardWorkSection = (props: Props) => {
       </div>
       <CarouselWithGradation
         items={works.map((work, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <div key={index} className="flex flex-col space-y-2">
+          <div key={index.toString()} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
                 workId={work.workId}

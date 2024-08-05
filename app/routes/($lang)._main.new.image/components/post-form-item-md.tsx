@@ -1,5 +1,5 @@
 import { Card, CardContent } from "~/components/ui/card"
-import TextEditor from "~/components/text-editor"
+import TextEditor from "~/routes/($lang)._main.new.image/components/text-editor"
 
 type Props = {
   label?: string

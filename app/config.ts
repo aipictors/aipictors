@@ -263,6 +263,18 @@ export const config = {
   query: {
     maxLimit: 800,
     generationTasksMaxLimit: 200,
+    /**
+     * ホームの作品一覧数
+     */
+    homeWorkCount: {
+      ad: 16,
+      novel: 16,
+      video: 16,
+      column: 16,
+      generation: 16,
+      promotion: 16,
+      award: 16,
+    },
   },
   /**
    * ワードプレスエンドポイント

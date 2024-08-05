@@ -14,16 +14,6 @@ import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { config } from "~/config"
 
-export const WORK_COUNT_DEFINE = {
-  AD_WORKS: 16,
-  NOVEL_WORKS: 16,
-  VIDEO_WORKS: 16,
-  COLUMN_WORKS: 16,
-  GENERATION_WORKS: 16,
-  PROMOTION_WORKS: 16,
-  AWARD_WORKS: 16,
-}
-
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
 
@@ -89,13 +79,13 @@ export async function loader({ response }: LoaderFunctionArgs) {
       day: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
-      adWorksLimit: WORK_COUNT_DEFINE.AD_WORKS,
-      novelWorksLimit: WORK_COUNT_DEFINE.NOVEL_WORKS,
-      videoWorksLimit: WORK_COUNT_DEFINE.VIDEO_WORKS,
-      columnWorksLimit: WORK_COUNT_DEFINE.COLUMN_WORKS,
-      generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
-      promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
-      awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      adWorksLimit: config.query.homeWorkCount.ad,
+      novelWorksLimit: config.query.homeWorkCount.novel,
+      videoWorksLimit: config.query.homeWorkCount.video,
+      columnWorksLimit: config.query.homeWorkCount.column,
+      generationWorksLimit: config.query.homeWorkCount.generation,
+      promotionWorksLimit: config.query.homeWorkCount.promotion,
+      awardWorksLimit: config.query.homeWorkCount.award,
       novelWorksBefore: pastNovelDate.toISOString(),
       videoWorksBefore: pastVideoDate.toISOString(),
       columnWorksBefore: pastColumnDate.toISOString(),

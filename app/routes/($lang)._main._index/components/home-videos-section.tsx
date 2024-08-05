@@ -1,10 +1,10 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { HomeVideosWorksSection } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import { WORK_COUNT_DEFINE } from "~/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
+import { config } from "~/config"
 
 type Props = {
   title: string
@@ -23,7 +23,7 @@ export const HomeVideosSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: WORK_COUNT_DEFINE.VIDEO_WORKS,
+      limit: config.query.homeWorkCount.video,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         workType: "VIDEO",

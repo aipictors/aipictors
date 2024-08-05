@@ -3,7 +3,7 @@ import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 
-type HomeWorkAlbumProps = RenderPhotoProps & {
+type Props = RenderPhotoProps & {
   src: string
   userId: string
   userName: string
@@ -16,44 +16,34 @@ type HomeWorkAlbumProps = RenderPhotoProps & {
   subWorksCount?: number
 }
 
-export function HomeWorkAlbum({
-  src,
-  userId,
-  userName,
-  userIcon,
-  workId,
-  workTitle,
-  workOwnerUserId,
-  isLiked,
-  subWorksCount,
-}: HomeWorkAlbumProps) {
+export function HomeWorkAlbum(props: Props) {
   return (
     <div
       className="cursor overflow-hidden rounded transition-all"
       style={{ position: "relative" }}
     >
-      <Link to={`/posts/${workId}`} className="group">
+      <Link to={`/posts/${props.workId}`} className="group">
         <img
-          src={src}
-          alt={workTitle}
+          src={props.src}
+          alt={props.workTitle}
           className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
       <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-        <Link className="w-48 font-bold" to={`/posts/${workId}`}>
+        <Link className="w-48 font-bold" to={`/posts/${props.workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
-            {workTitle}
+            {props.workTitle}
           </p>
         </Link>
-        <Link to={`/users/${userId}`}>
+        <Link to={`/users/${props.userId}`}>
           <div className="flex items-center space-x-2">
             <img
-              src={IconUrl(userIcon)}
-              alt={userName}
+              src={IconUrl(props.userIcon)}
+              alt={props.userName}
               className="h-4 w-4 rounded-full"
             />
             <span className="text-nowrap font-bold text-sm text-white">
-              {userName}
+              {props.userName}
             </span>
           </div>
         </Link>
@@ -61,22 +51,22 @@ export function HomeWorkAlbum({
       <div className="absolute right-1 bottom-1">
         <LikeButton
           size={56}
-          targetWorkId={workId}
-          targetWorkOwnerUserId={workOwnerUserId}
-          defaultLiked={isLiked}
+          targetWorkId={props.workId}
+          targetWorkOwnerUserId={props.workOwnerUserId}
+          defaultLiked={props.isLiked}
           defaultLikedCount={0}
           isBackgroundNone={true}
           strokeWidth={2}
         />
       </div>
-      {subWorksCount !== undefined && subWorksCount !== 0 && (
+      {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
         <div
           className={
             "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
           }
           style={{ backgroundColor: "#00000052" }}
         >
-          {subWorksCount + 1}
+          {props.subWorksCount + 1}
         </div>
       )}
     </div>

@@ -1,13 +1,13 @@
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
-import { UserNameBadge } from "~/components/user-name-badge"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 type Props = {
   awards: FragmentOf<typeof workAwardFieldsFragment>[]
   year: number

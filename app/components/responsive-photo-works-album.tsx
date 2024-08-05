@@ -22,22 +22,23 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
-          ket: work.id,
+          key: work.id,
           src: work.smallThumbnailImageURL,
           width: work.smallThumbnailImageWidth,
           height: work.smallThumbnailImageHeight,
-          workId: work.id, // 各作品のID
-          userId: work.user.id, // 作品の所有者のID
-          userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
-          userName: work.user.name, // 作品の所有者の名前
-          workOwnerUserId: work.user.id,
-          isLiked: work.isLiked,
-          title: work.title,
-          isSensitive: work.rating === "R18" || work.rating === "R18G",
-          subWorksCount: work.subWorksCount,
-          to: `/posts/${work.id}`,
-          href: `/posts/${work.id}`,
-          likesCount: work.likesCount,
+          // workId: work.id,
+          // userId: work.user.id,
+          // userIcon: IconUrl(work.user?.iconUrl),
+          // userName: work.user.name,
+          // workOwnerUserId: work.user.id,
+          // isLiked: work.isLiked,
+          // title: work.title,
+          // isSensitive: work.rating === "R18" || work.rating === "R18G",
+          // subWorksCount: work.subWorksCount,
+          // to: `/posts/${work.id}`,
+          // href: `/posts/${work.id}`,
+          // likesCount: work.likesCount,
+          context: work,
         }))}
         targetRowHeight={180}
         sizes={{
@@ -51,36 +52,41 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
               <div className="absolute right-1 bottom-16 z-10">
                 <LikeButton
                   size={56}
-                  targetWorkId={photo.workId}
-                  targetWorkOwnerUserId={photo.userId}
-                  defaultLiked={photo.isLiked}
-                  defaultLikedCount={photo.likesCount}
+                  targetWorkId={photo.context.id}
+                  targetWorkOwnerUserId={photo.context.user.id}
+                  defaultLiked={photo.context.isLiked}
+                  defaultLikedCount={photo.context.likesCount}
                   isBackgroundNone={true}
                   strokeWidth={2}
-                  likedCount={photo.likesCount}
+                  likedCount={photo.context.likesCount}
                 />
               </div>
               <div className="mt-2 flex flex-col space-y-2 overflow-hidden">
-                <Link className="w-48 font-bold" to={`/posts/${photo.workId}`}>
+                <Link
+                  className="w-48 font-bold"
+                  to={`/posts/${photo.context.id}`}
+                >
                   <p className="overflow-hidden truncate text-nowrap text-base">
-                    {photo.title}
+                    {photo.context.title}
                   </p>
                 </Link>
-                <Link to={`/users/${photo.userId}`}>
+                <Link to={`/users/${photo.context.user.id}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <img
-                        src={IconUrl(photo.userIcon)}
-                        alt={photo.userName}
+                        src={IconUrl(photo.context.user.iconUrl)}
+                        alt={photo.context.user.name}
                         className="h-4 w-4 rounded-full"
                       />
                       <span className="block max-w-16 overflow-hidden text-ellipsis text-nowrap font-bold text-sm ">
-                        {photo.userName}
+                        {photo.context.user.name}
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
-                      <span className="text-xs">{photo.likesCount}</span>
+                      <span className="text-xs">
+                        {photo.context.likesCount}
+                      </span>
                     </div>
                   </div>
                 </Link>
@@ -102,7 +108,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           image(props, context) {
             return (
               <Link
-                to={context.photo.href}
+                to={`/posts/${context.photo.context.id}`}
                 className="block overflow-hidden rounded"
               >
                 <img
@@ -110,11 +116,11 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   alt={props.alt}
                   className="transition-transform duration-300 ease-in-out hover:scale-105"
                 />
-                {context.photo.subWorksCount > 0 && (
+                {context.photo.context.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
                     <Images className="h-3 w-3 text-white" />
                     <div className="font-bold text-white text-xs">
-                      {context.photo.subWorksCount + 1}
+                      {context.photo.context.subWorksCount + 1}
                     </div>
                   </div>
                 )}

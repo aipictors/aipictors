@@ -1,7 +1,7 @@
-import PrivateImagePaintCanvas from "~/components/private-image-paint-canvas"
 import { InPaintingImageForm } from "~/routes/($lang).generation._index/components/submission-view/InPaintingImageForm"
 import { useEffect, useState } from "react"
 import FullScreenContainer from "~/components/full-screen-container"
+import PrivateImagePaintCanvas from "~/routes/($lang).generation._index/components/submission-view/private-image-paint-canvas"
 
 type Props = {
   isOpen: boolean

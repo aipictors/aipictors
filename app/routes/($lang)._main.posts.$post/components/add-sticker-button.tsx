@@ -1,6 +1,6 @@
-import { AddStickerDialog } from "~/components/add-sticker-dialog"
 import { Button } from "~/components/ui/button"
 import { PlusIcon } from "lucide-react"
+import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post/components/add-sticker-dialog"
 
 type Props = {
   onAddedSicker?: () => void
