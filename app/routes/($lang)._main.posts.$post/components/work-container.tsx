@@ -43,17 +43,6 @@ export const WorkContainer = (props: Props) => {
     return null
   }
 
-  const relatedWorks = work.user.works.map((relatedWork) => ({
-    smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-    thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
-    smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
-    smallThumbnailImageHeight: relatedWork.smallThumbnailImageHeight,
-    id: relatedWork.id,
-    userId: relatedWork.userId,
-    isLiked: false,
-    subWorksCount: relatedWork.subWorksCount,
-  }))
-
   const tags = work?.tagNames ?? []
 
   const randomTag =
@@ -70,7 +59,19 @@ export const WorkContainer = (props: Props) => {
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
             <WorkArticle isDraft={props.isDraft} work={work} />
-            <WorkRelatedList works={relatedWorks} />
+            <WorkRelatedList
+              works={work.user.works.map((relatedWork) => ({
+                smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+                thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
+                smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
+                smallThumbnailImageHeight:
+                  relatedWork.smallThumbnailImageHeight,
+                id: relatedWork.id,
+                userId: relatedWork.userId,
+                isLiked: false,
+                subWorksCount: relatedWork.subWorksCount,
+              }))}
+            />
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={props.comments} />
             )}

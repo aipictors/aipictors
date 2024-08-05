@@ -22,24 +22,7 @@ export const HomeNovelsWorksSection = (props: Props) => {
     return null
   }
 
-  const workResults = props.works.map((work) => ({
-    id: work.id,
-    src: work.smallThumbnailImageURL,
-    width: work.smallThumbnailImageWidth,
-    height: work.smallThumbnailImageHeight,
-    workId: work.id,
-    thumbnailImagePosition: work.thumbnailImagePosition,
-    userId: work.user.id,
-    userIcon: work.user.iconUrl,
-    userName: work.user.name,
-    title: work.title,
-    isLiked: work.isLiked,
-    text: work.title,
-  }))
-
-  const works = workResults
-
-  if (works.length === 0) {
+  if (props.works.length === 0) {
     return null
   }
 
@@ -55,22 +38,22 @@ export const HomeNovelsWorksSection = (props: Props) => {
       </div>
 
       <CarouselWithGradation
-        items={works.map((work, index) => (
+        items={props.works.map((work, index) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
           <div className="rounded border-2 border-gray border-solid">
             <div className="relative">
               <NovelWorkPreviewItem
                 workId={work.id}
-                imageUrl={work.src}
+                imageUrl={work.smallThumbnailImageURL}
                 title={work.title}
-                text={work.text ?? ""}
+                text={work.description ?? ""}
                 tags={[]}
               />
             </div>
             <UserNameBadge
-              userId={work.userId}
-              userIconImageURL={IconUrl(work.userIcon)}
-              name={work.userName}
+              userId={work.user.id}
+              userIconImageURL={IconUrl(work.user.iconUrl)}
+              name={work.user.name}
               width={"lg"}
               padding={"md"}
             />
@@ -78,7 +61,7 @@ export const HomeNovelsWorksSection = (props: Props) => {
               <LikeButton
                 size={56}
                 targetWorkId={work.id}
-                targetWorkOwnerUserId={work.userId}
+                targetWorkOwnerUserId={work.user.id}
                 defaultLiked={work.isLiked}
                 defaultLikedCount={0}
                 isBackgroundNone={true}

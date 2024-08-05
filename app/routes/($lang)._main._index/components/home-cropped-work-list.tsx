@@ -37,24 +37,24 @@ export const HomeCroppedWorkList = (props: Props) => {
   return (
     <section className="relative space-y-4">
       <CarouselWithGradation
-        items={works.map((work, index) => (
+        items={props.works.map((work, index) => (
           <div key={work.id} className="flex flex-col space-y-2">
             <div className="relative">
               <CroppedWorkSquare
                 workId={work.id}
                 subWorksCount={work.subWorksCount}
-                imageUrl={work.src}
+                imageUrl={work.smallThumbnailImageURL}
                 thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                 size="lg"
-                imageWidth={work.width}
-                imageHeight={work.height}
+                imageWidth={work.smallThumbnailImageWidth}
+                imageHeight={work.smallThumbnailImageHeight}
                 ranking={props.isRanking ? index + 1 : undefined}
               />
               <div className="absolute right-0 bottom-0">
                 <LikeButton
                   size={56}
                   targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.userId}
+                  targetWorkOwnerUserId={work.user.id}
                   defaultLiked={work.isLiked}
                   defaultLikedCount={0}
                   isBackgroundNone={true}
@@ -67,9 +67,9 @@ export const HomeCroppedWorkList = (props: Props) => {
               {work.title}
             </p>
             <UserNameBadge
-              userId={work.userId}
-              userIconImageURL={IconUrl(work.userIcon)}
-              name={work.userName}
+              userId={work.user.id}
+              userIconImageURL={IconUrl(work.user.iconUrl)}
+              name={work.user.name}
               width={"lg"}
             />
           </div>
