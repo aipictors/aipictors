@@ -3,6 +3,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   activeTab: string
@@ -145,15 +146,14 @@ export const UserTabs = (props: Props) => {
         </TabsList>
       </Tabs>
       <div className="grid grid-cols-3 gap-2 md:hidden">
-        {tabList().map((tabValue) => (
-          // biome-ignore lint/a11y/useButtonType: <explanation>
-          <button
+        {tabList().map((tabValue: string) => (
+          <Button
             key={removeParentheses(tabValue)}
             onClick={() => handleTabClick(removeParentheses(tabValue))}
-            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-center font-medium text-gray-600 text-sm hover:text-gray-800 focus:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            variant="secondary"
           >
             {tabValue}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

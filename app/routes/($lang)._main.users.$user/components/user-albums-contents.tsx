@@ -65,7 +65,7 @@ export const UserAlbumsContents = (props: Props) => {
       {authContext.userId === props.userId && (
         <WorksSeriesAddButton refetch={refetch} />
       )}
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {albums.map((album) => (
           <ResponsiveAlbumsList
             key={album.id}

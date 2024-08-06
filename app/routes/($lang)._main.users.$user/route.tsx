@@ -88,12 +88,11 @@ export default function UserLayout() {
                       background: "center top / contain no-repeat",
                       backgroundImage: `url(${data.user.headerImageUrl})`,
                       maxHeight: "240px",
-                      boxShadow: "0px 0px 20px rgba(0,0,0,0.5)",
                     }}
                   />
                   <div className="relative m-auto">
                     <img
-                      className="absolute top-0 left-0 block h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500"
+                      className="absolute top-0 left-0 block h-full max-h-full min-h-[240px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500"
                       src={data.user.headerImageUrl}
                       alt=""
                     />
@@ -101,9 +100,9 @@ export default function UserLayout() {
                       <UserProfileNameIcon user={data.user} />
                     </div>
                   </div>
-                  <div className="absolute right-0 bottom-0 left-0 z-20 h-[25%] bg-gradient-to-t from-[rgba(0,0,0,0.30)] to-transparent p-4 pb-3">
+                  {/* <div className="absolute right-0 bottom-0 left-0 z-20 h-[25%] bg-gradient-to-t from-[rgba(0,0,0,0.30)] to-transparent p-4 pb-3">
                     &nbsp;
-                  </div>
+                  </div> */}
                 </div>
               ) : (
                 <div className="relative min-h-[240px] md:min-h-[320px]">
@@ -128,13 +127,6 @@ export default function UserLayout() {
                   </div>
                 </div>
               )}
-              <div
-                className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-60"
-                style={{
-                  background:
-                    "linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 70%)",
-                }}
-              />
             </div>
             <Suspense>
               <UserHomeMain user={data.user} userId={data.user.id} />

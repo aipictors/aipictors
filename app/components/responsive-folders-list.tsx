@@ -16,7 +16,7 @@ export const ResponsiveFoldersList = (props: Props) => {
   return (
     <div
       key={props.folder.id}
-      className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
+      className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
     >
       <div className="box-border flex flex-col justify-end">
         <Link to={`/collections/${props.folder.id}`} className="relative">

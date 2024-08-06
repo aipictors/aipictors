@@ -47,7 +47,7 @@ export const UserFoldersContents = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-4">
         {folders.map((folder) => (
           <ResponsiveFoldersList
             key={folder.id}
