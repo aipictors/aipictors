@@ -86,7 +86,11 @@ export default function FollowingLayout() {
         </CardHeader>
         <CardContent>
           <div className="m-auto flex max-w-96 flex-col items-center text-left">
-            <div className="mb-2 text-left text-sm" dangerouslySetInnerHTML={{ __html: data.appEvent.description }}></div>
+            <div
+              className="mb-2 text-left text-sm"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
+            />
             <div className="mr-auto text-sm">
               {toDateTimeText(data.appEvent.startAt)}～
               {toDateTimeText(data.appEvent.endAt)}

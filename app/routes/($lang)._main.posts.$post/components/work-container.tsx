@@ -6,16 +6,16 @@ import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-use
 import { Suspense, useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
-import {
-  type commentFragment,
-  WorkCommentList,
-} from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
 import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
+import {
+  type commentFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 
 type Props = {
   post: string
