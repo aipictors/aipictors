@@ -38,9 +38,7 @@ type Props = {
 export function ReportDialog(props: Props) {
   const [reason, setReason] = useState("")
   const [comment, setComment] = useState("")
-  const [mutation, { loading: isLoading }] = useMutation(
-    reportWorkMutation,
-  )
+  const [mutation, { loading: isLoading }] = useMutation(reportWorkMutation)
   const authContext = useContext(AuthContext)
 
   const onReport = async () => {
@@ -101,14 +99,18 @@ export function ReportDialog(props: Props) {
               <SelectItem value="AGE_MISMATCH">
                 {"対象年齢が異なる（過度な性的表現など）"}
               </SelectItem>
-              <SelectItem value="TASTE_MISMATCH">{"テイストが異なる"}</SelectItem>
+              <SelectItem value="TASTE_MISMATCH">
+                {"テイストが異なる"}
+              </SelectItem>
               <SelectItem value="NO_MOSAIC">
                 {"必要なモザイク加工がされていない"}
               </SelectItem>
               <SelectItem value="PRIVACY_VIOLATION">
                 {"プライバシーまたは肖像権を侵害している"}
               </SelectItem>
-              <SelectItem value="UNAUTHORIZED_REPOST">{"無断転載している"}</SelectItem>
+              <SelectItem value="UNAUTHORIZED_REPOST">
+                {"無断転載している"}
+              </SelectItem>
               <SelectItem value="COMMERCIAL_CONTENT">
                 {"商業用の広告や宣伝、勧誘を目的とする情報が含まれている"}
               </SelectItem>
