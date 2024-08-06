@@ -67,6 +67,7 @@ export const WorksListContainer = (props: Props) => {
             ratings: [props.rating],
           }),
           createdAtAfter: new Date("1999/01/01").toISOString(),
+          beforeCreatedAt: new Date("2099/01/01").toISOString(),
         },
       },
     },
