@@ -3,16 +3,16 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
-import { UserNameBadge } from "~/components/user-name-badge"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
-import { WORK_COUNT_DEFINE } from "~/routes/($lang)._main._index/route"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { Heart } from "lucide-react"
+import { config } from "~/config"
+import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
   title: string
@@ -39,7 +39,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
-      limit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      limit: config.query.homeWorkCount.award,
       where: {
         year: Number(year),
         month: Number(month),
@@ -50,22 +50,6 @@ export const HomeAwardWorkSection = (props: Props) => {
   })
 
   const workDisplayed = workAwardsResp?.workAwards ?? props.works
-
-  const works = workDisplayed.map((work) => ({
-    id: work.work.id,
-    src: work.work.smallThumbnailImageURL,
-    width: work.work.smallThumbnailImageWidth,
-    height: work.work.smallThumbnailImageHeight,
-    workId: work.work.id,
-    thumbnailImagePosition: work.work.thumbnailImagePosition,
-    userId: work.work.user.id,
-    userIcon: work.work.user.iconUrl,
-    userName: work.work.user.name,
-    title: work.work.title,
-    isLiked: work.work.isLiked,
-    subWorksCount: work.work.subWorksCount,
-    likesCount: work.work.likesCount,
-  }))
 
   const yesterdayStr = `${yesterday.getFullYear()}/${
     yesterday.getMonth() + 1
@@ -85,52 +69,67 @@ export const HomeAwardWorkSection = (props: Props) => {
         </Link>
       </div>
       <CarouselWithGradation
-        items={works.map((work, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <div key={index} className="flex flex-col space-y-2">
-            <div className="relative">
-              <CroppedWorkSquare
-                workId={work.workId}
-                imageUrl={work.src}
-                subWorksCount={work.subWorksCount}
-                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                size="lg"
-                imageWidth={work.width}
-                imageHeight={work.height}
-                ranking={index + 1}
-              />
-              <div className="absolute right-0 bottom-0">
-                <LikeButton
-                  size={56}
-                  targetWorkId={work.workId}
-                  targetWorkOwnerUserId={work.userId}
-                  defaultLiked={work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                  isParticle={true}
+        items={workDisplayed
+          .map((work) => ({
+            id: work.work.id,
+            src: work.work.smallThumbnailImageURL,
+            width: work.work.smallThumbnailImageWidth,
+            height: work.work.smallThumbnailImageHeight,
+            workId: work.work.id,
+            thumbnailImagePosition: work.work.thumbnailImagePosition,
+            userId: work.work.user.id,
+            userIcon: work.work.user.iconUrl,
+            userName: work.work.user.name,
+            title: work.work.title,
+            isLiked: work.work.isLiked,
+            subWorksCount: work.work.subWorksCount,
+            likesCount: work.work.likesCount,
+          }))
+          .map((work, index) => (
+            <div key={index.toString()} className="flex flex-col space-y-2">
+              <div className="relative">
+                <CroppedWorkSquare
+                  workId={work.workId}
+                  imageUrl={work.src}
+                  subWorksCount={work.subWorksCount}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="lg"
+                  imageWidth={work.width}
+                  imageHeight={work.height}
+                  ranking={index + 1}
                 />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={work.workId}
+                    targetWorkOwnerUserId={work.userId}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                    isParticle={true}
+                  />
+                </div>
               </div>
-            </div>
-            <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-              {work.title}
-            </p>
-            <div className="flex max-w-40 items-center justify-between">
-              <UserNameBadge
-                userId={work.userId}
-                userIconImageURL={IconUrl(work.userIcon)}
-                name={work.userName}
-                width={"lg"}
-              />
-              <div className="flex items-center space-x-1">
+              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+                {work.title}
+              </p>
+              <div className="flex max-w-40 items-center justify-between">
+                <UserNameBadge
+                  userId={work.userId}
+                  userIconImageURL={IconUrl(work.userIcon)}
+                  name={work.userName}
+                  width={"lg"}
+                />
                 <div className="flex items-center space-x-1">
-                  <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
-                  <span className="text-xs">{work.likesCount}</span>
+                  <div className="flex items-center space-x-1">
+                    <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                    <span className="text-xs">{work.likesCount}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       />
     </section>
   )

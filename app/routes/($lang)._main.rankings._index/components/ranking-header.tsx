@@ -1,9 +1,10 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   year: number
@@ -211,13 +212,30 @@ export const RankingHeader = (props: Props) => {
             週間
           </Button>
         </div>
-        <Button
-          className="w-72 md:w-96"
-          variant={"secondary"}
-          onClick={handleNavigate}
-        >
-          変更した内容で表示
-        </Button>
+        <div className="flex w-full justify-between space-x-1 md:space-x-4">
+          <AppConfirmDialog
+            title={"確認"}
+            description={"あなたは18歳以上ですか？"}
+            onNext={() => {
+              navigate("/sensitive/rankings")
+            }}
+            cookieKey={"check-sensitive-ranking"}
+            onCancel={() => {}}
+          >
+            <div className="flex w-32 cursor-pointer items-center">
+              <RefreshCcwIcon className="mr-1 w-3" />
+              <p className="text-sm">{"対象年齢"}</p>
+            </div>
+          </AppConfirmDialog>
+
+          <Button
+            className="w-72 md:w-96"
+            variant={"secondary"}
+            onClick={handleNavigate}
+          >
+            {"変更した内容で表示"}
+          </Button>
+        </div>
       </div>
     </Card>
   )

@@ -6,9 +6,9 @@ import { ArrowDownToLine, Loader2Icon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import React from "react"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post/components/work-comment-input"
-import { StickerInfoDialog } from "~/components/sticker-info-dialog"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
 
 type Props = {
   isMine: boolean

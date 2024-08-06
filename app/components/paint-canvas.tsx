@@ -19,7 +19,7 @@ import { Slider } from "~/components/ui/slider"
 import { cn } from "~/lib/cn"
 import MosaicCanvas from "~/components/mosaic-canvas"
 
-interface IProps {
+type Props = {
   width?: number // キャンバスの横幅
   height?: number // キャンバスの立幅
   imageUrl?: string // 画像のURL
@@ -51,26 +51,7 @@ interface CanvasState {
  * ペイント機能を提供する、ツールバーも提供する
  * TODO: コンポーネントを分割する
  */
-const PaintCanvas: React.FC<IProps> = ({
-  width,
-  height,
-  imageUrl,
-  isMosaicMode,
-  isColorPicker,
-  isBackground,
-  isBackgroundColorPicker,
-  isShowSubmitButton,
-  isPadding,
-  imageBase64,
-  backImageBase64,
-  extension,
-  onChangeBrushImageBase64,
-  onChangeSetDrawing,
-  onChangeCompositionCanvasBase64,
-  onSubmit,
-  onClose,
-  setBackImageBase64,
-}) => {
+export const PaintCanvas = (props: Props) => {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -79,7 +60,7 @@ const PaintCanvas: React.FC<IProps> = ({
 
   const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
-  const [tool, setTool] = useState(isMosaicMode ? "eraser" : "brush")
+  const [tool, setTool] = useState(props.isMosaicMode ? "eraser" : "brush")
 
   const [color, setColor] = useState("#000000") // ブラシの初期色
 
@@ -89,9 +70,9 @@ const PaintCanvas: React.FC<IProps> = ({
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
 
-  const [canvasWidth, setCanvasWidth] = useState<number>(width || 240)
+  const [canvasWidth, setCanvasWidth] = useState<number>(props.width || 240)
 
-  const [canvasHeight, setCanvasHeight] = useState<number>(height || 360)
+  const [canvasHeight, setCanvasHeight] = useState<number>(props.height || 360)
 
   const [backgroundColor, setBackgroundColor] = useState("#fff")
 
@@ -169,7 +150,7 @@ const PaintCanvas: React.FC<IProps> = ({
     if (stateIndex > 0) {
       const newIndex = stateIndex - 1
       setStateIndex(newIndex)
-      const ref = isMosaicMode ? imageCanvasRef : brushCanvasRef
+      const ref = props.isMosaicMode ? imageCanvasRef : brushCanvasRef
       if (ref.current) {
         restoreCanvasState(ref.current, canvasStates[newIndex])
       }
@@ -181,7 +162,7 @@ const PaintCanvas: React.FC<IProps> = ({
     if (stateIndex < canvasStates.length - 1) {
       const newIndex = stateIndex + 1
       setStateIndex(newIndex)
-      const ref = isMosaicMode ? imageCanvasRef : brushCanvasRef
+      const ref = props.isMosaicMode ? imageCanvasRef : brushCanvasRef
       if (ref.current) {
         restoreCanvasState(ref.current, canvasStates[newIndex])
       }
@@ -189,7 +170,7 @@ const PaintCanvas: React.FC<IProps> = ({
   }
 
   useEffect(() => {
-    if (imageBase64) {
+    if (props.imageBase64) {
       // 画像のbase64がセットされたら、キャンバスに描画する
       const imageCanvas = imageCanvasRef.current
       if (!imageCanvas) return
@@ -197,7 +178,7 @@ const PaintCanvas: React.FC<IProps> = ({
       if (!ctx) return
       const image = new Image()
       image.crossOrigin = "Anonymous" // CORSを回避するための設定
-      image.src = imageBase64
+      image.src = props.imageBase64
       image.onload = () => {
         imageCanvas.width = image.width
         imageCanvas.height = image.height
@@ -205,11 +186,11 @@ const PaintCanvas: React.FC<IProps> = ({
         saveCanvasState(imageCanvas)
       }
     }
-  }, [imageBase64])
+  }, [props.imageBase64])
 
   useEffect(() => {
-    if (backImageBase64) {
-      if (backImageBase64) {
+    if (props.backImageBase64) {
+      if (props.backImageBase64) {
         // brashRefに対して再描画する
         const brushCanvas = brushCanvasRef.current
         if (!brushCanvas) return
@@ -217,7 +198,7 @@ const PaintCanvas: React.FC<IProps> = ({
         if (!ctx) return
         const image = new Image()
         image.crossOrigin = "Anonymous" // CORSを回避するための設定
-        image.src = `data:image/png;base64,${backImageBase64}`
+        image.src = `data:image/png;base64,${props.backImageBase64}`
         image.onload = () => {
           brushCanvas.width = image.width
           brushCanvas.height = image.height
@@ -225,25 +206,25 @@ const PaintCanvas: React.FC<IProps> = ({
           saveCanvasState(brushCanvas)
         }
       }
-      if (setBackImageBase64) {
-        setBackImageBase64("")
+      if (props.setBackImageBase64) {
+        props.setBackImageBase64("")
       }
     }
-  }, [backImageBase64])
+  }, [props.backImageBase64])
 
   useEffect(() => {
     const brushCanvas = brushCanvasRef.current
     if (!brushCanvas) return
 
     const imageCanvas = imageCanvasRef.current
-    if (isMosaicMode && !imageCanvas) return
+    if (props.isMosaicMode && !imageCanvas) return
 
     const backgroundCanvas = backgroundCanvasRef.current
 
     const assistedCanvas = assistedCanvasRef.current
     if (!assistedCanvas) return
 
-    const ctx = isMosaicMode
+    const ctx = props.isMosaicMode
       ? imageCanvas?.getContext("2d")
       : brushCanvas.getContext("2d")
     if (!ctx) return
@@ -252,7 +233,7 @@ const PaintCanvas: React.FC<IProps> = ({
     if (!assistedCtx) return
 
     const handleMouseDown = (e: MouseEvent | TouchEvent) => {
-      if (onChangeSetDrawing) onChangeSetDrawing(true)
+      if (props.onChangeSetDrawing) props.onChangeSetDrawing(true)
 
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
       const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
@@ -268,7 +249,7 @@ const PaintCanvas: React.FC<IProps> = ({
       assistedCtx.beginPath()
       assistedCtx.moveTo(x, y)
 
-      if (isMosaicMode && tool === "eraser") {
+      if (props.isMosaicMode && tool === "eraser") {
         ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.lineWidth = brushSize
@@ -322,7 +303,7 @@ const PaintCanvas: React.FC<IProps> = ({
 
       const handleMouseUp = () => {
         if (canvasStates.length === 0) {
-          if (isMosaicMode) {
+          if (props.isMosaicMode) {
             if (imageCanvas) {
               // index以降の履歴を削除
               canvasStates.splice(stateIndex + 1)
@@ -350,7 +331,7 @@ const PaintCanvas: React.FC<IProps> = ({
         document.removeEventListener("touchmove", handleMouseMove)
         document.removeEventListener("touchend", handleMouseUp)
 
-        if (isMosaicMode) {
+        if (props.isMosaicMode) {
           if (imageCanvas) {
             // index以降の履歴を削除
             canvasStates.splice(stateIndex + 1)
@@ -364,9 +345,9 @@ const PaintCanvas: React.FC<IProps> = ({
           }
         }
 
-        if (onChangeSetDrawing) onChangeSetDrawing(false)
+        if (props.onChangeSetDrawing) props.onChangeSetDrawing(false)
 
-        if (onChangeCompositionCanvasBase64) {
+        if (props.onChangeCompositionCanvasBase64) {
           // キャンバスを合成してbase64に変換してセットする
           const compositionCanvas = document.createElement("canvas")
           compositionCanvas.width = canvasWidth
@@ -380,7 +361,7 @@ const PaintCanvas: React.FC<IProps> = ({
               compositionCtx.drawImage(imageCanvas, 0, 0)
             }
             compositionCtx.drawImage(brushCanvas, 0, 0)
-            onChangeCompositionCanvasBase64(compositionCanvas.toDataURL())
+            props.onChangeCompositionCanvasBase64(compositionCanvas.toDataURL())
           }
         }
       }
@@ -390,10 +371,10 @@ const PaintCanvas: React.FC<IProps> = ({
       document.addEventListener("touchmove", handleMouseMove)
       document.addEventListener("touchend", handleMouseUp)
 
-      if (!isMosaicMode) {
+      if (!props.isMosaicMode) {
         // ブラシキャンバスのbase64画像を取得する
-        if (onChangeBrushImageBase64) {
-          onChangeBrushImageBase64(brushCanvas.toDataURL())
+        if (props.onChangeBrushImageBase64) {
+          props.onChangeBrushImageBase64(brushCanvas.toDataURL())
         }
       }
     }
@@ -405,7 +386,7 @@ const PaintCanvas: React.FC<IProps> = ({
       assistedCanvas.removeEventListener("mousedown", handleMouseDown)
       assistedCanvas.removeEventListener("touchstart", handleMouseDown)
     }
-  }, [brushSize, color, isMosaicMode, scale, tool, points])
+  }, [brushSize, color, props.isMosaicMode, scale, tool, points])
 
   useEffect(() => {
     const imageCanvas = imageCanvasRef.current
@@ -420,11 +401,11 @@ const PaintCanvas: React.FC<IProps> = ({
 
     ctx.globalCompositeOperation = "copy"
 
-    if (!imageUrl) return
+    if (!props.imageUrl) return
 
     const image = new Image()
     image.crossOrigin = "Anonymous" // CORSを回避するための設定
-    image.src = imageUrl
+    image.src = props.imageUrl
     image.onload = () => {
       imageCanvas.width = image.width
       imageCanvas.height = image.height
@@ -442,7 +423,7 @@ const PaintCanvas: React.FC<IProps> = ({
       saveCanvasState(imageCanvas)
       // ここで必要な処理を実行する（例: サーバーに送信する、他の要素に表示するなど）
     }
-  }, [imageUrl])
+  }, [props.imageUrl])
 
   const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault() // デフォルトのイベントをキャンセル
@@ -465,7 +446,7 @@ const PaintCanvas: React.FC<IProps> = ({
 
     const ctx = imageCanvas.getContext("2d")
 
-    if (!ctx || !imageUrl) return
+    if (!ctx || !props.imageUrl) return
 
     ctx.globalCompositeOperation = "copy"
 
@@ -480,7 +461,7 @@ const PaintCanvas: React.FC<IProps> = ({
       console.error("画像の読み込みに失敗しました。")
     }
 
-    image.src = imageUrl // 画像URLを設定
+    image.src = props.imageUrl // 画像URLを設定
   }
 
   const resetAssistedCanvas = () => {
@@ -494,7 +475,7 @@ const PaintCanvas: React.FC<IProps> = ({
     <section className="relative h-[100%] w-[100%]">
       <div className="block h-[100%] w-[100%] md:flex">
         <div className="mb-1 flex bg-card md:flex-col">
-          {!isMosaicMode && (
+          {!props.isMosaicMode && (
             <Button
               className={cn(tool === "brush" ? "mr-2 border" : "mr-2")}
               size="icon"
@@ -504,7 +485,7 @@ const PaintCanvas: React.FC<IProps> = ({
               <BrushIcon className="m-auto text-black" />
             </Button>
           )}
-          {!isMosaicMode && (
+          {!props.isMosaicMode && (
             <Button // 2. 投げ縄ボタンを追加
               className={cn(tool === "lasso" ? "mr-2 border" : "mr-2")}
               size="icon"
@@ -514,7 +495,7 @@ const PaintCanvas: React.FC<IProps> = ({
               <LassoIcon className="m-auto" />
             </Button>
           )}
-          {isMosaicMode && (
+          {props.isMosaicMode && (
             <Button // 2. 投げ縄ボタンを追加
               className={cn(tool === "lasso-mosaic" ? "mr-2 border" : "mr-2")}
               size="icon"
@@ -533,7 +514,7 @@ const PaintCanvas: React.FC<IProps> = ({
           >
             <EraserIcon className="m-auto" />
           </Button>
-          {!isMosaicMode && (
+          {!props.isMosaicMode && (
             <Button
               className="mr-2"
               size="icon"
@@ -543,7 +524,7 @@ const PaintCanvas: React.FC<IProps> = ({
               <CookingPotIcon className="m-auto" />
             </Button>
           )}
-          {isMosaicMode && (
+          {props.isMosaicMode && (
             <Button
               className="mr-2"
               size="icon"
@@ -584,7 +565,9 @@ const PaintCanvas: React.FC<IProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <div className={`flex items-center${isPadding ? "p-2" : ""}`}>
+              <div
+                className={`flex items-center${props.isPadding ? "p-2" : ""}`}
+              >
                 <div className="flex flex-col">
                   <p className="w-48">{"ブラシサイズ："}</p>
                   <Slider
@@ -601,7 +584,7 @@ const PaintCanvas: React.FC<IProps> = ({
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
-          {!isMosaicMode && isColorPicker && (
+          {!props.isMosaicMode && props.isColorPicker && (
             <input
               type="color"
               value={color}
@@ -611,7 +594,7 @@ const PaintCanvas: React.FC<IProps> = ({
               title="Choose a color"
             />
           )}
-          {isBackgroundColorPicker && (
+          {props.isBackgroundColorPicker && (
             <input
               type="color"
               value={color}
@@ -632,8 +615,8 @@ const PaintCanvas: React.FC<IProps> = ({
               `w-[${canvasWidth}px] h-[${canvasHeight}px] relative m-auto`,
             )}
             style={{
-              width: `${width}px`,
-              height: `${height}px`,
+              width: `${props.width}px`,
+              height: `${props.height}px`,
               transform: `scale(${scale})`,
               transformOrigin: "center center",
             }}
@@ -641,74 +624,74 @@ const PaintCanvas: React.FC<IProps> = ({
               handleWheel(event)
             }
           >
-            {isMosaicMode && imageUrl && (
+            {props.isMosaicMode && props.imageUrl && (
               <MosaicCanvas
                 className={cn("absolute top-0 left-0")}
-                imageUrl={imageUrl}
+                imageUrl={props.imageUrl}
                 mosaicSize={10}
-                width={width}
-                height={height}
+                width={props.width}
+                height={props.height}
                 onChangeCanvasRef={onChangeMosaicCanvasRef}
                 style={{
-                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
 
             {/* 真っ白な背景のキャンバスを描画する */}
-            {isBackground && (
+            {props.isBackground && (
               <canvas
                 ref={backgroundCanvasRef}
-                width={width}
-                height={height}
+                width={props.width}
+                height={props.height}
                 className={cn("absolute top-0 left-0")}
                 style={{
                   backgroundColor: `${backgroundColor}`,
-                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
 
-            {imageUrl && (
+            {props.imageUrl && (
               <canvas
                 ref={imageCanvasRef}
-                width={width}
-                height={height}
+                width={props.width}
+                height={props.height}
                 className={cn("absolute top-0 left-0")}
                 style={{
-                  top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
             <canvas
               ref={brushCanvasRef}
-              width={width}
-              height={height}
+              width={props.width}
+              height={props.height}
               className={cn("absolute top-0 left-0")}
               style={{
-                top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
               }}
             />
             <canvas
               ref={assistedCanvasRef}
-              width={width}
-              height={height}
+              width={props.width}
+              height={props.height}
               className={cn("absolute top-0 left-0 opacity-50")}
               style={{
-                top: `${imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                left: `${imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
               }}
             />
           </div>
-          {isShowSubmitButton && (
+          {props.isShowSubmitButton && (
             <Button
               className="absolute bottom-16 md:bottom-12"
               onClick={() => {
-                if (onSubmit) {
+                if (props.onSubmit) {
                   // キャンバスを合成する（brush、image、background）
                   const compositeCanvas = document.createElement("canvas")
                   const ctx = compositeCanvas.getContext("2d")
@@ -735,15 +718,15 @@ const PaintCanvas: React.FC<IProps> = ({
 
                   // 合成したキャンバスからDataURLを取得
                   const dataUrl = compositeCanvas.toDataURL(
-                    `image/${extension ?? "webp"}`,
+                    `image/${props.extension ?? "webp"}`,
                     1.0,
                   )
 
                   // onSubmit関数を呼び出し、DataURLを渡す
-                  onSubmit(dataUrl)
+                  props.onSubmit(dataUrl)
                 }
-                if (onClose) {
-                  onClose()
+                if (props.onClose) {
+                  props.onClose()
                 }
               }}
             >
@@ -767,5 +750,3 @@ const PaintCanvas: React.FC<IProps> = ({
     </section>
   )
 }
-
-export default PaintCanvas

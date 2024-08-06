@@ -1,11 +1,11 @@
 import { ParamsError } from "~/errors/params-error"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
-import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | ランキング"
@@ -57,6 +57,7 @@ export async function loader(props: LoaderFunctionArgs) {
         year: year,
         month: month,
         day: day,
+        isSensitive: true,
       },
     },
   })
@@ -87,8 +88,13 @@ export default function SensitiveAwardsPage() {
 
   return (
     <>
-      <RankingHeader year={year} month={month} day={day} weekIndex={null} />
-      <RankingWorkList
+      <RankingSensitiveHeader
+        year={year}
+        month={month}
+        day={day}
+        weekIndex={null}
+      />
+      <RankingSensitiveWorkList
         year={year}
         month={month}
         day={day}

@@ -68,19 +68,18 @@ export default function NewAnimation() {
     },
   )
 
+  const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
+  const dateJST = new Date(Date.now() + offset)
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
   const { data: viewer } = useQuery(viewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
-      startAt: new Date().toISOString().split("T")[0],
-      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
+      startAt: dateJST.toISOString().split("T")[0],
+      startDate: dateJST.toISOString().split("T")[0],
+      endDate: afterDate.toISOString().split("T")[0],
     },
   })
 

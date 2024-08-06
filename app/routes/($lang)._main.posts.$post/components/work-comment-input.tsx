@@ -4,12 +4,12 @@ import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
-import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { IconUrl } from "~/components/icon-url"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 
 type Props = {
   targetCommentId: string

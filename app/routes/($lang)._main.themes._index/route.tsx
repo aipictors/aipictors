@@ -32,12 +32,11 @@ export default function Themes() {
   const data = useLoaderData<typeof loader>()
 
   const description =
-    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう。午前0時に更新されます。"
+    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
 
   return (
     <>
       <AppPageHeader title={"お題"} description={description} />
-      {/* <ThemeHeader /> */}
       <ThemeList
         year={data.year}
         month={data.month}

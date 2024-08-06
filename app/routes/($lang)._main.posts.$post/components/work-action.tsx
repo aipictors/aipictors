@@ -7,8 +7,8 @@ import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post/components/
 import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post/components/work-action-bookmark"
 import { AuthContext } from "~/contexts/auth-context"
-import { RecommendButton } from "~/components/recommend-button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { RecommendButton } from "~/routes/($lang)._main.posts.$post/components/recommend-button"
 
 type Props = {
   title?: string

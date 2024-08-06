@@ -1,5 +1,4 @@
 import FullScreenContainer from "~/components/full-screen-container"
-import PaintCanvas from "~/components/paint-canvas"
 import { cn } from "~/lib/cn"
 import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
 import { config } from "~/config"
@@ -10,6 +9,7 @@ import type { Dispatch } from "react"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
 import type { PostTextFormState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-state"
+import { PaintCanvas } from "~/components/paint-canvas"
 
 type Props = {
   dispatch: Dispatch<PostTextFormAction>
@@ -177,13 +177,13 @@ export function EditTextFormUploader(props: Props) {
           enabledScroll={props.state.isDrawing}
         >
           <PaintCanvas
-            onChangeSetDrawing={(isDrawing) =>
+            onChangeSetDrawing={(isDrawing: boolean) =>
               props.dispatch({ type: "SET_IS_DRAWING", payload: isDrawing })
             }
             imageUrl={props.state.editTargetImageBase64}
             isMosaicMode={true}
             isShowSubmitButton={true}
-            onSubmit={(base64) => {
+            onSubmit={(base64: string) => {
               props.dispatch({
                 type: "SET_EDITED_IMAGE",
                 payload: { base64 },

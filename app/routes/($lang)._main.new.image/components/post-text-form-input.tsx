@@ -50,9 +50,15 @@ type Props = {
 // 日本時間の日付を計算する関数
 const getJSTDate = () => {
   const date = new Date()
-  const jstOffset = date.getTimezoneOffset() + 9 * 60 // JST is UTC+9
-  const jstDate = new Date(date.getTime() + jstOffset * 60 * 1000)
-  return jstDate.toISOString().split("T")[0]
+  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
+  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
+  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
+
+  const year = jstDate.getFullYear()
+  const month = String(jstDate.getMonth() + 1).padStart(2, "0")
+  const day = String(jstDate.getDate()).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
 }
 
 export function PostTextFormInput(props: Props) {

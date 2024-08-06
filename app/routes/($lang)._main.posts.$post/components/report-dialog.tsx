@@ -22,11 +22,60 @@ import {
 import { Textarea } from "~/components/ui/textarea"
 import { FlagIcon } from "lucide-react"
 import { toast } from "sonner"
+import { graphql } from "gql.tada"
+import { useMutation } from "@apollo/client/index"
+import { useContext, useState } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+
+type Props = {
+  postId: string
+}
 
 /**
  * 作品の報告ダイアログ
  */
-export function ReportDialog() {
+export function ReportDialog(props: Props) {
+  const [reason, setReason] = useState("")
+  const [comment, setComment] = useState("")
+  const [mutation, { loading: isLoading }] = useMutation(reportWorkMutation)
+  const authContext = useContext(AuthContext)
+
+  const onReport = async () => {
+    try {
+      if (authContext.isNotLoggedIn) {
+        toast("ログインしてください")
+        return
+      }
+
+      if (reason === "") {
+        toast("報告内容を選択してください")
+        return
+      }
+
+      if (comment.length === 0) {
+        toast("詳細を入力してください")
+        return
+      }
+
+      await mutation({
+        variables: {
+          input: {
+            workId: props.postId,
+            reason: reason as IntrospectionEnum<"ReportReason">,
+            comment,
+          },
+        },
+      }).then(async (result) => {
+        toast("報告いたしました、ご協力ありがとうございます。")
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -40,39 +89,43 @@ export function ReportDialog() {
           <DialogTitle>問題を報告する</DialogTitle>
         </DialogHeader>
         <h4 className="text-md">{"報告内容"}</h4>
-        <Select>
+        <Select onValueChange={(value) => setReason(value)}>
           <SelectTrigger>
             <SelectValue placeholder="選択してください" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>{"選択してください"}</SelectLabel>
-              <SelectItem value="1">
+              <SelectItem value="AGE_MISMATCH">
                 {"対象年齢が異なる（過度な性的表現など）"}
               </SelectItem>
-              <SelectItem value="2">{"テイストが異なる"}</SelectItem>
-              <SelectItem value="3">
+              <SelectItem value="TASTE_MISMATCH">
+                {"テイストが異なる"}
+              </SelectItem>
+              <SelectItem value="NO_MOSAIC">
                 {"必要なモザイク加工がされていない"}
               </SelectItem>
-              <SelectItem value="4">
+              <SelectItem value="PRIVACY_VIOLATION">
                 {"プライバシーまたは肖像権を侵害している"}
               </SelectItem>
-              <SelectItem value="5">{"無断転載している"}</SelectItem>
-              <SelectItem value="6">
+              <SelectItem value="UNAUTHORIZED_REPOST">
+                {"無断転載している"}
+              </SelectItem>
+              <SelectItem value="COMMERCIAL_CONTENT">
                 {"商業用の広告や宣伝、勧誘を目的とする情報が含まれている"}
               </SelectItem>
-              <SelectItem value="7">
+              <SelectItem value="EXCESSIVE_GORE">
                 {"過度なグロテスク表現が含まれている"}
               </SelectItem>
-              <SelectItem value="8">
+              <SelectItem value="CHILD_PORNOGRAPHY">
                 {
                   "実写に見える作品で、児童ポルノと認定される恐れのある内容が含まれている"
                 }
               </SelectItem>
-              <SelectItem value="9">
+              <SelectItem value="ILLEGAL_CONTENT">
                 {"サイトで禁止されているコンテンツへの誘導が含まれている"}
               </SelectItem>
-              <SelectItem value="10">{"その他"}</SelectItem>
+              <SelectItem value="OTHER">{"その他"}</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -85,14 +138,11 @@ export function ReportDialog() {
         <Textarea
           placeholder="問題の詳細を入力してください"
           className="resize-none"
+          onChange={(e) => setComment(e.target.value)}
         />
         <DialogFooter>
-          <DialogClose>
-            <Button
-              onClick={() => {
-                toast("開発中につき、送信されません")
-              }}
-            >
+          <DialogClose asChild>
+            <Button onClick={onReport} disabled={isLoading}>
               {"送信"}
             </Button>
           </DialogClose>
@@ -101,3 +151,9 @@ export function ReportDialog() {
     </Dialog>
   )
 }
+
+const reportWorkMutation = graphql(
+  `mutation ReportWork($input: ReportWorkInput!) {
+    reportWork(input: $input)
+  }`,
+)

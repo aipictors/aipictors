@@ -17,22 +17,12 @@ import {
   HomeWorksGeneratedSection,
 } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { config } from "~/config"
-
-export const WORK_COUNT_DEFINE = {
-  AD_WORKS: 16,
-  NOVEL_WORKS: 16,
-  VIDEO_WORKS: 16,
-  COLUMN_WORKS: 16,
-  GENERATION_WORKS: 16,
-  PROMOTION_WORKS: 16,
-  AWARD_WORKS: 16,
-}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -62,7 +52,7 @@ export const dateToText = (date: Date) => {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
 }
 
-export async function loader({ response }: LoaderFunctionArgs) {
+export async function loader() {
   const client = createClient()
 
   const date = new Date()
@@ -102,13 +92,13 @@ export async function loader({ response }: LoaderFunctionArgs) {
       day: date.getDate(),
       month: date.getMonth() + 1,
       year: date.getFullYear(),
-      adWorksLimit: WORK_COUNT_DEFINE.AD_WORKS,
-      novelWorksLimit: WORK_COUNT_DEFINE.NOVEL_WORKS,
-      videoWorksLimit: WORK_COUNT_DEFINE.VIDEO_WORKS,
-      columnWorksLimit: WORK_COUNT_DEFINE.COLUMN_WORKS,
-      generationWorksLimit: WORK_COUNT_DEFINE.GENERATION_WORKS,
-      promotionWorksLimit: WORK_COUNT_DEFINE.PROMOTION_WORKS,
-      awardWorksLimit: WORK_COUNT_DEFINE.AWARD_WORKS,
+      adWorksLimit: config.query.homeWorkCount.ad,
+      novelWorksLimit: config.query.homeWorkCount.novel,
+      videoWorksLimit: config.query.homeWorkCount.video,
+      columnWorksLimit: config.query.homeWorkCount.column,
+      generationWorksLimit: config.query.homeWorkCount.generation,
+      promotionWorksLimit: config.query.homeWorkCount.promotion,
+      awardWorksLimit: config.query.homeWorkCount.award,
       pastGenerationBefore: pastGenerationDate.toISOString(),
       novelWorksBefore: pastNovelDate.toISOString(),
       videoWorksBefore: pastVideoDate.toISOString(),
@@ -124,74 +114,79 @@ export async function loader({ response }: LoaderFunctionArgs) {
   const columnWorksBeforeText = pastColumnDate.toISOString()
   const promotionWorksBeforeText = pastPromotionDate.toISOString()
 
-  response?.headers.append("Cache-Control", config.cacheControl.home)
-
-  return json({
-    /**
-     * HomeBanners
-     */
-    adWorks: resp.data.adWorks,
-    /**
-     * HomeTagList
-     */
-    dailyTheme: resp.data.dailyTheme,
-    /**
-     * HomeTagList
-     */
-    hotTags: resp.data.hotTags,
-    /**
-     * HomeAwardWorkSection
-     */
-    awardDateText: awardDateText,
-    /**
-     * HomeAwardWorkSection
-     */
-    workAwards: resp.data.workAwards,
-    /**
-     * HomeWorksGeneratedSection
-     */
-    generationWorks: resp.data.generationWorks,
-    /**
-     * generationDateText
-     */
-    generationDateText,
-    /**
-     * HomeWorksUsersRecommendedSection
-     */
-    promotionWorks: resp.data.promotionWorks,
-    /**
-     * HomeTagsSection
-     */
-    tags: resp.data.recommendedTags,
-    /**
-     * HomeNovelsSection
-     */
-    novelWorks: resp.data.novelWorks,
-    /**
-     * HomeVideosSection
-     */
-    videoWorks: resp.data.videoWorks,
-    /**
-     * HomeColumnsSection
-     */
-    columnWorks: resp.data.columnWorks,
-    /**
-     * novelWorksBeforeText
-     */
-    novelWorksBeforeText,
-    /**
-     * videoWorksBeforeText
-     */
-    videoWorksBeforeText,
-    /**
-     * columnWorksBeforeText
-     */
-    columnWorksBeforeText,
-    /**
-     * promotionWorksBeforeText
-     */
-    promotionWorksBeforeText,
-  })
+  return json(
+    {
+      /**
+       * HomeBanners
+       */
+      adWorks: resp.data.adWorks,
+      /**
+       * HomeTagList
+       */
+      dailyTheme: resp.data.dailyTheme,
+      /**
+       * HomeTagList
+       */
+      hotTags: resp.data.hotTags,
+      /**
+       * HomeAwardWorkSection
+       */
+      awardDateText: awardDateText,
+      /**
+       * HomeAwardWorkSection
+       */
+      workAwards: resp.data.workAwards,
+      /**
+       * HomeWorksGeneratedSection
+       */
+      generationWorks: resp.data.generationWorks,
+      /**
+       * generationDateText
+       */
+      generationDateText,
+      /**
+       * HomeWorksUsersRecommendedSection
+       */
+      promotionWorks: resp.data.promotionWorks,
+      /**
+       * HomeTagsSection
+       */
+      tags: resp.data.recommendedTags,
+      /**
+       * HomeNovelsSection
+       */
+      novelWorks: resp.data.novelWorks,
+      /**
+       * HomeVideosSection
+       */
+      videoWorks: resp.data.videoWorks,
+      /**
+       * HomeColumnsSection
+       */
+      columnWorks: resp.data.columnWorks,
+      /**
+       * novelWorksBeforeText
+       */
+      novelWorksBeforeText,
+      /**
+       * videoWorksBeforeText
+       */
+      videoWorksBeforeText,
+      /**
+       * columnWorksBeforeText
+       */
+      columnWorksBeforeText,
+      /**
+       * promotionWorksBeforeText
+       */
+      promotionWorksBeforeText,
+    },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.home,
+      },
+    },
+  )
 }
 
 export default function Index() {

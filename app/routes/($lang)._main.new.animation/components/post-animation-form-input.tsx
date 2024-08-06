@@ -44,9 +44,15 @@ type Props = {
 // 日本時間の日付を計算する関数
 const getJSTDate = () => {
   const date = new Date()
-  const jstOffset = date.getTimezoneOffset() + 9 * 60 // JST is UTC+9
-  const jstDate = new Date(date.getTime() + jstOffset * 60 * 1000)
-  return jstDate.toISOString().split("T")[0]
+  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
+  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
+  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
+
+  const year = jstDate.getFullYear()
+  const month = String(jstDate.getMonth() + 1).padStart(2, "0")
+  const day = String(jstDate.getDate()).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
 }
 
 export function PostAnimationFormInput(props: Props) {
@@ -58,10 +64,6 @@ export function PostAnimationFormInput(props: Props) {
       isSensitive:
         props.state.ratingRestriction === "R18" ||
         props.state.ratingRestriction === "R18G",
-      startAt: new Date().toISOString().split("T")[0],
-      year: props.state.date.getFullYear(),
-      month: props.state.date.getMonth() + 1,
-      day: props.state.date.getDate(),
     },
   })
 
@@ -293,10 +295,6 @@ export function PostAnimationFormInput(props: Props) {
 const pageQuery = graphql(
   `query PageQuery(
     $isSensitive: Boolean!
-    $startAt: String!
-    $year: Int,
-    $month: Int,
-    $day: Int,
   ) {
     whiteListTags(
       where: {

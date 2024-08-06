@@ -3,6 +3,7 @@ import { createClient } from "~/lib/client"
 import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { AppPageHeader } from "~/components/app/app-page-header"
 
 export async function loader() {
   const client = createClient()
@@ -30,8 +31,12 @@ export async function loader() {
 export default function SensitiveThemes() {
   const data = useLoaderData<typeof loader>()
 
+  const description =
+    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
+
   return (
     <>
+      <AppPageHeader title={"お題"} description={description} />
       <ThemeList
         year={data.year}
         month={data.month}

@@ -57,7 +57,7 @@ export function MenuPopover(props: Props) {
               <DownloadIcon />
               ダウンロード
             </Button>
-            <ReportDialog />
+            <ReportDialog postId={props.postId} />
             {props.isEnabledDelete && (
               <AppConfirmDialog
                 title={"確認"}

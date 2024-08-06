@@ -1,7 +1,5 @@
-import { AddStickerDialog } from "~/components/add-sticker-dialog"
 import { RoundedLightButton } from "~/components/button/rounded-light-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { StickerChangeAccessTypeDialog } from "~/components/sticker-change-access-type-dialog"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
@@ -12,6 +10,8 @@ import { graphql } from "gql.tada"
 import { useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
+import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post/components/add-sticker-dialog"
+import { StickerChangeAccessTypeDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
 
 export const MyStickersList = () => {
   const authContext = useContext(AuthContext)
@@ -103,7 +103,7 @@ export const MyStickersList = () => {
           }}
           isActive={stickerStatus === "DOWNLOADED"}
         >
-          {"ダウンロード"}
+          {"マイスタンプ"}
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {

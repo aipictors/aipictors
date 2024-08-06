@@ -6,10 +6,11 @@ import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
-import { AddStickerButton } from "~/components/add-sticker-button"
+
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { graphql } from "gql.tada"
 import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
+import { AddStickerButton } from "~/routes/($lang)._main.posts.$post/components/add-sticker-button"
 
 type Props = {
   isOpen: boolean

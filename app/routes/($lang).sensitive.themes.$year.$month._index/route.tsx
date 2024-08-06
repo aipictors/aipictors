@@ -1,14 +1,19 @@
-import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
-import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
+import { json, useParams } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (props.params.year === undefined || props.params.month === undefined) {
-    throw new Response("Invalid date", { status: 400 })
+  if (props.params.year === undefined) {
+    throw new Response(null, { status: 404 })
+  }
+
+  if (props.params.month === undefined) {
+    throw new Response(null, { status: 404 })
   }
 
   const client = createClient()
@@ -17,54 +22,66 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const month = Number.parseInt(props.params.month)
 
-  const dailyThemesResp = await client.query({
-    query: dailyThemesQuery,
+  const workAwardsResp = await client.query({
+    query: workAwardsQuery,
     variables: {
       offset: 0,
-      limit: 31,
-      where: { year: year, month: month },
+      limit: 200,
+      where: {
+        year: year,
+        month: month,
+        isSensitive: true,
+      },
     },
   })
 
   return json({
-    dailyThemes: dailyThemesResp.data.dailyThemes,
+    year,
+    month,
+    workAwards: workAwardsResp,
   })
 }
 
-export default function SensitiveMonthThemesPage() {
-  const data = useLoaderData<typeof loader>()
-
+/**
+ * ある月のランキングの履歴
+ */
+export default function MonthlyAwards() {
   const params = useParams()
 
-  if (params.year === undefined || params.month === undefined) {
-    throw new ParamsError()
+  if (params.year === undefined) {
+    return null
   }
 
-  const year = Number.parseInt(params.year)
+  if (params.month === undefined) {
+    return null
+  }
 
-  const month = Number.parseInt(params.month)
+  const data = useLoaderData<typeof loader>()
 
-  return <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
+  return (
+    <>
+      <RankingSensitiveHeader
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+      />
+      <RankingSensitiveWorkList
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+        awards={data.workAwards.data.workAwards}
+      />
+    </>
+  )
 }
 
-const dailyThemesQuery = graphql(
-  `query DailyThemes(
-    $offset: Int!
-    $limit: Int!
-    $where: DailyThemesWhereInput!
-  ) {
-    dailyThemes(offset: $offset, limit: $limit, where: $where) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount
-      firstWork {
-        ...PartialWorkFields
-      }
+const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      ...WorkAwardFields
     }
   }`,
-  [partialWorkFieldsFragment],
+  [workAwardFieldsFragment],
 )

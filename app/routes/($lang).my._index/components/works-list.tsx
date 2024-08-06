@@ -43,18 +43,16 @@ export const WorksList = (props: Props) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
 
-  const displayWorks = props.works.map((work) => {
-    return {
-      ...work,
-      title: truncateTitle(work.title, 32),
-    }
-  })
-
   return (
     <>
       <div className="hidden md:block">
         <WorksListTable
-          works={displayWorks}
+          works={props.works.map((work) => {
+            return {
+              ...work,
+              title: truncateTitle(work.title, 32),
+            }
+          })}
           sort={props.sort}
           orderBy={props.orderBy}
           onClickTitleSortButton={props.onClickTitleSortButton}
@@ -69,7 +67,12 @@ export const WorksList = (props: Props) => {
       </div>
       <div className="block md:hidden">
         <WorksSpList
-          works={displayWorks}
+          works={props.works.map((work) => {
+            return {
+              ...work,
+              title: truncateTitle(work.title, 32),
+            }
+          })}
           sort={props.sort}
           orderBy={props.orderBy}
         />
