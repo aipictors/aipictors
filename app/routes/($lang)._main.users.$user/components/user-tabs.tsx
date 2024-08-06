@@ -1,4 +1,4 @@
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import {} from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -131,32 +131,43 @@ export const UserTabs = (props: Props) => {
   }
 
   return (
-    <div>
-      <Tabs defaultValue="ポートフォリオ">
-        <TabsList className="hidden border-b md:block">
-          {tabList().map((tabValue) => (
-            <TabsTrigger
-              key={removeParentheses(tabValue)}
-              value={removeParentheses(tabValue)}
-              onClick={() => handleTabClick(removeParentheses(tabValue))}
-            >
-              {tabValue}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-      <div className="grid grid-cols-3 gap-2 md:hidden">
-        {tabList().map((tabValue: string) => (
-          <Button
-            key={removeParentheses(tabValue)}
-            onClick={() => handleTabClick(removeParentheses(tabValue))}
-            variant="secondary"
-          >
-            {tabValue}
-          </Button>
-        ))}
-      </div>
+    <div className="grid grid-cols-3 gap-2">
+      {tabList().map((tabValue: string) => (
+        <Button
+          key={removeParentheses(tabValue)}
+          onClick={() => handleTabClick(removeParentheses(tabValue))}
+          variant="secondary"
+        >
+          {tabValue}
+        </Button>
+      ))}
     </div>
+    // <div>
+    //   <Tabs defaultValue="ポートフォリオ">
+    //     <TabsList className="hidden border-b md:block">
+    //       {tabList().map((tabValue) => (
+    //         <TabsTrigger
+    //           key={removeParentheses(tabValue)}
+    //           value={removeParentheses(tabValue)}
+    //           onClick={() => handleTabClick(removeParentheses(tabValue))}
+    //         >
+    //           {tabValue}
+    //         </TabsTrigger>
+    //       ))}
+    //     </TabsList>
+    //   </Tabs>
+    //   <div className="grid grid-cols-3 gap-2 md:hidden">
+    //     {tabList().map((tabValue: string) => (
+    //       <Button
+    //         key={removeParentheses(tabValue)}
+    //         onClick={() => handleTabClick(removeParentheses(tabValue))}
+    //         variant="secondary"
+    //       >
+    //         {tabValue}
+    //       </Button>
+    //     ))}
+    //   </div>
+    // </div>
   )
 }
 
