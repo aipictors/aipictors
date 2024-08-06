@@ -7,8 +7,7 @@ import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/hom
 import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
@@ -42,7 +41,7 @@ export const dateToText = (date: Date) => {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
 }
 
-export async function loader({ response }: LoaderFunctionArgs) {
+export async function loader() {
   const client = createClient()
 
   const date = new Date()
@@ -99,67 +98,72 @@ export async function loader({ response }: LoaderFunctionArgs) {
   const columnWorksBeforeText = pastColumnDate.toISOString()
   const promotionWorksBeforeText = pastPromotionDate.toISOString()
 
-  response?.headers.append("Cache-Control", config.cacheControl.home)
+  return json(
+    {
+      /**
+       * HomeBanners
+       */
+      adWorks: resp.data.adWorks,
+      /**
+       * HomeTagList
+       */
+      dailyTheme: resp.data.dailyTheme,
+      /**
+       * HomeAwardWorkSection
+       */
+      awardDateText: awardDateText,
+      /**
+       * HomeAwardWorkSection
+       */
+      workAwards: resp.data.workAwards,
+      /**
+       * HomeWorksGeneratedSection
+       */
+      generationWorks: resp.data.generationWorks,
 
-  return json({
-    /**
-     * HomeBanners
-     */
-    adWorks: resp.data.adWorks,
-    /**
-     * HomeTagList
-     */
-    dailyTheme: resp.data.dailyTheme,
-    /**
-     * HomeAwardWorkSection
-     */
-    awardDateText: awardDateText,
-    /**
-     * HomeAwardWorkSection
-     */
-    workAwards: resp.data.workAwards,
-    /**
-     * HomeWorksGeneratedSection
-     */
-    generationWorks: resp.data.generationWorks,
-
-    /**
-     * HomeWorksUsersRecommendedSection
-     */
-    promotionWorks: resp.data.promotionWorks,
-    /**
-     * HomeTagsSection
-     */
-    tags: resp.data.recommendedTags,
-    /**
-     * HomeNovelsSection
-     */
-    novelWorks: resp.data.novelWorks,
-    /**
-     * HomeVideosSection
-     */
-    videoWorks: resp.data.videoWorks,
-    /**
-     * HomeColumnsSection
-     */
-    columnWorks: resp.data.columnWorks,
-    /**
-     * novelWorksBeforeText
-     */
-    novelWorksBeforeText,
-    /**
-     * videoWorksBeforeText
-     */
-    videoWorksBeforeText,
-    /**
-     * columnWorksBeforeText
-     */
-    columnWorksBeforeText,
-    /**
-     * promotionWorksBeforeText
-     */
-    promotionWorksBeforeText,
-  })
+      /**
+       * HomeWorksUsersRecommendedSection
+       */
+      promotionWorks: resp.data.promotionWorks,
+      /**
+       * HomeTagsSection
+       */
+      tags: resp.data.recommendedTags,
+      /**
+       * HomeNovelsSection
+       */
+      novelWorks: resp.data.novelWorks,
+      /**
+       * HomeVideosSection
+       */
+      videoWorks: resp.data.videoWorks,
+      /**
+       * HomeColumnsSection
+       */
+      columnWorks: resp.data.columnWorks,
+      /**
+       * novelWorksBeforeText
+       */
+      novelWorksBeforeText,
+      /**
+       * videoWorksBeforeText
+       */
+      videoWorksBeforeText,
+      /**
+       * columnWorksBeforeText
+       */
+      columnWorksBeforeText,
+      /**
+       * promotionWorksBeforeText
+       */
+      promotionWorksBeforeText,
+    },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.home,
+      },
+    },
+  )
 }
 
 export default function Index() {

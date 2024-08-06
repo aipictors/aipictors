@@ -51,13 +51,18 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  props.response?.headers.set("Cache-Control", config.cacheControl.oneHour)
-
-  return json({
-    post: props.params.post,
-    work: workResp.data.work,
-    workComments: workCommentsResp.data.work.comments,
-  })
+  return json(
+    {
+      post: props.params.post,
+      work: workResp.data.work,
+      workComments: workCommentsResp.data.work.comments,
+    },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.oneHour,
+      },
+    },
+  )
 }
 
 export default function Work() {
