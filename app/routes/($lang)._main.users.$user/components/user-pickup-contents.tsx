@@ -9,9 +9,11 @@ type Props = {
 
 export const UserPickupContents = (props: Props) => {
   // 結合
-  const combinedWorks = props.userPickupWorks.concat(
-    props.userPickupSensitiveWorks,
-  )
+  // const combinedWorks = props.userPickupWorks.concat(
+  //   props.userPickupSensitiveWorks,
+  // )
+
+  const combinedWorks = props.userPickupWorks
 
   return (
     <div className="items-center">

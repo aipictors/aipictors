@@ -12,6 +12,7 @@ type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
   targetRowHeight?: number
   direction?: "rows" | "columns"
+  size?: "small" | "large"
 }
 
 /**
@@ -23,9 +24,18 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
           key: work.id,
-          src: work.smallThumbnailImageURL,
-          width: work.smallThumbnailImageWidth,
-          height: work.smallThumbnailImageHeight,
+          src:
+            props.size === "large"
+              ? work.largeThumbnailImageURL
+              : work.smallThumbnailImageURL,
+          width:
+            props.size === "large"
+              ? work.largeThumbnailImageWidth
+              : work.smallThumbnailImageWidth,
+          height:
+            props.size === "large"
+              ? work.largeThumbnailImageHeight
+              : work.smallThumbnailImageHeight,
           context: work,
         }))}
         targetRowHeight={180}
