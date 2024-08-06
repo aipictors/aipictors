@@ -33,6 +33,7 @@ export const ThemeList = (props: Props) => {
       isSaturday: index % 7 === 6,
       isToday: isToday,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+      thumbnailUrl: theme?.firstWork?.smallThumbnailImageURL ?? null,
     }
   })
 
@@ -90,23 +91,32 @@ export const ThemeList = (props: Props) => {
               {day}
             </div>
           ))}
-          {blocks.map((block) => (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-            <div
-              key={block.id}
-              onClick={() => handleCellClick(block.date)}
-              className={`h-24 cursor-pointer border p-2 ${block.isToday ? "bg-blue-200" : ""}`}
-            >
+          {blocks
+            .filter((block) => block.title !== null)
+            .map((block) => (
+              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
               <div
-                className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                key={block.id}
+                onClick={() => handleCellClick(block.date)}
+                className={`flex cursor-pointer flex-col space-y-2 border p-2 ${block.isToday ? "bg-blue-200" : ""}`}
               >
-                {block.day}
+                <div
+                  className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                >
+                  {block.day}
+                </div>
+                {block.title && (
+                  <div className="mt-2 text-center text-sm">{block.title}</div>
+                )}
+                {block.thumbnailUrl && (
+                  <img
+                    src={block.thumbnailUrl}
+                    alt=""
+                    className="h-16 w-full rounded-md object-cover"
+                  />
+                )}
               </div>
-              {block.title && (
-                <div className="mt-2 text-center text-sm">{block.title}</div>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
