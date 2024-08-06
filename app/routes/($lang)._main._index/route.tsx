@@ -5,11 +5,17 @@ import { createClient } from "~/lib/client"
 import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBanners } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/home-columns-section"
-import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
+import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
-import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagList,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
+import {
+  HomeGenerationWorkFragment,
+  HomeWorksGeneratedSection,
+} from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
@@ -199,7 +205,7 @@ export default function Index() {
         fallbackURL="https://www.aipictors.com/"
         deadline={"2024-07-30"}
       />
-      <HomeBanners adWorks={data.adWorks} />
+      <HomeBanners works={data.adWorks} />
       <HomeTagList themeTitle={data.dailyTheme?.title} hotTags={data.hotTags} />
       <HomeWorksGeneratedSection
         dateText={data.generationDateText}
@@ -260,7 +266,7 @@ const query = graphql(
         ratings: [G],
       }
     ) {
-      ...HomeGenerationBannerWorkField
+      ...HomeGenerationBannerWork
     }
     novelWorks: works(
       offset: 0,
@@ -268,7 +274,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: NOVEL,
-        beforeCreatedAt: $novelWorksBefore 
+        beforeCreatedAt: $novelWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -279,7 +285,7 @@ const query = graphql(
       where: {
         ratings: [G, R15],
         workType: VIDEO,
-        beforeCreatedAt: $videoWorksBefore   
+        beforeCreatedAt: $videoWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -306,7 +312,7 @@ const query = graphql(
         beforeCreatedAt: $pastGenerationBefore
       }
     ) {
-      ...PartialWorkFields
+      ...HomeGenerationWork
     }
     dailyTheme(
       year: $year
@@ -325,10 +331,7 @@ const query = graphql(
       }
     }
     hotTags {
-      ...PartialTagFields
-      firstWork {
-        ...PartialWorkFields
-      }
+      ...HomeTagListItem
     }
     recommendedTags: recommendedTags(
       limit: 8
@@ -363,9 +366,11 @@ const query = graphql(
     }
   }`,
   [
+    HomeTagListItemFragment,
+    HomeGenerationWorkFragment,
     partialTagFieldsFragment,
     partialWorkFieldsFragment,
-    homeGenerationBannerWorkFieldFragment,
+    HomeGenerationBannerWorkFragment,
     partialRecommendedTagFieldsFragment,
     workAwardFieldsFragment,
   ],

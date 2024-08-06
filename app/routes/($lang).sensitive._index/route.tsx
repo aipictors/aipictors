@@ -4,7 +4,7 @@ import { createClient } from "~/lib/client"
 import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBanners } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/home-columns-section"
-import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
+import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
 import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
@@ -183,7 +183,7 @@ export default function Index() {
         fallbackURL="https://www.aipictors.com/"
         deadline={"2024-07-30"}
       />
-      <HomeBanners adWorks={data.adWorks} />
+      <HomeBanners works={data.adWorks} />
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}
         title={"前日ランキング"}
@@ -242,7 +242,7 @@ const query = graphql(
         ratings: [G],
       }
     ) {
-      ...HomeGenerationBannerWorkField
+      ...HomeGenerationBannerWork
     }
     novelWorks: works(
       offset: 0,
@@ -250,7 +250,7 @@ const query = graphql(
       where: {
         ratings: [R18, R18G],
         workType: NOVEL,
-        beforeCreatedAt: $novelWorksBefore 
+        beforeCreatedAt: $novelWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -261,7 +261,7 @@ const query = graphql(
       where: {
         ratings: [R18, R18G],
         workType: VIDEO,
-        beforeCreatedAt: $videoWorksBefore   
+        beforeCreatedAt: $videoWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -340,7 +340,7 @@ const query = graphql(
   }`,
   [
     partialWorkFieldsFragment,
-    homeGenerationBannerWorkFieldFragment,
+    HomeGenerationBannerWorkFragment,
     partialRecommendedTagFieldsFragment,
     workAwardFieldsFragment,
   ],

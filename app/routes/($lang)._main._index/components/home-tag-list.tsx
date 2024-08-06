@@ -3,12 +3,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from "~/components/ui/carousel"
-import type { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  hotTags: FragmentOf<typeof partialTagFieldsFragment>[]
+  hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   themeTitle?: string
 }
 
@@ -38,3 +37,10 @@ export const HomeTagList = (props: Props) => {
     </Carousel>
   )
 }
+
+export const HomeTagListItemFragment = graphql(
+  `fragment HomeTagListItem on TagNode @_unmask {
+    id
+    name
+  }`,
+)
