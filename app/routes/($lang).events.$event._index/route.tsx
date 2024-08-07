@@ -67,7 +67,7 @@ export default function FollowingLayout() {
   return (
     <div className="flex flex-col space-y-4">
       <img
-        className="h-auto w-full rounded-lg object-cover"
+        className="h-auto max-h-96 w-full rounded-lg object-cover"
         src={data.appEvent.thumbnailImageUrl}
         alt=""
       />
