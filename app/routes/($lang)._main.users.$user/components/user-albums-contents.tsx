@@ -66,13 +66,15 @@ export const UserAlbumsContents = (props: Props) => {
         <WorksSeriesAddButton refetch={refetch} />
       )}
       <div className="flex flex-wrap gap-2">
-        {albums.map((album) => (
-          <ResponsiveAlbumsList
-            key={album.id}
-            album={album}
-            works={album.works}
-          />
-        ))}
+        {albums
+          .filter((album) => album.works.length > 0)
+          .map((album) => (
+            <ResponsiveAlbumsList
+              key={album.id}
+              album={album}
+              works={album.works}
+            />
+          ))}
       </div>
       <div className="mt-1 mb-1">
         <ResponsivePagination
