@@ -7,10 +7,10 @@ import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { type FragmentOf, graphql } from "gql.tada"
 import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import type { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import type { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 
 type Props = {
-  album: FragmentOf<typeof albumArticleFragment>
+  album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
 }
 
 export const AlbumWorkDescription = (props: Props) => {

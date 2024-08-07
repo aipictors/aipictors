@@ -1,9 +1,10 @@
-import { IconUrl } from "~/components/icon-url"
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
-import { AlbumArticleHeader } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
+import {
+  AlbumArticleHeader,
+  AlbumArticleHeaderFragment,
+} from "~/routes/($lang)._main.albums.$album/components/album-article-header"
 import { AlbumWorkList } from "~/routes/($lang)._main.albums.$album/components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
@@ -55,7 +56,7 @@ export async function loader(props: LoaderFunctionArgs) {
 /**
  * シリーズの詳細
  */
-export default function albums() {
+export default function Route() {
   const params = useParams()
 
   if (params.album === undefined || params.user === undefined) {
@@ -64,9 +65,7 @@ export default function albums() {
 
   const data = useLoaderData<typeof loader>()
 
-  console.log(data)
-
-  const work = data.albumWorks.length > 0 ? data.albumWorks[0] : null
+  const [work = null] = data.albumWorks
 
   const thumbnail = data.album.thumbnailImageURL
     ? data.album.thumbnailImageURL
@@ -76,14 +75,7 @@ export default function albums() {
     <>
       <article className="flex">
         <div className="flex w-full flex-col justify-center">
-          <AlbumArticleHeader
-            album={data.album}
-            thumbnail={thumbnail}
-            userLogin={data.album.user.login}
-            userId={data.album.user.id}
-            userName={data.album.user.name}
-            userProfileImageURL={IconUrl(data.album.user.iconUrl)}
-          />
+          <AlbumArticleHeader album={data.album} thumbnail={thumbnail} />
         </div>
       </article>
       <AlbumWorkList
@@ -110,8 +102,8 @@ const albumWorksQuery = graphql(
 const userAlbumQuery = graphql(
   `query userAlbum($where: UserAlbumWhereInput) {
     userAlbum( where: $where) {
-      ...AlbumArticle
+      ...AlbumArticleHeader
     }
   }`,
-  [albumArticleFragment],
+  [AlbumArticleHeaderFragment],
 )

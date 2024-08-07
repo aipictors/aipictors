@@ -20,7 +20,7 @@ import { useContext, useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
-  album: FragmentOf<typeof albumArticleFragment>
+  album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
   thumbnail?: string
   children: React.ReactNode
   userNanoid: string
@@ -42,7 +42,7 @@ export const AlbumArticleEditorDialog = (props: Props) => {
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery, {
+  const { data: token, refetch: tokenRefetch } = useQuery(viewerQuery, {
     skip: authContext.isLoading,
   })
 
@@ -177,13 +177,17 @@ export const AlbumArticleEditorDialog = (props: Props) => {
   )
 }
 
-export const albumArticleFragment = graphql(
-  `fragment AlbumArticle on AlbumNode @_unmask {
+export const AlbumArticleEditorDialogFragment = graphql(
+  `fragment AlbumArticleEditorDialog on AlbumNode @_unmask {
     id
     title
     description
     user {
-      ...WorkUserFields
+      id
+      name
+      login
+      iconUrl
+      nanoid
       isFollowee
       isFollowee
       isMuted
@@ -199,7 +203,7 @@ export const albumArticleFragment = graphql(
   [workUserFieldsFragment],
 )
 
-const viewerTokenQuery = graphql(
+const viewerQuery = graphql(
   `query ViewerToken {
     viewer {
       id

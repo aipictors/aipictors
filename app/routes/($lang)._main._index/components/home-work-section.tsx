@@ -1,4 +1,7 @@
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import {
   Tooltip,
@@ -6,14 +9,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import {
+  HomeCoppedWorkFragment,
+  HomeCroppedWorkList,
+} from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeWorkFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -61,3 +66,11 @@ export const HomeWorkSection = (props: Props) => {
     </section>
   )
 }
+
+export const HomeWorkFragment = graphql(
+  `fragment HomeWork on WorkNode @_unmask {
+    ...PhotoAlbumWork
+    ...HomeCoppedWork
+  }`,
+  [PhotoAlbumWorkFragment, HomeCoppedWorkFragment],
+)

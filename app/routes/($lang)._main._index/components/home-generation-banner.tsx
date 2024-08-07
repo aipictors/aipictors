@@ -1,15 +1,19 @@
 import { Link } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql, readFragment, type FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof homeGenerationBannerWorkFieldFragment>[]
+  works: FragmentOf<typeof HomeGenerationBannerWorkFragment>[]
 }
 
 /**
  * ホームの生成機バナー
  */
-export const HomeGenerationBanner = (props: Props) => {
-  const [workA, workB, workC] = props.works
+export function HomeGenerationBanner(props: Props) {
+  const works = props.works.map((work) => {
+    return readFragment(HomeGenerationBannerWorkFragment, work)
+  })
+
+  const [workA, workB, workC] = works
 
   return (
     <div className="flex w-full items-center overflow-hidden rounded-md border p-4">
@@ -64,8 +68,8 @@ export const HomeGenerationBanner = (props: Props) => {
   )
 }
 
-export const homeGenerationBannerWorkFieldFragment = graphql(
-  `fragment HomeGenerationBannerWorkField on WorkNode @_unmask {
+export const HomeGenerationBannerWorkFragment = graphql(
+  `fragment HomeGenerationBannerWork on WorkNode {
     id
     smallThumbnailImageURL
   }`,

@@ -1,10 +1,15 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
-import { AlbumArticleHeader } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
+import { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import {
+  AlbumArticleHeader,
+  AlbumArticleHeaderFragment,
+} from "~/routes/($lang)._main.albums.$album/components/album-article-header"
 import { AlbumWorkDescription } from "~/routes/($lang)._main.albums.$album/components/album-work-description"
-import { AlbumWorkList } from "~/routes/($lang)._main.albums.$album/components/album-work-list"
+import {
+  AlbumWorkList,
+  AlbumWorkListItemFragment,
+} from "~/routes/($lang)._main.albums.$album/components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -17,15 +22,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const client = createClient()
 
-  const albumResp = await client.query({
-    query: albumQuery,
-    variables: {
-      id: props.params.album,
-    },
-  })
-
-  const albumWorksResp = await client.query({
-    query: albumWorksQuery,
+  const result = await client.query({
+    query: LoaderQuery,
     variables: {
       albumId: props.params.album,
       offset: 0,
@@ -33,17 +31,13 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (albumResp.data.album === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  if (albumWorksResp.data.album === null) {
+  if (result.data.album === null) {
     throw new Response(null, { status: 404 })
   }
 
   return json({
-    album: albumResp.data.album,
-    albumWorks: albumWorksResp.data.album.works,
+    ...result.data,
+    album: result.data.album,
   })
 }
 
@@ -63,15 +57,9 @@ export default function albums() {
     <>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader
-            album={data.album}
-            userLogin={""}
-            userId={""}
-            userName={""}
-            userProfileImageURL={""}
-          />
+          <AlbumArticleHeader album={data.album} />
           <AlbumWorkList
-            albumWorks={data.albumWorks}
+            albumWorks={data.album.works}
             maxCount={0}
             albumId={data.album.id}
           />
@@ -82,23 +70,20 @@ export default function albums() {
   )
 }
 
-const albumWorksQuery = graphql(
+const LoaderQuery = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
       works(offset: $offset, limit: $limit) {
-        ...PartialWorkFields
+        ...AlbumWorkListItem
       }
+      ...AlbumArticleHeader
+      ...AlbumArticleEditorDialog
     }
   }`,
-  [partialWorkFieldsFragment],
-)
-
-const albumQuery = graphql(
-  `query Album($id: ID!) {
-    album(id: $id) {
-      ...AlbumArticle
-    }
-  }`,
-  [albumArticleFragment],
+  [
+    AlbumArticleHeaderFragment,
+    AlbumWorkListItemFragment,
+    AlbumArticleEditorDialogFragment,
+  ],
 )

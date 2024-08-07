@@ -1,15 +1,10 @@
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { toDateText } from "~/lib/app/utils/to-date-text"
 
 type Props = {
-  ownerUserId: string
-  workId: string
-  thumbnailUrl: string
-  iconUrl: string
-  stickerUrl: string
-  comment: string
-  userName: string
-  createdAt: string
+  notification: FragmentOf<typeof WorkCommentReplyNotificationFragment>
   stickerSize?: "lg" | "md" | "sm" | "xs"
 }
 
@@ -31,39 +26,35 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
   return (
     <>
       <Link
-        to={`/posts/${props.workId}`}
+        to={`/posts/${props.notification.work?.id}`}
         className="flex items-center border-b transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
-        <Link to={`/users/${props.ownerUserId}`}>
+        <Link to={`/users/${props.notification.user?.id}`}>
           <img
-            src={IconUrl(props.iconUrl)}
+            src={IconUrl(props.notification.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />
         </Link>
         <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">
-            {props.userName}さんが返信しました
-            {props.comment && (
-              <>
-                {"「"}
-                {props.comment}
-                {"」"}
-              </>
-            )}
+            {props.notification.user?.name}さんが返信しました
+            {props.notification.message && `「${props.notification.message}」`}
           </p>
-          {props.stickerUrl && (
+          {props.notification.sticker?.imageUrl && (
             <img
-              src={props.stickerUrl}
+              src={props.notification.sticker.imageUrl}
               alt="sticker"
               className={`${stickerClass} h-12 w-12`}
             />
           )}
-          <p className="text-sm opacity-80">{props.createdAt}</p>
+          <p className="text-sm opacity-80">
+            {toDateText(props.notification.createdAt)}
+          </p>
         </div>
         <div className="h-12 w-12 overflow-hidden rounded-md">
           <img
-            src={props.thumbnailUrl}
+            src={props.notification.work?.smallThumbnailImageURL}
             alt="thumbnail"
             className="h-16 w-16 object-cover"
           />
@@ -72,3 +63,24 @@ export const HomeNotificationsContentReplyItem = (props: Props) => {
     </>
   )
 }
+
+export const WorkCommentReplyNotificationFragment = graphql(
+  `fragment WorkCommentReplyNotification on WorkCommentReplyNotificationNode @_unmask {
+    id
+    createdAt
+    message
+    work {
+      id
+      smallThumbnailImageURL
+    }
+    user {
+      id
+      name
+      iconUrl
+    }
+    sticker {
+      id
+      imageUrl
+    }
+  }`,
+)

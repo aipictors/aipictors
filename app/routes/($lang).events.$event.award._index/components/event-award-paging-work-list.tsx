@@ -2,12 +2,14 @@ import { useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
   isSensitive: boolean
   maxCount: number
   page: number
@@ -21,7 +23,7 @@ export function EventAwardPagingWorkList(props: Props) {
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(appEventQuery, {
+  const { data: resp } = useQuery(query, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -31,11 +33,11 @@ export function EventAwardPagingWorkList(props: Props) {
     },
   })
 
-  const workDisplayed = resp?.appEvent?.awardWorks ?? props.works
+  const works = resp?.appEvent?.awardWorks ?? props.works
 
   return (
     <>
-      <ResponsivePhotoWorksAlbum works={workDisplayed} />
+      <ResponsivePhotoWorksAlbum works={works} />
       {/* <ResponsivePagination
         maxCount={Number(props.maxCount)}
         perPage={64}
@@ -48,13 +50,20 @@ export function EventAwardPagingWorkList(props: Props) {
   )
 }
 
-const appEventQuery = graphql(
+export const EventAwardWorkListItemFragment = graphql(
+  `fragment EventAwardWorkListItem on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
       appEvent(slug: $slug) {
         awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
-          ...PartialWorkFields
+          ...EventAwardWorkListItem
         }
       }
     }`,
-  [partialWorkFieldsFragment],
+  [EventAwardWorkListItemFragment],
 )

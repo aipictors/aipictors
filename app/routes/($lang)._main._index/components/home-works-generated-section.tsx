@@ -1,23 +1,25 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeGenerationWorkFragment>[]
   dateText: string
 }
 
 /**
  * 生成された作品セクション
  */
-export const HomeWorksGeneratedSection = (props: Props) => {
+export function HomeWorksGeneratedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(worksQuery, {
+  const { data: resp } = useQuery(WorksQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -46,11 +48,19 @@ export const HomeWorksGeneratedSection = (props: Props) => {
   )
 }
 
-const worksQuery = graphql(
+export const HomeGenerationWorkFragment = graphql(
+  `fragment HomeGenerationWork on WorkNode @_unmask {
+    id
+    ...HomeWork
+  }`,
+  [HomeWorkFragment],
+)
+
+const WorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomeGenerationWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeGenerationWorkFragment],
 )

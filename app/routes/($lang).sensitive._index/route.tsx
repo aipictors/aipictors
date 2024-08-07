@@ -1,16 +1,23 @@
 import { ConstructionAlert } from "~/components/construction-alert"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeBanners } from "~/routes/($lang)._main._index/components/home-banners"
-import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/home-columns-section"
-import { homeGenerationBannerWorkFieldFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
-import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
-import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
+import {
+  HomeAwardWorkSection,
+  HomeWorkAwardFragment,
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import {
+  HomeColumnPostFragment,
+  HomeColumnsSection,
+} from "~/routes/($lang)._main._index/components/home-columns-section"
+import {
+  HomeNovelPostFragment,
+  HomeNovelsSection,
+} from "~/routes/($lang)._main._index/components/home-novels-section"
+import {
+  HomeTagFragment,
+  HomeTagsSection,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
 import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { config } from "~/config"
 
 export const meta: MetaFunction = () => {
@@ -71,24 +78,14 @@ export async function loader() {
   const resp = await client.query({
     query: query,
     variables: {
-      after: new Date(Date.now() - 0.5 * 24 * 60 * 60 * 1000).toDateString(),
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
-      awardYear: yesterday.getFullYear(),
-      day: date.getDate(),
-      month: date.getMonth() + 1,
-      year: date.getFullYear(),
-      adWorksLimit: config.query.homeWorkCount.ad,
-      novelWorksLimit: config.query.homeWorkCount.novel,
-      videoWorksLimit: config.query.homeWorkCount.video,
-      columnWorksLimit: config.query.homeWorkCount.column,
-      generationWorksLimit: config.query.homeWorkCount.generation,
-      promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
-      novelWorksBefore: pastNovelDate.toISOString(),
-      videoWorksBefore: pastVideoDate.toISOString(),
+      awardYear: yesterday.getFullYear(),
       columnWorksBefore: pastColumnDate.toISOString(),
-      promotionWorksBefore: pastPromotionDate.toISOString(),
+      columnWorksLimit: config.query.homeWorkCount.column,
+      novelWorksBefore: pastNovelDate.toISOString(),
+      novelWorksLimit: config.query.homeWorkCount.novel,
     },
   })
 
@@ -100,69 +97,14 @@ export async function loader() {
 
   return json(
     {
-      /**
-       * HomeBanners
-       */
-      adWorks: resp.data.adWorks,
-      /**
-       * HomeTagList
-       */
-      dailyTheme: resp.data.dailyTheme,
-      /**
-       * HomeAwardWorkSection
-       */
+      ...resp.data,
       awardDateText: awardDateText,
-      /**
-       * HomeAwardWorkSection
-       */
-      workAwards: resp.data.workAwards,
-      /**
-       * HomeWorksGeneratedSection
-       */
-      generationWorks: resp.data.generationWorks,
-
-      /**
-       * HomeWorksUsersRecommendedSection
-       */
-      promotionWorks: resp.data.promotionWorks,
-      /**
-       * HomeTagsSection
-       */
-      tags: resp.data.recommendedTags,
-      /**
-       * HomeNovelsSection
-       */
-      novelWorks: resp.data.novelWorks,
-      /**
-       * HomeVideosSection
-       */
-      videoWorks: resp.data.videoWorks,
-      /**
-       * HomeColumnsSection
-       */
-      columnWorks: resp.data.columnWorks,
-      /**
-       * novelWorksBeforeText
-       */
       novelWorksBeforeText,
-      /**
-       * videoWorksBeforeText
-       */
       videoWorksBeforeText,
-      /**
-       * columnWorksBeforeText
-       */
       columnWorksBeforeText,
-      /**
-       * promotionWorksBeforeText
-       */
       promotionWorksBeforeText,
     },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
+    { headers: { "Cache-Control": config.cacheControl.home } },
   )
 }
 
@@ -177,26 +119,19 @@ export default function Index() {
         fallbackURL="https://www.aipictors.com/"
         deadline={"2024-07-30"}
       />
-      <HomeBanners adWorks={data.adWorks} />
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}
         title={"前日ランキング"}
-        works={data.workAwards}
+        awards={data.workAwards}
         isSensitive={true}
       />
-      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+      <HomeTagsSection title={"人気タグ"} tags={data.recommendedTags} />
       <HomeNovelsSection
         dateText={data.novelWorksBeforeText}
         works={data.novelWorks}
         title={"小説"}
         isSensitive={true}
       />
-      {/* <HomeVideosSection
-        dateText={data.videoWorksBeforeText}
-        works={data.videoWorks}
-        title={"動画"}
-        isSensitive={true}
-      /> */}
       <HomeColumnsSection
         dateText={data.columnWorksBeforeText}
         works={data.columnWorks}
@@ -209,116 +144,15 @@ export default function Index() {
 
 const query = graphql(
   `query HomeQuery(
-    $after: String!
-    $year: Int!
-    $month: Int!
-    $day: Int!
-    $awardYear: Int!
-    $awardMonth: Int!
     $awardDay: Int!
-    $adWorksLimit: Int!
-    $novelWorksLimit: Int!
-    $novelWorksBefore: String!
-    $videoWorksLimit: Int!
-    $videoWorksBefore: String!
-    $columnWorksLimit: Int!
-    $columnWorksBefore: String!
-    $generationWorksLimit: Int!
-    $promotionWorksLimit: Int!
-    $promotionWorksBefore: String!
+    $awardMonth: Int!
     $awardWorksLimit: Int!
+    $awardYear: Int!
+    $columnWorksBefore: String!
+    $columnWorksLimit: Int!
+    $novelWorksBefore: String!
+    $novelWorksLimit: Int!
   ) {
-    adWorks: works(
-      offset: 0,
-      limit: $adWorksLimit,
-      where: {
-        isFeatured: true,
-        ratings: [G],
-      }
-    ) {
-      ...HomeGenerationBannerWorkField
-    }
-    novelWorks: works(
-      offset: 0,
-      limit: $novelWorksLimit,
-      where: {
-        ratings: [R18, R18G],
-        workType: NOVEL,
-        beforeCreatedAt: $novelWorksBefore 
-      }
-    ) {
-      ...PartialWorkFields
-    }
-    videoWorks: works(
-      offset: 0,
-      limit: $videoWorksLimit,
-      where: {
-        ratings: [R18, R18G],
-        workType: VIDEO,
-        beforeCreatedAt: $videoWorksBefore   
-      }
-    ) {
-      ...PartialWorkFields
-    }
-    columnWorks: works(
-      offset: 0,
-      limit: $columnWorksLimit,
-      where: {
-        ratings: [R18, R18G],
-        workType: COLUMN,
-        beforeCreatedAt: $columnWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
-    }
-    generationWorks: works(
-      offset: 0
-      limit: $generationWorksLimit
-      where: {
-        orderBy: DATE_CREATED,
-        sort: DESC
-        ratings: [R18, R18G]
-        isFeatured: true
-        beforeCreatedAt: $after
-      }
-    ) {
-      ...PartialWorkFields
-    }
-    dailyTheme(
-      year: $year
-      month: $month
-      day: $day
-    ) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount,
-      works(offset: 0, limit: 0) {
-        ...PartialWorkFields
-      }
-    }
-    recommendedTags: recommendedTags(
-      limit: 8
-      where: {
-        isSensitive: true
-      }
-    ) {
-      ...PartialRecommendedTagFields
-    }
-    promotionWorks: works(
-      offset: 0,
-      limit: $promotionWorksLimit,
-      where: {
-        isRecommended: true
-        ratings: [G]
-        beforeCreatedAt: $promotionWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
-    }
     workAwards(
       offset: 0
       limit: $awardWorksLimit
@@ -329,13 +163,43 @@ const query = graphql(
         isSensitive: true
       }
     ) {
-      ...WorkAwardFields
+      ...HomeWorkAward
+    }
+    recommendedTags: recommendedTags(
+      limit: 8
+      where: {
+        isSensitive: true
+      }
+    ) {
+      ...HomeTag
+    }
+    novelWorks: works(
+      offset: 0,
+      limit: $novelWorksLimit,
+      where: {
+        ratings: [R18, R18G],
+        workType: NOVEL,
+        beforeCreatedAt: $novelWorksBefore
+      }
+    ) {
+      ...HomeNovelPost
+    }
+    columnWorks: works(
+      offset: 0,
+      limit: $columnWorksLimit,
+      where: {
+        ratings: [R18, R18G],
+        workType: COLUMN,
+        beforeCreatedAt: $columnWorksBefore
+      }
+    ) {
+      ...HomeColumnPost
     }
   }`,
   [
-    partialWorkFieldsFragment,
-    homeGenerationBannerWorkFieldFragment,
-    partialRecommendedTagFieldsFragment,
-    workAwardFieldsFragment,
+    HomeWorkAwardFragment,
+    HomeTagFragment,
+    HomeNovelPostFragment,
+    HomeColumnPostFragment,
   ],
 )
