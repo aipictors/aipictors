@@ -13,9 +13,9 @@ export const UserProfileNameIcon = (props: Props) => {
     <header className="relative">
       <div
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={"absolute z-10 top-[160px] md:top-[228px]"}
+        className={"absolute z-10 top-[128px] md:top-[228px]"}
       >
-        <div className="mr-auto flex items-center gap-4 p-4 md:p-8">
+        <div className="mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
           <UserProfileAvatar
             alt={props.user.name}
             src={
@@ -25,8 +25,8 @@ export const UserProfileNameIcon = (props: Props) => {
             size={"auto"}
           />
           <div className="hidden md:block">
-            <h1 className="font-bold text-2xl text-white">{props.user.name}</h1>
-            <h2 className="font-bold text-sm text-white opacity-50">
+            <h1 className="font-bold text-2xl">{props.user.name}</h1>
+            <h2 className="font-bold text-sm opacity-50">
               @{props.user.login}
             </h2>
             <div className="flex">

@@ -28,7 +28,7 @@ export const UserNovelList = (props: Props) => {
         {props.works.map((work) => (
           <div
             key={work.id}
-            className="relative ml-4 inline-block rounded border-2 border-gray border-solid"
+            className="relative ml-4 inline-block h-full rounded border-2 border-gray border-solid"
           >
             <NovelWorkPreviewItem
               workId={work.id}

@@ -28,6 +28,7 @@ export const UserFoldersContents = (props: Props) => {
       limit: 16,
       where: {
         userId: props.userId,
+        isPrivate: false,
       },
     },
   })
@@ -39,6 +40,7 @@ export const UserFoldersContents = (props: Props) => {
     variables: {
       where: {
         userId: props.userId,
+        isPrivate: false,
       },
     },
   })
@@ -47,7 +49,7 @@ export const UserFoldersContents = (props: Props) => {
 
   return (
     <>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-4">
         {folders.map((folder) => (
           <ResponsiveFoldersList
             key={folder.id}

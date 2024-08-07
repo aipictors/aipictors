@@ -134,7 +134,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                     <img
                       {...props}
                       alt={props.alt}
-                      className="overflow-hidden rounded"
+                      className="h-full w-full overflow-hidden rounded"
                     />
                     <video
                       src={context.photo.url ?? ""}

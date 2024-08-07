@@ -72,6 +72,7 @@ export const WorkArticle = (props: Props) => {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          html={props.work.html ?? ""}
           title={props.work.title}
         />
       )}
@@ -79,6 +80,7 @@ export const WorkArticle = (props: Props) => {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={props.work.md ?? ""}
+          html={props.work.html ?? ""}
           title={props.work.title}
         />
       )}

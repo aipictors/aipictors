@@ -4,6 +4,7 @@ import { cn } from "~/lib/cn"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
+  type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
 import { config } from "~/config"
 import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
@@ -18,6 +19,7 @@ import { PaintCanvas } from "~/components/paint-canvas"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
+  onChangeImageInformation: (imageInformation: PNGInfo) => void
   state: PostImageFormState
   onInputFiles?: (files: FileList) => void
 }
@@ -55,15 +57,13 @@ export function PostImageFormUploader(props: Props) {
         return
       }
       const pngInfo = await getExtractInfoFromPNG(file)
+      console.log(pngInfo)
       if (pngInfo.src !== null) {
-        props.dispatch({
-          type: "SET_PNG_INFO",
-          payload: pngInfo,
-        })
+        props.onChangeImageInformation(pngInfo)
         toast("PNG情報を取得しました")
         return
       }
-      props.dispatch({ type: "SET_PNG_INFO", payload: null })
+      // props.dispatch({ type: "SET_PNG_INFO", payload: null })
       toast("PNG情報を取得できませんでした")
     }
     input.click()
@@ -100,7 +100,7 @@ export function PostImageFormUploader(props: Props) {
               props.dispatch({ type: "SET_INDEX_LIST", payload: value })
             }}
             onChangePngInfo={(value) => {
-              props.dispatch({ type: "SET_PNG_INFO", payload: value })
+              props.onChangeImageInformation(value)
             }}
             onMosaicButtonClick={(value) => {
               props.dispatch({
@@ -204,15 +204,11 @@ export function PostImageFormUploader(props: Props) {
             payload: true,
           })
 
-          // TODO: 正しく生成画像からPNGInfoを取得する
           const pngInfo = await getExtractInfoFromBase64(
             lastSelectedOriginalImage,
           )
           if (pngInfo.src !== null) {
-            props.dispatch({
-              type: "SET_PNG_INFO",
-              payload: pngInfo,
-            })
+            props.onChangeImageInformation(pngInfo)
             return
           }
         }}

@@ -31,6 +31,7 @@ import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fi
 import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
+import type { PNGInfo } from "~/utils/get-extract-info-from-png"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -103,6 +104,13 @@ export default function NewImage() {
     usePromotionFeature: false,
     useTagFeature: true,
   })
+
+  const onChangeImageInformation = (imageInformation: PNGInfo) => {
+    dispatchInput({
+      type: "SET_IMAGE_INFORMATION",
+      payload: imageInformation,
+    })
+  }
 
   useEffect(() => {
     const processImages = async () => {
@@ -477,6 +485,7 @@ export default function NewImage() {
             </div>
           )}
           <PostImageFormUploader
+            onChangeImageInformation={onChangeImageInformation}
             state={state}
             dispatch={dispatch}
             onInputFiles={onInputFiles}

@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client/index"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/cn"
@@ -20,6 +20,10 @@ export const FollowButton = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)
+
+  useEffect(() => {
+    setIsFollow(props.isFollow)
+  }, [props.isFollow])
 
   const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
 

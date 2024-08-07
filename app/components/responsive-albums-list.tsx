@@ -8,13 +8,13 @@ type Props = {
 }
 
 /**
- * レスポンシブ対応の作品一覧
+ * レスポンシブ対応のアルバム一覧
  */
 export const ResponsiveAlbumsList = (props: Props) => {
   return (
     <div
       key={props.album.id}
-      className="m-2 h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
+      className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
     >
       <div className="box-border flex flex-col justify-end">
         <Link

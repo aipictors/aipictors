@@ -26,7 +26,7 @@ export const UserHomeMain = (props: Props) => {
 
   return (
     <div className="relative m-auto h-64 w-full md:h-24">
-      <div className="absolute top-8 right-8 hidden md:block">
+      <div className="absolute top-0 right-0 hidden md:block">
         <div className="flex items-center space-x-4">
           <FollowButton
             targetUserId={props.user.id}
@@ -49,9 +49,7 @@ export const UserHomeMain = (props: Props) => {
           {authContext.userId === props.user.id && (
             <ProfileEditDialog
               triggerChildren={
-                <Button className="absolute top-4 right-4">
-                  プロフィール編集
-                </Button>
+                <Button className="absolute top-4 right-4">編集</Button>
               }
             />
           )}

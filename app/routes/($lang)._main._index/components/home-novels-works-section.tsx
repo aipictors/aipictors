@@ -40,7 +40,7 @@ export const HomeNovelsWorksSection = (props: Props) => {
       <CarouselWithGradation
         items={props.works.map((work, index) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-          <div className="rounded border-2 border-gray border-solid">
+          <div className="h-full rounded border-2 border-gray border-solid">
             <div className="relative">
               <NovelWorkPreviewItem
                 workId={work.id}

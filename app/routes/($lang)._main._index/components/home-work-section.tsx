@@ -54,6 +54,7 @@ export const HomeWorkSection = (props: Props) => {
         <ResponsivePhotoWorksAlbum
           works={props.works}
           targetRowHeight={props.targetRowHeight}
+          size="large"
         />
       )}
     </section>

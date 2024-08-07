@@ -62,11 +62,7 @@ const getJSTDate = () => {
 export function PostImageFormInput(props: Props) {
   const jstDate = getJSTDate()
 
-  console.log(jstDate)
-
   const reservationDate = props.state.reservationDate || jstDate
-
-  console.log(reservationDate)
 
   const { data, loading } = useQuery(pageQuery, {
     variables: {
@@ -78,9 +74,6 @@ export function PostImageFormInput(props: Props) {
         : props.imageInformation.params.prompt,
     },
   })
-
-  console.log(props.state.tags)
-  console.log(props.state.tags.some((tag) => tag.text === props.event.tag))
 
   useEffect(() => {
     if (props.setDisabledSubmit) {

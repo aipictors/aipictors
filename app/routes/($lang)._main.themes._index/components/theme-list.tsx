@@ -15,7 +15,7 @@ export const ThemeList = (props: Props) => {
 
   const cells = createCalendarCells(props.year, props.month)
 
-  const currentDateInJapan = getCurrentDateInJapan()
+  const currentDateInJapan = getJSTDate()
 
   const blocks = cells.map((day, index) => {
     const theme = props.dailyThemes.find((dailyTheme) => {
@@ -61,7 +61,7 @@ export const ThemeList = (props: Props) => {
   }
 
   return (
-    <div className="space-y-4 dark:bg-gray-800 dark:text-white">
+    <div className="space-y-4">
       <div className="flex justify-center">
         <p className="text-lg">{"お題一覧"}</p>
       </div>
@@ -98,7 +98,7 @@ export const ThemeList = (props: Props) => {
               <div
                 key={block.id}
                 onClick={() => handleCellClick(block.date)}
-                className={`flex cursor-pointer flex-col space-y-2 border p-2 ${block.isToday ? "bg-blue-200" : ""}`}
+                className={`flex cursor-pointer flex-col space-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
               >
                 <div
                   className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
@@ -139,9 +139,11 @@ export const dailyThemeComponentFragment = graphql(
   [partialWorkFieldsFragment],
 )
 
-export const getCurrentDateInJapan = () => {
-  const japanTimeZone = "Asia/Tokyo"
-  return new Date(
-    new Date().toLocaleString("en-US", { timeZone: japanTimeZone }),
-  )
+const getJSTDate = () => {
+  const date = new Date()
+  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
+  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
+  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
+
+  return jstDate
 }

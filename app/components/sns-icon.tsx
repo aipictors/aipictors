@@ -55,7 +55,7 @@ export const SnsIconLink = (props: Props) => {
 
   return (
     <Link className="block" to={props.url} target="_blank" rel="noreferrer">
-      <Button variant={"secondary"} className="h-8 w-8 rounded-full p-1">
+      <Button variant={"secondary"} className="h-10 w-10 rounded-md p-2">
         {icon()}
       </Button>
     </Link>

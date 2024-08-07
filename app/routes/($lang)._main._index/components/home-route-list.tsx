@@ -65,7 +65,7 @@ export const HomeRouteList = (props: Props) => {
         icon={LightbulbIcon}
         onClick={closeHeaderMenu}
       >
-        {"創作アイデア"}
+        {"お題"}
       </HomeNavigationButton>
       <HomeNavigationButton
         onClick={closeHeaderMenu}
