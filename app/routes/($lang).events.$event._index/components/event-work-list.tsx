@@ -41,7 +41,7 @@ export function EventWorkList(props: Props) {
 
   return (
     <>
-      <ResponsivePhotoWorksAlbum works={works} />
+      <ResponsivePhotoWorksAlbum works={works} isHideProfile={true} />
       <ResponsivePagination
         maxCount={Number(props.maxCount)}
         perPage={64}
