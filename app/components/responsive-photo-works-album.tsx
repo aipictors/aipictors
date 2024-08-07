@@ -13,6 +13,7 @@ type Props = {
   targetRowHeight?: number
   direction?: "rows" | "columns"
   size?: "small" | "large"
+  isHideProfile?: boolean
 }
 
 /**
@@ -53,48 +54,74 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
         render={{
           extras: (_, { photo, index }) => (
             <div key={index}>
-              <div className="absolute right-1 bottom-16 z-10">
-                <LikeButton
-                  size={56}
-                  targetWorkId={photo.context.id}
-                  targetWorkOwnerUserId={photo.context.user.id}
-                  defaultLiked={photo.context.isLiked}
-                  defaultLikedCount={photo.context.likesCount}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                  likedCount={photo.context.likesCount}
-                />
-              </div>
-              <div className="mt-2 flex flex-col space-y-2 overflow-hidden">
-                <Link
-                  className="w-48 font-bold"
-                  to={`/posts/${photo.context.id}`}
-                >
-                  <p className="overflow-hidden truncate text-nowrap text-base">
-                    {photo.context.title}
-                  </p>
-                </Link>
-                <Link to={`/users/${photo.context.user.id}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src={IconUrl(photo.context.user.iconUrl)}
-                        alt={photo.context.user.name}
-                        className="h-4 w-4 rounded-full"
-                      />
-                      <span className="block max-w-16 overflow-hidden text-ellipsis text-nowrap font-bold text-sm ">
-                        {photo.context.user.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
-                      <span className="text-xs">
-                        {photo.context.likesCount}
-                      </span>
-                    </div>
+              <div
+                className={
+                  props.isHideProfile
+                    ? "absolute right-1 bottom-0 z-10"
+                    : "absolute right-1 bottom-16 z-10"
+                }
+              >
+                {props.isHideProfile ? (
+                  <div className="flex items-center">
+                    <LikeButton
+                      size={40}
+                      targetWorkId={photo.context.id}
+                      targetWorkOwnerUserId={photo.context.user.id}
+                      defaultLiked={photo.context.isLiked}
+                      defaultLikedCount={photo.context.likesCount}
+                      isBackgroundNone={true}
+                      strokeWidth={2}
+                      likedCount={photo.context.likesCount}
+                    />
+                    {/* <span className="font-bold text-md text-white">
+                      {photo.context.likesCount}
+                    </span> */}
                   </div>
-                </Link>
+                ) : (
+                  <LikeButton
+                    size={56}
+                    targetWorkId={photo.context.id}
+                    targetWorkOwnerUserId={photo.context.user.id}
+                    defaultLiked={photo.context.isLiked}
+                    defaultLikedCount={photo.context.likesCount}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                    likedCount={photo.context.likesCount}
+                  />
+                )}
               </div>
+              {props.isHideProfile ? null : (
+                <div className="mt-2 flex flex-col space-y-2 overflow-hidden">
+                  <Link
+                    className="w-48 font-bold"
+                    to={`/posts/${photo.context.id}`}
+                  >
+                    <p className="overflow-hidden truncate text-nowrap text-base">
+                      {photo.context.title}
+                    </p>
+                  </Link>
+                  <Link to={`/users/${photo.context.user.id}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src={IconUrl(photo.context.user.iconUrl)}
+                          alt={photo.context.user.name}
+                          className="h-4 w-4 rounded-full"
+                        />
+                        <span className="block max-w-16 overflow-hidden text-ellipsis text-nowrap font-bold text-sm ">
+                          {photo.context.user.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                        <span className="text-xs">
+                          {photo.context.likesCount}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
           ),
           link(props) {

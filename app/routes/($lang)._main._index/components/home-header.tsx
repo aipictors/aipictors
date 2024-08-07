@@ -120,12 +120,18 @@ const HomeHeader = (props: Props) => {
               </div>
             )}
             {!isSearchFormOpen && (
-              <div className="ml-6 flex w-full justify-start font-semibold md:space-x-6 xl:space-x-12">
-                <Link to={"/themes"}>{"お題"}</Link>
-                <Link to={"/rankings"} className="hidden lg:block">
-                  {"ランキング"}
+              <div className="flex w-full justify-start space-x-2 font-semibold">
+                <Link to={"/themes"}>
+                  <Button variant={"ghost"}>{"お題"}</Button>
                 </Link>
-                <p className="hidden opacity-80 lg:block">{"タイムライン"}</p>
+                <Link to={"/rankings"}>
+                  <Button variant={"ghost"}>{"ランキング"}</Button>
+                </Link>
+                <Link to={"/timeline"}>
+                  <Button disabled={true} variant={"ghost"}>
+                    {"タイムライン"}
+                  </Button>
+                </Link>
               </div>
             )}
             <Button

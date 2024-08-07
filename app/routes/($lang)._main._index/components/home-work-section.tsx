@@ -55,6 +55,7 @@ export const HomeWorkSection = (props: Props) => {
           works={props.works}
           targetRowHeight={props.targetRowHeight}
           size="large"
+          isHideProfile={true}
         />
       )}
     </section>
