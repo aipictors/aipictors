@@ -1,6 +1,8 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
@@ -8,7 +10,7 @@ import { config } from "~/config"
 
 type Props = {
   isSensitive?: boolean
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomePromotionWorkFragment>[]
 }
 
 /**
@@ -18,7 +20,7 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   // 推薦作品
-  const { data: recommendedWorksResp } = useQuery(worksQuery, {
+  const { data: recommendedWorksResp } = useQuery(WorksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
@@ -46,11 +48,19 @@ export const HomeWorksUsersRecommendedSection = (props: Props) => {
   )
 }
 
-const worksQuery = graphql(
+export const HomePromotionWorkFragment = graphql(
+  `fragment HomePromotionWork on WorkNode @_unmask {
+    id
+    ...HomeWork
+  }`,
+  [HomeWorkFragment],
+)
+
+const WorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomePromotionWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomePromotionWorkFragment],
 )

@@ -1,13 +1,15 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useState } from "react"
 
 type Props = {
   albumId: string
-  albumWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
+  albumWorks: FragmentOf<typeof AlbumWorkListItemFragment>[]
   maxCount: number
 }
 
@@ -22,7 +24,7 @@ export const AlbumWorkList = (props: Props) => {
 
   const [page, setPage] = useState(0)
 
-  const { data } = useSuspenseQuery(albumWorksQuery, {
+  const { data } = useSuspenseQuery(query, {
     variables: {
       albumId: props.albumId,
       offset: 32 * page,
@@ -54,14 +56,21 @@ export const AlbumWorkList = (props: Props) => {
   )
 }
 
-const albumWorksQuery = graphql(
+export const AlbumWorkListItemFragment = graphql(
+  `fragment AlbumWorkListItem on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const query = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
       works(offset: $offset, limit: $limit) {
-        ...PartialWorkFields
+        ...AlbumWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [AlbumWorkListItemFragment],
 )

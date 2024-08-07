@@ -1,7 +1,7 @@
 import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { albumArticleFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 import { AlbumArticleHeader } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
 import { AlbumWorkDescription } from "~/routes/($lang)._main.albums.$album/components/album-work-description"
 import { AlbumWorkList } from "~/routes/($lang)._main.albums.$album/components/album-work-list"
@@ -63,13 +63,7 @@ export default function albums() {
     <>
       <article className="flex">
         <div className="flex flex-col">
-          <AlbumArticleHeader
-            album={data.album}
-            userLogin={""}
-            userId={""}
-            userName={""}
-            userProfileImageURL={""}
-          />
+          <AlbumArticleHeader album={data.album} />
           <AlbumWorkList
             albumWorks={data.albumWorks}
             maxCount={0}
@@ -100,5 +94,5 @@ const albumQuery = graphql(
       ...AlbumArticle
     }
   }`,
-  [albumArticleFragment],
+  [AlbumArticleEditorDialogFragment],
 )

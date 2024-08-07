@@ -1,30 +1,40 @@
 import { ConstructionAlert } from "~/components/construction-alert"
-import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import {
   HomeAwardWorkSection,
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeBanners } from "~/routes/($lang)._main._index/components/home-banners"
-import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/home-columns-section"
-import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
-import { HomeNovelsSection } from "~/routes/($lang)._main._index/components/home-novels-section"
+import {
+  HomeBanners,
+  HomeBannerWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-banners"
+import {
+  HomeColumnPostFragment,
+  HomeColumnsSection,
+} from "~/routes/($lang)._main._index/components/home-columns-section"
+import {
+  HomeNovelPostFragment,
+  HomeNovelsSection,
+} from "~/routes/($lang)._main._index/components/home-novels-section"
 import {
   HomeTagList,
   HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
-import { HomeTagsSection } from "~/routes/($lang)._main._index/components/home-tags-section"
+import {
+  HomeTagFragment,
+  HomeTagsSection,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
 import {
   HomeGenerationWorkFragment,
   HomeWorksGeneratedSection,
 } from "~/routes/($lang)._main._index/components/home-works-generated-section"
-import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import {
+  HomePromotionWorkFragment,
+  HomeWorksUsersRecommendedSection,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { partialRecommendedTagFieldsFragment } from "~/graphql/fragments/partial-recommended-tag-fields"
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { config } from "~/config"
 
 export const meta: MetaFunction = () => {
@@ -86,7 +96,7 @@ export async function loader() {
   pastGenerationDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastGenerationDate.setDate(Math.floor(Math.random() * 28) + 1)
 
-  const resp = await client.query({
+  const result = await client.query({
     query: query,
     variables: {
       awardDay: yesterday.getDate(),
@@ -117,65 +127,12 @@ export async function loader() {
 
   return json(
     {
-      /**
-       * HomeBanners
-       */
-      adWorks: resp.data.adWorks,
-      /**
-       * HomeTagList
-       */
-      dailyTheme: resp.data.dailyTheme,
-      /**
-       * HomeTagList
-       */
-      hotTags: resp.data.hotTags,
-      /**
-       * HomeAwardWorkSection
-       */
+      ...result.data,
       awardDateText: awardDateText,
-      /**
-       * HomeAwardWorkSection
-       */
-      workAwards: resp.data.workAwards,
-      /**
-       * HomeWorksGeneratedSection
-       */
-      generationWorks: resp.data.generationWorks,
-      /**
-       * generationDateText
-       */
       generationDateText,
-      /**
-       * HomeWorksUsersRecommendedSection
-       */
-      promotionWorks: resp.data.promotionWorks,
-      /**
-       * HomeTagsSection
-       */
-      tags: resp.data.recommendedTags,
-      /**
-       * HomeNovelsSection
-       */
-      novelWorks: resp.data.novelWorks,
-      /**
-       * HomeColumnsSection
-       */
-      columnWorks: resp.data.columnWorks,
-      /**
-       * novelWorksBeforeText
-       */
       novelWorksBeforeText,
-      /**
-       * videoWorksBeforeText
-       */
       videoWorksBeforeText,
-      /**
-       * columnWorksBeforeText
-       */
       columnWorksBeforeText,
-      /**
-       * promotionWorksBeforeText
-       */
       promotionWorksBeforeText,
     },
     {
@@ -208,7 +165,7 @@ export default function Index() {
         title={"前日ランキング"}
         awards={data.workAwards}
       />
-      <HomeTagsSection title={"人気タグ"} tags={data.tags} />
+      <HomeTagsSection title={"人気タグ"} tags={data.recommendedTags} />
       <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
       <HomeNovelsSection
         dateText={data.novelWorksBeforeText}
@@ -256,29 +213,14 @@ const query = graphql(
         ratings: [G],
       }
     ) {
-      ...HomeGenerationBannerWork
+      ...HomeBannerWork
     }
-    novelWorks: works(
-      offset: 0,
-      limit: $novelWorksLimit,
-      where: {
-        ratings: [G, R15],
-        workType: NOVEL,
-        beforeCreatedAt: $novelWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
     }
-    columnWorks: works(
-      offset: 0,
-      limit: $columnWorksLimit,
-      where: {
-        ratings: [G, R15],
-        workType: COLUMN,
-        beforeCreatedAt: $columnWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
+    hotTags {
+      ...HomeTagListItem
     }
     generationWorks: works(
       offset: 0
@@ -293,44 +235,6 @@ const query = graphql(
     ) {
       ...HomeGenerationWork
     }
-    dailyTheme(
-      year: $year
-      month: $month
-      day: $day
-    ) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount,
-      works(offset: 0, limit: 0) {
-        ...PartialWorkFields
-      }
-    }
-    hotTags {
-      ...HomeTagListItem
-    }
-    recommendedTags: recommendedTags(
-      limit: 8
-      where: {
-        isSensitive: false
-      }
-    ) {
-      ...PartialRecommendedTagFields
-    }
-    promotionWorks: works(
-      offset: 0,
-      limit: $promotionWorksLimit,
-      where: {
-        isRecommended: true
-        ratings: [G]
-        beforeCreatedAt: $promotionWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
-    }
     workAwards(
       offset: 0
       limit: $awardWorksLimit
@@ -343,15 +247,56 @@ const query = graphql(
     ) {
       ...HomeWorkAward
     }
+    recommendedTags: recommendedTags(
+      limit: 8
+      where: {
+        isSensitive: false
+      }
+    ) {
+      ...HomeTag
+    }
+    promotionWorks: works(
+      offset: 0,
+      limit: $promotionWorksLimit,
+      where: {
+        isRecommended: true
+        ratings: [G]
+        beforeCreatedAt: $promotionWorksBefore
+      }
+    ) {
+      ...HomePromotionWork
+    }
+    novelWorks: works(
+      offset: 0,
+      limit: $novelWorksLimit,
+      where: {
+        ratings: [G, R15],
+        workType: NOVEL,
+        beforeCreatedAt: $novelWorksBefore
+      }
+    ) {
+      ...HomeNovelPost
+    }
+    columnWorks: works(
+      offset: 0,
+      limit: $columnWorksLimit,
+      where: {
+        ratings: [G, R15],
+        workType: COLUMN,
+        beforeCreatedAt: $columnWorksBefore
+      }
+    ) {
+      ...HomeColumnPost
+    }
   }`,
   [
+    HomeBannerWorkFragment,
+    HomePromotionWorkFragment,
+    HomeNovelPostFragment,
     HomeTagListItemFragment,
     HomeGenerationWorkFragment,
     HomeWorkAwardFragment,
-    partialTagFieldsFragment,
-    partialWorkFieldsFragment,
-    HomeGenerationBannerWorkFragment,
-    partialRecommendedTagFieldsFragment,
-    workAwardFieldsFragment,
+    HomeColumnPostFragment,
+    HomeTagFragment,
   ],
 )

@@ -33,7 +33,7 @@ export const HomeAwardWorkSection = (props: Props) => {
   // 前日のランキングを取得
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
-  const { data: workAwardsResp } = useQuery(workAwardsQuery, {
+  const { data: workAwardsResp } = useQuery(WorkAwardsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -133,6 +133,9 @@ export const HomeAwardWorkSection = (props: Props) => {
   )
 }
 
+/**
+ * TODO_2024_09: 不要なフィールドを削除する
+ */
 export const HomeWorkAwardFragment = graphql(
   `fragment HomeWorkAward on WorkAwardNode @_unmask {
       id
@@ -178,7 +181,7 @@ export const HomeWorkAwardFragment = graphql(
   }`,
 )
 
-const workAwardsQuery = graphql(
+const WorkAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
       id

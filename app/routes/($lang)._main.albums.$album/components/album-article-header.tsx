@@ -4,21 +4,18 @@ import { Card } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   AlbumArticleEditorDialog,
-  type albumArticleFragment,
+  AlbumArticleEditorDialogFragment,
 } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
+import { IconUrl } from "~/components/icon-url"
 
 type Props = {
-  album: FragmentOf<typeof albumArticleFragment>
+  album: FragmentOf<typeof AlbumArticleHeaderFragment>
   thumbnail?: string
-  userLogin: string
-  userId: string
-  userName: string
-  userProfileImageURL: string
 }
 
 export const AlbumArticleHeader = (props: Props) => {
@@ -40,21 +37,21 @@ export const AlbumArticleHeader = (props: Props) => {
         </div>
       </div>
       <div className="mt-4 flex flex-col items-center">
-        <Link to={`/users/${props.userLogin}`}>
+        <Link to={`/users/${props.album.user.login}`}>
           <div className="flex max-w-32 items-center overflow-hidden">
             <img
-              src={props.userProfileImageURL}
-              alt={props.userName}
+              src={IconUrl(props.album.user.iconUrl)}
+              alt={props.album.user.name}
               className="mr-2 h-8 w-8 rounded-full"
             />
-            <p className="font-semibold text-lg">{props.userName}</p>
+            <p className="font-semibold text-lg">{props.album.user.name}</p>
           </div>
         </Link>
         <p className="mt-2 text-center">{props.album.title}</p>
         <div className="mt-4 flex items-center">
           <XIntent
             text={`${props.album.title}\n`}
-            url={`${`https://beta.aipictors.com/${props.userId}/albums/${props.album.slug}`}\n`}
+            url={`${`https://beta.aipictors.com/${props.album.user.id}/albums/${props.album.slug}`}\n`}
           />
         </div>
       </div>
@@ -83,3 +80,25 @@ export const AlbumArticleHeader = (props: Props) => {
     </Card>
   )
 }
+
+export const AlbumArticleHeaderFragment = graphql(
+  `fragment AlbumArticleHeader on AlbumNode @_unmask {
+    id
+    title
+    description
+    user {
+      id
+      login
+      name
+      iconUrl
+    }
+    createdAt
+    isSensitive
+    thumbnailImageURL
+    slug
+    worksCount
+    workIds
+    ...AlbumArticleEditorDialog
+  }`,
+  [AlbumArticleEditorDialogFragment],
+)

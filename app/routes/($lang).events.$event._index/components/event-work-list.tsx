@@ -3,12 +3,14 @@ import { useNavigate } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof EventWorkListItemFragment>[]
   isSensitive: boolean
   maxCount: number
   page: number
@@ -23,7 +25,7 @@ export function EventWorkList(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(appEventQuery, {
+  const { data: resp } = useQuery(query, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: props.page * 64,
@@ -35,11 +37,11 @@ export function EventWorkList(props: Props) {
     },
   })
 
-  const workDisplayed = resp?.appEvent?.works ?? props.works
+  const works = resp?.appEvent?.works ?? props.works
 
   return (
     <>
-      <ResponsivePhotoWorksAlbum works={workDisplayed} />
+      <ResponsivePhotoWorksAlbum works={works} />
       <ResponsivePagination
         maxCount={Number(props.maxCount)}
         perPage={64}
@@ -52,13 +54,20 @@ export function EventWorkList(props: Props) {
   )
 }
 
-const appEventQuery = graphql(
+export const EventWorkListItemFragment = graphql(
+  `fragment EventWorkListItem on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
       appEvent(slug: $slug) {
         works(offset: $offset, limit: $limit, where: $where) {
-          ...PartialWorkFields
+          ...EventWorkListItem
         }
       }
     }`,
-  [partialWorkFieldsFragment],
+  [EventWorkListItemFragment],
 )

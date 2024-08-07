@@ -6,13 +6,11 @@ import {
 import React from "react"
 import Autoplay from "embla-carousel-autoplay"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
   title?: string
-  tags: {
-    thumbnailUrl: string
-    tagName: string
-  }[]
+  tags: FragmentOf<typeof HomeTagFragment>[]
 }
 
 export const HomeTagsSection = (props: Props) => {
@@ -58,3 +56,10 @@ export const HomeTagsSection = (props: Props) => {
     </>
   )
 }
+
+export const HomeTagFragment = graphql(
+  `fragment HomeTag on RecommendedTagNode @_unmask {
+    tagName
+    thumbnailUrl
+  }`,
+)

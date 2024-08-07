@@ -2,7 +2,6 @@ import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
@@ -13,7 +12,7 @@ import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-nam
 type Props = {
   title: string
   isSensitive?: boolean
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeColumnPostFragment>[]
   dateText: string
 }
 
@@ -23,7 +22,7 @@ type Props = {
 export const HomeColumnsSection = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data: novelWorks } = useQuery(worksQuery, {
+  const { data: novelWorks } = useQuery(WorksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -88,11 +87,54 @@ export const HomeColumnsSection = (props: Props) => {
   )
 }
 
-const worksQuery = graphql(
+/**
+ * TODO_2024_09: 不要なフィールドを削除する
+ */
+export const HomeColumnPostFragment = graphql(
+  `fragment HomeColumnPost on WorkNode @_unmask {
+    id
+    title
+    accessType
+    adminAccessType
+    type
+    likesCount
+    commentsCount
+    bookmarksCount
+    viewsCount
+    createdAt
+    rating
+    isTagEditable
+    smallThumbnailImageURL
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
+    type
+    prompt
+    negativePrompt
+    isLiked
+    thumbnailImagePosition
+    description
+    url
+    subWorksCount
+    tags {
+      name
+    }
+    user {
+      id
+      name
+      iconUrl
+    }
+    uuid
+  }`,
+)
+
+const WorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomeColumnPost
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeColumnPostFragment],
 )

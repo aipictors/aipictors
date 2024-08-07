@@ -3,12 +3,14 @@ import { useNavigate } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof EventSensitiveWorkListItemFragment>[]
   isSensitive: boolean
   maxCount: number
   page: number
@@ -23,7 +25,7 @@ export function EventSensitiveWorkList(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(appEventQuery, {
+  const { data: resp } = useQuery(query, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: props.page * 64,
@@ -52,13 +54,20 @@ export function EventSensitiveWorkList(props: Props) {
   )
 }
 
-const appEventQuery = graphql(
+export const EventSensitiveWorkListItemFragment = graphql(
+  `fragment EventSensitiveWorkListItem on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
       appEvent(slug: $slug) {
         works(offset: $offset, limit: $limit, where: $where) {
-          ...PartialWorkFields
+          ...EventSensitiveWorkListItem
         }
       }
     }`,
-  [partialWorkFieldsFragment],
+  [EventSensitiveWorkListItemFragment],
 )

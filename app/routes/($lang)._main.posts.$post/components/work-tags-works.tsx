@@ -1,8 +1,10 @@
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -16,7 +18,7 @@ type Props = {
 export const WorkTagsWorks = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data: suggestedWorkResp } = useQuery(worksQuery, {
+  const { data: suggestedWorkResp } = useQuery(query, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
@@ -33,11 +35,18 @@ export const WorkTagsWorks = (props: Props) => {
   return <ResponsivePhotoWorksAlbum works={tagWork} />
 }
 
-const worksQuery = graphql(
+const TagsWorkFragment = graphql(
+  `fragment TagsWork on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const query = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...TagsWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [TagsWorkFragment],
 )

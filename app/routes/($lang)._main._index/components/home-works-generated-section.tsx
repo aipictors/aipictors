@@ -1,13 +1,15 @@
 import { AuthContext } from "~/contexts/auth-context"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeGenerationWorkFragment>[]
   dateText: string
 }
 
@@ -17,7 +19,7 @@ type Props = {
 export function HomeWorksGeneratedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(query, {
+  const { data: resp } = useQuery(WorksQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -49,44 +51,12 @@ export function HomeWorksGeneratedSection(props: Props) {
 export const HomeGenerationWorkFragment = graphql(
   `fragment HomeGenerationWork on WorkNode @_unmask {
     id
-    title
-    accessType
-    adminAccessType
-    type
-    likesCount
-    commentsCount
-    bookmarksCount
-    viewsCount
-    createdAt
-    rating
-    isTagEditable
-    smallThumbnailImageURL
-    smallThumbnailImageHeight
-    smallThumbnailImageWidth
-    largeThumbnailImageURL
-    largeThumbnailImageHeight
-    largeThumbnailImageWidth
-    type
-    prompt
-    negativePrompt
-    isLiked
-    thumbnailImagePosition
-    description
-    url
-    subWorksCount
-    tags {
-      name
-    }
-    user {
-      id
-      name
-      iconUrl
-    }
-    uuid
+    ...HomeWork
   }`,
+  [HomeWorkFragment],
 )
 
-const query = graphql(
+const WorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...HomeGenerationWork
