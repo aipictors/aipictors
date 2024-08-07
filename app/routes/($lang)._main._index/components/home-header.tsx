@@ -33,6 +33,12 @@ const HomeHeader = (props: Props) => {
     window.location.href = `https://www.aipictors.com/search/?word=${searchText}`
   }
 
+  const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
+
+  const onToggleSearchForm = () => {
+    setIsSearchFormOpen((prev) => !prev)
+  }
+
   const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value)
   }
@@ -103,16 +109,31 @@ const HomeHeader = (props: Props) => {
           </div>
         </div>
         <div className="flex w-full justify-end gap-x-2">
-          <div className="hidden w-full space-x-2 md:flex">
-            <div className="w-full flex-1">
-              <Input
-                onChange={onChangeSearchText}
-                placeholder={"作品を検索"}
-                onKeyPress={onSearch}
-              />
-            </div>
-            <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
-              <Search />
+          <div className="hidden w-full items-center space-x-2 md:flex">
+            {isSearchFormOpen && (
+              <div className="w-full flex-1">
+                <Input
+                  onChange={onChangeSearchText}
+                  placeholder={"作品を検索"}
+                  onKeyPress={onSearch}
+                />
+              </div>
+            )}
+            {!isSearchFormOpen && (
+              <div className="ml-6 flex w-full justify-start font-semibold md:space-x-6 xl:space-x-12">
+                <Link to={"/themes"}>{"お題"}</Link>
+                <Link to={"/rankings"} className="hidden lg:block">
+                  {"ランキング"}
+                </Link>
+                <p className="hidden opacity-80 lg:block">{"タイムライン"}</p>
+              </div>
+            )}
+            <Button
+              onClick={onToggleSearchForm}
+              variant={"ghost"}
+              size={"icon"}
+            >
+              <Search className="w-16" />
             </Button>
             <Separator orientation="vertical" />
           </div>
@@ -122,13 +143,13 @@ const HomeHeader = (props: Props) => {
                 className="hidden md:block"
                 to={"https://www.aipictors.com/"}
               >
-                <Button variant={"secondary"}>{"旧版"}</Button>
+                <Button variant={"ghost"}>{"旧版"}</Button>
               </Link>
               <Link to={"/generation"}>
-                <Button variant={"secondary"}>{"生成"}</Button>
+                <Button variant={"ghost"}>{"生成"}</Button>
               </Link>
               <Link to={"/new/image"}>
-                <Button variant={"secondary"}>{"投稿"}</Button>
+                <Button variant={"ghost"}>{"投稿"}</Button>
               </Link>
             </>
           )}

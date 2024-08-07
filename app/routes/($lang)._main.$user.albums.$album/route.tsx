@@ -75,7 +75,7 @@ export default function albums() {
   return (
     <>
       <article className="flex">
-        <div className="m-auto flex flex-col justify-center">
+        <div className="flex w-full flex-col justify-center">
           <AlbumArticleHeader
             album={data.album}
             thumbnail={thumbnail}

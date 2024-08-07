@@ -38,7 +38,7 @@ export const HomeNotificationsMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size={"icon"} variant={"secondary"} aria-label={"通知"}>
+        <Button size={"icon"} variant={"ghost"} aria-label={"通知"}>
           <BellIcon className="w-16" />
         </Button>
       </DropdownMenuTrigger>

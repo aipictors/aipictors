@@ -75,7 +75,7 @@ export const UserTabs = (props: Props) => {
   const videosCount = videosCountResp.data?.worksCount ?? 0
 
   const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading,
     variables: {
       where: {
         ownerUserId: props.userId,
@@ -90,10 +90,11 @@ export const UserTabs = (props: Props) => {
   const albumsCount = albumsCountResp.data?.albumsCount ?? 0
 
   const folderCountResp = useSuspenseQuery(foldersCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading,
     variables: {
       where: {
         userId: props.userId,
+        isPrivate: false,
       },
     },
   })
@@ -101,7 +102,7 @@ export const UserTabs = (props: Props) => {
   const foldersCount = folderCountResp.data?.foldersCount ?? 0
 
   const stickersCountResp = useSuspenseQuery(stickersCountQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading,
     variables: {
       where: {
         creatorUserId: props.userId,
@@ -118,9 +119,7 @@ export const UserTabs = (props: Props) => {
       ...(novelsCount > 0 ? [`小説(${novelsCount})`] : []),
       ...(columnsCount > 0 ? [`コラム(${columnsCount})`] : []),
       ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
-      ...(albumsCount > 0 || authContext.userId === props.userId
-        ? [`シリーズ(${albumsCount})`]
-        : []),
+      ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
       ...(foldersCount > 0 ? [`コレクション(${foldersCount})`] : []),
       ...(stickersCount > 0 ? [`スタンプ(${stickersCount})`] : []),
     ]
@@ -142,32 +141,6 @@ export const UserTabs = (props: Props) => {
         </Button>
       ))}
     </div>
-    // <div>
-    //   <Tabs defaultValue="ポートフォリオ">
-    //     <TabsList className="hidden border-b md:block">
-    //       {tabList().map((tabValue) => (
-    //         <TabsTrigger
-    //           key={removeParentheses(tabValue)}
-    //           value={removeParentheses(tabValue)}
-    //           onClick={() => handleTabClick(removeParentheses(tabValue))}
-    //         >
-    //           {tabValue}
-    //         </TabsTrigger>
-    //       ))}
-    //     </TabsList>
-    //   </Tabs>
-    //   <div className="grid grid-cols-3 gap-2 md:hidden">
-    //     {tabList().map((tabValue: string) => (
-    //       <Button
-    //         key={removeParentheses(tabValue)}
-    //         onClick={() => handleTabClick(removeParentheses(tabValue))}
-    //         variant="secondary"
-    //       >
-    //         {tabValue}
-    //       </Button>
-    //     ))}
-    //   </div>
-    // </div>
   )
 }
 
