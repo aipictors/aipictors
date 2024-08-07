@@ -41,10 +41,16 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
         targetRowHeight={180}
         sizes={{
           size: "calc(100vw - 240px)",
-          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+          sizes: [
+            { viewport: "(max-width: 960px)", size: "100vw" },
+            {
+              viewport: "(min-width: 960px) and (max-width: 1200px)",
+              size: "calc(100vw - 240px)",
+            },
+            { viewport: "(min-width: 1200px)", size: "calc(100vw - 320px)" },
+          ],
         }}
         render={{
-          // TODO: コンポーネントを分ける
           extras: (_, { photo, index }) => (
             <div key={index}>
               <div className="absolute right-1 bottom-16 z-10">
@@ -112,7 +118,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                 <img
                   {...props}
                   alt={props.alt}
-                  className="transition-transform duration-300 ease-in-out hover:scale-105"
+                  className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
                 />
                 {context.photo.context.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
