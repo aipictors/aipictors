@@ -2,7 +2,10 @@ import { ConstructionAlert } from "~/components/construction-alert"
 import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { HomeAwardWorkSection } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import {
+  HomeAwardWorkSection,
+  HomeWorkAwardFragment,
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBanners } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeColumnsSection } from "~/routes/($lang)._main._index/components/home-columns-section"
 import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
@@ -94,14 +97,12 @@ export async function loader() {
       year: date.getFullYear(),
       adWorksLimit: config.query.homeWorkCount.ad,
       novelWorksLimit: config.query.homeWorkCount.novel,
-      videoWorksLimit: config.query.homeWorkCount.video,
       columnWorksLimit: config.query.homeWorkCount.column,
       generationWorksLimit: config.query.homeWorkCount.generation,
       promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
       pastGenerationBefore: pastGenerationDate.toISOString(),
       novelWorksBefore: pastNovelDate.toISOString(),
-      videoWorksBefore: pastVideoDate.toISOString(),
       columnWorksBefore: pastColumnDate.toISOString(),
       promotionWorksBefore: pastPromotionDate.toISOString(),
     },
@@ -157,10 +158,6 @@ export async function loader() {
        */
       novelWorks: resp.data.novelWorks,
       /**
-       * HomeVideosSection
-       */
-      videoWorks: resp.data.videoWorks,
-      /**
        * HomeColumnsSection
        */
       columnWorks: resp.data.columnWorks,
@@ -209,7 +206,7 @@ export default function Index() {
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}
         title={"前日ランキング"}
-        works={data.workAwards}
+        awards={data.workAwards}
       />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />
       <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
@@ -244,8 +241,6 @@ const query = graphql(
     $adWorksLimit: Int!
     $novelWorksLimit: Int!
     $novelWorksBefore: String!
-    $videoWorksLimit: Int!
-    $videoWorksBefore: String!
     $columnWorksLimit: Int!
     $columnWorksBefore: String!
     $generationWorksLimit: Int!
@@ -270,17 +265,6 @@ const query = graphql(
         ratings: [G, R15],
         workType: NOVEL,
         beforeCreatedAt: $novelWorksBefore
-      }
-    ) {
-      ...PartialWorkFields
-    }
-    videoWorks: works(
-      offset: 0,
-      limit: $videoWorksLimit,
-      where: {
-        ratings: [G, R15],
-        workType: VIDEO,
-        beforeCreatedAt: $videoWorksBefore
       }
     ) {
       ...PartialWorkFields
@@ -357,12 +341,13 @@ const query = graphql(
         isSensitive: false
       }
     ) {
-      ...WorkAwardFields
+      ...HomeWorkAward
     }
   }`,
   [
     HomeTagListItemFragment,
     HomeGenerationWorkFragment,
+    HomeWorkAwardFragment,
     partialTagFieldsFragment,
     partialWorkFieldsFragment,
     HomeGenerationBannerWorkFragment,

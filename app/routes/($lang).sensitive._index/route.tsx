@@ -181,7 +181,7 @@ export default function Index() {
       <HomeAwardWorkSection
         awardDateText={data.awardDateText}
         title={"前日ランキング"}
-        works={data.workAwards}
+        awards={data.workAwards}
         isSensitive={true}
       />
       <HomeTagsSection title={"人気タグ"} tags={data.tags} />

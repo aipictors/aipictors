@@ -4,8 +4,6 @@ import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import type { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -17,7 +15,7 @@ import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-nam
 type Props = {
   title: string
   isSensitive?: boolean
-  works: FragmentOf<typeof workAwardFieldsFragment>[]
+  awards: FragmentOf<typeof HomeWorkAwardFragment>[]
   awardDateText: string
 }
 
@@ -49,7 +47,7 @@ export const HomeAwardWorkSection = (props: Props) => {
     },
   })
 
-  const workDisplayed = workAwardsResp?.workAwards ?? props.works
+  const workDisplayed = workAwardsResp?.workAwards ?? props.awards
 
   const yesterdayStr = `${yesterday.getFullYear()}/${
     yesterday.getMonth() + 1
@@ -135,16 +133,57 @@ export const HomeAwardWorkSection = (props: Props) => {
   )
 }
 
-const workAwardsQuery = graphql(
-  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
-    workAwards(offset: $offset, limit: $limit, where: $where) {
+export const HomeWorkAwardFragment = graphql(
+  `fragment HomeWorkAward on WorkAwardNode @_unmask {
       id
       index
       dateText
       work {
-        ...PartialWorkFields
+        id
+        title
+        accessType
+        adminAccessType
+        type
+        likesCount
+        commentsCount
+        bookmarksCount
+        viewsCount
+        createdAt
+        rating
+        isTagEditable
+        smallThumbnailImageURL
+        smallThumbnailImageHeight
+        smallThumbnailImageWidth
+        largeThumbnailImageURL
+        largeThumbnailImageHeight
+        largeThumbnailImageWidth
+        type
+        prompt
+        negativePrompt
+        isLiked
+        thumbnailImagePosition
+        description
+        url
+        subWorksCount
+        tags {
+          name
+        }
+        user {
+          id
+          name
+          iconUrl
+        }
+        uuid
       }
+  }`,
+)
+
+const workAwardsQuery = graphql(
+  `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
+    workAwards(offset: $offset, limit: $limit, where: $where) {
+      id
+      ...HomeWorkAward
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeWorkAwardFragment],
 )
