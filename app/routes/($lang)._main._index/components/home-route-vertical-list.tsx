@@ -58,7 +58,7 @@ export const HomeRouteList = () => {
             </CarouselItem>
             <CarouselItem className="basis-1/1 xl:basis-1/8">
               <HomeNavigationButton href={"/themes"} icon={LightbulbIcon}>
-                {"創作アイデア"}
+                {"お題"}
               </HomeNavigationButton>
             </CarouselItem>
             <CarouselItem className="basis-1/1 xl:basis-1/8">

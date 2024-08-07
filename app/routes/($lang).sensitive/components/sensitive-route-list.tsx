@@ -19,7 +19,7 @@ export const SensitiveRouteList = () => {
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive/themes"} icon={LightbulbIcon}>
-        {"創作アイデア"}
+        {"お題"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/sensitive/rankings"} icon={AwardIcon}>
         {"ランキング"}
