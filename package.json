@@ -111,7 +111,7 @@
     "usehooks-ts": "^3.1.0",
     "valibot": "^0.37.0",
     "vaul": "^0.9.1",
-    "vite-bundle-analyzer": "^0.9.4",
+    "vite-bundle-analyzer": "^0.10.4",
     "xstate": "^5.17.1",
     "zenn-content-css": "^0.1.154",
     "zenn-markdown-html": "^0.1.154"
