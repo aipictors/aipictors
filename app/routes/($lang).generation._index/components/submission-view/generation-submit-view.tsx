@@ -82,6 +82,7 @@ export function GenerationSubmissionView(props: Props) {
     try {
       await signTerms({ variables: { input: { version: 1 } } })
       toast("画像生成の利用規約に同意しました")
+      window.location.reload()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
