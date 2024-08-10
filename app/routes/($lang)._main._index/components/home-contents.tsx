@@ -12,7 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
@@ -50,12 +50,20 @@ type Props = {
   isSensitive?: boolean
 }
 
+const useUpdateQueryParams = () => {
+  const updateQueryParams = (newParams: URLSearchParams) => {
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }
+  return updateQueryParams
+}
+
 /**
  * ホームのコンテンツ一覧
  */
 export const HomeContents = (props: Props) => {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
 
@@ -107,13 +115,13 @@ export const HomeContents = (props: Props) => {
 
     if (newWorksPage >= 0) {
       searchParams.set("page", newWorksPage.toString())
-      navigate(`?${searchParams.toString()}`)
+      updateQueryParams(searchParams)
     }
-  }, [newWorksPage, searchParams, navigate])
+  }, [newWorksPage, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
-    navigate(`?${searchParams.toString()}`)
+    updateQueryParams(searchParams)
   }
 
   const handleWorkTypeChange = (value: string) => {
@@ -128,7 +136,7 @@ export const HomeContents = (props: Props) => {
     // ページ番号を0にリセット
     setNewWorksPage(0)
     searchParams.set("page", "0")
-    navigate(`?${searchParams.toString()}`)
+    updateQueryParams(searchParams)
   }
 
   const handlePromptChange = (value: string) => {
@@ -140,7 +148,7 @@ export const HomeContents = (props: Props) => {
       searchParams.set("isPromptPublic", isPrompt ? "true" : "false")
       setIsPromptPublic(isPrompt)
     }
-    navigate(`?${searchParams.toString()}`)
+    updateQueryParams(searchParams)
   }
 
   const handleSortTypeChange = (value: string) => {
@@ -151,7 +159,7 @@ export const HomeContents = (props: Props) => {
       searchParams.set("sortType", value)
       setSortType(value as IntrospectionEnum<"WorkOrderBy">)
     }
-    navigate(`?${searchParams.toString()}`)
+    updateQueryParams(searchParams)
   }
 
   // ハイドレーションエラー対策
