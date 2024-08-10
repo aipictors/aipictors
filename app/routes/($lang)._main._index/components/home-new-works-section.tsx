@@ -12,6 +12,7 @@ type Props = {
   page: number
   setPage: (page: number) => void
   workType: IntrospectionEnum<"WorkType"> | null
+  isPromptPublic: boolean | null
 }
 
 /**
@@ -28,8 +29,12 @@ export const HomeNewWorksTagSection = (props: Props) => {
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
         orderBy: "DATE_CREATED",
-        ...(props.workType && {
+        ...(props.workType !== null && {
           workType: props.workType,
+        }),
+        ...(props.isPromptPublic !== null && {
+          hasPrompt: props.isPromptPublic,
+          isPromptPublic: props.isPromptPublic,
         }),
       },
     },

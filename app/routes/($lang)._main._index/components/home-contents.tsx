@@ -53,6 +53,10 @@ export const HomeContents = (props: Props) => {
   const [workType, setWorkType] =
     React.useState<IntrospectionEnum<"WorkType"> | null>(null)
 
+  const [isPromptPublic, setIsPromptPublic] = React.useState<boolean | null>(
+    null,
+  )
+
   return (
     <Tabs defaultValue="home" className="space-y-4">
       <TabsList>
@@ -93,35 +97,71 @@ export const HomeContents = (props: Props) => {
 
       <TabsContent value="new">
         <div className="space-y-4">
-          <Select
-            value={workType ? workType : ""}
-            onValueChange={(value) => {
-              if (value === "ALL") {
-                setWorkType(null)
-                return
+          <div className="flex space-x-4">
+            <Select
+              value={workType ? workType : ""}
+              onValueChange={(value) => {
+                if (value === "ALL") {
+                  setWorkType(null)
+                  return
+                }
+                setWorkType(value as IntrospectionEnum<"WorkType">)
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={workType ? toWorkTypeText(workType) : "種類"}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{"種類"}</SelectItem>
+                <SelectItem value="WORK">{"画像"}</SelectItem>
+                <SelectItem value="VIDEO">{"動画"}</SelectItem>
+                <SelectItem value="NOVEL">{"小説"}</SelectItem>
+                <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={
+                isPromptPublic === null
+                  ? "ALL"
+                  : isPromptPublic
+                    ? "prompt"
+                    : "no-prompt"
               }
-              setWorkType(value as IntrospectionEnum<"WorkType">)
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={workType ? toWorkTypeText(workType) : "すべて"}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">{"すべて"}</SelectItem>
-              <SelectItem value="WORK">{"画像"}</SelectItem>
-              <SelectItem value="VIDEO">{"動画"}</SelectItem>
-              <SelectItem value="NOVEL">{"小説"}</SelectItem>
-              <SelectItem value="COLUMN">{"コラム"}</SelectItem>
-            </SelectContent>
-          </Select>
+              onValueChange={(value) => {
+                if (value === "ALL") {
+                  setIsPromptPublic(null)
+                  return
+                }
+                setIsPromptPublic(value === "prompt")
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    isPromptPublic === null
+                      ? "プロンプト有無"
+                      : isPromptPublic
+                        ? "あり"
+                        : "なし"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{"プロンプト有無"}</SelectItem>
+                <SelectItem value="prompt">{"あり"}</SelectItem>
+                <SelectItem value="no-prompt">{"なし"}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Suspense fallback={<AppLoadingPage />}>
             <HomeNewWorksTagSection
               page={newWorksPage}
               setPage={setNewWorksPage}
               isSensitive={props.isSensitive}
               workType={workType}
+              isPromptPublic={isPromptPublic}
             />
           </Suspense>
         </div>
