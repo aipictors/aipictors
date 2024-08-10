@@ -67,7 +67,7 @@ export const HomeContents = (props: Props) => {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   useEffect(() => {
-    if (!searchParams.toString()) {
+    if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
     }
 
@@ -101,7 +101,7 @@ export const HomeContents = (props: Props) => {
 
   // newWorksPageが変更されたときにURLパラメータを更新
   useEffect(() => {
-    if (!searchParams.toString()) {
+    if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
     }
 
