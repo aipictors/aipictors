@@ -42,7 +42,13 @@ export const dateToText = (date: Date) => {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["メスガキ", "ダークファンタジー", "ゆめかわ", "イケメン"]
+  const categories = [
+    "メスガキ",
+    "ダークファンタジー",
+    "ゆめかわ",
+    "イケメン",
+    "コスプレ",
+  ]
 
   const randomCategories = categories
     .sort(() => Math.random() - 0.5)
