@@ -1,5 +1,6 @@
 import type { FragmentOf } from "gql.tada"
-import React from "react"
+import React, { Suspense } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
   Select,
   SelectContent,
@@ -115,12 +116,14 @@ export const HomeContents = (props: Props) => {
               <SelectItem value="COLUMN">{"コラム"}</SelectItem>
             </SelectContent>
           </Select>
-          <HomeNewWorksTagSection
-            page={newWorksPage}
-            setPage={setNewWorksPage}
-            isSensitive={props.isSensitive}
-            workType={workType}
-          />
+          <Suspense fallback={<AppLoadingPage />}>
+            <HomeNewWorksTagSection
+              page={newWorksPage}
+              setPage={setNewWorksPage}
+              isSensitive={props.isSensitive}
+              workType={workType}
+            />
+          </Suspense>
         </div>
       </TabsContent>
 

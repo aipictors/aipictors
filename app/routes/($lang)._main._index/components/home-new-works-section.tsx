@@ -1,6 +1,6 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
@@ -20,7 +20,7 @@ type Props = {
 export const HomeNewWorksTagSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
-  const { data: worksResp } = useQuery(WorksQuery, {
+  const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: props.page * 32,
