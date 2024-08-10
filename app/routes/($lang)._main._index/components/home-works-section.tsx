@@ -43,6 +43,7 @@ export const HomeWorksSection = (props: Props) => {
         ...((props.sortType !== null && {
           orderBy: props.sortType,
         }) || { orderBy: "DATE_CREATED" }),
+        isNowCreatedAt: true,
       },
     },
   })
