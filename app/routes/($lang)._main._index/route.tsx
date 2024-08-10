@@ -1,7 +1,9 @@
-import { ConstructionAlert } from "~/components/construction-alert"
 import { createClient } from "~/lib/client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
+import {
+  HomeBanners,
+  HomeBannerWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -50,9 +52,26 @@ export async function loader() {
     "コスプレ",
   ]
 
-  const randomCategories = categories
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 2)
+  const getRandomCategories = () => {
+    const currentTime = new Date()
+
+    // 1時間ごとに異なるシードを生成
+    const hourSeed = Math.floor(currentTime.getTime() / 3600000)
+
+    // シードを使った乱数生成器
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+
+    const randomCategories = categories
+      .sort(() => seededRandom(hourSeed) - 0.5)
+      .slice(0, 2)
+
+    return randomCategories
+  }
+
+  const randomCategories = getRandomCategories()
 
   const client = createClient()
 
@@ -155,12 +174,7 @@ export default function Index() {
 
   return (
     <>
-      <ConstructionAlert
-        type="WARNING"
-        message="不具合が起きる可能性があります。"
-        fallbackURL="https://www.aipictors.com/"
-        deadline={"2024-07-30"}
-      />
+      <HomeBanners works={data.adWorks} />
       <HomeContents
         homeParticles={{
           dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",

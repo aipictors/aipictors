@@ -173,9 +173,9 @@ export const HomeContents = (props: Props) => {
               />
             </div>
             <HomeWorksTagSection
-              isSensitive={props.isSensitive}
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
+              isSensitive={props.isSensitive}
             />
             <HomeWorksTagSection
               tag={props.homeParticles.secondTag}
