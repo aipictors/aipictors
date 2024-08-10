@@ -22,12 +22,14 @@ export const NovelWorkPreviewItem = (props: Props) => {
         <img
           src={props.imageUrl}
           alt="novel work preview"
-          className={"w-full max-w-40 rounded md:max-w-none"}
+          className={
+            "h-32 w-48 max-w-40 rounded object-cover md:w-64 md:max-w-none"
+          }
         />
       </div>
-      <div className="mt-2 max-h-48 w-48 space-y-2 overflow-hidden text-ellipsis md:w-64">
+      <div className="mt-2 h-32 w-48 space-y-2 overflow-hidden text-ellipsis p-2 md:w-64">
         <div className="overflow-hidden font-bold text-sm">{props.title}</div>
-        <div className="h-16 overflow-hidden text-ellipsis text-wrap text-gray-500 text-xs">
+        <div className="h-16 overflow-hidden text-ellipsis text-wrap text-xs">
           {props.text}
         </div>
         <div className="mt-1 flex flex-wrap space-x-1">

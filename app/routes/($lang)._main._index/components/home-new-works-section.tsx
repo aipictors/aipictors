@@ -6,6 +6,8 @@ import { useContext } from "react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { HomeNovelsWorksSection } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { HomeVideosWorksSection } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
 type Props = {
   isSensitive?: boolean
@@ -13,6 +15,7 @@ type Props = {
   setPage: (page: number) => void
   workType: IntrospectionEnum<"WorkType"> | null
   isPromptPublic: boolean | null
+  sortType: IntrospectionEnum<"WorkOrderBy"> | null
 }
 
 /**
@@ -21,14 +24,15 @@ type Props = {
 export const HomeNewWorksTagSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
+  const perPageCount = props.workType === "VIDEO" ? 8 : 32
+
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
     variables: {
-      offset: props.page * 32,
-      limit: 32,
+      offset: props.page * perPageCount,
+      limit: perPageCount,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
-        orderBy: "DATE_CREATED",
         ...(props.workType !== null && {
           workType: props.workType,
         }),
@@ -36,19 +40,34 @@ export const HomeNewWorksTagSection = (props: Props) => {
           hasPrompt: props.isPromptPublic,
           isPromptPublic: props.isPromptPublic,
         }),
+        ...((props.sortType !== null && {
+          orderBy: props.sortType,
+        }) || { orderBy: "DATE_CREATED" }),
       },
     },
   })
 
   return (
     <div className="space-y-4">
-      <HomeWorkSection
-        title={""}
-        works={worksResp?.works || []}
-        isCropped={false}
-      />
+      {(props.workType === "WORK" || props.workType === null) && (
+        <HomeWorkSection
+          title={""}
+          works={worksResp?.works || []}
+          isCropped={false}
+        />
+      )}
+      {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
+        <HomeNovelsWorksSection title={""} works={worksResp?.works || []} />
+      )}
+      {props.workType === "VIDEO" && (
+        <HomeVideosWorksSection
+          title={""}
+          works={worksResp?.works || []}
+          isAutoPlay={true}
+        />
+      )}
       <ResponsivePagination
-        perPage={32}
+        perPage={perPageCount}
         maxCount={1000}
         currentPage={props.page}
         onPageChange={(page: number) => {

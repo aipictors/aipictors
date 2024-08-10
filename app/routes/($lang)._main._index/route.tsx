@@ -162,16 +162,18 @@ export default function Index() {
         deadline={"2024-07-30"}
       />
       <HomeContents
-        dailyThemeTitle={data.dailyTheme?.title}
-        hotTags={data.hotTags}
-        firstTag={data.firstTag}
-        secondTag={data.secondTag}
-        firstTagWorks={data.firstTagWorks}
-        secondTagWorks={data.secondTagWorks}
-        awardDateText={data.awardDateText}
-        workAwards={data.workAwards}
-        recommendedTags={data.recommendedTags}
-        promotionWorks={data.promotionWorks}
+        homeParticles={{
+          dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",
+          hotTags: data.hotTags,
+          firstTag: data.firstTag,
+          firstTagWorks: data.firstTagWorks,
+          secondTag: data.secondTag,
+          secondTagWorks: data.secondTagWorks,
+          awardDateText: data.awardDateText,
+          workAwards: data.workAwards,
+          recommendedTags: data.recommendedTags,
+          promotionWorks: data.promotionWorks,
+        }}
       />
     </>
   )

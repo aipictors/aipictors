@@ -41,7 +41,7 @@ export const ResponsivePagination = ({
 
   return (
     <Pagination>
-      <PaginationContent className="flex items-center">
+      <PaginationContent className="flex items-center md:space-x-4">
         {/* Prevボタン */}
         {currentPageIndex !== 0 && (
           <PaginationItem>

@@ -13,6 +13,7 @@ import { Heart } from "lucide-react"
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
   targetRowHeight?: number
+  isAutoPlay?: boolean
 }
 
 /**
@@ -21,7 +22,12 @@ type Props = {
 export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
+  const isAutoPlay = props.isAutoPlay ?? false
+
   const handleMouseEnter = useCallback((index: number) => {
+    if (isAutoPlay) {
+      return
+    }
     const video = videoRefs.current[index]
     if (video) {
       video.style.zIndex = "10" // 動画を前面に表示
@@ -30,6 +36,9 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   }, [])
 
   const handleMouseLeave = useCallback((index: number) => {
+    if (isAutoPlay) {
+      return
+    }
     const video = videoRefs.current[index]
     if (video) {
       video.pause() // 動画を停止
@@ -141,8 +150,10 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                       // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
                       ref={(el) => (videoRefs.current[context.index] = el)}
                       className="absolute top-0 left-0 overflow-hidden rounded"
-                      style={{ zIndex: "-1" }}
+                      style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
                       muted
+                      autoPlay={isAutoPlay}
+                      loop
                     >
                       <track
                         kind="captions"

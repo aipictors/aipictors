@@ -1,5 +1,6 @@
 import type { FragmentOf } from "gql.tada"
-import React, { Suspense } from "react"
+import { ArrowDownWideNarrow } from "lucide-react"
+import { Suspense, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
   Select,
@@ -10,6 +11,8 @@ import {
 } from "~/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
@@ -20,18 +23,17 @@ import {
   type HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
 import {
-  type HomeTagFragment,
   HomeTagsSection,
+  type HomeTagFragment,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
 import {
-  type HomeTagWorkFragment,
   HomeWorksTagSection,
+  type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
-type Props = {
-  dailyThemeTitle?: string
+type homeParticles = {
+  dailyThemeTitle: string
   hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   firstTag: string
   firstTagWorks: FragmentOf<typeof HomeTagWorkFragment>[]
@@ -41,6 +43,10 @@ type Props = {
   workAwards: FragmentOf<typeof HomeWorkAwardFragment>[]
   recommendedTags: FragmentOf<typeof HomeTagFragment>[]
   promotionWorks: FragmentOf<typeof HomeTagWorkFragment>[]
+}
+
+type Props = {
+  homeParticles?: homeParticles
   isSensitive?: boolean
 }
 
@@ -48,51 +54,133 @@ type Props = {
  * ホームのコンテンツ一覧
  */
 export const HomeContents = (props: Props) => {
-  const [newWorksPage, setNewWorksPage] = React.useState(0)
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
 
+  const [isMounted, setIsMounted] = useState(false)
+
+  const [newWorksPage, setNewWorksPage] = useState(0)
   const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(null)
+    useState<IntrospectionEnum<"WorkType"> | null>(null)
+  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+  const [sortType, setSortType] =
+    useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
-  const [isPromptPublic, setIsPromptPublic] = React.useState<boolean | null>(
-    null,
-  )
+  useEffect(() => {
+    // Set state based on URL parameters after the component mounts
+    const page = searchParams.get("page")
+    if (page) setNewWorksPage(Number.parseInt(page))
+
+    const type = searchParams.get("workType")
+    if (type) setWorkType(type as IntrospectionEnum<"WorkType">)
+
+    const prompt = searchParams.get("isPromptPublic")
+    if (prompt)
+      setIsPromptPublic(
+        prompt === "true" ? true : prompt === "false" ? false : null,
+      )
+
+    const sort = searchParams.get("sortType")
+    if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
+
+    setIsMounted(true) // Set mounted to true after all initializations
+  }, [searchParams])
+
+  const handleTabChange = (tab: string) => {
+    searchParams.set("tab", tab)
+    navigate(`?${searchParams.toString()}`)
+  }
+
+  const handleWorkTypeChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("workType")
+      setWorkType(null)
+    } else {
+      searchParams.set("workType", value)
+      setWorkType(value as IntrospectionEnum<"WorkType">)
+    }
+    navigate(`?${searchParams.toString()}`)
+  }
+
+  const handlePromptChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("isPromptPublic")
+      setIsPromptPublic(null)
+    } else {
+      const isPrompt = value === "prompt"
+      searchParams.set("isPromptPublic", isPrompt ? "true" : "false")
+      setIsPromptPublic(isPrompt)
+    }
+    navigate(`?${searchParams.toString()}`)
+  }
+
+  const handleSortTypeChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("sortType")
+      setSortType(null)
+    } else {
+      searchParams.set("sortType", value)
+      setSortType(value as IntrospectionEnum<"WorkOrderBy">)
+    }
+    navigate(`?${searchParams.toString()}`)
+  }
+
+  // ハイドレーションエラー対策
+  if (
+    !isMounted &&
+    searchParams.get("tab") &&
+    searchParams.get("tab") !== "home"
+  ) {
+    return null
+  }
 
   return (
-    <Tabs defaultValue="home" className="space-y-4">
+    <Tabs
+      defaultValue={searchParams.get("tab") || "home"}
+      onValueChange={handleTabChange}
+      className="space-y-4"
+    >
       <TabsList>
         <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">新着</TabsTrigger>
-        <TabsTrigger value="follow">タイムライン</TabsTrigger>
-        {/* 他のタブを追加する場合はここに追加 */}
+        <TabsTrigger value="new">一覧</TabsTrigger>
+        <TabsTrigger value="timeline">タイムライン</TabsTrigger>
       </TabsList>
+
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-        <div>
-          <HomeTagList
-            themeTitle={props.dailyThemeTitle}
-            hotTags={props.hotTags}
-          />
-        </div>
-        <HomeWorksTagSection
-          isSensitive={props.isSensitive}
-          tag={props.firstTag}
-          works={props.firstTagWorks}
-        />
-        <HomeWorksTagSection
-          tag={props.secondTag}
-          works={props.secondTagWorks}
-          isSensitive={props.isSensitive}
-        />
-        <HomeAwardWorkSection
-          awardDateText={props.awardDateText}
-          title={"前日ランキング"}
-          awards={props.workAwards}
-          isSensitive={props.isSensitive}
-        />
-        <HomeTagsSection title={"人気タグ"} tags={props.recommendedTags} />
-        <HomeWorksUsersRecommendedSection
-          isSensitive={props.isSensitive}
-          works={props.promotionWorks}
-        />
+        {props.homeParticles && (
+          <>
+            <div>
+              <HomeTagList
+                themeTitle={props.homeParticles.dailyThemeTitle}
+                hotTags={props.homeParticles.hotTags}
+              />
+            </div>
+            <HomeWorksTagSection
+              isSensitive={props.isSensitive}
+              tag={props.homeParticles.firstTag}
+              works={props.homeParticles.firstTagWorks}
+            />
+            <HomeWorksTagSection
+              tag={props.homeParticles.secondTag}
+              works={props.homeParticles.secondTagWorks}
+              isSensitive={props.isSensitive}
+            />
+            <HomeAwardWorkSection
+              awardDateText={props.homeParticles.awardDateText}
+              title={"前日ランキング"}
+              awards={props.homeParticles.workAwards}
+              isSensitive={props.isSensitive}
+            />
+            <HomeTagsSection
+              title={"人気タグ"}
+              tags={props.homeParticles.recommendedTags}
+            />
+            <HomeWorksUsersRecommendedSection
+              isSensitive={props.isSensitive}
+              works={props.homeParticles.promotionWorks}
+            />
+          </>
+        )}
       </TabsContent>
 
       <TabsContent value="new">
@@ -100,13 +188,7 @@ export const HomeContents = (props: Props) => {
           <div className="flex space-x-4">
             <Select
               value={workType ? workType : ""}
-              onValueChange={(value) => {
-                if (value === "ALL") {
-                  setWorkType(null)
-                  return
-                }
-                setWorkType(value as IntrospectionEnum<"WorkType">)
-              }}
+              onValueChange={handleWorkTypeChange}
             >
               <SelectTrigger>
                 <SelectValue
@@ -129,13 +211,7 @@ export const HomeContents = (props: Props) => {
                     ? "prompt"
                     : "no-prompt"
               }
-              onValueChange={(value) => {
-                if (value === "ALL") {
-                  setIsPromptPublic(null)
-                  return
-                }
-                setIsPromptPublic(value === "prompt")
-              }}
+              onValueChange={handlePromptChange}
             >
               <SelectTrigger>
                 <SelectValue
@@ -154,6 +230,21 @@ export const HomeContents = (props: Props) => {
                 <SelectItem value="no-prompt">{"なし"}</SelectItem>
               </SelectContent>
             </Select>
+            <Select
+              value={sortType ? sortType : ""}
+              onValueChange={handleSortTypeChange}
+            >
+              <SelectTrigger>
+                <ArrowDownWideNarrow />
+                <SelectValue placeholder={sortType ? sortType : "最新"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{"最新"}</SelectItem>
+                <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
+                <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
+                <SelectItem value="COMMENTS_COUNT">{"コメント数"}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Suspense fallback={<AppLoadingPage />}>
             <HomeNewWorksTagSection
@@ -162,20 +253,19 @@ export const HomeContents = (props: Props) => {
               isSensitive={props.isSensitive}
               workType={workType}
               isPromptPublic={isPromptPublic}
+              sortType={sortType}
             />
           </Suspense>
         </div>
       </TabsContent>
 
-      <TabsContent value="follow">
+      <TabsContent value="timeline">
         <div className="flex h-32 items-center justify-center text-center">
           {"😢"}
           <br />
           {"ごめんなさい！工事中です！"}
         </div>
       </TabsContent>
-
-      {/* 他のタブのコンテンツを追加する場合はここに追加 */}
     </Tabs>
   )
 }

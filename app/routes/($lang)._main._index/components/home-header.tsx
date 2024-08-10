@@ -127,11 +127,11 @@ const HomeHeader = (props: Props) => {
                 <Link to={"/rankings"}>
                   <Button variant={"ghost"}>{"ランキング"}</Button>
                 </Link>
-                <Link to={"/timeline"}>
+                {/* <Link to={"/timeline"}>
                   <Button disabled={true} variant={"ghost"}>
                     {"タイムライン"}
                   </Button>
-                </Link>
+                </Link> */}
               </div>
             )}
             <Button

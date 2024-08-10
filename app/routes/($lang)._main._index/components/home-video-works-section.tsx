@@ -8,6 +8,7 @@ type Props = {
   tooltip?: string
   link?: string
   isCropped?: boolean
+  isAutoPlay?: boolean
 }
 
 /**
@@ -26,7 +27,10 @@ export const HomeVideosWorksSection = (props: Props) => {
         </h2>
       </div>
 
-      <ResponsivePhotoVideoWorksAlbum works={props.works} />
+      <ResponsivePhotoVideoWorksAlbum
+        isAutoPlay={props.isAutoPlay}
+        works={props.works}
+      />
     </section>
   )
 }
