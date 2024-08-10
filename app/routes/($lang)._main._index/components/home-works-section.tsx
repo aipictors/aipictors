@@ -19,9 +19,9 @@ type Props = {
 }
 
 /**
- * 新作一覧
+ * トップ画面ホーム作品一覧
  */
-export const HomeNewWorksTagSection = (props: Props) => {
+export const HomeWorksSection = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32

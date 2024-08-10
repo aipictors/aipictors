@@ -17,7 +17,6 @@ import {
   HomeAwardWorkSection,
   type HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeNewWorksTagSection } from "~/routes/($lang)._main._index/components/home-new-works-section"
 import {
   HomeTagList,
   type HomeTagListItemFragment,
@@ -31,6 +30,7 @@ import {
   type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -67,9 +67,18 @@ export const HomeContents = (props: Props) => {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   useEffect(() => {
-    // Set state based on URL parameters after the component mounts
     const page = searchParams.get("page")
-    if (page) setNewWorksPage(Number.parseInt(page))
+    if (page) {
+      const pageNumber = Number.parseInt(page)
+      if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+        console.log("Invalid page number:", pageNumber)
+      } else {
+        console.log("page", pageNumber)
+        setNewWorksPage(pageNumber)
+      }
+    } else {
+      setNewWorksPage(0)
+    }
 
     const type = searchParams.get("workType")
     if (type) setWorkType(type as IntrospectionEnum<"WorkType">)
@@ -83,8 +92,16 @@ export const HomeContents = (props: Props) => {
     const sort = searchParams.get("sortType")
     if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
 
-    setIsMounted(true) // Set mounted to true after all initializations
+    setIsMounted(true)
   }, [searchParams])
+
+  // newWorksPageが変更されたときにURLパラメータを更新
+  useEffect(() => {
+    if (newWorksPage >= 0) {
+      searchParams.set("page", newWorksPage.toString())
+      navigate(`?${searchParams.toString()}`)
+    }
+  }, [newWorksPage, searchParams, navigate])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -247,7 +264,7 @@ export const HomeContents = (props: Props) => {
             </Select>
           </div>
           <Suspense fallback={<AppLoadingPage />}>
-            <HomeNewWorksTagSection
+            <HomeWorksSection
               page={newWorksPage}
               setPage={setNewWorksPage}
               isSensitive={props.isSensitive}
