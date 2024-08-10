@@ -4,7 +4,7 @@ import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
-import { Link } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
@@ -21,6 +21,7 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   onClickMenuItem?: () => void
@@ -35,6 +36,8 @@ export const HomeRouteList = (props: Props) => {
       props.onClickMenuItem()
     }
   }
+
+  const navigate = useNavigate()
 
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
@@ -121,13 +124,21 @@ export const HomeRouteList = (props: Props) => {
       >
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton
-        href={"/sensitive"}
-        icon={BoxIcon}
-        onClick={closeHeaderMenu}
+      <AppConfirmDialog
+        title={"確認"}
+        description={"センシティブ作品を表示します。あなたは18歳以上ですか？"}
+        onNext={() => {
+          navigate("/sensitive")
+          closeHeaderMenu()
+        }}
+        cookieKey={"check-sensitive"}
+        onCancel={() => {}}
       >
-        {"センシティブ"}
-      </HomeNavigationButton>
+        <HomeNavigationButton icon={BoxIcon}>
+          {"センシティブ"}
+        </HomeNavigationButton>
+      </AppConfirmDialog>
+
       {authContext.isNotLoading && (
         <div className={"py-2"}>
           <Separator />
