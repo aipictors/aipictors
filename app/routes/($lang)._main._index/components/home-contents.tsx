@@ -145,6 +145,7 @@ export const HomeContents = (props: Props) => {
       setIsPromptPublic(null)
     } else {
       const isPrompt = value === "prompt"
+      console.log(isPrompt)
       searchParams.set("isPromptPublic", isPrompt ? "true" : "false")
       setIsPromptPublic(isPrompt)
     }
@@ -163,13 +164,13 @@ export const HomeContents = (props: Props) => {
   }
 
   // ハイドレーションエラー対策
-  if (
-    !isMounted &&
-    searchParams.get("tab") &&
-    searchParams.get("tab") !== "home"
-  ) {
-    return null
-  }
+  // if (
+  //   !isMounted &&
+  //   searchParams.get("tab") &&
+  //   searchParams.get("tab") !== "home"
+  // ) {
+  //   return null
+  // }
 
   return (
     <Tabs
