@@ -67,6 +67,10 @@ export const HomeContents = (props: Props) => {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   useEffect(() => {
+    if (!searchParams.toString()) {
+      return
+    }
+
     const page = searchParams.get("page")
     if (page) {
       const pageNumber = Number.parseInt(page)
@@ -97,6 +101,10 @@ export const HomeContents = (props: Props) => {
 
   // newWorksPageが変更されたときにURLパラメータを更新
   useEffect(() => {
+    if (!searchParams.toString()) {
+      return
+    }
+
     if (newWorksPage >= 0) {
       searchParams.set("page", newWorksPage.toString())
       navigate(`?${searchParams.toString()}`)
