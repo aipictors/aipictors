@@ -59,7 +59,7 @@ const HomeHeader = (props: Props) => {
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
         <div className="flex min-w-fit items-center gap-x-2 md:flex">
-          {props.onToggleSideMenu && (
+          {/* {props.onToggleSideMenu && (
             <Button
               variant={"ghost"}
               size={"icon"}
@@ -68,10 +68,10 @@ const HomeHeader = (props: Props) => {
             >
               <MenuIcon className="h-6 w-6" />
             </Button>
-          )}
+          )} */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button className="md:hidden" variant={"ghost"} size={"icon"}>
+              <Button variant={"ghost"} size={"icon"}>
                 <MenuIcon />
               </Button>
             </SheetTrigger>

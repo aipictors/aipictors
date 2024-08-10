@@ -29,9 +29,9 @@ type Props = {
 export const AlbumArticleEditorDialog = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const workIds = props.album.workIds.map((work) => work.toString())
-
-  const [selectedWorks, setSelectedWorks] = useState<string[]>(workIds)
+  const [selectedWorks, setSelectedWorks] = useState<string[]>(
+    props.album.workIds.map((work) => work.toString()),
+  )
 
   const [headerImageUrl, setHeaderImageUrl] = useState(props.thumbnail ?? "")
 
@@ -73,13 +73,15 @@ export const AlbumArticleEditorDialog = (props: Props) => {
           title: title,
           description: description,
           ...(imageUrl && { headerImageUrl: imageUrl }),
-          ...(workIds && { workIds: workIds }),
+          ...(selectedWorks && { workIds: selectedWorks }),
         },
       },
     })
 
     toast("シリーズを更新しました")
   }
+
+  console.log("test")
 
   return (
     <Dialog>
@@ -183,15 +185,7 @@ export const AlbumArticleEditorDialogFragment = graphql(
     title
     description
     user {
-      id
-      name
-      login
-      iconUrl
-      nanoid
-      isFollowee
-      isFollowee
-      isMuted
-      nanoid
+      ...WorkUserFields
     }
     createdAt
     isSensitive

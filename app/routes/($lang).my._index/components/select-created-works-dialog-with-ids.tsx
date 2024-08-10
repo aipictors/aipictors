@@ -1,7 +1,7 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
@@ -27,14 +27,16 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
   const [page, setPage] = useState(0)
-
   const [selectedPage, setSelectedPage] = useState(0)
-
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
-  const worksResult = useSuspenseQuery(worksQuery, {
+  // 選択された作品をオンメモリで管理
+  const [selectedWorksOnMemory, setSelectedWorksOnMemory] = useState<
+    FragmentOf<typeof partialWorkFieldsFragment>[]
+  >([])
+
+  const worksResult = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: page * 32,
@@ -48,7 +50,7 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
     },
   })
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
+  const worksCountResp = useQuery(worksCountQuery, {
     skip: appContext.isLoading,
     variables: {
       where: {
@@ -58,21 +60,17 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
     },
   })
 
-  const worksByIdsResult = useSuspenseQuery(worksQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      offset: page * 32,
-      limit: 32,
-      where: {
-        ids: props.selectedWorkIds,
-      },
-    },
-  })
-
-  const selectedWorks = worksByIdsResult.data?.works ?? []
+  // selectedWorkIdsが変更されたときにオンメモリのリストを更新
+  useEffect(() => {
+    if (worksResult.data?.works) {
+      const selectedWorks = worksResult.data.works.filter((work) =>
+        props.selectedWorkIds.includes(work.id),
+      )
+      setSelectedWorksOnMemory(selectedWorks)
+    }
+  }, [props.selectedWorkIds, worksResult.data])
 
   const works = worksResult.data?.works
-
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
   const truncateTitle = (title: string, maxLength: number) => {
@@ -82,17 +80,19 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
   const handleWorkClick = (
     work: FragmentOf<typeof partialWorkFieldsFragment>,
   ) => {
-    if (selectedWorks.some((w) => w.id === work.id)) {
+    if (selectedWorksOnMemory.some((w) => w.id === work.id)) {
       props.setSelectedWorkIds(
         props.selectedWorkIds.filter((w) => w !== work.id),
       )
+      setSelectedWorksOnMemory(
+        selectedWorksOnMemory.filter((w) => w.id !== work.id),
+      )
     } else {
-      if (!props.limit || selectedWorks.length < props.limit) {
-        props.setSelectedWorkIds(
-          [...props.selectedWorkIds, work.id].filter(
-            (workId, index, self) => self.indexOf(workId) === index,
-          ),
-        )
+      if (!props.limit || selectedWorksOnMemory.length < props.limit) {
+        props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
+        setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
+
+        console.log(props.selectedWorkIds)
       } else {
         toast(`選択できる作品数は${props.limit}つまでです。`)
       }
@@ -117,7 +117,7 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
           <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
             {truncateTitle(work.title, 8)}
           </div>
-          {selectedWorks.some((w) => w.id === work.id) && (
+          {selectedWorksOnMemory.some((w) => w.id === work.id) && (
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
@@ -138,7 +138,7 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
 
   return (
     <>
-      {selectedWorks.length > 7 && (
+      {selectedWorksOnMemory.length > 7 && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <p
           onClick={() => setIsOpen(true)}
@@ -149,7 +149,7 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
       )}
 
       <div className="flex flex-wrap items-center">
-        {selectedWorks.slice(0, 3).map((work) => (
+        {selectedWorksOnMemory.slice(0, 3).map((work) => (
           <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
             <img
               className="h-16 w-16 rounded-md object-cover md:h-24 md:w-24"
@@ -214,7 +214,7 @@ export const SelectCreatedWorksDialogWithIds = (props: Props) => {
               )}
               {tab === "SELECTED" && (
                 <div className="flex flex-wrap">
-                  {renderWorks(worksByIdsResult.data?.works ?? [])}
+                  {renderWorks(selectedWorksOnMemory)}
                 </div>
               )}
             </ScrollArea>

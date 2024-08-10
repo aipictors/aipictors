@@ -16,6 +16,7 @@ import {
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
 import { graphql, type FragmentOf } from "gql.tada"
+import { cn } from "~/lib/cn"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]
@@ -28,7 +29,7 @@ type Props = {
 
 export const HomeWorkSection = (props: Props) => {
   return (
-    <section className="space-y-4">
+    <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}

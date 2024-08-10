@@ -37,7 +37,7 @@ export const HomeRouteList = (props: Props) => {
   }
 
   return (
-    <div className="h-[80vh] w-full space-y-1 pr-4 pb-16 md:w-40">
+    <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
       {authContext.isNotLoggedIn && (
         <>
           <LoginDialogButton variant="secondary" isWidthFull />
