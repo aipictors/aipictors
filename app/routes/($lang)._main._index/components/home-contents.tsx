@@ -116,6 +116,10 @@ export const HomeContents = (props: Props) => {
       searchParams.set("workType", value)
       setWorkType(value as IntrospectionEnum<"WorkType">)
     }
+
+    // ページ番号を0にリセット
+    setNewWorksPage(0)
+    searchParams.set("page", "0")
     navigate(`?${searchParams.toString()}`)
   }
 
@@ -192,10 +196,12 @@ export const HomeContents = (props: Props) => {
               title={"人気タグ"}
               tags={props.homeParticles.recommendedTags}
             />
-            <HomeWorksUsersRecommendedSection
-              isSensitive={props.isSensitive}
-              works={props.homeParticles.promotionWorks}
-            />
+            {!props.isSensitive && (
+              <HomeWorksUsersRecommendedSection
+                isSensitive={props.isSensitive}
+                works={props.homeParticles.promotionWorks}
+              />
+            )}
           </>
         )}
       </TabsContent>

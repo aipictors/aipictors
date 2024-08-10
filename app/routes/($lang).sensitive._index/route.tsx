@@ -1,27 +1,18 @@
-import { ConstructionAlert } from "~/components/construction-alert"
 import { createClient } from "~/lib/client"
-import {
-  HomeAwardWorkSection,
-  HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeColumnPostFragment,
-  HomeColumnsSection,
-} from "~/routes/($lang)._main._index/components/home-columns-section"
-import {
-  HomeNovelPostFragment,
-  HomeNovelsSection,
-} from "~/routes/($lang)._main._index/components/home-novels-section"
-import {
-  HomeTagFragment,
-  HomeTagsSection,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
-import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
+import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
+import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
+import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config } from "~/config"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
+  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト | センシティブ"
 
   const metaDescription =
     "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
@@ -49,6 +40,30 @@ export const dateToText = (date: Date) => {
 }
 
 export async function loader() {
+  // 下記カテゴリからランダムに2つ選んで返す
+  const categories = ["メスガキ", "JK", "グラビア", "コスプレ"]
+
+  const getRandomCategories = () => {
+    const currentTime = new Date()
+
+    // 1時間ごとに異なるシードを生成
+    const hourSeed = Math.floor(currentTime.getTime() / 3600000)
+
+    // シードを使った乱数生成器
+    const seededRandom = (seed: number) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+
+    const randomCategories = categories
+      .sort(() => seededRandom(hourSeed) - 0.5)
+      .slice(0, 2)
+
+    return randomCategories
+  }
+
+  const randomCategories = getRandomCategories()
+
   const client = createClient()
 
   const date = new Date()
@@ -62,49 +77,86 @@ export async function loader() {
   const pastNovelDate = new Date(now)
   pastNovelDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastNovelDate.setDate(Math.floor(Math.random() * 28) + 1)
+  if (pastNovelDate > now) {
+    pastNovelDate.setTime(now.getTime())
+  }
 
   const pastVideoDate = new Date(now)
   pastVideoDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastVideoDate.setDate(Math.floor(Math.random() * 28) + 1)
+  if (pastVideoDate > now) {
+    pastVideoDate.setTime(now.getTime())
+  }
 
   const pastColumnDate = new Date(now)
   pastColumnDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastColumnDate.setDate(Math.floor(Math.random() * 28) + 1)
+  if (pastColumnDate > now) {
+    pastColumnDate.setTime(now.getTime())
+  }
 
   const pastPromotionDate = new Date(now)
   pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
   pastPromotionDate.setDate(Math.floor(Math.random() * 28) + 1)
+  if (pastPromotionDate > now) {
+    pastPromotionDate.setTime(now.getTime())
+  }
 
-  const resp = await client.query({
+  const pastGenerationDate = new Date(now)
+  pastGenerationDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
+  pastGenerationDate.setDate(Math.floor(Math.random() * 28) + 1)
+  if (pastGenerationDate > now) {
+    pastGenerationDate.setTime(now.getTime())
+  }
+
+  console.log(randomCategories)
+
+  const result = await client.query({
     query: query,
     variables: {
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
-      awardWorksLimit: config.query.homeWorkCount.award,
       awardYear: yesterday.getFullYear(),
-      columnWorksBefore: pastColumnDate.toISOString(),
-      columnWorksLimit: config.query.homeWorkCount.column,
-      novelWorksBefore: pastNovelDate.toISOString(),
-      novelWorksLimit: config.query.homeWorkCount.novel,
+      day: date.getDate(),
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
+      adWorksLimit: config.query.homeWorkCount.ad,
+      // novelWorksLimit: config.query.homeWorkCount.novel,
+      // columnWorksLimit: config.query.homeWorkCount.column,
+      // generationWorksLimit: config.query.homeWorkCount.generation,
+      promotionWorksLimit: config.query.homeWorkCount.promotion,
+      awardWorksLimit: config.query.homeWorkCount.award,
+      // pastGenerationBefore: pastGenerationDate.toISOString(),
+      // novelWorksBefore: pastNovelDate.toISOString(),
+      // columnWorksBefore: pastColumnDate.toISOString(),
+      categoryFirst: randomCategories[0],
+      categorySecond: randomCategories[1],
+      tagWorksLimit: config.query.homeWorkCount.tag,
     },
   })
 
   const awardDateText = dateToText(yesterday)
+  const generationDateText = pastGenerationDate.toISOString()
   const novelWorksBeforeText = pastNovelDate.toISOString()
   const videoWorksBeforeText = pastVideoDate.toISOString()
   const columnWorksBeforeText = pastColumnDate.toISOString()
-  const promotionWorksBeforeText = pastPromotionDate.toISOString()
 
   return json(
     {
-      ...resp.data,
+      ...result.data,
       awardDateText: awardDateText,
+      generationDateText,
       novelWorksBeforeText,
       videoWorksBeforeText,
       columnWorksBeforeText,
-      promotionWorksBeforeText,
+      firstTag: randomCategories[0],
+      secondTag: randomCategories[1],
     },
-    { headers: { "Cache-Control": config.cacheControl.home } },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.home,
+      },
+    },
   )
 }
 
@@ -113,29 +165,19 @@ export default function Index() {
 
   return (
     <>
-      <ConstructionAlert
-        type="WARNING"
-        message="不具合が起きる可能性があります。"
-        fallbackURL="https://www.aipictors.com/"
-        deadline={"2024-07-30"}
-      />
-      <HomeAwardWorkSection
-        awardDateText={data.awardDateText}
-        title={"前日ランキング"}
-        awards={data.workAwards}
-        isSensitive={true}
-      />
-      <HomeTagsSection title={"人気タグ"} tags={data.recommendedTags} />
-      <HomeNovelsSection
-        dateText={data.novelWorksBeforeText}
-        works={data.novelWorks}
-        title={"小説"}
-        isSensitive={true}
-      />
-      <HomeColumnsSection
-        dateText={data.columnWorksBeforeText}
-        works={data.columnWorks}
-        title={"コラム"}
+      <HomeContents
+        homeParticles={{
+          dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",
+          hotTags: data.hotTags,
+          firstTag: data.firstTag,
+          firstTagWorks: data.firstTagWorks,
+          secondTag: data.secondTag,
+          secondTagWorks: data.secondTagWorks,
+          awardDateText: data.awardDateText,
+          workAwards: data.workAwards,
+          recommendedTags: data.recommendedTags,
+          promotionWorks: data.promotionWorks,
+        }}
         isSensitive={true}
       />
     </>
@@ -144,15 +186,42 @@ export default function Index() {
 
 const query = graphql(
   `query HomeQuery(
-    $awardDay: Int!
-    $awardMonth: Int!
-    $awardWorksLimit: Int!
+    # $pastGenerationBefore: String!
+    $year: Int!
+    $month: Int!
+    $day: Int!
     $awardYear: Int!
-    $columnWorksBefore: String!
-    $columnWorksLimit: Int!
-    $novelWorksBefore: String!
-    $novelWorksLimit: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
+    $adWorksLimit: Int!
+    # $novelWorksLimit: Int!
+    # $novelWorksBefore: String!
+    # $columnWorksLimit: Int!
+    # $columnWorksBefore: String!
+    # $generationWorksLimit: Int!
+    $promotionWorksLimit: Int!
+    $awardWorksLimit: Int!
+    $categoryFirst: String!
+    $categorySecond: String!
+    $tagWorksLimit: Int!
   ) {
+    adWorks: works(
+      offset: 0,
+      limit: $adWorksLimit,
+      where: {
+        isFeatured: true,
+        ratings: [R18],
+      }
+    ) {
+      ...HomeBannerWork
+    }
+    dailyTheme(year: $year, month: $month, day: $day) {
+      id
+      title
+    }
+    hotTags {
+      ...HomeTagListItem
+    }
     workAwards(
       offset: 0
       limit: $awardWorksLimit
@@ -173,33 +242,70 @@ const query = graphql(
     ) {
       ...HomeTag
     }
-    novelWorks: works(
+    firstTagWorks: works(
       offset: 0,
-      limit: $novelWorksLimit,
+      limit: $tagWorksLimit,
       where: {
-        ratings: [R18, R18G],
-        workType: NOVEL,
-        beforeCreatedAt: $novelWorksBefore
+        ratings: [R18],
+        search: $categoryFirst
+        orderBy: VIEWS_COUNT
       }
     ) {
-      ...HomeNovelPost
+      ...HomeTagWork
     }
-    columnWorks: works(
+    secondTagWorks: works(
       offset: 0,
-      limit: $columnWorksLimit,
+      limit: $tagWorksLimit,
       where: {
-        ratings: [R18, R18G],
-        workType: COLUMN,
-        beforeCreatedAt: $columnWorksBefore
+        ratings: [R18],
+        search: $categorySecond
+        orderBy: VIEWS_COUNT
       }
     ) {
-      ...HomeColumnPost
+      ...HomeTagWork
     }
+    promotionWorks: works(
+      offset: 0,
+      limit: $promotionWorksLimit,
+      where: {
+        isRecommended: true
+        ratings: [R18]
+      }
+    ) {
+      ...HomePromotionWork
+    }
+    # novelWorks: works(
+    #   offset: 0,
+    #   limit: $novelWorksLimit,
+    #   where: {
+    #     ratings: [G, R15],
+    #     workType: NOVEL,
+    #     beforeCreatedAt: $novelWorksBefore
+    #   }
+    # ) {
+    #   ...HomeNovelPost
+    # }
+    # columnWorks: works(
+    #   offset: 0,
+    #   limit: $columnWorksLimit,
+    #   where: {
+    #     ratings: [G, R15],
+    #     workType: COLUMN,
+    #     beforeCreatedAt: $columnWorksBefore
+    #   }
+    # ) {
+    #   ...HomeColumnPost
+    # }
   }`,
   [
+    HomeBannerWorkFragment,
+    HomePromotionWorkFragment,
+    // HomeNovelPostFragment,
+    HomeTagListItemFragment,
+    // HomeGenerationWorkFragment,
     HomeWorkAwardFragment,
+    // HomeColumnPostFragment,
     HomeTagFragment,
-    HomeNovelPostFragment,
-    HomeColumnPostFragment,
+    HomeTagWorkFragment,
   ],
 )
