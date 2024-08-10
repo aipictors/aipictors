@@ -104,7 +104,7 @@ export const HomeContents = (props: Props) => {
           >
             <SelectTrigger>
               <SelectValue
-                placeholder={workType ? toWorkTypeText(workType) : "種類"}
+                placeholder={workType ? toWorkTypeText(workType) : "すべて"}
               />
             </SelectTrigger>
             <SelectContent>
