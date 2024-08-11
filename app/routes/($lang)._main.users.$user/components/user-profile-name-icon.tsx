@@ -25,7 +25,9 @@ export const UserProfileNameIcon = (props: Props) => {
             size={"auto"}
           />
           <div className="hidden md:block">
-            <h1 className="font-bold text-2xl text-white">{props.user.name}</h1>
+            <h1 className="text-nowrap font-bold text-2xl text-white">
+              {props.user.name}
+            </h1>
             <h2 className="font-bold text-sm text-white opacity-50">
               @{props.user.login}
             </h2>
@@ -49,7 +51,7 @@ export const UserProfileNameIcon = (props: Props) => {
         </div>
 
         <div className="block md:hidden">
-          <h1 className="font-bold text-2xl">{props.user.name}</h1>
+          <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
           <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>
         </div>
 

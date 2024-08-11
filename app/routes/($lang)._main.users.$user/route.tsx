@@ -93,7 +93,7 @@ export default function UserLayout() {
                           maxHeight: "240px",
                         }}
                       />
-                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-30" />
+                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
                     </>
                   ) : (
                     <div
