@@ -9,6 +9,8 @@ type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   targetRowHeight?: number
   direction?: "rows" | "columns"
+  size?: "small" | "medium" | "large"
+  isHideProfile?: boolean
 }
 
 /**

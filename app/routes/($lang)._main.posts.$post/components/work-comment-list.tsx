@@ -348,57 +348,58 @@ export const WorkCommentList = (props: Props) => {
                 }}
               />
               {/* コメントへの返信 */}
-              {comment.responses
-                .sort((a, b) => a.createdAt - b.createdAt)
-                .filter((reply) => !hideCommentIds.includes(reply.id))
-                .map((reply) => (
-                  <WorkCommentResponse
-                    key={reply.id}
-                    userId={reply.user?.id ?? ""}
-                    isMine={reply.user?.id === appContext.userId}
-                    createdAt={reply.createdAt}
-                    stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                    stickerTitle={reply.sticker?.title}
-                    stickerId={reply.sticker?.id}
-                    stickerAccessType={reply.sticker?.accessType}
-                    isStickerDownloadable={reply.sticker?.isDownloaded}
-                    text={reply.text}
-                    userIconImageURL={IconUrl(reply.user?.iconUrl)}
-                    userName={reply.user?.name}
-                    replyId={reply.id}
-                    iconUrl={IconUrl(userIcon)}
-                    onDeleteComment={() => {
-                      onDeleteComment(reply.id)
-                    }}
-                    onReplyCompleted={(
-                      id: string,
-                      text: string,
-                      stickerId: string,
-                      stickerImageURL: string,
-                    ) => {
-                      // 表示コメントを追加
-                      setNewReplyComments([
-                        {
-                          replyTargetId: comment.id,
-                          id: id,
-                          text: text,
-                          createdAt: new Date().getTime(),
-                          user: {
-                            id: appContext.userId ?? "",
-                            name: appContext.displayName ?? "",
-                            iconUrl: IconUrl(userIcon),
-                          },
-                          sticker: {
-                            image: {
-                              downloadURL: stickerImageURL,
+              {comment.responses?.length &&
+                comment.responses
+                  .sort((a, b) => a.createdAt - b.createdAt)
+                  .filter((reply) => !hideCommentIds.includes(reply.id))
+                  .map((reply) => (
+                    <WorkCommentResponse
+                      key={reply.id}
+                      userId={reply.user?.id ?? ""}
+                      isMine={reply.user?.id === appContext.userId}
+                      createdAt={reply.createdAt}
+                      stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                      stickerTitle={reply.sticker?.title}
+                      stickerId={reply.sticker?.id}
+                      stickerAccessType={reply.sticker?.accessType}
+                      isStickerDownloadable={reply.sticker?.isDownloaded}
+                      text={reply.text}
+                      userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                      userName={reply.user?.name}
+                      replyId={reply.id}
+                      iconUrl={IconUrl(userIcon)}
+                      onDeleteComment={() => {
+                        onDeleteComment(reply.id)
+                      }}
+                      onReplyCompleted={(
+                        id: string,
+                        text: string,
+                        stickerId: string,
+                        stickerImageURL: string,
+                      ) => {
+                        // 表示コメントを追加
+                        setNewReplyComments([
+                          {
+                            replyTargetId: comment.id,
+                            id: id,
+                            text: text,
+                            createdAt: new Date().getTime(),
+                            user: {
+                              id: appContext.userId ?? "",
+                              name: appContext.displayName ?? "",
+                              iconUrl: IconUrl(userIcon),
                             },
+                            sticker: {
+                              image: {
+                                downloadURL: stickerImageURL,
+                              },
+                            },
+                            ...newReplyComments,
                           },
-                          ...newReplyComments,
-                        },
-                      ])
-                    }}
-                  />
-                ))}
+                        ])
+                      }}
+                    />
+                  ))}
               {/* 新しく追加した返信への返信 */}
               {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
               {showNewReplyComments &&
@@ -479,57 +480,58 @@ export const WorkCommentList = (props: Props) => {
                     }}
                   />
                   {/* コメントへの返信 */}
-                  {comment.responses
-                    .sort((a, b) => a.createdAt - b.createdAt)
-                    .filter((reply) => !hideCommentIds.includes(reply.id))
-                    .map((reply) => (
-                      <WorkCommentResponse
-                        key={reply.id}
-                        userId={reply.user?.id ?? ""}
-                        isMine={reply.user?.id === appContext.userId}
-                        createdAt={reply.createdAt}
-                        stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                        stickerTitle={reply.sticker?.title}
-                        stickerId={reply.sticker?.id}
-                        stickerAccessType={reply.sticker?.accessType}
-                        isStickerDownloadable={reply.sticker?.isDownloaded}
-                        text={reply.text}
-                        userIconImageURL={IconUrl(reply.user?.iconUrl)}
-                        userName={reply.user?.name}
-                        replyId={reply.id}
-                        iconUrl={IconUrl(userIcon)}
-                        onDeleteComment={() => {
-                          onDeleteComment(reply.id)
-                        }}
-                        onReplyCompleted={(
-                          id: string,
-                          text: string,
-                          stickerId: string,
-                          stickerImageURL: string,
-                        ) => {
-                          // 表示コメントを追加
-                          setNewReplyComments([
-                            {
-                              replyTargetId: comment.id,
-                              id: id,
-                              text: text,
-                              createdAt: new Date().getTime(),
-                              user: {
-                                id: appContext.userId ?? "",
-                                name: appContext.displayName ?? "",
-                                iconUrl: IconUrl(userIcon),
-                              },
-                              sticker: {
-                                image: {
-                                  downloadURL: stickerImageURL,
+                  {comment.responses?.length &&
+                    comment.responses
+                      .sort((a, b) => a.createdAt - b.createdAt)
+                      .filter((reply) => !hideCommentIds.includes(reply.id))
+                      .map((reply) => (
+                        <WorkCommentResponse
+                          key={reply.id}
+                          userId={reply.user?.id ?? ""}
+                          isMine={reply.user?.id === appContext.userId}
+                          createdAt={reply.createdAt}
+                          stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                          stickerTitle={reply.sticker?.title}
+                          stickerId={reply.sticker?.id}
+                          stickerAccessType={reply.sticker?.accessType}
+                          isStickerDownloadable={reply.sticker?.isDownloaded}
+                          text={reply.text}
+                          userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                          userName={reply.user?.name}
+                          replyId={reply.id}
+                          iconUrl={IconUrl(userIcon)}
+                          onDeleteComment={() => {
+                            onDeleteComment(reply.id)
+                          }}
+                          onReplyCompleted={(
+                            id: string,
+                            text: string,
+                            stickerId: string,
+                            stickerImageURL: string,
+                          ) => {
+                            // 表示コメントを追加
+                            setNewReplyComments([
+                              {
+                                replyTargetId: comment.id,
+                                id: id,
+                                text: text,
+                                createdAt: new Date().getTime(),
+                                user: {
+                                  id: appContext.userId ?? "",
+                                  name: appContext.displayName ?? "",
+                                  iconUrl: IconUrl(userIcon),
                                 },
+                                sticker: {
+                                  image: {
+                                    downloadURL: stickerImageURL,
+                                  },
+                                },
+                                ...newReplyComments,
                               },
-                              ...newReplyComments,
-                            },
-                          ])
-                        }}
-                      />
-                    ))}
+                            ])
+                          }}
+                        />
+                      ))}
                   {/* 新しく追加した返信への返信 */}
                   {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
                   {showNewReplyComments &&
