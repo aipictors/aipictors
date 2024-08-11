@@ -279,7 +279,6 @@ export const HomeContents = (props: Props) => {
                 <SelectValue placeholder={sortType ? sortType : "最新"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">{"最新"}</SelectItem>
                 <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
                 <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
                 <SelectItem value="COMMENTS_COUNT">{"コメント数"}</SelectItem>

@@ -12,6 +12,7 @@ import { UserWorksContents } from "~/routes/($lang)._main.users.$user/components
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { CalendarHeartIcon } from "lucide-react"
 
 type Props = {
   user: FragmentOf<typeof userProfileFragment>
@@ -34,6 +35,8 @@ export const UserContents = (props: Props) => {
 
   const [stickersPage, setStickersPage] = useState(0)
 
+  console.log(props.user.createdAt)
+
   return (
     <div className="flex flex-col space-y-4">
       <UserTabs
@@ -45,9 +48,42 @@ export const UserContents = (props: Props) => {
         <Suspense fallback={<AppLoadingPage />}>
           {activeTab === "ポートフォリオ" && (
             <>
-              <Card className="flex flex-col space-y-4 p-4">
-                <p className="font-bold">プロフィール</p>
-                <p className="text-sm">{props.user.biography}</p>
+              <Card className="flex flex-col gap-y-4 p-4">
+                <p className="flex items-center space-x-2 text-sm opacity-80">
+                  <CalendarHeartIcon className="h-4 w-4" />
+                  {props.user.createdAt < 1672953307 ? (
+                    <>
+                      <p>
+                        {new Date(1672953307 * 1000).toLocaleDateString(
+                          "ja-JP",
+                          {
+                            timeZone: "Asia/Tokyo",
+                            year: "numeric",
+                            month: "2-digit",
+                          },
+                        )}
+                      </p>
+                      <p>以前開始</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        {new Date(1672953307 * 1000).toLocaleDateString(
+                          "ja-JP",
+                          {
+                            timeZone: "Asia/Tokyo",
+                            year: "numeric",
+                            month: "2-digit",
+                          },
+                        )}
+                      </p>
+                      <p>頃開始</p>
+                    </>
+                  )}
+                </p>
+                {props.user.biography && (
+                  <p className="text-sm">{props.user.biography}</p>
+                )}
                 <div className="flex items-center gap-x-4">
                   {props.user.twitterAccountId && (
                     <SnsIconLink
@@ -156,6 +192,7 @@ export const userProfileFragment = graphql(
     name
     headerImageUrl
     headerImageUrl
+    createdAt
     biography
     instagramAccountId
     twitterAccountId

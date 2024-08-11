@@ -19,6 +19,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Suspense } from "react"
+import { Lumiflex } from "uvcanvas"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -81,21 +82,38 @@ export default function UserLayout() {
           <div className="relative">
             <div className="relative">
               {data.user.headerImageUrl ? (
-                <div className="relative min-h-[240px] md:min-h-[320px]">
-                  <div
-                    className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[240px] w-full items-center justify-center md:min-h-[320px]"
-                    style={{
-                      background: "center top / contain no-repeat",
-                      backgroundImage: `url(${data.user.headerImageUrl})`,
-                      maxHeight: "240px",
-                    }}
-                  />
+                <div className="relative min-h-[168px] md:min-h-[320px]">
+                  {data.user.headerImageUrl ? (
+                    <>
+                      <div
+                        className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[168px] w-full items-center justify-center md:min-h-[320px]"
+                        style={{
+                          background: "center top / contain no-repeat",
+                          backgroundImage: `url(${data.user.headerImageUrl})`,
+                          maxHeight: "240px",
+                        }}
+                      />
+                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-30" />
+                    </>
+                  ) : (
+                    <div
+                      className="absolute top-0 left-0 z-10 z-standard flex h-16 min-h-[168px] w-full items-center justify-center opacity-50 md:min-h-[320px]"
+                      style={{
+                        background: "center top / contain no-repeat",
+                        maxHeight: "240px",
+                      }}
+                    >
+                      <Lumiflex />
+                    </div>
+                  )}
                   <div className="relative m-auto">
-                    <img
-                      className="absolute top-0 left-0 block h-full max-h-full min-h-[240px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500"
-                      src={data.user.headerImageUrl}
-                      alt=""
-                    />
+                    <div className="absolute top-0 left-0 max-h-full min-h-[168px] w-full max-w-full overflow-hidden md:min-h-[320px]">
+                      <img
+                        className="block h-full max-h-full min-h-[168px] w-full max-w-full scale-125 object-cover object-center blur-[64px] transition-opacity duration-500 md:min-h-[320px]"
+                        src={data.user.headerImageUrl}
+                        alt=""
+                      />
+                    </div>
                     <div className="absolute bottom-0 left-8 z-30">
                       <UserProfileNameIcon user={data.user} />
                     </div>

@@ -25,8 +25,8 @@ export const UserHomeMain = (props: Props) => {
   const isFollow = userInfo?.user?.isFollowee ?? false
 
   return (
-    <div className="relative m-auto h-64 w-full md:h-24">
-      <div className="absolute top-0 right-0 hidden md:block">
+    <div className="relative m-auto h-72 w-full md:h-24">
+      <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex items-center space-x-4">
           <FollowButton
             targetUserId={props.user.id}
@@ -49,14 +49,14 @@ export const UserHomeMain = (props: Props) => {
           {authContext.userId === props.user.id && (
             <ProfileEditDialog
               triggerChildren={
-                <Button className="absolute top-4 right-4">編集</Button>
+                <Button className="absolute top-4 right-0">編集</Button>
               }
             />
           )}
         </div>
       </div>
 
-      <div className="absolute top-40 left-0 block w-[100%] px-8 md:hidden">
+      <div className="absolute top-48 left-0 block w-[100%] px-8 md:hidden">
         {authContext.userId !== props.user.id && (
           <FollowButton
             className="mb-2 w-[100%] rounded-full"

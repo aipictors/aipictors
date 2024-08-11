@@ -132,7 +132,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                 style={{ position: "relative" }}
               >
                 <div
-                  className="relative inline-block"
+                  className="relative inline-block h-full w-full"
                   onMouseEnter={() => handleMouseEnter(context.index)}
                   onMouseLeave={() => handleMouseLeave(context.index)}
                 >
