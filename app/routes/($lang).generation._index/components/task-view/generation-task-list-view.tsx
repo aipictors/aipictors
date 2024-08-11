@@ -249,6 +249,7 @@ const viewerImageGenerationResultsQuery = graphql(
     viewer {
       id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
+        id
         ...ImageGenerationResultFields
       }
     }
@@ -261,6 +262,7 @@ const viewerImageGenerationTasksQuery = graphql(
     viewer {
       id
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
+        id
         ...ImageGenerationTaskFields
       }
     }

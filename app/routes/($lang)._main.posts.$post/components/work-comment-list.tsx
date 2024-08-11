@@ -689,7 +689,9 @@ const createWorkCommentMutation = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
+        id
         iconUrl
       }
     }

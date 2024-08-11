@@ -119,6 +119,7 @@ const viewerMutedTagsQuery = graphql(
     viewer {
       id
       mutedTags(offset: $offset, limit: $limit) {
+        id
         ...PartialMutedTagFields
       }
     }

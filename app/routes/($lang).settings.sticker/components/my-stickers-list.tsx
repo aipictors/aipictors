@@ -191,6 +191,7 @@ const viewerUserStickersQuery = graphql(
     viewer {
       id
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
+        id
         ...PartialStickerFields
       }
     }

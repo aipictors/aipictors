@@ -556,6 +556,7 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
+        id
         ...PassFields
       }
     }
