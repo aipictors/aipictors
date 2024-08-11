@@ -130,14 +130,8 @@ export async function loader() {
       month: date.getMonth() + 1,
       year: date.getFullYear(),
       adWorksLimit: config.query.homeWorkCount.ad,
-      // novelWorksLimit: config.query.homeWorkCount.novel,
-      // columnWorksLimit: config.query.homeWorkCount.column,
-      // generationWorksLimit: config.query.homeWorkCount.generation,
       promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
-      // pastGenerationBefore: pastGenerationDate.toISOString(),
-      // novelWorksBefore: pastNovelDate.toISOString(),
-      // columnWorksBefore: pastColumnDate.toISOString(),
       categoryFirst: randomCategories[0],
       categorySecond: randomCategories[1],
       tagWorksLimit: config.query.homeWorkCount.tag,
@@ -203,11 +197,6 @@ const query = graphql(
     $awardMonth: Int!
     $awardDay: Int!
     $adWorksLimit: Int!
-    # $novelWorksLimit: Int!
-    # $novelWorksBefore: String!
-    # $columnWorksLimit: Int!
-    # $columnWorksBefore: String!
-    # $generationWorksLimit: Int!
     $promotionWorksLimit: Int!
     $awardWorksLimit: Int!
     $categoryFirst: String!
@@ -283,37 +272,12 @@ const query = graphql(
     ) {
       ...HomePromotionWork
     }
-    # novelWorks: works(
-    #   offset: 0,
-    #   limit: $novelWorksLimit,
-    #   where: {
-    #     ratings: [G, R15],
-    #     workType: NOVEL,
-    #     beforeCreatedAt: $novelWorksBefore
-    #   }
-    # ) {
-    #   ...HomeNovelPost
-    # }
-    # columnWorks: works(
-    #   offset: 0,
-    #   limit: $columnWorksLimit,
-    #   where: {
-    #     ratings: [G, R15],
-    #     workType: COLUMN,
-    #     beforeCreatedAt: $columnWorksBefore
-    #   }
-    # ) {
-    #   ...HomeColumnPost
-    # }
   }`,
   [
     HomeBannerWorkFragment,
     HomePromotionWorkFragment,
-    // HomeNovelPostFragment,
     HomeTagListItemFragment,
-    // HomeGenerationWorkFragment,
     HomeWorkAwardFragment,
-    // HomeColumnPostFragment,
     HomeTagFragment,
     HomeTagWorkFragment,
   ],

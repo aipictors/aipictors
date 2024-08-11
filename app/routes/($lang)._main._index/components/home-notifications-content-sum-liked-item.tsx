@@ -1,8 +1,8 @@
+import { type FragmentOf, graphql } from "gql.tada"
 import { HeartIcon } from "lucide-react"
 
 type Props = {
-  message: string
-  createdAt: string
+  notification: FragmentOf<typeof LikedWorksSummaryNotificationFragment>
 }
 
 /**
@@ -14,9 +14,17 @@ export const HomeNotificationsContentSumLikedItem = (props: Props) => {
       <div className="flex items-center p-1 transition-all">
         <HeartIcon className="mr-2 w-4" />
         <div className="ml-2 w-full overflow-hidden">
-          <p className="text-ellipsis">{props.message}</p>
+          <p className="text-ellipsis">{props.notification.message}</p>
         </div>
       </div>
     </>
   )
 }
+
+export const LikedWorksSummaryNotificationFragment = graphql(
+  `fragment LikedWorksSummaryNotification on LikedWorksSummaryNotificationNode @_unmask {
+    id
+    message
+    createdAt
+  }`,
+)

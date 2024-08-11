@@ -1,13 +1,21 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { HomeNovelsWorksSection } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import { HomeVideosWorksSection } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import {
+  HomeNovelsWorkListItemFragment,
+  HomeNovelsWorksSection,
+} from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import {
+  HomeVideosWorkListItemFragment,
+  HomeVideosWorksSection,
+} from "~/routes/($lang)._main._index/components/home-video-works-section"
 
 type Props = {
   isSensitive?: boolean
@@ -79,11 +87,18 @@ export const HomeWorksSection = (props: Props) => {
     </div>
   )
 }
+
 const WorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomeWork
+      ...HomeNovelsWorkListItem
+      ...HomeVideosWorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
+  ],
 )
