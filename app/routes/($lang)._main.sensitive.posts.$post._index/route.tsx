@@ -1,6 +1,6 @@
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
-import { workArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
+import { sensitiveWorkArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
 import { commentFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post/components/work-container"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -40,15 +40,15 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  // センシティブな作品の場合は/sensitive/にリダイレクト
+  // センシティブでない作品の場合は/postsにリダイレクト
   if (
-    workResp.data.work.rating === "R18" ||
-    workResp.data.work.rating === "R18G"
+    workResp.data.work.rating === "G" ||
+    workResp.data.work.rating === "R15"
   ) {
     return json(null, {
       status: 302,
       headers: {
-        Location: `/sensitive/posts/${props.params.post}`,
+        Location: `/posts/${props.params.post}`,
       },
     })
   }
@@ -118,5 +118,5 @@ const workQuery = graphql(
       ...WorkArticle
     }
   }`,
-  [workArticleFragment],
+  [sensitiveWorkArticleFragment],
 )

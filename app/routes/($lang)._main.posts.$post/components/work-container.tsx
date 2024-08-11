@@ -1,6 +1,7 @@
 import {
   WorkArticle,
   workArticleFragment,
+  sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
 import { Suspense, useContext } from "react"
@@ -22,6 +23,7 @@ type Props = {
   work: FragmentOf<typeof workArticleFragment> | null
   comments: FragmentOf<typeof commentFragment>[]
   isDraft?: boolean
+  isSensitive?: boolean
 }
 
 /**
@@ -30,12 +32,15 @@ type Props = {
 export const WorkContainer = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data, refetch } = useQuery(workQuery, {
-    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
-    variables: {
-      id: props.post,
+  const { data, refetch } = useQuery(
+    props.isSensitive ? sensitiveWorkQuery : workQuery,
+    {
+      skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
+      variables: {
+        id: props.post,
+      },
     },
-  })
+  )
 
   const work = data?.work ?? props.work
 
@@ -133,4 +138,13 @@ const workQuery = graphql(
     }
   }`,
   [workArticleFragment],
+)
+
+const sensitiveWorkQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      ...WorkArticle
+    }
+  }`,
+  [sensitiveWorkArticleFragment],
 )
