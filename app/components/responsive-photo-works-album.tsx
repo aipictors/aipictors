@@ -4,6 +4,7 @@ import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
+import { Images } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -73,6 +74,16 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
                   strokeWidth={2}
                   likedCount={photo.context.likesCount}
                 />
+              </div>
+              <div className="absolute top-1 right-1 z-10">
+                {photo.context.subWorksCount > 0 && (
+                  <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                    <Images className="h-3 w-3 text-white" />
+                    <div className="font-bold text-white text-xs">
+                      {photo.context.subWorksCount + 1}
+                    </div>
+                  </div>
+                )}
               </div>
               {/* <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
                 <Link className="w-48 font-bold" to={`/posts/${photo.workId}`}>

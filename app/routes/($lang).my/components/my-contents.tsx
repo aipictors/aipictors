@@ -60,7 +60,6 @@ export const MyContents = (props: Props) => {
         }}
       >
         <div>
-          <p className="font-bold text-xl">ダッシュボード</p>
           <Tabs
             className="mt-2 mb-8"
             value={myContentType}
