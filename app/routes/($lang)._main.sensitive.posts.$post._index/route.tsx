@@ -96,6 +96,7 @@ export default function Work() {
       post={data.post}
       work={data.work}
       comments={data.workComments}
+      isSensitive={true}
     />
   )
 }

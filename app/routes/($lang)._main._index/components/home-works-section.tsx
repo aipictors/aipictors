@@ -33,6 +33,7 @@ export const HomeWorksSection = (props: Props) => {
       limit: perPageCount,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        isSensitive: props.isSensitive,
         ...(props.workType !== null && {
           workType: props.workType,
         }),

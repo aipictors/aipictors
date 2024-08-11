@@ -123,7 +123,11 @@ export const WorkContainer = (props: Props) => {
                 {"おすすめ"}
               </h2>
             </div>
-            <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
+            <WorkTagsWorks
+              isSensitive={props.isSensitive}
+              tagName={randomTag}
+              rating={work.rating ?? "G"}
+            />
           </>
         )}
       </section>

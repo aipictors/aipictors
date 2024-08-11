@@ -19,7 +19,7 @@ export const ResponsiveFoldersList = (props: Props) => {
       className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
     >
       <div className="box-border flex flex-col justify-end">
-        <Link to={`/collections/${props.folder.id}`} className="relative">
+        <Link to={`/collections/${props.folder.nanoid}`} className="relative">
           <img
             className="h-16 w-32 object-cover transition-all hover:scale-110 md:h-32 md:w-64"
             src={

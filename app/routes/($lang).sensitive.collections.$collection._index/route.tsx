@@ -1,6 +1,5 @@
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -27,7 +26,7 @@ export default function SensitiveCollection() {
 
   return (
     <>
-      <CollectionArticle />
+      {/* <CollectionArticle /> */}
       <WorkList works={data.works} />
     </>
   )

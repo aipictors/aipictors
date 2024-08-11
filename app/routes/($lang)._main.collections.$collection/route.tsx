@@ -2,24 +2,26 @@ import { ParamsError } from "~/errors/params-error"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
-import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  if (props.params.collection === undefined) {
+    throw new Response(null, { status: 404 })
+  }
+
   const client = createClient()
 
-  const worksResp = await client.query({
-    query: worksQuery,
+  const collectionResp = await client.query({
+    query: folderQuery,
     variables: {
-      offset: 0,
-      limit: 16,
-      where: {},
+      nanoid: props.params.collection,
     },
   })
   return json({
-    worksResp,
+    folderResp: collectionResp.data.folder,
   })
 }
 
@@ -35,19 +37,43 @@ export default function Collections() {
 
   const data = useLoaderData<typeof loader>()
 
+  if (data.folderResp === null) {
+    throw new Response(null, { status: 404 })
+  }
+
   return (
     <>
-      <CollectionArticle />
-      <WorkList works={data.worksResp.data.works ?? []} />
+      <CollectionArticle collection={data.folderResp} />
     </>
   )
 }
 
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
+export const partialFolderFieldsFragment = graphql(
+  `fragment PartialFolderFields on FolderNode @_unmask {
+      id
+      thumbnailImageURL
+      title
+      description
+      tags
+      user {
+        id
+        name
+        iconUrl
+        login
+      }
+      worksCount
+      works(offset: 0, limit: 16) {
+        ...PartialWorkFields
+      }
   }`,
   [partialWorkFieldsFragment],
+)
+
+const folderQuery = graphql(
+  `query folder($nanoid: String!) {
+    folder(where: { nanoid: $nanoid }) {
+      ...PartialFolderFields
+    }
+  }`,
+  [partialFolderFieldsFragment],
 )

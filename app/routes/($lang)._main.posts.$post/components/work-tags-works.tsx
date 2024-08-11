@@ -10,6 +10,7 @@ import { graphql } from "gql.tada"
 type Props = {
   tagName: string
   rating: "G" | "R15" | "R18" | "R18G"
+  isSensitive?: boolean
 }
 
 /**
@@ -26,6 +27,7 @@ export const WorkTagsWorks = (props: Props) => {
       where: {
         tagNames: [props.tagName],
         ratings: [props.rating],
+        isSensitive: props.isSensitive,
       },
     },
   })

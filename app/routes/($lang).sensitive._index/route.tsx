@@ -249,6 +249,7 @@ const query = graphql(
         ratings: [R18],
         search: $categoryFirst
         orderBy: VIEWS_COUNT
+        isSensitive: true
       }
     ) {
       ...HomeTagWork
@@ -260,6 +261,7 @@ const query = graphql(
         ratings: [R18],
         search: $categorySecond
         orderBy: VIEWS_COUNT
+        isSensitive: true
       }
     ) {
       ...HomeTagWork

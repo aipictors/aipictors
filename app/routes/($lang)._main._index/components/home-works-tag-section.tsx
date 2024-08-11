@@ -27,6 +27,7 @@ export const HomeWorksTagSection = (props: Props) => {
       limit: config.query.homeWorkCount.tag,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        isSensitive: props.isSensitive,
         search: props.tag, // タグによるフィルタリングを追加
         orderBy: "VIEWS_COUNT",
       },

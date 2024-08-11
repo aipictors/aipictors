@@ -22,7 +22,7 @@ type Props = {
 export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
-  const isAutoPlay = props.isAutoPlay ?? false
+  const isAutoPlay = props.isAutoPlay ?? true
 
   const handleMouseEnter = useCallback((index: number) => {
     if (isAutoPlay) {
@@ -149,7 +149,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                       src={context.photo.url ?? ""}
                       // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
                       ref={(el) => (videoRefs.current[context.index] = el)}
-                      className="absolute top-0 left-0 overflow-hidden rounded"
+                      className="absolute top-0 left-0 h-full overflow-hidden rounded"
                       style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
                       muted
                       autoPlay={isAutoPlay}
