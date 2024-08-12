@@ -20,7 +20,7 @@ import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sti
 
 type Props = {
   workId: string
-  comments: FragmentOf<typeof commentFragment>[]
+  comments: FragmentOf<typeof CommentFragment>[]
 }
 
 // コメント
@@ -717,7 +717,7 @@ const userQuery = graphql(
   [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const commentFragment = graphql(
+export const CommentFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
       ...CommentFields
       responses(offset: 0, limit: 128) {
