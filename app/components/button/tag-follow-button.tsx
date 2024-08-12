@@ -4,9 +4,10 @@ import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/cn"
 import { graphql } from "gql.tada"
+import { toast } from "sonner"
 
 type Props = {
-  targetUserId: string
+  tag: string
   isFollow: boolean
   className?: string
   triggerChildren?: React.ReactNode
@@ -14,9 +15,9 @@ type Props = {
 }
 
 /**
- * フォロー
+ * タグフォロー
  */
-export const FollowButton = (props: Props) => {
+export const TagFollowButton = (props: Props) => {
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)
@@ -31,58 +32,62 @@ export const FollowButton = (props: Props) => {
     useMutation(unfollowUserMutation)
 
   const onFollow = async () => {
-    try {
-      const res = await follow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
-        },
-      })
-      setIsFollow(res.data?.followUser?.isFollowee ?? false)
-    } catch (e) {
-      console.error(e)
-    }
+    toast("メンテナンス中です")
+    // try {
+    //   const res = await follow({
+    //     variables: {
+    //       input: {
+    //         userId: props.targetUserId,
+    //       },
+    //     },
+    //   })
+    //   setIsFollow(res.data?.followUser?.isFollowee ?? false)
+    // } catch (e) {
+    //   console.error(e)
+    // }
   }
 
   const onUnFollow = async () => {
-    try {
-      const res = await unFollow({
-        variables: {
-          input: {
-            userId: props.targetUserId,
-          },
-        },
-      })
-      setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
-    } catch (e) {
-      console.error(e)
-    }
+    toast("メンテナンス中です")
+    // try {
+    //   const res = await unFollow({
+    //     variables: {
+    //       input: {
+    //         userId: props.targetUserId,
+    //       },
+    //     },
+    //   })
+    //   setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
+    // } catch (e) {
+    //   console.error(e)
+    // }
   }
 
   const triggerNode = props.triggerChildren ?? (
     <button
       type="button"
+      disabled={true}
       onClick={() => {}}
       className={
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-8 w-full font-bold rounded-full bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
+        `h-10 w-full font-bold rounded-full bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
       }
     >
-      {"フォローする"}
+      {"お気に入り登録"}
     </button>
   )
 
   const unFollowTriggerNode = props.unFollowTriggerChildren ?? (
     <button
       type="button"
+      disabled={true}
       onClick={() => {}}
       className={
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-8 w-full font-bold rounded-full bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
+        `h-10 w-full font-bold rounded-full bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
       }
     >
-      {"フォロー中"}
+      {"お気に入り解除"}
     </button>
   )
 
@@ -99,8 +104,7 @@ export const FollowButton = (props: Props) => {
     )
   }
 
-  /* 自分自身の場合はフォローボタンを表示しない */
-  if (authContext.userId === props.targetUserId) {
+  if (!props.tag) {
     return null
   }
 
@@ -111,7 +115,9 @@ export const FollowButton = (props: Props) => {
         if (isFollowing || isUnFollowing) return
         onUnFollow()
       }}
-      className={cn(isFollowing || isUnFollowing ? "opacity-80" : "")}
+      className={cn(
+        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+      )}
     >
       {unFollowTriggerNode}
     </div>
@@ -122,7 +128,9 @@ export const FollowButton = (props: Props) => {
         if (isFollowing || isUnFollowing) return
         onFollow()
       }}
-      className={cn(isFollowing || isUnFollowing ? "opacity-80" : "")}
+      className={cn(
+        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+      )}
     >
       {triggerNode}
     </div>

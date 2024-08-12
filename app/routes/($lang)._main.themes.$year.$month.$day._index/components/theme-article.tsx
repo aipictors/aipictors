@@ -66,7 +66,9 @@ export const ThemeArticle = (props: Props) => {
         {!props.isSensitive ? (
           <AppConfirmDialog
             title={"確認"}
-            description={"あなたは18歳以上ですか？"}
+            description={
+              "センシティブな作品を表示します、あなたは18歳以上ですか？"
+            }
             onNext={() => {
               navigate(
                 `/sensitive/themes/${props.year}/${props.month}/${props.day}`,

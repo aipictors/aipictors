@@ -28,11 +28,7 @@ export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
     <>
       <div className="flex flex-row flex-wrap items-center gap-x-4">
         {tagNames.map((tagName) => (
-          <Link
-            to={`https://www.aipictors.com/search/?tag=${tagName}`}
-            key={tagName}
-            className="p-0"
-          >
+          <Link to={`/tags/${tagName}`} key={tagName} className="p-0">
             <Button className="p-0" variant={"link"}>{`#${tagName}`}</Button>
           </Link>
         ))}
