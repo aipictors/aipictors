@@ -46,97 +46,78 @@ export const NotificationListItems = (props: Props) => {
 
   const notifications = result.data?.viewer?.notifications ?? []
 
-  const activeNotifications = notifications.filter((notification) => {
-    if (props.type === "LIKED_WORK") {
-      return notification.__typename === "LikedWorkNotificationNode"
-    }
-    if (props.type === "WORK_AWARD") {
-      return notification.__typename === "WorkAwardNotificationNode"
-    }
-    if (props.type === "WORK_COMMENT") {
-      return notification.__typename === "WorkCommentNotificationNode"
-    }
-    if (props.type === "COMMENT_REPLY") {
-      return notification.__typename === "WorkCommentReplyNotificationNode"
-    }
-    if (props.type === "FOLLOW") {
-      return notification.__typename === "FollowNotificationNode"
-    }
-    if (props.type === "LIKED_WORKS_SUMMARY") {
-      return notification.__typename === "LikedWorksSummaryNotificationNode"
-    }
-    return false
-  })
-
   return (
     <div className="space-y-2 overflow-hidden p-2">
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "WorkCommentNotificationNode") {
-          return null
+      {notifications.map((notification) => {
+        if (
+          props.type === "WORK_COMMENT" &&
+          notification.__typename === "WorkCommentNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentCommentedItem
+              key={notification.id}
+              notification={notification}
+              stickerSize="lg"
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentCommentedItem
-            key={notification.id}
-            notification={notification}
-            stickerSize="lg"
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "WorkCommentReplyNotificationNode") {
-          return null
+        if (
+          props.type === "COMMENT_REPLY" &&
+          notification.__typename === "WorkCommentReplyNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentReplyItem
+              key={notification.id}
+              notification={notification}
+              stickerSize="lg"
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentReplyItem
-            key={notification.id}
-            notification={notification}
-            stickerSize="lg"
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "LikedWorkNotificationNode") {
-          return null
+        if (
+          props.type === "LIKED_WORK" &&
+          notification.__typename === "LikedWorkNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentLikedItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentLikedItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "WorkAwardNotificationNode") {
-          return null
+        if (
+          props.type === "WORK_AWARD" &&
+          notification.__typename === "WorkAwardNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentAwardItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentAwardItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "FollowNotificationNode") {
-          return null
+        if (
+          props.type === "FOLLOW" &&
+          notification.__typename === "FollowNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentFollowedItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentFollowedItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "LikedWorksSummaryNotificationNode") {
-          return null
+        if (
+          props.type === "LIKED_WORKS_SUMMARY" &&
+          notification.__typename === "LikedWorksSummaryNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentSumLikedItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentSumLikedItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
+        return null
       })}
     </div>
   )

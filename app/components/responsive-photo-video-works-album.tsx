@@ -189,6 +189,8 @@ export const PhotoAlbumVideoWorkFragment = graphql(
     isLiked
     user {
       id
+      name
+      iconUrl
     }
   }`,
 )

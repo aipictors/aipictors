@@ -36,7 +36,7 @@ export const HomeNotificationsContents = (props: Props) => {
 
   const notifications = query.data.viewer?.notifications ?? []
 
-  if (notifications?.length === 0) {
+  if (notifications.length === 0) {
     return (
       <>
         <div className="m-auto">
@@ -51,60 +51,47 @@ export const HomeNotificationsContents = (props: Props) => {
     )
   }
 
-  const activeNotifications = notifications.filter((notification) => {
-    if (props.type === "LIKED_WORK") {
-      return notification.__typename === "LikedWorkNotificationNode"
-    }
-    if (props.type === "WORK_AWARD") {
-      return notification.__typename === "WorkAwardNotificationNode"
-    }
-    if (props.type === "FOLLOW") {
-      return notification.__typename === "FollowNotificationNode"
-    }
-    return false
-  })
-
   return (
-    <>
-      <ScrollArea className="h-96 overflow-y-auto">
-        <div className="max-w-96 overflow-hidden">
-          {activeNotifications.map((notification) => {
-            if (props.type !== "LIKED_WORK") return null
-            if (notification.__typename !== "LikedWorkNotificationNode") {
-              return null
-            }
+    <ScrollArea className="h-96 overflow-y-auto">
+      <div className="max-w-96 overflow-hidden">
+        {notifications.map((notification) => {
+          if (
+            props.type === "LIKED_WORK" &&
+            notification.__typename === "LikedWorkNotificationNode"
+          ) {
             return (
               <HomeNotificationsContentLikedItem
                 key={notification.id}
                 notification={notification}
               />
             )
-          })}
-          {activeNotifications.map((notification) => {
-            if (notification.__typename !== "WorkAwardNotificationNode") {
-              return null
-            }
+          }
+          if (
+            props.type === "WORK_AWARD" &&
+            notification.__typename === "WorkAwardNotificationNode"
+          ) {
             return (
               <HomeNotificationsContentAwardItem
                 key={notification.id}
                 notification={notification}
               />
             )
-          })}
-          {activeNotifications.map((notification) => {
-            if (notification.__typename !== "FollowNotificationNode") {
-              return null
-            }
+          }
+          if (
+            props.type === "FOLLOW" &&
+            notification.__typename === "FollowNotificationNode"
+          ) {
             return (
               <HomeNotificationsContentFollowedItem
                 key={notification.id}
                 notification={notification}
               />
             )
-          })}
-        </div>
-      </ScrollArea>
-    </>
+          }
+          return null
+        })}
+      </div>
+    </ScrollArea>
   )
 }
 

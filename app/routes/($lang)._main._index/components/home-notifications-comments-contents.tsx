@@ -31,39 +31,32 @@ export const HomeNotificationCommentsContents = (props: Props) => {
 
   const notifications = result.data?.viewer?.notifications ?? []
 
-  const activeNotifications = notifications.filter((notification) => {
-    if (props.type === "WORK_COMMENT") {
-      return notification.__typename === "WorkCommentNotificationNode"
-    }
-    if (props.type === "COMMENT_REPLY") {
-      return notification.__typename === "WorkCommentReplyNotificationNode"
-    }
-    return false
-  })
-
   return (
     <div className="max-w-96 overflow-hidden">
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "WorkCommentNotificationNode") {
-          return null
+      {notifications.map((notification) => {
+        if (
+          props.type === "WORK_COMMENT" &&
+          notification.__typename === "WorkCommentNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentCommentedItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentCommentedItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
-      })}
-      {activeNotifications.map((notification) => {
-        if (notification.__typename !== "WorkCommentReplyNotificationNode") {
-          return null
+        if (
+          props.type === "COMMENT_REPLY" &&
+          notification.__typename === "WorkCommentReplyNotificationNode"
+        ) {
+          return (
+            <HomeNotificationsContentReplyItem
+              key={notification.id}
+              notification={notification}
+            />
+          )
         }
-        return (
-          <HomeNotificationsContentReplyItem
-            key={notification.id}
-            notification={notification}
-          />
-        )
+        return null
       })}
     </div>
   )
