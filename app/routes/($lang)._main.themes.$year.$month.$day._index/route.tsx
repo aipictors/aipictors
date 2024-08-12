@@ -1,132 +1,83 @@
-import { Button } from "~/components/ui/button"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { Link, json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (props.params.year === undefined) {
-    throw new Response(null, { status: 404 })
-  }
-
-  if (props.params.month === undefined) {
-    throw new Response(null, { status: 404 })
-  }
-
-  if (props.params.day === undefined) {
-    throw new Response(null, { status: 404 })
+  if (
+    props.params.year === undefined ||
+    props.params.month === undefined ||
+    props.params.day === undefined
+  ) {
+    throw new Response("Invalid date", { status: 400 })
   }
 
   const client = createClient()
+
+  const year = Number.parseInt(props.params.year)
+
+  const month = Number.parseInt(props.params.month)
+
+  const day = Number.parseInt(props.params.day)
+
+  const url = new URL(props.request.url)
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
 
   const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
       limit: 1,
+      where: { year, month, day },
+    },
+  })
+
+  const [dailyTheme = null] = dailyThemesResp.data.dailyThemes
+
+  if (dailyTheme === null) {
+    throw new Response("Not found", { status: 404 })
+  }
+
+  const worksResp = await client.query({
+    query: themeWorksAndCountQuery,
+    variables: {
+      offset: page * 32,
+      limit: 32,
       where: {
-        year: Number.parseInt(props.params.year),
-        month: Number.parseInt(props.params.month),
-        day: Number.parseInt(props.params.day),
+        subjectId: Number(dailyThemesResp.data.dailyThemes[0].id),
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
       },
     },
   })
 
-  const [dailyTheme] = dailyThemesResp.data.dailyThemes
-
-  return json({
-    dailyTheme,
-  })
+  return json({ dailyTheme, worksResp, year, month, day, page })
 }
 
-/**
- * その日のテーマ一覧
- */
-export default function Theme() {
-  const params = useParams()
-
-  if (params.year === undefined) {
-    throw new Error()
-  }
-
-  if (params.month === undefined) {
-    throw new Error()
-  }
-
-  if (params.day === undefined) {
-    throw new Error()
-  }
-
+export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
 
-  const year = Number.parseInt(params.year)
-  const month = Number.parseInt(params.month)
-  const day = Number.parseInt(params.day)
-
-  const calculateDate = (
-    year: number,
-    month: number,
-    day: number,
-    offset: number,
-  ) => {
-    const date = new Date(year, month - 1, day)
-    date.setDate(date.getDate() + offset)
-    return date
-  }
-
-  const yesterday = calculateDate(year, month, day, -1)
-  const tomorrow = calculateDate(year, month, day, 1)
-
-  const dateLink = (date: Date) => {
-    return (
-      <Link
-        to={`/themes/${date.getFullYear()}/${
-          date.getMonth() + 1
-        }/${date.getDate()}`}
-      >
-        {date.getFullYear()}年 {date.getMonth() + 1}月 {date.getDate()}日
-      </Link>
-    )
-  }
-
-  const yesterdayLink = dateLink(yesterday)
-  const tomorrowLink = dateLink(tomorrow)
-
   return (
-    <>
-      <article>
-        <h1>お題</h1>
-        <div className="m-4">
-          <p className="text-lg md:text-xl">"{data.dailyTheme.title}"</p>
-          <Button asChild={true} className="m-1">
-            <Link
-              to={`https://www.aipictors.com/search/?tag=${data.dailyTheme.title}`}
-            >
-              タグの作品一覧を見る
-            </Link>
-          </Button>
-          <p>
-            <Link to={`/themes/${year}/${month}/`} className="underline">
-              {year}年 {month}月
-            </Link>
-            {day}日
-          </p>
-          <p>
-            昨日：
-            <Button asChild={true} className="m-1">
-              {yesterdayLink}
-            </Button>
-            <br />
-            明日：
-            <Button asChild={true} className="m-1">
-              {tomorrowLink}
-            </Button>
-          </p>
-        </div>
-      </article>
-    </>
+    <article>
+      <ThemeArticleContainer
+        works={data.worksResp.data.works}
+        worksCount={data.worksResp.data.worksCount}
+        firstWork={data.dailyTheme.firstWork}
+        title={`${data.year}/${data.month}/${data.day}のお題「${data.dailyTheme.title}」`}
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        page={data.page}
+        isSensitive={false}
+        themeId={data.dailyTheme.id}
+      />
+    </article>
   )
 }
 
@@ -147,6 +98,25 @@ const dailyThemesQuery = graphql(
       firstWork {
         ...PartialWorkFields
       }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const themeWorksAndCountQuery = graphql(
+  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+    worksCount(where: $where)
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const themeWorksQuery = graphql(
+  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
     }
   }`,
   [partialWorkFieldsFragment],

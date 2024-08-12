@@ -4,7 +4,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { WorkComment } from "~/routes/($lang)._main.posts.$post/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post/components/work-comment-response"
 import { Loader2Icon, StampIcon } from "lucide-react"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
@@ -15,10 +15,12 @@ import { ExpansionTransition } from "~/components/expansion-transition"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { commentFieldsFragment } from "~/graphql/fragments/comment-fields"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
+import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
+import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 
 type Props = {
   workId: string
-  comments: FragmentOf<typeof CommentFragment>[]
+  comments: FragmentOf<typeof commentFragment>[]
 }
 
 // コメント
@@ -56,6 +58,15 @@ type ReplyComment = {
   }
 }
 
+// 日本時間の日付を計算する関数
+const getJSTDate = () => {
+  const date = new Date()
+  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
+  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
+  const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
+  return jstDate
+}
+
 /**
  * 作品へのコメント一覧
  */
@@ -65,7 +76,7 @@ export const WorkCommentList = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const [createWorkComment, { loading: isCreatingWorkComment }] = useMutation(
-    CreateWorkCommentMutation,
+    createWorkCommentMutation,
   )
 
   // 入力中のコメント
@@ -124,6 +135,12 @@ export const WorkCommentList = (props: Props) => {
     (comment) => !hideCommentIds.includes(comment.id),
   )
 
+  useEffect(() => {
+    if (newComments !== null) {
+      setNewComments(null)
+    }
+  }, [props.workId])
+
   /**
    * コメント送信イベント（スタンプボタン押下も含む）
    * @param text
@@ -151,12 +168,13 @@ export const WorkCommentList = (props: Props) => {
         })
 
         setComment("")
+        console.log(getJSTDate().getTime())
 
         setNewComments([
           {
             id: res.data?.createWorkComment?.id ?? "",
             text: text,
-            createdAt: new Date().getTime(),
+            createdAt: getJSTDate().getTime() / 1000,
             user: {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
@@ -207,17 +225,43 @@ export const WorkCommentList = (props: Props) => {
   // もっと見る以降のコメント一覧、showCommentsから8件以降を表示
   const showCommentsAfterMore = showComments.slice(8)
 
-  const { data = null } = useQuery(ViewerUserQuery, {
+  const { data = null } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading,
   })
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+
+  const stickers = data?.viewer?.userStickers ?? []
 
   return (
     <>
       {/* コメント一覧 */}
       <div className="space-y-4">
         <p>{`コメント (${showComments.length + (showNewComments?.length ?? 0)})`}</p>
+        {stickers.length > 0 && (
+          <div className="flex space-x-2 overflow-x-auto">
+            {stickers.map((sticker) => (
+              <StickerButton
+                key={sticker.id}
+                imageUrl={sticker.imageUrl ?? ""}
+                title={sticker.title}
+                onClick={async () => {
+                  try {
+                    await sendComment(
+                      comment,
+                      sticker.id,
+                      sticker.imageUrl ?? "",
+                      props.workId,
+                    )
+                  } catch (error) {
+                    console.error("Failed to send comment:", error)
+                  }
+                }}
+              />
+            ))}
+          </div>
+        )}
+
         {/* コメント入力欄 */}
         <div className="flex w-full items-center space-x-4">
           <Avatar>
@@ -259,7 +303,7 @@ export const WorkCommentList = (props: Props) => {
           {showNewComments && (
             <div className="space-y-4">
               {showNewComments.map((comment) => (
-                <div key={comment.id}>
+                <div key={`${props.workId}-${comment.id}`}>
                   <WorkComment
                     userId={comment.user?.id ?? ""}
                     isMine={comment.user?.id === appContext.userId}
@@ -276,12 +320,13 @@ export const WorkCommentList = (props: Props) => {
                       stickerId: string,
                       stickerImageURL: string,
                     ) => {
+                      console.log(getJSTDate().getTime())
                       // 表示コメントを追加
                       setNewComments([
                         {
                           id: id,
                           text: text,
-                          createdAt: new Date().getTime(),
+                          createdAt: getJSTDate().getTime() / 1000,
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
@@ -348,57 +393,59 @@ export const WorkCommentList = (props: Props) => {
                 }}
               />
               {/* コメントへの返信 */}
-              {comment.responses
-                ?.sort((a, b) => a.createdAt - b.createdAt)
-                .filter((reply) => !hideCommentIds.includes(reply.id))
-                .map((reply) => (
-                  <WorkCommentResponse
-                    key={reply.id}
-                    userId={reply.user?.id ?? ""}
-                    isMine={reply.user?.id === appContext.userId}
-                    createdAt={reply.createdAt}
-                    stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                    stickerTitle={reply.sticker?.title}
-                    stickerId={reply.sticker?.id}
-                    stickerAccessType={reply.sticker?.accessType}
-                    isStickerDownloadable={reply.sticker?.isDownloaded}
-                    text={reply.text}
-                    userIconImageURL={IconUrl(reply.user?.iconUrl)}
-                    userName={reply.user?.name}
-                    replyId={reply.id}
-                    iconUrl={IconUrl(userIcon)}
-                    onDeleteComment={() => {
-                      onDeleteComment(reply.id)
-                    }}
-                    onReplyCompleted={(
-                      id: string,
-                      text: string,
-                      stickerId: string,
-                      stickerImageURL: string,
-                    ) => {
-                      // 表示コメントを追加
-                      setNewReplyComments([
-                        {
-                          replyTargetId: comment.id,
-                          id: id,
-                          text: text,
-                          createdAt: new Date().getTime(),
-                          user: {
-                            id: appContext.userId ?? "",
-                            name: appContext.displayName ?? "",
-                            iconUrl: IconUrl(userIcon),
-                          },
-                          sticker: {
-                            image: {
-                              downloadURL: stickerImageURL,
+              {comment.responses !== null &&
+                comment.responses?.length !== 0 &&
+                comment.responses
+                  .sort((a, b) => a.createdAt - b.createdAt)
+                  .filter((reply) => !hideCommentIds.includes(reply.id))
+                  .map((reply) => (
+                    <WorkCommentResponse
+                      key={reply.id}
+                      userId={reply.user?.id ?? ""}
+                      isMine={reply.user?.id === appContext.userId}
+                      createdAt={reply.createdAt}
+                      stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                      stickerTitle={reply.sticker?.title}
+                      stickerId={reply.sticker?.id}
+                      stickerAccessType={reply.sticker?.accessType}
+                      isStickerDownloadable={reply.sticker?.isDownloaded}
+                      text={reply.text}
+                      userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                      userName={reply.user?.name}
+                      replyId={reply.id}
+                      iconUrl={IconUrl(userIcon)}
+                      onDeleteComment={() => {
+                        onDeleteComment(reply.id)
+                      }}
+                      onReplyCompleted={(
+                        id: string,
+                        text: string,
+                        stickerId: string,
+                        stickerImageURL: string,
+                      ) => {
+                        // 表示コメントを追加
+                        setNewReplyComments([
+                          {
+                            replyTargetId: comment.id,
+                            id: id,
+                            text: text,
+                            createdAt: new Date().getTime(),
+                            user: {
+                              id: appContext.userId ?? "",
+                              name: appContext.displayName ?? "",
+                              iconUrl: IconUrl(userIcon),
                             },
+                            sticker: {
+                              image: {
+                                downloadURL: stickerImageURL,
+                              },
+                            },
+                            ...newReplyComments,
                           },
-                          ...newReplyComments,
-                        },
-                      ])
-                    }}
-                  />
-                ))}
+                        ])
+                      }}
+                    />
+                  ))}
               {/* 新しく追加した返信への返信 */}
               {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
               {showNewReplyComments &&
@@ -479,57 +526,59 @@ export const WorkCommentList = (props: Props) => {
                     }}
                   />
                   {/* コメントへの返信 */}
-                  {comment.responses
-                    ?.sort((a, b) => a.createdAt - b.createdAt)
-                    .filter((reply) => !hideCommentIds.includes(reply.id))
-                    .map((reply) => (
-                      <WorkCommentResponse
-                        key={reply.id}
-                        userId={reply.user?.id ?? ""}
-                        isMine={reply.user?.id === appContext.userId}
-                        createdAt={reply.createdAt}
-                        stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                        stickerTitle={reply.sticker?.title}
-                        stickerId={reply.sticker?.id}
-                        stickerAccessType={reply.sticker?.accessType}
-                        isStickerDownloadable={reply.sticker?.isDownloaded}
-                        text={reply.text}
-                        userIconImageURL={IconUrl(reply.user?.iconUrl)}
-                        userName={reply.user?.name}
-                        replyId={reply.id}
-                        iconUrl={IconUrl(userIcon)}
-                        onDeleteComment={() => {
-                          onDeleteComment(reply.id)
-                        }}
-                        onReplyCompleted={(
-                          id: string,
-                          text: string,
-                          stickerId: string,
-                          stickerImageURL: string,
-                        ) => {
-                          // 表示コメントを追加
-                          setNewReplyComments([
-                            {
-                              replyTargetId: comment.id,
-                              id: id,
-                              text: text,
-                              createdAt: new Date().getTime(),
-                              user: {
-                                id: appContext.userId ?? "",
-                                name: appContext.displayName ?? "",
-                                iconUrl: IconUrl(userIcon),
-                              },
-                              sticker: {
-                                image: {
-                                  downloadURL: stickerImageURL,
+                  {comment.responses !== null &&
+                    comment.responses?.length !== 0 &&
+                    comment.responses
+                      .sort((a, b) => a.createdAt - b.createdAt)
+                      .filter((reply) => !hideCommentIds.includes(reply.id))
+                      .map((reply) => (
+                        <WorkCommentResponse
+                          key={reply.id}
+                          userId={reply.user?.id ?? ""}
+                          isMine={reply.user?.id === appContext.userId}
+                          createdAt={reply.createdAt}
+                          stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                          stickerTitle={reply.sticker?.title}
+                          stickerId={reply.sticker?.id}
+                          stickerAccessType={reply.sticker?.accessType}
+                          isStickerDownloadable={reply.sticker?.isDownloaded}
+                          text={reply.text}
+                          userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                          userName={reply.user?.name}
+                          replyId={reply.id}
+                          iconUrl={IconUrl(userIcon)}
+                          onDeleteComment={() => {
+                            onDeleteComment(reply.id)
+                          }}
+                          onReplyCompleted={(
+                            id: string,
+                            text: string,
+                            stickerId: string,
+                            stickerImageURL: string,
+                          ) => {
+                            // 表示コメントを追加
+                            setNewReplyComments([
+                              {
+                                replyTargetId: comment.id,
+                                id: id,
+                                text: text,
+                                createdAt: new Date().getTime(),
+                                user: {
+                                  id: appContext.userId ?? "",
+                                  name: appContext.displayName ?? "",
+                                  iconUrl: IconUrl(userIcon),
                                 },
+                                sticker: {
+                                  image: {
+                                    downloadURL: stickerImageURL,
+                                  },
+                                },
+                                ...newReplyComments,
                               },
-                              ...newReplyComments,
-                            },
-                          ])
-                        }}
-                      />
-                    ))}
+                            ])
+                          }}
+                        />
+                      ))}
                   {/* 新しく追加した返信への返信 */}
                   {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
                   {showNewReplyComments &&
@@ -668,7 +717,7 @@ const userQuery = graphql(
   [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const CommentFragment = graphql(
+export const commentFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
       ...CommentFields
       responses(offset: 0, limit: 128) {
@@ -678,7 +727,7 @@ export const CommentFragment = graphql(
   [commentFieldsFragment],
 )
 
-const CreateWorkCommentMutation = graphql(
+const createWorkCommentMutation = graphql(
   `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
       id
@@ -686,14 +735,16 @@ const CreateWorkCommentMutation = graphql(
   }`,
 )
 
-const ViewerUserQuery = graphql(
+const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
-      id
       user {
-        id
         iconUrl
+      }
+      userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
+        ...PartialStickerFields
       }
     }
   }`,
+  [partialStickerFieldsFragment],
 )

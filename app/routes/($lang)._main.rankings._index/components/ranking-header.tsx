@@ -215,7 +215,9 @@ export const RankingHeader = (props: Props) => {
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
           <AppConfirmDialog
             title={"確認"}
-            description={"あなたは18歳以上ですか？"}
+            description={
+              "センシティブな作品を表示します、あなたは18歳以上ですか？"
+            }
             onNext={() => {
               navigate("/sensitive/rankings")
             }}

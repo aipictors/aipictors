@@ -51,6 +51,7 @@ export const WorkAction = (props: Props) => {
           targetWorkId={props.targetWorkId}
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+          isUsedShortcutKey={true}
         />
         <Suspense fallback={null}>
           <RecommendButton

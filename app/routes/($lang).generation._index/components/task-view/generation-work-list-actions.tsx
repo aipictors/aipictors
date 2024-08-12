@@ -8,6 +8,7 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
 import { useState } from "react"
+import { Input } from "~/components/ui/input"
 
 type Props = {
   thumbnailSize: number
@@ -46,7 +47,7 @@ export const GenerationWorkListActions = (props: Props) => {
       {/* 作品一覧（検索）の操作一覧 */}
       <div className="px-2 pb-2 md:px-4 xl:px-4">
         <div className="flex items-center gap-x-2">
-          {/* <Input
+          <Input
             minLength={1}
             maxLength={120}
             required
@@ -65,7 +66,7 @@ export const GenerationWorkListActions = (props: Props) => {
             variant={"secondary"}
           >
             検索
-          </Button> */}
+          </Button>
           {state !== "WORK_LIST_FULL" && (
             <div className="hidden md:block">
               <GenerationTaskPreviewModeButton

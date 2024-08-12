@@ -148,7 +148,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                       src={context.photo.url ?? ""}
                       // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
                       ref={(el) => (videoRefs.current[context.index] = el)}
-                      className="absolute top-0 left-0 h-full overflow-hidden rounded"
+                      className="absolute top-0 left-0 hidden w-full overflow-hidden rounded object-contain md:block"
                       style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
                       muted
                       autoPlay={isAutoPlay}
@@ -160,6 +160,7 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
                         label="English"
                       />
                     </video>
+
                     <div className="absolute top-1 left-1 opacity-50">
                       <Badge variant={"secondary"} className="text-xs">
                         {"video"}

@@ -3,6 +3,7 @@ import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fiel
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
+import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
 
 type Props = {
   user: FragmentOf<typeof userProfileIconFragment>
@@ -15,7 +16,7 @@ export const UserProfileNameIcon = (props: Props) => {
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
         className={"absolute z-10 top-[128px] md:top-[228px]"}
       >
-        <div className="mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
+        <div className="relative mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
           <UserProfileAvatar
             alt={props.user.name}
             src={
@@ -48,8 +49,10 @@ export const UserProfileNameIcon = (props: Props) => {
               </div>
             </div>
           </div>
+          <div className="absolute right-0 bottom-0 md:hidden">
+            <UserActionShare login={props.user.login} name={props.user.name} />
+          </div>
         </div>
-
         <div className="block md:hidden">
           <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
           <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>

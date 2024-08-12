@@ -105,7 +105,7 @@ export const StickerArticle = (props: Props) => {
         variant={"secondary"}
         className="m-auto"
       >
-        {"一覧にもどる"}
+        {"スタンプ一覧にもどる"}
       </Button>
     </div>
   )
