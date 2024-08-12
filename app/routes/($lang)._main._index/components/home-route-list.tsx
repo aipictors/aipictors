@@ -118,7 +118,7 @@ export const HomeRouteList = (props: Props) => {
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={config.isReleaseMode}
-        href={"/posts/2.5d"}
+        href={"/posts/3d"}
         icon={BookImageIcon}
         onClick={closeHeaderMenu}
       >
