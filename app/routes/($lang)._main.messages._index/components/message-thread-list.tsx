@@ -16,7 +16,7 @@ import {
 } from "~/routes/($lang)._main.messages._index/components/thread-recipient"
 
 export const MessageThreadList = () => {
-  const { data: threads, refetch } = useSuspenseQuery(MyMessageThreadsQuery, {
+  const query = useSuspenseQuery(MyMessageThreadsQuery, {
     variables: {
       limit: 124,
       offset: 0,
@@ -25,11 +25,11 @@ export const MessageThreadList = () => {
 
   useInterval(() => {
     startTransition(() => {
-      refetch()
+      query.refetch()
     })
   }, 4000)
 
-  const messageThreads = threads.viewer?.messageThreads ?? []
+  const messageThreads = query.data.viewer?.messageThreads ?? []
 
   return (
     <aside className="sticky h-main w-80 min-w-80 pb-4 pl-4">
@@ -63,9 +63,11 @@ const MyMessageThreadsQuery = graphql(
       messageThreads(offset: $offset, limit: $limit) {
         id
         recipient {
+          id
           ...ThreadRecipient
         }
         latestMessage {
+          id
           ...ThreadLastMessage
         }
       }

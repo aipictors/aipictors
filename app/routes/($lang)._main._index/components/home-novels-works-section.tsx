@@ -78,38 +78,13 @@ export const HomeNovelsWorkListItemFragment = graphql(
   `fragment HomeNovelsWorkListItem on WorkNode @_unmask {
     id
     title
-    accessType
-    adminAccessType
-    type
-    likesCount
-    commentsCount
-    bookmarksCount
-    viewsCount
-    createdAt
-    rating
-    isTagEditable
-    smallThumbnailImageURL
-    smallThumbnailImageHeight
-    smallThumbnailImageWidth
-    largeThumbnailImageURL
-    largeThumbnailImageHeight
-    largeThumbnailImageWidth
-    type
-    prompt
-    negativePrompt
-    isLiked
-    thumbnailImagePosition
     description
-    url
-    subWorksCount
-    tags {
-      name
-    }
+    smallThumbnailImageURL
+    isLiked
     user {
       id
       name
       iconUrl
     }
-    uuid
   }`,
 )
