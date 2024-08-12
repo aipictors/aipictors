@@ -42,8 +42,11 @@ export default function TagComment() {
   return (
     <>
       <TagWorkSection
-        title={decodeURIComponent(params.tag)}
+        tag={params.tag}
         works={data.works}
+        worksCount={data.works.length}
+        page={0}
+        isSensitive={false}
       />
     </>
   )
