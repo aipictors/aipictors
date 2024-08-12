@@ -50,7 +50,7 @@ export default function Stickers() {
 
   return (
     <main className="flex flex-col space-y-8 pb-16">
-      <StickerListHeader />
+      <StickerListHeader title={data.search} />
       <StickerSearchForm text={decodeURIComponent(data.search)} />
       {data.isEmpty ? (
         <p>{"スタンプが見つかりませんでした"}</p>
