@@ -181,38 +181,14 @@ export const PhotoAlbumVideoWorkFragment = graphql(
   `fragment PhotoAlbumVideoWork on WorkNode @_unmask {
     id
     title
-    accessType
-    adminAccessType
-    type
-    likesCount
-    commentsCount
-    bookmarksCount
-    viewsCount
-    createdAt
-    rating
-    isTagEditable
-    smallThumbnailImageURL
+    url
     smallThumbnailImageHeight
     smallThumbnailImageWidth
-    largeThumbnailImageURL
-    largeThumbnailImageHeight
-    largeThumbnailImageWidth
-    type
-    prompt
-    negativePrompt
+    smallThumbnailImageURL
+    likesCount
     isLiked
-    thumbnailImagePosition
-    description
-    url
-    subWorksCount
-    tags {
-      name
-    }
     user {
       id
-      name
-      iconUrl
     }
-    uuid
   }`,
 )
