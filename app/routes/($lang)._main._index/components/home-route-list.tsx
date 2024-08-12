@@ -2,7 +2,6 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dialog-button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { config } from "~/config"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import { Link, useNavigate } from "@remix-run/react"
 import {
@@ -109,7 +108,6 @@ export const HomeRouteList = (props: Props) => {
         <Separator />
       </div>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/posts/2d"}
         icon={ImageIcon}
         onClick={closeHeaderMenu}
@@ -117,7 +115,6 @@ export const HomeRouteList = (props: Props) => {
         {"イラスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        isDisabled={config.isReleaseMode}
         href={"/posts/3d"}
         icon={BookImageIcon}
         onClick={closeHeaderMenu}
