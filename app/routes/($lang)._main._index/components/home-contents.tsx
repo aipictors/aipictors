@@ -180,7 +180,7 @@ export const HomeContents = (props: Props) => {
     >
       <TabsList>
         <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">一覧</TabsTrigger>
+        <TabsTrigger value="new">新着・人気</TabsTrigger>
         <TabsTrigger value="timeline">タイムライン</TabsTrigger>
       </TabsList>
 
