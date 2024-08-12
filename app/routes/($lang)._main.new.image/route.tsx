@@ -352,7 +352,7 @@ export default function NewImage() {
             imageWidth: mainImageSize.width,
             accessGenerationType:
               state.isSelectedGenerationImage && inputState.useGenerationParams
-                ? "PUBLIC_IN_OWN_PRODUCT"
+                ? "PUBLIC_RESTORABLE"
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
