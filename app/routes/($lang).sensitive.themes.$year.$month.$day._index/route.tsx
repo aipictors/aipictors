@@ -3,6 +3,8 @@ import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -21,6 +23,13 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const day = Number.parseInt(props.params.day)
 
+  const url = new URL(props.request.url)
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
+
   const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
@@ -36,7 +45,28 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 })
   }
 
-  return json({ dailyTheme })
+  const worksResp = await client.query({
+    query: themeWorksAndCountQuery,
+    variables: {
+      offset: page * 32,
+      limit: 32,
+      where: {
+        subjectId: Number(dailyThemesResp.data.dailyThemes[0].id),
+        ratings: ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isSensitive: true,
+      },
+    },
+  })
+
+  return json(
+    { dailyTheme, worksResp, year, month, day, page },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.oneDay,
+      },
+    },
+  )
 }
 
 export default function SensitiveDayThemePage() {
@@ -44,7 +74,18 @@ export default function SensitiveDayThemePage() {
 
   return (
     <article>
-      <h1>{data.dailyTheme.title}</h1>
+      <ThemeArticleContainer
+        works={data.worksResp.data.works}
+        worksCount={data.worksResp.data.worksCount}
+        firstWork={data.dailyTheme.firstWork}
+        title={`${data.year}/${data.month}/${data.day}のお題「${data.dailyTheme.title}」`}
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        page={data.page}
+        isSensitive={true}
+        themeId={data.dailyTheme.id}
+      />
     </article>
   )
 }
@@ -66,6 +107,25 @@ const dailyThemesQuery = graphql(
       firstWork {
         ...PartialWorkFields
       }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const themeWorksAndCountQuery = graphql(
+  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+    worksCount(where: $where)
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const themeWorksQuery = graphql(
+  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
     }
   }`,
   [partialWorkFieldsFragment],

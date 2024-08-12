@@ -6,6 +6,8 @@ import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user/components/profile-edit-dialog"
+import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
+import { UserActionOther } from "~/routes/($lang)._main.users.$user/components/user-action-other"
 
 type Props = {
   user: FragmentOf<typeof userHomeMainFragment>
@@ -24,10 +26,14 @@ export const UserHomeMain = (props: Props) => {
 
   const isFollow = userInfo?.user?.isFollowee ?? false
 
+  const isMute = userInfo?.user?.isMuted ?? false
+
   return (
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 hidden md:block">
-        <div className="flex items-center space-x-4">
+        <div className="flex w-full items-center justify-end space-x-4">
+          <UserActionOther id={props.user.id} isMuted={isMute} />
+          <UserActionShare login={props.user.login} name={props.user.name} />
           <FollowButton
             targetUserId={props.user.id}
             isFollow={isFollow}
@@ -47,11 +53,7 @@ export const UserHomeMain = (props: Props) => {
               />
             )}
           {authContext.userId === props.user.id && (
-            <ProfileEditDialog
-              triggerChildren={
-                <Button className="absolute top-4 right-0">編集</Button>
-              }
-            />
+            <ProfileEditDialog triggerChildren={<Button>編集</Button>} />
           )}
         </div>
       </div>
@@ -90,8 +92,11 @@ export const UserHomeMain = (props: Props) => {
 export const userHomeMainFragment = graphql(
   `fragment UserHomeMain on UserNode @_unmask {
     id
+    login
     isFollowee
     isFollower
+    isMuted
+    name
     promptonUser {
       id
     }

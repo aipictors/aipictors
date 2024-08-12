@@ -37,7 +37,7 @@ const stringToColor = (text: string) => {
 
 export function TagButton(props: Props) {
   return (
-    <Link to={`https://www.aipictors.com/search/?tag=${props.link}`}>
+    <Link to={`/tags/${props.link}`}>
       <div
         className="rounded-md bg-blue-500 p-1 pr-2 pl-2 text-white"
         style={{ backgroundColor: stringToColor(props.name) }}

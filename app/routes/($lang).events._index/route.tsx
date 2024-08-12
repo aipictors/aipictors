@@ -1,4 +1,3 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { createClient } from "~/lib/client"
 import { EventsList } from "~/routes/($lang).events._index/components/events-list"
@@ -10,7 +9,7 @@ import {
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -72,9 +71,10 @@ export default function FollowingLayout() {
 
   return (
     <>
-      <Suspense fallback={<AppLoadingPage />}>
-        {authContext.isLoggedIn && <EventsList appEvents={events.appEvents} />}
-      </Suspense>
+      <h1 className="text-center font-bold text-2xl">
+        AIイラスト - 開催イベント一覧
+      </h1>
+      <EventsList appEvents={events.appEvents} />
     </>
   )
 }

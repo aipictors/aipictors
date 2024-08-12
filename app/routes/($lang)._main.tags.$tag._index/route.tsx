@@ -14,19 +14,34 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const url = new URL(props.request.url)
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
+
+  const isSensitive = url.searchParams.get("sensitive") === "1"
+
   const worksResp = await client.query({
-    query: worksQuery,
+    query: tagWorksAndCountQuery,
     variables: {
-      offset: 0,
+      offset: page * 32,
       limit: 32,
       where: {
-        tagNames: [decodeURIComponent(props.params.tag)],
+        search: decodeURIComponent(props.params.tag),
+        orderBy: "LIKES_COUNT",
+        isSensitive: isSensitive,
       },
     },
   })
 
   return json({
+    tag: decodeURIComponent(props.params.tag),
     works: worksResp.data.works,
+    worksCount: worksResp.data.worksCount,
+    page: page,
+    isSensitive: isSensitive,
   })
 }
 
@@ -42,14 +57,27 @@ export default function Tag() {
   return (
     <>
       <TagWorkSection
-        title={decodeURIComponent(params.tag)}
         works={data.works}
+        worksCount={data.worksCount}
+        tag={decodeURIComponent(params.tag)}
+        page={data.page}
+        isSensitive={data.isSensitive}
       />
     </>
   )
 }
 
-const worksQuery = graphql(
+const tagWorksAndCountQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
+    }
+    worksCount(where: $where)
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+export const tagWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

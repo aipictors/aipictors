@@ -87,7 +87,7 @@
     "isbot": "^5.1.14",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.427.0",
-    "marked": "^13.0.3",
+    "marked": "^14.0.0",
     "microcms-js-sdk": "^3.1.2",
     "million": "^3.1.11",
     "next-themes": "^0.3.0",
@@ -112,7 +112,7 @@
     "uvcanvas": "^0.2.1",
     "valibot": "^0.37.0",
     "vaul": "^0.9.1",
-    "vite-bundle-analyzer": "^0.9.4",
+    "vite-bundle-analyzer": "^0.10.5",
     "xstate": "^5.17.1",
     "zenn-content-css": "^0.1.154",
     "zenn-markdown-html": "^0.1.154"
@@ -136,7 +136,7 @@
     "@types/bun": "^1.1.6",
     "@types/google-libphonenumber": "^7.4.30",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "20.14.14",
+    "@types/node": "20.14.15",
     "@types/react": "18.3.0",
     "@types/react-dom": "18.2.25",
     "autoprefixer": "^10.4.20",
@@ -150,7 +150,7 @@
     "typescript": "^5.5.4",
     "vite": "^5.3.5",
     "vite-plugin-static-copy": "^1.0.6",
-    "vite-tsconfig-paths": "^4.3.2",
+    "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "^3.68.0"
   }
 }

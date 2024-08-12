@@ -1,12 +1,13 @@
-import { useEffect, useState, useContext } from "react"
+import { useEffect, useState, useContext, useCallback } from "react"
 import { Heart } from "lucide-react"
 import { cn } from "~/lib/cn"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { KeyCodes } from "~/config"
 
-type LikeButtonProps = {
+type Props = {
   size?: number
   text?: string
   textColor?: "black" | "white" | null
@@ -20,21 +21,10 @@ type LikeButtonProps = {
   isBackgroundNone?: boolean
   strokeWidth?: number
   isParticle?: boolean
+  isUsedShortcutKey?: boolean
 }
 
-export const LikeButton = ({
-  size = 40,
-  defaultLiked = false,
-  defaultLikedCount,
-  text,
-  onClick,
-  targetWorkId,
-  targetWorkOwnerUserId,
-  isBackgroundNone = true,
-  strokeWidth = 1,
-  isParticle = false,
-  textColor,
-}: LikeButtonProps) => {
+export const LikeButton = (props: Props) => {
   const authContext = useContext(AuthContext)
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,
@@ -42,19 +32,47 @@ export const LikeButton = ({
   const [deleteWorkLike, { loading: isDeleteLoading }] = useMutation(
     deleteWorkLikeMutation,
   )
-  const [isLiked, setIsLiked] = useState(defaultLiked)
-  const [likedCount, setLikedCount] = useState(defaultLikedCount)
+  const [isLiked, setIsLiked] = useState(props.defaultLiked)
+  const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
+
+  /**
+   * Fキーでいいね
+   */
+  const handleFavoritedKeyDown = useCallback((event: KeyboardEvent) => {
+    // 入力欄やテキストエリアにフォーカスしている場合は何もしない
+    const tagName = document.activeElement?.tagName.toLowerCase()
+    if (
+      tagName === "input" ||
+      tagName === "textarea" ||
+      isLiked ||
+      props.defaultLiked
+    ) {
+      return
+    }
+    if (event.code === KeyCodes.F) {
+      handleOnClick(event)
+    }
+  }, [])
 
   useEffect(() => {
-    setIsLiked(defaultLiked)
-    setLikedCount(defaultLikedCount)
-  }, [defaultLiked, defaultLikedCount, targetWorkId])
+    if (props.isUsedShortcutKey) {
+      if (typeof document !== "undefined") {
+        document.removeEventListener("keydown", handleFavoritedKeyDown)
+        document.addEventListener("keydown", handleFavoritedKeyDown)
+      }
+    }
+  }, [props.targetWorkId])
+
+  useEffect(() => {
+    setIsLiked(props.defaultLiked)
+    setLikedCount(props.defaultLikedCount)
+  }, [props.defaultLiked, props.defaultLikedCount, props.targetWorkId])
 
   const handleOnClick = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
-    if (onClick) {
-      onClick(!isLiked)
+    if (props.onClick) {
+      props.onClick(!isLiked)
     }
 
     try {
@@ -62,22 +80,22 @@ export const LikeButton = ({
         await createWorkLike({
           variables: {
             input: {
-              workId: targetWorkId,
+              workId: props.targetWorkId,
             },
           },
         }).then(() => {
-          setIsLiked(!isLiked)
+          setIsLiked(true)
           // setLikedCount((prevCount) => prevCount + 1)
         })
       } else {
         await deleteWorkLike({
           variables: {
             input: {
-              workId: targetWorkId,
+              workId: props.targetWorkId,
             },
           },
         }).then(() => {
-          setIsLiked(!isLiked)
+          setIsLiked(false)
           // setLikedCount((prevCount) => prevCount - 1)
         })
       }
@@ -87,11 +105,13 @@ export const LikeButton = ({
   }
 
   /* 自分自身の作品の場合はいいねボタンを表示しない */
-  if (authContext.userId === targetWorkOwnerUserId) {
+  if (authContext.userId === props.targetWorkOwnerUserId) {
     return null
   }
 
-  const width = Math.floor(size * 24)
+  const width = Math.floor((props.size ?? 40) * 24)
+
+  const size = props.size ?? 40
 
   /* 未ログイン */
   if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -104,16 +124,18 @@ export const LikeButton = ({
         triggerChildren={
           <button
             className={`${
-              isParticle ? "like-button " : ""
+              props.isParticle ? "like-button " : ""
             }relative flex items-center justify-center rounded-md ${
-              isBackgroundNone
+              props.isBackgroundNone
                 ? ""
                 : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
               // biome-ignore lint/nursery/useSortedClasses: <explanation>
             } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
             style={{
-              width: text ? "auto" : `${size - (isBackgroundNone ? 8 : 0)}px`,
-              height: `${size - (isBackgroundNone ? 8 : 0)}px`,
+              width: props.text
+                ? "auto"
+                : `${size - (props.isBackgroundNone ? 8 : 0)}px`,
+              height: `${size - (props.isBackgroundNone ? 8 : 0)}px`,
             }}
             type="button"
           >
@@ -134,16 +156,16 @@ export const LikeButton = ({
                 className={cn(
                   isLiked
                     ? "fill-rose-500 text-rose-500"
-                    : isBackgroundNone
+                    : props.isBackgroundNone
                       ? "fill-white "
                       : "fill-transparent ",
                   isLiked ? "like-animation" : "like-animation-end",
                   "stroke-2",
                 )}
                 size={Math.floor(size / 2)}
-                strokeWidth={strokeWidth}
+                strokeWidth={props.strokeWidth}
                 stroke={
-                  isBackgroundNone
+                  props.isBackgroundNone
                     ? isLiked
                       ? "none"
                       : "gray"
@@ -151,9 +173,9 @@ export const LikeButton = ({
                 }
               />
             </div>
-            {text && (
+            {props.text && (
               <div className={cn("flex space-x-1 pr-3 font-bold text-sm")}>
-                <p>{text}</p>
+                <p>{props.text}</p>
                 <p>{likedCount}</p>
               </div>
             )}
@@ -166,16 +188,18 @@ export const LikeButton = ({
   return (
     <button
       className={`${
-        isParticle ? "like-button " : ""
+        props.isParticle ? "like-button " : ""
       }relative flex items-center justify-center rounded-md ${
-        isBackgroundNone
+        props.isBackgroundNone
           ? ""
           : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
       } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
       style={{
-        width: text ? "auto" : `${size - (isBackgroundNone ? 8 : 0)}px`,
-        height: `${size - (isBackgroundNone ? 8 : 0)}px`,
+        width: props.text
+          ? "auto"
+          : `${size - (props.isBackgroundNone ? 8 : 0)}px`,
+        height: `${size - (props.isBackgroundNone ? 8 : 0)}px`,
       }}
       onClick={handleOnClick}
       type="button"
@@ -197,31 +221,35 @@ export const LikeButton = ({
           className={cn(
             isLiked
               ? "fill-rose-500 text-rose-500"
-              : isBackgroundNone
+              : props.isBackgroundNone
                 ? "fill-white "
                 : "fill-transparent ",
             isLiked ? "like-animation" : "like-animation-end",
             "stroke-2",
           )}
           size={Math.floor(size / 2)}
-          strokeWidth={strokeWidth}
+          strokeWidth={props.strokeWidth}
           stroke={
-            isBackgroundNone ? (isLiked ? "none" : "gray") : "currentColor"
+            props.isBackgroundNone
+              ? isLiked
+                ? "none"
+                : "gray"
+              : "currentColor"
           }
         />
       </div>
-      {text !== undefined && (
+      {props.text !== undefined && (
         <div
           className={cn(
             "flex space-x-1 pr-3 font-bold text-sm",
-            textColor
-              ? textColor === "black"
+            props.textColor
+              ? props.textColor === "black"
                 ? "text-black"
                 : "text-white"
               : "",
           )}
         >
-          <p>{text}</p>
+          <p>{props.text}</p>
           <p>{likedCount}</p>
         </div>
       )}

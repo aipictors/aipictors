@@ -3,6 +3,9 @@ import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { createClient } from "~/lib/client"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { StickerList } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
+import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.sticker === undefined) {
@@ -26,11 +29,29 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  console.log(stickerResp.data.sticker)
-
-  return json({
-    sticker: stickerResp.data.sticker,
+  const favoritedStickersResp = await client.query({
+    query: stickersQuery,
+    variables: {
+      offset: 0,
+      limit: 40,
+      where: {
+        orderBy: "DATE_DOWNLOADED",
+        sort: "DESC",
+      },
+    },
   })
+
+  return json(
+    {
+      sticker: stickerResp.data.sticker,
+      stickers: favoritedStickersResp.data.stickers,
+    },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.oneDay,
+      },
+    },
+  )
 }
 
 /**
@@ -59,6 +80,10 @@ export default function Sticker() {
           },
         }}
       />
+      <section className="flex flex-col gap-y-4">
+        <h2 className="font-bold text-lg">{"人気"}</h2>
+        <StickerList stickers={data.stickers} />
+      </section>
     </>
   )
 }
@@ -83,3 +108,12 @@ const stickerQuery = graphql(`
     }
   }
 `)
+
+const stickersQuery = graphql(
+  `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
+    stickers(offset: $offset, limit: $limit, where: $where) {
+      ...PartialStickerFields
+    }
+  }`,
+  [partialStickerFieldsFragment],
+)

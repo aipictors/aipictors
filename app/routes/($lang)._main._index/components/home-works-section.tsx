@@ -16,6 +16,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
+  style?: IntrospectionEnum<"ImageStyle">
 }
 
 /**
@@ -44,6 +45,9 @@ export const HomeWorksSection = (props: Props) => {
         ...((props.sortType !== null && {
           orderBy: props.sortType,
         }) || { orderBy: "DATE_CREATED" }),
+        ...(props.style && {
+          style: props.style,
+        }),
         isNowCreatedAt: true,
       },
     },

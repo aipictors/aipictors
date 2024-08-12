@@ -56,15 +56,14 @@ export const ThemeList = (props: Props) => {
   }
 
   const handleCellClick = (date: string) => {
-    const url = `https://www.aipictors.com/idea/search/?word=subjectDate:${date}`
-    window.location.href = url
+    const year = Number(date.slice(0, 4))
+    const month = Number(date.slice(5, 7))
+    const day = Number(date.slice(8, 10))
+    navigate(`/themes/${year}/${month}/${day}`)
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center">
-        <p className="text-lg">{"お題一覧"}</p>
-      </div>
       <div className="flex items-center justify-center space-x-4">
         <Button
           variant={"secondary"}

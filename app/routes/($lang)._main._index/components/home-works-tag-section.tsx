@@ -7,11 +7,13 @@ import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   isSensitive?: boolean
   works: FragmentOf<typeof HomeTagWorkFragment>[]
   tag: string
+  style?: IntrospectionEnum<"ImageStyle">
 }
 
 /**
@@ -30,6 +32,9 @@ export const HomeWorksTagSection = (props: Props) => {
         isSensitive: props.isSensitive,
         search: props.tag, // タグによるフィルタリングを追加
         orderBy: "VIEWS_COUNT",
+        ...(props.style && {
+          style: props.style,
+        }),
       },
     },
   })

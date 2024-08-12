@@ -13,35 +13,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useSearchParams } from "react-router-dom"
-import {
-  HomeAwardWorkSection,
-  type HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeTagList,
-  type HomeTagListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeTagsSection,
-  type HomeTagFragment,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import {
   HomeWorksTagSection,
   type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 
 type homeParticles = {
-  dailyThemeTitle: string
-  hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
   firstTag: string
   firstTagWorks: FragmentOf<typeof HomeTagWorkFragment>[]
   secondTag: string
   secondTagWorks: FragmentOf<typeof HomeTagWorkFragment>[]
-  awardDateText: string
-  workAwards: FragmentOf<typeof HomeWorkAwardFragment>[]
-  recommendedTags: FragmentOf<typeof HomeTagFragment>[]
   promotionWorks: FragmentOf<typeof HomeTagWorkFragment>[]
 }
 
@@ -59,9 +42,9 @@ const useUpdateQueryParams = () => {
 }
 
 /**
- * ホームのコンテンツ一覧
+ * 2Dホームのコンテンツ一覧
  */
-export const HomeContents = (props: Props) => {
+export const Home2dContents = (props: Props) => {
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 
@@ -180,43 +163,28 @@ export const HomeContents = (props: Props) => {
     >
       <TabsList>
         <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">新着・人気</TabsTrigger>
-        <TabsTrigger value="timeline">タイムライン</TabsTrigger>
+        <TabsTrigger value="new">2D作品一覧</TabsTrigger>
       </TabsList>
-
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {props.homeParticles && (
           <>
-            <div>
-              <HomeTagList
-                themeTitle={props.homeParticles.dailyThemeTitle}
-                hotTags={props.homeParticles.hotTags}
-              />
-            </div>
             <HomeWorksTagSection
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
               isSensitive={props.isSensitive}
+              style="ILLUSTRATION"
             />
             <HomeWorksTagSection
               tag={props.homeParticles.secondTag}
               works={props.homeParticles.secondTagWorks}
               isSensitive={props.isSensitive}
-            />
-            <HomeAwardWorkSection
-              awardDateText={props.homeParticles.awardDateText}
-              title={"前日ランキング"}
-              awards={props.homeParticles.workAwards}
-              isSensitive={props.isSensitive}
-            />
-            <HomeTagsSection
-              title={"人気タグ"}
-              tags={props.homeParticles.recommendedTags}
+              style="ILLUSTRATION"
             />
             {!props.isSensitive && (
               <HomeWorksUsersRecommendedSection
                 isSensitive={props.isSensitive}
                 works={props.homeParticles.promotionWorks}
+                style="ILLUSTRATION"
               />
             )}
           </>
@@ -293,16 +261,9 @@ export const HomeContents = (props: Props) => {
               workType={workType}
               isPromptPublic={isPromptPublic}
               sortType={sortType}
+              style="ILLUSTRATION"
             />
           </Suspense>
-        </div>
-      </TabsContent>
-
-      <TabsContent value="timeline">
-        <div className="flex h-32 items-center justify-center text-center">
-          {"😢"}
-          <br />
-          {"ごめんなさい！工事中です！"}
         </div>
       </TabsContent>
     </Tabs>
