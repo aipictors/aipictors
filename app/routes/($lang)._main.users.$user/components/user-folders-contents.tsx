@@ -1,8 +1,9 @@
-import { ResponsiveFoldersList } from "~/components/responsive-folders-list"
+import {
+  FolderListItemFragment,
+  ResponsiveFoldersList,
+} from "~/components/responsive-folders-list"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialFolderFieldsFragment } from "~/graphql/fragments/partial-folder-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { useSuspenseQuery } from "@apollo/client/index"
@@ -51,11 +52,7 @@ export const UserFoldersContents = (props: Props) => {
     <>
       <div className="flex flex-wrap gap-4">
         {folders.map((folder) => (
-          <ResponsiveFoldersList
-            key={folder.id}
-            folder={folder}
-            user={folder.user}
-          />
+          <ResponsiveFoldersList key={folder.id} folder={folder} />
         ))}
       </div>
       <div className="mt-1 mb-1">
@@ -81,11 +78,9 @@ const foldersCountQuery = graphql(
 const foldersQuery = graphql(
   `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
     folders(offset: $offset, limit: $limit, where: $where) {
-      ...PartialFolderFields
-      user {
-        ...PartialUserFields
-      }
+      id
+      ...FolderListItem
     }
   }`,
-  [partialFolderFieldsFragment, partialUserFieldsFragment],
+  [FolderListItemFragment],
 )

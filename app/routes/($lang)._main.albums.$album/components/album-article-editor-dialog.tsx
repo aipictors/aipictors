@@ -10,7 +10,6 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog"
 import { AuthContext } from "~/contexts/auth-context"
-import { workUserFieldsFragment } from "~/graphql/fragments/work-user-fields"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -185,7 +184,11 @@ export const AlbumArticleEditorDialogFragment = graphql(
     title
     description
     user {
-      ...WorkUserFields
+      id
+      name
+      login
+      iconUrl
+      nanoid
     }
     createdAt
     isSensitive
@@ -194,7 +197,6 @@ export const AlbumArticleEditorDialogFragment = graphql(
     worksCount
     workIds
   }`,
-  [workUserFieldsFragment],
 )
 
 const viewerQuery = graphql(

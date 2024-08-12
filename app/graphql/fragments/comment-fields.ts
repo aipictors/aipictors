@@ -1,4 +1,3 @@
-import { workUserFieldsFragment } from "~/graphql/fragments/work-user-fields"
 import { graphql } from "gql.tada"
 
 export const commentFieldsFragment = graphql(
@@ -7,7 +6,11 @@ export const commentFieldsFragment = graphql(
     createdAt
     text
     user {
-      ...WorkUserFields
+      id
+      name
+      login
+      iconUrl
+      nanoid
     }
     sticker {
       id
@@ -20,5 +23,4 @@ export const commentFieldsFragment = graphql(
       accessType
     }
   }`,
-  [workUserFieldsFragment],
 )

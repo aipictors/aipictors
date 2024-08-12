@@ -1,4 +1,3 @@
-import { partialPromotionFieldsFragment } from "~/graphql/fragments/partial-promotion-fields"
 import { graphql } from "gql.tada"
 
 export default function Route() {
@@ -8,10 +7,15 @@ export default function Route() {
 const promotionsQuery = graphql(
   `query Promotions($offset: Int!, $limit: Int!) {
     promotions(offset: $offset, limit: $limit) {
-      ...PartialPromotionFields
+      id
+      title
+      description
+      imageURL
+      pageURL
+      startDateTime
+      endDateTime
     }
   }`,
-  [partialPromotionFieldsFragment],
 )
 
 const promotionQuery = graphql(

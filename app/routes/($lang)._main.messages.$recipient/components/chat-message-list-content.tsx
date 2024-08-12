@@ -1,6 +1,4 @@
 import { IconUrl } from "~/components/icon-url"
-import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
-import { messageThreadFieldsFragment } from "~/graphql/fragments/message-thread-fields"
 import { SupportMessageList } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -46,12 +44,42 @@ const messageThreadMessagesQuery = graphql(
       id
       messageThread(threadId: $threadId) {
         id
-        ...MessageThreadFields
+        updatedAt
+        recipient {
+          id
+          nanoid
+          login
+          name
+          iconUrl
+          isFollowee
+          isFollower
+          iconUrl
+        }
+        latestMessage {
+          id
+          createdAt
+          text
+          isRead
+          isViewer
+          user {
+            id
+            nanoid
+            login
+            name
+            iconUrl
+            isFollowee
+            isFollower
+            iconUrl
+          }
+        }
         messages(offset: $offset, limit: $limit) {
-          ...MessageFields
+          id
+          createdAt
+          text
+          isRead
+          isViewer
         }
       }
     }
   }`,
-  [messageThreadFieldsFragment, messageFieldsFragment],
 )
