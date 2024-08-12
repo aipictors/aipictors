@@ -150,6 +150,31 @@ export const WorkComment = (props: Props) => {
   )
 }
 
+export const WorkCommentFragment = graphql(
+  `fragment WorkComment on CommentNode @_unmask  {
+    id
+    createdAt
+    text
+    user {
+      id
+      name
+      login
+      iconUrl
+      nanoid
+    }
+    sticker {
+      id
+      imageUrl
+      title
+      isDownloaded
+      likesCount
+      usesCount
+      downloadsCount
+      accessType
+    }
+  }`,
+)
+
 const deleteCommentMutation = graphql(
   `mutation DeleteComment($input: DeleteCommentInput!) {
     deleteComment(input: $input) {
