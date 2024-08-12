@@ -70,7 +70,7 @@ export const TagWorkSection = (props: Props) => {
                 />
               )}
             </div>
-            <h1 className="mt-auto font-bold text-md text-white">
+            <h1 className="mt-auto font-bold text-md">
               <p>#{props.tag}の作品</p>
               <p>{props.worksCount}件</p>
             </h1>
