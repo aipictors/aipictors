@@ -1,7 +1,7 @@
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
-import { commentFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
+import { CommentFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post/components/work-container"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
@@ -109,7 +109,7 @@ const workCommentsQuery = graphql(
       }
     }
   }`,
-  [commentFragment],
+  [CommentFragment],
 )
 
 const workQuery = graphql(

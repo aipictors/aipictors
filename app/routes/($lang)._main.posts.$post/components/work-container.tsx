@@ -14,14 +14,14 @@ import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/wor
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
 import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
 import {
-  type commentFragment,
+  type CommentFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
-  comments: FragmentOf<typeof commentFragment>[]
+  comments: FragmentOf<typeof CommentFragment>[]
   isDraft?: boolean
   isSensitive?: boolean
 }

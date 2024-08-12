@@ -1,6 +1,6 @@
 import {
-  albumItemFragment,
-  albumItemWorkFragment,
+  AlbumItemFragment,
+  AlbumItemWorkFragment,
   ResponsiveAlbumsList,
 } from "~/components/responsive-albums-list"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -24,7 +24,7 @@ type Props = {
 export const UserAlbumsContents = (props: Props) => {
   const authContext = useContext(AuthContext)
 
-  const { data: albumsResp, refetch } = useSuspenseQuery(albumsQuery, {
+  const { data: albumsResp, refetch } = useSuspenseQuery(AlbumsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 16 * props.page,
@@ -43,7 +43,7 @@ export const UserAlbumsContents = (props: Props) => {
 
   const albums = albumsResp?.albums ?? []
 
-  const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
+  const albumsCountResp = useSuspenseQuery(AlbumsCountQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       where: {
@@ -90,13 +90,13 @@ export const UserAlbumsContents = (props: Props) => {
   )
 }
 
-const albumsCountQuery = graphql(
+const AlbumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
 )
 
-const albumsQuery = graphql(
+const AlbumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...AlbumItemFields
@@ -105,5 +105,5 @@ const albumsQuery = graphql(
       }
     }
   }`,
-  [albumItemFragment, albumItemWorkFragment],
+  [AlbumItemFragment, AlbumItemWorkFragment],
 )

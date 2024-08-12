@@ -18,7 +18,7 @@ import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sti
 
 type Props = {
   workId: string
-  comments: FragmentOf<typeof commentFragment>[]
+  comments: FragmentOf<typeof CommentFragment>[]
 }
 
 // コメント
@@ -65,7 +65,7 @@ export const WorkCommentList = (props: Props) => {
   const appContext = useContext(AuthContext)
 
   const [createWorkComment, { loading: isCreatingWorkComment }] = useMutation(
-    createWorkCommentMutation,
+    CreateWorkCommentMutation,
   )
 
   // 入力中のコメント
@@ -207,7 +207,7 @@ export const WorkCommentList = (props: Props) => {
   // もっと見る以降のコメント一覧、showCommentsから8件以降を表示
   const showCommentsAfterMore = showComments.slice(8)
 
-  const { data = null } = useQuery(viewerUserQuery, {
+  const { data = null } = useQuery(ViewerUserQuery, {
     skip: authContext.isLoading,
   })
 
@@ -349,7 +349,7 @@ export const WorkCommentList = (props: Props) => {
               />
               {/* コメントへの返信 */}
               {comment.responses
-                .sort((a, b) => a.createdAt - b.createdAt)
+                ?.sort((a, b) => a.createdAt - b.createdAt)
                 .filter((reply) => !hideCommentIds.includes(reply.id))
                 .map((reply) => (
                   <WorkCommentResponse
@@ -480,7 +480,7 @@ export const WorkCommentList = (props: Props) => {
                   />
                   {/* コメントへの返信 */}
                   {comment.responses
-                    .sort((a, b) => a.createdAt - b.createdAt)
+                    ?.sort((a, b) => a.createdAt - b.createdAt)
                     .filter((reply) => !hideCommentIds.includes(reply.id))
                     .map((reply) => (
                       <WorkCommentResponse
@@ -668,7 +668,7 @@ const userQuery = graphql(
   [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const commentFragment = graphql(
+export const CommentFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
       ...CommentFields
       responses(offset: 0, limit: 128) {
@@ -678,7 +678,7 @@ export const commentFragment = graphql(
   [commentFieldsFragment],
 )
 
-const createWorkCommentMutation = graphql(
+const CreateWorkCommentMutation = graphql(
   `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
       id
@@ -686,7 +686,7 @@ const createWorkCommentMutation = graphql(
   }`,
 )
 
-const viewerUserQuery = graphql(
+const ViewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
       id

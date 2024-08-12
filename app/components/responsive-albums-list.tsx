@@ -3,8 +3,8 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Images } from "lucide-react"
 
 type Props = {
-  album: FragmentOf<typeof albumItemFragment>
-  works: FragmentOf<typeof albumItemWorkFragment>[]
+  album: FragmentOf<typeof AlbumItemFragment>
+  works: FragmentOf<typeof AlbumItemWorkFragment>[]
   targetRowHeight?: number
 }
 
@@ -53,7 +53,7 @@ export const ResponsiveAlbumsList = (props: Props) => {
   )
 }
 
-export const albumItemFragment = graphql(
+export const AlbumItemFragment = graphql(
   `fragment AlbumItemFields on AlbumNode @_unmask {
     id
     slug
@@ -68,9 +68,9 @@ export const albumItemFragment = graphql(
   }`,
 )
 
-export const albumItemWorkFragment = graphql(
+export const AlbumItemWorkFragment = graphql(
   `fragment AlbumItemWorkFields on WorkNode  @_unmask {
-      id
-      smallThumbnailImageURL
+    id
+    smallThumbnailImageURL
   }`,
 )
