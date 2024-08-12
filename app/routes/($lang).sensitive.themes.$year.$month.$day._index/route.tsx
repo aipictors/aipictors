@@ -36,7 +36,16 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 })
   }
 
-  return json({ dailyTheme })
+  const worksResp = await client.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 32,
+      where: { subjectId: Number(dailyThemesResp.data.dailyThemes[0].id) },
+    },
+  })
+
+  return json({ dailyTheme, worksResp })
 }
 
 export default function SensitiveDayThemePage() {
@@ -66,6 +75,15 @@ const dailyThemesQuery = graphql(
       firstWork {
         ...PartialWorkFields
       }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
+
+const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PartialWorkFields
     }
   }`,
   [partialWorkFieldsFragment],
