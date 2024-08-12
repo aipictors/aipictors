@@ -1,6 +1,6 @@
 import {
-  AlbumItemFragment,
-  AlbumItemWorkFragment,
+  albumItemFragment,
+  albumItemWorkFragment,
   ResponsiveAlbumsList,
 } from "~/components/responsive-albums-list"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -105,5 +105,5 @@ const AlbumsQuery = graphql(
       }
     }
   }`,
-  [AlbumItemFragment, AlbumItemWorkFragment],
+  [albumItemFragment, albumItemWorkFragment],
 )
