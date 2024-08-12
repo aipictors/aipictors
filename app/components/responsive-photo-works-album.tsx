@@ -47,8 +47,7 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
         }}
         componentsProps={{
-          // @ts-ignore
-          link: (props) => <Link {...props} />,
+          image: { loading: "lazy" },
         }}
         render={{
           // TODO: コンポーネントを分ける
@@ -108,6 +107,31 @@ export const ResponsivePhotoWorksAlbum = (props: Props) => {
           ),
           // ),
           // ),
+          link: (props, context) => (
+            <Link to={`/posts/${context.photo.context.id}`} {...props} />
+          ),
+          // image(props, context) {
+          //   return (
+          //     <Link
+          //       to={`/posts/${context.photo.context.id}`}
+          //       className="block overflow-hidden rounded"
+          //     >
+          //       <img
+          //         {...props}
+          //         alt={props.alt}
+          //         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+          //       />
+          //       {context.photo.context.subWorksCount > 0 && (
+          //         <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+          //           <Images className="h-3 w-3 text-white" />
+          //           <div className="font-bold text-white text-xs">
+          //             {context.photo.context.subWorksCount + 1}
+          //           </div>
+          //         </div>
+          //       )}
+          //     </Link>
+          //   )
+          // },
         }}
       />
     </SSR>
