@@ -8,6 +8,8 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
+import { RefreshCcwIcon } from "lucide-react"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -35,6 +37,8 @@ export const ThemeArticle = (props: Props) => {
       where: {
         subjectId: Number(props.themeId),
         ratings: props.isSensitive ? ["G", "R15"] : ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -56,7 +60,41 @@ export const ThemeArticle = (props: Props) => {
         />
         <div className="absolute top-0 left-0 bg-black bg-opacity-60 p-4 font-semibold text-lg text-white">
           <h1 className="font-bold text-2xl">{props.title}</h1>
+          {props.isSensitive && <h2 className="text-md">{"センシティブ"}</h2>}
+          <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
         </div>
+        {!props.isSensitive ? (
+          <AppConfirmDialog
+            title={"確認"}
+            description={"あなたは18歳以上ですか？"}
+            onNext={() => {
+              navigate(
+                `/sensitive/themes/${props.year}/${props.month}/${props.day}`,
+              )
+            }}
+            cookieKey={"check-sensitive-ranking"}
+            onCancel={() => {}}
+          >
+            <Button
+              variant={"secondary"}
+              className="-translate-x-1/2 absolute bottom-1 left-1/2 flex w-32 transform cursor-pointer items-center"
+            >
+              <RefreshCcwIcon className="mr-1 w-3" />
+              <p className="text-sm">{"対象年齢"}</p>
+            </Button>
+          </AppConfirmDialog>
+        ) : (
+          <Button
+            onClick={() => {
+              navigate(`/themes/${props.year}/${props.month}/${props.day}`)
+            }}
+            variant={"secondary"}
+            className="-translate-x-1/2 absolute bottom-1 left-1/2 flex w-32 transform cursor-pointer items-center"
+          >
+            <RefreshCcwIcon className="mr-1 w-3" />
+            <p className="text-sm">{"対象年齢"}</p>
+          </Button>
+        )}
       </div>
       <Button
         onClick={() => {

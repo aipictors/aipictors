@@ -64,9 +64,6 @@ export const ThemeList = (props: Props) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center">
-        <p className="text-lg">{"お題一覧"}</p>
-      </div>
       <div className="flex items-center justify-center space-x-4">
         <Button
           variant={"secondary"}
