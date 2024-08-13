@@ -1,12 +1,14 @@
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
 import { IconUrl } from "~/components/icon-url"
-import { Heart, MessageCircleIcon } from "lucide-react"
+import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
+import { LikeButton } from "~/components/like-button"
+import { Link } from "@remix-run/react"
 
 type Props = {
   isSensitive?: boolean
@@ -21,9 +23,10 @@ type PostSummaryType = FragmentOf<typeof PostSummaryFragment> & {
       work: {
         id: string
         title: string
-        smallThumbnailImageURL: string
+        largeThumbnailImageURL: string
         description: string
         tagNames: string[]
+        isLiked: boolean
         likesCount: number
         commentsCount: number
         user: {
@@ -57,11 +60,7 @@ export const FeedContents = (props: Props) => {
     )
   }
 
-  const [loadedPosts, setLoadedPosts] = useState<
-    PostSummaryType["feed"]["posts"]
-  >([])
-
-  const { data } = useSuspenseQuery(feedQuery, {
+  const data = useSuspenseQuery(feedQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 32 * props.page,
@@ -71,14 +70,13 @@ export const FeedContents = (props: Props) => {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
       },
     },
-    onCompleted: (data: PostSummaryType) => {
-      if (data?.feed?.posts) {
-        setLoadedPosts((prevPosts) => [...prevPosts, ...data.feed.posts])
-      }
-    },
   })
 
-  if (!data?.feed || !data.feed.posts || data.feed.posts.length === 0) {
+  if (
+    !data?.data?.feed ||
+    !data.data.feed.posts ||
+    data.data.feed.posts.length === 0
+  ) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-center">
@@ -94,57 +92,77 @@ export const FeedContents = (props: Props) => {
     props.setPage(props.page + 1)
   }
 
-  console.log(data.feed)
+  const posts = data.data.feed
+    .posts as unknown as PostSummaryType["feed"]["posts"]
 
   return (
-    <div className="space-y-4">
-      {loadedPosts.map(
+    <div className="m-auto w-full space-y-4 md:w-96">
+      {posts.map(
         (post) =>
           post.work && (
             <Card key={post.work.id} className="rounded-lg border">
-              <CardHeader className="flex items-center space-x-3 p-4">
-                <Avatar>
-                  <AvatarImage
-                    className="w-12 rounded-full"
-                    src={IconUrl(post.work.user.iconUrl)}
-                    alt=""
-                  />
-                  <AvatarFallback />
-                </Avatar>
-                <div>
-                  <div className="font-semibold text-lg">
-                    {post.work.user.name}
-                  </div>
-                  <div className="text-sm">@{post.work.user.login}</div>
+              <CardHeader className="m-0 flex justify-start">
+                <div className="flex items-center space-x-2">
+                  <Avatar>
+                    <AvatarImage
+                      className="rounded-full"
+                      src={IconUrl(post.work.user.iconUrl)}
+                      alt=""
+                    />
+                    <AvatarFallback />
+                  </Avatar>
+                  <Link
+                    to={`/users/${post.work.user.login}`}
+                    className="flex items-center space-x-2"
+                  >
+                    <div className="font-semibold text-md">
+                      {post.work.user.name}
+                    </div>
+                    <div className="text-sm">@{post.work.user.login}</div>
+                  </Link>
                 </div>
               </CardHeader>
-              <CardContent className="p-4">
+              <CardContent className="m-0">
                 <div className="space-y-2">
-                  <img
-                    src={post.work.smallThumbnailImageURL}
-                    alt={post.work.title}
-                    className="w-full rounded-lg"
-                  />
-                  <div className="font-semibold text-lg">{post.work.title}</div>
+                  <Link to={`/posts/${post.work.id}`}>
+                    <img
+                      src={post.work.largeThumbnailImageURL}
+                      alt={post.work.title}
+                      className="w-full rounded-md"
+                    />
+                  </Link>
+                  <div className="font-semibold text-md">{post.work.title}</div>
                   <div>{post.work.description}</div>
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center">
-                      <Heart className="h-5 w-5" />
-                      {post.work.likesCount}
+                      <LikeButton
+                        size={40}
+                        text={"いいね"}
+                        targetWorkId={post.work.id}
+                        targetWorkOwnerUserId={post.work.user.id}
+                        defaultLiked={post.work.isLiked}
+                        defaultLikedCount={post.work.likesCount}
+                        isBackgroundNone={false}
+                        strokeWidth={2}
+                      />
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center space-x-1">
                       <MessageCircleIcon className="h-5 w-5" />
-                      {post.work.commentsCount}
+                      <p>{post.work.commentsCount}</p>
                     </div>
                   </div>
-                  <div className="flex space-x-2">
-                    {post.work.tagNames.map((tag: string) => (
-                      <span
-                        key={tag}
-                        className="rounded-full px-2 py-1 text-xs"
+                  <div className="flex space-x-4">
+                    {post.work.tagNames.map((tagName) => (
+                      <Link
+                        to={`/tags/${tagName}`}
+                        key={tagName}
+                        className="p-0"
                       >
-                        #{tag}
-                      </span>
+                        <Button
+                          className="p-0"
+                          variant={"link"}
+                        >{`#${tagName}`}</Button>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -152,7 +170,7 @@ export const FeedContents = (props: Props) => {
             </Card>
           ),
       )}
-      <Button onClick={onMoreClick}>{"もっと見る"}</Button>
+      {/* <Button onClick={onMoreClick}>{"もっと見る"}</Button> */}
     </div>
   )
 }
@@ -163,9 +181,10 @@ export const PostSummaryFragment = graphql(`
     work {
       id
       title
-      smallThumbnailImageURL
+      largeThumbnailImageURL
       description
       tagNames
+      isLiked
       likesCount
       commentsCount
       user {
