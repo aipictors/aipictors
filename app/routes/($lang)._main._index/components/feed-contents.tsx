@@ -113,7 +113,7 @@ export const FeedContents = (props: Props) => {
               </CardHeader>
               <CardContent className="m-0">
                 <div className="w-full md:flex md:space-x-8">
-                  <div className="space-y-2 md:w-96">
+                  <div className="space-y-2 md:w-1/2 md:max-w-[560px]">
                     <Link to={`/posts/${post.work.id}`}>
                       <img
                         src={post.work.largeThumbnailImageURL}
@@ -172,7 +172,7 @@ export const FeedContents = (props: Props) => {
                     className={cn(
                       hiddenComments[post.work.id] ? "block" : "hidden",
                       "md:block", // md以上では常に表示
-                      "max-h-[480px] w-full overflow-y-auto",
+                      "w-full overflow-y-auto",
                     )}
                   >
                     {/* コメント欄 */}
@@ -180,6 +180,7 @@ export const FeedContents = (props: Props) => {
                       <WorkCommentList
                         workId={post.work.id}
                         comments={post.work.comments}
+                        defaultShowCommentCount={2}
                       />
                     )}
                   </div>

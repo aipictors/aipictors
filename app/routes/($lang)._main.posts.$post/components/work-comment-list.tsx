@@ -23,6 +23,7 @@ import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sti
 type Props = {
   workId: string
   comments: FragmentOf<typeof CommentListItemFragment>[]
+  defaultShowCommentCount?: number
 }
 
 // コメント
@@ -222,10 +223,15 @@ export const WorkCommentList = (props: Props) => {
   }
 
   // もっと見るを表示する前のコメント一覧、showCommentsから8件まで表示
-  const showCommentsBeforeMore = showComments.slice(0, 8)
+  const showCommentsBeforeMore = showComments.slice(
+    0,
+    props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
+  )
 
   // もっと見る以降のコメント一覧、showCommentsから8件以降を表示
-  const showCommentsAfterMore = showComments.slice(8)
+  const showCommentsAfterMore = showComments.slice(
+    props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
+  )
 
   const { data = null } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading,
