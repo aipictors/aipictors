@@ -10,6 +10,7 @@ import { graphql } from "gql.tada"
 import { config } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
+import { getJstDate } from "~/utils/jst-date"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト | センシティブ"
@@ -66,13 +67,9 @@ export async function loader() {
 
   const client = createClient()
 
-  const date = new Date()
+  const now = getJstDate()
 
-  const yesterday = new Date()
-
-  yesterday.setDate(yesterday.getDate() - 1)
-
-  const now = new Date()
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   const pastNovelDate = new Date(now)
   pastNovelDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
@@ -117,9 +114,9 @@ export async function loader() {
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
-      day: date.getDate(),
-      month: date.getMonth() + 1,
-      year: date.getFullYear(),
+      day: now.getDate(),
+      month: now.getMonth() + 1,
+      year: now.getFullYear(),
       adWorksLimit: config.query.homeWorkCount.ad,
       // novelWorksLimit: config.query.homeWorkCount.novel,
       // columnWorksLimit: config.query.homeWorkCount.column,

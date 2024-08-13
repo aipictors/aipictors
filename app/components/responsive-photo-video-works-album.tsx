@@ -45,6 +45,51 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
     }
   }, [])
 
+  if (props.works.length === 1) {
+    return (
+      <div className="relative transition-all" style={{ position: "relative" }}>
+        <div
+          className="relative inline-block h-full w-full"
+          onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
+          onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
+        >
+          <Link
+            to={`/posts/${props.works[0].id}`}
+            className="max-h-32 overflow-hidden rounded"
+          >
+            <img
+              {...props}
+              alt={props.works[0].title}
+              className="max-h-32 overflow-hidden rounded"
+            />
+            <video
+              src={props.works[0].url ?? ""}
+              // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+              ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
+              className="absolute top-0 left-0 hidden max-h-32 w-full overflow-hidden rounded object-contain md:block"
+              style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
+              muted
+              autoPlay={isAutoPlay}
+              loop
+            >
+              <track
+                kind="captions"
+                src={props.works[0].url ?? ""}
+                label="English"
+              />
+            </video>
+
+            <div className="absolute top-1 left-1 opacity-50">
+              <Badge variant={"secondary"} className="text-xs">
+                {"video"}
+              </Badge>
+            </div>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum

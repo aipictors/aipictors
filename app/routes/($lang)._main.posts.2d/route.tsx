@@ -7,6 +7,7 @@ import { graphql } from "gql.tada"
 import { config } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { Home2dContents } from "~/routes/($lang)._main.posts.2d/conponents/home-2d-contents"
+import { getJstDate } from "~/utils/jst-date"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
@@ -63,13 +64,9 @@ export async function loader() {
 
   const client = createClient()
 
-  const date = new Date()
+  const now = getJstDate()
 
-  const yesterday = new Date()
-
-  yesterday.setDate(yesterday.getDate() - 1)
-
-  const now = new Date()
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   const pastPromotionDate = new Date(now)
   pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
