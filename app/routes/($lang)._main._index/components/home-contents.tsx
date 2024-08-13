@@ -31,6 +31,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
+import { FeedContents } from "~/routes/($lang)._main._index/components/feed-contents"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -68,9 +69,14 @@ export const HomeContents = (props: Props) => {
   const [isMounted, setIsMounted] = useState(false)
 
   const [newWorksPage, setNewWorksPage] = useState(0)
+
+  const [feedPage, setFeedPage] = useState(0)
+
   const [workType, setWorkType] =
     useState<IntrospectionEnum<"WorkType"> | null>(null)
+
   const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
@@ -299,11 +305,11 @@ export const HomeContents = (props: Props) => {
       </TabsContent>
 
       <TabsContent value="timeline">
-        <div className="flex h-32 items-center justify-center text-center">
-          {"😢"}
-          <br />
-          {"ごめんなさい！工事中です！"}
-        </div>
+        <FeedContents
+          isSensitive={props.isSensitive}
+          page={feedPage}
+          setPage={setFeedPage}
+        />
       </TabsContent>
     </Tabs>
   )
