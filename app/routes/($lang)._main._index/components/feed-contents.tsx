@@ -68,7 +68,7 @@ export const FeedContents = (props: Props) => {
       limit: 32,
       userId: authContext.userId,
       where: {
-        ratings: props.isSensitive ? ["G", "R15"] : ["R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
       },
     },
     onCompleted: (data: PostSummaryType) => {
@@ -78,7 +78,7 @@ export const FeedContents = (props: Props) => {
     },
   })
 
-  if (!data?.feed || !data.feed.posts) {
+  if (!data?.feed || !data.feed.posts || data.feed.posts.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-center">
@@ -93,6 +93,8 @@ export const FeedContents = (props: Props) => {
   const onMoreClick = () => {
     props.setPage(props.page + 1)
   }
+
+  console.log(data.feed)
 
   return (
     <div className="space-y-4">
