@@ -32,6 +32,7 @@ import {
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { FeedContents } from "~/routes/($lang)._main._index/components/feed-contents"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -185,9 +186,18 @@ export const HomeContents = (props: Props) => {
       className="space-y-4"
     >
       <TabsList>
-        <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">新着・人気</TabsTrigger>
-        <TabsTrigger value="timeline">タイムライン</TabsTrigger>
+        <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
+        <TabsTrigger value="new">{"新着・人気"}</TabsTrigger>
+        <TabsTrigger value="timeline">
+          <div className="flex items-center space-x-2">
+            <p>{"タイムライン"}</p>
+            <CrossPlatformTooltip
+              text={
+                "フォローしたユーザ、お気に入り登録したタグの新着作品が表示されます"
+              }
+            />
+          </div>
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
