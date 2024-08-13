@@ -77,6 +77,9 @@ export const FeedContents = (props: Props) => {
   const [hiddenComments, setHiddenComments] = React.useState<{
     [key: string]: boolean
   }>({})
+  const [subWorksVisible, setSubWorksVisible] = React.useState<{
+    [key: string]: boolean
+  }>({})
 
   const toggleCommentsVisibility = (postId: string) => {
     setHiddenComments((prevState) => ({
@@ -85,11 +88,15 @@ export const FeedContents = (props: Props) => {
     }))
   }
 
+  const toggleSubWorksVisibility = (postId: string) => {
+    setSubWorksVisible((prevState) => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }))
+  }
+
   const works = posts
-    .filter(
-      // biome-ignore lint/complexity/useOptionalChain: <explanation>
-      (post) => post && post.work,
-    )
+    .filter((post) => post?.work)
     .map((post) => post.work)
     .map((work) => work)
 
@@ -125,13 +132,47 @@ export const FeedContents = (props: Props) => {
               <CardContent className="m-auto max-w-[1200px]">
                 <div className="w-full md:flex md:space-x-8">
                   <div className="space-y-2 md:w-1/2 md:max-w-[560px]">
-                    <Link to={`/posts/${work.id}`}>
-                      <img
-                        src={work.largeThumbnailImageURL}
-                        alt={work.title}
-                        className="w-full rounded-md"
-                      />
-                    </Link>
+                    <div className="relative">
+                      <Link to={`/posts/${work.id}`}>
+                        <img
+                          src={work.largeThumbnailImageURL}
+                          alt={work.title}
+                          className="w-full rounded-md"
+                        />
+                      </Link>
+                      {work.subWorks.length > 0 && (
+                        <>
+                          {!subWorksVisible[work.id] && (
+                            <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88" />
+                          )}
+                          <Button
+                            className="-translate-x-1/2 absolute bottom-2 left-1/2 transform rounded-full opacity-80"
+                            variant={"secondary"}
+                            onClick={() => toggleSubWorksVisibility(work.id)}
+                          >
+                            {!subWorksVisible[work.id]
+                              ? `もっと見る(${work.subWorks.length})`
+                              : "閉じる"}
+                          </Button>
+                          {subWorksVisible[work.id] &&
+                            work.subWorks.map(
+                              (subWork, index) =>
+                                subWork.imageUrl && (
+                                  <Link
+                                    key={index.toString()}
+                                    to={`/posts/${work.id}`}
+                                  >
+                                    <img
+                                      src={subWork.imageUrl}
+                                      alt={work.title}
+                                      className="w-full rounded-md"
+                                    />
+                                  </Link>
+                                ),
+                            )}
+                        </>
+                      )}
+                    </div>
                     <div className="font-semibold text-md">{work.title}</div>
                     <div>{work.description}</div>
                     <div className="flex items-center space-x-4">
@@ -148,7 +189,6 @@ export const FeedContents = (props: Props) => {
                         />
                       </div>
                       {work !== null && (
-                        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                         <Button
                           variant={"secondary"}
                           className="flex cursor-pointer items-center space-x-1"
@@ -176,7 +216,6 @@ export const FeedContents = (props: Props) => {
                         </Link>
                       ))}
                     </div>
-                    {/* 日時 */}
                     <div className="text-sm">
                       {toDateTimeText(work.createdAt)}
                     </div>
@@ -184,11 +223,10 @@ export const FeedContents = (props: Props) => {
                   <div
                     className={cn(
                       hiddenComments[work.id] ? "block" : "hidden",
-                      "md:block", // md以上では常に表示
+                      "md:block",
                       "w-full overflow-y-auto",
                     )}
                   >
-                    {/* コメント欄 */}
                     {work.isCommentsEditable && (
                       <WorkCommentList
                         workId={work.id}
@@ -223,6 +261,9 @@ export const workFieldsFragment = graphql(
       name
       login
       iconUrl
+    }
+    subWorks {
+      imageUrl
     }
   }`,
 )

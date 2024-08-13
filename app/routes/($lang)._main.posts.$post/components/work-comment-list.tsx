@@ -233,8 +233,6 @@ export const WorkCommentList = (props: Props) => {
     props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
   )
 
-  console.log(showCommentsAfterMore)
-
   const { data = null } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading,
   })
