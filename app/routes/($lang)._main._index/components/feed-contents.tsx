@@ -14,6 +14,7 @@ import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post/comp
 import { cn } from "~/lib/cn"
 import React from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   isSensitive?: boolean
@@ -167,6 +168,10 @@ export const FeedContents = (props: Props) => {
                         </Link>
                       ))}
                     </div>
+                    {/* 日時 */}
+                    <div className="text-sm">
+                      {toDateTimeText(post.work.createdAt)}
+                    </div>
                   </div>
                   <div
                     className={cn(
@@ -206,6 +211,7 @@ const feedQuery = graphql(
           tagNames
           isLiked
           likesCount
+          createdAt
           commentsCount
           isCommentsEditable
           user {
