@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -9,6 +9,11 @@ import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
+import { WorkCommentList } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
+import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
+import { cn } from "~/lib/cn"
+import React from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 
 type Props = {
   isSensitive?: boolean
@@ -16,35 +21,14 @@ type Props = {
   setPage: (page: number) => void
 }
 
-type PostSummaryType = FragmentOf<typeof PostSummaryFragment> & {
-  feed: {
-    posts: Array<{
-      createdAt: string
-      work: {
-        id: string
-        title: string
-        largeThumbnailImageURL: string
-        description: string
-        tagNames: string[]
-        isLiked: boolean
-        likesCount: number
-        commentsCount: number
-        user: {
-          id: string
-          name: string
-          login: string
-          iconUrl: string
-        }
-      }
-    }>
-  }
-}
-
 export const FeedContents = (props: Props) => {
   const authContext = useContext(AuthContext)
 
+  if (authContext.isLoading) {
+    return <AppLoadingPage />
+  }
+
   if (
-    authContext.isLoading ||
     authContext.isNotLoggedIn ||
     authContext.userId === undefined ||
     !authContext.userId
@@ -88,15 +72,20 @@ export const FeedContents = (props: Props) => {
     )
   }
 
-  const onMoreClick = () => {
-    props.setPage(props.page + 1)
+  const posts = data.data.feed.posts
+  const [hiddenComments, setHiddenComments] = React.useState<{
+    [key: string]: boolean
+  }>({})
+
+  const toggleCommentsVisibility = (postId: string) => {
+    setHiddenComments((prevState) => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }))
   }
 
-  const posts = data.data.feed
-    .posts as unknown as PostSummaryType["feed"]["posts"]
-
   return (
-    <div className="m-auto w-full space-y-4 md:w-96">
+    <div className="m-auto w-full space-y-4">
       {posts.map(
         (post) =>
           post.work && (
@@ -123,88 +112,114 @@ export const FeedContents = (props: Props) => {
                 </div>
               </CardHeader>
               <CardContent className="m-0">
-                <div className="space-y-2">
-                  <Link to={`/posts/${post.work.id}`}>
-                    <img
-                      src={post.work.largeThumbnailImageURL}
-                      alt={post.work.title}
-                      className="w-full rounded-md"
-                    />
-                  </Link>
-                  <div className="font-semibold text-md">{post.work.title}</div>
-                  <div>{post.work.description}</div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center">
-                      <LikeButton
-                        size={40}
-                        text={"いいね"}
-                        targetWorkId={post.work.id}
-                        targetWorkOwnerUserId={post.work.user.id}
-                        defaultLiked={post.work.isLiked}
-                        defaultLikedCount={post.work.likesCount}
-                        isBackgroundNone={false}
-                        strokeWidth={2}
+                <div className="w-full md:flex md:space-x-8">
+                  <div className="space-y-2 md:w-96">
+                    <Link to={`/posts/${post.work.id}`}>
+                      <img
+                        src={post.work.largeThumbnailImageURL}
+                        alt={post.work.title}
+                        className="w-full rounded-md"
                       />
+                    </Link>
+                    <div className="font-semibold text-md">
+                      {post.work.title}
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <MessageCircleIcon className="h-5 w-5" />
-                      <p>{post.work.commentsCount}</p>
+                    <div>{post.work.description}</div>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center">
+                        <LikeButton
+                          size={40}
+                          text={"いいね"}
+                          targetWorkId={post.work.id}
+                          targetWorkOwnerUserId={post.work.user.id}
+                          defaultLiked={post.work.isLiked}
+                          defaultLikedCount={post.work.likesCount}
+                          isBackgroundNone={false}
+                          strokeWidth={2}
+                        />
+                      </div>
+                      {post.work !== null && (
+                        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+                        <Button
+                          variant={"secondary"}
+                          className="flex cursor-pointer items-center space-x-1"
+                          onClick={() => {
+                            if (post.work) {
+                              toggleCommentsVisibility(post.work.id)
+                            }
+                          }}
+                        >
+                          <MessageCircleIcon className="h-5 w-5" />
+                          <p>{post.work.commentsCount}</p>
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex space-x-4">
+                      {post.work.tagNames.map((tagName) => (
+                        <Link
+                          to={`/tags/${tagName}`}
+                          key={tagName}
+                          className="p-0"
+                        >
+                          <Button className="p-0" variant={"link"}>
+                            {`#${tagName}`}
+                          </Button>
+                        </Link>
+                      ))}
                     </div>
                   </div>
-                  <div className="flex space-x-4">
-                    {post.work.tagNames.map((tagName) => (
-                      <Link
-                        to={`/tags/${tagName}`}
-                        key={tagName}
-                        className="p-0"
-                      >
-                        <Button
-                          className="p-0"
-                          variant={"link"}
-                        >{`#${tagName}`}</Button>
-                      </Link>
-                    ))}
+                  <div
+                    className={cn(
+                      hiddenComments[post.work.id] ? "block" : "hidden",
+                      "md:block", // md以上では常に表示
+                      "max-h-[480px] w-full overflow-y-auto",
+                    )}
+                  >
+                    {/* コメント欄 */}
+                    {post.work.isCommentsEditable && (
+                      <WorkCommentList
+                        workId={post.work.id}
+                        comments={post.work.comments}
+                      />
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
           ),
       )}
-      {/* <Button onClick={onMoreClick}>{"もっと見る"}</Button> */}
     </div>
   )
 }
-
-export const PostSummaryFragment = graphql(`
-  fragment PostSummary on FeedPostNode {
-    id
-    work {
-      id
-      title
-      largeThumbnailImageURL
-      description
-      tagNames
-      isLiked
-      likesCount
-      commentsCount
-      user {
-        id
-        name
-        login
-        iconUrl
-      }
-    }
-    createdAt
-  }
-`)
 
 const feedQuery = graphql(
   `query Feed($userId: ID!, $limit: Int!, $offset: Int!, $where: FeedPostsWhereInput) {
     feed(userId: $userId) {
       posts(limit: $limit, offset: $offset, where: $where) {
-        ...PostSummary
+        id
+        work {
+          id
+          title
+          largeThumbnailImageURL
+          description
+          tagNames
+          isLiked
+          likesCount
+          commentsCount
+          isCommentsEditable
+          user {
+            id
+            name
+            login
+            iconUrl
+          }
+          comments(offset: 0, limit: 128) {
+            ...Comment
+          }
+        }
+
       }
     }
   }`,
-  [PostSummaryFragment],
+  [CommentListItemFragment],
 )
