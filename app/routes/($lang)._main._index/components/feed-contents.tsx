@@ -101,7 +101,7 @@ export const FeedContents = (props: Props) => {
         (work) =>
           work && (
             <Card key={work.id} className="rounded-lg border">
-              <CardHeader className="m-0 flex justify-start">
+              <CardHeader className="m-auto flex max-w-[1200px] justify-start">
                 <div className="flex items-center space-x-2">
                   <Avatar>
                     <AvatarImage
@@ -122,7 +122,7 @@ export const FeedContents = (props: Props) => {
                   </Link>
                 </div>
               </CardHeader>
-              <CardContent className="m-0">
+              <CardContent className="m-auto max-w-[1200px]">
                 <div className="w-full md:flex md:space-x-8">
                   <div className="space-y-2 md:w-1/2 md:max-w-[560px]">
                     <Link to={`/posts/${work.id}`}>
@@ -163,7 +163,7 @@ export const FeedContents = (props: Props) => {
                         </Button>
                       )}
                     </div>
-                    <div className="flex space-x-4">
+                    <div className="flex flex-wrap gap-x-4">
                       {work.tagNames.map((tagName) => (
                         <Link
                           to={`/tags/${tagName}`}
