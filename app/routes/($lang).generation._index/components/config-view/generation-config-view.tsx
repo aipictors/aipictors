@@ -271,6 +271,7 @@ const viewerCurrentImageGenerationMemosQuery = graphql(
     viewer {
       id
       currentImageGenerationMemos {
+        id
         ...ImageGenerationMemoFields
       }
     }

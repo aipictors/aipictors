@@ -1,12 +1,15 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { FollowingUserItem } from "~/routes/($lang).following._index/components/following-user-item"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext } from "react"
+import {
+  FollowerListItemFragment,
+  FollowerListItemWorkFragment,
+} from "~/routes/($lang).followers._index/components/follower-user-item"
 
 export const FollowingList = () => {
   const [page, setPage] = React.useState(0)
@@ -21,22 +24,11 @@ export const FollowingList = () => {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId,
-      worksWhere: {},
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {},
-      worksOffset: 0,
-      worksLimit: 0,
       followeesOffset: 16 * page,
       followeesLimit: 16,
       followeesWorksOffset: 0,
       followeesWorksLimit: 8,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
+      followeesWorksWhere: {},
     },
   })
   console.log(userResp.data)
@@ -50,25 +42,14 @@ export const FollowingList = () => {
           {userResp.data?.user?.followees.map((follower, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             <div key={index} className="space-y-2">
-              <FollowingUserItem
-                userId={follower.id}
-                userName={follower.name}
-                userIconImageURL={follower.iconUrl}
-                biography={follower.biography ?? ""}
-                isFollow={follower.isFollowee}
-                works={follower.works.map((work) => ({
-                  id: work.id,
-                  title: work.title,
-                  thumbnailImageUrl: work.smallThumbnailImageURL,
-                }))}
-              />
+              <FollowingUserItem user={follower} works={follower.works} />
               <Separator />
             </div>
           ))}
         </div>
         <ResponsivePagination
           perPage={16}
-          maxCount={userResp.data?.user?.followersCount ?? 0}
+          maxCount={userResp.data?.user?.followeesCount ?? 0}
           currentPage={page}
           onPageChange={(page: number) => {
             setPage(page)
@@ -82,91 +63,23 @@ export const FollowingList = () => {
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
     $followeesOffset: Int!,
     $followeesLimit: Int!,
     $followeesWorksOffset: Int!,
     $followeesWorksLimit: Int!,
     $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
+      followeesCount
       followees(offset: $followeesOffset, limit: $followeesLimit) {
         id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
+        ...FollowerListItem
         works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
+          ...FollowerListItemWork
         }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [FollowerListItemFragment, FollowerListItemWorkFragment],
 )

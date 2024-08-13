@@ -1,8 +1,7 @@
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
@@ -11,7 +10,7 @@ import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   targetRowHeight?: number
   isAutoPlay?: boolean
 }
@@ -177,3 +176,21 @@ export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
     </SSR>
   )
 }
+
+export const PhotoAlbumVideoWorkFragment = graphql(
+  `fragment PhotoAlbumVideoWork on WorkNode @_unmask {
+    id
+    title
+    url
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    smallThumbnailImageURL
+    likesCount
+    isLiked
+    user {
+      id
+      name
+      iconUrl
+    }
+  }`,
+)

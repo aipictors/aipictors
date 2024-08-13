@@ -1,7 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { WorkComment } from "~/routes/($lang)._main.posts.$post/components/work-comment"
+import {
+  WorkComment,
+  WorkCommentFragment,
+} from "~/routes/($lang)._main.posts.$post/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post/components/work-comment-response"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
@@ -13,14 +16,13 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { commentFieldsFragment } from "~/graphql/fragments/comment-fields"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 
 type Props = {
   workId: string
-  comments: FragmentOf<typeof commentFragment>[]
+  comments: FragmentOf<typeof CommentListItemFragment>[]
 }
 
 // コメント
@@ -717,14 +719,14 @@ const userQuery = graphql(
   [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const commentFragment = graphql(
+export const CommentListItemFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
-      ...CommentFields
+      ...WorkComment
       responses(offset: 0, limit: 128) {
-        ...CommentFields
+        ...WorkComment
       }
   }`,
-  [commentFieldsFragment],
+  [WorkCommentFragment],
 )
 
 const createWorkCommentMutation = graphql(

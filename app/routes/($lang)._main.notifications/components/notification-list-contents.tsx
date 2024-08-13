@@ -13,18 +13,15 @@ export const NotificationListContents = () => {
 
   const [page, setPage] = useState(0)
 
-  const { data: notificationsCount } = useSuspenseQuery(
-    viewerNotificationsCountQuery,
-    {
-      variables: {
-        where: {
-          type: notifyType !== null ? notifyType : undefined,
-        },
-        orderBy: "CREATED_AT",
+  const { data: notificationsCount } = useSuspenseQuery(ViewerQuery, {
+    variables: {
+      where: {
+        type: notifyType !== null ? notifyType : undefined,
       },
-      fetchPolicy: "cache-first",
+      orderBy: "CREATED_AT",
     },
-  )
+    fetchPolicy: "cache-first",
+  })
 
   return (
     <>
@@ -49,7 +46,7 @@ export const NotificationListContents = () => {
   )
 }
 
-const viewerNotificationsCountQuery = graphql(
+const ViewerQuery = graphql(
   `query ViewerNotifications($where: NotificationsWhereInput) {
     viewer {
       id

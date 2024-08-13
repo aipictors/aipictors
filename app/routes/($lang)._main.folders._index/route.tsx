@@ -1,12 +1,10 @@
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { workUserFieldsFragment } from "~/graphql/fragments/work-user-fields"
 import { graphql } from "gql.tada"
 
 export default function Route() {
   return null
 }
 
-export const folderQuery = graphql(
+export const FolderQuery = graphql(
   `query Folder($id: ID!) {
     folder(id: $id) {
       id
@@ -15,7 +13,7 @@ export const folderQuery = graphql(
       isPrivate
       description
       user {
-        ...WorkUserFields
+        id
         isFollowee
         isFollowee
         isMuted
@@ -25,17 +23,17 @@ export const folderQuery = graphql(
       thumbnailImageURL
     }
   }`,
-  [workUserFieldsFragment],
+  [],
 )
 
-export const folderWorksQuery = graphql(
+export const FolderWorksQuery = graphql(
   `query FolderWorks($folderId: ID!, $offset: Int!, $limit: Int!) {
     folder(id: $folderId) {
       id
       works(offset: $offset, limit: $limit) {
-        ...PartialWorkFields
+        id
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [],
 )

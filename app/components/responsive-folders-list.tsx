@@ -1,12 +1,8 @@
-import type { partialFolderFieldsFragment } from "~/graphql/fragments/partial-folder-fields"
-import type { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  folder: FragmentOf<typeof partialFolderFieldsFragment>
-  user: FragmentOf<typeof partialUserFieldsFragment> | null
-  targetRowHeight?: number
+  folder: FragmentOf<typeof FolderListItemFragment>
 }
 
 /**
@@ -14,10 +10,7 @@ type Props = {
  */
 export const ResponsiveFoldersList = (props: Props) => {
   return (
-    <div
-      key={props.folder.id}
-      className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64"
-    >
+    <div className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64">
       <div className="box-border flex flex-col justify-end">
         <Link to={`/collections/${props.folder.nanoid}`} className="relative">
           <img
@@ -39,3 +32,12 @@ export const ResponsiveFoldersList = (props: Props) => {
     </div>
   )
 }
+
+export const FolderListItemFragment = graphql(
+  `fragment FolderListItem on FolderNode @_unmask {
+    id
+    nanoid
+    title
+    thumbnailImageURL
+  }`,
+)

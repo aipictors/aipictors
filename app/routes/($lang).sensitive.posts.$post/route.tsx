@@ -5,7 +5,7 @@ import {
   workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post/components/work-article"
 import {
-  commentFragment,
+  CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
@@ -73,7 +73,7 @@ const workCommentsQuery = graphql(
       }
     }
   }`,
-  [commentFragment],
+  [CommentListItemFragment],
 )
 
 const workQuery = graphql(

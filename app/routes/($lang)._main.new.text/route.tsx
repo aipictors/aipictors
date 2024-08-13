@@ -1,10 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -26,7 +22,6 @@ import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export default function NewText() {
   const authContext = useContext(AuthContext)
@@ -166,7 +161,7 @@ export default function NewText() {
   }, [viewer?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
-    useMutation(createWorkMutation)
+    useMutation(CreateWorkMutation)
 
   const formResult = safeParse(vPostTextForm, {
     title: inputState.title,
@@ -468,10 +463,67 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
-        ...PassFields
+        id
+        type
+        payment {
+          id
+          amount
+          stripePaymentIntentId
+        }
+        isDisabled
+        periodStart
+        periodEnd
+        trialPeriodStart
+        trialPeriodEnd
+        createdAt
+        price
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
-        ...ImageGenerationResultFields
+        id
+        prompt
+        negativePrompt
+        seed
+        steps
+        scale
+        sampler
+        clipSkip
+        sizeType
+        t2tImageUrl
+        t2tMaskImageUrl
+        t2tDenoisingStrengthSize
+        t2tInpaintingFillSize
+        rating
+        completedAt
+        isProtected
+        generationType
+        postModelId
+        modelHash
+        model {
+          id
+          name
+          type
+        }
+        vae
+        nanoid
+        status
+        estimatedSeconds
+        controlNetControlMode
+        controlNetEnabled
+        controlNetGuidanceEnd
+        controlNetGuidanceStart
+        controlNetPixelPerfect
+        controlNetProcessorRes
+        controlNetResizeMode
+        controlNetThresholdA
+        controlNetThresholdB
+        controlNetWeight
+        controlNetModule
+        controlNetModel
+        controlNetSaveDetectedMap
+        controlNetHrOption
+        upscaleSize
+        imageUrl
+        thumbnailUrl
       }
     }
     albums(
@@ -484,13 +536,45 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
+      id
+      title
+      isSensitive
+      likesCount
+      viewsCount
+      thumbnailImageURL
+      description
+      works(limit: $limit, offset: $offset) {
+        id
+        title
+        imageURL
+        largeThumbnailImageURL
+        smallThumbnailImageURL
+        accessType
+        rating
+        createdAt
+      }
+      rating
+      createdAt
+      slug
+      userId
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
     }
     dailyThemes(
       limit: 8,
@@ -518,16 +602,9 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialUserFieldsFragment,
-    passFieldsFragment,
-    imageGenerationResultFieldsFragment,
-  ],
 )
 
-const createWorkMutation = graphql(
+const CreateWorkMutation = graphql(
   `mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
       id

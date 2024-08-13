@@ -53,6 +53,7 @@ const viewerMutedUsersQuery = graphql(
     viewer {
       id
       mutedUsers(offset: $offset, limit: $limit) {
+        id
         ...PartialUserFields
       }
     }

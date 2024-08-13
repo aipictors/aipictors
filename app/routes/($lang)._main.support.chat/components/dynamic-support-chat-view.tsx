@@ -67,6 +67,7 @@ const viewerSupportMessagesQuery = graphql(
     viewer {
       id
       supportMessages(offset: $offset, limit: $limit) {
+        id
         ...MessageFields
       }
     }

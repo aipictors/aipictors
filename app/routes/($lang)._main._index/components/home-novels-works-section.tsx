@@ -1,13 +1,12 @@
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -74,3 +73,18 @@ export const HomeNovelsWorksSection = (props: Props) => {
     </section>
   )
 }
+
+export const HomeNovelsWorkListItemFragment = graphql(
+  `fragment HomeNovelsWorkListItem on WorkNode @_unmask {
+    id
+    title
+    description
+    smallThumbnailImageURL
+    isLiked
+    user {
+      id
+      name
+      iconUrl
+    }
+  }`,
+)

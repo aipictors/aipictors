@@ -1,12 +1,10 @@
-import { partialFeedWorkFieldsFragment } from "~/graphql/fragments/partial-feed-work-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 
 export default function Route() {
   return null
 }
 
-export const feedDailyThemeWorksQuery = graphql(
+export const FeedDailyThemeWorksQuery = graphql(
   `query FeedDailyThemeWorks(
     $year: Int!
     $month: Int!
@@ -18,9 +16,7 @@ export const feedDailyThemeWorksQuery = graphql(
       id
       title
       works(offset: $offset, limit: $limit) {
-        ...PartialFeedWorkFields
         user {
-          ...PartialUserFields
           isFollower
           isFollowee
           isMuted
@@ -30,15 +26,13 @@ export const feedDailyThemeWorksQuery = graphql(
       }
     }
   }`,
-  [partialFeedWorkFieldsFragment, partialUserFieldsFragment],
+  [],
 )
 
-export const feedHotWorksQuery = graphql(
+export const FeedHotWorksQuery = graphql(
   `query FeedHotWorks {
     hotWorks {
-      ...PartialFeedWorkFields
       user {
-        ...PartialUserFields
         isFollower
         isFollowee
         isMuted
@@ -47,15 +41,13 @@ export const feedHotWorksQuery = graphql(
       isInCollection
     }
   }`,
-  [partialFeedWorkFieldsFragment, partialUserFieldsFragment],
+  [],
 )
 
-export const feedLatestWorksQuery = graphql(
+export const FeedLatestWorksQuery = graphql(
   `query FeedLatestWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialFeedWorkFields
       user {
-        ...PartialUserFields
         isFollower
         isFollowee
         isMuted
@@ -64,5 +56,5 @@ export const feedLatestWorksQuery = graphql(
       isInCollection
     }
   }`,
-  [partialFeedWorkFieldsFragment, partialUserFieldsFragment],
+  [],
 )
