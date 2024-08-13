@@ -85,78 +85,86 @@ export const FeedContents = (props: Props) => {
     }))
   }
 
+  // postsのworkのcreated_atで降順にソート
+  const works = posts
+    .map((post) => post.work)
+    .sort((a, b) => {
+      if (a?.createdAt && b?.createdAt) {
+        return a.createdAt < b.createdAt ? 1 : -1
+      }
+      return 0
+    })
+
   return (
     <div className="m-auto w-full space-y-4">
-      {posts.map(
-        (post) =>
-          post.work && (
-            <Card key={post.work.id} className="rounded-lg border">
+      {works.map(
+        (work) =>
+          work && (
+            <Card key={work.id} className="rounded-lg border">
               <CardHeader className="m-0 flex justify-start">
                 <div className="flex items-center space-x-2">
                   <Avatar>
                     <AvatarImage
                       className="rounded-full"
-                      src={IconUrl(post.work.user.iconUrl)}
+                      src={IconUrl(work.user.iconUrl)}
                       alt=""
                     />
                     <AvatarFallback />
                   </Avatar>
                   <Link
-                    to={`/users/${post.work.user.login}`}
+                    to={`/users/${work.user.login}`}
                     className="flex items-center space-x-2"
                   >
                     <div className="font-semibold text-md">
-                      {post.work.user.name}
+                      {work.user.name}
                     </div>
-                    <div className="text-sm">@{post.work.user.login}</div>
+                    <div className="text-sm">@{work.user.login}</div>
                   </Link>
                 </div>
               </CardHeader>
               <CardContent className="m-0">
                 <div className="w-full md:flex md:space-x-8">
                   <div className="space-y-2 md:w-1/2 md:max-w-[560px]">
-                    <Link to={`/posts/${post.work.id}`}>
+                    <Link to={`/posts/${work.id}`}>
                       <img
-                        src={post.work.largeThumbnailImageURL}
-                        alt={post.work.title}
+                        src={work.largeThumbnailImageURL}
+                        alt={work.title}
                         className="w-full rounded-md"
                       />
                     </Link>
-                    <div className="font-semibold text-md">
-                      {post.work.title}
-                    </div>
-                    <div>{post.work.description}</div>
+                    <div className="font-semibold text-md">{work.title}</div>
+                    <div>{work.description}</div>
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center">
                         <LikeButton
                           size={40}
                           text={"いいね"}
-                          targetWorkId={post.work.id}
-                          targetWorkOwnerUserId={post.work.user.id}
-                          defaultLiked={post.work.isLiked}
-                          defaultLikedCount={post.work.likesCount}
+                          targetWorkId={work.id}
+                          targetWorkOwnerUserId={work.user.id}
+                          defaultLiked={work.isLiked}
+                          defaultLikedCount={work.likesCount}
                           isBackgroundNone={false}
                           strokeWidth={2}
                         />
                       </div>
-                      {post.work !== null && (
+                      {work !== null && (
                         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                         <Button
                           variant={"secondary"}
                           className="flex cursor-pointer items-center space-x-1"
                           onClick={() => {
-                            if (post.work) {
-                              toggleCommentsVisibility(post.work.id)
+                            if (work) {
+                              toggleCommentsVisibility(work.id)
                             }
                           }}
                         >
                           <MessageCircleIcon className="h-5 w-5" />
-                          <p>{post.work.commentsCount}</p>
+                          <p>{work.commentsCount}</p>
                         </Button>
                       )}
                     </div>
                     <div className="flex space-x-4">
-                      {post.work.tagNames.map((tagName) => (
+                      {work.tagNames.map((tagName) => (
                         <Link
                           to={`/tags/${tagName}`}
                           key={tagName}
@@ -170,21 +178,21 @@ export const FeedContents = (props: Props) => {
                     </div>
                     {/* 日時 */}
                     <div className="text-sm">
-                      {toDateTimeText(post.work.createdAt)}
+                      {toDateTimeText(work.createdAt)}
                     </div>
                   </div>
                   <div
                     className={cn(
-                      hiddenComments[post.work.id] ? "block" : "hidden",
+                      hiddenComments[work.id] ? "block" : "hidden",
                       "md:block", // md以上では常に表示
                       "w-full overflow-y-auto",
                     )}
                   >
                     {/* コメント欄 */}
-                    {post.work.isCommentsEditable && (
+                    {work.isCommentsEditable && (
                       <WorkCommentList
-                        workId={post.work.id}
-                        comments={post.work.comments}
+                        workId={work.id}
+                        comments={work.comments}
                         defaultShowCommentCount={2}
                       />
                     )}
