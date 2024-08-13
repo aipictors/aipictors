@@ -5,6 +5,7 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/cn"
 import { graphql } from "gql.tada"
 import { toast } from "sonner"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type Props = {
   tag: string
@@ -105,31 +106,40 @@ export const TagFollowButton = (props: Props) => {
     return null
   }
 
-  return isFollow ? (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-    <div
-      onClick={() => {
-        if (isFollowing || isUnFollowing) return
-        onUnFollow()
-      }}
-      className={cn(
-        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+  return (
+    <div className="flex w-full items-center space-x-2">
+      <CrossPlatformTooltip
+        text={
+          "タグのついた新着作品をタイムラインでチェックできるようになります"
+        }
+      />
+      {isFollow ? (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        <div
+          onClick={() => {
+            if (isFollowing || isUnFollowing) return
+            onUnFollow()
+          }}
+          className={cn(
+            isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+          )}
+        >
+          {unFollowTriggerNode}
+        </div>
+      ) : (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        <div
+          onClick={() => {
+            if (isFollowing || isUnFollowing) return
+            onFollow()
+          }}
+          className={cn(
+            isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+          )}
+        >
+          {triggerNode}
+        </div>
       )}
-    >
-      {unFollowTriggerNode}
-    </div>
-  ) : (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-    <div
-      onClick={() => {
-        if (isFollowing || isUnFollowing) return
-        onFollow()
-      }}
-      className={cn(
-        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
-      )}
-    >
-      {triggerNode}
     </div>
   )
 }
